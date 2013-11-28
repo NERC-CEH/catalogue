@@ -29,8 +29,8 @@
             <@base.onlineResource x/>
         </#list>
     </@base.orNilReason>
-    <ef:purpose nilReason="missing"/>
-    <@base.orNilReason "ef:observingCapability" observingCapabilities! false>
+    <ef:purpose nilReason="missing" xsi:nil="true"/>
+    <@base.orNilReason type="ef:observingCapability" x=observingCapabilities! nillable=false>
         <#list observingCapabilities as x>
             <@base.observingCapability x x_index/>
         </#list>
@@ -49,7 +49,7 @@
             <@base.link "supersedes" x/>
         </#list>
     </@base.orNilReason>
-    <@base.orNilReason "ef:supersededBy" supersededBy!>
+    <@base.orNilReason type="ef:supersededBy" x=supersededBy! nillable=false>
         <#list supersededBy as x>
             <@base.link "supersededBy" x/>
         </#list>

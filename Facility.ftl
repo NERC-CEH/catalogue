@@ -29,8 +29,8 @@
             <@base.onlineResource x/>
         </#list>
     </@base.orNilReason>
-    <ef:purpose nilReason="missing"/>
-    <@base.orNilReason "ef:observingCapability" observingCapabilities! false>
+    <ef:purpose nilReason="missing" xsi:nil="true"/>
+    <@base.orNilReason type="ef:observingCapability" x=observingCapabilities! nillable=false>
         <#list observingCapabilities as x>
             <@base.observingCapability x x_index/>
         </#list>
@@ -49,7 +49,7 @@
             <@base.link "supersedes" x/>
         </#list>
     </@base.orNilReason>
-    <@base.orNilReason "ef:supersededBy" supersededBy!>
+    <@base.orNilReason type="ef:supersededBy" x=supersededBy! nillable=false>
         <#list supersededBy as x>
             <@base.link "supersededBy" x/>
         </#list>
@@ -65,15 +65,19 @@
             <@base.link "involvedIn" x/>
         </#list>
     </@base.orNilReason>
-    <ef:representativePoint nilReason="missing"/>
-    <ef:measurementRegime nilReason="missing"/>
-    <ef:mobile nilReason="missing"/>
-    <ef:resultAcquisitionSource nilReason="missing"/>
-    <ef:specialisedEMFType nilReason="missing"/>
+    <ef:representativePoint nilReason="missing" xsi:nil="true"/>
+    <ef:measurementRegime nilReason="missing" xsi:nil="true"/>
+    <ef:mobile nilReason="missing" xsi:nil="true"/>
+    <ef:resultAcquisitionSource nilReason="missing" xsi:nil="true"/>
+    <ef:specialisedEMFType nilReason="missing" xsi:nil="true"/>
     <@base.orNilReason "ef:operationalActivityPeriod" operationalPeriod!>
-        <ef:activityTime>
-            <@base.timePeriod operationalPeriod.lifespan "at_0"/>
-        </ef:activityTime>
+        <ef:operationalActivityPeriod>
+            <ef:OperationalActivityPeriod gml:id="oap_0">
+                <ef:activityTime>
+                    <@base.timePeriod operationalPeriod "oap_0_tp"/>
+                </ef:activityTime>
+            </ef:OperationalActivityPeriod>
+        </ef:operationalActivityPeriod>
     </@base.orNilReason>
     <@base.orNilReason "ef:relatedTo" relatedTo!>
         <#list relatedTo as x>

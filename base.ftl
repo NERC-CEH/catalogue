@@ -1,5 +1,5 @@
 <#macro stdObjProps>
-    <@orNilReason "gml:description" getDescription()!>
+    <@orNilReason type="gml:description" x=getDescription()! nillable=false>
         <gml:description>${getDescription()}</gml:description>
     </@orNilReason>
     <#if (getMetadata().fileIdentifier)??>
@@ -109,13 +109,13 @@
             <@orNilReason "ef:onlineResource" oc.onlineResource!>
                 <@onlineResource oc.onlineResource!/>
             </@orNilReason>
-            <@orNilReason "ef:procedure" oc.procedure!>
+            <@orNilReason type="ef:procedure" x=oc.procedure! nillable=false>
                 <@link "procedure" oc.procedure!/>
             </@orNilReason>
             <@orNilReason "ef:featureOfInterest" oc.featureOfInterest!>
                 <@link "featureOfInterest" oc.featureOfInterest!/>
             </@orNilReason>
-            <@orNilReason "ef:observedProperty" nillable=false x=oc.observedProperty! >
+            <@orNilReason type="ef:observedProperty" x=oc.observedProperty! nillable=false>
                 <@link "observedProperty" oc.observedProperty!/>
             </@orNilReason>
         </ef:ObservingCapability>
