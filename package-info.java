@@ -1,10 +1,10 @@
 @XmlSchema(
     elementFormDefault = XmlNsForm.QUALIFIED,
     attributeFormDefault = XmlNsForm.QUALIFIED,
-    namespace = "http://www.ukeof.org.uk/schema/0.5.0",
+    namespace = "http://www.ukeof.org.uk/schema/1",
     xmlns = {
         @XmlNs(prefix = "xlink", namespaceURI = "http://www.w3.org/1999/xlink"),
-        @XmlNs(prefix = "ukeof", namespaceURI = "http://www.ukeof.org.uk/schema/0.5.0")
+        @XmlNs(prefix = "ukeof", namespaceURI = "http://www.ukeof.org.uk/schema/1")
     }
 )
 @XmlJavaTypeAdapters({
