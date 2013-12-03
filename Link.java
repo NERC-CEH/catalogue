@@ -1,10 +1,7 @@
 package uk.ac.ceh.ukeof.model.simple;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import javax.xml.bind.annotation.*;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 @Data
@@ -13,6 +10,9 @@ import lombok.experimental.Accessors;
 public class Link {
     @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
     private String title, href;
+    
+    @XmlValue
+    private String value;
     
     @Data
     @EqualsAndHashCode(callSuper = true)

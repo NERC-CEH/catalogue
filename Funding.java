@@ -14,5 +14,5 @@ import lombok.experimental.Accessors;
 })
 public class Funding {
     private String futureFundingStatus, risksToFunding, fundingNotes;
-    private CodeList fundingCategory;
+    private Link fundingCategory;
 }

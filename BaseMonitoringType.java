@@ -1,21 +1,15 @@
 package uk.ac.ceh.ukeof.model.simple;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
+import org.w3c.dom.Element;
 
 @Data
 @Accessors(chain = true)
@@ -25,15 +19,17 @@ import org.hibernate.validator.constraints.Range;
     "name",
     "alternativeNames",
     "description",
+    "purposeOfCollection",
+    "objectives",
     "keywords",
-    "geographicDescriptions",
     "boundingBoxes",
-    "supplementalInfo",
+    "environmentalDomain",
     "responsibleParties",
+    "supplementalInfo",
+    "onlineResources",
     "funding",
     "operationCosts",
-    "onlineResources",
-    "objectives"
+    "extendedMetadata"
 })
 @JsonIgnoreProperties(value = "id")
 @JsonTypeInfo(  
@@ -57,6 +53,9 @@ public class BaseMonitoringType {
     
     private String description, objectives;
     
+    @XmlElement(name = "purposeOfCollection")
+    private List<Link> purposeOfCollection = new ArrayList<>();
+    
     @XmlElement(name = "identifier")
     private List<Identifier> identifiers  = new ArrayList<>();
     
@@ -70,17 +69,16 @@ public class BaseMonitoringType {
     private List<String> alternativeNames  = new ArrayList<>();
     
     @XmlElement(name = "keyword")
-    private List<Keyword> keywords = new ArrayList<>();
+    private List<Link> keywords = new ArrayList<>();
     
     @XmlElement(name = "onlineResource")
     private List<Link> onlineResources  = new ArrayList<>();
     
-    @XmlElement(name = "geographicDescription")
-    private List<CodeList> geographicDescriptions  = new ArrayList<>();
-    
     @XmlElement(name = "boundingBox")
     @Valid
     private List<BoundingBox> boundingBoxes  = new ArrayList<>();
+    
+    private Link environmentalDomain;
     
     @XmlElement(name = "responsibleParty")
     List<ResponsibleParty> responsibleParties = new ArrayList<>();
@@ -90,6 +88,9 @@ public class BaseMonitoringType {
     private OperationCosts operationCosts;
     
     private List<String> supplementalInfo  = new ArrayList<>();
+    
+    @XmlAnyElement
+    private Element extendedMetadata;
     
     @Data
     @XmlType(propOrder = {"westBoundLongitude", "eastBoundLongitude", "southBoundLatitude", "northBoundLatitude" })
@@ -106,16 +107,6 @@ public class BaseMonitoringType {
         public String toString() {
             return String.format("%s %s %s %s", westBoundLongitude, southBoundLatitude, eastBoundLongitude, northBoundLatitude);
         }
-    }
-    
-    @Data
-    public static class Keyword {
-        @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
-        private String href;
-        @XmlAttribute
-        private String thesaurusName, thesaurusDate;
-        @XmlValue
-        private String value;
     }
     
     @Data

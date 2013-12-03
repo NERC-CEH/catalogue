@@ -1,13 +1,8 @@
 package uk.ac.ceh.ukeof.model.simple;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.util.*;
+import javax.xml.bind.annotation.*;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 @Data
@@ -18,9 +13,6 @@ import lombok.experimental.Accessors;
 @XmlType(propOrder = {
     "lifespan",
     "parametersMeasured",
-    "environmentalDomains",
-    "reasonsForCollection",
-    "frequencyOfObservations",
     "setUpFor",
     "uses"
 })
@@ -28,17 +20,10 @@ public class Activity extends BaseMonitoringType {
     
     private Lifespan lifespan;
     
-    private List<Keyword> parametersMeasured = new ArrayList<>();
-    
-    @XmlElement(name = "environmentalDomain")
-    private List<CodeList> environmentalDomains = new ArrayList<>();
-    
-    @XmlElement(name = "reasonForCollection")
-    private List<CodeList> reasonsForCollection = new ArrayList<>();
-    
     private String frequencyOfObservations;
     
     private List<Link> 
+        parametersMeasured = new ArrayList<>(),
         setUpFor = new ArrayList<>(),
         uses = new ArrayList<>();
 }

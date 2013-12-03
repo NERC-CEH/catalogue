@@ -1,12 +1,8 @@
 package uk.ac.ceh.ukeof.model.simple;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -30,8 +26,7 @@ public class ResponsibleParty {
     private String organisationName;
     
     private Address postalAddress;
-    private CodeList role;
-    private Link onlineResource;
+    private Link onlineResource, role;
     
     @XmlElement(name = "personalIdentifier")
     private List<PersonalIdentifier> personalIdentifiers = new ArrayList<>();

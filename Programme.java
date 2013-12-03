@@ -32,7 +32,7 @@ public class Programme extends BaseMonitoringType {
         lifespan;
     
     @XmlElement(name = "environmentalDomain")
-    private List<CodeList> 
+    private List<Link> 
         environmentalDomains = new ArrayList<>();
     
     private List<Link> 
