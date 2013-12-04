@@ -64,7 +64,7 @@ public class BaseMonitoringType {
         @XmlAttribute
         private String localIdentifier, namespace;
     }
-    
+   
     @XmlElement(name = "alternativeName")
     private List<String> alternativeNames  = new ArrayList<>();
     
@@ -108,7 +108,7 @@ public class BaseMonitoringType {
             return String.format("%s %s %s %s", westBoundLongitude, southBoundLatitude, eastBoundLongitude, northBoundLatitude);
         }
     }
-    
+        
     @Data
     @XmlType(propOrder = {
         "annualisedCost",

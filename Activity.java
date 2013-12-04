@@ -20,8 +20,6 @@ public class Activity extends BaseMonitoringType {
     
     private Lifespan lifespan;
     
-    private String frequencyOfObservations;
-    
     private List<Link> 
         parametersMeasured = new ArrayList<>(),
         setUpFor = new ArrayList<>(),

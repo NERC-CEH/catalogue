@@ -51,19 +51,6 @@ public class Facility extends BaseMonitoringType {
     private Geometry geometry;
     
     @Data
-    public static class ObservingCapability {
-        private Link 
-            featureOfInterest,
-            observedProperty,
-            procedure,
-            onlineResource,
-            resultNature,
-            processType;
-        
-        private Lifespan observingTime;
-    }
-    
-    @Data
     public static class Geometry {
         @XmlAttribute(name = "SRS")
         private final String SRS = "urn:ogc:def:crs:EPSG::4326";

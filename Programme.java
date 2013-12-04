@@ -22,18 +22,12 @@ import lombok.experimental.Accessors;
     "narrowerThan",
     "broaderThan",
     "lifespan",
-    "environmentalDomains",
     "legislation",
     "triggers"
 })
 public class Programme extends BaseMonitoringType {
     
-    private Lifespan 
-        lifespan;
-    
-    @XmlElement(name = "environmentalDomain")
-    private List<Link> 
-        environmentalDomains = new ArrayList<>();
+    private Lifespan lifespan;
     
     private List<Link> 
         supersedes = new ArrayList<>(),
@@ -44,10 +38,9 @@ public class Programme extends BaseMonitoringType {
         broaderThan  = new ArrayList<>(),
         narrowerThan = new ArrayList<>();
 
-    private List<Legislation> 
+    private List<Link> 
         legislation = new ArrayList<>();
     
     @XmlElement(name = "observingCapability")
-    private List<Facility.ObservingCapability>
-        observingCapabilities  = new ArrayList<>();
+    private List<ObservingCapability> observingCapabilities  = new ArrayList<>();
 }

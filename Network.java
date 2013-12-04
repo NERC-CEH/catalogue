@@ -31,6 +31,5 @@ public class Network extends BaseMonitoringType {
         contains = new ArrayList<>();
     
     @XmlElement(name = "observingCapability")
-    private List<Facility.ObservingCapability> 
-        observingCapabilities = new ArrayList<>();
+    private List<ObservingCapability> observingCapabilities = new ArrayList<>();
 }
