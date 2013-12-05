@@ -25,6 +25,9 @@ import lombok.experimental.Accessors;
     "broaderThan",
     "involvedIn",
     "operationalPeriod",
+    "measurementRegime",
+    "resultAquisitionSources",
+    "mobile",
     "geometry",
     "belongsTo",
     "relatedTo"
@@ -33,8 +36,8 @@ public class Facility extends BaseMonitoringType {
     
     private List<Link> 
         supersedes  = new ArrayList<>(), 
-        supersededBy = new ArrayList<>(), 
-        involvedIn = new ArrayList<>(), 
+        supersededBy = new ArrayList<>(),
+        involvedIn = new ArrayList<>(),
         relatedTo = new ArrayList<>();
     
     private Lifespan operationalPeriod;
@@ -45,8 +48,14 @@ public class Facility extends BaseMonitoringType {
         belongsTo = new ArrayList<>();
     
     @XmlElement(name = "observingCapability")
-    private List<ObservingCapability> 
-        observingCapabilities  = new ArrayList<>();
+    private List<ObservingCapability> observingCapabilities  = new ArrayList<>();
+    
+    private Link measurementRegime;
+    
+    @XmlElement(name = "resultAquisitionSource")
+    private List<Link> resultAquisitionSources  = new ArrayList<>();
+    
+    private String mobile;
     
     private Geometry geometry;
     
