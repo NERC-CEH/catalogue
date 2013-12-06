@@ -56,7 +56,7 @@
 			</#if>
 			<#if rp.role?has_content>
 				<#-- link to role vocabulary -->
-				<base2:role xlink:title="${rp.role.codeListValue}" xlink:href="${rp.role.codeList}"/>
+				<base2:role xlink:title="${rp.role.title}" xlink:href="${rp.role.href}"/>
 			</#if>
 		</base2:RelatedParty>
 	</ef:responsibleParty>
