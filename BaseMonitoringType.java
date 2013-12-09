@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
-import org.w3c.dom.Element;
+import uk.ac.ceh.ukeof.model.simple.adapters.ExtendedMetadataHandler;
 
 @Data
 @Accessors(chain = true)
@@ -89,8 +89,17 @@ public class BaseMonitoringType {
     
     private List<String> supplementalInfo  = new ArrayList<>();
     
-    @XmlAnyElement
-    private Element extendedMetadata;
+    private String extendedMetadata; 
+    
+    @XmlAnyElement(ExtendedMetadataHandler.class)
+    public String getExtendedMetadata() {
+        return extendedMetadata;
+    }
+    
+    public BaseMonitoringType setExtendedMetadata(String extendedMetadata) {
+        this.extendedMetadata = extendedMetadata;
+        return this;
+    }
     
     @Data
     @XmlType(propOrder = {"westBoundLongitude", "eastBoundLongitude", "southBoundLatitude", "northBoundLatitude" })
