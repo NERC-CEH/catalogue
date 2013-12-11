@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
-import uk.ac.ceh.ukeof.model.simple.adapters.ExtendedMetadataHandler;
 
 @Data
 @Accessors(chain = true)
@@ -23,13 +22,12 @@ import uk.ac.ceh.ukeof.model.simple.adapters.ExtendedMetadataHandler;
     "objectives",
     "keywords",
     "boundingBoxes",
-    "environmentalDomain",
+    "environmentalDomains",
     "responsibleParties",
     "supplementalInfo",
     "onlineResources",
     "funding",
-    "operationCosts",
-    "extendedMetadata"
+    "operationCosts"
 })
 @JsonIgnoreProperties(value = "id")
 @JsonTypeInfo(  
@@ -78,7 +76,8 @@ public class BaseMonitoringType {
     @Valid
     private List<BoundingBox> boundingBoxes  = new ArrayList<>();
     
-    private Link environmentalDomain;
+    @XmlElement(name = "environmentalDomain")
+    private List<Link> environmentalDomains = new ArrayList<>();
     
     @XmlElement(name = "responsibleParty")
     List<ResponsibleParty> responsibleParties = new ArrayList<>();
@@ -87,19 +86,7 @@ public class BaseMonitoringType {
     
     private OperationCosts operationCosts;
     
-    private List<String> supplementalInfo  = new ArrayList<>();
-    
-    private String extendedMetadata; 
-    
-    @XmlAnyElement(ExtendedMetadataHandler.class)
-    public String getExtendedMetadata() {
-        return extendedMetadata;
-    }
-    
-    public BaseMonitoringType setExtendedMetadata(String extendedMetadata) {
-        this.extendedMetadata = extendedMetadata;
-        return this;
-    }
+    private List<Link> supplementalInfo  = new ArrayList<>();
     
     @Data
     @XmlType(propOrder = {"westBoundLongitude", "eastBoundLongitude", "southBoundLatitude", "northBoundLatitude" })
