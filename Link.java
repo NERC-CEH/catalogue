@@ -14,6 +14,16 @@ public class Link {
     @XmlValue
     private String value;
     
+    public String getValueOrFallback() {
+        String toReturn = "";
+        if (value != null) {
+            toReturn = value;
+        } else if (title != null) {
+            toReturn = title;
+        }
+        return toReturn;
+    }
+    
     @Data
     @EqualsAndHashCode(callSuper = true)
     @ToString(callSuper = true)
