@@ -71,13 +71,15 @@
     <ef:resultAcquisitionSource nilReason="missing" xsi:nil="true"/>
     <ef:specialisedEMFType nilReason="missing" xsi:nil="true"/>
     <@base.orNilReason "ef:operationalActivityPeriod" operationalPeriod!>
-        <ef:operationalActivityPeriod>
-            <ef:OperationalActivityPeriod gml:id="oap_0">
-                <ef:activityTime>
-                    <@base.timePeriod operationalPeriod "oap_0_tp"/>
-                </ef:activityTime>
-            </ef:OperationalActivityPeriod>
-        </ef:operationalActivityPeriod>
+        <#list operationalPeriod as op>
+            <ef:operationalActivityPeriod>
+                <ef:OperationalActivityPeriod gml:id="oap_${op_index}">
+                    <ef:activityTime>
+                        <@base.timePeriod op "oap_${op_index}_tp"/>
+                    </ef:activityTime>
+                </ef:OperationalActivityPeriod>
+            </ef:operationalActivityPeriod>
+        </#list>
     </@base.orNilReason>
     <@base.orNilReason "ef:relatedTo" relatedTo!>
         <#list relatedTo as x>
