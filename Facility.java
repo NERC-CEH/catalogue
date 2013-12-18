@@ -40,7 +40,7 @@ public class Facility extends BaseMonitoringType {
         involvedIn = new ArrayList<>(),
         relatedTo = new ArrayList<>();
     
-    private Lifespan operationalPeriod;
+    private List<Lifespan> operationalPeriod;
     
     private List<Link.TimedLink>
         narrowerThan  = new ArrayList<>(),
