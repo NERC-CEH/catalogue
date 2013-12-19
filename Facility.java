@@ -26,7 +26,7 @@ import lombok.experimental.Accessors;
     "involvedIn",
     "operationalPeriod",
     "measurementRegime",
-    "resultAquisitionSources",
+    "resultAcquisitionSources",
     "mobile",
     "geometry",
     "belongsTo",
@@ -52,8 +52,8 @@ public class Facility extends BaseMonitoringType {
     
     private Link measurementRegime;
     
-    @XmlElement(name = "resultAquisitionSource")
-    private List<Link> resultAquisitionSources  = new ArrayList<>();
+    @XmlElement(name = "resultAcquisitionSource")
+    private List<Link> resultAcquisitionSources  = new ArrayList<>();
     
     private String mobile;
     
