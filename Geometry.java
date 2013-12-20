@@ -1,5 +1,6 @@
 package uk.ac.ceh.ukeof.model.simple;
 
+import com.google.common.base.Splitter;
 import javax.xml.bind.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -35,14 +36,37 @@ public class Geometry {
                 googleStaticMapUrl.append(lat).append(",").append(lon);
             } else if (value.toLowerCase().startsWith("polygon")) {
                 googleStaticMapUrl.append("&path=color:0xAA0000FF|weight:3");
+                int beginIndex = value.indexOf("((") + 2;
+                int endIndex = value.indexOf(")", beginIndex);
+                extractCoordintes(value, beginIndex, endIndex);
             } else if (value.toLowerCase().startsWith("linestring")) {
                 googleStaticMapUrl.append("&path=color:0xAA0000FF|weight:3");
+                int beginIndex = value.indexOf("(") + 1;
+                int endIndex = value.indexOf(")", beginIndex);
+                extractCoordintes(value, beginIndex, endIndex);
             } else {
                 return "";
             }
         } else {
         }
-        return googleStaticMapUrl.toString();
+        String mapUrl = googleStaticMapUrl.toString();
+        logger.info("Google static map url: {}", mapUrl);
+        return mapUrl;
+    }
+    
+    private void extractCoordintes(String input, int beginIndex, int endIndex) {
+        String rawCoords = input.substring(beginIndex, endIndex);
+        logger.debug(rawCoords);
+
+        for (String coordPair : Splitter.on(",").trimResults().omitEmptyStrings().split(rawCoords)) {
+            logger.debug(coordPair);
+            String[] coords = coordPair.split(" ");
+            googleStaticMapUrl
+                .append("|")
+                .append(fixedDecimal(coords[1], DECIMAL_PLACES))
+                .append(",")
+                .append(fixedDecimal(coords[0], DECIMAL_PLACES));
+        }
     }
     
     private String fixedDecimal(String coord, int fixed) {
