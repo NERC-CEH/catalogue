@@ -17,6 +17,8 @@ public class Geometry {
     
     @XmlAttribute(name = "SRS")
     private final String SRS = "urn:ogc:def:crs:EPSG::4326";
+    @XmlAttribute
+    private Boolean representativePoint; 
     @XmlValue
     private String value;
 
