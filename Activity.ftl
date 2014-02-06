@@ -28,10 +28,8 @@
             <@base.link "setUpFor" x/>
         </#list>
     </@base.orNilReason>
-    <@base.orNilReason "ef:uses" uses!>
-        <#list uses as x>
-            <@base.link "uses" x/>
-        </#list>
-    </@base.orNilReason>
+    <#list uses as x>
+        <@base.link "uses" x/>
+    </#list>
 </ef:EnvironmentalMonitoringActivity>
 </#compress>

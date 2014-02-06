@@ -126,6 +126,6 @@
     <#if x?has_content>
         <#nested/>
     <#else>
-        <${type} nilReason="missing" <#if nillable>xsi:nil="true"</#if>/>
+        <${type} nilReason="Withheld" <#if nillable>xsi:nil="true"</#if>/>
     </#if>
 </#macro>
