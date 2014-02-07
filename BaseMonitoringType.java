@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
+import uk.ac.ceh.ukeof.model.simple.adapters.ExtendedMetadataHandler;
 
 @Data
 @Accessors(chain = true)
@@ -27,7 +28,8 @@ import org.hibernate.validator.constraints.Range;
     "supplementalInfo",
     "onlineResources",
     "funding",
-    "operationCosts"
+    "operationCosts",
+    "extendedMetadata"
 })
 @JsonIgnoreProperties(value = "id")
 @JsonTypeInfo(  
@@ -87,6 +89,9 @@ public class BaseMonitoringType {
     private OperationCosts operationCosts;
     
     private List<Link> supplementalInfo  = new ArrayList<>();
+    
+    @XmlAnyElement(ExtendedMetadataHandler.class)
+    private String extendedMetadata;
     
     @Data
     @XmlType(propOrder = {"westBoundLongitude", "eastBoundLongitude", "southBoundLatitude", "northBoundLatitude" })

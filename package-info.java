@@ -9,17 +9,13 @@
 )
 @XmlJavaTypeAdapters({
     @XmlJavaTypeAdapter(type=DateTime.class, value=uk.ac.ceh.ukeof.model.simple.adapters.DateTimeAdapter.class),
-    @XmlJavaTypeAdapter(type=LocalDate.class, value=uk.ac.ceh.ukeof.model.simple.adapters.LocalDateAdapter.class)
+    @XmlJavaTypeAdapter(type=LocalDate.class, value=uk.ac.ceh.ukeof.model.simple.adapters.LocalDateAdapter.class),
+    @XmlJavaTypeAdapter(type=UUID.class, value=uk.ac.ceh.ukeof.model.simple.adapters.UuidAdapter.class)
 })
 @XmlAccessorType(XmlAccessType.FIELD)
 package uk.ac.ceh.ukeof.model.simple;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
+import java.util.UUID;
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.*;
+import org.joda.time.*;
