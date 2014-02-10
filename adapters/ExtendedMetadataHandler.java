@@ -27,11 +27,8 @@ public class ExtendedMetadataHandler implements DomHandler<String, StreamResult>
         String xml = rt.getWriter().toString();
         logger.debug("\n--StreamResult--\n{}\n--END--", xml);
         int beginIndex = xml.indexOf(START_TAG) + START_TAG.length();
-        logger.debug("start index: {}", xml.indexOf(START_TAG));
         int endIndex = xml.indexOf(END_TAG);
-        String toReturn = xml.substring(beginIndex, endIndex);
-        logger.debug("\n--substring--\n{}\n--END--", toReturn);
-        return toReturn;
+        return xml.substring(beginIndex, endIndex);
     }
 
     @Override
@@ -39,7 +36,7 @@ public class ExtendedMetadataHandler implements DomHandler<String, StreamResult>
         try {
             String xml = START_TAG + n.trim() + END_TAG;
             logger.debug("\n--MARSHAL--\nn: {} \nxml: {}\n--END--", n, xml);
-            StringReader xmlReader = new StringReader(n);
+            StringReader xmlReader = new StringReader(xml);
             return new StreamSource(xmlReader);
         } catch(Exception ex) {
             throw new RuntimeException(ex);
