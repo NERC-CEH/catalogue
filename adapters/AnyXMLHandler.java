@@ -10,10 +10,10 @@ import org.slf4j.*;
 /*
  * see http://blog.bdoughan.com/2011/04/xmlanyelement-and-non-dom-properties.html
  */
-public class ExtendedMetadataHandler implements DomHandler<String, StreamResult> {
-    private final Logger logger = LoggerFactory.getLogger(ExtendedMetadataHandler.class);
-    private static final String START_TAG = "<ukeof:extendedMetadata xmlns:ukeof=\"http://www.ukeof.org.uk/schema/1\">";
-    private static final String END_TAG = "</ukeof:extendedMetadata>";
+public class AnyXMLHandler implements DomHandler<String, StreamResult> {
+    private final Logger logger = LoggerFactory.getLogger(AnyXMLHandler.class);
+    private static final String START_TAG = "<ukeof:anyXML xmlns:ukeof=\"http://www.ukeof.org.uk/schema/1\">";
+    private static final String END_TAG = "</ukeof:anyXML>";
     
     private StringWriter xmlWriter = new StringWriter();
 

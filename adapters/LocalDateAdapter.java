@@ -8,9 +8,10 @@ public class LocalDateAdapter extends XmlAdapter<String, LocalDate>{
     private final Logger logger = LoggerFactory.getLogger(LocalDateAdapter.class);
 
     @Override
+    // XML => Java
     public LocalDate unmarshal(String v) throws Exception {
-        logger.debug("date string: {}", v);
-        if (v.isEmpty()) {
+        logger.debug("unmarshal localDate: {}", v);
+        if (v == null || v.isEmpty()) {
             return null;
         } else {
             return new LocalDate(v);
@@ -18,7 +19,13 @@ public class LocalDateAdapter extends XmlAdapter<String, LocalDate>{
     }
 
     @Override
+    // Java => XML
     public String marshal(LocalDate v) throws Exception {
-        return v.toString();
+        logger.debug("marshal localDate: {}", v);
+        if (v == null) {
+            return null;
+        } else {
+            return v.toString();
+        }
     }
 }
