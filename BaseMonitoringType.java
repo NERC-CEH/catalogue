@@ -32,6 +32,8 @@ import uk.ac.ceh.ukeof.model.simple.adapters.AnyXMLHandler;
     "funding",
     "operationCosts",
     "codings",
+    "useLimitations",
+    "accessConstraints",
     "anyXML"
 })
 @JsonIgnoreProperties(value = "id")
@@ -97,7 +99,13 @@ public class BaseMonitoringType {
     private OperationCosts operationCosts;
     
     @XmlElement(name = "coding")
-    private List<Coding> codings;
+    private List<Coding> codings = new ArrayList<>();
+    
+    @XmlElement(name = "useLimitation")
+    private List<Link> useLimitations = new ArrayList<>();
+    
+    @XmlElement(name = "accessConstraint")
+    private List<Link> accessConstraints = new ArrayList<>();
     
     private List<Link> supplementalInfo  = new ArrayList<>();
     
