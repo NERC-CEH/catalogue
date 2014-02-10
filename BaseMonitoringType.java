@@ -23,6 +23,7 @@ import uk.ac.ceh.ukeof.model.simple.adapters.AnyXMLHandler;
     "objectives",
     "keywords",
     "boundingBoxes",
+    "spatialResolution",
     "environmentalDomains",
     "responsibleParties",
     "supplementalInfo",
@@ -77,6 +78,8 @@ public class BaseMonitoringType {
     @XmlElement(name = "boundingBox")
     @Valid
     private List<BoundingBox> boundingBoxes  = new ArrayList<>();
+    
+    private SpatialResolution spatialResolution;
     
     @XmlElement(name = "environmentalDomain")
     private List<Link> environmentalDomains = new ArrayList<>();
@@ -139,5 +142,13 @@ public class BaseMonitoringType {
         public static class FinancialYearCost {
             private String year, cost, inKindContributions, costNotes;
         }
+    }
+    
+    @Data
+    public static class SpatialResolution {
+        @XmlAttribute
+        private final String uom = "urn:ogc:def:uom:EPSG::9001";
+        @XmlValue
+        private BigDecimal value;
     }
 }
