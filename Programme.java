@@ -22,7 +22,7 @@ import lombok.experimental.Accessors;
     "narrowerThan",
     "broaderThan",
     "lifespan",
-    "legislation",
+    "reportToLegalAct",
     "triggers"
 })
 public class Programme extends BaseMonitoringType {
@@ -39,7 +39,7 @@ public class Programme extends BaseMonitoringType {
         narrowerThan = new ArrayList<>();
 
     private List<Link> 
-        legislation = new ArrayList<>();
+        reportToLegalAct = new ArrayList<>();
     
     @XmlElement(name = "observingCapability")
     private List<ObservingCapability> observingCapabilities  = new ArrayList<>();
