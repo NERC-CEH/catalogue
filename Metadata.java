@@ -15,7 +15,8 @@ import org.joda.time.DateTime;
     "selfUrl",
     "author",
     "authorDate",
-    "publicationState"
+    "publicationState",
+    "quality"
 })
 public class Metadata {
     public enum State { 
@@ -33,4 +34,27 @@ public class Metadata {
     private ResponsibleParty author;
     @NotNull
     private State publicationState;
+    private Quality quality;
+    
+    @Data
+    @XmlType(propOrder = {
+        "lineage",
+        "conformanceResult"
+    })
+    public static class Quality {
+        private String lineage;
+        @Valid private ConformanceResult conformanceResult;
+    }
+    
+    @Data
+    @XmlType(propOrder = {
+        "specification",
+        "explanation",
+        "pass"
+    })
+    public static class ConformanceResult {
+        @NotNull private Link specification;
+        private String explanation;
+        @NotNull private String pass;
+    }
 }
