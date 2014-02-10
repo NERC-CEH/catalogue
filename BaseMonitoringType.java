@@ -24,12 +24,14 @@ import uk.ac.ceh.ukeof.model.simple.adapters.AnyXMLHandler;
     "keywords",
     "boundingBoxes",
     "spatialResolution",
+    "topicCategories",
     "environmentalDomains",
     "responsibleParties",
     "supplementalInfo",
     "onlineResources",
     "funding",
     "operationCosts",
+    "codings",
     "anyXML"
 })
 @JsonIgnoreProperties(value = "id")
@@ -81,6 +83,9 @@ public class BaseMonitoringType {
     
     private SpatialResolution spatialResolution;
     
+    @XmlElement(name = "topicCategory")
+    private List<Link> topicCategories = new ArrayList<>();
+    
     @XmlElement(name = "environmentalDomain")
     private List<Link> environmentalDomains = new ArrayList<>();
     
@@ -90,6 +95,9 @@ public class BaseMonitoringType {
     private Funding funding;
     
     private OperationCosts operationCosts;
+    
+    @XmlElement(name = "coding")
+    private List<Coding> codings;
     
     private List<Link> supplementalInfo  = new ArrayList<>();
     
@@ -150,5 +158,12 @@ public class BaseMonitoringType {
         private final String uom = "urn:ogc:def:uom:EPSG::9001";
         @XmlValue
         private BigDecimal value;
+    }
+    
+    @Data
+    public static class Coding {
+        @XmlAttribute
+        private String codeType;
+        private List<String> code;
     }
 }
