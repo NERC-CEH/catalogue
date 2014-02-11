@@ -11,7 +11,7 @@ import org.slf4j.*;
 public class Geometry {
     @XmlTransient
     private final StringBuilder googleStaticMapUrl 
-        = new StringBuilder("http://maps.googleapis.com/maps/api/staticmap?sensor=false&size=300x300");
+        = new StringBuilder("https://maps.googleapis.com/maps/api/staticmap?sensor=false&size=300x300");
     private static final Logger logger = LoggerFactory.getLogger(Geometry.class);
     private static final int DECIMAL_PLACES = 3;
     
