@@ -26,8 +26,8 @@ public class AnyXMLHandler implements DomHandler<String, StreamResult> {
     public String getElement(StreamResult rt) {
         String xml = rt.getWriter().toString();
         logger.debug("\n--StreamResult--\n{}\n--END--", xml);
-        int beginIndex = xml.indexOf(START_TAG) + START_TAG.length();
-        int endIndex = xml.indexOf(END_TAG);
+        int beginIndex = xml.lastIndexOf(START_TAG) + START_TAG.length();
+        int endIndex = xml.lastIndexOf(END_TAG);
         return xml.substring(beginIndex, endIndex);
     }
 
