@@ -15,19 +15,17 @@ public class AnyXMLHandler implements DomHandler<String, StreamResult> {
     private static final String START_TAG = "<ukeof:anyXML xmlns:ukeof=\"http://www.ukeof.org.uk/schema/1\">";
     private static final String END_TAG = "</ukeof:anyXML>";
     
-    private StringWriter xmlWriter = new StringWriter();
-
     @Override
     public StreamResult createUnmarshaller(ValidationEventHandler errorHandler) {
-        return new StreamResult(xmlWriter);
+        return new StreamResult(new StringWriter());
     }
 
     @Override
     public String getElement(StreamResult rt) {
         String xml = rt.getWriter().toString();
         logger.debug("\n--StreamResult--\n{}\n--END--", xml);
-        int beginIndex = xml.lastIndexOf(START_TAG) + START_TAG.length();
-        int endIndex = xml.lastIndexOf(END_TAG);
+        int beginIndex = xml.indexOf(START_TAG) + START_TAG.length();
+        int endIndex = xml.indexOf(END_TAG);
         return xml.substring(beginIndex, endIndex);
     }
 
