@@ -21,19 +21,24 @@ public class AnyXMLHandler implements DomHandler<String, StreamResult> {
     }
 
     @Override
-    public String getElement(StreamResult rt) {
-        String xml = rt.getWriter().toString();
+    public String getElement(StreamResult streamResult) {
+        String xml = streamResult.getWriter().toString();
         logger.debug("\n--StreamResult--\n{}\n--END--", xml);
         int beginIndex = xml.indexOf(START_TAG) + START_TAG.length();
         int endIndex = xml.indexOf(END_TAG);
-        return xml.substring(beginIndex, endIndex);
+        
+        if (endIndex > -1) {
+            return xml.substring(beginIndex, endIndex);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public Source marshal(String n, ValidationEventHandler errorHandler) {
+    public Source marshal(String value, ValidationEventHandler errorHandler) {
         try {
-            String xml = START_TAG + n.trim() + END_TAG;
-            logger.debug("\n--MARSHAL--\nn: {} \nxml: {}\n--END--", n, xml);
+            String xml = START_TAG + value.trim() + END_TAG;
+            logger.debug("\n--MARSHAL--\nn: {} \nxml: {}\n--END--", value, xml);
             StringReader xmlReader = new StringReader(xml);
             return new StreamSource(xmlReader);
         } catch(Exception ex) {
