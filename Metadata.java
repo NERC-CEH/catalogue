@@ -1,6 +1,6 @@
 package uk.ac.ceh.ukeof.model.simple;
 
-import java.util.UUID;
+import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
@@ -39,11 +39,12 @@ public class Metadata {
     @Data
     @XmlType(propOrder = {
         "lineage",
-        "conformanceResult"
+        "conformanceResults"
     })
     public static class Quality {
         private String lineage;
-        @Valid private ConformanceResult conformanceResult;
+        @XmlElement(name = "conformanceResult")
+        @Valid private List<ConformanceResult> conformanceResults;
     }
     
     @Data
