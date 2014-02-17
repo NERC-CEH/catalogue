@@ -44,7 +44,7 @@ public class Metadata {
     public static class Quality {
         private String lineage;
         @XmlElement(name = "conformanceResult")
-        @Valid private List<ConformanceResult> conformanceResults;
+        private List<ConformanceResult> conformanceResults;
     }
     
     @Data
@@ -54,8 +54,8 @@ public class Metadata {
         "pass"
     })
     public static class ConformanceResult {
-        @NotNull private Link specification;
+        private Link specification;
         private String explanation;
-        @NotNull private String pass;
+        private String pass;
     }
 }
