@@ -29,6 +29,7 @@ import uk.ac.ceh.ukeof.model.simple.adapters.AnyXMLHandler;
     "responsibleParties",
     "supplementalInfo",
     "onlineResources",
+    "linkToData",
     "funding",
     "operationCosts",
     "codings",
@@ -78,6 +79,9 @@ public class BaseMonitoringType {
     
     @XmlElement(name = "onlineResource")
     private List<Link> onlineResources  = new ArrayList<>();
+    
+    @XmlElement(name = "linkToData")
+    private List<Link> linkToData = new ArrayList<>();
     
     @XmlElement(name = "boundingBox")
     @Valid
