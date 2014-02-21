@@ -16,7 +16,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @XmlType(propOrder = {
-    "linkToData",
     "legalBackground",
     "observingCapabilities",
     "supersedes",
@@ -32,7 +31,6 @@ public class Programme extends BaseMonitoringType {
     private Lifespan lifespan;
     
     private List<Link> 
-        linkToData = new ArrayList<>(),
         legalBackground = new ArrayList<>(),
         reportToLegalAct = new ArrayList<>(),
         supersedes = new ArrayList<>(),

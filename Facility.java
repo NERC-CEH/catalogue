@@ -11,7 +11,6 @@ import lombok.experimental.Accessors;
 @ToString(callSuper = true)
 @XmlRootElement
 @XmlType(propOrder = {
-    "linkToData",
     "legalBackground",
     "observingCapabilities",
     "supersedes",
@@ -31,7 +30,6 @@ import lombok.experimental.Accessors;
 public class Facility extends BaseMonitoringType {
     
     private List<Link> 
-        linkToData = new ArrayList<>(),
         legalBackground = new ArrayList<>(),
         supersedes  = new ArrayList<>(), 
         supersededBy = new ArrayList<>(),
