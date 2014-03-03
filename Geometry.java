@@ -1,6 +1,10 @@
 package uk.ac.ceh.ukeof.model.simple;
 
 import com.google.common.base.Splitter;
+import com.spatial4j.core.context.jts.JtsSpatialContext;
+import com.spatial4j.core.io.JtsShapeReadWriter;
+import com.spatial4j.core.shape.Point;
+import com.vividsolutions.jts.io.ParseException;
 import javax.xml.bind.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -9,9 +13,9 @@ import org.slf4j.*;
 @Data
 @Accessors(chain = true)
 public class Geometry {
-    @XmlTransient
-    private final StringBuilder googleStaticMapUrl 
+    @XmlTransient private final StringBuilder googleStaticMapUrl 
         = new StringBuilder("https://maps.googleapis.com/maps/api/staticmap?sensor=false&size=300x300");
+    private static final String googleMapUrl = "https://maps.google.co.uk/maps?q=";
     private static final Logger logger = LoggerFactory.getLogger(Geometry.class);
     private static final int DECIMAL_PLACES = 3;
     
@@ -21,6 +25,29 @@ public class Geometry {
     private Boolean representativePoint; 
     @XmlValue
     private String value;
+    
+    public String getCentroidAsWKT() throws ParseException {
+        if (value != null) {
+            final Point centroid = getCentroid(value);
+            return String.format("POINT(%.4f %.4f)", centroid.getX(), centroid.getY());
+        } else {
+            return "";
+        }
+    }
+    
+    public String getGoogleMapUrl() throws ParseException {
+        if (value != null) {
+            final Point centroid = getCentroid(value);
+            return String.format("%s%.4f,%.4f", googleMapUrl, centroid.getY(), centroid.getX());
+        } else {
+            return "";
+        }
+    }
+    
+    private Point getCentroid(String value) {
+        final JtsShapeReadWriter shapeReadWriter = new JtsShapeReadWriter(JtsSpatialContext.GEO);
+        return shapeReadWriter.readShape(value).getCenter();
+    }
 
     public String getStaticMapUrl() {
         if (value != null) {

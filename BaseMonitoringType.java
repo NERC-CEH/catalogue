@@ -127,9 +127,31 @@ public class BaseMonitoringType {
         @Range(min = -90, max = 90)
         private BigDecimal southBoundLatitude, northBoundLatitude;
         
+        public String asWktPolygon() {
+            if (validCoords()) {
+                return String.format("POLYGON((%.4f %.4f, %.4f %.4f, %.4f %.4f, %.4f %.4f, %.4f %.4f))",
+                    westBoundLongitude, southBoundLatitude,
+                    eastBoundLongitude, southBoundLatitude,
+                    eastBoundLongitude, northBoundLatitude,
+                    westBoundLongitude, northBoundLatitude,
+                    westBoundLongitude, southBoundLatitude
+                );
+            } else {
+                return "";
+            }
+        }
+        
+        private boolean validCoords() {
+            if (westBoundLongitude == null || eastBoundLongitude == null || southBoundLatitude == null || northBoundLatitude == null) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        
         @Override
         public String toString() {
-            return String.format("%s %s %s %s", westBoundLongitude, southBoundLatitude, eastBoundLongitude, northBoundLatitude);
+            return String.format("%.4f %.4f %.4f %.4f", westBoundLongitude, southBoundLatitude, eastBoundLongitude, northBoundLatitude);
         }
     }
         
