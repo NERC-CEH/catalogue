@@ -59,6 +59,8 @@ public class BaseMonitoringType {
     
     private String description, objectives;
     
+    private Link measurementRegime;
+    
     @XmlElement(name = "purposeOfCollection")
     private List<Link> purposeOfCollection = new ArrayList<>();
     
