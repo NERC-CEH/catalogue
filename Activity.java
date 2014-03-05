@@ -12,7 +12,6 @@ import lombok.experimental.Accessors;
 @XmlRootElement
 @XmlType(propOrder = {
     "lifespan",
-    "parametersMeasured",
     "setUpFor",
     "uses"
 })
@@ -21,7 +20,6 @@ public class Activity extends BaseMonitoringType {
     private Lifespan lifespan;
     
     private List<Link> 
-        parametersMeasured = new ArrayList<>(),
         setUpFor = new ArrayList<>(),
         uses = new ArrayList<>();
 }

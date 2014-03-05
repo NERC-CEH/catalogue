@@ -22,10 +22,12 @@ import uk.ac.ceh.ukeof.model.simple.adapters.AnyXMLHandler;
     "purposeOfCollection",
     "objectives",
     "keywords",
+    "parametersMeasured",
     "boundingBoxes",
     "spatialResolution",
     "topicCategories",
     "environmentalDomains",
+    "measurementRegime",
     "responsibleParties",
     "supplementalInfo",
     "onlineResources",
@@ -78,6 +80,8 @@ public class BaseMonitoringType {
     
     @XmlElement(name = "keyword")
     private List<Link> keywords = new ArrayList<>();
+    
+    private List<Link> parametersMeasured = new ArrayList<>();
     
     @XmlElement(name = "onlineResource")
     private List<Link> onlineResources  = new ArrayList<>();
