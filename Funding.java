@@ -15,5 +15,5 @@ import java.util.List;
 })
 public class Funding {
     private String futureFundingStatus, risksToFunding, fundingNotes;
-    private List<Link> fundingCategory;
+    private List<Link> fundingCategories;
 }
