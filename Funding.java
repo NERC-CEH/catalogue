@@ -3,6 +3,7 @@ package uk.ac.ceh.ukeof.model.simple;
 import javax.xml.bind.annotation.XmlType;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -14,5 +15,5 @@ import lombok.experimental.Accessors;
 })
 public class Funding {
     private String futureFundingStatus, risksToFunding, fundingNotes;
-    private Link fundingCategory;
+    private List<Link> fundingCategories;
 }
