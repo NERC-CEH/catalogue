@@ -16,9 +16,9 @@ public class Link {
     
     public String getValueOrFallback() {
         String toReturn = "";
-        if (value != null) {
+        if (value != null && !value.isEmpty()) {
             toReturn = value;
-        } else if (title != null) {
+        } else if (title != null && !title.isEmpty()) {
             toReturn = title;
         }
         return toReturn;
