@@ -14,8 +14,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 7000, host: 7000, auto_correct: true
 
   config.vm.synced_folder "puppet_ssl", "/var/lib/puppet/ssl"
-  config.vm.synced_folder "ukeof_code", "/home/tomcat7/code", create: true
-  config.vm.synced_folder "ukeof_repository", "/home/tomcat7/datastore", create: true
 
   config.vm.provider "vmware_workstation" do |v|
     v.vmx["memsize"] = "4096"
@@ -23,9 +21,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "puppet_server" do |puppet|
     puppet.puppet_server = "lapuppet.nerc-lancaster.ac.uk"
-    puppet.puppet_node = "catalogue-developer.ukeof.org.uk"
+    puppet.puppet_node = "cig-developer.nerc-lancaster.ac.uk"
     puppet.options = "--verbose"
   end
 
-  config.vm.provision :shell, :path => "mount.sh"
+#  config.vm.provision :shell, :path => "mount.sh"
 end
