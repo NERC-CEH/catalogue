@@ -1,0 +1,19 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+      http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <global-method-security secured-annotations="enabled" pre-post-annotations="enabled"/>
+    
+    <http create-session="stateless" entry-point-ref="restAuthenticationEntryPoint">
+        <anonymous enabled="false"/>
+        <custom-filter ref="anonymousAuthenticationFilter" position="ANONYMOUS_FILTER"/>
+        <remember-me key="CehSecuredKey" services-ref="rememberMeServices"/>
+    </http>
+
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider ref="authenticationProvider"/>
+    </authentication-manager>
+</beans:beans>
