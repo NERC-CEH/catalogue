@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +64,9 @@ public class DocumentController {
             @RequestHeader("Content-Type") String contentType) throws DataRepositoryException, IOException, UnknownContentTypeException {
         
         MediaType contentMediaType = MediaType.parseMediaType(contentType);
-        Path tmpFile = Files.createTempFile("tmp","tmp"); //Create a temp file to upload the input stream to
+        Path tmpFile = Files.createTempFile("upload", null); //Create a temp file to upload the input stream to
         try {
-            Files.copy(request.getInputStream(), tmpFile); //copy the file so that we can pass over multiple times
+            Files.copy(request.getInputStream(), tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
             
             //the documentReader will close the underlying inputstream
             Metadata data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType); 
