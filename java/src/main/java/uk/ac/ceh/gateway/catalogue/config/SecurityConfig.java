@@ -18,7 +18,7 @@ import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthentication
 import uk.ac.ceh.components.userstore.springsecurity.RestAuthenticationEntryPoint;
 import uk.ac.ceh.components.userstore.springsecurity.TokenRememberMeServices;
 import uk.ac.ceh.components.userstore.springsecurity.UsernamePasswordAuthenticationProvider;
-import uk.ac.ceh.gateway.catalogue.model.User;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 /**
  * The following spring JavaConfig defines the beans required the spring security
@@ -28,8 +28,8 @@ import uk.ac.ceh.gateway.catalogue.model.User;
 @Configuration
 @ImportResource("classpath:/uk/ac/ceh/gateway/catalogue/config/securityContext-config.xml")
 public class SecurityConfig {
-    @Autowired UserStore<User> userstore;
-    @Autowired GroupStore<User> groupstore;
+    @Autowired UserStore<CatalogueUser> userstore;
+    @Autowired GroupStore<CatalogueUser> groupstore;
     @Value("${sso.token.domain}") String cookieDomain;
     @Value("${sso.token.ttl}") Integer cookieMaxAge;
     @Value("${sso.token.key}") String cookieName;
@@ -43,7 +43,7 @@ public class SecurityConfig {
     
     @Bean
     public AnonymousAuthenticationFilter anonymousAuthenticationFilter() {
-       return new AnonymousUserAuthenticationFilter("NotSure", User.PUBLIC_USER, "ROLE_ANONYMOUS");
+       return new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS");
     }
     
     @Bean
@@ -54,7 +54,7 @@ public class SecurityConfig {
     }
     
     @Bean
-    public TokenRememberMeServices<User> rememberMeServices() throws StatelessTokenKeystoreManagerException {
+    public TokenRememberMeServices<CatalogueUser> rememberMeServices() throws StatelessTokenKeystoreManagerException {
         CookieGenerator cookieGenerator = new CookieGenerator();
         cookieGenerator.setCookieDomain(cookieDomain);
         cookieGenerator.setCookieMaxAge(cookieMaxAge);

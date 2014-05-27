@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.model.User;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.ukeof.model.UsernamePassword;
 
 /**
@@ -40,7 +40,7 @@ public class AuthenticationController {
     
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public User me(@ActiveUser User user) {
+    public CatalogueUser me(@ActiveUser CatalogueUser user) {
         return user;
     }
     

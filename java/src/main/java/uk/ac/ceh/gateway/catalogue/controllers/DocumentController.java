@@ -1,30 +1,34 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
-import java.net.URI;
-import javax.validation.Valid;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.model.User;
-import uk.ac.ceh.gateway.catalogue.model.DocumentAlreadyExistsException;
 import uk.ac.ceh.gateway.catalogue.gemini.Metadata;
-import uk.ac.ceh.gateway.catalogue.services.JsonObjectMapperService;
-import uk.ac.ceh.gateway.catalogue.services.URLLinkingService;
+import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.notSureWhereYet.DataDocumentResource;
+import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
  *
@@ -32,93 +36,87 @@ import uk.ac.ceh.gateway.catalogue.services.URLLinkingService;
  */
 @Controller
 public class DocumentController {
-    
-    private final DataRepository<User> repo;
-    private final JsonObjectMapperService mapper;
-    private final URLLinkingService links;
+    private final DataRepository<CatalogueUser> repo;
+    private final DocumentReadingService<Metadata> documentReader;
+    private final DocumentInfoMapper<MetadataInfo, Metadata> documentInfoMapper;
     
     @Autowired
-    public DocumentController(  DataRepository<User> repo,
-                                URLLinkingService links,
-                                JsonObjectMapperService mapper) {
+    public DocumentController(  DataRepository<CatalogueUser> repo,
+                                DocumentReadingService<Metadata> documentReader,
+                                DocumentInfoMapper documentInfoMapper) {
         this.repo = repo;
-        this.links = links;
-        this.mapper = mapper;
+        this.documentReader = documentReader;
+        this.documentInfoMapper = documentInfoMapper;
     }
     
-    @Secured("ROLE_USER")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<Metadata> uploadDocument(
-            @ActiveUser User user,
+    public void uploadDocument(
+            @ActiveUser CatalogueUser user,
             @RequestParam(value = "message", defaultValue = "new document") String commitMessage,
-            @Valid @RequestBody Metadata document) throws DataRepositoryException {
+            HttpServletRequest request,
+            @RequestHeader("Content-Type") String contentType) throws DataRepositoryException, IOException, UnknownContentTypeException {
         
-        if(!repo.getFiles().contains(document.getId())) {
-            repo.submitData(document.getId(), mapper.of(document))
-                .commit(user, commitMessage);
-            HttpHeaders headers = new HttpHeaders();
-            headers.setLocation(URI.create(links.getEndpointForDocument(document.getId())));
+        MediaType contentMediaType = MediaType.parseMediaType(contentType);
+        Path tmpFile = Files.createTempFile("tmp","tmp"); //Create a temp file to upload the input stream to
+        try {
+            Files.copy(request.getInputStream(), tmpFile); //copy the file so that we can pass over multiple times
             
-            return new ResponseEntity<>(document, headers, HttpStatus.CREATED);
-        } else {
-            throw new DocumentAlreadyExistsException("A document already exists with id " + document.getId());
-        }
-    }
-    
-    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
-    @RequestMapping(value = "documents/{id}",
-                    method = RequestMethod.PUT)
-    public ResponseEntity<Metadata> replaceDocument(
-            @ActiveUser User user,
-            @PathVariable("file") String id,
-            @RequestParam(value = "message", defaultValue = "edit document") String commitMessage,
-            @Valid @RequestBody Metadata document) throws DataRepositoryException {
-        
-        if(!id.equals(document.getId())) {
-            throw new IllegalArgumentException("The document posted to this resource does not have the id: " + id);
-        }
-        
-        repo.submitData(document.getId(), mapper.of(document))
+            //the documentReader will close the underlying inputstream
+            Metadata data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType); 
+            MetadataInfo metadataDocument = documentInfoMapper.createInfo(data, contentMediaType); //get the metadata info
+            
+            repo.submitData(filename(data.getId(), "meta"), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
+                .submitData(filename(data.getId(), "raw"), (o) -> Files.copy(tmpFile, o) )
                 .commit(user, commitMessage);
-        return new ResponseEntity<>(document, HttpStatus.OK);
+            
+        }
+        finally {
+            Files.delete(tmpFile); //file no longer needed
+        }
     }
     
-    @PreAuthorize("@permission.toAccess(#file, 'DOCUMENT_READ')")
     @RequestMapping( value ="documents/{file}",
                      method = RequestMethod.GET)
     @ResponseBody
-    public Metadata readMetadata(
-            @PathVariable("file") String file ) throws DataRepositoryException, IOException {
-        return mapper.read(repo.getData(file), Metadata.class);
-    }
-    
-    @PreAuthorize("@permission.toAccess(#file, #revision, 'DOCUMENT_READ')")
-    @RequestMapping( value ="history/{revision}/{file}",
-                     method = RequestMethod.GET)
-    @ResponseBody
-    public Metadata readMetadata(
+    public Object readMetadata(
             @PathVariable("file") String file,
-            @PathVariable("revision") String revision,
-            @RequestParam(value = "original", defaultValue = "false") boolean original ) throws DataRepositoryException, IOException {
-        Metadata document = mapper.read(repo.getData(file, revision), Metadata.class);
+            @RequestHeader("Accept") String acceptType) throws DataRepositoryException, IOException, UnknownContentTypeException {
+        List<MediaType> acceptableTypes = MediaType.parseMediaTypes(acceptType);
+        MediaType.sortBySpecificityAndQuality(acceptableTypes);
         
-        if(!original) {
-            document = links.getInContext(document, revision);
+        String latestRev = repo.getLatestRevision();
+        MetadataInfo documentInfo = documentInfoMapper.readInfo(
+                                        repo.getData(latestRev, filename(file, "meta"))
+                                            .getInputStream());
+        
+        DataDocument document = repo.getData(latestRev, filename(file, "raw"));
+        
+        if(!acceptableTypes.isEmpty() && acceptableTypes.get(0).includes(documentInfo.getRawMediaType())) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(documentInfo.getRawMediaType());
+            return new HttpEntity(new DataDocumentResource(document), headers);
         }
-        
-        return document;
+        else {
+            return documentReader.read(document.getInputStream(), documentInfo.getRawMediaType());
+        }
     }
     
     @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
     @RequestMapping(value = "documents/{file}",
             method = RequestMethod.DELETE)
     @ResponseBody
-    public DataRevision<User> deleteDocument(
-            @ActiveUser User user,
+    public DataRevision<CatalogueUser> deleteDocument(
+            @ActiveUser CatalogueUser user,
             @RequestParam(value = "message", defaultValue = "delete document") String reason,
             @PathVariable("file") String file) throws DataRepositoryException, IOException {
-        return repo.deleteData(file).commit(user, reason);
+        return repo.deleteData(filename(file, "meta"))
+                   .deleteData(filename(file, "raw"))
+                   .commit(user, reason);
+    }
+    
+    protected String filename(String name, String extension) {
+        return String.format("%s.%s", name, extension);
     }
 }
