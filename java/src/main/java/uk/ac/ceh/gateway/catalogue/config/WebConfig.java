@@ -14,6 +14,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
+import uk.ac.ceh.gateway.catalogue.gemini.Metadata;
 
 @Configuration
 @EnableWebMvc
@@ -28,7 +30,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setObjectMapper(mapper);
         
-        //converters.add(new Object2TemplatedMessageConverter(configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Metadata.class, configureFreeMarker().getConfiguration()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
     }

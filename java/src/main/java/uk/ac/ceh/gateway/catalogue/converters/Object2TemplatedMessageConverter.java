@@ -1,13 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
 import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
@@ -15,45 +17,56 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
  *
  * @author cjohn
  */
-public class Object2TemplatedMessageConverter implements HttpMessageConverter<Object> {
+public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConverter<T> {
     
     private final Configuration configuration;
+    private final Class<T> clazz;
     
-    public Object2TemplatedMessageConverter(Configuration configuration) {
+    public Object2TemplatedMessageConverter(Class<T> clazz, Configuration configuration) {
+        this.clazz = clazz;
         this.configuration = configuration;
-    }
+    }  
 
+    @Override
+    protected boolean supports(Class<?> clazz) {
+        return clazz.isAssignableFrom(clazz);
+    }
+    
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
-        return false; // I can't read anything
+        return false;
     }
 
     @Override
-    public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        ConvertUsing using = clazz.getAnnotation(ConvertUsing.class);
-        if(using != null) {
-            return Arrays.stream(using.value())                    
-                  .anyMatch(t-> MediaType.parseMediaType(t.whenRequestedAs()).isCompatibleWith(mediaType));
-        }
-        else {
-            return false;
-        }
+    protected T readInternal(Class<? extends T> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+        throw new HttpMessageNotReadableException("This implementation can not read anything");
     }
-
+    
     @Override
     public List<MediaType> getSupportedMediaTypes() {
-        return null; //not sure what to return here
-    }
-
-    @Override
-    public Object read(Class<? extends Object> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ConvertUsing convertUsing = clazz.getAnnotation(ConvertUsing.class);
+        List<MediaType> toReturn = new ArrayList<>();
+        if(convertUsing != null) {
+            for(Template template : convertUsing.value()) {
+                toReturn.add(MediaType.parseMediaType(template.whenRequestedAs()));
+            }
+        }
+        return toReturn;
     }
     
-    
+    @Override
+    protected void writeInternal(Object t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+        try {
+            //Locate the correct template for the given media type
+            MediaType requestedMediaType = outputMessage.getHeaders().getContentType();
+            for(Template template: t.getClass().getAnnotation(ConvertUsing.class).value()) {
+                if(MediaType.parseMediaType(template.whenRequestedAs()).isCompatibleWith(requestedMediaType)) {
+                    configuration.getTemplate(template.called())
+                                 .process(t, new OutputStreamWriter(outputMessage.getBody()));
+                }
+            }
+        } catch(TemplateException te) {
+            throw new HttpMessageNotWritableException("There was an error in the template", te);
+        }
+    }
 }
