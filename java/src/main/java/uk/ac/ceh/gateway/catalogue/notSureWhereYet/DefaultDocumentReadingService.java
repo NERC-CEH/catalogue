@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.Metadata;
+import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
@@ -24,13 +25,12 @@ public class DefaultDocumentReadingService implements DocumentReadingService<Met
     }
     
     @Override
-    public Metadata read(InputStream newInputStream, MediaType contentType) throws IOException, UnknownContentTypeException {
+    public Metadata read(InputStream inputStream, MediaType contentType) throws IOException, UnknownContentTypeException {
         if(contentType.isCompatibleWith(MediaType.APPLICATION_JSON)) {
-            return mapper.readValue(newInputStream, Metadata.class);
+            return mapper.readValue(inputStream, Metadata.class);
         }
         else {
             throw new UnknownContentTypeException("I don't know how to read " + contentType);
         }
     }
-    
 }

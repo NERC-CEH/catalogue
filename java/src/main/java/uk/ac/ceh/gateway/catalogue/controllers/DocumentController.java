@@ -26,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Metadata;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.notSureWhereYet.DataDocumentResource;
+import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
@@ -39,14 +40,17 @@ public class DocumentController {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentReadingService<Metadata> documentReader;
     private final DocumentInfoMapper<MetadataInfo, Metadata> documentInfoMapper;
+    private final DocumentBundleService<Metadata, MetadataInfo, Metadata> documentBundler;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
                                 DocumentReadingService<Metadata> documentReader,
-                                DocumentInfoMapper documentInfoMapper) {
+                                DocumentInfoMapper documentInfoMapper,
+                                DocumentBundleService<Metadata, MetadataInfo, Metadata> documentBundler) {
         this.repo = repo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
+        this.documentBundler = documentBundler;
     }
     
     @RequestMapping (value = "documents",
@@ -91,15 +95,18 @@ public class DocumentController {
                                         repo.getData(latestRev, filename(file, "meta"))
                                             .getInputStream());
         
-        DataDocument document = repo.getData(latestRev, filename(file, "raw"));
+        DataDocument dataDoc = repo.getData(latestRev, filename(file, "raw"));
         
         if(!acceptableTypes.isEmpty() && acceptableTypes.get(0).includes(documentInfo.getRawMediaType())) {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(documentInfo.getRawMediaType());
-            return new HttpEntity(new DataDocumentResource(document), headers);
+            return new HttpEntity(new DataDocumentResource(dataDoc), headers);
         }
         else {
-            return documentReader.read(document.getInputStream(), documentInfo.getRawMediaType());
+            Metadata document = documentReader.read(dataDoc.getInputStream(),
+                                                    documentInfo.getRawMediaType());
+            documentBundler.bundle(document, documentInfo);
+            return document;
         }
     }
     
