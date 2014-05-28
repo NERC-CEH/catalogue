@@ -13,8 +13,12 @@ import javax.xml.namespace.NamespaceContext;
 public class HardcodedNamespaceResolver implements NamespaceContext {
 
     @Override
-    public String getNamespaceURI(String prefix) {        
-        switch(prefix.toLowerCase()) {
+    public String getNamespaceURI(String prefix) {
+        if(prefix == null) {
+            throw new IllegalArgumentException("No prefix provided!");
+        }
+        
+        switch(prefix) {
             case "gmd": return "http://www.isotc211.org/2005/gmd";
             case "gco": return "http://www.isotc211.org/2005/gco";
             case "csw": return "http://www.opengis.net/cat/csw/2.0.2";
