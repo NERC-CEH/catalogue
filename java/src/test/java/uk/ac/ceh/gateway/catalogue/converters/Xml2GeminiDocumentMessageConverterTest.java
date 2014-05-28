@@ -2,6 +2,7 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
 import java.io.IOException;
+import javax.xml.xpath.XPathExpressionException;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -16,7 +17,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
     private Xml2GeminiDocumentMessageConverter geminiReader;
     
     @Before
-    public void createGeminiDocumentConverter() {
+    public void createGeminiDocumentConverter() throws XPathExpressionException {
         geminiReader = new Xml2GeminiDocumentMessageConverter();
     }
 
@@ -28,7 +29,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 "fc77c9b3-570d-4314-82ba-bc914538a748.xml"));
         
         //When
-        GeminiDocument document = geminiReader.read(GeminiDocument.class, message);
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //Then
         assertEquals("Expected to be able to read the id", "fc77c9b3-570d-4314-82ba-bc914538a748", document.getId());
