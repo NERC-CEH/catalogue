@@ -218,7 +218,5 @@ public class Object2TemplatedMessageResolverTest {
         
         //Then
         assertFalse("Didn't expect to be able to support string", supports);
-        
     }
-    
 }
