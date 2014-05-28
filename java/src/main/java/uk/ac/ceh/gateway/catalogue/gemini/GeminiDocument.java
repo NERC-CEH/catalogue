@@ -16,7 +16,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
     @Template(called="template", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Metadata {
+public class GeminiDocument {
     private String id;
     
     //Ignored, it is the responsibility of a DocumentBundleService to bundle the 

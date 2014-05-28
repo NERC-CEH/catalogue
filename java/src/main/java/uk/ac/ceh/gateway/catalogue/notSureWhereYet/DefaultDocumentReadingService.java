@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import uk.ac.ceh.gateway.catalogue.gemini.Metadata;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
@@ -34,7 +34,7 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  * @author cjohn
  */
 @Service
-public class DefaultDocumentReadingService implements DocumentReadingService<Metadata> {
+public class DefaultDocumentReadingService implements DocumentReadingService<GeminiDocument> {
     private final ObjectMapper mapper;
     
     @Autowired
@@ -43,9 +43,9 @@ public class DefaultDocumentReadingService implements DocumentReadingService<Met
     }
     
     @Override
-    public Metadata read(InputStream inputStream, MediaType contentType) throws IOException, UnknownContentTypeException {
+    public GeminiDocument read(InputStream inputStream, MediaType contentType) throws IOException, UnknownContentTypeException {
         if(contentType.isCompatibleWith(MediaType.APPLICATION_JSON)) {
-            return mapper.readValue(inputStream, Metadata.class);
+            return mapper.readValue(inputStream, GeminiDocument.class);
         }
         else if(contentType.isCompatibleWith(MediaType.APPLICATION_XML)) {
             try {
@@ -65,7 +65,7 @@ public class DefaultDocumentReadingService implements DocumentReadingService<Met
     private  Transformer transformer;
     private  SAXTransformerFactory transformerFactory;
     
-    private Metadata readXml(InputStream doc) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, XPathExpressionException {
+    private GeminiDocument readXml(InputStream doc) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, XPathExpressionException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
 
@@ -82,7 +82,7 @@ public class DefaultDocumentReadingService implements DocumentReadingService<Met
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document parse = builder.parse(new InputSource(doc));
         
-        Metadata toReturn = new Metadata();
+        GeminiDocument toReturn = new GeminiDocument();
         
         toReturn.setId(filenameXPath.evaluate(parse));
         

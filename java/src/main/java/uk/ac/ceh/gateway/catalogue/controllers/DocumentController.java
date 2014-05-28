@@ -23,7 +23,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.gemini.Metadata;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.notSureWhereYet.DataDocumentResource;
@@ -39,15 +39,15 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 @Controller
 public class DocumentController {
     private final DataRepository<CatalogueUser> repo;
-    private final DocumentReadingService<Metadata> documentReader;
-    private final DocumentInfoMapper<MetadataInfo, Metadata> documentInfoMapper;
-    private final DocumentBundleService<Metadata, MetadataInfo, Metadata> documentBundler;
+    private final DocumentReadingService<GeminiDocument> documentReader;
+    private final DocumentInfoMapper<MetadataInfo, GeminiDocument> documentInfoMapper;
+    private final DocumentBundleService<GeminiDocument, MetadataInfo, GeminiDocument> documentBundler;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
-                                DocumentReadingService<Metadata> documentReader,
+                                DocumentReadingService<GeminiDocument> documentReader,
                                 DocumentInfoMapper documentInfoMapper,
-                                DocumentBundleService<Metadata, MetadataInfo, Metadata> documentBundler) {
+                                DocumentBundleService<GeminiDocument, MetadataInfo, GeminiDocument> documentBundler) {
         this.repo = repo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
@@ -69,7 +69,7 @@ public class DocumentController {
             Files.copy(request.getInputStream(), tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
             
             //the documentReader will close the underlying inputstream
-            Metadata data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType); 
+            GeminiDocument data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType); 
             MetadataInfo metadataDocument = documentInfoMapper.createInfo(data, contentMediaType); //get the metadata info
             
             repo.submitData(filename(data.getId(), "meta"), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
@@ -104,7 +104,7 @@ public class DocumentController {
             return new HttpEntity(new DataDocumentResource(dataDoc), headers);
         }
         else {
-            Metadata document = documentReader.read(dataDoc.getInputStream(),
+            GeminiDocument document = documentReader.read(dataDoc.getInputStream(),
                                                     documentInfo.getRawMediaType());
             documentBundler.bundle(document, documentInfo);
             return document;

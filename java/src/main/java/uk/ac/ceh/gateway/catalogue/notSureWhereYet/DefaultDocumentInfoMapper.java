@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.gateway.catalogue.gemini.Metadata;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 
@@ -16,7 +16,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
  * @author cjohn
  */
 @Service
-public class DefaultDocumentInfoMapper implements DocumentInfoMapper<MetadataInfo, Metadata> {
+public class DefaultDocumentInfoMapper implements DocumentInfoMapper<MetadataInfo, GeminiDocument> {
     private final ObjectMapper mapper;
     
     @Autowired
@@ -25,7 +25,7 @@ public class DefaultDocumentInfoMapper implements DocumentInfoMapper<MetadataInf
     }
     
     @Override
-    public MetadataInfo createInfo(Metadata document, MediaType contentType) {
+    public MetadataInfo createInfo(GeminiDocument document, MediaType contentType) {
         MetadataInfo toReturn = new MetadataInfo();
         toReturn.setRawType(contentType.toString());
         return toReturn;

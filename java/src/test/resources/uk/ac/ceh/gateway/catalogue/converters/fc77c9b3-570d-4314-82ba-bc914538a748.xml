@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<gmd:fileIdentifier>
+<gco:CharacterString>fc77c9b3-570d-4314-82ba-bc914538a748</gco:CharacterString>
+</gmd:fileIdentifier>
+<gmd:language>
+<LanguageCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="eng"/>
+</gmd:language>
+<gmd:hierarchyLevel>
+<MD_ScopeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="series"/>
+</gmd:hierarchyLevel>
+<gmd:hierarchyLevelName>
+<gco:CharacterString>Land Cover Map 2000</gco:CharacterString>
+</gmd:hierarchyLevelName>
+<gmd:contact>
+<gmd:CI_ResponsibleParty>
+<gmd:individualName>
+<gco:CharacterString>Claire Wood</gco:CharacterString>
+</gmd:individualName>
+<gmd:organisationName>
+<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+</gmd:organisationName>
+<gmd:contactInfo>
+<gmd:CI_Contact>
+<gmd:address>
+<gmd:CI_Address>
+<gmd:deliveryPoint>
+<gco:CharacterString>Lancaster Environment Centre,  Library Avenue, Bailrigg</gco:CharacterString>
+</gmd:deliveryPoint>
+<gmd:city>
+<gco:CharacterString>Lancaster</gco:CharacterString>
+</gmd:city>
+<gmd:administrativeArea>
+<gco:CharacterString>Lancashire</gco:CharacterString>
+</gmd:administrativeArea>
+<gmd:postalCode>
+<gco:CharacterString>LA1 4AP</gco:CharacterString>
+</gmd:postalCode>
+<gmd:country>
+<gco:CharacterString>United Kingdom</gco:CharacterString>
+</gmd:country>
+<gmd:electronicMailAddress>
+<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+</gmd:electronicMailAddress>
+</gmd:CI_Address>
+</gmd:address>
+</gmd:CI_Contact>
+</gmd:contactInfo>
+<gmd:role>
+<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+</gmd:role>
+</gmd:CI_ResponsibleParty>
+</gmd:contact>
+<gmd:dateStamp>
+    <gco:Date>2014-01-23</gco:Date>
+  </gmd:dateStamp>
+<gmd:metadataStandardName>
+<gco:CharacterString>NERC profile of ISO19115:2003</gco:CharacterString>
+</gmd:metadataStandardName>
+<gmd:metadataStandardVersion>
+<gco:CharacterString>1.0</gco:CharacterString>
+</gmd:metadataStandardVersion>
+<gmd:referenceSystemInfo>
+<gmd:MD_ReferenceSystem>
+<gmd:referenceSystemIdentifier>
+<gmd:RS_Identifier>
+<gmd:code>
+<gco:CharacterString>27700</gco:CharacterString>
+</gmd:code>
+<gmd:codeSpace>
+<gco:CharacterString>urn:ogc:def:crs:EPSG</gco:CharacterString>
+</gmd:codeSpace>
+<gmd:version>
+<gco:CharacterString>6.11.2</gco:CharacterString>
+</gmd:version>
+</gmd:RS_Identifier>
+</gmd:referenceSystemIdentifier>
+</gmd:MD_ReferenceSystem>
+</gmd:referenceSystemInfo>
+<gmd:identificationInfo>
+    <gmd:MD_DataIdentification>
+<gmd:citation>
+        <gmd:CI_Citation>
+<gmd:title>
+            <gco:CharacterString>Land Cover Map 2000</gco:CharacterString>
+          </gmd:title>
+<gmd:date>
+<gmd:CI_Date>
+<gmd:date>
+<gco:Date>2000-01-01</gco:Date>
+</gmd:date>
+<gmd:dateType>
+<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+</gmd:dateType>
+</gmd:CI_Date>
+</gmd:date>
+<gmd:identifier>
+<gmd:RS_Identifier>
+<gmd:code>
+<gco:CharacterString>1287396215377</gco:CharacterString>
+</gmd:code>
+<gmd:codeSpace>
+<gco:CharacterString>CEH:EIDC:</gco:CharacterString>
+</gmd:codeSpace>
+</gmd:RS_Identifier>
+</gmd:identifier>
+</gmd:CI_Citation>
+      </gmd:citation>
+<gmd:abstract>
+        <gco:CharacterString>The Land Cover Map 2000 (LCM2000) is a parcel-based thematic classification of satellite image data covering the entire United Kingdom. The map updates and substantially upgrades the Land Cover Map of Great Britain (LCMGB) 1990. Like the earlier LCMGB, LCM2000 is derived from a computer classification of satellite scenes obtained mainly from the Landsat sensor, but in addition to LCMGB, it also covers Northern Ireland, producing for the first time an all-UK dataset. It incorporates information derived from other ancillary datasets. LCM2000 was classified using a hierarchical nomenclature corresponding to the Joint Nature Conservation Committee (JNCC) Broad Habitats, which encompasses the entire range of UK habitats. In addition, it records further detail where possible and incorporates land cover classes sought by other users.
+LCM2000 is produced in both vector and raster formats, with a number of different versions containing varying levels of detail and at different spatial resolutions.</gco:CharacterString>
+      </gmd:abstract>
+<gmd:status>
+<MD_ProgressCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ProgressCode" codeListValue="completed"/>
+</gmd:status>
+<gmd:pointOfContact>
+<gmd:CI_ResponsibleParty>
+<gmd:organisationName>
+<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+</gmd:organisationName>
+<gmd:contactInfo>
+<gmd:CI_Contact>
+<gmd:address>
+<gmd:CI_Address>
+<gmd:deliveryPoint>
+<gco:CharacterString>Lancaster Environment Centre,  Library Avenue, Bailrigg</gco:CharacterString>
+</gmd:deliveryPoint>
+<gmd:city>
+<gco:CharacterString>Lancaster</gco:CharacterString>
+</gmd:city>
+<gmd:administrativeArea>
+<gco:CharacterString>Lancashire</gco:CharacterString>
+</gmd:administrativeArea>
+<gmd:postalCode>
+<gco:CharacterString>LA1 4AP</gco:CharacterString>
+</gmd:postalCode>
+<gmd:country>
+<gco:CharacterString>United Kingdom</gco:CharacterString>
+</gmd:country>
+<gmd:electronicMailAddress>
+<gco:CharacterString>datalicensing@ceh.ac.uk </gco:CharacterString>
+</gmd:electronicMailAddress>
+</gmd:CI_Address>
+</gmd:address>
+</gmd:CI_Contact>
+</gmd:contactInfo>
+<gmd:role>
+<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+</gmd:role>
+</gmd:CI_ResponsibleParty>
+</gmd:pointOfContact>
+<gmd:pointOfContact>
+<gmd:CI_ResponsibleParty>
+<gmd:organisationName>
+<gco:CharacterString>Parr Section</gco:CharacterString>
+</gmd:organisationName>
+<gmd:contactInfo>
+<gmd:CI_Contact>
+<gmd:address>
+<gmd:CI_Address>
+<gmd:electronicMailAddress>
+<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+</gmd:electronicMailAddress>
+</gmd:CI_Address>
+</gmd:address>
+</gmd:CI_Contact>
+</gmd:contactInfo>
+<gmd:role>
+<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="resourceProvider">resourceProvider</gmd:CI_RoleCode>
+</gmd:role>
+</gmd:CI_ResponsibleParty>
+</gmd:pointOfContact>
+<gmd:resourceMaintenance>
+<gmd:MD_MaintenanceInformation>
+<gmd:maintenanceAndUpdateFrequency>
+<MD_MaintenanceFrequencyCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="notPlanned"/>
+</gmd:maintenanceAndUpdateFrequency>
+</gmd:MD_MaintenanceInformation>
+</gmd:resourceMaintenance>
+<gmd:graphicOverview>
+<gmd:MD_BrowseGraphic>
+<gmd:fileName>
+<gco:CharacterString>https://gateway.ceh.ac.uk:443/smartEditor/preview/fc77c9b3-570d-4314-82ba-bc914538a748.png</gco:CharacterString>
+</gmd:fileName>
+</gmd:MD_BrowseGraphic>
+</gmd:graphicOverview>
+<gmd:descriptiveKeywords>
+<gmd:MD_Keywords>
+<gmd:keyword>
+<gco:CharacterString>Land cover</gco:CharacterString>
+</gmd:keyword>
+<gmd:keyword>
+<gco:CharacterString>Land use</gco:CharacterString>
+</gmd:keyword>
+<gmd:keyword>
+<gco:CharacterString>Land cover</gco:CharacterString>
+</gmd:keyword>
+<gmd:type>
+<MD_KeywordTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+</gmd:type>
+<gmd:thesaurusName>
+<gmd:CI_Citation>
+<gmd:title>
+<gco:CharacterString>GEMET - INSPIRE themes, version 1.0</gco:CharacterString>
+</gmd:title>
+<gmd:date>
+<gmd:CI_Date>
+<gmd:date>
+<gco:Date>2008-06-01</gco:Date>
+</gmd:date>
+<gmd:dateType>
+<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="CI_DateTypeCode" codeListValue="revision"/>
+</gmd:dateType>
+</gmd:CI_Date>
+</gmd:date>
+</gmd:CI_Citation>
+</gmd:thesaurusName>
+</gmd:MD_Keywords>
+</gmd:descriptiveKeywords>
+<gmd:descriptiveKeywords>
+<gmd:MD_Keywords>
+<gmd:keyword>
+<gco:CharacterString>NERC_DDC</gco:CharacterString>
+</gmd:keyword>
+<gmd:keyword>
+<gco:CharacterString>CEH Biodiversity Programme</gco:CharacterString>
+</gmd:keyword>
+<gmd:type>
+<MD_KeywordTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="discipline"/>
+</gmd:type>
+</gmd:MD_Keywords>
+</gmd:descriptiveKeywords>
+<gmd:resourceConstraints xmlns:gmx="http://www.isotc211.org/2005/gmx">
+<gmd:MD_LegalConstraints>
+<gmd:useLimitation>
+<gco:CharacterString>Licence terms and conditions apply</gco:CharacterString>
+</gmd:useLimitation>
+<gmd:accessConstraints>
+<MD_RestrictionCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
+</gmd:accessConstraints>
+<gmd:otherConstraints>
+<gco:CharacterString>Licence terms and conditions apply</gco:CharacterString>
+</gmd:otherConstraints>
+</gmd:MD_LegalConstraints>
+</gmd:resourceConstraints>
+<gmd:spatialRepresentationType>
+<MD_SpatialRepresentationTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="grid"/>
+</gmd:spatialRepresentationType>
+<gmd:spatialRepresentationType>
+<MD_SpatialRepresentationTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="vector"/>
+</gmd:spatialRepresentationType>
+<gmd:language>
+<LanguageCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="eng"/>
+</gmd:language>
+<gmd:topicCategory>
+<gmd:MD_TopicCategoryCode>imageryBaseMapsEarthCover</gmd:MD_TopicCategoryCode>
+</gmd:topicCategory>
+<gmd:extent>
+<gmd:EX_Extent>
+<gmd:temporalElement>
+<gmd:EX_TemporalExtent>
+<gmd:extent>
+<gml:TimePeriod xmlns:gml="http://www.opengis.net/gml/3.2" gml:id="w5872aaa">
+<gml:beginPosition>2000-01-01</gml:beginPosition>
+<gml:endPosition>2000-12-31</gml:endPosition>
+</gml:TimePeriod>
+</gmd:extent>
+</gmd:EX_TemporalExtent>
+</gmd:temporalElement>
+</gmd:EX_Extent>
+</gmd:extent>
+<gmd:extent>
+<gmd:EX_Extent>
+<gmd:geographicElement>
+<gmd:EX_GeographicBoundingBox>
+<gmd:extentTypeCode>
+<gco:Boolean>true</gco:Boolean>
+</gmd:extentTypeCode>
+<gmd:westBoundLongitude>
+<gco:Decimal>-10.00</gco:Decimal>
+</gmd:westBoundLongitude>
+<gmd:eastBoundLongitude>
+<gco:Decimal>5.00</gco:Decimal>
+</gmd:eastBoundLongitude>
+<gmd:southBoundLatitude>
+<gco:Decimal>49.00</gco:Decimal>
+</gmd:southBoundLatitude>
+<gmd:northBoundLatitude>
+<gco:Decimal>59.00</gco:Decimal>
+</gmd:northBoundLatitude>
+</gmd:EX_GeographicBoundingBox>
+</gmd:geographicElement>
+</gmd:EX_Extent>
+</gmd:extent>
+<gmd:supplementalInformation>
+<gco:CharacterString>Fuller, R.M., Smith, G.M., Sanderson, J.M., Hill, R.A., &amp; Thomson, A.G. (2002). The
+UK Land Cover Map 2000: construction of a parcel-based vector map from satellite
+images. Cartographic Journal, 39. 15-25.
+</gco:CharacterString>
+</gmd:supplementalInformation>
+</gmd:MD_DataIdentification>
+  </gmd:identificationInfo>
+<gmd:distributionInfo>
+<gmd:MD_Distribution>
+<gmd:distributionFormat>
+<gmd:MD_Format>
+<gmd:name>
+<gco:CharacterString>various</gco:CharacterString>
+</gmd:name>
+<gmd:version>
+<gco:CharacterString>unknown</gco:CharacterString>
+</gmd:version>
+</gmd:MD_Format>
+</gmd:distributionFormat>
+<gmd:distributor>
+<gmd:MD_Distributor>
+<gmd:distributorContact>
+<gmd:CI_ResponsibleParty>
+<gmd:organisationName>
+<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+</gmd:organisationName>
+<gmd:contactInfo>
+<gmd:CI_Contact>
+<gmd:address>
+<gmd:CI_Address>
+<gmd:deliveryPoint>
+<gco:CharacterString>Maclean Building, Benson Lane, Crowmarsh Gifford</gco:CharacterString>
+</gmd:deliveryPoint>
+<gmd:city>
+<gco:CharacterString>Wallingford</gco:CharacterString>
+</gmd:city>
+<gmd:administrativeArea>
+<gco:CharacterString>Oxfordshire </gco:CharacterString>
+</gmd:administrativeArea>
+<gmd:postalCode>
+<gco:CharacterString>OX10 8BB</gco:CharacterString>
+</gmd:postalCode>
+<gmd:country>
+<gco:CharacterString>United Kingdom</gco:CharacterString>
+</gmd:country>
+<gmd:electronicMailAddress>
+<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+</gmd:electronicMailAddress>
+</gmd:CI_Address>
+</gmd:address>
+</gmd:CI_Contact>
+</gmd:contactInfo>
+<gmd:role>
+<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="distributor">distributor</gmd:CI_RoleCode>
+</gmd:role>
+</gmd:CI_ResponsibleParty>
+</gmd:distributorContact>
+</gmd:MD_Distributor>
+</gmd:distributor>
+<gmd:transferOptions>
+<gmd:MD_DigitalTransferOptions>
+<gmd:onLine>
+<gmd:CI_OnlineResource>
+<gmd:linkage>
+<gmd:URL>http://www.ceh.ac.uk/sci_programmes/BioGeoChem/LandCoverMap2000.html</gmd:URL>
+</gmd:linkage>
+<gmd:name>
+<gco:CharacterString>CEH Web Site</gco:CharacterString>
+</gmd:name>
+<gmd:description>
+<gco:CharacterString>Further information about CEH land cover data.</gco:CharacterString>
+</gmd:description>
+<gmd:function>
+<CI_OnLineFunctionCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+</gmd:function>
+</gmd:CI_OnlineResource>
+</gmd:onLine>
+</gmd:MD_DigitalTransferOptions>
+</gmd:transferOptions>
+</gmd:MD_Distribution>
+</gmd:distributionInfo>
+<gmd:dataQualityInfo>
+<gmd:DQ_DataQuality>
+<gmd:scope>
+<gmd:DQ_Scope>
+<gmd:level>
+<MD_ScopeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="series"/>
+</gmd:level>
+<gmd:levelDescription>
+<gmd:MD_ScopeDescription>
+<gmd:other>
+<gco:CharacterString>series</gco:CharacterString>
+</gmd:other>
+</gmd:MD_ScopeDescription>
+</gmd:levelDescription>
+</gmd:DQ_Scope>
+</gmd:scope>
+<gmd:lineage>
+<gmd:LI_Lineage>
+<gmd:statement>
+<gco:CharacterString>In a major development of the 1990 methods, Land Cover Map 2000 (LCM2000) used image segmentation to identify land parcels in the pixel-based images. An automated procedure grouped the image pixels into spectrally 'uniform' segments. These were built around 'seedpoints' selected to avoid parcel boundaries. The segmentation recorded a field-by-field pattern, also separating land use zones within urban and suburban areas, and subdividing mosaics of semi-natural vegetation. Generalisation gave minimum mappable units of a half hectare. A 'vector' version was then created in the geographical information system (GIS), where the boundaries between the pixel-based segments were represented by digital linework. The resultant land parcels were treated as GIS objects to which attribute data could then be attached covering such topics as land cover class, parcel area, length of boundary, processing history, knowledge-based correction and identification of the original satellite scene.   The raster products have been derived from the vector dataset. LCM2000 was produced at CEH Monks Wood.
+
+For further information on the methodology developed and used to create Land Cover Map 2000:
+
+Fuller, R.M., Smith, G.M., Sanderson, J.M., Hill, R.A., and Thomson, A.G. (2002). The UK Land Cover Map 2000: construction of a parcel-based vector map from satellite
+images. Cartographic Journal, 39. 15-25.
+
+Smith, G.M., Fuller, R.M., Sanderson, J.M., Hill, R.A. and Thomson, A.G. (2001).   Land Cover Map 2000: a parcel-based map from satellite images. Proceedings of the 1st Annual Remote Sensing and Photogrammetry Society Conference, Remote Sensing Society, Nottingham. CDROM</gco:CharacterString>
+</gmd:statement>
+</gmd:LI_Lineage>
+</gmd:lineage>
+</gmd:DQ_DataQuality>
+</gmd:dataQualityInfo>
+</gmd:MD_Metadata>
