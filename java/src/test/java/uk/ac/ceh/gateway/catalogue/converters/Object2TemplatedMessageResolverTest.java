@@ -187,4 +187,38 @@ public class Object2TemplatedMessageResolverTest {
         //Then
         assertFalse("Didn't expect to be able to write html from type", canWrite);      
     }
+    
+    @Test
+    public void checkSubTypeCanAlsoBeRead() {
+        //Given
+        @ConvertUsing(@Template(called="bob",whenRequestedAs="application/xml"))
+        class MyType {}        
+        class MySubType extends MyType {}
+        
+        Object2TemplatedMessageConverter<MyType> converter = 
+                new Object2TemplatedMessageConverter(MyType.class, configuration);
+        
+        //When
+        boolean supports = converter.supports(MySubType.class);
+        
+        //Then
+        assertTrue("Expected to be able to support subtype", supports);
+    }
+    
+    @Test
+    public void checkRandomTypeCantBeRead() {
+        @ConvertUsing(@Template(called="bob",whenRequestedAs="application/xml"))
+        class MyType {}
+        
+        Object2TemplatedMessageConverter<MyType> converter = 
+                new Object2TemplatedMessageConverter(MyType.class, configuration);
+        
+        //When
+        boolean supports = converter.supports(String.class);
+        
+        //Then
+        assertFalse("Didn't expect to be able to support string", supports);
+        
+    }
+    
 }

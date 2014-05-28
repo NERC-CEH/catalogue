@@ -29,7 +29,7 @@ public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConv
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(clazz);
+        return this.clazz.isAssignableFrom(clazz);
     }
     
     @Override
