@@ -26,8 +26,9 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.notSureWhereYet.DataDocumentResource;
+import uk.ac.ceh.gateway.catalogue.model.DataDocumentResource;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
@@ -40,17 +41,20 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 public class DocumentController {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentReadingService<GeminiDocument> documentReader;
-    private final DocumentInfoMapper<MetadataInfo, GeminiDocument> documentInfoMapper;
-    private final DocumentBundleService<GeminiDocument, MetadataInfo, GeminiDocument> documentBundler;
+    private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
+    private final DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
+    private final DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
                                 DocumentReadingService<GeminiDocument> documentReader,
                                 DocumentInfoMapper documentInfoMapper,
-                                DocumentBundleService<GeminiDocument, MetadataInfo, GeminiDocument> documentBundler) {
+                                DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory,
+                                DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler) {
         this.repo = repo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
+        this.infoFactory = infoFactory;
         this.documentBundler = documentBundler;
     }
     
@@ -70,7 +74,7 @@ public class DocumentController {
             
             //the documentReader will close the underlying inputstream
             GeminiDocument data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType); 
-            MetadataInfo metadataDocument = documentInfoMapper.createInfo(data, contentMediaType); //get the metadata info
+            MetadataInfo metadataDocument = infoFactory.createInfo(data, contentMediaType); //get the metadata info
             
             repo.submitData(filename(data.getId(), "meta"), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
                 .submitData(filename(data.getId(), "raw"), (o) -> Files.copy(tmpFile, o) )
