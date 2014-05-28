@@ -47,68 +47,8 @@ public class DefaultDocumentReadingService implements DocumentReadingService<Gem
         if(contentType.isCompatibleWith(MediaType.APPLICATION_JSON)) {
             return mapper.readValue(inputStream, GeminiDocument.class);
         }
-        else if(contentType.isCompatibleWith(MediaType.APPLICATION_XML)) {
-            try {
-                return readXml(inputStream);
-            }
-            catch(Exception ex) {
-                throw new IOException(ex);
-            }
-        }
         else {
             throw new UnknownContentTypeException("I don't know how to read " + contentType);
-        }
-    }
-    
-    private  Map<String, Templates> schematron;
-    private  XPathExpression filenameXPath;
-    private  Transformer transformer;
-    private  SAXTransformerFactory transformerFactory;
-    
-    private GeminiDocument readXml(InputStream doc) throws ParserConfigurationException, SAXException, IOException, TransformerConfigurationException, XPathExpressionException {
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-
-
-        this.transformerFactory = (SAXTransformerFactory) transformerFactory;
-        this.transformer = transformerFactory.newTransformer();
-
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(new HardcodedNamespaceResolver());
-        this.filenameXPath = xpath.compile("/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString");
-            
-        
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document parse = builder.parse(new InputSource(doc));
-        
-        GeminiDocument toReturn = new GeminiDocument();
-        
-        toReturn.setId(filenameXPath.evaluate(parse));
-        
-        return toReturn;
-    }
-    
-    public static class HardcodedNamespaceResolver implements NamespaceContext{
-
-        @Override
-        public String getNamespaceURI(String prefix) {        
-            switch(prefix.toLowerCase()) {
-                case "gmd": return "http://www.isotc211.org/2005/gmd";
-                case "gco": return "http://www.isotc211.org/2005/gco";
-                case "csw": return "http://www.opengis.net/cat/csw/2.0.2";
-                default:    return "";
-            }
-        }
-
-        @Override
-        public String getPrefix(String namespaceURI) {
-            return "";
-        }
-
-        @Override
-        public Iterator getPrefixes(String namespaceURI) {
-            return Collections.emptyIterator();
         }
     }
 }
