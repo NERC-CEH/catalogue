@@ -23,7 +23,7 @@ public class DataDocumentResource extends AbstractResource {
 
     @Override
     public boolean exists() {
-            return true;
+        return true;
     }
 
     @Override
