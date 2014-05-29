@@ -31,4 +31,8 @@ public class MetadataInfo {
     public MediaType getRawMediaType() {
         return MediaType.parseMediaType(rawType);
     }
+    
+    public void hideMediaType() {
+        setRawType(null);
+    }
 }

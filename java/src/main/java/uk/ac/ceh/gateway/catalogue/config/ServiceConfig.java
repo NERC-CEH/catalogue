@@ -33,8 +33,15 @@ public class ServiceConfig {
     @Bean
     public DocumentInfoFactory<GeminiDocument, MetadataInfo> documentInfoFactory() {
         return (GeminiDocument document, MediaType contentType) -> {
-            MetadataInfo toReturn = new MetadataInfo();
-            toReturn.setRawType(contentType.toString());
+            MetadataInfo toReturn = document.getMetadata();
+            
+            //If no MetadataInfo is attached to the document, we need to create 
+            //a new one. 
+            if(toReturn == null) {
+                toReturn = new MetadataInfo();
+            }
+            
+            toReturn.setRawType(contentType.toString()); //set the raw type
             return toReturn;
         };
     }
@@ -47,6 +54,7 @@ public class ServiceConfig {
     @Bean
     public DocumentBundleService<GeminiDocument, MetadataInfo> documentBundleService() {
         return (GeminiDocument document, MetadataInfo info) -> {
+            info.hideMediaType();
             document.setMetadata(info);
             return document;
         };
