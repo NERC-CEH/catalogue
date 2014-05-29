@@ -20,7 +20,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 public class GeminiDocument {
     
     //Mandatory fields
-    private String id, title, alternativeTitle;
+    private String id, title, alternateTitle;
     
     //Conditional
     private String languageCodeList;

@@ -33,6 +33,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertEquals("Expected to be able to read the id", "9e7790ab-a37d-4918-8107-5c427798ca68", document.getId());
+        assertFalse("Expected id to not be empty string", document.getId().isEmpty());
     }
 
     @Test
@@ -47,6 +48,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertNotNull("Expected title to have content", document.getTitle());
+        assertFalse("Expected title to not be empty string", document.getTitle().isEmpty());
     }
 
     @Test
@@ -60,7 +62,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //Then
-        assertNotNull("Expected title to have content", document.getTitle());
+        assertNotNull("Expected title to have content", document.getAlternateTitle());
+        assertFalse("Expected alternate title to not be empty string", document.getAlternateTitle().isEmpty());
     }
     
     @Test
@@ -74,6 +77,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertNotNull("Expected languageCodeList to have content", document.getLanguageCodeList());
+        assertFalse("Expected language code list to not be empty string", document.getLanguageCodeList().isEmpty());
     }
     
 //    @Test

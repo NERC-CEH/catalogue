@@ -61,7 +61,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             GeminiDocument toReturn = new GeminiDocument();
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
-            toReturn.setAlternativeTitle(alternateTitle.evaluate(document));
+            toReturn.setAlternateTitle(alternateTitle.evaluate(document));
             toReturn.setLanguageCodeList(languageCodeList.evaluate(document));
             return toReturn;
         }
