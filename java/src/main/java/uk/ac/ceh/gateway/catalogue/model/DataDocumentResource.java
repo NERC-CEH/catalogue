@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.notSureWhereYet;
+package uk.ac.ceh.gateway.catalogue.model;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +23,7 @@ public class DataDocumentResource extends AbstractResource {
 
     @Override
     public boolean exists() {
-            return true;
+        return true;
     }
 
     @Override
