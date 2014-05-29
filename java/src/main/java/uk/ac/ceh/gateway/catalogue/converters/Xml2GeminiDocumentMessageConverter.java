@@ -23,7 +23,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
  * @author jcoop, cjohn
  */
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
-    private final XPathExpression id;
+    private final XPathExpression id, title, alternateTitle, languageCodeList;
+//    , datasetLanguage, description, topicCategory,
+//            keyword, temporalExtentBegin, temporalExtentEnd;
+//    private final TemporalExtent temporalExtent;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -31,6 +34,15 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(new HardcodedNamespaceResolver());
         this.id = xpath.compile("/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString");
+        this.title = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
+        this.alternateTitle = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString");
+        this.languageCodeList = xpath.compile("/gmd:MD_Metadata/gmd:language/gmd:LanguageCode/@codeList");
+        
+//        this.datasetLanguage = 
+//        this.description = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString");
+//        this.topicCategory = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory[1]/gmd:MD_TopicCategoryCode");
+//        this.temporalExtentBegin = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent[1]/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition");
+//        this.temporalExtentEnd = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent[4]/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:endPosition");
     }
     
     @Override
@@ -48,6 +60,9 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
 
             GeminiDocument toReturn = new GeminiDocument();
             toReturn.setId(id.evaluate(document));
+            toReturn.setTitle(title.evaluate(document));
+            toReturn.setAlternateTitle(alternateTitle.evaluate(document));
+            toReturn.setLanguageCodeList(languageCodeList.evaluate(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
