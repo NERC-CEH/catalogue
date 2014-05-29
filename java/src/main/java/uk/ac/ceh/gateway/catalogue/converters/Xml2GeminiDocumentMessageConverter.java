@@ -36,7 +36,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.id = xpath.compile("/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString");
         this.title = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
         this.alternateTitle = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString");
-        this.languageCodeList = xpath.compile("/gmd:MD_Metadata/gmd:language/LanguageCode/@codeList");
+        this.languageCodeList = xpath.compile("/gmd:MD_Metadata/gmd:language/gmd:LanguageCode/@codeList");
         
 //        this.datasetLanguage = 
 //        this.description = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString");
