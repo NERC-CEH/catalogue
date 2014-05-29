@@ -22,16 +22,113 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
 
     @Test
-    public void canReadXmlContent() throws IOException {
+    public void canGetId() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream(
-                "fc77c9b3-570d-4314-82ba-bc914538a748.xml"));
+                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //Then
-        assertEquals("Expected to be able to read the id", "fc77c9b3-570d-4314-82ba-bc914538a748", document.getId());
+        assertEquals("Expected to be able to read the id", "9e7790ab-a37d-4918-8107-5c427798ca68", document.getId());
     }
+
+    @Test
+    public void canGetTitle() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
+                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        assertNotNull("Expected title to have content", document.getTitle());
+    }
+
+    @Test
+    public void canGetAlternateTitle() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
+                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        assertNotNull("Expected title to have content", document.getTitle());
+    }
+    
+    @Test
+    public void canGetLanguageCodeList() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        assertNotNull("Expected languageCodeList to have content", document.getLanguageCodeList());
+    }
+    
+//    @Test
+//    public void canGetAbstract() throws IOException {
+//        //Given
+//        HttpInputMessage message = mock(HttpInputMessage.class);
+//        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
+//                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
+//        
+//        //When
+//        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+//        
+//        //Then
+//        assertNotNull("Expected abstract to have content", document.getDescription());
+//    }
+//
+//    @Test
+//    public void canGetTopicCategory() throws IOException {
+//        //Given
+//        HttpInputMessage message = mock(HttpInputMessage.class);
+//        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
+//                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
+//        
+//        //When
+//        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+//        
+//        //Then
+//        assertNotNull("Expected topicCategory to have content", document.getTopicCategory());
+//    }
+//
+//    @Test
+//    public void canGetTemporalExtentBegin() throws IOException {
+//        //Given
+//        HttpInputMessage message = mock(HttpInputMessage.class);
+//        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
+//                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
+//        
+//        //When
+//        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+//        
+//        //Then
+//        assertNotNull("Expected temporalExtent-begin to have content", document.getTemporalExtentBegin());
+//    }
+//
+//    @Test
+//    public void canGetTemporalExtentEnd() throws IOException {
+//        //Given
+//        HttpInputMessage message = mock(HttpInputMessage.class);
+//        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
+//                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
+//        
+//        //When
+//        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+//        
+//        //Then
+//        assertNotNull("Expected temporalExtent-end to have content", document.getTemporalExtentEnd());
+//    }
 }

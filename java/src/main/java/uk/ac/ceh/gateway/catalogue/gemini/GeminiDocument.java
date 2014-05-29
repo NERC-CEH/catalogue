@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.List;
 import lombok.Data;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -17,7 +18,12 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument {
-    private String id;
+    
+    //Mandatory fields
+    private String id, title, alternativeTitle;
+    
+    //Conditional
+    private String languageCodeList;
     
     //Ignored, it is the responsibility of a DocumentBundleService to bundle the 
     //MetadataInfo to an instance of Metadata
