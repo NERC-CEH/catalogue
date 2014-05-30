@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetLanguage;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.List;
 import lombok.Data;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -16,11 +18,11 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument {
-    //Mandatory fields
-    private String id, title, alternateTitle;
     
-    //Conditional
-    private String languageCodeList;
+    private String id, title;
+    private List<String> alternateTitles;
+    
+    private DatasetLanguage datasetLanguage;
     
     private MetadataInfo metadata;
 }

@@ -1,10 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -15,34 +18,31 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetLanguage;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
 
 /**
  *
  * @author jcoop, cjohn
  */
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
-    private final XPathExpression id, title, alternateTitle, languageCodeList;
-//    , datasetLanguage, description, topicCategory,
-//            keyword, temporalExtentBegin, temporalExtentEnd;
-//    private final TemporalExtent temporalExtent;
+    private final XPathExpression id, title, alternateTitle, languageCodeList, languageCodeListValue;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
         
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(new HardcodedNamespaceResolver());
-        this.id = xpath.compile("/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString");
-        this.title = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
-        this.alternateTitle = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString");
-        this.languageCodeList = xpath.compile("/gmd:MD_Metadata/gmd:language/gmd:LanguageCode/@codeList");
+        this.id = xpath.compile(XPaths.ID);
+        this.title = xpath.compile(XPaths.TITLE);
+        this.alternateTitle = xpath.compile(XPaths.ALTERNATE_TITLE);
+        this.languageCodeList = xpath.compile(XPaths.LANGUAGE_CODE_LIST);
+        this.languageCodeListValue = xpath.compile(XPaths.LANGUAGE_CODE_LIST_VALUE);
         
-//        this.datasetLanguage = 
-//        this.description = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString");
-//        this.topicCategory = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory[1]/gmd:MD_TopicCategoryCode");
-//        this.temporalExtentBegin = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent[1]/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition");
-//        this.temporalExtentEnd = xpath.compile("/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent[4]/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:endPosition");
     }
     
     @Override
@@ -61,8 +61,13 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             GeminiDocument toReturn = new GeminiDocument();
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
-            toReturn.setAlternateTitle(alternateTitle.evaluate(document));
-            toReturn.setLanguageCodeList(languageCodeList.evaluate(document));
+            toReturn.setAlternateTitles(getAlternateTitles(document));
+            toReturn.setDatasetLanguage(DatasetLanguage
+                    .builder()
+                    .codeList(languageCodeList.evaluate(document))
+                    .codeListValue(languageCodeListValue.evaluate(document))
+                    .build()
+            );
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
@@ -82,5 +87,14 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
         return false; // I can never write
+    }
+    
+    private List<String> getAlternateTitles(Document document) throws XPathExpressionException{
+        ArrayList<String> toReturn = new ArrayList<>();
+        NodeList nodeList = (NodeList) alternateTitle.evaluate(document, XPathConstants.NODESET);
+        for(int i=0; i<nodeList.getLength(); i++){
+            toReturn.add(nodeList.item(i).getNodeValue());
+        }
+        return toReturn;
     }
 }
