@@ -1,10 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -15,6 +18,8 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetLanguage;
@@ -56,7 +61,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             GeminiDocument toReturn = new GeminiDocument();
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
-            toReturn.setAlternateTitle(alternateTitle.evaluate(document));
+            toReturn.setAlternateTitles(getAlternateTitles(document));
             toReturn.setDatasetLanguage(DatasetLanguage
                     .builder()
                     .codeList(languageCodeList.evaluate(document))
@@ -82,5 +87,14 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
         return false; // I can never write
+    }
+    
+    private List<String> getAlternateTitles(Document document) throws XPathExpressionException{
+        ArrayList<String> toReturn = new ArrayList<>();
+        NodeList nodeList = (NodeList) alternateTitle.evaluate(document, XPathConstants.NODESET);
+        for(int i=0; i<nodeList.getLength(); i++){
+            toReturn.add(nodeList.item(i).getNodeValue());
+        }
+        return toReturn;
     }
 }

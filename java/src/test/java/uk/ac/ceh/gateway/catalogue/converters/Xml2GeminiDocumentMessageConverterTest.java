@@ -61,8 +61,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //Then
-        assertNotNull("Expected title to have content", document.getAlternateTitle());
-        assertFalse("Expected alternate title to not be empty string", document.getAlternateTitle().isEmpty());
+        assertNotNull("Expected title to have content", document.getAlternateTitles());
+        assertEquals("Expected there to be two alternate titles", 2, document.getAlternateTitles().size());
     }
     
     @Test

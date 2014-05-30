@@ -20,10 +20,9 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument {
     
-    //Mandatory fields
-    private String id, title, alternateTitle;
+    private String id, title;
+    private List<String> alternateTitles;
     
-    //Conditional
     private DatasetLanguage datasetLanguage;
     
     //Ignored, it is the responsibility of a DocumentBundleService to bundle the 

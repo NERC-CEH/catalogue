@@ -5,7 +5,10 @@
 			<gmd:citation>
 				<gmd:CI_Citation>
 					<gmd:alternateTitle>
-						<gco:CharacterString>Source of testing template for dataset records</gco:CharacterString>
+						<gco:CharacterString>Source of testing template for dataset records - one</gco:CharacterString>
+					</gmd:alternateTitle>
+					<gmd:alternateTitle>
+						<gco:CharacterString>Source of testing template for dataset records - two</gco:CharacterString>
 					</gmd:alternateTitle>
 				</gmd:CI_Citation>
 			</gmd:citation>
