@@ -4,11 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -26,7 +23,6 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.DataDocumentResource;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -86,38 +82,37 @@ public class DocumentController {
         }
     }
     
-    @RequestMapping( value ="documents/{file}",
-                     method = RequestMethod.GET)
+    @RequestMapping(value = "documents/{file}",
+                    method = RequestMethod.GET)   
     @ResponseBody
-    public Object readMetadata(
-            @PathVariable("file") String file,
-            @RequestHeader("Accept") String acceptType) throws DataRepositoryException, IOException, UnknownContentTypeException {
-        List<MediaType> acceptableTypes = MediaType.parseMediaTypes(acceptType);
-        MediaType.sortBySpecificityAndQuality(acceptableTypes);
-        
+    public GeminiDocument readMetadata(
+            @PathVariable("file") String file) throws DataRepositoryException, IOException, UnknownContentTypeException {
         String latestRev = repo.getLatestRevision();
+        
+        return readMetadata(file, latestRev);
+    }
+    
+    @RequestMapping(value = "history/{revision}/{file}",
+                    method = RequestMethod.GET)
+    @ResponseBody
+    public GeminiDocument readMetadata(
+            @PathVariable("file") String file,
+            @PathVariable("revision") String revision) throws DataRepositoryException, IOException, UnknownContentTypeException {
+                
         MetadataInfo documentInfo = documentInfoMapper.readInfo(
-                                        repo.getData(latestRev, filename(file, "meta"))
+                                        repo.getData(revision, filename(file, "meta"))
                                             .getInputStream());
         
-        DataDocument dataDoc = repo.getData(latestRev, filename(file, "raw"));
-        
-        if(!acceptableTypes.isEmpty() && acceptableTypes.get(0).includes(documentInfo.getRawMediaType())) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(documentInfo.getRawMediaType());
-            return new HttpEntity(new DataDocumentResource(dataDoc), headers);
-        }
-        else {
-            GeminiDocument document = documentReader.read(dataDoc.getInputStream(),
+        DataDocument dataDoc = repo.getData(revision, filename(file, "raw"));
+        GeminiDocument document = documentReader.read(dataDoc.getInputStream(),
                                                     documentInfo.getRawMediaType());
-            documentBundler.bundle(document, documentInfo);
-            return document;
-        }
+        documentBundler.bundle(document, documentInfo);
+        return document;
     }
     
     @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
     @RequestMapping(value = "documents/{file}",
-            method = RequestMethod.DELETE)
+                    method = RequestMethod.DELETE)
     @ResponseBody
     public DataRevision<CatalogueUser> deleteDocument(
             @ActiveUser CatalogueUser user,

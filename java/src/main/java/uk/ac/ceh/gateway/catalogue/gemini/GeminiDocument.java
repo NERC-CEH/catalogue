@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetLanguage;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import lombok.Data;
@@ -25,8 +24,5 @@ public class GeminiDocument {
     
     private DatasetLanguage datasetLanguage;
     
-    //Ignored, it is the responsibility of a DocumentBundleService to bundle the 
-    //MetadataInfo to an instance of Metadata
-    @JsonIgnore
     private MetadataInfo metadata;
 }
