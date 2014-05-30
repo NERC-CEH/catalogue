@@ -70,7 +70,7 @@ public class TerraCatalogExportImporterTest {
         
     }
     
-    @Test
+    //@Test
     public void loadInZip() throws IOException, UnknownUserException, UnknownContentTypeException {
         //Given
         when(userstore.getUser(any(String.class))).thenReturn(automatedUser);
