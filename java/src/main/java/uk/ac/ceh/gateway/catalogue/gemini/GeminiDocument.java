@@ -20,7 +20,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 public class GeminiDocument {
     
     private String id, title;
-    private List<String> alternateTitles;
+    private List<String> alternateTitles, topicCategories;
     
     private DatasetLanguage datasetLanguage;
     

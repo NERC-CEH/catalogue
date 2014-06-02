@@ -30,7 +30,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
  * @author jcoop, cjohn
  */
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
-    private final XPathExpression id, title, alternateTitle, languageCodeList, languageCodeListValue;
+    private final XPathExpression id, title, alternateTitle, languageCodeList, languageCodeListValue, topicCategories;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -42,7 +42,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.alternateTitle = xpath.compile(XPaths.ALTERNATE_TITLE);
         this.languageCodeList = xpath.compile(XPaths.LANGUAGE_CODE_LIST);
         this.languageCodeListValue = xpath.compile(XPaths.LANGUAGE_CODE_LIST_VALUE);
-        
+        this.topicCategories = xpath.compile(XPaths.TOPIC_CATEGORIES);
     }
     
     @Override
@@ -61,13 +61,14 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             GeminiDocument toReturn = new GeminiDocument();
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
-            toReturn.setAlternateTitles(getAlternateTitles(document));
+            toReturn.setAlternateTitles(getNodeListValues(document, alternateTitle));
             toReturn.setDatasetLanguage(DatasetLanguage
                     .builder()
                     .codeList(languageCodeList.evaluate(document))
                     .codeListValue(languageCodeListValue.evaluate(document))
                     .build()
             );
+            toReturn.setTopicCategories(getNodeListValues(document, topicCategories));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
@@ -89,12 +90,13 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         return false; // I can never write
     }
     
-    private List<String> getAlternateTitles(Document document) throws XPathExpressionException{
+    private List<String> getNodeListValues(Document document, XPathExpression expression) throws XPathExpressionException{
         ArrayList<String> toReturn = new ArrayList<>();
-        NodeList nodeList = (NodeList) alternateTitle.evaluate(document, XPathConstants.NODESET);
+        NodeList nodeList = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
-            toReturn.add(nodeList.item(i).getNodeValue());
+            toReturn.add(nodeList.item(i).getFirstChild().getNodeValue());
         }
         return toReturn;
     }
+
 }
