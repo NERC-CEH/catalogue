@@ -1,12 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.util.terracatalog;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 import javax.xml.xpath.XPathExpressionException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -251,11 +254,9 @@ public class TerraCatalogExportImporterTest {
         //Given
         File toImport = folder.newFolder();
         
-        File firstFile = new File(toImport, "BACKUP_TC_2013-03-25-13-14-30-951.zip");
-        File secondFile = new File(toImport, "BACKUP_TC_2014-05-22-15-02-06-454.zip");
-        firstFile.createNewFile();
-        secondFile.createNewFile();
-        
+        File firstFile = createZip(toImport, "BACKUP_TC_2013-03-25-13-14-30-951.zip");
+        File secondFile = createZip(toImport, "BACKUP_TC_2014-05-22-15-02-06-454.zip");
+                
         TerraCatalogImporter importer = mock(TerraCatalogImporter.class);
         doCallRealMethod().when(importer).importDirectory(toImport);
         doNothing().when(importer).importFile(any(ZipFile.class));
@@ -265,10 +266,16 @@ public class TerraCatalogExportImporterTest {
         
         //Then
         ArgumentCaptor<ZipFile> imported = ArgumentCaptor.forClass(ZipFile.class);
-        verify(importer).importFile(imported.capture());
+        verify(importer, times(2)).importFile(imported.capture());
         
-        assertEquals("Expected two files imported", 2, imported.getAllValues().size());
         assertEquals("Expected first file to be earliest", firstFile.getPath(), imported.getAllValues().get(0).getName());
         assertEquals("Expected srcond file to be latest", secondFile.getPath(), imported.getAllValues().get(1).getName());
+    }
+    
+    private static File createZip(File directory, String name) throws IOException {
+        File toReturn = new File(directory, name);
+        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(toReturn));
+        out.close();
+        return toReturn;
     }
 }
