@@ -2,13 +2,21 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
-import org.junit.Before;
-import org.junit.Test;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import static org.mockito.Mockito.*;
 import org.springframework.http.HttpInputMessage;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 /**
  *
  * @author cjohn
@@ -23,6 +31,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
 
     @Test
     public void canGetId() throws IOException {
+        
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("id.xml"));
@@ -37,6 +46,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
 
     @Test
     public void canGetTitle() throws IOException {
+        
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream(
@@ -51,11 +61,12 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
 
     @Test
-    public void canGetAlternateTitle() throws IOException {
+    public void canGetAlternateTitles() throws IOException {
+       
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream(
-                "alternateTitle.xml"));
+                "alternateTitles.xml"));
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
@@ -67,6 +78,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
     
     @Test
     public void canGetDatasetLanguage() throws IOException {
+        
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("language.xml"));
@@ -75,66 +87,31 @@ public class Xml2GeminiDocumentMessageConverterTest {
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //Then
-        assertNotNull("Expected languageCodeList to have content", document.getDatasetLanguage());
+        assertNotNull("Expected language type not to be null", document.getDatasetLanguage());
+        assertNotNull("Expected language code not to be null", document.getDatasetLanguage().getCodeListValue());
         assertNotNull("Expected language code list to not be null", document.getDatasetLanguage().getCodeList());
-        assertFalse("Expected language code list to not be empty string", document.getDatasetLanguage().getCodeList().isEmpty());
-        assertNotNull("Expected language code list value to not be null", document.getDatasetLanguage().getCodeListValue());
-        assertFalse("Expected language code list value to not be empty string", document.getDatasetLanguage().getCodeListValue().isEmpty());
+        assertFalse("Expected language code not be empty string", document.getDatasetLanguage().getCodeListValue().isEmpty());
+        assertFalse("Expected language code list not be empty string", document.getDatasetLanguage().getCodeList().isEmpty());
     }
     
-//    @Test
-//    public void canGetAbstract() throws IOException {
-//        //Given
-//        HttpInputMessage message = mock(HttpInputMessage.class);
-//        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
-//                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
-//        
-//        //When
-//        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-//        
-//        //Then
-//        assertNotNull("Expected abstract to have content", document.getDescription());
-//    }
-//
-//    @Test
-//    public void canGetTopicCategory() throws IOException {
-//        //Given
-//        HttpInputMessage message = mock(HttpInputMessage.class);
-//        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
-//                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
-//        
-//        //When
-//        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-//        
-//        //Then
-//        assertNotNull("Expected topicCategory to have content", document.getTopicCategory());
-//    }
-//
-//    @Test
-//    public void canGetTemporalExtentBegin() throws IOException {
-//        //Given
-//        HttpInputMessage message = mock(HttpInputMessage.class);
-//        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
-//                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
-//        
-//        //When
-//        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-//        
-//        //Then
-//        assertNotNull("Expected temporalExtent-begin to have content", document.getTemporalExtentBegin());
-//    }
-//
-//    @Test
-//    public void canGetTemporalExtentEnd() throws IOException {
-//        //Given
-//        HttpInputMessage message = mock(HttpInputMessage.class);
-//        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
-//                "9e7790ab-a37d-4918-8107-5c427798ca68.xml"));
-//        
-//        //When
-//        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-//        
-//        //Then
-//        assertNotNull("Expected temporalExtent-end to have content", document.getTemporalExtentEnd());
-//    }
+    @Test
+    public void canGetTopicCategories() throws IOException {
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("topicCategories.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<String> actual = document.getTopicCategories();
+        List<String> expected = Arrays.asList("environment", "imageryBaseMapsEarthCover");
+        Collections.sort(actual);
+        Collections.sort(expected);
+        
+        //Then
+        assertNotNull("Expected topicCategories to not be null", actual);
+        assertEquals("Expected topicCateries to have two entries", 2, actual.size());
+        assertThat("Content of topicCategories is not as expected", actual, is(expected));
+    }
+    
 }
