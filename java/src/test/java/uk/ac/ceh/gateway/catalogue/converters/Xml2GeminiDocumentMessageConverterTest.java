@@ -2,17 +2,13 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
 import org.springframework.http.HttpInputMessage;
@@ -70,10 +66,14 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<String> actual = document.getAlternateTitles();
+        List<String> expected = Arrays.asList("First alternate title", "Second alternate title");
+        Collections.sort(actual);
+        Collections.sort(expected);
         
         //Then
-        assertNotNull("Expected title to have content", document.getAlternateTitles());
-        assertEquals("Expected there to be two alternate titles", 2, document.getAlternateTitles().size());
+        assertNotNull("Expected title to have content", actual);
+        assertThat("Content of alternateTitles not as expected", actual, is(expected));
     }
     
     @Test
@@ -110,7 +110,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertNotNull("Expected topicCategories to not be null", actual);
-        assertEquals("Expected topicCateries to have two entries", 2, actual.size());
         assertThat("Content of topicCategories is not as expected", actual, is(expected));
     }
     

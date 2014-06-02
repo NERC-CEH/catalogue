@@ -62,6 +62,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
             toReturn.setAlternateTitles(getNodeListValues(document, alternateTitle));
+            
             toReturn.setDatasetLanguage(DatasetLanguage
                     .builder()
                     .codeList(languageCodeList.evaluate(document))
