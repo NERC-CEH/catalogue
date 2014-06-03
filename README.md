@@ -10,3 +10,4 @@ This is the code base for the CEH gemini catalogue. The intention here is the ma
 
 - web. Any static or pre built content which can be hosted to help power your catalogue. (Javascripts/Images and the like)
 
+### Just a small edit to test Bamboo builds
