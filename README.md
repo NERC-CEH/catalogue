@@ -9,4 +9,3 @@ This is the code base for the CEH gemini catalogue. The intention here is the ma
 - templates. Here go the freemarker templates which your object model can use for things like generating HTML pages
 
 - web. Any static or pre built content which can be hosted to help power your catalogue. (Javascripts/Images and the like)
-
