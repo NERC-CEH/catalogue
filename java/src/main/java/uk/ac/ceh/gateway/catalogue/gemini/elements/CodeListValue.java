@@ -5,8 +5,8 @@ import lombok.experimental.Builder;
 
 @Value
 @Builder
-public class DatasetLanguage {
+public class CodeListValue {
     
-    private String codeList, codeListValue;
+    private String codeList, value;
     
 }

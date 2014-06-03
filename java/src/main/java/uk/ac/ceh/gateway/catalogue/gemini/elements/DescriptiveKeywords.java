@@ -9,5 +9,6 @@ import lombok.experimental.Builder;
 public class DescriptiveKeywords {
     
     private List<String> keywords;
+    private CodeListValue type;
     
 }

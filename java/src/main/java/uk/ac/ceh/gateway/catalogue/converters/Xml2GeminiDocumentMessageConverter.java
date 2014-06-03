@@ -22,7 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetLanguage;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListValue;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
 
@@ -66,10 +66,10 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
             toReturn.setAlternateTitles(getNodeListValuesEvaluate(document, alternateTitle));
-            toReturn.setDatasetLanguage(DatasetLanguage
+            toReturn.setDatasetLanguage(CodeListValue
                     .builder()
                     .codeList(languageCodeList.evaluate(document))
-                    .codeListValue(languageCodeListValue.evaluate(document))
+                    .value(languageCodeListValue.evaluate(document))
                     .build()
             );
             toReturn.setDescriptiveKeywords(getDescriptiveKeywords(document, descriptiveKeywords));
@@ -112,12 +112,15 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         NodeList nodeList = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
             Node descriptiveKeywords = nodeList.item(i);
+            
             NodeList keywords = (NodeList) xpath.evaluate("*/gmd:keyword/gco:CharacterString", descriptiveKeywords, XPathConstants.NODESET);
             toReturn.add(DescriptiveKeywords
                     .builder()
                     .keywords(getNodeListValues(keywords))
                     .build()
             );
+            
+            
         }
         return toReturn;
     }
