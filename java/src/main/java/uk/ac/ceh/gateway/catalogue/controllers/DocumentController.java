@@ -87,9 +87,9 @@ public class DocumentController {
     @ResponseBody
     public GeminiDocument readMetadata(
             @PathVariable("file") String file) throws DataRepositoryException, IOException, UnknownContentTypeException {
-        String latestRev = repo.getLatestRevision();
+        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
         
-        return readMetadata(file, latestRev);
+        return readMetadata(file, latestRev.getRevisionID());
     }
     
     @RequestMapping(value = "history/{revision}/{file}",
