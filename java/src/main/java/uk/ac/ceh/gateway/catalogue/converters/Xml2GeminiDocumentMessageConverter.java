@@ -30,7 +30,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
  * @author jcoop, cjohn
  */
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
-    private final XPathExpression id, title, alternateTitle, languageCodeList, languageCodeListValue, topicCategories;
+    private final XPathExpression id, title, alternateTitle, languageCodeList, languageCodeListValue, 
+            topicCategories, keywords;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -43,6 +44,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.languageCodeList = xpath.compile(XPaths.LANGUAGE_CODE_LIST);
         this.languageCodeListValue = xpath.compile(XPaths.LANGUAGE_CODE_LIST_VALUE);
         this.topicCategories = xpath.compile(XPaths.TOPIC_CATEGORIES);
+        this.keywords = xpath.compile(XPaths.KEYWORDS);
     }
     
     @Override
@@ -62,13 +64,13 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
             toReturn.setAlternateTitles(getNodeListValues(document, alternateTitle));
-            
             toReturn.setDatasetLanguage(DatasetLanguage
                     .builder()
                     .codeList(languageCodeList.evaluate(document))
                     .codeListValue(languageCodeListValue.evaluate(document))
                     .build()
             );
+            toReturn.setKeywords(getNodeListValues(document, keywords));
             toReturn.setTopicCategories(getNodeListValues(document, topicCategories));
             return toReturn;
         }
@@ -96,6 +98,15 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         NodeList nodeList = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
             toReturn.add(nodeList.item(i).getFirstChild().getNodeValue());
+        }
+        return toReturn;
+    }
+    
+    private List<String> getKeywords(Document document, XPathExpression expression) throws XPathExpressionException{
+        List<String> toReturn = new ArrayList<>();
+        NodeList nodeList = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
+        for(int i=0; i<nodeList.getLength(); i++){
+            Node node = nodeList.item(i);
         }
         return toReturn;
     }

@@ -113,4 +113,23 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertThat("Content of topicCategories is not as expected", actual, is(expected));
     }
     
+    @Test
+    public void canGetUncitedKeywords() throws IOException {
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsUncited.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<String> actual = document.getKeywords();
+        List<String> expected = Arrays.asList("Uncited1", "Uncited2");
+        Collections.sort(actual);
+        Collections.sort(expected);
+        
+        //Then
+        assertNotNull("Expected keywords to not be null", actual);
+        assertThat("Content of keywords is not as expected", actual, is(expected));
+    }
+    
 }
