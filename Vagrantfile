@@ -17,6 +17,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provider "vmware_workstation" do |v|
     v.vmx["memsize"] = "4096"
+    v.vmx["remotedisplay.vnc.enabled"] = "false"
   end
 
   config.vm.provision "puppet_server" do |puppet|
