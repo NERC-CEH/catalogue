@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListValue;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import lombok.Data;
@@ -22,7 +22,7 @@ public class GeminiDocument {
     
     private String id, title;
     private List<String> alternateTitles, topicCategories;
-    private CodeListValue datasetLanguage;
+    private CodeListItem datasetLanguage;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private MetadataInfo metadata;
 }

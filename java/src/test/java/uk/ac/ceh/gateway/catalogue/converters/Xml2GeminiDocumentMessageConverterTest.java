@@ -13,6 +13,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 /**
  *
@@ -153,17 +154,29 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertNotNull("Expected descriptiveKeywords not to be null", descriptiveKeywords);
-        assertThat("descriptiveKeywords list should have 3 descriptiveKeywords entries", descriptiveKeywords.size(), is(3));
-//        
-//        //When
-//        List<String> actual = descriptiveKeywords.get(0).getKeywords();
-//        List<String> expected = Arrays.asList("Uncited1", "Uncited2");
-//        Collections.sort(actual);
-//        Collections.sort(expected);
-//        
-//        //Then
-//        assertNotNull("Expected keywords to not be null", actual);
-//        assertThat("Content of keywords is not as expected", actual, is(expected));
+        assertThat("DescriptiveKeywords list should have 2 DescriptiveKeywords entries", descriptiveKeywords.size(), is(2));
+        
+        //When
+        List<String> actualKeywords = descriptiveKeywords.get(0).getKeywords();
+        List<String> expectedKeywords = Arrays.asList("Cited Simple 1", "Cited Simple 2");
+        Collections.sort(actualKeywords);
+        Collections.sort(expectedKeywords);
+        
+        //Then
+        assertNotNull("Expected keywords to not be null", actualKeywords);
+        assertThat("Content of Keywords is not as expected", actualKeywords, is(expectedKeywords));
+        
+        //When
+        CodeListItem actualType = descriptiveKeywords.get(0).getType();
+        CodeListItem expectedType = CodeListItem
+                .builder()
+                .codeList("http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_KeywordTypeCode")
+                .value("theme")
+                .build();
+        
+        //Then
+        assertNotNull("Expected type to not be null", actualType);
+        assertThat("Content of Type not as expected", actualType, is(expectedType));
     }
     
 }

@@ -5,7 +5,7 @@ import lombok.experimental.Builder;
 
 @Value
 @Builder
-public class CodeListValue {
+public class CodeListItem {
     
     private String codeList, value;
     

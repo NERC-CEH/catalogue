@@ -22,7 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListValue;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
 
@@ -66,7 +66,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
             toReturn.setAlternateTitles(getNodeListValuesEvaluate(document, alternateTitle));
-            toReturn.setDatasetLanguage(CodeListValue
+            toReturn.setDatasetLanguage(CodeListItem
                     .builder()
                     .codeList(languageCodeList.evaluate(document))
                     .value(languageCodeListValue.evaluate(document))
@@ -113,15 +113,16 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         for(int i=0; i<nodeList.getLength(); i++){
             Node descriptiveKeywordsNodes = nodeList.item(i);
             
-            NodeList keywords = (NodeList) xpath.evaluate("*/gmd:keyword/gco:CharacterString", descriptiveKeywordsNodes, XPathConstants.NODESET);
-            CodeListValue
+            List<String> keywords = getNodeListValues((NodeList) xpath.evaluate("*/gmd:keyword/gco:CharacterString", descriptiveKeywordsNodes, XPathConstants.NODESET));
+            CodeListItem type = CodeListItem
                     .builder()
-                    .codeList(xpath.evaluate("*/gmd:type/gmdMD_KeywordTypeCode/@codeList", descriptiveKeywordsNodes))
-                    .value(xpath.evaluate("*/gmd:type/gmdMD_KeywordTypeCode/@codeListValue", descriptiveKeywordsNodes))
+                    .codeList(xpath.evaluate("*/gmd:type/gmd:MD_KeywordTypeCode/@codeList", descriptiveKeywordsNodes))
+                    .value(xpath.evaluate("*/gmd:type/gmd:MD_KeywordTypeCode/@codeListValue", descriptiveKeywordsNodes))
                     .build();
             toReturn.add(DescriptiveKeywords
                     .builder()
-                    .keywords(getNodeListValues(keywords))
+                    .keywords(keywords)
+                    .type(type)
                     .build()
             );
             
