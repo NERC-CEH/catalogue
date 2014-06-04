@@ -111,9 +111,14 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         List<DescriptiveKeywords> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
-            Node descriptiveKeywords = nodeList.item(i);
+            Node descriptiveKeywordsNodes = nodeList.item(i);
             
-            NodeList keywords = (NodeList) xpath.evaluate("*/gmd:keyword/gco:CharacterString", descriptiveKeywords, XPathConstants.NODESET);
+            NodeList keywords = (NodeList) xpath.evaluate("*/gmd:keyword/gco:CharacterString", descriptiveKeywordsNodes, XPathConstants.NODESET);
+            CodeListValue
+                    .builder()
+                    .codeList(xpath.evaluate("*/gmd:type/gmdMD_KeywordTypeCode/@codeList", descriptiveKeywordsNodes))
+                    .value(xpath.evaluate("*/gmd:type/gmdMD_KeywordTypeCode/@codeListValue", descriptiveKeywordsNodes))
+                    .build();
             toReturn.add(DescriptiveKeywords
                     .builder()
                     .keywords(getNodeListValues(keywords))

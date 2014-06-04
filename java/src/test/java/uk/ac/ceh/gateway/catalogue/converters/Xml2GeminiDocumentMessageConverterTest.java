@@ -140,4 +140,30 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertThat("Content of keywords is not as expected", actual, is(expected));
     }
     
+    @Test
+    public void canGetCitedKeywords() throws IOException {
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
+        
+        //Then
+        assertNotNull("Expected descriptiveKeywords not to be null", descriptiveKeywords);
+        assertThat("descriptiveKeywords list should have 3 descriptiveKeywords entries", descriptiveKeywords.size(), is(3));
+//        
+//        //When
+//        List<String> actual = descriptiveKeywords.get(0).getKeywords();
+//        List<String> expected = Arrays.asList("Uncited1", "Uncited2");
+//        Collections.sort(actual);
+//        Collections.sort(expected);
+//        
+//        //Then
+//        assertNotNull("Expected keywords to not be null", actual);
+//        assertThat("Content of keywords is not as expected", actual, is(expected));
+    }
+    
 }
