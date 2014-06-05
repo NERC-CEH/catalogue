@@ -24,7 +24,7 @@
 										<gco:Date>2014-06-03</gco:Date>
 									</gmd:date>
 									<gmd:dateType>
-										<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+										<gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
 									</gmd:dateType>
 								</gmd:CI_Date>
 							</gmd:date>

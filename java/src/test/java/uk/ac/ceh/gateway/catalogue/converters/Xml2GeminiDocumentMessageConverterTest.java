@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.CoreMatchers.is;
+import org.joda.time.LocalDate;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
 /**
  *
  * @author cjohn
@@ -111,8 +113,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         Collections.sort(expected);
         
         //Then
-        assertNotNull("Expected topicCategories to not be null", actual);
-        assertThat("Content of topicCategories is not as expected", actual, is(expected));
+        assertNotNull("Expected TopicCategories to not be null", actual);
+        assertThat("Content of TopicCategories is not as expected", actual, is(expected));
     }
     
     @Test
@@ -127,8 +129,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
         
         //Then
-        assertNotNull("Expected descriptiveKeywords not to be null", descriptiveKeywords);
-        assertThat("descriptiveKeywords list should have 1 descriptiveKeywords entry", descriptiveKeywords.size(), is(1));
+        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+        assertThat("DescriptiveKeywords list should have 1 DescriptiveKeywords entry", descriptiveKeywords.size(), is(1));
         
         //When
         List<String> actual = descriptiveKeywords.get(0).getKeywords();
@@ -137,8 +139,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         Collections.sort(expected);
         
         //Then
-        assertNotNull("Expected keywords to not be null", actual);
-        assertThat("Content of keywords is not as expected", actual, is(expected));
+        assertNotNull("Expected Keywords to not be null", actual);
+        assertThat("Content of Keywords is not as expected", actual, is(expected));
     }
     
     @Test
@@ -153,8 +155,23 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
         
         //Then
-        assertNotNull("Expected descriptiveKeywords not to be null", descriptiveKeywords);
+        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
         assertThat("DescriptiveKeywords list should have 2 DescriptiveKeywords entries", descriptiveKeywords.size(), is(2));
+    }
+    
+    @Test
+    public void canGetCitedKeywordsKeywords() throws IOException {
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
+        
+        //Then
+        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
         
         //When
         List<String> actualKeywords = descriptiveKeywords.get(0).getKeywords();
@@ -163,9 +180,24 @@ public class Xml2GeminiDocumentMessageConverterTest {
         Collections.sort(expectedKeywords);
         
         //Then
-        assertNotNull("Expected keywords to not be null", actualKeywords);
+        assertNotNull("Expected Keywords to not be null", actualKeywords);
         assertThat("Content of Keywords is not as expected", actualKeywords, is(expectedKeywords));
+    }
+    
+    @Test
+    public void canGetCitedKeywordsType() throws IOException {
         
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
+        
+        //Then
+        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+
         //When
         CodeListItem actualType = descriptiveKeywords.get(0).getType();
         CodeListItem expectedType = CodeListItem
@@ -175,8 +207,31 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .build();
         
         //Then
-        assertNotNull("Expected type to not be null", actualType);
+        assertNotNull("Expected Type to not be null", actualType);
         assertThat("Content of Type not as expected", actualType, is(expectedType));
+    }
+    
+    @Test
+    public void canGetCitedKeywordsThesaurus() throws IOException {
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
+        
+        //Then
+        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+
+        //When
+        ThesaurusName thesaurusName = descriptiveKeywords.get(0).getThesaurusName();
+        
+        //Then
+        assertNotNull("Expected Thesaurus to not be null", thesaurusName);
+        assertEquals("Title not as expected", "test thesaurus" , thesaurusName.getTitle());
+        assertEquals("Date not as expected", new LocalDate(2014, 6, 3), thesaurusName.getDate());
     }
     
 }

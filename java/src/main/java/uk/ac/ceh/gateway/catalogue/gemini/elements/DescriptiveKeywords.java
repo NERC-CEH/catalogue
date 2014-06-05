@@ -10,5 +10,5 @@ public class DescriptiveKeywords {
     
     private List<String> keywords;
     private CodeListItem type;
-    
+    private ThesaurusName thesaurusName;
 }
