@@ -15,7 +15,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
  */
 @Data
 @ConvertUsing({
-    @Template(called="template", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/metadata.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument {
