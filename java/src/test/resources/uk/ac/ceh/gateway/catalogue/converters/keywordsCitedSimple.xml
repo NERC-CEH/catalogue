@@ -32,36 +32,6 @@
 					</gmd:thesaurusName>
 				</gmd:MD_Keywords>
 			</gmd:descriptiveKeywords>
-			<gmd:descriptiveKeywords>
-				<gmd:MD_Keywords>
-					<gmd:keyword>
-						<gmx:Anchor xlink:href="www.google.com">links 1</gmx:Anchor>
-					</gmd:keyword>
-					<gmd:keyword>
-						<gmx:Anchor xlink:href="www.bing.com">links 2</gmx:Anchor>
-					</gmd:keyword>
-					<gmd:type>
-						<MD_KeywordTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
-					</gmd:type>
-					<gmd:thesaurusName>
-						<gmd:CI_Citation>
-							<gmd:title>
-								<gco:CharacterString>their thesaurus</gco:CharacterString>
-							</gmd:title>
-							<gmd:date>
-								<gmd:CI_Date>
-									<gmd:date>
-										<gco:Date>2014-06-03</gco:Date>
-									</gmd:date>
-									<gmd:dateType>
-										<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
-									</gmd:dateType>
-								</gmd:CI_Date>
-							</gmd:date>
-						</gmd:CI_Citation>
-					</gmd:thesaurusName>
-				</gmd:MD_Keywords>
-			</gmd:descriptiveKeywords>
 		</gmd:MD_DataIdentification>
 	</gmd:identificationInfo>
 </gmd:MD_Metadata>

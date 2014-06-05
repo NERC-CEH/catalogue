@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.converters;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,6 +26,7 @@ import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
 
@@ -115,7 +117,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         for(int i=0; i<nodeList.getLength(); i++){
             Node descriptiveKeywordsNode = nodeList.item(i);
             
-            List<String> keywords = getNodeListValues((NodeList) xpath.evaluate("*/gmd:keyword/gco:CharacterString", descriptiveKeywordsNode, XPathConstants.NODESET));
+            List<Keyword> keywords = getKeywordsFromDescriptiveKeywordsNode(descriptiveKeywordsNode);// getNodeListValues((NodeList) xpath.evaluate("*/gmd:keyword/gco:CharacterString", descriptiveKeywordsNode, XPathConstants.NODESET));
             
             CodeListItem type = CodeListItem
                     .builder()
@@ -155,6 +157,48 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
                 toReturn = new LocalDate(Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]));
             }else{
                 throw new IllegalArgumentException(String.format("Unable to parse date.  Expected a date format of 'yyyy-mm-dd', eg 2014-06-03, but found this: %s.", nodeValue));
+            }
+        }
+        return toReturn;
+    }
+    
+    private List<Keyword> getKeywordsFromDescriptiveKeywordsNode(Node descriptiveKeywordsNode) throws XPathExpressionException{
+        List<Keyword> toReturn = new ArrayList<>();
+        List<Keyword> keywordsWithoutURI = getKeywordsFromCharacterString(descriptiveKeywordsNode);
+        List<Keyword> keywordsWithURI = getKeywordsURIFromDescriptiveKeywordsNode(descriptiveKeywordsNode);
+        toReturn.addAll(keywordsWithoutURI);
+        toReturn.addAll(keywordsWithURI);
+        return toReturn;
+    }
+    
+    private List<Keyword> getKeywordsFromCharacterString(Node descriptiveKeywordsNode) throws XPathExpressionException {
+        List<Keyword> toReturn = new ArrayList<>();
+        List<String> keywords = getNodeListValues((NodeList) xpath.evaluate("*/gmd:keyword/gco:CharacterString", descriptiveKeywordsNode, XPathConstants.NODESET));
+        if(keywords != null && !keywords.isEmpty()){
+            for(String keyword : keywords){
+                toReturn.add(Keyword
+                        .builder()
+                        .value(keyword)
+                        .URI(null)
+                        .build()
+                );
+            }
+        }
+        return toReturn;
+    }
+    
+    private List<Keyword> getKeywordsURIFromDescriptiveKeywordsNode(Node descriptiveKeywordsNode) throws XPathExpressionException{
+        List<Keyword> toReturn = new ArrayList<>();
+        NodeList xlinkKeywords = (NodeList) xpath.evaluate("*/gmd:keyword/gmx:Anchor", descriptiveKeywordsNode, XPathConstants.NODESET);
+        if(xlinkKeywords != null && xlinkKeywords.getLength() > 0){
+            for(int i=0; i<xlinkKeywords.getLength(); i++){
+                Node xlinkKeyword = xlinkKeywords.item(i);
+                toReturn.add(Keyword
+                        .builder()
+                        .value(xlinkKeyword.getFirstChild().getNodeValue())
+                        .URI(xlinkKeyword.getAttributes().getNamedItem("xlink:href").getNodeValue())
+                        .build()
+                );
             }
         }
         return toReturn;
