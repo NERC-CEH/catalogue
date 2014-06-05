@@ -90,13 +90,22 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        CodeListItem actual = document.getDatasetLanguage();
+        CodeListItem expected = CodeListItem
+                .builder()
+                .codeList("http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode")
+                .value("eng")
+                .build();
         
         //Then
-        assertNotNull("Expected language type not to be null", document.getDatasetLanguage());
-//        assertNotNull("Expected language code not to be null", document.getDatasetLanguage().getCodeListValue());
-        assertNotNull("Expected language code list to not be null", document.getDatasetLanguage().getCodeList());
-//        assertFalse("Expected language code not be empty string", document.getDatasetLanguage().getCodeListValue().isEmpty());
-        assertFalse("Expected language code list not be empty string", document.getDatasetLanguage().getCodeList().isEmpty());
+        assertNotNull("Expected language type not to be null", actual);
+        assertNotNull("Expected language code not to be null", actual.getValue());
+        assertNotNull("Expected language code list to not be null", actual.getCodeList());
+        assertFalse("Expected language code not be empty string", actual.getValue().isEmpty());
+        assertFalse("Expected language code list not be empty string", actual.getCodeList().isEmpty());
+        assertEquals("Language not as expected", "eng", actual.getValue());
+        assertEquals("Codelist not as expected", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode", actual.getCodeList());
+        assertEquals("", expected, actual);
     }
     
     @Test
