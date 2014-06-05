@@ -11,6 +11,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.joda.time.LocalDate;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -22,8 +23,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListValue;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
 
 /**
@@ -66,7 +68,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
             toReturn.setAlternateTitles(getNodeListValuesEvaluate(document, alternateTitle));
-            toReturn.setDatasetLanguage(CodeListValue
+            toReturn.setDatasetLanguage(CodeListItem
                     .builder()
                     .codeList(languageCodeList.evaluate(document))
                     .value(languageCodeListValue.evaluate(document))
@@ -111,16 +113,49 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         List<DescriptiveKeywords> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
-            Node descriptiveKeywords = nodeList.item(i);
+            Node descriptiveKeywordsNode = nodeList.item(i);
             
-            NodeList keywords = (NodeList) xpath.evaluate("*/gmd:keyword/gco:CharacterString", descriptiveKeywords, XPathConstants.NODESET);
+            List<String> keywords = getNodeListValues((NodeList) xpath.evaluate("*/gmd:keyword/gco:CharacterString", descriptiveKeywordsNode, XPathConstants.NODESET));
+            
+            CodeListItem type = CodeListItem
+                    .builder()
+                    .codeList(xpath.evaluate("*/gmd:type/gmd:MD_KeywordTypeCode/@codeList", descriptiveKeywordsNode))
+                    .value(xpath.evaluate("*/gmd:type/gmd:MD_KeywordTypeCode/@codeListValue", descriptiveKeywordsNode))
+                    .build();
+            
+            ThesaurusName thesaurusName = ThesaurusName
+                    .builder()
+                    .title(xpath.evaluate("*/gmd:thesaurusName/*/gmd:title/gco:CharacterString", descriptiveKeywordsNode))
+                    .date(getDate(xpath.evaluate("*/gmd:thesaurusName/*/gmd:date/gmd:CI_Date/gmd:date/gco:Date", descriptiveKeywordsNode)))
+                    .dateType(CodeListItem
+                            .builder()
+                            .codeList("*/gmd:date/*/gmd:dateType/gmd:CI_DateTypeCode@codeList")
+                            .value("*/gmd:date/*/gmd:dateType/gmd:CI_DateTypeCode@codeListValue")
+                            .build())
+                    .build();
+                    
             toReturn.add(DescriptiveKeywords
                     .builder()
-                    .keywords(getNodeListValues(keywords))
+                    .keywords(keywords)
+                    .type(type)
+                    .thesaurusName(thesaurusName)
                     .build()
             );
             
             
+        }
+        return toReturn;
+    }
+    
+    private LocalDate getDate(String nodeValue){
+        LocalDate toReturn = null;
+        if(nodeValue != null && !nodeValue.isEmpty()){
+            String[] dateParts = nodeValue.split("-");
+            if(dateParts.length == 3){
+                toReturn = new LocalDate(Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]));
+            }else{
+                throw new IllegalArgumentException(String.format("Unable to parse date.  Expected a date format of 'yyyy-mm-dd', eg 2014-06-03, but found this: %s.", nodeValue));
+            }
         }
         return toReturn;
     }
