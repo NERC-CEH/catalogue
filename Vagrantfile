@@ -22,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "puppet_server" do |puppet|
     puppet.puppet_server = "lapuppet.nerc-lancaster.ac.uk"
-    puppet.puppet_node = "cig-developer.nerc-lancaster.ac.uk"
+    puppet.puppet_node = "gateway-developer.ceh.ac.uk"
     puppet.options = "--verbose"
   end
 
