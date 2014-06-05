@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.converters;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -143,8 +142,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
                     .thesaurusName(thesaurusName)
                     .build()
             );
-            
-            
         }
         return toReturn;
     }
