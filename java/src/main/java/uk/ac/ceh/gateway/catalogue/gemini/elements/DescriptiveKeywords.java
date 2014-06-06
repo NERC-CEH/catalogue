@@ -8,7 +8,7 @@ import lombok.experimental.Builder;
 @Builder
 public class DescriptiveKeywords {
     
-    private List<String> keywords;
-    private CodeListValue type;
-    
+    private List<Keyword> keywords;
+    private CodeListItem type;
+    private ThesaurusName thesaurusName;
 }
