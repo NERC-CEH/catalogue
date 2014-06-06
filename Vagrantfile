@@ -25,6 +25,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puppet.puppet_node = "gateway-developer.ceh.ac.uk"
     puppet.options = "--verbose"
   end
+  
+  # Clone the test data from stash into the local repository
+  config.vm.provision :shell, :inline => "puppet resource vcsrepo '/var/ceh-catalogue/datastore'"\
+                                         " ensure='latest'"\
+                                         " provider='git'"\
+                                         " source='ssh://git@stash.ceh.ac.uk:7999/cig/tcExport.git'"\
+                                         " identity='/etc/ssh/automaton_id_rsa'"\
+                                         " owner='tomcat7'"\
+                                         " group='tomcat7'"\
+                                         " revision='master'"
 
 #  config.vm.provision :shell, :path => "mount.sh"
 end
