@@ -23,6 +23,7 @@ public class HardcodedNamespaceResolver implements NamespaceContext {
             case "gco": return "http://www.isotc211.org/2005/gco";
             case "csw": return "http://www.opengis.net/cat/csw/2.0.2";
             case "gml": return "http://www.opengis.net/gml/3.2";
+            case "gmx": return "http://www.isotc211.org/2005/gmx";
             default:    return "";
         }
     }

@@ -5,10 +5,10 @@
 			<gmd:descriptiveKeywords>
 				<gmd:MD_Keywords>
 					<gmd:keyword>
-						<gco:CharacterString>Uncited1</gco:CharacterString>
+						<gco:CharacterString>Uncited 1</gco:CharacterString>
 					</gmd:keyword>
 					<gmd:keyword>
-						<gco:CharacterString>Uncited2</gco:CharacterString>
+						<gco:CharacterString>Uncited 2</gco:CharacterString>
 					</gmd:keyword>
 				</gmd:MD_Keywords>
 			</gmd:descriptiveKeywords>

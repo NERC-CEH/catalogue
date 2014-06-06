@@ -16,6 +16,7 @@ import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
 /**
  *
@@ -89,13 +90,22 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        CodeListItem actual = document.getDatasetLanguage();
+        CodeListItem expected = CodeListItem
+                .builder()
+                .codeList("http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode")
+                .value("eng")
+                .build();
         
         //Then
-        assertNotNull("Expected language type not to be null", document.getDatasetLanguage());
-//        assertNotNull("Expected language code not to be null", document.getDatasetLanguage().getCodeListValue());
-        assertNotNull("Expected language code list to not be null", document.getDatasetLanguage().getCodeList());
-//        assertFalse("Expected language code not be empty string", document.getDatasetLanguage().getCodeListValue().isEmpty());
-        assertFalse("Expected language code list not be empty string", document.getDatasetLanguage().getCodeList().isEmpty());
+        assertNotNull("Expected language type not to be null", actual);
+        assertNotNull("Expected language code not to be null", actual.getValue());
+        assertNotNull("Expected language code list to not be null", actual.getCodeList());
+        assertFalse("Expected language code not be empty string", actual.getValue().isEmpty());
+        assertFalse("Expected language code list not be empty string", actual.getCodeList().isEmpty());
+        assertEquals("Language not as expected", "eng", actual.getValue());
+        assertEquals("Codelist not as expected", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode", actual.getCodeList());
+        assertEquals("Content of DatasetLanguage not as expected", expected, actual);
     }
     
     @Test
@@ -133,10 +143,19 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertThat("DescriptiveKeywords list should have 1 DescriptiveKeywords entry", descriptiveKeywords.size(), is(1));
         
         //When
-        List<String> actual = descriptiveKeywords.get(0).getKeywords();
-        List<String> expected = Arrays.asList("Uncited1", "Uncited2");
-        Collections.sort(actual);
-        Collections.sort(expected);
+        List<Keyword> actual = descriptiveKeywords.get(0).getKeywords();
+        List<Keyword> expected = Arrays.asList(
+            Keyword
+                .builder()
+                .value("Uncited 1")
+                .URI(null)
+                .build()
+            ,Keyword
+                .builder()
+                .value("Uncited 2")
+                .URI(null)
+                .build()
+        );
         
         //Then
         assertNotNull("Expected Keywords to not be null", actual);
@@ -160,11 +179,11 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
-    public void canGetCitedKeywordsKeywords() throws IOException {
+    public void canGetCitedKeywordsSimple() throws IOException {
         
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCitedSimple.xml"));
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
@@ -174,14 +193,96 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
         
         //When
-        List<String> actualKeywords = descriptiveKeywords.get(0).getKeywords();
-        List<String> expectedKeywords = Arrays.asList("Cited Simple 1", "Cited Simple 2");
-        Collections.sort(actualKeywords);
-        Collections.sort(expectedKeywords);
+        List<Keyword> actualKeywords = descriptiveKeywords.get(0).getKeywords();
+        List<Keyword> expectedKeywords = Arrays.asList(
+            Keyword
+                .builder()
+                .value("Cited Simple 1")
+                .URI(null)
+                .build()
+            ,Keyword
+                .builder()
+                .value("Cited Simple 2")
+                .URI(null)
+                .build()
+        );
         
         //Then
         assertNotNull("Expected Keywords to not be null", actualKeywords);
         assertThat("Content of Keywords is not as expected", actualKeywords, is(expectedKeywords));
+    }
+    
+    @Test
+    public void canGetCitedKeywordsLinks() throws IOException{
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCitedLinks.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
+        
+        //Then
+        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+        
+        //When
+        List<Keyword> actualKeywords = descriptiveKeywords.get(0).getKeywords();
+        List<Keyword> expectedKeywords = Arrays.asList(
+            Keyword
+                .builder()
+                .value("links 1")
+                .URI("http://www.google.com")
+                .build()
+            ,Keyword
+                .builder()
+                .value("links 2")
+                .URI("http://www.bing.com")
+                .build()
+        );
+        
+        //Then
+        assertNotNull("Expected Keywords to not be null", actualKeywords);
+        assertThat("Content of Keywrods is not as expected", actualKeywords, is(expectedKeywords));
+    }
+    
+    @Test
+    public void canGetCitedKeywordsMixed() throws IOException{
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCitedMixed.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
+        
+        //Then
+        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+        
+        //When
+        List<Keyword> actualKeywords = descriptiveKeywords.get(0).getKeywords();
+        List<Keyword> expectedKeywords = Arrays.asList(
+            Keyword
+                .builder()
+                .value("Cited Simple 1")
+                .URI(null)
+                .build()
+            ,Keyword
+                .builder()
+                .value("links 1")
+                .URI("http://www.google.com")
+                .build()
+            ,Keyword
+                .builder()
+                .value("links 2")
+                .URI("http://www.bing.com")
+                .build()
+        );
+        
+        //Then
+        assertNotNull("Expected Keywords to not be null", actualKeywords);
+        assertThat("Content of Keywrods is not as expected", actualKeywords, is(expectedKeywords));
     }
     
     @Test
@@ -233,5 +334,25 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertEquals("Title not as expected", "test thesaurus" , thesaurusName.getTitle());
         assertEquals("Date not as expected", new LocalDate(2014, 6, 3), thesaurusName.getDate());
     }
-    
+
+    @Test
+    public void canGetWhereXmlnsInline() throws IOException {
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("languageInlineXmlns.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        CodeListItem actual = document.getDatasetLanguage();
+        CodeListItem expected = CodeListItem
+                .builder()
+                .codeList("http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode")
+                .value("eng")
+                .build();
+        
+        //Then
+        assertEquals("Content of DatasetLanguage not as expected", expected, actual);
+    }
+
 }
