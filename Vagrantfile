@@ -35,6 +35,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                                          " owner='tomcat7'"\
                                          " group='tomcat7'"\
                                          " revision='master'"
-
-#  config.vm.provision :shell, :path => "mount.sh"
 end
