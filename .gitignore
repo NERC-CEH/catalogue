@@ -9,3 +9,4 @@ puppet_ssl/crl.pem
 # Ignore dev files
 catalogue
 catalogue-config
+catalogue_tomcat
