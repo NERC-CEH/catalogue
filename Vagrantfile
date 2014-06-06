@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.synced_folder "puppet_ssl", "/var/lib/puppet/ssl"
   config.vm.synced_folder "catalogue", "/opt/ceh-catalogue", create: true
-  config.vm.synced_folder "catalogue-config", "/etc/ceh-catalogue", create: true
+  config.vm.synced_folder "catalogue_config", "/etc/ceh-catalogue", create: true
 
   config.vm.provider "vmware_workstation" do |v|
     v.vmx["memsize"] = "4096"
