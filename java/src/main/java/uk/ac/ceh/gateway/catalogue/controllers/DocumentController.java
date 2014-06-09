@@ -72,8 +72,8 @@ public class DocumentController {
             GeminiDocument data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType); 
             MetadataInfo metadataDocument = infoFactory.createInfo(data, contentMediaType); //get the metadata info
             
-            repo.submitData(filename(data.getId(), "meta"), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
-                .submitData(filename(data.getId(), "raw"), (o) -> Files.copy(tmpFile, o) )
+            repo.submitData(data.getId() + ".meta", (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
+                .submitData(data.getId() + ".raw", (o) -> Files.copy(tmpFile, o) )
                 .commit(user, commitMessage);
             
         }
@@ -100,10 +100,10 @@ public class DocumentController {
             @PathVariable("revision") String revision) throws DataRepositoryException, IOException, UnknownContentTypeException {
                 
         MetadataInfo documentInfo = documentInfoMapper.readInfo(
-                                        repo.getData(revision, filename(file, "meta"))
+                                        repo.getData(revision, file + ".meta")
                                             .getInputStream());
         
-        DataDocument dataDoc = repo.getData(revision, filename(file, "raw"));
+        DataDocument dataDoc = repo.getData(revision, file + ".raw");
         GeminiDocument document = documentReader.read(dataDoc.getInputStream(),
                                                     documentInfo.getRawMediaType());
         documentBundler.bundle(document, documentInfo);
@@ -118,12 +118,8 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @RequestParam(value = "message", defaultValue = "delete document") String reason,
             @PathVariable("file") String file) throws DataRepositoryException, IOException {
-        return repo.deleteData(filename(file, "meta"))
-                   .deleteData(filename(file, "raw"))
+        return repo.deleteData(file + ".meta")
+                   .deleteData(file + ".raw")
                    .commit(user, reason);
-    }
-    
-    protected String filename(String name, String extension) {
-        return String.format("%s.%s", name, extension);
     }
 }
