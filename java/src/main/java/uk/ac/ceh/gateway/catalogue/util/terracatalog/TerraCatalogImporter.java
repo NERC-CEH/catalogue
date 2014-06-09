@@ -26,6 +26,7 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.User;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
@@ -41,6 +42,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     private static final Pattern TC_EXPORT_REGEX = Pattern.compile("BACKUP_TC_[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*\\.zip");
     
     private final DataRepository<U> repo;
+    private final DocumentListingService documentList;
     private final TerraCatalogUserFactory<U> userFactory;
     private final DocumentReadingService<GeminiDocument> documentReader;
     private final DocumentInfoMapper<M> documentInfoMapper;
@@ -49,12 +51,13 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     private final U importUser;
     
     public TerraCatalogImporter(DataRepository<U> repo,
+                                DocumentListingService documentList,
                                 TerraCatalogUserFactory<U> userFactory,
                                 DocumentReadingService<GeminiDocument> documentReader,
                                 DocumentInfoMapper<M> documentInfoMapper,
                                 TerraCatalogDocumentInfoFactory<M> metadataDocument,
                                 U importUser) {
-        this(repo, userFactory, documentReader, documentInfoMapper, metadataDocument, new TerraCatalogExtReader(), importUser);
+        this(repo, documentList, userFactory, documentReader, documentInfoMapper, metadataDocument, new TerraCatalogExtReader(), importUser);
     }
     /**
      * 
@@ -139,9 +142,8 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     }
     
     protected List<String> getFilesInRepositoryButNotInImport(List<TerraCatalogPair> files) throws DataRepositoryException {
-        return repo.getFiles()
+        return documentList.filterFilenames(repo.getFiles())
                    .stream()
-                   .filter((f)-> FilenameUtils.isExtension(f, "meta"))
                    .map((f) -> FilenameUtils.removeExtension(f))
                    .filter((f)-> files.stream().noneMatch((t)-> t.getId().equals(f)))
                    .collect(Collectors.toList());
