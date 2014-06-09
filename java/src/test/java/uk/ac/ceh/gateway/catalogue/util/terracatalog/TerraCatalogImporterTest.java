@@ -47,7 +47,7 @@ import uk.ac.ceh.gateway.catalogue.util.terracatalog.TerraCatalogImporter.TerraC
  *
  * @author cjohn
  */
-public class TerraCatalogExportImporterTest {
+public class TerraCatalogImporterTest {
     @Mock(answer=RETURNS_DEEP_STUBS) DataRepository<CatalogueUser> repo;
     @Spy CatalogueUser automatedUser;
     @Mock DocumentListingService listingService;
