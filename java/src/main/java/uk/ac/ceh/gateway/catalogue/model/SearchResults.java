@@ -19,7 +19,7 @@ public class SearchResults<T> {
     
     @Data
     @Accessors(chain = true)
-    public static class SearchResult{
+    public static class DocumentSearchResult{
         private UUID id;
         private String title, description;
     }

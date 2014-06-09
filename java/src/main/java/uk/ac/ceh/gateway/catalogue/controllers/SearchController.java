@@ -1,14 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults;
+import uk.ac.ceh.gateway.catalogue.model.SearchResults.DocumentSearchResult;
 
 @Controller
 public class SearchController {
+    
+    private final SolrServer solrServer;
+    
+    @Autowired
+    public SearchController(SolrServer solrServer){
+        this.solrServer = solrServer;
+    }
     
     @RequestMapping(value = "documents",
                     method = RequestMethod.GET)
@@ -20,9 +31,15 @@ public class SearchController {
         return performQuery(term, start, rows);
     }
     
-    private SearchResults performQuery(String term, long start, long rows){
+    private SearchResults<DocumentSearchResult> performQuery(String term, long start, long rows){
         SearchResults toReturn = null;
         return toReturn;
+    }
+    
+    private SolrQuery getQuery(String term){
+        SolrQuery query = new SolrQuery()
+                .setQuery(term);
+        return query;
     }
     
 }
