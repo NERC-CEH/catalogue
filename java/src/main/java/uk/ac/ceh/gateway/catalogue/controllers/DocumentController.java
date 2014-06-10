@@ -23,10 +23,12 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.State;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.services.PublicationService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -40,18 +42,21 @@ public class DocumentController {
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
     private final DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler;
+    private final PublicationService publicationService;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
                                 DocumentReadingService<GeminiDocument> documentReader,
                                 DocumentInfoMapper documentInfoMapper,
                                 DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory,
-                                DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler) {
+                                DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler,
+                                PublicationService publicationService ) {
         this.repo = repo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
         this.infoFactory = infoFactory;
         this.documentBundler = documentBundler;
+        this.publicationService = publicationService;
     }
     
     @RequestMapping (value = "documents",
@@ -123,6 +128,25 @@ public class DocumentController {
                    .commit(user, reason);
     }
     
+    @PreAuthorize("@permission.toAccess(#file, 'READ')")
+    @RequestMapping(value = "documents/{file}/publication", 
+                    method =  RequestMethod.GET)
+    public State currentPublication(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file) {
+       return publicationService.current(user, file); 
+    }
+    
+    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
+    @RequestMapping(value = "documents/{file}/publication/{transition}", 
+                    method =  RequestMethod.PUT)
+    public State transitionPublication(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @PathVariable("transition") String transition) {
+       return null; 
+    }
+        
     protected String filename(String name, String extension) {
         return String.format("%s.%s", name, extension);
     }
