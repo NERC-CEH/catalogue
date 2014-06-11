@@ -11,7 +11,7 @@ public class SimplePublicationService implements PublicationService {
     }
 
     @Override
-    public void transition(CatalogueUser user, String file, String state) {
+    public State transition(CatalogueUser user, String file, String state) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

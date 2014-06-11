@@ -5,5 +5,5 @@ import uk.ac.ceh.gateway.catalogue.model.State;
 
 public interface PublicationService {
     State current(CatalogueUser user, String file);
-    void transition(CatalogueUser user, String file, String state);
+    State transition(CatalogueUser user, String file, String state);
 }

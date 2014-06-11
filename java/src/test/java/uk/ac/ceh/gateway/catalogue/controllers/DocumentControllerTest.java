@@ -169,7 +169,7 @@ public class DocumentControllerTest {
         verify(documentBundler).bundle(geminiDocument, metadata);
     }
     
-    @Test public void userCanGetPublication() {
+    @Test public void userCanGetCurrentPublicationState() {
         //Given
         CatalogueUser user = new CatalogueUser();
         user.setUsername("user");
@@ -177,13 +177,27 @@ public class DocumentControllerTest {
         
         String file = "123-123-123-123";
         
-        
-        
         //when
         controller.currentPublication(user, file);
         
         //Then
         verify(publicationService).current(user, file);
+    }
+    
+    @Test public void userCanTransitionPublicationState() {
+        //Given
+        CatalogueUser user = new CatalogueUser();
+        user.setUsername("user");
+        user.setEmail("user@test.com");
+        
+        String file = "123-123-123-123";
+        String state = "pending";
+        
+        //when
+        controller.transitionPublication(user, file, state);
+        
+        //Then
+        verify(publicationService).transition(user, file, state); 
     }
     
     private DataRevision<CatalogueUser> lastCommit(String file) throws DataRepositoryException {

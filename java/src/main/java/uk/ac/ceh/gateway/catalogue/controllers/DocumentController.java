@@ -131,6 +131,7 @@ public class DocumentController {
     @PreAuthorize("@permission.toAccess(#file, 'READ')")
     @RequestMapping(value = "documents/{file}/publication", 
                     method =  RequestMethod.GET)
+    @ResponseBody
     public State currentPublication(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file) {
@@ -140,11 +141,12 @@ public class DocumentController {
     @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
     @RequestMapping(value = "documents/{file}/publication/{transition}", 
                     method =  RequestMethod.PUT)
+    @ResponseBody
     public State transitionPublication(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @PathVariable("transition") String transition) {
-       return null; 
+       return publicationService.transition(user, file, transition);
     }
         
     protected String filename(String name, String extension) {
