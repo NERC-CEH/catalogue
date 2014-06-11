@@ -1,14 +1,18 @@
 
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Spy;
-import org.springframework.test.web.servlet.MockMvc;
 
 public class SearchControllerTest {
     
-    @Spy SearchController searchController;
-    private MockMvc mockMvc;
+    
+    @Spy private SearchController searchController;
+    
+    @Before
+    public void init(){
+    }
     
     @Test
     public void getQueryCalled(){
