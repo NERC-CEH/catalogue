@@ -5818,3 +5818,33 @@ td.visible-print {
     display: none !important;
   }
 }
+.navbar-static-top {
+  margin-bottom: 19px;
+}
+.navbar {
+  background-color: #FFF;
+  border-bottom: #38CCD7 3px solid;
+}
+.navbar li a:hover {
+  color: #38CCD7;
+}
+.navbar li a:visited,
+.navbar li a:link {
+  text-shadow: none;
+  border-left: 1px solid #B7ECF0;
+  font-weight: bold;
+}
+.navbar li:first-child a {
+  border-left-style: none;
+}
+.navbar li ul a:visited,
+.navbar li li ul a:link {
+  border-left-style: none;
+}
+.navbar li ul a:hover {
+  background-color: #38CCD7;
+  color: #FFF;
+}
+.navbar-right {
+  padding-top: 40px;
+}
