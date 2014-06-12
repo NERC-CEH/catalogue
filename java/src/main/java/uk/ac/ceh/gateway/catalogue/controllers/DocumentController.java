@@ -6,7 +6,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -132,10 +135,10 @@ public class DocumentController {
     @RequestMapping(value = "documents/{file}/publication", 
                     method =  RequestMethod.GET)
     @ResponseBody
-    public State currentPublication(
+    public HttpEntity<State> currentPublication(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file) {
-       return publicationService.current(user, file); 
+        return new ResponseEntity<>(publicationService.current(user, file), HttpStatus.OK); 
     }
     
     @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
