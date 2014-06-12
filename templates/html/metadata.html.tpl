@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>Woot, the template has been loaded and processed</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
   </head>
 <body data-target="#scrollspy" data-spy="scroll">
 <div class="container">
@@ -14,7 +15,7 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a href="#"><img src="http://www.ceh.ac.uk/images/logos/header_logo.png" alt="CEH Logo"></a></li>
+            <li><a href="#"><img src="/static/img/header_logo.png" alt="CEH Logo"></a></li>
           </ul>
           
 	 <ul class="nav navbar-nav navbar-right">
