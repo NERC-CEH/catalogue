@@ -55,6 +55,8 @@ public class GitPublicationServiceTest {
     public void successfullyTransitionState() throws DataRepositoryException, IOException {
         //Given
         GitPublicationService publicationService = new GitPublicationService(repo, documentInfoMapper, stateAssembler);
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("test", "", "draft"));
+        when(stateAssembler.toResource(editor, filename, "draft")).thenReturn(State.builder().id("draft").build());
         
         //When
         final State transition = publicationService.transition(editor, filename, "pending");
@@ -62,7 +64,7 @@ public class GitPublicationServiceTest {
         //Then
         verify(repo).getData(filename + ".meta");
         verify(documentInfoMapper).readInfo(any(InputStream.class));
-        verify(repo).submitData(filename + "meta", any(DataWriter.class));
+        verify(repo).submitData(any(String.class), any(DataWriter.class));
         assertThat("State Id should be pending", transition.getId(), equalTo("pending"));
     }
     
