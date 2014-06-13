@@ -43,7 +43,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
-import uk.ac.ceh.gateway.catalogue.services.PublicationService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -57,7 +56,6 @@ public class DocumentControllerTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler;
-    @Mock PublicationService publicationService;
     private DocumentController controller;
     
     @Rule
@@ -74,8 +72,7 @@ public class DocumentControllerTest {
                                             documentReader,
                                             documentInfoMapper,
                                             infoFactory,
-                                            documentBundler,
-                                            publicationService);
+                                            documentBundler);
     }
     
     @Test
@@ -167,37 +164,6 @@ public class DocumentControllerTest {
         
         //Then
         verify(documentBundler).bundle(geminiDocument, metadata);
-    }
-    
-    @Test public void userCanGetCurrentPublicationState() {
-        //Given
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("user");
-        user.setEmail("user@test.com");
-        
-        String file = "123-123-123-123";
-        
-        //when
-        controller.currentPublication(user, file);
-        
-        //Then
-        verify(publicationService).current(user, file);
-    }
-    
-    @Test public void userCanTransitionPublicationState() {
-        //Given
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("user");
-        user.setEmail("user@test.com");
-        
-        String file = "123-123-123-123";
-        String state = "pending";
-        
-        //when
-        controller.transitionPublication(user, file, state);
-        
-        //Then
-        verify(publicationService).transition(user, file, state); 
     }
     
     private DataRevision<CatalogueUser> lastCommit(String file) throws DataRepositoryException {

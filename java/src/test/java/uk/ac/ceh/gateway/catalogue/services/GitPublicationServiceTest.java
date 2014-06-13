@@ -24,7 +24,7 @@ import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
-import uk.ac.ceh.gateway.catalogue.model.State;
+import uk.ac.ceh.gateway.catalogue.publication.State;
 
 public class GitPublicationServiceTest {
     @Spy DataRepository<CatalogueUser> repo;
@@ -56,7 +56,7 @@ public class GitPublicationServiceTest {
         //Given
         GitPublicationService publicationService = new GitPublicationService(repo, documentInfoMapper, stateAssembler);
         when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("test", "", "draft"));
-        when(stateAssembler.toResource(editor, filename, "draft")).thenReturn(State.builder().id("draft").build());
+        when(stateAssembler.toResource(editor, filename, "draft")).thenReturn(new State("draft", "Daft"));
         
         //When
         final State transition = publicationService.transition(editor, filename, "pending");
@@ -73,7 +73,7 @@ public class GitPublicationServiceTest {
         //Given 
         GitPublicationService publicationService = new GitPublicationService(repo, documentInfoMapper, stateAssembler);
         when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("test", "", "draft"));
-        when(stateAssembler.toResource(editor, filename, "draft")).thenReturn(State.builder().id("draft").build());
+        when(stateAssembler.toResource(editor, filename, "draft")).thenReturn(new State("draft", "Daft"));
         
         //When
         State current = publicationService.current(editor, filename);

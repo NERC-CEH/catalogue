@@ -6,10 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,12 +23,10 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.State;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
-import uk.ac.ceh.gateway.catalogue.services.PublicationService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -45,21 +40,18 @@ public class DocumentController {
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
     private final DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler;
-    private final PublicationService publicationService;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
                                 DocumentReadingService<GeminiDocument> documentReader,
                                 DocumentInfoMapper documentInfoMapper,
                                 DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory,
-                                DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler,
-                                PublicationService publicationService ) {
+                                DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler) {
         this.repo = repo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
         this.infoFactory = infoFactory;
         this.documentBundler = documentBundler;
-        this.publicationService = publicationService;
     }
     
     @RequestMapping (value = "documents",
@@ -129,27 +121,6 @@ public class DocumentController {
         return repo.deleteData(filename(file, "meta"))
                    .deleteData(filename(file, "raw"))
                    .commit(user, reason);
-    }
-    
-    @PreAuthorize("@permission.toAccess(#file, 'READ')")
-    @RequestMapping(value = "documents/{file}/publication", 
-                    method =  RequestMethod.GET)
-    @ResponseBody
-    public HttpEntity<State> currentPublication(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file) {
-        return new ResponseEntity<>(publicationService.current(user, file), HttpStatus.OK); 
-    }
-    
-    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
-    @RequestMapping(value = "documents/{file}/publication/{transition}", 
-                    method =  RequestMethod.PUT)
-    @ResponseBody
-    public State transitionPublication(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            @PathVariable("transition") String transition) {
-       return publicationService.transition(user, file, transition);
     }
         
     protected String filename(String name, String extension) {

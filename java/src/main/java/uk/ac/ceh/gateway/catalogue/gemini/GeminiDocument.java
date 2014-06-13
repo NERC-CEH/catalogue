@@ -1,12 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 
 /**
@@ -14,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
  * @author cjohn
  */
 @Data
+@Accessors(chain = true)
 @ConvertUsing({
     @Template(called="html/metadata.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })

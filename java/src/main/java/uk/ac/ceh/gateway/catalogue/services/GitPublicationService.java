@@ -4,10 +4,12 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
-import uk.ac.ceh.gateway.catalogue.model.State;
+import uk.ac.ceh.gateway.catalogue.publication.PublicationException;
+import uk.ac.ceh.gateway.catalogue.publication.State;
 
 @Service
 public class GitPublicationService implements PublicationService {
@@ -32,8 +34,12 @@ public class GitPublicationService implements PublicationService {
     public State transition(CatalogueUser user, String file, String state) {
         MetadataInfo metadataInfo = getMetadataInfo(file);
         metadataInfo.setState(state);
-        repo.submitData(String.format("%s.meta", file), (o)-> documentInfoMapper.writeInfo(metadataInfo, o));
-        return State.builder().id(state).title(file).build();
+        try {
+            repo.submitData(String.format("%s.meta", file), (o)-> documentInfoMapper.writeInfo(metadataInfo, o)).commit(user, "publication state changed");
+        } catch (DataRepositoryException ex) {
+            throw new PublicationException(String.format("Unable to change publication state to: %s for %s", state, file), ex);
+        }
+        return new State(state, file);
     }
     
     private MetadataInfo getMetadataInfo(String file) {
