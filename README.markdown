@@ -6,6 +6,8 @@ This is the CEH development box, it will create an instance of the CEH Catalogue
 
 Inside the vagrant box there are a few git repositories which are checked out. 
 
+Directories will be shared with your host machine unless the environment variable *VAGRANT_DISABLE_SHARING* is set to true
+
 ### /opt/ceh-catalogue -> ssh://git@stash.ceh.ac.uk:7999/cig/catalogue.git
 
   A dump of the software repository, this contains things like the templates for the 
