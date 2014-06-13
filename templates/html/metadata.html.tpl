@@ -1,11 +1,17 @@
 <#import "skeleton.html.tpl" as skeleton>
+<#import "keywords.html.tpl" as keyword>
+<#import "title.html.tpl" as t>
 <@skeleton.master title=title>
-<!-- InstanceBeginEditable name="MAIN" -->
-<div about="http://data.ceh.ac.uk/id/2a742df-3772-481a-97d6-0de5133f4812">
 
-  <div class="page-header">
-    <h2>${title}</h2>       
-  </div>
+<!-- InstanceBeginEditable name="MAIN" -->
+<div>
+  <@t.title/>
+</div>
+
+<div>
+  <#if description?has_content>
+    <p>${description}</p>
+  </#if>
 </div>
 
 <div>
@@ -18,26 +24,9 @@
 </div>
 
 <div>
-  <p>Keywords</p>
-  <ul>
-
-    <#list descriptiveKeywords as keywordsList>
-
-      <#list keywordsList.keywords as keyword>
-        <li>${keyword.value}</li>
-      </#list>
-    </#list>
-
-  </ul>
+  <@keyword.keywords/>
 </div>
 
-<div>
-  <p>Language:</p>
-  <#if datasetLanguage?has_content>
-    <p>${datasetLanguage.codeList}</p>
-    <p>${datasetLanguage.value}</p>
-  </#if>
-</div>
 
 <div>
   <#if alternateTitles?has_content>
@@ -48,11 +37,6 @@
   </#if>
 </div>
 
-<div>
-  <#if metadata?has_content>
-    <p>Metadata: ${metadata}</p>
-  </#if>
-</div>
 
-<h2>${id}</h2>
+
 </@skeleton.master>
