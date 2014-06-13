@@ -355,4 +355,22 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertEquals("Content of DatasetLanguage not as expected", expected, actual);
     }
 
+    @Test
+    public void canGetDescription() throws IOException {
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream(
+                "description.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        String expectedTitle = "Test description text";
+        assertNotNull("Expected description to have content", document.getDescription());
+        assertFalse("Expected title to not be empty string", document.getDescription().isEmpty());
+        assertEquals(String.format("Expected title to say'%s'.", expectedTitle), expectedTitle, document.getDescription());
+    }
+
 }
