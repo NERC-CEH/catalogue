@@ -15,6 +15,7 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
     @Override
     public GeminiDocumentSolrIndex generateIndex(GeminiDocument document) {
         return new GeminiDocumentSolrIndex()
+                .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
                 .setIdentifier(document.getId());
     }
@@ -29,5 +30,6 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
     public static class GeminiDocumentSolrIndex {
         private @Field String identifier;
         private @Field String title;
+        private @Field String description;
     }
 }

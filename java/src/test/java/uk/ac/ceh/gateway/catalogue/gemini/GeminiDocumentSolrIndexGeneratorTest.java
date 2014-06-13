@@ -45,4 +45,18 @@ public class GeminiDocumentSolrIndexGeneratorTest {
         //Then
         assertEquals("Expected to get my id", id, index.getIdentifier());
     }
+    
+    @Test
+    public void checkThatDescriptionIsTransferedToIndex() {
+        //Given
+        String description = "Once upon a time, there was a metadata record...";
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(document.getDescription()).thenReturn(description);
+        
+        //When
+        GeminiDocumentSolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertEquals("Expected to get my description", description, index.getDescription());
+    }
 }

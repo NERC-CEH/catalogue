@@ -2,50 +2,11 @@
 <schema name="example" version="1.5">
     <uniqueKey>identifier</uniqueKey>
     <fields>
-            <!--Parts of the document relating to who should be able to access them-->
-            <field name="state" type="string" indexed="true" stored="true" required="true"/>
-            <field name="owner" type="string" indexed="true" stored="true" required="true"/>
-
             <!--Searchable content-->
-            <field name="type" type="string_caseinsensitive" indexed="true" stored="true" required="true" multiValued="false" /> 
             <field name="identifier" type="keyword" indexed="true" stored="true" required="true" multiValued="false" /> 
-            <field name="UKEOFIdentifier" type="keyword" indexed="true" stored="true" required="true" multiValued="false" /> 
             <field name="title" type="text_general" indexed="true" stored="true" required="true" multiValued="false"/>
-            <field name="titleForPhrases" type="text_for_quoted_phrases" indexed="true" stored="true" required="true" multiValued="false"/>
-            <field name="alternativeTitles" type="text_general" indexed="true" stored="true" multiValued="true"/>
-            <field name="alternativeTitlesForPhrases" type="text_for_quoted_phrases" indexed="true" stored="true" multiValued="true"/>
             <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>   
-            <field name="descriptionForPhrases" type="text_for_quoted_phrases" indexed="true" stored="true" multiValued="false"/>   
-            <field name="keywords" type="string_caseinsensitive" indexed="true" stored="true" required="false" multiValued="true"/>
-            <field name="keywordLinks" type="string_caseinsensitive" indexed="true" stored="true" required="false" multiValued="true"/>
-            <field name="location" type="location_rpt" indexed="true" stored="true" required="false" multiValued="true"/> 
-            <field name="organisations" type="text_general" indexed="true" stored="true" multiValued="true"/>
-            <field name="leadOrganisation" type="string_caseinsensitive" indexed="true" stored="true" multiValued="false" required="false"/>
-            <field name="leadOrganisationForFacet" type="string" indexed="true" stored="true" multiValued="false" required="false"/>
-            <field name="purposeOfCollection" type="keyword" indexed="true" stored="true" multiValued="true" required="false"/>
-            <field name="environmentalDomains" type="keyword" indexed="true" stored="true" multiValued="true" required="false"/>
-            <field name="objectives" type="text_general" indexed="true" stored="true" multiValued="false" required="false"/>
-            <field name="fundingCategories" type="string_caseinsensitive" indexed="true" stored="true" required="false" multiValued="true"/>
             <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
-
-            <!--Non-searchable content-->
-            <field name="keywordsDelimited" type="string" indexed="false" stored="true" required="false" multiValued="false"/>
-            <field name="purposeOfCollectionDelimited" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-            <field name="environmentalDomainsDelimited" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-            <field name="parametersMeasuredDelimited" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-            <field name="selfUrl" type="string" indexed="false" stored="true" multiValued="false" required="true"/>
-            <field name="onlineResourcesDelimited" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-            <field name="linksToDataDelimited" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-            <field name="lifeSpanStart" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-            <field name="lifeSpanEnd" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-            <field name="fundingCategoriesDelimited" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-			<field name="authorDate" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-			<field name="envirobaseCodings" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-			<field name="gmesCodings" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-			<field name="geossCodings" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-			<field name="ecvCodings" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-			<field name="measurementRegime" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
-			<field name="legalBackground" type="string" indexed="false" stored="true" multiValued="false" required="false"/>
     </fields>
     <types>
         <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
@@ -135,8 +96,4 @@
             units="degrees"
         />
     </types>
-    <copyField source="title" dest="titleForPhrases"/>
-    <copyField source="alternativeTitles" dest="alternativeTitlesForPhrases"/>
-    <copyField source="description" dest="descriptionForPhrases"/>
-	<copyField source="leadOrganisation" dest="leadOrganisationForFacet"/>
 </schema>
