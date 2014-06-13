@@ -20,7 +20,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument {
     
-    private String id, title;
+    private String id, title, description;
     private List<String> alternateTitles, topicCategories;
     private CodeListItem datasetLanguage;
     private List<DescriptiveKeywords> descriptiveKeywords;
