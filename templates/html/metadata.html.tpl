@@ -1,6 +1,7 @@
 <#import "skeleton.html.tpl" as skeleton>
 <#import "keywords.html.tpl" as keyword>
 <#import "title.html.tpl" as t>
+<#import "description.html.tpl" as d>
 <@skeleton.master title=title>
 
 <!-- InstanceBeginEditable name="MAIN" -->
@@ -9,9 +10,7 @@
 </div>
 
 <div>
-  <#if description?has_content>
-    <p>${description}</p>
-  </#if>
+  <@d.description/>
 </div>
 
 <div>
