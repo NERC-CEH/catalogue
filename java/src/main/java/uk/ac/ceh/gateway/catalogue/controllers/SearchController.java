@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.model.DocumentSearchResults;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults.Header;
 
@@ -42,8 +42,8 @@ public class SearchController {
         Header header = new SearchResults.Header()
                 .setNumFound(results.size())
                 .setStart(query.getStart())
-                .setRows(query.getRows());
-        return new SearchResults<GeminiDocumentSolrIndex>()
+                .setRows(query.getRows());        
+        return new DocumentSearchResults()
                 .setHeader(header)
                 .setResults(results);
     }
