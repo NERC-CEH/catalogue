@@ -11,12 +11,6 @@ ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_workstation'
 DISABLE_SHARING = ENV['VAGRANT_DISABLE_SHARING']
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  if DISABLE_SHARING
-    puts 'sharing off'
-  else
-    puts 'sharing on'
-  end
-
   config.vm.box = "ubuntu-12.04-amd64"
   config.vm.box_url = "http://ladist.nerc-lancaster.ac.uk/vagrant/ubuntu-12.04-amd64.box"
   config.vm.network :forwarded_port, guest: 443, host: 8080, auto_correct: true
