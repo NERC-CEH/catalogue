@@ -5826,11 +5826,12 @@ td.visible-print {
   border-bottom: #38CCD7 3px solid;
 }
 .navbar li a:hover {
-  color: #38CCD7;
+  color: #999999;
 }
 .navbar li a:visited,
 .navbar li a:link {
   text-shadow: none;
+  color: #999999;
   border-left: 1px solid #B7ECF0;
   font-weight: bold;
 }
@@ -5842,7 +5843,7 @@ td.visible-print {
   border-left-style: none;
 }
 .navbar li ul a:hover {
-  background-color: #38CCD7;
+  background-color: #999999;
   color: #FFF;
 }
 .navbar-right {

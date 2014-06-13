@@ -23,12 +23,12 @@
 
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#"><i></i></a></li>
-            <li><a href="#">Help</a></li>
-            <li><a href="#">Publish <b></b></a></li>
-            <li><a href="#">Admin <b></b></a></li>
-            <li>
-              <a href="#"><i class="glyphicon glyphicon-user"></i> Username</a>
-              <ul>
+            <li class="dropdown"><a href="#">Help<b class="caret"></b></a></li>
+            <li class="dropdown"><a href="#">Publish <b class="caret"></b></a></li>
+            <li class="dropdown"><a href="#">Admin<b class="caret"></b></a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Username</a>
+              <ul class="dropdown-menu">
                 <li><a href="#">CHANGE PASSWORD</a></li>
                 <li><a href="#">LOGOUT</a></li>
               </ul>
