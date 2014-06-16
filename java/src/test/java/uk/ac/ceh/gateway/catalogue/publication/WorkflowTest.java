@@ -11,7 +11,6 @@ import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
 public class WorkflowTest {
     private final PublishingRole editor, publisher;
     private final Workflow workflow;
-    State draft, pending, publik;
 
     public WorkflowTest() {
         //Given
@@ -46,7 +45,7 @@ public class WorkflowTest {
         final State currentState = workflow.currentState(document);
         
         //Then
-        assertThat("state should be draft", currentState, equalTo(draft));
+        assertThat("state should be draft", currentState.getId(), equalTo("draft"));
     }
     
     @Test
@@ -57,11 +56,11 @@ public class WorkflowTest {
             .setTitle("MultiMOVE: A Package of niche models for British vegetation")
             .setMetadata(new MetadataInfo("test", "", "draft"));
         
-        //When
         final State currentState = workflow.currentState(document);
-        final Set<Transition> avaliableTransitions = currentState.avaliableTransitions(editor);
-        final Transition transition = avaliableTransitions.iterator().next();
-        document = workflow.transitionDocumentState(document, editor, transition);
+        final Transition toPending = getTransitionTo(currentState.avaliableTransitions(editor), "pending");
+        
+        //When
+        document = workflow.transitionDocumentState(document, editor, toPending);
         
         //Then
         assertThat("state should be pending", document.getMetadata().getState(), equalTo("pending"));
@@ -75,9 +74,11 @@ public class WorkflowTest {
             .setTitle("MultiMOVE: A Package of niche models for British vegetation")
             .setMetadata(new MetadataInfo("test", "", "pending"));
         
-        //When
         final State currentState = workflow.currentState(document);
-        document = workflow.transitionDocumentState(document, editor, );
+        final Transition toPublic = getTransitionTo(currentState.avaliableTransitions(editor), "public");
+        
+        //When
+        document = workflow.transitionDocumentState(document, editor, toPublic);
         
         //Then
         assertThat("state should be pending", document.getMetadata().getState(), equalTo("pending"));
@@ -91,13 +92,41 @@ public class WorkflowTest {
             .setTitle("MultiMOVE: A Package of niche models for British vegetation")
             .setMetadata(new MetadataInfo("test", "", "pending"));
         
-        //When
         final State currentState = workflow.currentState(document);
-        document = workflow.transitionDocumentState(document, publisher, publik);
+        final Transition toPublic = getTransitionTo(currentState.avaliableTransitions(publisher), "public");
+        
+        //When
+        document = workflow.transitionDocumentState(document, publisher, toPublic);
         
         //Then
         assertThat("state should be public", document.getMetadata().getState(), equalTo("public"));
     }
     
+    @Test
+    public void editorCanNotTransitionFromPublicToDraft() {
+        //Given
+        GeminiDocument document = new GeminiDocument()
+            .setId("c4d0393e-ff0a-47da-84e0-09ca9182e6cb")
+            .setTitle("MultiMOVE: A Package of niche models for British vegetation")
+            .setMetadata(new MetadataInfo("test", "", "public"));
+        
+        final State currentState = workflow.currentState(document);
+        final Transition toDraft = getTransitionTo(currentState.avaliableTransitions(editor), "draft");
+        
+        //When
+        document = workflow.transitionDocumentState(document, editor, toDraft);
+        
+        //Then
+        assertThat("Tate should be public", document.getMetadata().getState(), equalTo("public"));   
+    }
     
+    private Transition getTransitionTo(Set<Transition> transitions, String state) {
+        Transition toReturn = Transition.UNKNOWN_TRANSITION;
+        for (Transition transition : transitions) {
+            if (transition.getToState().getId().equalsIgnoreCase(state)) {
+                toReturn = transition;
+            }   
+        }
+        return toReturn;
+    }
 }
