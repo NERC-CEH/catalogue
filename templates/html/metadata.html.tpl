@@ -2,40 +2,25 @@
 <#import "keywords.html.tpl" as keyword>
 <#import "title.html.tpl" as t>
 <#import "description.html.tpl" as d>
+<#import "topiccategories.html.tpl" as tc>
+
 <@skeleton.master title=title>
 
 <!-- InstanceBeginEditable name="MAIN" -->
 <div>
-  <@t.title/>
+  <@t.title_tmpl title=title/>
 </div>
 
 <div>
-  <@d.description/>
+  <@d.description_tmpl description=description/>
 </div>
 
 <div>
-  <#if topicCategories?has_content>
-    <p>Topic category:</p>
-    <#list topicCategories as topics>
-      ${topics}
-    </#list>
-  </#if>
+  <@tc.category/>
 </div>
 
 <div>
   <@keyword.keywords/>
 </div>
-
-
-<div>
-  <#if alternateTitles?has_content>
-    <p>Alternate title:</p>
-    <#list alternateTitles as atitles>
-      ${atitles}
-    </#list>
-  </#if>
-</div>
-
-
 
 </@skeleton.master>

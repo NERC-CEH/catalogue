@@ -1,5 +1,5 @@
 <#macro keywords>
-<!-- InstanceBeginEditable name="MAIN" -->
+
 <div>
   <p><b>Keywords</b></p>
   <ul>

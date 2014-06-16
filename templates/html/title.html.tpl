@@ -1,5 +1,5 @@
-<#macro title>
-<!-- InstanceBeginEditable name="MAIN" -->
+<#macro title_tmpl title>
+
 <div>
   <div class="page-header">
     <#if title?has_content>
