@@ -6,7 +6,7 @@
     <form id="search-form" action="/documents" method="get">
       <div class="input-group">
       
-        <input type="text" class="form-control" placeholder="Search the Catalogue" id="term" name="term" value="">
+        <input type="text" class="form-control" placeholder="Search the Catalogue" id="term" name="term" value="${header.term}">
         <div class="input-group-btn">
           <button type="submit" id="Search" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
         </div>

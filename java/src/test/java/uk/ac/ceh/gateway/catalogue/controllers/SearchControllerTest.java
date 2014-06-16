@@ -49,6 +49,7 @@ public class SearchControllerTest {
         SearchResults searchResults = searchController.searchDocuments(searchTerm, start, rows);
         
         //Then
+        assertEquals("Term is wrong in results header.", searchTerm, searchResults.getHeader().getTerm());
         assertEquals("Start is wrong in results header.", start, searchResults.getHeader().getStart());
         assertEquals("Rows is wrong in results header.", rows, searchResults.getHeader().getRows());
         assertEquals("Number of search results is wrong in results header.", 100L, searchResults.getHeader().getNumFound());

@@ -30,21 +30,22 @@ public class SearchController {
     @RequestMapping(value = "documents",
                     method = RequestMethod.GET)
     public @ResponseBody SearchResults searchDocuments(
-            @RequestParam(value = "term", required = false) String term,
+            @RequestParam(value = "term", defaultValue="") String term,
             @RequestParam(value = "start", defaultValue = "0") int start,
             @RequestParam(value = "rows", defaultValue = "20") int rows
     ) throws SolrServerException{
         SolrQuery query = getQuery(term, start, rows);
-        return performQuery(query);
+        return performQuery(term, query);
     }
     
-    private SearchResults<GeminiDocumentSolrIndex> performQuery(SolrQuery query) throws SolrServerException{
+    private SearchResults<GeminiDocumentSolrIndex> performQuery(String term, SolrQuery query) throws SolrServerException{
         QueryResponse response = solrServer.query(query, SolrRequest.METHOD.POST);
         List<GeminiDocumentSolrIndex> results = response.getBeans(GeminiDocumentSolrIndex.class);
         Header header = new SearchResults.Header()
                 .setNumFound(response.getResults().getNumFound())
+                .setTerm(term)
                 .setStart(query.getStart())
-                .setRows(query.getRows());        
+                .setRows(query.getRows());   
         return new DocumentSearchResults()
                 .setHeader(header)
                 .setResults(results);
