@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe "Metadata landing page", :type => :feature do
 
 	it "should work" do
