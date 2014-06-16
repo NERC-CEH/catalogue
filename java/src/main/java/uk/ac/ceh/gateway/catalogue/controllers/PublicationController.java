@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.publication.State;
+import uk.ac.ceh.gateway.catalogue.publication.PublicationResource;
 import uk.ac.ceh.gateway.catalogue.services.PublicationService;
 
 @Controller
@@ -22,25 +22,25 @@ public class PublicationController {
         this.publicationService = publicationService;
     }
     
-    //@PreAuthorize("@permission.toAccess(#file, 'READ')")
+    @PreAuthorize("@permission.toAccess(#file, 'READ')")
     @RequestMapping(value = "documents/{file}/publication", 
                     method =  RequestMethod.GET)
     @ResponseBody
-    public HttpEntity<State> currentPublication(
+    public HttpEntity<PublicationResource> currentPublication(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file) {
-        return new ResponseEntity<>(publicationService.current(user, file), HttpStatus.OK); 
+            @PathVariable("file") String fileIdentifier) {
+        return new ResponseEntity<>(publicationService.current(user, fileIdentifier), HttpStatus.OK); 
     }
     
     @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
-    @RequestMapping(value = "documents/{file}/publication/{transition}", 
+    @RequestMapping(value = "documents/{file}/publication/{toState}", 
                     method =  RequestMethod.PUT)
     @ResponseBody
-    public State transitionPublication(
+    public HttpEntity<PublicationResource> transitionPublication(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            @PathVariable("transition") String transition) {
-       return publicationService.transition(user, file, transition);
+            @PathVariable("file") String fileIdentifier,
+            @PathVariable("toState") String toState) {
+       return new ResponseEntity<>(publicationService.transition(user, fileIdentifier, toState), HttpStatus.OK);
     }
 
 }

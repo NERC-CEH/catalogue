@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.publication.State;
+import uk.ac.ceh.gateway.catalogue.publication.PublicationResource;
 
 public interface PublicationService {
-    State current(CatalogueUser user, String file);
-    State transition(CatalogueUser user, String file, String state);
+    PublicationResource current(CatalogueUser user, String fileIdentifier);
+    PublicationResource transition(CatalogueUser user, String fileIdentifier, String toState);
 }
