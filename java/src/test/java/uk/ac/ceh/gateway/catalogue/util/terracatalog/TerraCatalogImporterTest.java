@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.util.terracatalog;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,6 +38,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 import uk.ac.ceh.gateway.catalogue.util.terracatalog.TerraCatalogImporter.TerraCatalogPair;
@@ -47,9 +47,10 @@ import uk.ac.ceh.gateway.catalogue.util.terracatalog.TerraCatalogImporter.TerraC
  *
  * @author cjohn
  */
-public class TerraCatalogExportImporterTest {
+public class TerraCatalogImporterTest {
     @Mock(answer=RETURNS_DEEP_STUBS) DataRepository<CatalogueUser> repo;
     @Spy CatalogueUser automatedUser;
+    @Mock DocumentListingService listingService;
     @Mock UserStore<CatalogueUser> userstore;
     @Mock TerraCatalogUserFactory userFactory;
     @Mock DocumentReadingService<GeminiDocument> documentReader;
@@ -69,7 +70,7 @@ public class TerraCatalogExportImporterTest {
         
         MockitoAnnotations.initMocks(this);
                 
-        importer = new TerraCatalogImporter<>(repo, userFactory, documentReader, documentInfoMapper, terraCatalogDocumentInfoFactory, tcExtReader, automatedUser);
+        importer = new TerraCatalogImporter<>(repo, listingService, userFactory, documentReader, documentInfoMapper, terraCatalogDocumentInfoFactory, tcExtReader, automatedUser);
     }
     
     @Test
@@ -98,10 +99,8 @@ public class TerraCatalogExportImporterTest {
         TerraCatalogImporter.TerraCatalogPair pair = mock(TerraCatalogImporter.TerraCatalogPair.class);
         when(pair.getId()).thenReturn("486f7764-7943-6f64-6550-6172746e6572");
         
-        when(repo.getFiles()).thenReturn(Arrays.asList( "486f7764-7943-6f64-6550-6172746e6572.raw",
-                                                        "486f7764-7943-6f64-6550-6172746e6572.meta",
-                                                        "4d6f6d65-6e74-6172-794c-617073654f66.raw",
-                                                        "4d6f6d65-6e74-6172-794c-617073654f66.meta"));
+        when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList( "486f7764-7943-6f64-6550-6172746e6572",
+                                                                           "4d6f6d65-6e74-6172-794c-617073654f66"));
         
         //When
         List<String> ids = importer.getFilesInRepositoryButNotInImport(Arrays.asList(pair));

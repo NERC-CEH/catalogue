@@ -24,10 +24,16 @@
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#"><i></i></a></li>
             <li class="dropdown"><a href="#">Help<b class="caret"></b></a></li>
-            <li class="dropdown"><a href="#">Publish <b class="caret"></b></a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Publish<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Blah</a></li>
+                <li><a href="#">Blah</a></li>
+              </ul>
+            </li>
             <li class="dropdown"><a href="#">Admin<b class="caret"></b></a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Username</a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Username<b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="#">CHANGE PASSWORD</a></li>
                 <li><a href="#">LOGOUT</a></li>
@@ -41,6 +47,10 @@
     <div class="container">
       <#nested>
     </div>
+
+    <script language="javascript" type="text/javascript" src="/static/vendor/jquery/dist/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="/static/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+  
   </body>
 </html>
 </#macro>

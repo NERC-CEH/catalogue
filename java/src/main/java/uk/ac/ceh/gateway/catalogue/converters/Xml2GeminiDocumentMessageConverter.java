@@ -34,8 +34,9 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
  * @author jcoop, cjohn
  */
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
-    private final XPathExpression id, title, alternateTitle, languageCodeList, languageCodeListValue, 
-            topicCategories, descriptiveKeywords;
+    private final XPathExpression id, title, description, alternateTitle, 
+            languageCodeList, languageCodeListValue, topicCategories, 
+            descriptiveKeywords;
     private final XPath xpath;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
@@ -45,6 +46,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         xpath.setNamespaceContext(new HardcodedNamespaceResolver());
         this.id = xpath.compile(XPaths.ID);
         this.title = xpath.compile(XPaths.TITLE);
+        this.description = xpath.compile(XPaths.DESCRIPTION);
         this.alternateTitle = xpath.compile(XPaths.ALTERNATE_TITLE);
         this.languageCodeList = xpath.compile(XPaths.LANGUAGE_CODE_LIST);
         this.languageCodeListValue = xpath.compile(XPaths.LANGUAGE_CODE_LIST_VALUE);
@@ -68,6 +70,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             GeminiDocument toReturn = new GeminiDocument();
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
+            toReturn.setDescription(description.evaluate(document));
             toReturn.setAlternateTitles(getNodeListValuesEvaluate(document, alternateTitle));
             toReturn.setDatasetLanguage(CodeListItem
                     .builder()
