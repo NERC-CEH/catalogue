@@ -31,8 +31,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puppet.puppet_node = "gateway-developer.ceh.ac.uk"
     puppet.options = "--verbose"
   end
-
-  if !DISABLE_SHARING
-    config.vm.provision :shell, :path => "mount.sh"
-  end
 end
