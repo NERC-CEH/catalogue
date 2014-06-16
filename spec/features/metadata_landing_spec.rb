@@ -1,6 +1,6 @@
 describe "Metadata landing page", :type => :feature do
 
 	it "should work" do
-		visit "http://www.google.com"
+		visit "/documents"
 	end
 end
