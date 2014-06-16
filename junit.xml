@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="rspec" tests="1" failures="0" errors="0" time="3.973397" timestamp="2014-06-16T12:48:33+01:00">
-  <properties/>
-  <testcase classname="spec.features.metadata_landing_spec" name="Metadata landing page should work" time="3.973397"/>
-</testsuite>
