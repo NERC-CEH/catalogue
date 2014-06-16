@@ -2,19 +2,26 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.xml.xpath.XPathExpressionException;
+import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 
 /**
  * The following spring configuration will populate service beans
@@ -23,6 +30,8 @@ import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 @Configuration
 public class ServiceConfig {
     @Autowired ObjectMapper jacksonMapper;
+    @Autowired DataRepository<CatalogueUser> dataRepository;
+    @Autowired SolrServer solrServer;
     
     @Bean
     public DocumentReadingService<GeminiDocument> documentReadingService() throws XPathExpressionException {
@@ -58,5 +67,31 @@ public class ServiceConfig {
             document.setMetadata(info);
             return document;
         };
+    }
+    
+    @Bean
+    public MetadataInfoBundledReaderService<GeminiDocument> bundledReaderService() throws XPathExpressionException {
+        return new MetadataInfoBundledReaderService<>(
+                dataRepository,
+                documentReadingService(),
+                documentInfoMapper(),
+                documentBundleService()
+        );
+    }
+    
+    @Bean
+    public ExtensionDocumentListingService documentListingService() {
+        return new ExtensionDocumentListingService();
+    } 
+    
+    @Bean
+    public SolrIndexingService<GeminiDocument> documentIndexingService() throws XPathExpressionException {
+        return new SolrIndexingService<>(
+                bundledReaderService(),
+                documentListingService(),
+                dataRepository,
+                new GeminiDocumentSolrIndexGenerator(),
+                solrServer
+        );
     }
 }
