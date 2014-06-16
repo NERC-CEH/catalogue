@@ -1,12 +1,12 @@
 <#macro keywords>
 <div>
-  <p><b>Keywords</b></p>
-  <ul>
+  <h3>Keywords</h3>
+  <p>
     <#list descriptiveKeywords as keywordsList>
       <#list keywordsList.keywords as keyword>
-        <li>${keyword.value}</li>
+        ${keyword.value}<br>
       </#list>
     </#list>
-  </ul>
+  </p>
 </div>
 </#macro>
