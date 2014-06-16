@@ -9,7 +9,6 @@ puppet_ssl/crl.pem
 # Ignore dev files
 catalogue
 catalogue_config
-catalogue_tomcat
 
 # Ignore Test output
 junit.xml
