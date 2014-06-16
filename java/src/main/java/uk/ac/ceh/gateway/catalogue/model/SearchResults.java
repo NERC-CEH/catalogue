@@ -14,5 +14,6 @@ public abstract class SearchResults<T> {
     @Accessors(chain = true)
     public static class Header{
         private long numFound, start, rows;
+        private String term;
     }
 }
