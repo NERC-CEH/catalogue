@@ -1,12 +1,13 @@
 
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.common.SolrDocumentList;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,39 +38,35 @@ public class SearchControllerTest {
     @Test
     public void isHeaderCorrect() throws SolrServerException{
         //Given
-        List<GeminiDocumentSolrIndex> mockResults = Arrays.asList(
-                mock(GeminiDocumentSolrIndex.class),
-                mock(GeminiDocumentSolrIndex.class)
-        );
-        when(solrServer.query(any(SolrQuery.class), eq(SolrRequest.METHOD.POST)).getBeans(GeminiDocumentSolrIndex.class)).thenReturn(mockResults);
+        SolrDocumentList results = mock(SolrDocumentList.class);
+        when(results.getNumFound()).thenReturn(100L);
+        when(solrServer.query(any(SolrQuery.class), eq(SolrRequest.METHOD.POST)).getResults()).thenReturn(results);
         
         //When
         String searchTerm = "testterm";
-        int start = 3;
-        int rows = 30;
+        int start = 2;
+        int rows =5;
         SearchResults searchResults = searchController.searchDocuments(searchTerm, start, rows);
         
         //Then
         assertEquals("Start is wrong in results header.", start, searchResults.getHeader().getStart());
         assertEquals("Rows is wrong in results header.", rows, searchResults.getHeader().getRows());
-        assertEquals("Number of search results is wrong in results header.", mockResults.size(), searchResults.getHeader().getNumFound());
+        assertEquals("Number of search results is wrong in results header.", 100L, searchResults.getHeader().getNumFound());
     }
     
     @Test
     public void isSolrQueryBuiltCorrectly() throws SolrServerException {
         //Given
-        GeminiDocumentSolrIndex doc1 = mock(GeminiDocumentSolrIndex.class);
-        GeminiDocumentSolrIndex doc2 = mock(GeminiDocumentSolrIndex.class);
-        List<GeminiDocumentSolrIndex> results = Arrays.asList(
-                doc1,
-                doc2
-        );
-        when(solrServer.query(any(SolrQuery.class), eq(SolrRequest.METHOD.POST)).getBeans(GeminiDocumentSolrIndex.class)).thenReturn(results);
+        List<GeminiDocumentSolrIndex> mockResults = new ArrayList<>();
+        for(int i =0; i<9; i++){
+            mockResults.add(mock(GeminiDocumentSolrIndex.class));
+        }
+        when(solrServer.query(any(SolrQuery.class), eq(SolrRequest.METHOD.POST)).getBeans(GeminiDocumentSolrIndex.class)).thenReturn(mockResults);
         
         //When
         String searchTerm = "testterm";
         Integer start = 3;
-        Integer rows = 30;
+        Integer rows = 7;
         searchController.searchDocuments(searchTerm, start, rows);
         
         //Then
