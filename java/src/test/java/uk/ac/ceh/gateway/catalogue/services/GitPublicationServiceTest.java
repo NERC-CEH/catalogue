@@ -6,6 +6,7 @@ import java.io.InputStream;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,22 +16,28 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataWriter;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
+import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
+import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
 import uk.ac.ceh.gateway.catalogue.publication.State;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 
 public class GitPublicationServiceTest {
+    @Mock GroupStore<CatalogueUser> groupStore;
     @Spy DataRepository<CatalogueUser> repo;
     @Mock DocumentInfoMapper<MetadataInfo> documentInfoMapper;
-    @Mock StateAssembler stateAssembler;
-    
+    UriComponentsBuilder uriBuilder;
+    Workflow workflow;
     CatalogueUser editor;
     String filename = "e5090602-6ff9-4936-8217-857ea6de5774";
     
@@ -39,6 +46,8 @@ public class GitPublicationServiceTest {
     
     @Before
     public void given() throws IOException {
+        uriBuilder = UriComponentsBuilder.fromHttpUrl("https://example.com/documents").pathSegment(filename, "publication");
+        workflow = new PublicationConfig().workflow();
         editor = new CatalogueUser().setUsername("Ron MacDonald").setEmail("ron@example.com");
         repo = new GitDataRepository(folder.getRoot(),
                                      new InMemoryUserStore<>(),
@@ -54,44 +63,42 @@ public class GitPublicationServiceTest {
     @Test
     public void successfullyTransitionState() throws DataRepositoryException, IOException {
         //Given
-        GitPublicationService publicationService = new GitPublicationService(repo, documentInfoMapper, stateAssembler);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("test", "", "draft"));
-        when(stateAssembler.toResource(editor, filename, "draft")).thenReturn(new State("draft", "Daft"));
+        GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("test", "", "draft"), new MetadataInfo("test", "", "pending"));
         
         //When
-        final State transition = publicationService.transition(editor, filename, "pending");
+        final StateResource transition = publicationService.transition(editor, filename, "pending", uriBuilder);
         
         //Then
-        verify(repo).getData(filename + ".meta");
-        verify(documentInfoMapper).readInfo(any(InputStream.class));
-        verify(repo).submitData(any(String.class), any(DataWriter.class));
+        verify(repo, times(2)).getData(filename + ".meta");
+        verify(documentInfoMapper, times(2)).readInfo(any(InputStream.class));
+        //verify(repo).submitData(any(String.class), any(DataWriter.class));
         assertThat("State Id should be pending", transition.getId(), equalTo("pending"));
     }
     
     @Test
     public void successfullyGetCurrentState() throws DataRepositoryException, IOException {
-        //Given 
-        GitPublicationService publicationService = new GitPublicationService(repo, documentInfoMapper, stateAssembler);
+        //Given
+        GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
         when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("test", "", "draft"));
-        when(stateAssembler.toResource(editor, filename, "draft")).thenReturn(new State("draft", "Daft"));
+        
         
         //When
-        State current = publicationService.current(editor, filename);
+        StateResource current = publicationService.current(editor, filename, uriBuilder);
         
         //Then
         verify(repo).getData(filename + ".meta");
         verify(documentInfoMapper).readInfo(any(InputStream.class));
-        verify(stateAssembler).toResource(editor, filename, "draft");
         assertThat("State is should be draft", current.getId(), equalTo("draft"));
     }
     
     @Test(expected = DocumentDoesNotExistException.class)
     public void tryToGetFileThatDoesNotExist() {
         //Given 
-        GitPublicationService publicationService = new GitPublicationService(repo, documentInfoMapper, stateAssembler);
+        GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
         
         //When
-        publicationService.current(editor, "this file name does not exist");
+        publicationService.current(editor, "this file name does not exist", uriBuilder);
         
         //Then
         //The expected Exception should be thrown

@@ -25,30 +25,34 @@ public class PublicationConfig {
         // Transitions
         Transition draftToPending = Transition.builder()
             .toState(pending)
+            .id("ykhm7b")
             .title("Request publication of document")
             .helpText("Requesting publication of this document will notify a Publisher that you want this document to be made public. A Publisher will review this record for quality against CEH QA 2.4c, 3.45 and 76.4a rev9.")
-            .confirmationQuestion("Submit \"{title (first 100 characters)}\" for publication?")
+            .confirmationQuestion("Submit this document for publication?")
             .build();
         
         Transition pendingToDraft = Transition.builder()
             .toState(draft)
+            .id("gtkzpq")
             .title("Retract document to Draft")
             .helpText("Retract this document to Daft if you no longer want it be made public.")
-            .confirmationQuestion("Stop publication of \"{title (first 100 characters)}\"?")
+            .confirmationQuestion("Stop publication of this document?")
             .build();
         
         Transition pendingToPublic = Transition.builder()
             .toState(publik)
+            .id("re4vkb")
             .title("Publish Document")
             .helpText("Only publish document after Quality Check 2, 2.4a and 4.ii have been completed.")
-            .confirmationQuestion("Make \"{title (first 100 characters)}\" public?")
+            .confirmationQuestion("Make this document public?")
             .build();
         
         Transition publicToDraft = Transition.builder()
             .toState(draft)
+            .id("qtak5r")
             .title("Retract document from Public")
             .helpText("Only retract this document from Public after you have checked it is not a DOI landing page, create a JIRA issue to track what happens.")
-            .confirmationQuestion("Remove public access to \"{title (first 100 characters)}\"?")
+            .confirmationQuestion("Remove public access to this document?")
             .build();
         
         // Roles

@@ -1,11 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.publication;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Map;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 
 @Value
@@ -13,9 +12,9 @@ public class Workflow {
     @Getter(AccessLevel.NONE)
     private final Map<String, State> states;
     
-    public State currentState(GeminiDocument document) {
+    public State currentState(MetadataInfo info) {
         State currentState = State.UNKNOWN_STATE;
-        String state = getMetadataInfo(document).getState().toLowerCase();
+        String state = info.getState().toLowerCase();
         
         if (states.containsKey(state)) {
             currentState = states.get(state);
@@ -23,23 +22,13 @@ public class Workflow {
         return currentState;
     }
     
-    public GeminiDocument transitionDocumentState(GeminiDocument document, PublishingRole role, Transition transition) {
-        State fromState;
-        fromState = currentState(document);
+    public MetadataInfo transitionDocumentState(MetadataInfo info, Set<PublishingRole> roles, Transition transition) {
+        MetadataInfo toReturn = info;
+        State fromState = currentState(info);
         
-        if (fromState.canTransition(role, transition)) {
-            getMetadataInfo(document).setState(transition.getToState().getId());
+        if (fromState.canTransition(roles, transition)) {
+            toReturn = new MetadataInfo(info.getOrganisation(), info.getRawType(), transition.getToState().getId());
         }
-        return document;
-    }
-    
-    private MetadataInfo getMetadataInfo(GeminiDocument document) {
-        MetadataInfo metadataInfo;
-        try {
-            metadataInfo = checkNotNull(document.getMetadata());
-        } catch (NullPointerException ex) {
-            throw new PublicationException(String.format("Could not retrieve metadata info for document: %s", document.getId()), ex);
-        }
-        return metadataInfo;
+        return toReturn;
     }
 }

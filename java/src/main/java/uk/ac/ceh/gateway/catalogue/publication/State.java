@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.publication;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -19,20 +19,33 @@ public class State {
     
     public static State UNKNOWN_STATE = new State("unknown", "Unknown");
     
-    public Set<Transition> avaliableTransitions(PublishingRole role) {
-        Set<Transition> toReturn = Collections.EMPTY_SET;
-        if (transitions.containsKey(role)) {
-            toReturn = ImmutableSet.copyOf(transitions.get(role));
+    public Set<Transition> avaliableTransitions(Set<PublishingRole> roles) {
+        final Set<Transition> toReturn = new HashSet<>();
+        roles.stream().filter((role) -> (transitions.containsKey(role))).forEach((role) -> {
+            toReturn.addAll(transitions.get(role));
+        });
+        return ImmutableSet.copyOf(toReturn);
+    }
+    
+    public Transition getTransition(Set<PublishingRole> roles, String transitionId) {
+        Transition toReturn = Transition.UNKNOWN_TRANSITION;
+               
+        for (Transition transition: avaliableTransitions(roles)) {
+            if (transition.getId().equalsIgnoreCase(transitionId)) {
+                return transition;
+            }
         }
         return toReturn;
     }
     
-    public boolean canTransition(PublishingRole role, Transition transition) {
+    public boolean canTransition(Set<PublishingRole> roles, Transition transition) {
         boolean toReturn = false;
-        if (transitions.containsKey(role)) {
-            Set<Transition> available = transitions.get(role);
-            if(available.contains(transition)) {
-                toReturn = true;
+        for (PublishingRole role : roles) {
+            if (transitions.containsKey(role)) {
+                Set<Transition> available = transitions.get(role);
+                if(available.contains(transition)) {
+                    toReturn = true;
+                }
             }
         }
         return toReturn;

@@ -28,7 +28,7 @@ public class StateTest {
     @Test
     public void unknownRoleHasNoTransitions() {
         //When
-        final Set<Transition> avaliableTransitions = draft.avaliableTransitions(new PublishingRole("ROLE_UNKNOWN"));
+        final Set<Transition> avaliableTransitions = draft.avaliableTransitions(ImmutableSet.of(new PublishingRole("ROLE_UNKNOWN")));
         
         //Then
         assertThat("Should be no available Transitions", avaliableTransitions.size(), equalTo(0));
