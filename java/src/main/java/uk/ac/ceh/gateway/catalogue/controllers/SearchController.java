@@ -6,6 +6,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,9 +39,10 @@ public class SearchController {
     }
     
     private SearchResults<GeminiDocumentSolrIndex> performQuery(SolrQuery query) throws SolrServerException{
-        List<GeminiDocumentSolrIndex> results = solrServer.query(query, SolrRequest.METHOD.POST).getBeans(GeminiDocumentSolrIndex.class);
+        QueryResponse response = solrServer.query(query, SolrRequest.METHOD.POST);
+        List<GeminiDocumentSolrIndex> results = response.getBeans(GeminiDocumentSolrIndex.class);
         Header header = new SearchResults.Header()
-                .setNumFound(results.size())
+                .setNumFound(response.getResults().getNumFound())
                 .setStart(query.getStart())
                 .setRows(query.getRows());
         return new SearchResults<GeminiDocumentSolrIndex>()
