@@ -23,7 +23,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
+import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -39,19 +39,19 @@ public class DocumentController {
     private final DocumentReadingService<GeminiDocument> documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
-    private final DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler;
+    private final BundledReaderService<GeminiDocument> documentBundleReader;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
                                 DocumentReadingService<GeminiDocument> documentReader,
                                 DocumentInfoMapper documentInfoMapper,
                                 DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory,
-                                DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler) {
+                                BundledReaderService<GeminiDocument> documentBundleReader) {
         this.repo = repo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
         this.infoFactory = infoFactory;
-        this.documentBundler = documentBundler;
+        this.documentBundleReader = documentBundleReader;
     }
     
     @RequestMapping (value = "documents",
@@ -72,8 +72,8 @@ public class DocumentController {
             GeminiDocument data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType); 
             MetadataInfo metadataDocument = infoFactory.createInfo(data, contentMediaType); //get the metadata info
             
-            repo.submitData(filename(data.getId(), "meta"), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
-                .submitData(filename(data.getId(), "raw"), (o) -> Files.copy(tmpFile, o) )
+            repo.submitData(data.getId() + ".meta", (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
+                .submitData(data.getId() + ".raw", (o) -> Files.copy(tmpFile, o) )
                 .commit(user, commitMessage);
             
         }
@@ -98,16 +98,7 @@ public class DocumentController {
     public GeminiDocument readMetadata(
             @PathVariable("file") String file,
             @PathVariable("revision") String revision) throws DataRepositoryException, IOException, UnknownContentTypeException {
-                
-        MetadataInfo documentInfo = documentInfoMapper.readInfo(
-                                        repo.getData(revision, filename(file, "meta"))
-                                            .getInputStream());
-        
-        DataDocument dataDoc = repo.getData(revision, filename(file, "raw"));
-        GeminiDocument document = documentReader.read(dataDoc.getInputStream(),
-                                                    documentInfo.getRawMediaType());
-        documentBundler.bundle(document, documentInfo);
-        return document;
+        return documentBundleReader.readBundle(file, revision);
     }
     
     @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
@@ -118,12 +109,8 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @RequestParam(value = "message", defaultValue = "delete document") String reason,
             @PathVariable("file") String file) throws DataRepositoryException, IOException {
-        return repo.deleteData(filename(file, "meta"))
-                   .deleteData(filename(file, "raw"))
+        return repo.deleteData(file + ".meta")
+                   .deleteData(file + ".raw")
                    .commit(user, reason);
-    }
-    
-    protected String filename(String name, String extension) {
-        return String.format("%s.%s", name, extension);
     }
 }

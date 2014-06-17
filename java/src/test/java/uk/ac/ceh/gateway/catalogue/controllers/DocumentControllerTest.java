@@ -32,14 +32,13 @@ import org.springframework.util.StreamUtils;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
-import uk.ac.ceh.components.datastore.git.GitDataDocument;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
+import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -55,7 +54,7 @@ public class DocumentControllerTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService<GeminiDocument> documentReader;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler;
+    @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<GeminiDocument> documentBundleReader;
     private DocumentController controller;
     
     @Rule
@@ -72,7 +71,7 @@ public class DocumentControllerTest {
                                             documentReader,
                                             documentInfoMapper,
                                             infoFactory,
-                                            documentBundler);
+                                            documentBundleReader);
     }
     
     @Test
@@ -136,34 +135,62 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkDocumentIsBundledWhenReadFromParticularRevision() throws DataRepositoryException, IOException, UnknownContentTypeException {
+    public void checkThatReadingDelegatesToBundledReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException {
         //Given
-        String fileToRead = "file";
-        String revision = "HEAD";
+        GeminiDocument bundledDocument = mock(GeminiDocument.class);
         
-        ByteArrayInputStream metadataInfoInputStream = new ByteArrayInputStream("meta".getBytes());
-        GitDataDocument metadataInfoDocument = mock(GitDataDocument.class);
-        when(metadataInfoDocument.getInputStream()).thenReturn(metadataInfoInputStream);
+        String file = "myFile";
+        String revision = "revision";
         
-        ByteArrayInputStream rawInputStream = new ByteArrayInputStream("file".getBytes());
-        GitDataDocument rawDocument = mock(GitDataDocument.class);
-        when(rawDocument.getInputStream()).thenReturn(rawInputStream);
-        
-        doReturn(metadataInfoDocument).when(repo).getData(revision, "file.meta");
-        doReturn(rawDocument).when(repo).getData(revision, "file.raw");
-        
-        MetadataInfo metadata = mock(MetadataInfo.class);
-        when(metadata.getRawMediaType()).thenReturn(MediaType.TEXT_XML);
-        when(documentInfoMapper.readInfo(metadataInfoInputStream)).thenReturn(metadata);
-        
-        GeminiDocument geminiDocument = mock(GeminiDocument.class);
-        when(documentReader.read(rawInputStream, MediaType.TEXT_XML)).thenReturn(geminiDocument);
+        when(documentBundleReader.readBundle(file, revision)).thenReturn(bundledDocument);
         
         //When
-        controller.readMetadata(fileToRead, revision);
+        GeminiDocument readDocument = controller.readMetadata(file, revision);
         
         //Then
-        verify(documentBundler).bundle(geminiDocument, metadata);
+        verify(documentBundleReader).readBundle(file, revision);
+        assertEquals("Expected the mocked gemini document", bundledDocument, readDocument);
+    }
+    
+    @Test
+    public void checkThatReadingLatestFileComesFromLatestRevision() throws IOException, DataRepositoryException, UnknownContentTypeException {
+        //Given
+        String latestRevisionId = "latestRev";
+        String file = "myFile";
+        
+        GeminiDocument bundledDocument = mock(GeminiDocument.class);
+        when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
+        
+        DataRevision revision = mock(DataRevision.class);
+        when(revision.getRevisionID()).thenReturn(latestRevisionId);
+        doReturn(revision).when(repo).getLatestRevision();
+        
+        //When
+        controller.readMetadata(file);
+        
+        //Then
+        verify(documentBundleReader).readBundle(file, latestRevisionId);
+    }
+    
+    @Test
+    public void checkThatReadingLatestFileDelegatesToReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException {
+        //Given
+        String latestRevisionId = "latestRev";
+        String file = "myFile";
+        
+        GeminiDocument bundledDocument = mock(GeminiDocument.class);
+        when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
+        
+        DataRevision revision = mock(DataRevision.class);
+        when(revision.getRevisionID()).thenReturn(latestRevisionId);
+        doReturn(revision).when(repo).getLatestRevision();
+        
+        //When
+        GeminiDocument readDocument = controller.readMetadata(file);
+        
+        //Then
+        verify(documentBundleReader).readBundle(eq(file), any(String.class));
+        assertEquals("Expected the mocked gemini document", bundledDocument, readDocument);
     }
     
     private DataRevision<CatalogueUser> lastCommit(String file) throws DataRepositoryException {
