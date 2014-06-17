@@ -10,4 +10,7 @@ puppet_ssl/crl.pem
 catalogue
 catalogue_config
 catalogue_tomcat
+
+# Ignore Test output
+junit.xml
 npm-debug.log
