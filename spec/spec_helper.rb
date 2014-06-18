@@ -1,6 +1,15 @@
 require 'rubygems'
 require 'capybara/rspec'
 require 'selenium/webdriver'
+require 'headless'
+
+if ENV['HEADLESS'] == 'true'
+  headless = Headless.new
+  headless.start
+  at_exit do
+    headless.destroy
+  end
+end
 
 Capybara.register_driver :chrome do |app|
   Capybara::Selenium::Driver.new(app, :browser => :chrome)
