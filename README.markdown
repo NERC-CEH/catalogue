@@ -51,11 +51,10 @@ The vagrant box can be functionally tested using capybara and selenium. The test
 
 * Then you can execute your tests
 
-
         bundle exec rspec
 
 * Sit back and watch your chrome instance run through your test suite
 
 ### Running the tests headlessly
 
-If you want to execute the tests within xvfb, then set the environment variable *HEADLESS* to true. Chrome will be started up inside xvfb.
+If you want to execute the tests within xvfb, then set the environment variable **HEADLESS** to true. Chrome will be started up inside xvfb. Obviously your box will need to have xvfb installed.
