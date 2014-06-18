@@ -1,16 +1,26 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.EventBus;
+import javax.xml.xpath.XPathExpressionException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Matchers.any;
+import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 
@@ -19,12 +29,17 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
  * @author cjohn
  */
 public class ServiceConfigTest {
+    @Mock EventBus bus;
+    @Mock ObjectMapper jacksonMapper;
+    
     private ServiceConfig services;
     
     @Before
     public void createServiceConfig() {
-        services = new ServiceConfig();
-        services.jacksonMapper = mock(ObjectMapper.class);
+        MockitoAnnotations.initMocks(this);
+        services = spy(new ServiceConfig());
+        services.jacksonMapper = jacksonMapper;
+        services.bus = bus;
     }
     
     @Test
@@ -101,4 +116,55 @@ public class ServiceConfigTest {
         assertEquals("Expected to find image png media type", MediaType.IMAGE_PNG, metadataInfo.getRawMediaType());
     }
     
+    @Test
+    public void checkThatIndexingServiceIsRequestedToBeIndexedAfterCreation() throws XPathExpressionException {
+        //Given
+        doNothing().when(services).performReindexIfNothingIsIndexed(any(SolrIndexingService.class));
+        
+        //When
+        SolrIndexingService<GeminiDocument> documentIndexingService = services.documentIndexingService();
+        
+        //Then
+        verify(services).performReindexIfNothingIsIndexed(documentIndexingService);
+    }
+    
+    @Test
+    public void checkThatIndexingServiceIsReindexedIfEmpty() throws DocumentIndexingException {
+        //Given
+        SolrIndexingService<GeminiDocument> documentIndexingService = mock(SolrIndexingService.class);
+        when(documentIndexingService.isIndexEmpty()).thenReturn(true);
+        
+        //When
+        services.performReindexIfNothingIsIndexed(documentIndexingService);
+        
+        //Then
+        verify(documentIndexingService).rebuildIndex();
+    }
+    
+    @Test
+    public void checkThatIndexingServiceIsNotReindexIfPopulated() throws DocumentIndexingException {
+        //Given
+        SolrIndexingService<GeminiDocument> documentIndexingService = mock(SolrIndexingService.class);
+        when(documentIndexingService.isIndexEmpty()).thenReturn(false);
+        
+        //When
+        services.performReindexIfNothingIsIndexed(documentIndexingService);
+        
+        //Then
+        verify(documentIndexingService, never()).rebuildIndex();
+    }
+    
+    @Test
+    public void checkThatDocumentExceptionWhenReindexingIsPostedToEventBus() throws DocumentIndexingException {
+        //Given
+        DocumentIndexingException documentIndexingException = new DocumentIndexingException("Failed to check if index is empty");
+        SolrIndexingService<GeminiDocument> documentIndexingService = mock(SolrIndexingService.class);
+        when(documentIndexingService.isIndexEmpty()).thenThrow(documentIndexingException);
+        
+        //When
+        services.performReindexIfNothingIsIndexed(documentIndexingService);
+        
+        //Then
+        verify(bus).post(documentIndexingException);
+    }
 }

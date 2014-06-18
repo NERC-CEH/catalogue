@@ -3,20 +3,25 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
@@ -154,5 +159,48 @@ public class SolrIndexingServiceTest {
         //Then
         verify(solrServer).deleteById(documents);
         verify(solrServer).commit();
+    }
+    
+    @Test
+    public void checkThatEmptySolrIndexResultsInEmptyService() throws SolrServerException, DocumentIndexingException {
+        //Given
+        QueryResponse queryResponse = mock(QueryResponse.class, RETURNS_DEEP_STUBS);
+        when(queryResponse.getResults().isEmpty()).thenReturn(true);
+        when(solrServer.query(any(SolrQuery.class))).thenReturn(queryResponse);
+        
+        //When
+        boolean isEmpty = service.isIndexEmpty();
+        
+        //Then
+        assertTrue("Expected the service to return empty", isEmpty);
+    }
+    
+    @Test
+    public void checkThatPopulatedSolrIndexResultsInPopulatedService() throws SolrServerException, DocumentIndexingException {
+        //Given
+        QueryResponse queryResponse = mock(QueryResponse.class, RETURNS_DEEP_STUBS);
+        when(queryResponse.getResults().isEmpty()).thenReturn(false);
+        when(solrServer.query(any(SolrQuery.class))).thenReturn(queryResponse);
+        
+        //When
+        boolean isEmpty = service.isIndexEmpty();
+        
+        //Then
+        assertFalse("Expected the service to not be empty", isEmpty);
+    }
+    
+    @Test
+    public void checkThatWeQueryForAllDocumentsWhenCheckingIfSolrIndexIsEmpty() throws SolrServerException, DocumentIndexingException  {
+        //Given
+        QueryResponse queryResponse = mock(QueryResponse.class, RETURNS_DEEP_STUBS);
+        when(solrServer.query(any(SolrQuery.class))).thenReturn(queryResponse);
+        
+        //When
+        service.isIndexEmpty();
+        
+        //Then
+        ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
+        verify(solrServer).query(solrQuery.capture());
+        assertEquals("Expecte a wildcard query for the solr search", "*:*", solrQuery.getValue().getQuery());
     }
 }
