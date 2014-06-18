@@ -21,6 +21,7 @@ Directories will be shared with your host machine unless the environment variabl
 
   It is the development.properties which is relevant for the vagrant box.
 
+
 ### /var/ceh-catalogue/datastore -> ssh://git@stash.ceh.ac.uk:7999/cig/tcExport.git
 
   This contains a dump of test data for the vagrant box to use. 
@@ -38,3 +39,23 @@ Then in a bash window run
 
 Once you are up and running, try visiting one of the [metadata](https://localhost:8080/documents/ff55462e-38a4-4f30-b562-f82ff263d9c3) documents in your browser. Note that the server is using **https** on port 8080
 
+## Testing
+
+The vagrant box can be functionally tested using capybara and selenium. The tests for this are written in rspec, to run these and drive the chrome browser from a windows box you will need to:
+
+* Get a copy of the [chromedriver](http://ladist.nerc-lancaster.ac.uk/apps/selenium/chromedriver-2.10_win32.exe). Save it somewhere as *chromedriver* and make sure that it is accessable from your PATH variable
+
+* Install the gem bundle using ( you will have had to previously installed [bundler](http://bundler.io/) )
+
+        bundle install
+
+* Then you can execute your tests
+
+
+        bundle exec rspec
+
+* Sit back and watch your chrome instance run through your test suite
+
+### Running the tests headlessly
+
+If you want to execute the tests within xvfb, then set the environment variable HEADLESS to true. Chrome will be started up inside xvfb.
