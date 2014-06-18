@@ -58,4 +58,4 @@ The vagrant box can be functionally tested using capybara and selenium. The test
 
 ### Running the tests headlessly
 
-If you want to execute the tests within xvfb, then set the environment variable HEADLESS to true. Chrome will be started up inside xvfb.
+If you want to execute the tests within xvfb, then set the environment variable *HEADLESS* to true. Chrome will be started up inside xvfb.
