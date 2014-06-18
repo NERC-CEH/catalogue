@@ -3,8 +3,10 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import java.io.IOException;
 import java.util.List;
 import lombok.Data;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
@@ -30,6 +32,16 @@ public class SolrIndexingService<D> implements DocumentIndexingService {
             indexDocuments(listingService.filterFilenames(repo.getFiles(revision)), revision);
         }
         catch(IOException | SolrServerException  ex) {
+            throw new DocumentIndexingException(ex);
+        }
+    }
+    
+    @Override
+    public boolean isIndexEmpty() throws DocumentIndexingException {
+        try {
+            return solrServer.query(new SolrQuery("*:*")).getResults().isEmpty();
+        }
+        catch(SolrServerException ex) {
             throw new DocumentIndexingException(ex);
         }
     }

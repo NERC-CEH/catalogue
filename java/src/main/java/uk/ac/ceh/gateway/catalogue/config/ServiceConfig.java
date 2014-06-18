@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.EventBus;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
@@ -32,6 +34,7 @@ public class ServiceConfig {
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
     @Autowired SolrServer solrServer;
+    @Autowired EventBus bus;
     
     @Bean
     public DocumentReadingService<GeminiDocument> documentReadingService() throws XPathExpressionException {
@@ -86,12 +89,29 @@ public class ServiceConfig {
     
     @Bean
     public SolrIndexingService<GeminiDocument> documentIndexingService() throws XPathExpressionException {
-        return new SolrIndexingService<>(
+        SolrIndexingService toReturn = new SolrIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
                 new GeminiDocumentSolrIndexGenerator(),
                 solrServer
         );
+        
+        performReindexIfNothingIsIndexed(toReturn);
+        return toReturn;
+    }
+    
+    
+    //Perform an initial index of solr if their is no content inside
+    protected void performReindexIfNothingIsIndexed(SolrIndexingService<?> service) {
+        try {
+            if(service.isIndexEmpty()) {
+                service.rebuildIndex();
+            }
+        }
+        catch(DocumentIndexingException ex) {
+            //Indexing or reading from solr failed... 
+            bus.post(ex); //Silently hand over to the event bus
+        }
     }
 }
