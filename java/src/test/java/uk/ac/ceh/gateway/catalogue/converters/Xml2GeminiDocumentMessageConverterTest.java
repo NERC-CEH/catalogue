@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import org.joda.time.LocalDate;
 import static org.junit.Assert.*;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
 /**
@@ -28,6 +30,50 @@ public class Xml2GeminiDocumentMessageConverterTest {
     @Before
     public void createGeminiDocumentConverter() throws XPathExpressionException {
         geminiReader = new Xml2GeminiDocumentMessageConverter();
+    }
+    
+    @Test
+    public void canGetNonOglDownloadOrder() throws IOException {
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("nonOglDownloadOrder.xml"));
+        DownloadOrder expected = DownloadOrder
+            .builder()
+            .orderUrl("http://gateway.ceh.ac.uk/download?fileIdentifier=11caad35-4a33-4ad8-852b-6c120fd250e2")
+            .supportingDocumentsUrl("http://eidchub.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2")
+            .licenseUrl("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/standard-click-through/plain")
+            .build();
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        DownloadOrder actual = document.getDownloadOrder();
+        
+        //Then
+        assertThat("DownloadOrder 'actual' should be equal to 'expected'", actual, equalTo(expected));
+        assertThat("OGL license should be false", actual.isOgl(), equalTo(false));
+    }
+    
+    @Test
+    public void canGetOglDownloadOrder() throws IOException {
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("oglDownloadOrder.xml"));
+        DownloadOrder expected = DownloadOrder
+            .builder()
+            .orderUrl("http://gateway.ceh.ac.uk/download?fileIdentifier=11caad35-4a33-4ad8-852b-6c120fd250e2")
+            .supportingDocumentsUrl("http://eidchub.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2")
+            .licenseUrl("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
+            .build();
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        DownloadOrder actual = document.getDownloadOrder();
+        
+        //Then
+        assertThat("DownloadOrder 'actual' should be equal to 'expected'", actual, equalTo(expected));
+        assertThat("OGL license should be false", actual.isOgl(), equalTo(true));
     }
 
     @Test

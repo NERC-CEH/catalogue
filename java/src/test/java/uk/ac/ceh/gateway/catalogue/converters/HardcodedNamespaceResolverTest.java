@@ -18,6 +18,18 @@ public class HardcodedNamespaceResolverTest {
     }
     
     @Test
+    public void checkCanResolveXlinkPrefix() {
+        //Given
+        String prefix = "xlink";
+        
+        //When
+        String uri = resolver.getNamespaceURI(prefix);
+        
+        //Then
+        assertEquals("Expected the xlink uri", "http://www.w3.org/1999/xlink", uri);
+    }
+    
+    @Test
     public void checkCanResolveGMDPrefix() {
         //Given
         String prefix = "gmd";
