@@ -45,6 +45,8 @@ The vagrant box can be functionally tested using capybara and selenium. The test
 
 * Get a copy of the [chromedriver](http://ladist.nerc-lancaster.ac.uk/apps/selenium/chromedriver-2.10_win32.exe). Save it somewhere as *chromedriver* and make sure that it is accessable from your PATH variable
 
+* Get a ruby installation. If you are on windows get if from [here](http://dl.bintray.com/oneclick/rubyinstaller/rubyinstaller-1.9.3-p545.exe?direct)
+
 * Install the gem bundle using ( you will have had to previously installed [bundler](http://bundler.io/) )
 
         bundle install
