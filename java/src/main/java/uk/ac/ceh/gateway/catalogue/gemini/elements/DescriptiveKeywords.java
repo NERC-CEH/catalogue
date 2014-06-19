@@ -6,7 +6,7 @@ import lombok.Value;
 import lombok.experimental.Builder;
 
 @Value
-public class DescriptiveKeywords implements Empty {
+public class DescriptiveKeywords implements Renderable {
     private final List<Keyword> keywords;
     private final CodeListItem type;
     private final ThesaurusName thesaurusName;
@@ -33,7 +33,7 @@ public class DescriptiveKeywords implements Empty {
     }
 
     @Override
-    public boolean isEmpty() {
-        return keywords.isEmpty() && type.isEmpty() && thesaurusName.isEmpty();
+    public boolean hasRenderableContent() {
+        return keywords.isEmpty() && type.hasRenderableContent() && thesaurusName.hasRenderableContent();
     }
 }

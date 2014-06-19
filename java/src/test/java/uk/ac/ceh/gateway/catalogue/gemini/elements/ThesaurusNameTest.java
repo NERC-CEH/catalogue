@@ -12,7 +12,7 @@ public class ThesaurusNameTest {
         ThesaurusName actual = ThesaurusName.builder().build();
         
         //When
-        final boolean empty = actual.isEmpty();
+        final boolean empty = actual.hasRenderableContent();
         
         //Then
         assertThat("ThesaurusName should be empty", empty, equalTo(true));

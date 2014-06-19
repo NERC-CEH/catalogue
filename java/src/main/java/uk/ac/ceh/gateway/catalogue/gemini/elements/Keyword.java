@@ -5,7 +5,7 @@ import lombok.experimental.Builder;
 import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
-public class Keyword implements Empty{
+public class Keyword implements Renderable{
     private final String value, URI;
     
     @Builder
@@ -15,7 +15,7 @@ public class Keyword implements Empty{
     }
 
     @Override
-    public boolean isEmpty() {
+    public boolean hasRenderableContent() {
         return value.isEmpty() && URI.isEmpty();
     }
 }

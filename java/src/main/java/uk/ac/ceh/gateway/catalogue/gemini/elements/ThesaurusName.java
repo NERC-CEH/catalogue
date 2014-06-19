@@ -6,7 +6,7 @@ import org.joda.time.LocalDate;
 import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
-public class ThesaurusName implements Empty {
+public class ThesaurusName implements Renderable {
     private final String title;
     private final LocalDate date;
     private final CodeListItem dateType;
@@ -31,7 +31,7 @@ public class ThesaurusName implements Empty {
     }
 
     @Override
-    public boolean isEmpty() {
-        return title.isEmpty() && date.equals(NULL_DATE) && dateType.isEmpty();
+    public boolean hasRenderableContent() {
+        return title.isEmpty() && date.equals(NULL_DATE) && dateType.hasRenderableContent();
     }
 }

@@ -37,7 +37,7 @@ public class DownloadOrderTest {
         DownloadOrder actual = DownloadOrder.builder().build();
         
         //When
-        final boolean empty = actual.isEmpty();
+        final boolean empty = actual.hasRenderableContent();
         
         assertThat("DownloadOrder should be empty", empty, equalTo(true));
     }   

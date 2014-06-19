@@ -5,7 +5,7 @@ import lombok.experimental.Builder;
 import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
-public class CodeListItem implements Empty {
+public class CodeListItem implements Renderable {
     private final String codeList, value;
     public static CodeListItem EMPTY_CODE_LIST_ITEM = new CodeListItem("", "");
 
@@ -16,7 +16,7 @@ public class CodeListItem implements Empty {
     }
     
     @Override
-    public boolean isEmpty() {
+    public boolean hasRenderableContent() {
         return codeList.isEmpty() && value.isEmpty();
     }
     
