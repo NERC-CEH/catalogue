@@ -20,17 +20,15 @@
             </div>
 
           <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="#"><i></i></a></li>
-              <li class="dropdown"><a href="#">Help<b class="caret"></b></a></li>
+            <ul class="nav navbar-nav navbar-right">             
+              <li><a href="#">Help</a></li>              
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Publish<b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#">Blah</a></li>
-                  <li><a href="#">Blah</a></li>
+                  <li><a href="#">BLAH</a></li>
+                  <li><a href="#">BLAH</a></li>
                 </ul>
               </li>
-              <li class="dropdown"><a href="#">Admin<b class="caret"></b></a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Username<b class="caret"></b></a>
                 <ul class="dropdown-menu">
@@ -40,15 +38,10 @@
               </li>
             </ul>
           </div>
+          </div>
         </div>
       </div>
-    </div>
-    
-
-      <div>
-        <#nested>
-      </div>
-
+    <#nested>
     </div>
 
     <script language="javascript" type="text/javascript" src="/static/vendor/jquery/dist/jquery.min.js"></script>

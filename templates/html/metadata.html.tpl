@@ -7,20 +7,31 @@
 <@skeleton.master title=title>
 
 <!-- InstanceBeginEditable name="MAIN" -->
-<div>
-  <@t.title_tmpl title=title/>
+<div class="row">
+	<div class="col-md-12">
+  		<@t.title_tmpl title=title/>
+  	</div>
 </div>
 
-<div>
-  <@d.description_tmpl description=description/>
+<div class="row">
+	<div class="col-md-9">
+  		<@d.description_tmpl description=description/>
+  	</div>
+  	<div class="col-md-3">
+  		<p>Get the data</p>
+  	</div>
 </div>
 
-<div>
-  <@tc.category/>
+<div class="row">
+	<div class="col-md-12">
+ 		<@tc.category/>
+  	</div>
 </div>
 
-<div>
-  <@keyword.keywords/>
+<div class="row">
+	<div class="col-md-12">
+ 		<@keyword.keywords/>
+  	</div>
 </div>
 
 </@skeleton.master>
