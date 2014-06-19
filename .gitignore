@@ -13,4 +13,5 @@ catalogue_tomcat
 
 # Ignore Test output
 junit.xml
+rspec_screenshots
 npm-debug.log
