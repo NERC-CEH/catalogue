@@ -1,4 +1,3 @@
-<#macro category>
 <div>
   <#if topicCategories?has_content>
     <p>Topic category:</p>
@@ -7,4 +6,3 @@
     </#list>
   </#if>
 </div>
-</#macro>

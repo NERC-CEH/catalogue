@@ -5844,7 +5844,7 @@ td.visible-print {
   margin-bottom: 19px;
 }
 .navbar {
-  background-color: #FFF;
+  background-color: #ffffff;
   border-bottom: #38CCD7 3px solid;
 }
 .navbar li a:hover {
@@ -5857,9 +5857,6 @@ td.visible-print {
   border-left: 1px solid #B7ECF0;
   font-weight: bold;
 }
-.navbar li:first-child a {
-  border-left-style: none;
-}
 .navbar li ul a:visited,
 .navbar li li ul a:link {
   border-left-style: none;
@@ -5870,4 +5867,7 @@ td.visible-print {
 }
 .navbar-right {
   padding-top: 40px;
+}
+.navbar-inverse .navbar-toggle {
+  border-color: #000000;
 }

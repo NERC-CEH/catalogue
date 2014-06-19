@@ -1,26 +1,33 @@
 <#import "skeleton.html.tpl" as skeleton>
-<#import "keywords.html.tpl" as keyword>
-<#import "title.html.tpl" as t>
-<#import "description.html.tpl" as d>
-<#import "topiccategories.html.tpl" as tc>
 
 <@skeleton.master title=title>
 
 <!-- InstanceBeginEditable name="MAIN" -->
-<div>
-  <@t.title_tmpl title=title/>
+<div class="row">
+    <div class="col-md-12">
+      <#include "_title.html.tpl">
+    </div>
 </div>
 
-<div>
-  <@d.description_tmpl description=description/>
+<div class="row">
+    <div class="col-md-9">
+      <#include "_description.html.tpl">
+    </div>
+    <div class="col-md-3">
+      <p>Get Data</p>
+    </div>
 </div>
 
-<div>
-  <@tc.category/>
+<div class="row">
+    <div class="col-md-12">
+      <#include "_topiccategories.html.tpl">
+    </div>    
 </div>
 
-<div>
-  <@keyword.keywords/>
+<div class="row">
+    <div class="col-md-12">
+      <#include "_keywords.html.tpl">
+    </div>
 </div>
 
 </@skeleton.master>
