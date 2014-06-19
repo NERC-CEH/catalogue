@@ -23,7 +23,6 @@
         <freemarker.version>2.3.20</freemarker.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <joda-time.version>2.3</joda-time.version>
-        <tomcat-directory>${project.build.directory}</tomcat-directory>
     </properties>
     
     <dependencies>        
@@ -209,7 +208,6 @@
                 <configuration>
                     <warName>ROOT</warName>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <outputDirectory>${tomcat-directory}</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
