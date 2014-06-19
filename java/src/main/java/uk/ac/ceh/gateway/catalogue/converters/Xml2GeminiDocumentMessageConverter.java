@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
@@ -36,7 +37,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id, title, description, alternateTitle, 
             languageCodeList, languageCodeListValue, topicCategories, 
-            descriptiveKeywords;
+            descriptiveKeywords, orderUrl, supportingDocumentsUrl, licenseUrl;
     private final XPath xpath;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
@@ -52,6 +53,9 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.languageCodeListValue = xpath.compile(XPaths.LANGUAGE_CODE_LIST_VALUE);
         this.topicCategories = xpath.compile(XPaths.TOPIC_CATEGORIES);
         this.descriptiveKeywords = xpath.compile(XPaths.DESCRIPTIVE_KEYWORDS);
+        this.orderUrl = xpath.compile(XPaths.ORDER_URL);
+        this.supportingDocumentsUrl = xpath.compile(XPaths.SUPPORTING_DOCUMENTS_URL);
+        this.licenseUrl = xpath.compile(XPaths.LICENCE_URL);
     }
     
     @Override
@@ -80,6 +84,12 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             );
             toReturn.setDescriptiveKeywords(getDescriptiveKeywords(document, descriptiveKeywords));
             toReturn.setTopicCategories(getNodeListValuesEvaluate(document, topicCategories));
+            toReturn.setDownloadOrder(DownloadOrder
+                    .builder()
+                    .orderUrl(orderUrl.evaluate(document))
+                    .supportingDocumentsUrl(supportingDocumentsUrl.evaluate(document))
+                    .licenseUrl(licenseUrl.evaluate(document))
+                    .build());
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
