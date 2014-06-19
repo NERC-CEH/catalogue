@@ -1,4 +1,3 @@
-<#macro keywords>
 <div>
   <h3>Keywords</h3>
   <p>
@@ -9,4 +8,3 @@
     </#list>
   </p>
 </div>
-</#macro>
