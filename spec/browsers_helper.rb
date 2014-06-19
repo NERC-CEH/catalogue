@@ -1,5 +1,5 @@
 # Parse the environment var browsers. If it is not there just test chrome
-browsers = ENV['BROWSERS'] || 'chrome'
+browsers = ENV['BROWSERS'] || 'chrome,firefox'
 BROWSERS = browsers.split(',').map {|s| s.to_sym}
 
 Capybara.register_driver :chrome do |app|
