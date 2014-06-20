@@ -34,16 +34,17 @@ public class WorkflowTest {
     @Test
     public void editorTransitionDraftToPending() {
         //Given
-        MetadataInfo info = new MetadataInfo("test", "", "draft");
+        MetadataInfo original = new MetadataInfo("test", "", "draft");
         
-        final State currentState = workflow.currentState(info);
+        final State currentState = workflow.currentState(original);
         final Transition toPending = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "pending");
         
         //When
-        info = workflow.transitionDocumentState(info, ImmutableSet.of(editor), toPending);
+        MetadataInfo transitioned = workflow.transitionDocumentState(original, ImmutableSet.of(editor), toPending);
         
         //Then
-        assertThat("state should be pending", info.getState(), equalTo("pending"));
+        assertThat("state should be pending", transitioned.getState(), equalTo("pending"));
+        assertThat("transitioned should not be equal to original", transitioned, not(equalTo(original)));
     }
     
     @Test

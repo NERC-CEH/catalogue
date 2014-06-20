@@ -9,9 +9,11 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(of = {"id", "title"})
+@ToString(of = {"id", "title"})
 public class State {
     private final String id, title;
     @Getter(AccessLevel.NONE)
