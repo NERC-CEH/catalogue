@@ -8,6 +8,7 @@ import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import org.joda.time.LocalDate;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -30,6 +31,52 @@ public class Xml2GeminiDocumentMessageConverterTest {
     @Before
     public void createGeminiDocumentConverter() throws XPathExpressionException {
         geminiReader = new Xml2GeminiDocumentMessageConverter();
+    }
+    
+    @Test
+    public void canGetOtherCitationDetailsFromDataset() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("otherCitationDetailsDataset.xml"));
+        String expected = "This is other citation details";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getOtherCitationDetails();
+        
+        //Then
+        assertThat("OtherCitationDetails 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetOtherCitationDetailsFromService() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("otherCitationDetailsService.xml"));
+        String expected = "This is other citation details - service";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getOtherCitationDetails();
+        
+        //Then
+        assertThat("OtherCitationDetails 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void otherCitationDetailsFromEmptyElementIsNotNull() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("otherCitationDetailsServiceEmpty.xml"));
+        String expected = "";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getOtherCitationDetails();
+        
+        //Then
+        assertThat("OtherCitationDetails should not be null", actual, notNullValue());
+        assertThat("OtherCitationDetails 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
     
     @Test
@@ -106,7 +153,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertNotNull("Expected title to have content", document.getTitle());
         assertFalse("Expected title to not be empty string", document.getTitle().isEmpty());
     }
-
+    
     @Test
     public void canGetAlternateTitles() throws IOException {
        
