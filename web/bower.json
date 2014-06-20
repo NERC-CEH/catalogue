@@ -1,0 +1,7 @@
+{
+  "name": "ceh-catalogue",
+  "version": "0.0.0",
+  "dependencies": {
+    "bootstrap": "3.1.0"
+  }
+}

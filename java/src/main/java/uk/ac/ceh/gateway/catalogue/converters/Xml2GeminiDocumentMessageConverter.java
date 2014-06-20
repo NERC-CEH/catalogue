@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
@@ -34,8 +35,9 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
  * @author jcoop, cjohn
  */
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
-    private final XPathExpression id, title, alternateTitle, languageCodeList, languageCodeListValue, 
-            topicCategories, descriptiveKeywords;
+    private final XPathExpression id, title, description, alternateTitle, 
+            languageCodeList, languageCodeListValue, topicCategories, 
+            descriptiveKeywords, orderUrl, supportingDocumentsUrl, licenseUrl, otherCitationDetails;
     private final XPath xpath;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
@@ -45,11 +47,16 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         xpath.setNamespaceContext(new HardcodedNamespaceResolver());
         this.id = xpath.compile(XPaths.ID);
         this.title = xpath.compile(XPaths.TITLE);
+        this.description = xpath.compile(XPaths.DESCRIPTION);
         this.alternateTitle = xpath.compile(XPaths.ALTERNATE_TITLE);
         this.languageCodeList = xpath.compile(XPaths.LANGUAGE_CODE_LIST);
         this.languageCodeListValue = xpath.compile(XPaths.LANGUAGE_CODE_LIST_VALUE);
         this.topicCategories = xpath.compile(XPaths.TOPIC_CATEGORIES);
         this.descriptiveKeywords = xpath.compile(XPaths.DESCRIPTIVE_KEYWORDS);
+        this.orderUrl = xpath.compile(XPaths.ORDER_URL);
+        this.supportingDocumentsUrl = xpath.compile(XPaths.SUPPORTING_DOCUMENTS_URL);
+        this.licenseUrl = xpath.compile(XPaths.LICENCE_URL);
+        this.otherCitationDetails = xpath.compile(XPaths.OTHER_CITATION_DETAILS);
     }
     
     @Override
@@ -68,6 +75,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             GeminiDocument toReturn = new GeminiDocument();
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
+            toReturn.setDescription(description.evaluate(document));
             toReturn.setAlternateTitles(getNodeListValuesEvaluate(document, alternateTitle));
             toReturn.setDatasetLanguage(CodeListItem
                     .builder()
@@ -77,6 +85,13 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             );
             toReturn.setDescriptiveKeywords(getDescriptiveKeywords(document, descriptiveKeywords));
             toReturn.setTopicCategories(getNodeListValuesEvaluate(document, topicCategories));
+            toReturn.setDownloadOrder(DownloadOrder
+                    .builder()
+                    .orderUrl(orderUrl.evaluate(document))
+                    .supportingDocumentsUrl(supportingDocumentsUrl.evaluate(document))
+                    .licenseUrl(licenseUrl.evaluate(document))
+                    .build());
+            toReturn.setOtherCitationDetails(otherCitationDetails.evaluate(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

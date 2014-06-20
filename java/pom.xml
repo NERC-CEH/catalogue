@@ -4,7 +4,7 @@
 
     <groupId>uk.ac.ceh.gateway</groupId>
     <artifactId>Catalogue</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>CEH Information Gateway Catalogue</name>
@@ -176,11 +176,16 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -201,6 +206,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.3</version>
                 <configuration>
+                    <warName>ROOT</warName>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>

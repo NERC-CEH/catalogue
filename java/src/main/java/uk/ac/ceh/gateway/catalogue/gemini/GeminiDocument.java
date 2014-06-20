@@ -9,6 +9,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 
 /**
  *
@@ -22,9 +23,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument {
     
-    private String id, title;
+    private String id, title, description, otherCitationDetails;
     private List<String> alternateTitles, topicCategories;
     private CodeListItem datasetLanguage;
     private List<DescriptiveKeywords> descriptiveKeywords;
+    private DownloadOrder downloadOrder;
     private MetadataInfo metadata;
 }

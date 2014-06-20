@@ -1,18 +1,33 @@
-<html>
-  <head>
-    <title>Woot, the template has been loaded and processed</title>
-  </head>
-  <body>
-    <h1>CEH Metadata Record with id ${id}</h1>
-    <p>
-      This is a freemarker template for a metadata record. You can read variables like this.
-      <code> ${id} </code>
+<#import "skeleton.html.tpl" as skeleton>
 
-      The properties which are available to you can be found by looking at the GeminiDocument.java from
-      the uk.ac.ceh.gateway.catalogue.gemini package.
+<@skeleton.master title=title>
 
-      Be careful to check that the element you are going to read is present in the document. It is worth
-      brushing up on the <a href="http://freemarker.org/docs/dgui.html">Template authors guide</a> before begining to write templates
-    </p>
-  </body>
-</html>
+<!-- InstanceBeginEditable name="MAIN" -->
+<div class="row">
+    <div class="col-md-12">
+      <#include "_title.html.tpl">
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+      <#include "_description.html.tpl">
+    </div>
+    <div class="col-md-3">
+      <p>Get Data</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+      <#include "_topiccategories.html.tpl">
+    </div>    
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+      <#include "_keywords.html.tpl">
+    </div>
+</div>
+
+</@skeleton.master>

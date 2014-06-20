@@ -1,30 +1,56 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.EventBus;
+import javax.xml.xpath.XPathExpressionException;
+import org.apache.solr.client.solrj.SolrServer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Matchers.any;
+import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
+import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
+import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 
 /**
  *
  * @author cjohn
  */
 public class ServiceConfigTest {
+    @Mock EventBus bus;
+    @Mock ObjectMapper jacksonMapper;
+    @Mock DataRepository dataRepository;
+    @Mock SolrServer solrServer;
+    
     private ServiceConfig services;
     
     @Before
     public void createServiceConfig() {
-        services = new ServiceConfig();
-        services.jacksonMapper = mock(ObjectMapper.class);
+        MockitoAnnotations.initMocks(this);
+        services = spy(new ServiceConfig());
+        services.jacksonMapper = jacksonMapper;
+        services.dataRepository = dataRepository;
+        services.solrServer = solrServer;
+        services.bus = bus;
     }
     
     @Test
@@ -101,4 +127,108 @@ public class ServiceConfigTest {
         assertEquals("Expected to find image png media type", MediaType.IMAGE_PNG, metadataInfo.getRawMediaType());
     }
     
+    @Test
+    public void checkThatIndexingServiceIsRequestedToBeIndexedAfterCreation() throws XPathExpressionException {
+        //Given
+        doNothing().when(services).performReindexIfNothingIsIndexed(any(SolrIndexingService.class));
+        
+        //When
+        SolrIndexingService<GeminiDocument> documentIndexingService = services.documentIndexingService();
+        
+        //Then
+        verify(services).performReindexIfNothingIsIndexed(documentIndexingService);
+    }
+    
+    @Test
+    public void checkThatIndexingServiceIsReindexedIfEmpty() throws DocumentIndexingException {
+        //Given
+        SolrIndexingService<GeminiDocument> documentIndexingService = mock(SolrIndexingService.class);
+        when(documentIndexingService.isIndexEmpty()).thenReturn(true);
+        
+        //When
+        services.performReindexIfNothingIsIndexed(documentIndexingService);
+        
+        //Then
+        verify(documentIndexingService).rebuildIndex();
+    }
+    
+    @Test
+    public void checkThatIndexingServiceIsNotReindexIfPopulated() throws DocumentIndexingException {
+        //Given
+        SolrIndexingService<GeminiDocument> documentIndexingService = mock(SolrIndexingService.class);
+        when(documentIndexingService.isIndexEmpty()).thenReturn(false);
+        
+        //When
+        services.performReindexIfNothingIsIndexed(documentIndexingService);
+        
+        //Then
+        verify(documentIndexingService, never()).rebuildIndex();
+    }
+    
+    @Test
+    public void checkThatDocumentExceptionWhenReindexingIsPostedToEventBus() throws DocumentIndexingException {
+        //Given
+        DocumentIndexingException documentIndexingException = new DocumentIndexingException("Failed to check if index is empty");
+        SolrIndexingService<GeminiDocument> documentIndexingService = mock(SolrIndexingService.class);
+        when(documentIndexingService.isIndexEmpty()).thenThrow(documentIndexingException);
+        
+        //When
+        services.performReindexIfNothingIsIndexed(documentIndexingService);
+        
+        //Then
+        verify(bus).post(documentIndexingException);
+    }
+    
+    @Test
+    public void checkThatDocumentInfoMapperCanBeCreated() {
+        //Given
+        //Nothing
+        
+        //When
+        DocumentInfoMapper docMapper = services.documentInfoMapper();
+        
+        //Then
+        assertNotNull("Didn't expect the mapper to be null", docMapper);
+    }
+    
+    @Test
+    public void checkThatBundledReaderServiceIsComposedCorrectly() throws XPathExpressionException {
+        //Given
+        DocumentReadingService<GeminiDocument> readingService = mock(DocumentReadingService.class);
+        DocumentInfoMapper infoMapper = mock(DocumentInfoMapper.class);
+        DocumentBundleService<GeminiDocument, MetadataInfo> bundleService = mock(DocumentBundleService.class);
+        
+        doReturn(readingService).when(services).documentReadingService();
+        doReturn(infoMapper).when(services).documentInfoMapper();
+        doReturn(bundleService).when(services).documentBundleService();
+        
+        //When
+        MetadataInfoBundledReaderService<GeminiDocument> reader = services.bundledReaderService();
+        
+        //Then
+        assertEquals("Expected to find the dataRepository", dataRepository, reader.getRepo());
+        assertEquals("Expected to find the readingService", readingService, reader.getDocumentReader());
+        assertEquals("Expected to find the infoMapper", infoMapper, reader.getDocumentInfoMapper());
+        assertEquals("Expected to find the bundleService", bundleService, reader.getDocumentBundler());
+    }
+    
+    @Test
+    public void checkThatDocumentIndexingServiceIsComposedCorrectly() throws XPathExpressionException {
+        //Given
+        MetadataInfoBundledReaderService<GeminiDocument> reader = mock(MetadataInfoBundledReaderService.class);
+        ExtensionDocumentListingService listingService = mock(ExtensionDocumentListingService.class);
+        
+        doReturn(reader).when(services).bundledReaderService();
+        doReturn(listingService).when(services).documentListingService();
+        doNothing().when(services).performReindexIfNothingIsIndexed(any(SolrIndexingService.class));
+        
+        //When
+        SolrIndexingService<GeminiDocument> documentIndexingService = services.documentIndexingService();
+        
+        //Then
+        assertEquals("Expected to find the reader", reader, documentIndexingService.getReader());
+        assertEquals("Expected to find the listingService", listingService, documentIndexingService.getListingService());
+        assertEquals("Expected to find the dataRepository", dataRepository, documentIndexingService.getRepo());
+        assertEquals("Expected to find the solrServer", solrServer, documentIndexingService.getSolrServer());
+    }   
 }

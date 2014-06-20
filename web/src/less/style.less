@@ -1,0 +1,45 @@
+// Import our own style sheets
+
+@import "bootstrap";
+@import "search";
+
+// Variables
+// --------------------------------------------------
+//== Colors
+@hover_nav: #999999;
+@header_bg: #FFF;
+
+
+
+// Define the ceh navbar
+.navbar-static-top {margin-bottom: 19px;}
+
+.navbar {
+  background-color: @header_bg;
+  border-bottom:  #38CCD7 3px solid;
+
+  li {
+    a {
+      &:hover { color: @hover_nav;}
+      &:visited, &:link {
+        text-shadow: none;
+        color: @hover_nav;
+        border-left: 1px solid #B7ECF0;
+        font-weight: bold;        
+      }
+    }
+
+    ul a:visited, li ul a:link {
+      border-left-style:none;       
+    }
+
+    ul a:hover {
+      background-color: @hover_nav;
+      color: #FFF;
+    }
+  }
+}
+
+.navbar-right { padding-top:40px; }
+
+.navbar-inverse .navbar-toggle { border-color: #000}
