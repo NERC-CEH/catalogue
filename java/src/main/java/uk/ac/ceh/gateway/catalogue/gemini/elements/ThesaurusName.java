@@ -32,5 +32,6 @@ public class ThesaurusName implements Renderable {
 
     @Override
     public boolean isRenderable() {
-        return title.isEmpty() && date.equals(NULL_DATE) && dateType.hasRendeisRenderable}
+        return title.isEmpty() && date.equals(NULL_DATE) && dateType.isRenderable();
+    }
 }

@@ -16,6 +16,11 @@ public class DownloadOrder implements Renderable {
         this.licenseUrl = nullToEmpty(licenseUrl);
     }
     
+    /**
+     * Returns {@code true} if license is an Open Government Licence (OGL).
+     * 
+     * @return {@code true} if license is an Open Government Licence (OGL), otherwise false.
+     */
     public boolean isOgl() {
         return oglUrl.equals(licenseUrl);
     }

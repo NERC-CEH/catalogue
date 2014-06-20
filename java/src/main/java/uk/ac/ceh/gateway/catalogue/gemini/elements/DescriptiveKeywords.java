@@ -34,6 +34,6 @@ public class DescriptiveKeywords implements Renderable {
 
     @Override
     public boolean isRenderable() {
-        return keywords.isEmpty() && type.hasRendeisRenderableesaurusName.hasRenderableContent();
+        return keywords.isEmpty() && type.isRenderable() && thesaurusName.isRenderable();
     }
 }
