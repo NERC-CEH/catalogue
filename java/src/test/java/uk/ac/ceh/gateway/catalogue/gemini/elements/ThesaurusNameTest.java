@@ -7,15 +7,15 @@ import static org.junit.Assert.*;
 public class ThesaurusNameTest {
 
     @Test
-    public void isEmpty() {
+    public void isRenderable() {
         //Given
         ThesaurusName actual = ThesaurusName.builder().build();
         
         //When
-        final boolean empty = actual.hasRenderableContent();
+        final boolean renderable = actual.isRenderable();
         
         //Then
-        assertThat("ThesaurusName should be empty", empty, equalTo(true));
+        assertThat("ThesaurusName should not be renderable", renderable, equalTo(true));
     }
     
 }

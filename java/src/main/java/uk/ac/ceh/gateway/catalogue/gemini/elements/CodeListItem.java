@@ -16,7 +16,7 @@ public class CodeListItem implements Renderable {
     }
     
     @Override
-    public boolean hasRenderableContent() {
+    public boolean isRenderable() {
         return codeList.isEmpty() && value.isEmpty();
     }
     
