@@ -21,7 +21,7 @@ public class DownloadOrder implements Renderable {
     }
     
     @Override
-    public boolean hasRenderableContent() {
+    public boolean isRenderable() {
         return orderUrl.isEmpty() && supportingDocumentsUrl.isEmpty() && licenseUrl.isEmpty();
     }
 }

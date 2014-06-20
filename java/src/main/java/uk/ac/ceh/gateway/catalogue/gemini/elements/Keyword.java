@@ -15,7 +15,7 @@ public class Keyword implements Renderable{
     }
 
     @Override
-    public boolean hasRenderableContent() {
+    public boolean isRenderable() {
         return value.isEmpty() && URI.isEmpty();
     }
 }
