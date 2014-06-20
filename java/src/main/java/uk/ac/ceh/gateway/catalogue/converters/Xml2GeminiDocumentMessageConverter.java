@@ -37,7 +37,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id, title, description, alternateTitle, 
             languageCodeList, languageCodeListValue, topicCategories, 
-            descriptiveKeywords, orderUrl, supportingDocumentsUrl, licenseUrl;
+            descriptiveKeywords, orderUrl, supportingDocumentsUrl, licenseUrl, otherCitationDetails;
     private final XPath xpath;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
@@ -56,6 +56,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.orderUrl = xpath.compile(XPaths.ORDER_URL);
         this.supportingDocumentsUrl = xpath.compile(XPaths.SUPPORTING_DOCUMENTS_URL);
         this.licenseUrl = xpath.compile(XPaths.LICENCE_URL);
+        this.otherCitationDetails = xpath.compile(XPaths.OTHER_CITATION_DETAILS);
     }
     
     @Override
@@ -90,6 +91,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
                     .supportingDocumentsUrl(supportingDocumentsUrl.evaluate(document))
                     .licenseUrl(licenseUrl.evaluate(document))
                     .build());
+            toReturn.setOtherCitationDetails(otherCitationDetails.evaluate(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
