@@ -6,6 +6,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 
 /**
  *
@@ -59,4 +60,5 @@ public class GeminiDocumentSolrIndexGeneratorTest {
         //Then
         assertEquals("Expected to get my description", description, index.getDescription());
     }
+
 }
