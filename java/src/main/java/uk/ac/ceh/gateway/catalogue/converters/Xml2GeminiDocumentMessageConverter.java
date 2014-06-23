@@ -37,7 +37,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id, title, description, alternateTitle, 
             languageCodeList, languageCodeListValue, topicCategories, 
-            descriptiveKeywords, orderUrl, supportingDocumentsUrl, licenseUrl, otherCitationDetails;
+            descriptiveKeywords, orderUrl, supportingDocumentsUrl, licenseUrl, 
+            otherCitationDetails, resourceTypeCodeList, resourceTypeCodeListValue;
     private final XPath xpath;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
@@ -57,6 +58,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.supportingDocumentsUrl = xpath.compile(XPaths.SUPPORTING_DOCUMENTS_URL);
         this.licenseUrl = xpath.compile(XPaths.LICENCE_URL);
         this.otherCitationDetails = xpath.compile(XPaths.OTHER_CITATION_DETAILS);
+        this.resourceTypeCodeList = xpath.compile(XPaths.RESOURCE_TYPE_CODE_LIST);
+        this.resourceTypeCodeListValue = xpath.compile(XPaths.RESOURCE_TYPE_CODE_LIST_VALUE);
     }
     
     @Override
@@ -92,6 +95,12 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
                     .licenseUrl(licenseUrl.evaluate(document))
                     .build());
             toReturn.setOtherCitationDetails(otherCitationDetails.evaluate(document));
+            toReturn.setResourceType(CodeListItem
+                    .builder()
+                    .codeList(resourceTypeCodeList.evaluate(document))
+                    .value(resourceTypeCodeListValue.evaluate(document))
+                    .build()
+            );
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

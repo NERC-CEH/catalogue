@@ -488,8 +488,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertNotNull("Expected resourcetType code list to not be null", actual.getCodeList());
         assertFalse("Expected resourceType value to not be an empty string", actual.getValue().isEmpty());
         assertFalse("Expected resourceType code list not be empty string", actual.getCodeList().isEmpty());
-        assertEquals("resourceType not as expected", "dataset", actual.getValue());
-        assertEquals("Codelist not as expected", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode", actual.getCodeList());
+        assertEquals("resourceType not as expected", expected.getValue(), actual.getValue());
+        assertEquals("Codelist not as expected", expected.getCodeList(), actual.getCodeList());
         assertEquals("Content of resourceType not as expected", expected, actual);
 
     
