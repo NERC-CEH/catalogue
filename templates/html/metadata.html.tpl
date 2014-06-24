@@ -13,9 +13,9 @@
     <div class="col-md-9">
       <#include "_description.html.tpl">
     </div>
-    <div class="col-md-3 pull-right">
-      <p><#include "_ordering.html.tpl"></p>
-      <p><#include "_citation.html.tpl"></p>
+    <div class="col-md-3">
+      <#include "_ordering.html.tpl">
+      <#include "_citation.html.tpl">
     </div>
 </div>
 
