@@ -1,10 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +27,8 @@ import uk.ac.ceh.gateway.catalogue.model.SearchResults.Header;
 public class SearchController {
     
     private final SolrServer solrServer;
+    
+    private static final List<String> FACET_FIELDS = Arrays.asList("resourceType");
     
     @Autowired
     public SearchController(SolrServer solrServer){
@@ -45,10 +53,25 @@ public class SearchController {
                 .setNumFound(response.getResults().getNumFound())
                 .setTerm(term)
                 .setStart(query.getStart())
-                .setRows(query.getRows());   
+                .setRows(query.getRows());  
         return new DocumentSearchResults()
                 .setHeader(header)
-                .setResults(results);
+                .setResults(results)
+                .setFacets(getFacets(response));
+    }
+    
+    private Map<String, List<String>> getFacets(QueryResponse response){
+        
+        Map<String,List<String>> toReturn = new HashMap<>();
+        
+        for(FacetField facetField : response.getFacetFields()){
+            List<String> facetResults = new ArrayList<>();
+            for(Count count : facetField.getValues()){
+                facetResults.add(count.getName() + ":" + count.getCount());
+            }
+            toReturn.put(facetField.getName(), facetResults);
+        }
+        return toReturn;
     }
     
     private SolrQuery getQuery(String term, int start, int rows){
@@ -56,6 +79,12 @@ public class SearchController {
                 .setQuery(term)
                 .setStart(start)
                 .setRows(rows);
+        if(FACET_FIELDS.size() > 0){
+            query.setFacet(true);
+            for(String facetFieldName : FACET_FIELDS){
+                query.addFacetField(facetFieldName);
+            }
+        }
         return query;
     }
     
