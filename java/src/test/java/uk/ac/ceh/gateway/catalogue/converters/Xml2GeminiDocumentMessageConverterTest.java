@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
 /**
  *
@@ -31,6 +32,56 @@ public class Xml2GeminiDocumentMessageConverterTest {
     @Before
     public void createGeminiDocumentConverter() throws XPathExpressionException {
         geminiReader = new Xml2GeminiDocumentMessageConverter();
+    }
+    
+    @Test
+    public void canGetResponsibleParty() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("responsibleParty.xml"));
+        List<ResponsibleParty> expected = Arrays.asList(
+            ResponsibleParty.builder()
+                .organisationName("Centre for Ecology & Hydrology")
+                .role("pointOfContact")
+                .email("enquiries@ceh.ac.uk")
+                .build(),
+            ResponsibleParty.builder()
+                .individualName("Reynolds,B.")
+                .organisationName("Centre for Ecology & Hydrology")
+                .role("author")
+                .email("enquiries@ceh.ac.uk")
+                .build(),
+            ResponsibleParty.builder()
+                .individualName("Neal,C.")
+                .organisationName("Centre for Ecology & Hydrology")
+                .role("author")
+                .email("enquiries@ceh.ac.uk")
+                .build(),
+            ResponsibleParty.builder()
+                .individualName("Kirchner,J.")
+                .organisationName("University of California, Berkley")
+                .role("author")
+                .email("enquiries@ceh.ac.uk")
+                .build(),
+            ResponsibleParty.builder()
+                .individualName("Norris,D.")
+                .organisationName("Centre for Ecology & Hydrology")
+                .role("pointOfContact")
+                .email("enquiries@ceh.ac.uk")
+                .build(),
+            ResponsibleParty.builder()
+                .organisationName("Centre for Ecology & Hydrology")
+                .role("distributor")
+                .email("enquiries@ceh.ac.uk")
+                .build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<ResponsibleParty> actual = document.getResponsibleParties();
+        
+        //Then
+        assertThat("ResponsibleParties 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
     
     @Test
