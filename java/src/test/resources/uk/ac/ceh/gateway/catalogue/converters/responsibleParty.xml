@@ -16,7 +16,7 @@
 								<gco:CharacterString>Wallingford</gco:CharacterString>
 							</gmd:city>
 							<gmd:administrativeArea>
-								<gco:CharacterString>Oxfordshire </gco:CharacterString>
+								<gco:CharacterString>Oxfordshire</gco:CharacterString>
 							</gmd:administrativeArea>
 							<gmd:postalCode>
 								<gco:CharacterString>OX10 8BB</gco:CharacterString>
@@ -51,7 +51,7 @@
 							<gmd:address>
 								<gmd:CI_Address>
 									<gmd:deliveryPoint>
-										<gco:CharacterString>Environment Centre Wales, Deiniol Road </gco:CharacterString>
+										<gco:CharacterString>Environment Centre Wales, Deiniol Road</gco:CharacterString>
 									</gmd:deliveryPoint>
 									<gmd:city>
 										<gco:CharacterString>Bangor</gco:CharacterString>
@@ -63,7 +63,7 @@
 										<gco:CharacterString>LL57 2UW</gco:CharacterString>
 									</gmd:postalCode>
 									<gmd:country>
-										<gco:CharacterString>United Kingdom</gco:CharacterString>
+										<gco:CharacterString>UK</gco:CharacterString>
 									</gmd:country>
 									<gmd:electronicMailAddress>
 										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
@@ -96,13 +96,13 @@
 										<gco:CharacterString>Wallingford</gco:CharacterString>
 									</gmd:city>
 									<gmd:administrativeArea>
-										<gco:CharacterString>Oxfordshire </gco:CharacterString>
+										<gco:CharacterString>Oxfordshire</gco:CharacterString>
 									</gmd:administrativeArea>
 									<gmd:postalCode>
 										<gco:CharacterString>OX10 8BB</gco:CharacterString>
 									</gmd:postalCode>
 									<gmd:country>
-										<gco:CharacterString>United Kingdom</gco:CharacterString>
+										<gco:CharacterString>UK</gco:CharacterString>
 									</gmd:country>
 									<gmd:electronicMailAddress>
 										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
@@ -153,7 +153,7 @@
 							<gmd:address>
 								<gmd:CI_Address>
 									<gmd:deliveryPoint>
-										<gco:CharacterString>Environment Centre Wales, Deiniol Road </gco:CharacterString>
+										<gco:CharacterString>Environment Centre Wales, Deiniol Road</gco:CharacterString>
 									</gmd:deliveryPoint>
 									<gmd:city>
 										<gco:CharacterString>Bangor</gco:CharacterString>
@@ -165,7 +165,7 @@
 										<gco:CharacterString>LL57 2UW</gco:CharacterString>
 									</gmd:postalCode>
 									<gmd:country>
-										<gco:CharacterString>United Kingdom</gco:CharacterString>
+										<gco:CharacterString>UK</gco:CharacterString>
 									</gmd:country>
 									<gmd:electronicMailAddress>
 										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
@@ -201,13 +201,13 @@
 												<gco:CharacterString>Wallingford</gco:CharacterString>
 											</gmd:city>
 											<gmd:administrativeArea>
-												<gco:CharacterString>Oxfordshire </gco:CharacterString>
+												<gco:CharacterString>Oxfordshire</gco:CharacterString>
 											</gmd:administrativeArea>
 											<gmd:postalCode>
 												<gco:CharacterString>OX10 8BB</gco:CharacterString>
 											</gmd:postalCode>
 											<gmd:country>
-												<gco:CharacterString>United Kingdom</gco:CharacterString>
+												<gco:CharacterString>UK</gco:CharacterString>
 											</gmd:country>
 											<gmd:electronicMailAddress>
 												<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>

@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty.Address;
 
 public class ResponsiblePartyConverter {
     private static final String RESPONSIBLE_PARTY = "//gmd:CI_ResponsibleParty";
@@ -17,7 +18,13 @@ public class ResponsiblePartyConverter {
     private static final String ORGANISATION_NAME = "gmd:organisationName/gco:CharacterString";
     private static final String EMAIL = "gmd:contactInfo/*/gmd:address/*/gmd:electronicMailAddress/gco:CharacterString";
     private static final String ROLE = "gmd:role/*/@codeListValue";
-    private final XPathExpression responsibleParties, individualName, organisationName, email, role;
+    private static final String DELIVERY_POINT = "gmd:contactInfo/*/gmd:address/*/gmd:deliveryPoint/gco:CharacterString";
+    private static final String CITY = "gmd:contactInfo/*/gmd:address/*/gmd:city/gco:CharacterString";
+    private static final String ADMINISTRATIVE_AREA = "gmd:contactInfo/*/gmd:address/*/gmd:administrativeArea/gco:CharacterString";
+    private static final String POSTAL_CODE = "gmd:contactInfo/*/gmd:address/*/gmd:postalCode/gco:CharacterString";
+    private static final String COUNTRY = "gmd:contactInfo/*/gmd:address/*/gmd:country/gco:CharacterString";
+    private final XPathExpression responsibleParties, individualName, organisationName, email, role,
+        deliveryPoint, city, administrativeArea, postalCode, country;
 
     public ResponsiblePartyConverter(XPath xpath) throws XPathExpressionException {
         this.responsibleParties = xpath.compile(RESPONSIBLE_PARTY);
@@ -25,6 +32,11 @@ public class ResponsiblePartyConverter {
         this.organisationName = xpath.compile(ORGANISATION_NAME);
         this.email = xpath.compile(EMAIL);
         this.role = xpath.compile(ROLE);
+        this.deliveryPoint = xpath.compile(DELIVERY_POINT);
+        this.city = xpath.compile(CITY);
+        this.administrativeArea = xpath.compile(ADMINISTRATIVE_AREA);
+        this.postalCode = xpath.compile(POSTAL_CODE);
+        this.country = xpath.compile(COUNTRY);
     }
     
     public List<ResponsibleParty> convert(Document document) throws XPathExpressionException {
@@ -37,9 +49,20 @@ public class ResponsiblePartyConverter {
                 .organisationName(organisationName.evaluate(responsiblePartyNode))
                 .email(email.evaluate(responsiblePartyNode))
                 .role(role.evaluate(responsiblePartyNode))
+                .address(convertAddress(responsiblePartyNode))
                 .build();
             toReturn.add(responsibleParty);
         }
         return toReturn;
+    }
+    
+    private Address convertAddress(Node responsiblePartyNode) throws XPathExpressionException {
+        return Address.builder()
+            .deliveryPoint(deliveryPoint.evaluate(responsiblePartyNode))
+            .city(city.evaluate(responsiblePartyNode))
+            .administrativeArea(administrativeArea.evaluate(responsiblePartyNode))
+            .postalCode(postalCode.evaluate(responsiblePartyNode))
+            .country(country.evaluate(responsiblePartyNode))
+            .build();
     }
 }
