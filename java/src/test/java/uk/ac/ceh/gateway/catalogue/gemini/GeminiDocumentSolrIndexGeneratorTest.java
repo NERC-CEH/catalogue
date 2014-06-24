@@ -60,5 +60,22 @@ public class GeminiDocumentSolrIndexGeneratorTest {
         //Then
         assertEquals("Expected to get my description", description, index.getDescription());
     }
+    
+    @Test
+    public void checkThatResourceTypeIsTransferedToIndex() {
+        //Given
+        CodeListItem resourceType = CodeListItem
+                .builder()
+                .value("dataset")
+                .build();
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(document.getResourceType()).thenReturn(resourceType);
+        
+        //When
+        GeminiDocumentSolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertEquals("Expected to get my resourceType", resourceType.getValue(), index.getResourceType());
+    }
 
 }
