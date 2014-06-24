@@ -2,7 +2,7 @@
 <div class="panel panel-default">
     <div class="panel-heading"><p class="panel-title">Cite this data</p></div>
     <div class="panel-body">
-    	<p>${otherCitationDetails}</p>     
+    	${otherCitationDetails}		  
     </div>
     <div class="panel-footer">
 	    <a href="http://data.datacite.org/application/x-bibtex/10.5285/E2A742DF-3772-481A-97D6-0DE5133F4812">BibTeX</a>
