@@ -20,6 +20,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.BoundingBoxesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
@@ -40,6 +41,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
     private final ResponsiblePartyConverter responsiblePartyConverter;
     private final DownloadOrderConverter downloadOrderConverter;
+    private final BoundingBoxesConverter boundingBoxesConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -59,6 +61,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.descriptiveKeywordsConverter = new DescriptiveKeywordsConverter(xpath);
         this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath);
         this.downloadOrderConverter = new DownloadOrderConverter(xpath);
+        this.boundingBoxesConverter = new BoundingBoxesConverter(xpath);
     }
     
     @Override
@@ -96,6 +99,12 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
                     .value(resourceTypeCodeListValue.evaluate(document))
                     .build()
             );
+            toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
+            toReturn.setTopicCategories(getListOfStrings(document, topicCategories));
+            toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
+            toReturn.setOtherCitationDetails(otherCitationDetails.evaluate(document));
+            toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
+            toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
