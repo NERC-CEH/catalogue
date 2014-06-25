@@ -16,6 +16,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
@@ -121,6 +122,34 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Then
         assertThat("DownloadOrder 'actual' should be equal to 'expected'", actual, equalTo(expected));
         assertThat("OGL license should be false", actual.isOgl(), equalTo(true));
+    }
+    
+    @Test
+    public void canGetBoundingBox() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("multipleSpatialExtent.xml"));
+        List<BoundingBox> expected = Arrays.asList(
+            BoundingBox.builder()
+                .westBoundLongitude("-9.0939")
+                .eastBoundLongitude("3.2549")
+                .southBoundLatitude("49.6642")
+                .northBoundLatitude("61.0363")
+                .build(),
+            BoundingBox.builder()
+                .westBoundLongitude("12.0424")
+                .eastBoundLongitude("36.0000")
+                .southBoundLatitude("68.1298")
+                .northBoundLatitude("74.2389")
+                .build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<BoundingBox> actual = document.getBoundingBoxes();
+        
+        //Then
+        assertThat("BoundingBoxes 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
 
     @Test
