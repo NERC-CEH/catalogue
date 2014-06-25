@@ -33,7 +33,9 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
  */
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id, title, description, alternateTitle, 
-            languageCodeList, languageCodeListValue, topicCategories, otherCitationDetails;
+            languageCodeList, languageCodeListValue, topicCategories, 
+            resourceTypeCodeList, resourceTypeCodeListValue, 
+            otherCitationDetails;
     private final XPath xpath;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
     private final ResponsiblePartyConverter responsiblePartyConverter;
@@ -52,6 +54,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.languageCodeListValue = xpath.compile(XPaths.LANGUAGE_CODE_LIST_VALUE);
         this.topicCategories = xpath.compile(XPaths.TOPIC_CATEGORIES);
         this.otherCitationDetails = xpath.compile(XPaths.OTHER_CITATION_DETAILS);
+        this.resourceTypeCodeList = xpath.compile(XPaths.RESOURCE_TYPE_CODE_LIST);
+        this.resourceTypeCodeListValue = xpath.compile(XPaths.RESOURCE_TYPE_CODE_LIST_VALUE);
         this.descriptiveKeywordsConverter = new DescriptiveKeywordsConverter(xpath);
         this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath);
         this.downloadOrderConverter = new DownloadOrderConverter(xpath);
@@ -86,6 +90,12 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
             toReturn.setOtherCitationDetails(otherCitationDetails.evaluate(document));
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
+            toReturn.setResourceType(CodeListItem
+                    .builder()
+                    .codeList(resourceTypeCodeList.evaluate(document))
+                    .value(resourceTypeCodeListValue.evaluate(document))
+                    .build()
+            );
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

@@ -9,4 +9,6 @@ public class XPaths {
     public static final String LANGUAGE_CODE_LIST_VALUE = "/*/gmd:identificationInfo/gmd:language/gmd:LanguageCode/@codeListValue";
     public static final String TOPIC_CATEGORIES = "/*/gmd:identificationInfo/*/gmd:topicCategory/gmd:MD_TopicCategoryCode";    
     public static final String OTHER_CITATION_DETAILS = "/*/gmd:identificationInfo/*/gmd:citation/*/gmd:otherCitationDetails/gco:CharacterString";
+    public static final String RESOURCE_TYPE_CODE_LIST = "/*/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeList";
+    public static final String RESOURCE_TYPE_CODE_LIST_VALUE = "/*/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue";
 }

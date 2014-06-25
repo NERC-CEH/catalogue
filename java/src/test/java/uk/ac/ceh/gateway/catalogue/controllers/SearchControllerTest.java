@@ -46,6 +46,7 @@ public class SearchControllerTest {
         String searchTerm = "testterm";
         int start = 2;
         int rows =5;
+        String facet = "";
         SearchResults searchResults = searchController.searchDocuments(searchTerm, start, rows);
         
         //Then
@@ -68,6 +69,7 @@ public class SearchControllerTest {
         String searchTerm = "testterm";
         Integer start = 3;
         Integer rows = 7;
+        String facet = "";
         searchController.searchDocuments(searchTerm, start, rows);
         
         //Then

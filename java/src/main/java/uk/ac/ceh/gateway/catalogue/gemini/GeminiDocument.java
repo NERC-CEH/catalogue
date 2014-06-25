@@ -26,7 +26,7 @@ public class GeminiDocument {
     
     private String id, title, description, otherCitationDetails;
     private List<String> alternateTitles, topicCategories;
-    private CodeListItem datasetLanguage;
+    private CodeListItem datasetLanguage, resourceType;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private DownloadOrder downloadOrder;
     private MetadataInfo metadata;
