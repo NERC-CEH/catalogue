@@ -10,6 +10,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 
 /**
  *
@@ -29,4 +30,5 @@ public class GeminiDocument {
     private List<DescriptiveKeywords> descriptiveKeywords;
     private DownloadOrder downloadOrder;
     private MetadataInfo metadata;
+    private List<ResponsibleParty> responsibleParties;
 }
