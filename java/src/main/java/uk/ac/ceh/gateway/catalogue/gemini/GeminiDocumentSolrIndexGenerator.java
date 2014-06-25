@@ -22,7 +22,7 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
                 .setIsOgl(getIsOgl(document));
     }
     
-    private final String getResourceType(GeminiDocument document){
+    private String getResourceType(GeminiDocument document){
         if(document.getResourceType() != null){
             return document.getResourceType().getValue();
         } else {
@@ -30,7 +30,7 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
         }
     }
     
-    private final Boolean getIsOgl(GeminiDocument document){
+    private Boolean getIsOgl(GeminiDocument document){
         if(document.getDownloadOrder() != null){
             return document.getDownloadOrder().isOgl();
         } else {
