@@ -6,7 +6,8 @@
             <field name="identifier" type="keyword" indexed="true" stored="true" required="true" multiValued="false" /> 
             <field name="title" type="text_general" indexed="true" stored="true" required="true" multiValued="false"/>
             <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>   
-            <field name="resourceType" type="keyword" indexed="true" stored="true" multiValued="false"/>   
+            <field name="resourceType" type="keyword" indexed="true" stored="true" multiValued="false"/>
+			<field name="isOgl" type="boolean" indexed="true" stored="true" multiValued="false"/>
             <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
     </fields>
     <types>

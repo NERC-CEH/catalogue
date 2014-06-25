@@ -28,7 +28,7 @@ public class SearchController {
     
     private final SolrServer solrServer;
     
-    private static final List<String> FACET_FIELDS = Arrays.asList("resourceType");
+    private static final List<String> FACET_FIELDS = Arrays.asList("resourceType","isOgl");
     
     @Autowired
     public SearchController(SolrServer solrServer){
