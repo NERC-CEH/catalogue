@@ -5840,6 +5840,12 @@ td.visible-print {
 .result .label.label-Dataset {
   background-color: #5bc0de;
 }
+.result .facet .facetname {
+  font-weight: bold;
+}
+.result .facet .facetresult {
+  border-bottom: 1px solid;
+}
 .navbar-static-top {
   margin-bottom: 19px;
 }
