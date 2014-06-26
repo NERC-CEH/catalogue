@@ -13,12 +13,8 @@
       </div>
     </form>
   </div>
-
-
 <div class="row">
-  
   <div class="col-md-2 facet">
-
       <#list facets as facet>
         <div class="list-group">
             <a href="#" class="list-group-item active">${facet.displayName}</a>
@@ -27,15 +23,11 @@
           </#list>
         </div>
         </#list>
-
-
   </div>
-
   <div class="col-md-offset-1 col-md-9">
     <div class="row">
         ${header.numFound} records found
     </div>
-  
     <#list results as result>
       <div class="result row">
           <div class="col-md-2">
@@ -48,7 +40,6 @@
       </div>
     </#list>
   </div>
-
 </div>
 
 </@skeleton.master>
