@@ -2,8 +2,7 @@
   <h3>Contacts</h3>
   <#list responsibleParties as contactsList>
   <div class="row">
-  
-  	<div class="col-md-4"><b>${contactsList.role}</b></div>
+   	<div class="col-md-4"><b>${contactsList.role}</b></div>
   	<div class="col-md-4">
   			<#if contactsList.individualName?has_content>
 	      	${contactsList.individualName}<br>
@@ -34,7 +33,7 @@
 	      </#if>
 
 	      <#if contactsList.email?has_content>
-	      	<a href="mailto:${contactsList.email}">${contactsList.email}<br>
+	      	<a href="mailto:${contactsList.email}">${contactsList.email}</a><br>
 	      </#if><br>
 	   </div>	 
   </div>
