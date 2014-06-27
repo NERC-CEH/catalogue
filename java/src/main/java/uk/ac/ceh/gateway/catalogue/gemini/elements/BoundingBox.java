@@ -19,7 +19,7 @@ public class BoundingBox {
         googleStaticMapUrl= new StringBuilder(STATIC_MAP_BASE_URL);
     }
 
-    String getGoogleStaticMapUrl() {
+    public String getGoogleStaticMapUrl() {
         return googleStaticMapUrl
             .append(southBoundLatitude)
             .append(",")
