@@ -5,8 +5,10 @@
     	${otherCitationDetails}		  
     </div>
     <div class="panel-footer">
-	    <a href="http://data.datacite.org/application/x-bibtex/10.5285/E2A742DF-3772-481A-97D6-0DE5133F4812">BibTeX</a>
-	    <a href="http://data.datacite.org/application/x-research-info-systems/10.5285/E2A742DF-3772-481A-97D6-0DE5133F4812">RIS</a>   
+    <#if id?has_content>
+	    <a href="http://data.datacite.org/application/x-bibtex/10.5285/${id}">BibTeX</a>
+	    <a href="http://data.datacite.org/application/x-research-info-systems/10.5285/${id}">RIS</a>
+	</#if>  
     </div>
 </div>
 </#if>
