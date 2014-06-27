@@ -31,14 +31,4 @@ public class DownloadOrderTest {
         assertThat("Should not be an OGL licensed DownloadOrder", ogl, equalTo(false));
     }
 
-    @Test
-    public void isRenderable() {
-        //Given
-        DownloadOrder actual = DownloadOrder.builder().build();
-        
-        //When
-        final boolean empty = actual.isRenderable();
-        
-        assertThat("DownloadOrder should be empty", empty, equalTo(true));
-    }   
 }

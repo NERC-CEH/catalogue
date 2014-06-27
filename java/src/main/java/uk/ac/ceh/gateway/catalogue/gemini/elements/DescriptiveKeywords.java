@@ -6,7 +6,7 @@ import lombok.Value;
 import lombok.experimental.Builder;
 
 @Value
-public class DescriptiveKeywords implements Renderable {
+public class DescriptiveKeywords {
     private final List<Keyword> keywords;
     private final CodeListItem type;
     private final ThesaurusName thesaurusName;
@@ -30,10 +30,5 @@ public class DescriptiveKeywords implements Renderable {
         } else {
             this.thesaurusName = thesaurusName;
         }
-    }
-
-    @Override
-    public boolean isRenderable() {
-        return keywords.isEmpty() && type.isRenderable() && thesaurusName.isRenderable();
     }
 }
