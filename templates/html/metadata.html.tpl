@@ -2,7 +2,6 @@
 
 <@skeleton.master title=title>
 
-<!-- InstanceBeginEditable name="MAIN" -->
 <div class="row">
     <div class="col-md-12">
       <#include "_title.html.tpl">
