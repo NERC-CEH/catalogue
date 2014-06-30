@@ -12,7 +12,7 @@
         <a href="${downloadOrder.supportingDocumentsUrl}">Supporting documentation</a>
       </p>
     </div>
-    <div class="panel-footer">
+    <div class="panel-footer column-sm">
     <#if downloadOrder.isOgl()>
       <a href="${downloadOrder.licenseUrl}"><img src="/static/img/ogl.png" alt="OGL" class="pull-right">This resource is available under the Open Government Licence (OGL)</a>
       <#else>
