@@ -5840,6 +5840,9 @@ td.visible-print {
 .result .label.label-Dataset {
   background-color: #5bc0de;
 }
+.column-sm {
+  min-height: 55px;
+}
 .navbar-static-top {
   margin-bottom: 19px;
 }
