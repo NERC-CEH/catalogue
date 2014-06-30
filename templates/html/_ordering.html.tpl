@@ -4,11 +4,6 @@
     <div class="panel-body">
       <#if downloadOrder.orderUrl?has_content>
         <p>
-          Preview
-        </p>
-      </#if>
-      <#if downloadOrder.orderUrl?has_content>
-        <p>
           <a href="${downloadOrder.orderUrl}">Order/Download</a>
         </p>
       <#else>
