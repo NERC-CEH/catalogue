@@ -19,15 +19,18 @@
   
   <div class="col-md-2 facet">
 
-      <#list facets as facet>
-        <div class="list-group">
-            <a href="#" class="list-group-item active">${facet.displayName}</a>
-          <#list facet.results as result>
-            <a href="#" class="list-group-item">${result.name} (${result.count}) <i class="icon-large icon-plus-sign"></i></a>
-          </#list>
-        </div>
-        </#list>
 
+      <#list facets as facet>
+
+        <div>
+            <a href="#" class="list-group-item active">${facet.displayName}</a>
+        </div>
+        <ul class="nav nav-pills">
+          <#list facet.results as result>
+            <li><a href="#">${result.name} (${result.count}) </a></li>
+          </#list>
+        </#list>
+      </ul>
 
   </div>
 
