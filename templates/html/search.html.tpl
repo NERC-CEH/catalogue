@@ -23,7 +23,7 @@
       <#list facets as facet>
 
         <div>
-            <a href="#" class="list-group-item active">${facet.displayName}</a>
+            <${facet.displayName}
         </div>
         <ul class="nav nav-pills">
           <#list facet.results as result>
