@@ -5876,7 +5876,7 @@ td.visible-print {
   margin-bottom: 19px;
 }
 .navbar {
-  background-color: #FFF;
+  background-color: #ffffff;
   border-bottom: #38CCD7 3px solid;
   min-height: 60px;
 }
@@ -5899,7 +5899,7 @@ td.visible-print {
 }
 .navbar li ul a:hover {
   background-color: #999999;
-  color: #FFF;
+  color: #ffffff;
 }
 .navbar-brand {
   position: absolute;

@@ -4,20 +4,24 @@
 @import "search";
 @import "media";
 
+@color:#fff;
+@bg:#999999;
+
+
 // Define the ceh navbar
 .navbar-static-top {margin-bottom: 19px;}
 
 .navbar {
-  background-color: #FFF;
+  background-color: @color;
   border-bottom:  #38CCD7 3px solid;
   min-height: 60px;
 
   li {
     a {
-      &:hover { color: #999999; }
+      &:hover { color: @bg; }
       &:visited, &:link {
         text-shadow: none;
-        color: #999999;
+        color: @bg;
         border-left: 1px solid #B7ECF0;
         font-weight: bold;        
       }
@@ -30,8 +34,8 @@
     }
 
     ul a:hover {
-      background-color: #999999;
-      color: #FFF;
+      background-color: @bg;
+      color: @color;
     }
   }
 }
@@ -62,7 +66,7 @@
 .navbar-inverse .navbar-toggle { border-color: #000}
 
 
-@media (max-width: 768px) {
+@media (max-width: @grid-float-breakpoint) {
   .navbar-mediaSml {
     display: block;
     opacity: 1;
