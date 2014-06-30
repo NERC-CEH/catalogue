@@ -2,6 +2,8 @@
   "name": "ceh-catalogue",
   "version": "0.0.0",
   "dependencies": {
-    "bootstrap": "3.1.0"
+    "bootstrap": "3.0.0",
+    "respond": "1.3.0",
+    "jquery": "1.10.2"
   }
 }

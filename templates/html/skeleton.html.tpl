@@ -4,6 +4,10 @@
   <head>
     <title>${title} - CEH Catalogue</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>    
+    <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
+    <![endif]-->
   </head>
   <body>
     <div class="container">
@@ -45,7 +49,7 @@
     <#nested>
     </div>
 
-    <script language="javascript" type="text/javascript" src="/static/vendor/jquery/dist/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="/static/vendor/jquery/jquery.min.js"></script>
     <script language="javascript" type="text/javascript" src="/static/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
   
   </body>
