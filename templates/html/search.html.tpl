@@ -16,22 +16,22 @@
 
 
 <div class="row">
-  
+  <!--http://jsfiddle.net/22cyX/-->
   <div class="col-md-2 facet">
-
-
       <#list facets as facet>
-
-        <div>
-            <${facet.displayName}
+        <div class="well">
+          <h3>${facet.displayName}</h3>
         </div>
-        <ul class="nav nav-pills">
+        <ul class="nav nav-pills nav-stacked">
           <#list facet.results as result>
-            <li><a href="#">${result.name} (${result.count}) </a></li>
-          </#list>
-        </#list>
-      </ul>
-
+              <li class="active">
+                <a href="#">
+                  ${result.name} (${result.count})
+                      <span class="badge pull-right">+</span>
+                </a>
+             </li>
+           </#list>
+        </ul>    
   </div>
 
   <div class="col-md-offset-1 col-md-9">
