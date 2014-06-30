@@ -16,7 +16,8 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a  class="navbar-brand" href="#"><img src="/static/img/header_logo.png" alt="CEH Logo"></a>
+              <a  class="navbar-brand" href="#"></a>
+              <a  class="navbar-mediaSml" href="#"></a>
             </div>
 
           <div class="navbar-collapse collapse">
