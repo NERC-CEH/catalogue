@@ -2,10 +2,10 @@
 <@skeleton.master title="Search">
 
 
-  <div class="row well">
+  <div class="row">
+  <div class="col-md-12 well">
     <form id="search-form" action="/documents" method="get">
       <div class="input-group">
-      
         <input type="text" class="form-control" placeholder="Search the Catalogue" id="term" name="term" value="${header.term}">
         <div class="input-group-btn">
           <button type="submit" id="Search" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
@@ -13,33 +13,52 @@
       </div>
     </form>
   </div>
+</div>
+
+
 <div class="row">
-  <div class="col-md-2 facet">
+  <!--http://jsfiddle.net/22cyX/-->
+  <div class="col-md-3 facet">
+    <ul class="nav nav-pills nav-stacked">
       <#list facets as facet>
-        <div class="list-group">
-            <a href="#" class="list-group-item active">${facet.displayName}</a>
+              <li class="active">
+                <a href="#">
+                  ${facet.displayName}
+                </a>
+             </li>
+
           <#list facet.results as result>
-            <a href="#" class="list-group-item">${result.name} (${result.count}) <i class="icon-large icon-plus-sign"></i></a>
-          </#list>
-        </div>
-        </#list>
+              <li>
+                <a href="#">
+                  ${result.name}
+                      <span class="badge pull-right">${result.count}</span>
+                </a>
+             </li>
+           </#list>
+      </#list>   
+    </ul> 
   </div>
-  <div class="col-md-offset-1 col-md-9">
+
+  <div class="col-md-9">
     <div class="row">
+      <div class="col-md-12">
         ${header.numFound} records found
+      </div>
     </div>
+  
     <#list results as result>
       <div class="result row">
           <div class="col-md-2">
               <span class="label label-Dataset">Dataset</span>
           </div>
-          <div class="col-md-7">
+          <div class="col-md-10">
               <a href="/documents/${result.identifier}">${result.title}</a>
                   ${result.description}
           </div>
       </div>
     </#list>
   </div>
+
 </div>
 
 </@skeleton.master>
