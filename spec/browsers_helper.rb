@@ -10,7 +10,7 @@ Capybara.register_driver :firefox do |app|
   Capybara::Selenium::Driver.new(app, :browser => :firefox)
 end
 
-Capybara.register_driver :ie8_server do |app|
+Capybara.register_driver :ie_server do |app|
   Capybara::Selenium::Driver.new(app, :browser => :remote,
                                       :url => 'http://192.171.153.182:4444/wd/hub',
                                       :desired_capabilities => :internet_explorer)
