@@ -11,4 +11,5 @@ public class XPaths {
     public static final String OTHER_CITATION_DETAILS = "/*/gmd:identificationInfo/*/gmd:citation/*/gmd:otherCitationDetails/gco:CharacterString";
     public static final String RESOURCE_TYPE_CODE_LIST = "/*/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeList";
     public static final String RESOURCE_TYPE_CODE_LIST_VALUE = "/*/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue";
+    public static final String BROWSE_GRAPHIC_URL = "/*/gmd:identificationInfo/*/gmd:graphicOverview/*/gmd:fileName/gco:CharacterString";
 }
