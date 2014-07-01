@@ -2,43 +2,36 @@
   "username": "--secure--",
   "key": "--secure--",
   "test_path": "js/tests/index.html",
-  "debug": true,
-  "browsers": [
+  "browsers":  [
     {
       "browser": "firefox",
       "browser_version": "latest",
       "os": "OS X",
-      "os_version": "Mavericks"
+      "os_version": "Mountain Lion"
     },
     {
       "browser": "safari",
       "browser_version": "latest",
       "os": "OS X",
-      "os_version": "Mavericks"
+      "os_version": "Mountain Lion"
     },
     {
       "browser": "chrome",
       "browser_version": "latest",
       "os": "OS X",
-      "os_version": "Mavericks"
+      "os_version": "Mountain Lion"
     },
     {
       "browser": "firefox",
       "browser_version": "latest",
       "os": "Windows",
-      "os_version": "8.1"
+      "os_version": "7"
     },
     {
       "browser": "chrome",
       "browser_version": "latest",
       "os": "Windows",
-      "os_version": "8.1"
-    },
-    {
-      "browser": "Mobile Safari",
-      "os": "ios",
-      "os_version": "7.0",
-      "device": "iPhone 5S"
+      "os_version": "7"
     }
   ]
 }

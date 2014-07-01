@@ -2,11 +2,16 @@ package uk.ac.ceh.gateway.catalogue.gemini.elements;
 
 import lombok.Value;
 import lombok.experimental.Builder;
+import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
-@Builder
 public class CodeListItem {
-    
-    private String codeList, value;
-    
+    private final String codeList, value;
+    public static CodeListItem EMPTY_CODE_LIST_ITEM = new CodeListItem("", "");
+
+    @Builder
+    private CodeListItem(String codeList, String value) {
+        this.codeList = nullToEmpty(codeList);
+        this.value = nullToEmpty(value);
+    }   
 }

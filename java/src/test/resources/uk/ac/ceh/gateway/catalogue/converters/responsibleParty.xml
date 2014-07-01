@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:MD_Metadata xmlns:ns1="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<gmd:contact>
+		<gmd:CI_ResponsibleParty>
+			<gmd:organisationName>
+				<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+			</gmd:organisationName>
+			<gmd:contactInfo>
+				<gmd:CI_Contact>
+					<gmd:address>
+						<gmd:CI_Address>
+							<gmd:deliveryPoint>
+								<gco:CharacterString>Maclean Building, Benson Lane, Crowmarsh Gifford</gco:CharacterString>
+							</gmd:deliveryPoint>
+							<gmd:city>
+								<gco:CharacterString>Wallingford</gco:CharacterString>
+							</gmd:city>
+							<gmd:administrativeArea>
+								<gco:CharacterString>Oxfordshire</gco:CharacterString>
+							</gmd:administrativeArea>
+							<gmd:postalCode>
+								<gco:CharacterString>OX10 8BB</gco:CharacterString>
+							</gmd:postalCode>
+							<gmd:country>
+								<gco:CharacterString>UK</gco:CharacterString>
+							</gmd:country>
+							<gmd:electronicMailAddress>
+								<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+							</gmd:electronicMailAddress>
+						</gmd:CI_Address>
+					</gmd:address>
+				</gmd:CI_Contact>
+			</gmd:contactInfo>
+			<gmd:role>
+				<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+			</gmd:role>
+		</gmd:CI_ResponsibleParty>
+	</gmd:contact>
+	<ns1:identificationInfo>
+		<ns1:MD_DataIdentification>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Reynolds,B.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:deliveryPoint>
+										<gco:CharacterString>Environment Centre Wales, Deiniol Road</gco:CharacterString>
+									</gmd:deliveryPoint>
+									<gmd:city>
+										<gco:CharacterString>Bangor</gco:CharacterString>
+									</gmd:city>
+									<gmd:administrativeArea>
+										<gco:CharacterString>Gwynedd</gco:CharacterString>
+									</gmd:administrativeArea>
+									<gmd:postalCode>
+										<gco:CharacterString>LL57 2UW</gco:CharacterString>
+									</gmd:postalCode>
+									<gmd:country>
+										<gco:CharacterString>UK</gco:CharacterString>
+									</gmd:country>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Neal,C.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:deliveryPoint>
+										<gco:CharacterString>Maclean Building, Benson Lane, Crowmarsh Gifford</gco:CharacterString>
+									</gmd:deliveryPoint>
+									<gmd:city>
+										<gco:CharacterString>Wallingford</gco:CharacterString>
+									</gmd:city>
+									<gmd:administrativeArea>
+										<gco:CharacterString>Oxfordshire</gco:CharacterString>
+									</gmd:administrativeArea>
+									<gmd:postalCode>
+										<gco:CharacterString>OX10 8BB</gco:CharacterString>
+									</gmd:postalCode>
+									<gmd:country>
+										<gco:CharacterString>UK</gco:CharacterString>
+									</gmd:country>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Kirchner,J.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>University of California, Berkley</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Norris,D.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:deliveryPoint>
+										<gco:CharacterString>Environment Centre Wales, Deiniol Road</gco:CharacterString>
+									</gmd:deliveryPoint>
+									<gmd:city>
+										<gco:CharacterString>Bangor</gco:CharacterString>
+									</gmd:city>
+									<gmd:administrativeArea>
+										<gco:CharacterString>Gwynedd</gco:CharacterString>
+									</gmd:administrativeArea>
+									<gmd:postalCode>
+										<gco:CharacterString>LL57 2UW</gco:CharacterString>
+									</gmd:postalCode>
+									<gmd:country>
+										<gco:CharacterString>UK</gco:CharacterString>
+									</gmd:country>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+		</ns1:MD_DataIdentification>
+	</ns1:identificationInfo>
+	<ns1:distributionInfo>
+		<ns1:MD_Distribution>
+			<gmd:distributor>
+				<gmd:MD_Distributor>
+					<gmd:distributorContact>
+						<gmd:CI_ResponsibleParty>
+							<gmd:organisationName>
+								<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+							</gmd:organisationName>
+							<gmd:contactInfo>
+								<gmd:CI_Contact>
+									<gmd:address>
+										<gmd:CI_Address>
+											<gmd:deliveryPoint>
+												<gco:CharacterString>Maclean Building, Benson Lane, Crowmarsh Gifford</gco:CharacterString>
+											</gmd:deliveryPoint>
+											<gmd:city>
+												<gco:CharacterString>Wallingford</gco:CharacterString>
+											</gmd:city>
+											<gmd:administrativeArea>
+												<gco:CharacterString>Oxfordshire</gco:CharacterString>
+											</gmd:administrativeArea>
+											<gmd:postalCode>
+												<gco:CharacterString>OX10 8BB</gco:CharacterString>
+											</gmd:postalCode>
+											<gmd:country>
+												<gco:CharacterString>UK</gco:CharacterString>
+											</gmd:country>
+											<gmd:electronicMailAddress>
+												<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+											</gmd:electronicMailAddress>
+										</gmd:CI_Address>
+									</gmd:address>
+								</gmd:CI_Contact>
+							</gmd:contactInfo>
+							<gmd:role>
+								<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="distributor">distributor</gmd:CI_RoleCode>
+							</gmd:role>
+						</gmd:CI_ResponsibleParty>
+					</gmd:distributorContact>
+				</gmd:MD_Distributor>
+			</gmd:distributor>
+		</ns1:MD_Distribution>
+	</ns1:distributionInfo>
+</ns1:MD_Metadata>

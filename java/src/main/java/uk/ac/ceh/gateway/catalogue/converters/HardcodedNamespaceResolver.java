@@ -24,6 +24,7 @@ public class HardcodedNamespaceResolver implements NamespaceContext {
             case "csw": return "http://www.opengis.net/cat/csw/2.0.2";
             case "gml": return "http://www.opengis.net/gml/3.2";
             case "gmx": return "http://www.isotc211.org/2005/gmx";
+            case "xlink": return "http://www.w3.org/1999/xlink";
             default:    return "";
         }
     }

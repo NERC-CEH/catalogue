@@ -6,6 +6,8 @@ import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 
 /**
  *
@@ -59,4 +61,56 @@ public class GeminiDocumentSolrIndexGeneratorTest {
         //Then
         assertEquals("Expected to get my description", description, index.getDescription());
     }
+    
+    @Test
+    public void checkThatResourceTypeIsTransferedToIndex() {
+        //Given
+        CodeListItem resourceType = CodeListItem
+                .builder()
+                .value("dataset")
+                .build();
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(document.getResourceType()).thenReturn(resourceType);
+        
+        //When
+        GeminiDocumentSolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertEquals("Expected to get my resourceType", resourceType.getValue(), index.getResourceType());
+    }
+    
+    @Test
+    public void checkThatIsOglTrueIsTransferredToIndex(){
+        //Given
+        DownloadOrder downloadOrder = DownloadOrder
+                .builder()
+                .licenseUrl("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
+                .build();
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(document.getDownloadOrder()).thenReturn(downloadOrder);
+        
+        //When
+        GeminiDocumentSolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertEquals("Expected isOgl to be true", true, index.getIsOgl());
+    }
+    
+    @Test
+    public void checkThatIsOglFalseIsTransferredToIndex(){
+        //Given
+        DownloadOrder downloadOrder = DownloadOrder
+                .builder()
+                .licenseUrl("http://I.am.a.non.ogl.license")
+                .build();
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(document.getDownloadOrder()).thenReturn(downloadOrder);
+        
+        //When
+        GeminiDocumentSolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertEquals("Expected isOgl to be false", false, index.getIsOgl());
+    }
+
 }
