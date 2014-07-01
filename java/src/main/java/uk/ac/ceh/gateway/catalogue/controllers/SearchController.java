@@ -1,10 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.DocumentSearchResults;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults;
+import uk.ac.ceh.gateway.catalogue.model.SearchResults.Facet;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults.Header;
 
 @Controller
@@ -28,7 +29,13 @@ public class SearchController {
     
     private final SolrServer solrServer;
     
-    private static final List<String> FACET_FIELDS = Arrays.asList("resourceType","isOgl");
+    private static final Map<String, String> FACET_FIELDS;
+    static
+    {
+        FACET_FIELDS = new HashMap<>();
+        FACET_FIELDS.put("resourceType", "Resource type");
+        FACET_FIELDS.put("isOgl", "OGL license");
+    }
     
     @Autowired
     public SearchController(SolrServer solrServer){
@@ -60,16 +67,27 @@ public class SearchController {
                 .setFacets(getFacets(response));
     }
     
-    private Map<String, List<String>> getFacets(QueryResponse response){
+    private List<Facet> getFacets(QueryResponse response){
         
-        Map<String,List<String>> toReturn = new HashMap<>();
+        List<SearchResults.Facet> toReturn = new ArrayList<>();
         
         for(FacetField facetField : response.getFacetFields()){
-            List<String> facetResults = new ArrayList<>();
+            List<SearchResults.FacetResult> facetResults = new ArrayList<>();
             for(Count count : facetField.getValues()){
-                facetResults.add(count.getName() + ":" + count.getCount());
+                facetResults.add(SearchResults.FacetResult
+                        .builder()
+                        .name(count.getName())
+                        .count(count.getCount())
+                        .build()
+                );
             }
-            toReturn.put(facetField.getName(), facetResults);
+            toReturn.add(Facet
+                    .builder()
+                    .fieldName(facetField.getName())
+                    .displayName(FACET_FIELDS.get(facetField.getName()))
+                    .results(facetResults)
+                    .build()
+            );
         }
         return toReturn;
     }
@@ -81,8 +99,8 @@ public class SearchController {
                 .setRows(rows);
         if(FACET_FIELDS.size() > 0){
             query.setFacet(true);
-            for(String facetFieldName : FACET_FIELDS){
-                query.addFacetField(facetFieldName);
+            for(Entry<String, String> entry : FACET_FIELDS.entrySet()){
+                query.addFacetField(entry.getKey());
             }
         }
         return query;
