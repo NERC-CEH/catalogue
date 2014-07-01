@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
@@ -30,5 +31,6 @@ public class GeminiDocument {
     private List<DescriptiveKeywords> descriptiveKeywords;
     private DownloadOrder downloadOrder;
     private MetadataInfo metadata;
+    private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> responsibleParties;
 }
