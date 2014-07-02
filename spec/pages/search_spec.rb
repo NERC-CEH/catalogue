@@ -31,7 +31,15 @@ BROWSERS.each do |browser|
 
       expect(first('.result')).to have_content 'OS OnDemand Web Map Service'
       
-expect(first('.result').first('.label')).to have_content 'service'
+expect(first('.result .label')).to have_content 'service'
+    end
+
+    it "should have dataset results with the label-dataset class applied" do
+      visit "/documents"
+
+      perform_search 'Land Cover Map 2007 vector'
+
+      expect(first('.result .label')).has_css 'label-dataset'
     end
   end
 end
