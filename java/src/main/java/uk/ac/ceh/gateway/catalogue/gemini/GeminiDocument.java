@@ -25,7 +25,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument {
     
-    private String id, title, description, otherCitationDetails;
+    private String id, title, description, otherCitationDetails, browseGraphicUrl;
     private List<String> alternateTitles, topicCategories;
     private CodeListItem datasetLanguage, resourceType;
     private List<DescriptiveKeywords> descriptiveKeywords;
