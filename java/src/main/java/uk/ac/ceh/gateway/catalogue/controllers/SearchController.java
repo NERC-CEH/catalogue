@@ -32,7 +32,7 @@ public class SearchController {
     private final SolrServer solrServer;
     
     private static final Map<String, String> FACET_FIELDS;
-    private static final String DEFAULT_SEARCH_TERM = "*";
+    protected static final String DEFAULT_SEARCH_TERM = "*";
     static
     {
         FACET_FIELDS = new HashMap<>();
