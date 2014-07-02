@@ -1,12 +1,17 @@
 BROWSERS.each do |browser|
+  
+  def perform_search(term) 
+      within("#search-form") do
+        fill_in "term", :with => term
+        click_button "Search"
+      end
+  end
+
   describe "Search page in #{browser}", :type => :feature, :driver => browser do
     it "should find land cover map 2007 as top result" do
       visit "/documents"
 
-      within("#search-form") do
-        fill_in "term", :with => 'land cover map 2007'
-        click_button "Search"
-      end
+      perform_search 'land cover map 2007'
 
       expect(first('.result')).to have_content 'Land Cover Map 2007'
     end
@@ -14,12 +19,19 @@ BROWSERS.each do |browser|
     it "should show the search term in the search box after a search" do
       visit "/documents"
 
-      within("#search-form") do
-        fill_in "term", :with => 'any old search term'
-        click_button "Search"
-      end
+      perform_search 'any old search term'
 
       expect(find_field('term').value).to eq 'any old search term'
+    end
+
+    it "should show the correct label for the resource type" do
+      visit "/documents"
+
+      perform_search 'OS OnDemand Web Map Service'
+
+      expect(first('.result')).to have_content 'OS OnDemand Web Map Service'
+      
+expect(first('.result').first('.label')).to have_content 'service'
     end
   end
 end
