@@ -49,7 +49,8 @@
     <#list results as result>
       <div class="result row">
           <div class="col-md-2">
-              <span class="label label-Dataset">Dataset</span>
+              <span class="label 
+label-Dataset">${result.resourceType}</span>
           </div>
           <div class="col-md-10">
               <a href="/documents/${result.identifier}">${result.title}</a>
