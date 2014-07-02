@@ -30,8 +30,7 @@ BROWSERS.each do |browser|
       perform_search 'OS OnDemand Web Map Service'
 
       expect(first('.result')).to have_content 'OS OnDemand Web Map Service'
-      
-expect(first('.result .label')).to have_content 'service'
+      expect(first('.result .label')).to have_content 'service'
     end
 
     it "should have dataset results with the label-dataset class applied" do
