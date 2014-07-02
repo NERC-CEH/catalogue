@@ -1,7 +1,10 @@
-<div>
-  <div class="page-header">
+<div class="page-header">
+  <h2>
+  	<#if resourceType?has_content>
+  	  <span class="label label-primary">${resourceType.value}</span>
+  	</#if>
     <#if title?has_content>
-      <h2>${title}</h2>
-    </#if>      
-  </div>
+      ${title}
+    </#if>
+  </h2>
 </div>
