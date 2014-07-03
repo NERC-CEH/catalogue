@@ -5866,9 +5866,6 @@ td.visible-print {
   border-radius: 5px;
   line-height: 1.4;
 }
-.result .label.label-dataset {
-  background-color: #5bc0de;
-}
 .column-sm {
   min-height: 55px;
 }
@@ -5925,6 +5922,15 @@ td.visible-print {
 }
 .navbar-inverse .navbar-toggle {
   border-color: #000000;
+}
+.label-dataset {
+  background-color: #5bc0de;
+}
+.label-service {
+  background-color: #ccf;
+}
+.label-series {
+  background-color: #fc0;
 }
 @media (max-width: 768px) {
   .navbar-mediaSml {
