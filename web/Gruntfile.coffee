@@ -31,4 +31,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'prep', ['clean']
   grunt.registerTask 'develop', ['less', 'watch']
   grunt.registerTask 'build', ['clean', 'less', 'cssmin']
-  grunt.registerTask 'default', ['prep', 'build']
+  grunt.registerTask 'default', ['prep', 'build', 'exec:git_status']
