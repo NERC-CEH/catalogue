@@ -38,7 +38,7 @@ BROWSERS.each do |browser|
 
       perform_search 'Land Cover Map 2007 vector'
 
-      expect(first('.result .label')).has_css 'label-dataset'
+      expect(first('.result')).to have_selector 'span.label-dataset'
     end
   end
 end
