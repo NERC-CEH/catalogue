@@ -6,7 +6,12 @@
   <div class="col-md-12 well">
     <form id="search-form" action="/documents" method="get">
       <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search the Catalogue" id="term" name="term" value="${header.term}">
+        <#if header.term="*">
+          <#assign term="">
+        <#else>
+          <#assign term=header.term>
+        </#if>
+        <input type="text" class="form-control" placeholder="Search the Catalogue" id="term" name="term" value="${term}">
         <div class="input-group-btn">
           <button type="submit" id="Search" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
         </div>

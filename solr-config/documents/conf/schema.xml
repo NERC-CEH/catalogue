@@ -9,6 +9,7 @@
             <field name="resourceType" type="keyword" indexed="true" stored="true" multiValued="false"/>
 			<field name="isOgl" type="boolean" indexed="true" stored="true" multiValued="false"/>
             <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
+			<dynamicField name="random*" type="random" indexed="true" stored="false"/>
     </fields>
     <types>
         <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
@@ -29,7 +30,7 @@
         <fieldType name="pfloat" class="solr.FloatField"/>
         <fieldType name="pdouble" class="solr.DoubleField"/>
         <fieldType name="pdate" class="solr.DateField" sortMissingLast="true"/>
-        <fieldType name="random" class="solr.RandomSortField" indexed="true" />
+        <fieldType name="random" class="solr.RandomSortField"/>
         <fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
         <fieldType name="string_caseinsensitive" class="solr.TextField" sortMissingLast="true" omitNorms="true">
             <analyzer>
