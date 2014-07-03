@@ -143,6 +143,36 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
+    public void canGetBrowseGraphicUrl() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("browseGraphicUrl.xml"));
+        String expected = "https://gateway.ceh.ac.uk:443/smartEditor/preview/d481e451-9094-4983-aca9-46b170d840d8.png";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getBrowseGraphicUrl();
+        
+        //Then
+        assertThat("BrowseGraphicUrl 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canNotGetBrowseGraphicUrl() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("noBrowseGraphicUrl.xml"));
+        String expected = "";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getBrowseGraphicUrl();
+        
+        //Then
+        assertThat("BrowseGraphicUrl 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
     public void canGetOtherCitationDetailsFromService() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
