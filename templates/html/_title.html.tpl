@@ -3,7 +3,7 @@
   <div class="row">
     <div class="col-md-2 col-md-push-10">
 			<#if resourceType?has_content>
-			  <span class="label label-Dataset">${resourceType.value}</span>
+			  <span class="label label-${resourceType.value}">${resourceType.value}</span>
 			</#if>  
     </div>
     <div class="col-md-10 col-md-pull-2">

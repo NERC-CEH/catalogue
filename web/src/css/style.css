@@ -5923,13 +5923,13 @@ td.visible-print {
 .navbar-inverse .navbar-toggle {
   border-color: #000000;
 }
-.label-Dataset {
+.label-dataset {
   background-color: #5bc0de;
 }
-.label-Service {
+.label-service {
   background-color: #ccf;
 }
-.label-Series {
+.label-series {
   background-color: #fc0;
 }
 @media (max-width: 768px) {
