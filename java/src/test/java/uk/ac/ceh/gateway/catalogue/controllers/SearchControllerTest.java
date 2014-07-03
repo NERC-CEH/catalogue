@@ -69,7 +69,6 @@ public class SearchControllerTest {
         String searchTerm = "testterm";
         Integer start = 3;
         Integer rows = 7;
-        String facet = "";
         searchController.searchDocuments(searchTerm, start, rows);
         
         //Then
@@ -79,5 +78,18 @@ public class SearchControllerTest {
         assertEquals("Incorrect search term passed to solrQuery", searchTerm, solrQuery.getValue().getQuery());
         assertEquals("Incorrect start value passed to solrQuery", start, solrQuery.getValue().getStart());
         assertEquals("Incorrect number of rows passed to solrQuery", rows, solrQuery.getValue().getRows());
+    }
+    
+    @Test
+    public void facetMinCountIsSet() throws SolrServerException{
+        //When
+        searchController.searchDocuments("testterm", 1, 10);
+        ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
+        verify(solrServer).query(solrQuery.capture(), eq(SolrRequest.METHOD.POST));
+        
+        //Then
+        int expected = 1;
+        int actual = solrQuery.getValue().getFacetMinCount();
+        assertEquals("Expected minimum facet size of " + expected + ", got " + actual, expected, actual);
     }
 }
