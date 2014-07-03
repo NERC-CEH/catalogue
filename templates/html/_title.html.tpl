@@ -1,10 +1,16 @@
 <div class="page-header">
-  <h2>
-  	<#if resourceType?has_content>
-  	  <span class="label label-primary">${resourceType.value}</span>
-  	</#if>
-    <#if title?has_content>
-      ${title}
-    </#if>
+  <h2>  	
+  <div class="row">
+    <div class="col-md-2 col-md-push-10">
+			<#if resourceType?has_content>
+			  <span class="label label-Dataset">${resourceType.value}</span>
+			</#if>  
+    </div>
+    <div class="col-md-10 col-md-pull-2">
+	    <#if title?has_content>
+	      ${title}
+	    </#if>   
+    </div>
+   </div>
   </h2>
 </div>
