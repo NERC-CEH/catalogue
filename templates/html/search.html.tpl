@@ -21,14 +21,14 @@
   <div class="col-md-3 facet">
     <ul class="nav nav-pills nav-stacked">
       <#list facets as facet>
-              <li class="active">
+              <li class="active facet">
                 <a href="#">
                   ${facet.displayName}
                 </a>
              </li>
 
           <#list facet.results as result>
-              <li>
+              <li class="facet-result">
                 <a href="#">
                   ${result.name}
                       <span class="badge pull-right">${result.count}</span>
