@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
+import java.util.Set;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 
 /**
@@ -26,11 +28,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 public class GeminiDocument {
     
     private String id, title, description, otherCitationDetails, browseGraphicUrl;
-    private List<String> alternateTitles, topicCategories;
+    private List<String> alternateTitles, topicCategories, coupleResources;
     private CodeListItem datasetLanguage, resourceType;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private DownloadOrder downloadOrder;
     private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> responsibleParties;
+    private Set<Link> documentLinks;
 }

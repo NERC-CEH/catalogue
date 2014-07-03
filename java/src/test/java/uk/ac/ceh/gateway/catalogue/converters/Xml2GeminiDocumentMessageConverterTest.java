@@ -354,6 +354,21 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
+    public void canGetCoupledResources() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("coupledResources.xml"));
+        List<String> expected = Arrays.asList("CEH:EIDC:#1275577974562", "CEH:EIDC:#9984234423443");
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<String> actual = document.getCoupleResources();
+        
+        //Then
+        assertThat("CoupledResources 'actual' should be equal to 'expected'", actual, equalTo(expected));   
+    }
+    
+    @Test
     public void canGetTopicCategories() throws IOException {
         
         //Given
