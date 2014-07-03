@@ -37,6 +37,14 @@ Then in a bash window run
 
     vagrant up
 
+### Having trouble getting it up? - When resuming
+
+This is probally because the shared folders from you host are attached to your vagrant box after startup. This means that certain services are kicked off before the data they require is present.
+
+To get around this, we maintain a bash script of all the services which need restarting.
+
+    ./vagrant-resume.sh
+
 Once you are up and running, try visiting one of the [metadata](https://localhost:8080/documents/ff55462e-38a4-4f30-b562-f82ff263d9c3) documents in your browser. Note that the server is using **https** on port 8080
 
 ## Testing
