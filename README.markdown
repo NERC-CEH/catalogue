@@ -62,7 +62,7 @@ The vagrant box can be functionally tested using capybara and selenium. The test
 
 * Get a copy of the [chromedriver](http://ladist.nerc-lancaster.ac.uk/apps/selenium/chromedriver-2.10_win32.exe). Save it somewhere as *chromedriver* and make sure that it is accessable from your PATH variable
 
-* Install the gem bundle using
+* Install the gem bundle using. Nokogiri will be installed here and may need to build some components. This step may take some time.
 
         bundle install
 
