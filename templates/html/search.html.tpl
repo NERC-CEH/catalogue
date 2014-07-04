@@ -23,10 +23,10 @@
 
 <div class="row">
   <!--http://jsfiddle.net/22cyX/-->
-  <div class="col-md-3 facet">
+  <div class="col-md-3 facets">
     <ul class="nav nav-pills nav-stacked">
       <#list facets as facet>
-              <li class="active">
+              <li class="active facet">
                 <a href="#">
                   ${facet.displayName}
                 </a>
@@ -35,8 +35,8 @@
           <#list facet.results as result>
               <li>
                 <a href="#">
-                  ${result.name}
-                      <span class="badge pull-right">${result.count}</span>
+                  <span class="facet-result-name">${result.name}</span>
+                      <span class="badge pull-right facet-result-count">${result.count}</span>
                 </a>
              </li>
            </#list>
