@@ -65,18 +65,20 @@ BROWSERS.each do |browser|
       expect(facets).to match_array ['service']
     end
 
-    it "should have search results" do
+    it "should have search results when no search term" do
       visit "/documents"
-      first_title = first('.search-result-title').text
-      visit "/documents"
-      second_title = first('.search-result-title').text
-      visit "/documents"
-      third_title = first('.search-result-title').text
-      puts first_title
-      puts second_title
-      puts third_title
-      #expect(first_title).not_to eq second_title
+      first_visit = all('.search-result-title')
 
+      expect(first_visit).not_to be_empty
+    end
+
+    it "should have different search results on two different visits when there is no search term" do
+      visit "/documents"
+      first_visit = all('.search-result-title').map{ |e| e.text }
+      visit "/documents"
+      second_visit = all('.search-result-title').map{ |e| e.text }
+
+      expect(first_visit).not_to match_array second_visit
     end
 
   end
