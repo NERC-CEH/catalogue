@@ -16,6 +16,7 @@
 
 <div class="row">
     <div class="col-md-4 col-md-push-8">
+      <#include "_browsegraphic.html.tpl">
       <#include "_ordering.html.tpl">
       <#include "_citation.html.tpl">
     </div>
