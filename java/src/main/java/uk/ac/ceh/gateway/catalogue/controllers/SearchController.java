@@ -106,11 +106,10 @@ public class SearchController {
     }
     
     private void setFacetFields(SolrQuery query){
-        if(FACET_FIELDS.size() > 0){
-            query.setFacet(true);
-            for(Entry<String, String> entry : FACET_FIELDS.entrySet()){
-                query.addFacetField(entry.getKey());
-            }
+        query.setFacet(true);
+        query.setFacetMinCount(1);
+        for(Entry<String, String> entry : FACET_FIELDS.entrySet()){
+            query.addFacetField(entry.getKey());
         }
     }
     
