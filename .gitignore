@@ -15,3 +15,6 @@ catalogue_tomcat
 junit.xml
 rspec_screenshots
 npm-debug.log
+
+# Ignore webdriver directories (created by rspec/capybara testing)
+webdriver*

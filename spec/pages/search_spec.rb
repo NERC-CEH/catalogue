@@ -40,5 +40,31 @@ BROWSERS.each do |browser|
 
       expect(first('.result')).to have_selector 'span.label-dataset'
     end
+
+    it "should not find the facet 'application'" do
+      visit "/documents"
+
+      perform_search 'herbicide'
+
+      facets = all('.facet-result-name')
+        .select{ |e| e.text == 'application' }
+        .map{ |e| e.text }
+
+      expect(facets).to match_array []
+    end
+
+    it "should find the facet 'service'" do
+      visit "/documents"
+
+      perform_search 'herbicide'
+
+      facets = all('.facet-result-name')
+        .select{ |e| e.text == 'service' }
+        .map{ |e| e.text }
+
+      expect(facets).to match_array ['service']
+    end
+
   end
+
 end
