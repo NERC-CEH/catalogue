@@ -50,7 +50,7 @@ BROWSERS.each do |browser|
         .select{ |e| e.text == 'application' }
         .map{ |e| e.text }
 
-      expect(facets).to match_array []
+      expect(facets).to be_empty
     end
 
     it "should find the facet 'service'" do
@@ -63,6 +63,20 @@ BROWSERS.each do |browser|
         .map{ |e| e.text }
 
       expect(facets).to match_array ['service']
+    end
+
+    it "should have search results" do
+      visit "/documents"
+      first_title = first('.search-result-title').text
+      visit "/documents"
+      second_title = first('.search-result-title').text
+      visit "/documents"
+      third_title = first('.search-result-title').text
+      puts first_title
+      puts second_title
+      puts third_title
+      #expect(first_title).not_to eq second_title
+
     end
 
   end
