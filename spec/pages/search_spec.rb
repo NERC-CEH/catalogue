@@ -67,9 +67,8 @@ BROWSERS.each do |browser|
 
     it "should have search results when no search term" do
       visit "/documents"
-      first_visit = all('.search-result-title')
 
-      expect(first_visit).not_to be_empty
+      expect(all('.search-result-title')).not_to be_empty
     end
 
     it "should have different search results on two different visits when there is no search term" do
