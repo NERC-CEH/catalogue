@@ -1,5 +1,6 @@
 module.exports = (grunt) ->
-  #Load grunt tasks  
+  #Load grunt tasks
+  grunt.loadNpmTasks 'grunt-exec'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-less'
@@ -7,7 +8,10 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
 
   #Configure tasks
-  grunt.initConfig    
+  grunt.initConfig
+    exec:
+      git_status: 'git diff --exit-code'
+
     less: 
       development:
         files: 'src/css/style.css' : 'src/less/style.less'
@@ -27,4 +31,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'prep', ['clean']
   grunt.registerTask 'develop', ['less', 'watch']
   grunt.registerTask 'build', ['clean', 'less', 'cssmin']
-  grunt.registerTask 'default', ['prep', 'build']
+  grunt.registerTask 'default', ['prep', 'build', 'exec:git_status']

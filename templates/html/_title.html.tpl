@@ -1,7 +1,16 @@
-<div>
-  <div class="page-header">
-    <#if title?has_content>
-      <h2>${title}</h2>
-    </#if>      
-  </div>
+<div class="page-header">
+  <h2>  	
+  <div class="row">
+    <div class="col-md-2 col-md-push-10">
+			<#if resourceType?has_content>
+			  <span class="label label-${resourceType.value}">${resourceType.value}</span>
+			</#if>  
+    </div>
+    <div class="col-md-10 col-md-pull-2">
+	    <#if title?has_content>
+	      ${title}
+	    </#if>   
+    </div>
+   </div>
+  </h2>
 </div>
