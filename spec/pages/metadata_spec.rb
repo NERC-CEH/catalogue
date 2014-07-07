@@ -9,7 +9,6 @@ BROWSERS.each do |browser|
 
       it "should show a series label on UK Butterfly Monitoring Scheme (UKBMS) data" do
         visit '/documents/571a676f-6c32-489b-b7ec-18dcc617a9f1'
-
         expect(page).to have_selector('.label-series')
       end
     end
@@ -18,7 +17,6 @@ BROWSERS.each do |browser|
 
       it "should show the correct title for the UK Butterfly Monitoring Scheme (UKBMS) data record" do
         visit '/documents/571a676f-6c32-489b-b7ec-18dcc617a9f1'
-
         expect(first('#document-title')).to have_content "UK Butterfly Monitoring Scheme (UKBMS) data"
         puts first('#document-title').text
       end
@@ -30,13 +28,15 @@ BROWSERS.each do |browser|
 
       it "should show the correct topic categories for the Woodlands survey flora data 1971-2001" do
         visit '/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae'
-        puts first('.document-categories').text
-
         topics = all('.document-categories')
-          .select{ |e| e.text == 'biota' }
           .map{ |e| e.text }
-        expect(topics).to match_array ['biota', 'environment']
-        
+        expect(topics).to match_array ["biota environment"]
+      end
+      it "should show the correct keywords for the Woodlands survey flora data 1971-2001" do
+        visit '/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae'
+        topics = all('.document-keywords')
+          .map{ |e| e.text }
+        expect(topics).to match_array ["Environmental monitoring facilities woodland trees plants Britain NERC_DDC"]
       end
 
     end
