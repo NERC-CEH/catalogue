@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingService;
 
 /**
  *
@@ -18,10 +20,12 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 public class MaintenanceController {
     
     private final DocumentIndexingService solrIndex;
+    private final DocumentLinkingService linkingService;
     
     @Autowired
-    public MaintenanceController( DocumentIndexingService solrIndex ) {
+    public MaintenanceController(DocumentIndexingService solrIndex, DocumentLinkingService linkingService) {
         this.solrIndex = solrIndex;
+        this.linkingService = linkingService;
     }
     
     @RequestMapping(value="/documents/reindex",
@@ -29,5 +33,12 @@ public class MaintenanceController {
     @ResponseStatus(HttpStatus.OK)
     public void reindexDocuments() throws DocumentIndexingException {
         solrIndex.rebuildIndex();
+    }
+    
+    @RequestMapping(value="/links/reindex",
+                    method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void reindexLinks() throws DocumentLinkingException {
+        linkingService.rebuildLinks();
     }
 }

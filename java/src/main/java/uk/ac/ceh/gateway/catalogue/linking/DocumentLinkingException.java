@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
-class DocumentLinkingException extends Exception {
+public class DocumentLinkingException extends Exception {
 
     public DocumentLinkingException() {
     }
