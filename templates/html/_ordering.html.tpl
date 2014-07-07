@@ -20,7 +20,7 @@
     <div class="panel-footer column-sm">
     <#if downloadOrder.licenseUrl?has_content>
       <#if downloadOrder.isOgl()>
-        <a href="${downloadOrder.licenseUrl}"><img src="/static/img/ogl.png" alt="OGL" class="pull-right">This resource is available under the Open Government Licence (OGL)</a>
+        <a href="${downloadOrder.licenseUrl}"><img src="/static/img/ogl.png" alt="OGL" class="hidden-sm hidden-xs pull-right">This resource is available under the Open Government Licence (OGL)</a>
       <#else>
   	   <p>
   	     <a href="${downloadOrder.licenseUrl}">Licence terms and conditions apply</a>
