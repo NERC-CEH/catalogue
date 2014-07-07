@@ -12,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.TimePeriod;
 
 /**
  *
@@ -33,4 +34,5 @@ public class GeminiDocument {
     private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> responsibleParties;
+    private List<TimePeriod> temporalExtent;
 }

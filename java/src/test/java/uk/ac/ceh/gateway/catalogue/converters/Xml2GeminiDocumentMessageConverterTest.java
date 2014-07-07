@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty.Address;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.TimePeriod;
 /**
  *
  * @author cjohn
@@ -125,6 +126,25 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("ResponsibleParties 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetTimeExtent() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("timeExtent.xml"));
+        List<TimePeriod> expected = Arrays.asList(
+            new TimePeriod("1987-04-21", "1989-12-31"),
+            new TimePeriod("1999-03-30", "2013-10-10"),
+            new TimePeriod("2014-03-12", "")
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<TimePeriod> actual = document.getTemporalExtent();
+        
+        //Then
+        assertThat("TemporalExtent 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
     
     @Test
