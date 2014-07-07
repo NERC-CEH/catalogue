@@ -1,0 +1,1 @@
+psql catalogue catalogueuser -h localhost -f "create-db.sql"
