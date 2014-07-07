@@ -32,11 +32,19 @@ BROWSERS.each do |browser|
           .map{ |e| e.text }
         expect(topics).to match_array ["biota environment"]
       end
+
       it "should show the correct keywords for the Woodlands survey flora data 1971-2001" do
         visit '/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae'
-        topics = all('.document-keywords')
+        keywords = all('.document-keywords')
           .map{ |e| e.text }
-        expect(topics).to match_array ["Environmental monitoring facilities woodland trees plants Britain NERC_DDC"]
+        expect(keywords).to match_array ["Environmental monitoring facilities woodland trees plants Britain NERC_DDC"]
+      end
+
+      it "should show the correct contacts for the Woodlands survey flora data 1971-2001" do
+        visit '/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae'
+        contacts = all('.document-contacts')
+          .map{ |e| e.text }
+        expect(contacts).to match_array ["Author Black, H.I.J. Centre for Ecology & Hydrology enquiries@ceh.ac.uk", "Author Bunce, R.G.H. Alterra enquiries@ceh.ac.uk", "Author Corney, P.M. University of Liverpool enquiries@ceh.ac.uk", "Author Kirby, K.J. English Nature enquiries@ceh.ac.uk", "Author Shaw, M.W. The Nature Conservancy enquiries@ceh.ac.uk", "Author Smart, S.M. Centre for Ecology & Hydrology enquiries@ceh.ac.uk", "Author Smithers, R.J. Woodland Trust enquiries@ceh.ac.uk", "Custodian EIDC Hub eidc@ceh.ac.uk", "Point Of Contact Centre for Ecology & Hydrology Lancaster Environment Centre, Library Avenue, Bailrigg Lancashire Lancaster United Kingdom LA1 4AP enquiries@ceh.ac.uk", "Point Of Contact Centre for Ecology & Hydrology Lancaster Environment Centre, Library Avenue, Bailrigg Lancashire Lancaster United Kingdom LA1 4AP enquiries@ceh.ac.uk", "Point Of Contact Centre for Ecology & Hydrology Lancaster Environment Centre, Library Avenue, Bailrigg Lancashire Lancaster United Kingdom LA1 4AP enquries@ceh.ac.uk", "Resource Provider Parr Section enquiries@ceh.ac.uk"]
       end
 
     end
