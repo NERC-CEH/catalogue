@@ -6,7 +6,7 @@
 			  <span class="label label-${resourceType.value}">${resourceType.value}</span>
 			</#if>  
     </div>
-    <div class="col-md-10 col-md-pull-2">
+    <div id="document-title" class="col-md-10 col-md-pull-2">
 	    <#if title?has_content>
 	      ${title}
 	    </#if>   
