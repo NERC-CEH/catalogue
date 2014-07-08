@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.BoundingBoxesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
@@ -38,6 +39,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             resourceTypeCodeList, resourceTypeCodeListValue, 
             otherCitationDetails, browseGraphicUrl, coupledResource;
     private final XPath xpath;
+    private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
     private final ResponsiblePartyConverter responsiblePartyConverter;
     private final DownloadOrderConverter downloadOrderConverter;
@@ -58,6 +60,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.otherCitationDetails = xpath.compile(XPaths.OTHER_CITATION_DETAILS);
         this.resourceTypeCodeList = xpath.compile(XPaths.RESOURCE_TYPE_CODE_LIST);
         this.resourceTypeCodeListValue = xpath.compile(XPaths.RESOURCE_TYPE_CODE_LIST_VALUE);
+        this.resourceIdentifierConverter = new ResourceIdentifierConverter(xpath);
         this.descriptiveKeywordsConverter = new DescriptiveKeywordsConverter(xpath);
         this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath);
         this.downloadOrderConverter = new DownloadOrderConverter(xpath);
@@ -101,6 +104,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
                     .value(resourceTypeCodeListValue.evaluate(document))
                     .build()
             );
+            toReturn.setResourceIdentifiers(resourceIdentifierConverter.convert(document));
             toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
             toReturn.setTopicCategories(getListOfStrings(document, topicCategories));
             toReturn.setDownloadOrder(downloadOrderConverter.convert(document));

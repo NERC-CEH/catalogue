@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 
 /**
@@ -36,4 +37,5 @@ public class GeminiDocument {
     private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> responsibleParties;
     private Set<Link> documentLinks;
+    private Set<ResourceIdentifier> resourceIdentifiers;
 }
