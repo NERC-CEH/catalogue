@@ -4,7 +4,7 @@ This is the code base for the CEH gemini catalogue. The intention here is the ma
 
 ## Map of Code Base
 
-- java. Inside here is the java code which powers the catalogue. Define the object model in here which represents the content of your catalogue
+- [java](java/README.md). Inside here is the java code which powers the catalogue. Define the object model in here which represents the content of your catalogue
 
 - templates. Here go the freemarker templates which your object model can use for things like generating HTML pages
 
