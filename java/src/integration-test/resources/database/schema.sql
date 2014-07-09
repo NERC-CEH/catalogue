@@ -1,3 +1,6 @@
+drop table metadata if exists;
+drop table coupledResources if exists;
+
 create table metadata (	
   fileIdentifier varchar(50) not null,  
   resourceIdentifier varchar(50), 
