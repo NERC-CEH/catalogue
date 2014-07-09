@@ -1,5 +1,5 @@
 <#if downloadOrder?has_content>
-<div class="panel panel-default">
+<div class="panel panel-default document-ordering">
   <div class="panel-heading"><p class="panel-title">Get the data</p></div>
     <div class="panel-body">
       <#if downloadOrder.orderUrl?has_content>

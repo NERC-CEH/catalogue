@@ -1,7 +1,7 @@
 <#if responsibleParties?has_content>
   <h3>Contacts</h3>
   <#list responsibleParties as contactsList>
-  <div class="row">
+  <div class="row document-contacts">
    	<div class="col-md-4"><b>${contactsList.role}</b></div>
   	<div class="col-md-4">
   			<#if contactsList.individualName?has_content>
