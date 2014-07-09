@@ -8,7 +8,7 @@ import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingService;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 
 /**
  *
@@ -16,7 +16,7 @@ import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingService;
  */
 public class MaintenanceControllerTest {
     @Mock DocumentIndexingService indexService;
-    @Mock DocumentLinkingService linkingService;
+    @Mock DocumentLinkService linkingService;
     
     private MaintenanceController controller;
     

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingService;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 
 /**
  *
@@ -20,10 +20,10 @@ import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingService;
 public class MaintenanceController {
     
     private final DocumentIndexingService solrIndex;
-    private final DocumentLinkingService linkingService;
+    private final DocumentLinkService linkingService;
     
     @Autowired
-    public MaintenanceController(DocumentIndexingService solrIndex, DocumentLinkingService linkingService) {
+    public MaintenanceController(DocumentIndexingService solrIndex, DocumentLinkService linkingService) {
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
     }
