@@ -50,9 +50,10 @@ public class SearchController {
     public @ResponseBody SearchResults searchDocuments(
             @RequestParam(value = "term", defaultValue=DEFAULT_SEARCH_TERM) String term,
             @RequestParam(value = "start", defaultValue = "0") int start,
-            @RequestParam(value = "rows", defaultValue = "20") int rows
+            @RequestParam(value = "rows", defaultValue = "20") int rows,
+            @RequestParam(value = "facet", defaultValue = "") List<String> facets
     ) throws SolrServerException{
-        SolrQuery query = getQuery(term, start, rows);
+        SolrQuery query = getQuery(term, start, rows, facets);
         return performQuery(term, query);
     }
     
@@ -95,14 +96,24 @@ public class SearchController {
         return toReturn;
     }
     
-    private SolrQuery getQuery(String term, int start, int rows){
+    private SolrQuery getQuery(String term, int start, int rows, List<String> facets){
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setStart(start)
                 .setRows(rows);
+        setFacetQueries(query, facets);
         setFacetFields(query);
         setSortOrder(query, term);
         return query;
+    }
+    
+    private void setFacetQueries(SolrQuery query, List<String> facets){
+        if(facets != null && facets.size() > 0){
+            for(String facet : facets){
+                String[] facetParts = facet.split("\\|");
+                query.addFacetQuery(facetParts[0] + ":" + facetParts[1]);
+            }
+        }
     }
     
     private void setFacetFields(SolrQuery query){

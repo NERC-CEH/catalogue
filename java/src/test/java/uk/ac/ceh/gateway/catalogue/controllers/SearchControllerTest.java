@@ -50,7 +50,7 @@ public class SearchControllerTest {
         int start = 2;
         int rows =5;
         String facet = "";
-        SearchResults searchResults = searchController.searchDocuments(searchTerm, start, rows);
+        SearchResults searchResults = searchController.searchDocuments(searchTerm, start, rows, null);
         
         //Then
         assertEquals("Term is wrong in results header.", searchTerm, searchResults.getHeader().getTerm());
@@ -72,7 +72,7 @@ public class SearchControllerTest {
         String searchTerm = "testterm";
         Integer start = 3;
         Integer rows = 7;
-        searchController.searchDocuments(searchTerm, start, rows);
+        searchController.searchDocuments(searchTerm, start, rows, null);
         
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
@@ -86,7 +86,7 @@ public class SearchControllerTest {
     @Test
     public void facetMinCountIsSet() throws SolrServerException{
         //When
-        searchController.searchDocuments("testterm", 1, 10);
+        searchController.searchDocuments("testterm", 1, 10, null);
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
         verify(solrServer).query(solrQuery.capture(), eq(SolrRequest.METHOD.POST));
         
@@ -99,7 +99,7 @@ public class SearchControllerTest {
     @Test
     public void isRandomSortWhenTermIsDefault() throws SolrServerException{
         //When 
-        searchController.searchDocuments(SearchController.DEFAULT_SEARCH_TERM, 1, 10);
+        searchController.searchDocuments(SearchController.DEFAULT_SEARCH_TERM, 1, 10, null);
 
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
@@ -114,7 +114,7 @@ public class SearchControllerTest {
     @Test
     public void isNotRandomSortWhenTermIsNotDefault() throws SolrServerException{
         //When 
-        searchController.searchDocuments("Not default search term", 1, 10);
+        searchController.searchDocuments("Not default search term", 1, 10, null);
 
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);

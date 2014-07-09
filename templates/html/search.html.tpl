@@ -2,7 +2,7 @@
 <@skeleton.master title="Search">
 
 
-  <div class="row">
+<div class="row">
   <div class="col-md-12 well">
     <form id="search-form" action="/documents" method="get">
       <div class="input-group">
@@ -16,12 +16,13 @@
           <button type="submit" id="Search" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
         </div>
       </div>
-    </form>
+  </form>
   </div>
 </div>
 
 
 <div class="row">
+
   <!--http://jsfiddle.net/22cyX/-->
   <div class="col-md-3 facets">
     <ul class="nav nav-pills nav-stacked">
@@ -34,7 +35,7 @@
 
           <#list facet.results as result>
               <li>
-                <a href="#">
+                <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}">
                   <span class="facet-result-name">${result.name}</span>
                       <span class="badge pull-right facet-result-count">${result.count}</span>
                 </a>

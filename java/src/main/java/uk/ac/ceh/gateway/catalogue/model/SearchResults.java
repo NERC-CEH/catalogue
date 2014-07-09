@@ -17,6 +17,7 @@ public abstract class SearchResults<T> {
     public static class Header{
         private long numFound, start, rows;
         private String term;
+        private List<String> facetQueries;
     }
     
     @Data
