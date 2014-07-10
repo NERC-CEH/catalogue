@@ -45,6 +45,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
     public void linkDocuments(List<String> fileIdentifiers) throws DocumentLinkingException {
         DataRevision<CatalogueUser> latestRev;
         List<Metadata> metadata = new ArrayList();
+        List<CoupledResource> coupledResources = new ArrayList<>();
         
         try {
             latestRev = repo.getLatestRevision();
@@ -54,7 +55,15 @@ public class GitDocumentLinkService implements DocumentLinkService {
         
         for (String fileIdentifier : fileIdentifiers) {
             try {
-                metadata.add(new Metadata(documentBundleReader.readBundle(fileIdentifier, latestRev.getRevisionID())));
+                GeminiDocument document = documentBundleReader.readBundle(fileIdentifier, latestRev.getRevisionID());
+                metadata.add(new Metadata(document));
+                document.getCoupleResources().forEach((coupleResource) -> {
+                    coupledResources.add(
+                        CoupledResource.builder()
+                            .fileIdentifier(document.getId())
+                            .resourceIdentifier(coupleResource)
+                            .build());
+                });
             } catch (DataRepositoryException ex) {
                 throw new DocumentLinkingException("Problem retrieving GeminiDocument", ex);
             } catch (IOException | UnknownContentTypeException ex) {
@@ -62,6 +71,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
             }
         }
         linkDatabase.addMetadata(metadata);
+        linkDatabase.addCoupledResources(coupledResources);
     }
 
     @Override

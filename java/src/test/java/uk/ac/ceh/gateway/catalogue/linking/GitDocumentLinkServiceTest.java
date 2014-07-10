@@ -5,11 +5,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyCollectionOf;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,36 +32,33 @@ public class GitDocumentLinkServiceTest {
     @Test
     public void canRebuildLinks() throws Exception {
         //Given
-        GeminiDocument document = new GeminiDocument();
         when(repo.getFiles()).thenReturn(Arrays.asList("123-123-123", "222-333-444"));
         when(repo.getLatestRevision()).thenReturn(mock(DataRevision.class));
-        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(document);
+        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(mock(GeminiDocument.class));
         GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
-        Metadata expected = new Metadata(document);
         
         //When
         service.rebuildLinks();
         
         //Then
         verify(linkDatabase).empty();
-        verify(linkDatabase).addMetadata(Arrays.asList(expected, expected));
+        verify(linkDatabase).addMetadata((List<Metadata>) anyCollectionOf(Metadata.class));
+        verify(linkDatabase).addCoupledResources((List<CoupledResource>) anyCollectionOf(CoupledResource.class));
     }
     
     @Test
     public void canLinkDocuments() throws Exception {
         //Given
-        List<String> documents =  Arrays.asList("1bb", "234");
-        GeminiDocument document = new GeminiDocument();
         when(repo.getLatestRevision()).thenReturn(mock(DataRevision.class));
-        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(document);
+        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(mock(GeminiDocument.class));
         GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
-        Metadata expected = new Metadata(document);
         
         //When
-        service.linkDocuments(documents);
+        service.linkDocuments(Arrays.asList("1bb", "234"));
         
         //Then
-        verify(linkDatabase).addMetadata(Arrays.asList(expected, expected));
+        verify(linkDatabase).addMetadata((List<Metadata>) anyCollectionOf(Metadata.class));
+        verify(linkDatabase).addCoupledResources((List<CoupledResource>) anyCollectionOf(CoupledResource.class));
     }
     
     @Test
