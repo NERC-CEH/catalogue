@@ -26,7 +26,6 @@
         <freemarker.version>2.3.20</freemarker.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <joda-time.version>2.3</joda-time.version>
-        <postgresql.version>9.2-1002.jdbc4</postgresql.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -46,12 +45,7 @@
         </profile>
     </profiles>
     
-    <dependencies>  
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
-        </dependency>      
+    <dependencies>       
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -157,6 +151,14 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
             <version>${spring-security.version}</version>
+        </dependency>
+        
+        <!-- Database Connection Pooling -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jdbc</artifactId>
+            <version>8.0.9</version>
+            <scope>provided</scope>
         </dependency>
         
         <!-- E-mail -->

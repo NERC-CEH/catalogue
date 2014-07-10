@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -17,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
+@Service
 public class GitDocumentLinkService implements DocumentLinkService {
     private final DataRepository<CatalogueUser> repo;
     private final BundledReaderService<GeminiDocument> documentBundleReader;
@@ -24,8 +26,9 @@ public class GitDocumentLinkService implements DocumentLinkService {
 
     @Autowired
     public GitDocumentLinkService(DataRepository<CatalogueUser> repo, 
-                                          BundledReaderService<GeminiDocument> documentBundleReader,
-                                          LinkDatabase linkingRepository) {
+                                  BundledReaderService<GeminiDocument> documentBundleReader,
+                                  LinkDatabase linkingRepository) {
+        
         this.repo = checkNotNull(repo);
         this.documentBundleReader = checkNotNull(documentBundleReader);
         this.linkDatabase = checkNotNull(linkingRepository);

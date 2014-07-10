@@ -6,14 +6,18 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class RdbmsLinkDatabase implements LinkDatabase {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Metadata> rowMapper;
 
+    @Autowired
     public RdbmsLinkDatabase(DataSource dataSource) {
         jdbcTemplate = new JdbcTemplate(dataSource);
         rowMapper = new MetadataRowMapper();
