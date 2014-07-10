@@ -2,7 +2,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>${title} - CEH Catalogue</title>
+     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>${title} - CEH Catalogue</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>    
@@ -20,8 +23,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a  class="navbar-brand" href="#"></a>
-              <a  class="navbar-mediaSml" href="#"></a>
+              <a href="#" class="navbar-brand"><img src="/static/img/header_logo.png" alt="CEH Logo" class="img-responsive"/></a>
             </div>
 
           <div class="navbar-collapse collapse">
