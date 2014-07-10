@@ -42,6 +42,7 @@ public class GitDocumentLinkServiceTest {
         
         //Then
         verify(linkDatabase).empty();
+        verify(repo).getFiles(any(String.class));
         verify(linkDatabase).addMetadata((List<Metadata>) anyCollectionOf(Metadata.class));
         verify(linkDatabase).addCoupledResources((List<CoupledResource>) anyCollectionOf(CoupledResource.class));
     }

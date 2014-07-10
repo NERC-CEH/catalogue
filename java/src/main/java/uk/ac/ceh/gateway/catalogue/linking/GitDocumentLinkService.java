@@ -1,11 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import java.io.IOException;
+import com.google.common.base.Splitter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -16,9 +17,9 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 @Service
+@Slf4j
 public class GitDocumentLinkService implements DocumentLinkService {
     private final DataRepository<CatalogueUser> repo;
     private final BundledReaderService<GeminiDocument> documentBundleReader;
@@ -38,7 +39,8 @@ public class GitDocumentLinkService implements DocumentLinkService {
     public void rebuildLinks() throws DocumentLinkingException {
         try {
             linkDatabase.empty();
-            linkDocuments(repo.getFiles());
+            String revision = repo.getLatestRevision().getRevisionID();
+            linkDocuments(repo.getFiles(revision));
         } catch (DataRepositoryException ex) {
             throw new DocumentLinkingException("Unable to get file names from Git", ex);
         }
@@ -56,7 +58,11 @@ public class GitDocumentLinkService implements DocumentLinkService {
             throw new DocumentLinkingException("Unable to get latest revision from Git", ex);
         }
         
-        for (String fileIdentifier : fileIdentifiers) {
+        DocumentLinkingException linkingException = new DocumentLinkingException("Errors from document linking");
+        
+        fileIdentifiers.stream().forEach((fileIdentifier) -> {
+            fileIdentifier = stripFileExtension(fileIdentifier);
+            log.debug("linking with fileIdentifier: {}", fileIdentifier);
             try {
                 GeminiDocument document = documentBundleReader.readBundle(fileIdentifier, latestRev.getRevisionID());
                 metadata.add(new Metadata(document));
@@ -67,14 +73,17 @@ public class GitDocumentLinkService implements DocumentLinkService {
                             .resourceIdentifier(coupleResource)
                             .build());
                 });
-            } catch (DataRepositoryException ex) {
-                throw new DocumentLinkingException("Problem retrieving GeminiDocument", ex);
-            } catch (IOException | UnknownContentTypeException ex) {
-                throw new DocumentLinkingException("Problem retrieving GeminiDocument", ex);
+            } catch (Exception ex) {
+                linkingException.addSuppressed(ex);
             }
-        }
+        });
+        
         linkDatabase.addMetadata(metadata);
         linkDatabase.addCoupledResources(coupledResources);
+        
+        if(linkingException.getSuppressed().length != 0) {
+                throw linkingException;
+        }
     }
 
     @Override
@@ -100,5 +109,10 @@ public class GitDocumentLinkService implements DocumentLinkService {
                 .build());
         });
         return toReturn;
+    }
+    
+    private String stripFileExtension(String filename) {
+        Iterable<String> split = Splitter.on(".").trimResults().omitEmptyStrings().split(filename);
+        return split.iterator().next();
     }
 }
