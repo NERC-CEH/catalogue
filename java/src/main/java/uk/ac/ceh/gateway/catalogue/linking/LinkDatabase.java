@@ -1,46 +1,56 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface LinkDatabase {
     /**
      * Empty the database of all data.
      * 
-     * @throws DocumentLinkingException 
      */
-    void empty() throws DocumentLinkingException;
+    void empty();
     
     /**
      * Delete metadata from the database.
      * 
      * @param metadata to delete 
-     * @throws DocumentLinkingException 
      */
-    void delete(Metadata metadata) throws DocumentLinkingException;
+    void deleteMetadata(Metadata metadata);
+    
+    /**
+     * Delete coupledResources from the database.
+     * 
+     * @param coupledResources to delete 
+     */
+    void deleteCoupledResources(List<CoupledResource> coupledResources);
     
     /**
      * Add metadata to the database.
      * 
      * @param metadata to add
-     * @throws DocumentLinkingException 
      */
-    void add(Metadata metadata) throws DocumentLinkingException;
+    void addMetadata(Metadata metadata);
     
     /**
-     * Add collection of metadata to the database.
+     * Add list of Metadata to the database.
      * 
-     * @param metadata collection of metadata to add
-     * @throws DocumentLinkingException 
+     * @param metadata list of Metadata to add
      */
-    void add(Collection<Metadata> metadata) throws DocumentLinkingException;
+    void addMetadata(List<Metadata> metadata);
+    
+    /**
+     * Add list of CoupledResource to the database.
+     * 
+     * @param coupledResources list of CoupledResource to add 
+     */
+    void addCoupledResources(List<CoupledResource> coupledResources);
     
     /**
      * Get dataset metadata for a service.
      * 
      * @param fileIdentifier of service
-     * @return Collection of metadata
+     * @return list of metadata
      */
-    Collection<Metadata> findDatasetsForService(String fileIdentifier);
+    List<Metadata> findDatasetsForService(String fileIdentifier);
     
     /**
      * Get service metadata for a dataset.
@@ -48,5 +58,5 @@ public interface LinkDatabase {
      * @param fileIdentifier of dataset
      * @return Collection of metadata
      */
-    Collection<Metadata> findServicesForDataset(String fileIdentifier);
+    List<Metadata> findServicesForDataset(String fileIdentifier);
 }

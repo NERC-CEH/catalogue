@@ -3,6 +3,8 @@ package database;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -11,7 +13,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
+import uk.ac.ceh.gateway.catalogue.linking.CoupledResource;
 import uk.ac.ceh.gateway.catalogue.linking.Metadata;
 import uk.ac.ceh.gateway.catalogue.linking.RdbmsLinkDatabase;
 
@@ -26,8 +28,149 @@ public class ITRdbmsLinkDatabase {
 			.build();
     }
     
+    private DataSource createEmptyTestDataSource() {
+        return new EmbeddedDatabaseBuilder()
+			.setName("catalogue")
+			.addScripts("database/schema.sql")
+			.build();
+    }
+    
     @Test
-    public void emptyDatabase() throws DocumentLinkingException {
+    public void deleteCoupledResource() {
+        //Given
+        DataSource dataSource = createPopulatedTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        verifyDatabaseHasRows(jdbcTemplate);
+        List<CoupledResource> toDelete = Arrays.asList(
+            CoupledResource.builder().fileIdentifier("793d5f7a-3926-4ccf-8995-1305c7b0374c").resourceIdentifier("CEH:EIDC:#1374152631039").build()
+        );
+        
+        //When
+        linkDatabase.deleteCoupledResources(toDelete);
+        
+        //Then
+        Integer count = jdbcTemplate.queryForObject("select count(*) from coupledResources where fileIdentifier = '793d5f7a-3926-4ccf-8995-1305c7b0374c' and resourceIdentifier = 'CEH:EIDC:#1374152631039'", Integer.class);
+        assertThat("Should not be a record with specfied fileIdentifier and resourceIdentifier", count, equalTo(0));
+    }
+    
+    @Test
+    public void addCoupledResources() {
+        //Given
+        DataSource dataSource = createEmptyTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        verifyDatabaseIsEmpty(jdbcTemplate);
+        List<CoupledResource> resources = Arrays.asList(
+            CoupledResource.builder().fileIdentifier("abcd").resourceIdentifier("CEH:EIDC:#0123456789").build(),
+            CoupledResource.builder().fileIdentifier("abcd").resourceIdentifier("CEH:EIDC:#9876543210").build()
+        );
+        
+        //When
+        linkDatabase.addCoupledResources(resources);
+        
+        //Then
+        Integer count = jdbcTemplate.queryForObject("select count(*) from coupledResources", Integer.class);
+        assertThat("Should be two rows in the database", count, equalTo(2));
+        
+    }
+    
+    @Test
+    public void addAlreadyExisitingCoupledResources() {
+        //Given
+        DataSource dataSource = createPopulatedTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        verifyDatabaseHasRows(jdbcTemplate);
+        List<CoupledResource> resources = Arrays.asList(
+            CoupledResource.builder().fileIdentifier("793d5f7a-3926-4ccf-8995-1305c7b0374c").resourceIdentifier("CEH:EIDC:#1374152631039").build(),
+            CoupledResource.builder().fileIdentifier("793d5f7a-3926-4ccf-8995-1305c7b0374c").resourceIdentifier("CEH:EIDC:#1395932301823").build()
+        );
+        
+        //When
+        linkDatabase.addCoupledResources(resources);
+        
+        //Then
+        Integer count = jdbcTemplate.queryForObject("select count(*) from coupledResources where fileIdentifier = '793d5f7a-3926-4ccf-8995-1305c7b0374c'", Integer.class);
+        assertThat("Two rows should have been added", count, equalTo(2));
+    }
+    
+    @Test
+    public void addAlreadyExisitingMetadata() {
+        //Given
+        DataSource dataSource = createPopulatedTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        verifyDatabaseHasRows(jdbcTemplate);
+        List<Metadata> metadata = Arrays.asList(
+            Metadata.builder().fileIdentifier("793d5f7a-3926-4ccf-8995-1305c7b0374c").build()
+        );
+        
+        //When
+        linkDatabase.addMetadata(metadata);
+        
+        //Then
+        Integer count = jdbcTemplate.queryForObject("select count(*) from metadata where fileIdentifier = '793d5f7a-3926-4ccf-8995-1305c7b0374c'", Integer.class);
+        assertThat("One row should have been added", count, equalTo(1));
+    }
+    
+    @Test
+    public void addMultipleMetadata() {
+        //Given
+        DataSource dataSource = createEmptyTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        verifyDatabaseIsEmpty(jdbcTemplate);
+        List<Metadata> metadata = Arrays.asList(
+            Metadata.builder().fileIdentifier("1234-4321").build(),
+            Metadata.builder().fileIdentifier("abcd-dcba").build()
+        );
+        
+        //When
+        linkDatabase.addMetadata(metadata);
+        
+        //Then
+        Integer count = jdbcTemplate.queryForObject("select count(*) from metadata", Integer.class);
+        assertThat("Two rows should have been added", count, equalTo(2));
+    }
+    
+    @Test
+    public void tryToDeleteWithEmptyString() {
+        //Given
+        DataSource dataSource = createPopulatedTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        verifyDatabaseHasRows(jdbcTemplate);
+        Integer before = jdbcTemplate.queryForObject("select count(*) from metadata", Integer.class);
+        Metadata toDelete = Metadata.builder().build();
+        
+        //When
+        linkDatabase.deleteMetadata(toDelete);
+        
+        //Then
+        Integer after = jdbcTemplate.queryForObject("select count(*) from metadata", Integer.class);
+        assertThat("Rows should not have been deleted", after, equalTo(before));
+    }
+    
+    @Test
+    public void deleteMetadataRecord() {
+        //Given
+        DataSource dataSource = createPopulatedTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        verifyDatabaseHasRows(jdbcTemplate);
+        Metadata toDelete = Metadata.builder().fileIdentifier("793d5f7a-3926-4ccf-8995-1305c7b0374c").build();
+        
+        //When
+        linkDatabase.deleteMetadata(toDelete);
+        
+        //Then
+        Integer count = jdbcTemplate.queryForObject("select count(*) from metadata where fileIdentifier = '793d5f7a-3926-4ccf-8995-1305c7b0374c'", Integer.class);
+        assertThat("Should not be a record with specfied fileIdentifier", count, equalTo(0));
+    }
+    
+    @Test
+    public void emptyDatabase() {
         //Given
         DataSource dataSource = createPopulatedTestDataSource();
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
@@ -78,7 +221,10 @@ public class ITRdbmsLinkDatabase {
     @Test
     public void zeroResultsDoesNotCauseCrash() {
         //Given
-        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        DataSource dataSource = createPopulatedTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        verifyDatabaseHasRows(jdbcTemplate);
         
         //When
         Collection<Metadata> actual = linkDatabase.findServicesForDataset(FILE_IDENTIFIER_NOT_IN_DATABASE);

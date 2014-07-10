@@ -28,6 +28,7 @@
         <joda-time.version>2.3</joda-time.version>
         <postgresql.version>9.2-1002.jdbc4</postgresql.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <profiles>
         <profile>

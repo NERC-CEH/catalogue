@@ -45,7 +45,7 @@ public class GitDocumentLinkServiceTest {
         
         //Then
         verify(linkDatabase).empty();
-        verify(linkDatabase).add(Arrays.asList(expected, expected));
+        verify(linkDatabase).addMetadata(Arrays.asList(expected, expected));
     }
     
     @Test
@@ -62,7 +62,7 @@ public class GitDocumentLinkServiceTest {
         service.linkDocuments(documents);
         
         //Then
-        verify(linkDatabase).add(Arrays.asList(expected, expected));
+        verify(linkDatabase).addMetadata(Arrays.asList(expected, expected));
     }
     
     @Test

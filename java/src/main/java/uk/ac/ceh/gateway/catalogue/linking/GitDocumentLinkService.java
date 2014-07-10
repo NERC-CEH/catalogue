@@ -61,7 +61,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
                 throw new DocumentLinkingException("Problem retrieving GeminiDocument", ex);
             }
         }
-        linkDatabase.add(metadata);
+        linkDatabase.addMetadata(metadata);
     }
 
     @Override
