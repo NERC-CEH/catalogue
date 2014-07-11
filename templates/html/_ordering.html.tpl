@@ -26,8 +26,6 @@
   	     <a href="${downloadOrder.licenseUrl}">Licence terms and conditions apply</a>
   	   </p>
       </#if>
-    <#else>
-      <p>Licence not found</p>
     </#if>
     </div>
 </div>
