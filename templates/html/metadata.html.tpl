@@ -3,14 +3,9 @@
 <@skeleton.master title=title>
 
 <div class="row">
-    <div class="col-md-12">
-      <#include "_title.html.tpl">
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-12">
-      <#include "_description.html.tpl">
+    <div class="col-md-12">      
+      <div><#include "_title.html.tpl"></div>
+      <div><#include "_description.html.tpl"></div>
     </div>
 </div>
 
@@ -33,7 +28,8 @@
 
 <div class="row">
     <div class="col-md-12">
-      <#include "_extent.html.tpl">
+      <div><#include "_extent.html.tpl"></div>
+      <div><#include "_temporalExtent.html.tpl"></div>
     </div>
 </div>
 
