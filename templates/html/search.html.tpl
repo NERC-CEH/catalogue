@@ -34,12 +34,20 @@
              </li>
 
           <#list facet.results as result>
-              <li>
-                <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}">
-                  <span class="facet-result-name">${result.name}</span>
-                      <span class="badge pull-right facet-result-count">${result.count}</span>
-                </a>
-             </li>
+                <#if isActiveFacetFilter(header.facetFilters facet.fieldName result.name)>
+                  <li class="facet-filter-active"}>
+                    <a href="/documents?term=${term}${removeFacetFilter(header.facetFilters, facet.fieldName + '|' + result.name)}">
+                      <span class="facet-result-name">${result.name}</span>
+                      <span class="badge pull-right facet-result-count">X</span>
+                    </a>
+                 </li>
+                <#else>
+                  <li class="facet-filter-inactive">
+                    <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getActiveFacetFiltersForUrl(header.facetFilters)}">
+                      <span class="facet-result-name">${result.name} (${result.count})</span>
+                    </a>
+                 </li>
+                </#if>
            </#list>
       </#list>   
     </ul> 
@@ -68,3 +76,25 @@
 </div>
 
 </@skeleton.master>
+
+<#function isActiveFacetFilter facetFilters facetFieldName facetValue>
+  <#return facetFilters?seq_contains(facetFieldName + "|" + facetValue)>
+</#function>
+
+<#function getActiveFacetFiltersForUrl facetFilters>
+  <#if facetFilters?? && (facetFilters?size > 0)>
+    <#return '&facet=' + facetFilters?join('&facet=')>
+  <#else>
+    <#return ''>
+  </#if>
+</#function>
+
+<#function removeFacetFilter facetFilters toRemove>
+  <#assign toReturn = []>
+  <#list facetFilters as facetFilter>
+    <#if facetFilter != toRemove>
+      <#assign toReturn = toReturn + [facetFilter]>
+    </#if>
+  </#list>
+  <#return getActiveFacetFiltersForUrl(toReturn)>
+</#function>
