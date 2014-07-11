@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeyw
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
@@ -44,6 +45,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final ResponsiblePartyConverter responsiblePartyConverter;
     private final DownloadOrderConverter downloadOrderConverter;
     private final BoundingBoxesConverter boundingBoxesConverter;
+    private final TemporalExtentConverter temporalExtentConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -66,6 +68,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.downloadOrderConverter = new DownloadOrderConverter(xpath);
         this.boundingBoxesConverter = new BoundingBoxesConverter(xpath);
         this.browseGraphicUrl = xpath.compile(XPaths.BROWSE_GRAPHIC_URL);
+        this.temporalExtentConverter = new TemporalExtentConverter(xpath);
         this.coupledResource = xpath.compile(XPaths.COUPLED_RESOURCE);
     }
     
@@ -112,6 +115,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
             toReturn.setBrowseGraphicUrl(browseGraphicUrl.evaluate(document));
+            toReturn.setTemporalExtent(temporalExtentConverter.convert(document));
             toReturn.setCoupleResources(getListOfStrings(document, coupledResource));
             return toReturn;
         }

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -30,6 +32,7 @@ public class SearchController {
     private final SolrServer solrServer;
     
     private static final Map<String, String> FACET_FIELDS;
+    protected static final String DEFAULT_SEARCH_TERM = "*";
     static
     {
         FACET_FIELDS = new HashMap<>();
@@ -45,7 +48,7 @@ public class SearchController {
     @RequestMapping(value = "documents",
                     method = RequestMethod.GET)
     public @ResponseBody SearchResults searchDocuments(
-            @RequestParam(value = "term", defaultValue="") String term,
+            @RequestParam(value = "term", defaultValue=DEFAULT_SEARCH_TERM) String term,
             @RequestParam(value = "start", defaultValue = "0") int start,
             @RequestParam(value = "rows", defaultValue = "20") int rows
     ) throws SolrServerException{
@@ -97,13 +100,25 @@ public class SearchController {
                 .setQuery(term)
                 .setStart(start)
                 .setRows(rows);
-        if(FACET_FIELDS.size() > 0){
-            query.setFacet(true);
-            for(Entry<String, String> entry : FACET_FIELDS.entrySet()){
-                query.addFacetField(entry.getKey());
-            }
-        }
+        setFacetFields(query);
+        setSortOrder(query, term);
         return query;
+    }
+    
+    private void setFacetFields(SolrQuery query){
+        query.setFacet(true);
+        query.setFacetMinCount(1);
+        for(Entry<String, String> entry : FACET_FIELDS.entrySet()){
+            query.addFacetField(entry.getKey());
+        }
+    }
+    
+    private void setSortOrder(SolrQuery query, String term){
+        Random randomGenerator = new Random(System.currentTimeMillis());
+        String randomDynamicFieldName = "random" + randomGenerator.nextInt();
+        if(DEFAULT_SEARCH_TERM.equals(term)){
+            query.setSort(randomDynamicFieldName, ORDER.asc);
+        }
     }
     
 }

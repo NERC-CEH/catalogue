@@ -6,7 +6,12 @@
   <div class="col-md-12 well">
     <form id="search-form" action="/documents" method="get">
       <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search the Catalogue" id="term" name="term" value="${header.term}">
+        <#if header.term="*">
+          <#assign term="">
+        <#else>
+          <#assign term=header.term>
+        </#if>
+        <input type="text" class="form-control" placeholder="Search the Catalogue" id="term" name="term" value="${term}">
         <div class="input-group-btn">
           <button type="submit" id="Search" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
         </div>
@@ -18,10 +23,10 @@
 
 <div class="row">
   <!--http://jsfiddle.net/22cyX/-->
-  <div class="col-md-3 facet">
+  <div class="col-md-3 facets">
     <ul class="nav nav-pills nav-stacked">
       <#list facets as facet>
-              <li class="active">
+              <li class="active facet">
                 <a href="#">
                   ${facet.displayName}
                 </a>
@@ -30,8 +35,8 @@
           <#list facet.results as result>
               <li>
                 <a href="#">
-                  ${result.name}
-                      <span class="badge pull-right">${result.count}</span>
+                  <span class="facet-result-name">${result.name}</span>
+                      <span class="badge pull-right facet-result-count">${result.count}</span>
                 </a>
              </li>
            </#list>
@@ -49,10 +54,10 @@
     <#list results as result>
       <div class="result row">
           <div class="col-md-2">
-              <span class="label label-Dataset">Dataset</span>
+              <span class="label label-${result.resourceType}">${result.resourceType}</span>
           </div>
           <div class="col-md-10">
-              <a href="/documents/${result.identifier}">${result.title}</a>
+              <a href="/documents/${result.identifier}" class="search-result-title">${result.title}</a>
                   ${result.description}
           </div>
       </div>
