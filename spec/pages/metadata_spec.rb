@@ -46,7 +46,27 @@ BROWSERS.each do |browser|
           .map{ |e| e.text }
         expect(contacts).to match_array ["Author Black, H.I.J. Centre for Ecology & Hydrology enquiries@ceh.ac.uk", "Author Bunce, R.G.H. Alterra enquiries@ceh.ac.uk", "Author Corney, P.M. University of Liverpool enquiries@ceh.ac.uk", "Author Kirby, K.J. English Nature enquiries@ceh.ac.uk", "Author Shaw, M.W. The Nature Conservancy enquiries@ceh.ac.uk", "Author Smart, S.M. Centre for Ecology & Hydrology enquiries@ceh.ac.uk", "Author Smithers, R.J. Woodland Trust enquiries@ceh.ac.uk", "Custodian EIDC Hub eidc@ceh.ac.uk", "Point Of Contact Centre for Ecology & Hydrology Lancaster Environment Centre, Library Avenue, Bailrigg Lancashire Lancaster United Kingdom LA1 4AP enquiries@ceh.ac.uk", "Point Of Contact Centre for Ecology & Hydrology Lancaster Environment Centre, Library Avenue, Bailrigg Lancashire Lancaster United Kingdom LA1 4AP enquiries@ceh.ac.uk", "Point Of Contact Centre for Ecology & Hydrology Lancaster Environment Centre, Library Avenue, Bailrigg Lancashire Lancaster United Kingdom LA1 4AP enquries@ceh.ac.uk", "Resource Provider Parr Section enquiries@ceh.ac.uk"]
       end
-
     end
+
+    describe "Get the data panel" do
+
+      it "should show a Get the data panel on Woodlands survey flora data 1971-2001 with links" do
+        visit '/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae'
+
+        expect(page).to have_selector('.document-ordering')
+        expect(page).to have_link("Order/Download", href: "http://gateway.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
+        expect(page).to have_link("Supporting documentation", href: "http://eidchub.ceh.ac.uk/metadata/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
+        expect(page).to have_link("This resource is available under the Open Government Licence (OGL)", href: "http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
+      end
+
+      it "should show a Get the data panel with no links on The BUZZ project: comparison of new and existing agri-environment scheme options for biodiversity enhancement on arable land" do
+        visit '/documents/6795cf1b-9204-451e-99f1-f9b90658537f'
+
+        expect(page).to have_selector('.document-ordering')
+        expect(first('.document-ordering')).to have_content "No Order/Download available"
+        expect(first('.document-ordering')).to have_content "Licence not found"
+      end
+    end
+
   end
 end
