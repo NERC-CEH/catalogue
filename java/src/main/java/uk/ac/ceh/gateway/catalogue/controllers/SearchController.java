@@ -16,6 +16,7 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,20 +52,21 @@ public class SearchController {
             @RequestParam(value = "term", defaultValue=DEFAULT_SEARCH_TERM) String term,
             @RequestParam(value = "start", defaultValue = "0") int start,
             @RequestParam(value = "rows", defaultValue = "20") int rows,
-            @RequestParam(value = "facet", defaultValue = "") List<String> facets
+            @RequestParam(value = "facet", defaultValue = "") List<String> facetFilters
     ) throws SolrServerException{
-        SolrQuery query = getQuery(term, start, rows, facets);
-        return performQuery(term, query);
+        SolrQuery query = getQuery(term, start, rows, facetFilters);
+        return performQuery(term, facetFilters, query);
     }
     
-    private SearchResults<GeminiDocumentSolrIndex> performQuery(String term, SolrQuery query) throws SolrServerException{
+    private SearchResults<GeminiDocumentSolrIndex> performQuery(String term, List<String> facetFilters, SolrQuery query) throws SolrServerException{
         QueryResponse response = solrServer.query(query, SolrRequest.METHOD.POST);
         List<GeminiDocumentSolrIndex> results = response.getBeans(GeminiDocumentSolrIndex.class);
         Header header = new SearchResults.Header()
                 .setNumFound(response.getResults().getNumFound())
                 .setTerm(term)
                 .setStart(query.getStart())
-                .setRows(query.getRows());  
+                .setRows(query.getRows())
+                .setFacetFilters(facetFilters);
         return new DocumentSearchResults()
                 .setHeader(header)
                 .setResults(results)
@@ -72,9 +74,7 @@ public class SearchController {
     }
     
     private List<Facet> getFacets(QueryResponse response){
-        
         List<SearchResults.Facet> toReturn = new ArrayList<>();
-        
         for(FacetField facetField : response.getFacetFields()){
             List<SearchResults.FacetResult> facetResults = new ArrayList<>();
             for(Count count : facetField.getValues()){
@@ -96,22 +96,27 @@ public class SearchController {
         return toReturn;
     }
     
-    private SolrQuery getQuery(String term, int start, int rows, List<String> facets){
+    private SolrQuery getQuery(String term, int start, int rows, List<String> facetFilters){
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setStart(start)
                 .setRows(rows);
-        setFacetQueries(query, facets);
+        setFacetFilters(query, facetFilters);
         setFacetFields(query);
         setSortOrder(query, term);
         return query;
     }
     
-    private void setFacetQueries(SolrQuery query, List<String> facets){
-        if(facets != null && facets.size() > 0){
-            for(String facet : facets){
-                String[] facetParts = facet.split("\\|");
-                query.addFacetQuery(facetParts[0] + ":" + facetParts[1]);
+    private void setFacetFilters(SolrQuery query, List<String> facetFilters){
+        String delimiter = "|";
+        if(facetFilters != null && facetFilters.size() > 0){
+            for(String facetFilter : facetFilters){
+                if(StringUtils.countOccurrencesOf(facetFilter, delimiter) == 1){
+                    String[] facetFilterParts = facetFilter.split("\\" + delimiter);
+                    query.addFilterQuery(facetFilterParts[0] + ":" + facetFilterParts[1]);
+                }else{
+                    throw new IllegalArgumentException(String.format("This is an invalid facet filter: %s. It should contain one argument delimiter of the type '|'", facetFilter));
+                }
             }
         }
     }
