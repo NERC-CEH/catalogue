@@ -3,9 +3,13 @@ package uk.ac.ceh.gateway.catalogue.linking;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.sql.DataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,6 +17,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Slf4j
 public class RdbmsLinkDatabase implements LinkDatabase {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Metadata> rowMapper;
@@ -35,25 +40,25 @@ public class RdbmsLinkDatabase implements LinkDatabase {
     }
     
     @Override
-    public void deleteCoupledResources(List<CoupledResource> coupledResources) {
-        delCoupledResources(coupledResources);
+    public void deleteCoupledResources(Set<CoupledResource> coupledResources) {
+        delCoupledResources(new ArrayList(coupledResources));
     }
 
     @Override
     public void addMetadata(Metadata metadata) {
-        addMetadata(Arrays.asList(metadata));
+        addMetadata(new HashSet(Arrays.asList(metadata)));
     }
 
     @Override
-    public void addMetadata(List<Metadata> metadata) {
-        deleteMetadata(metadata);
-        insertMetadata(metadata);
+    public void addMetadata(Set<Metadata> metadata) {
+        deleteMetadata(new ArrayList(metadata));
+        insertMetadata(new ArrayList(metadata));
     }
     
     @Override
-    public void addCoupledResources(List<CoupledResource> coupledResources) {
-        delCoupledResources(coupledResources);
-        insertCoupledResources(coupledResources);
+    public void addCoupledResources(Set<CoupledResource> coupledResources) {
+        delCoupledResources(new ArrayList(coupledResources));
+        insertCoupledResources(new ArrayList(coupledResources));
     }
 
     @Override
@@ -93,6 +98,7 @@ public class RdbmsLinkDatabase implements LinkDatabase {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 Metadata meta = metadata.get(i);
+                log.debug("inserting {}", meta);
                 ps.setString(1, meta.getFileIdentifier());
                 ps.setString(2, meta.getTitle());
                 ps.setString(3, meta.getResourceIdentifier());

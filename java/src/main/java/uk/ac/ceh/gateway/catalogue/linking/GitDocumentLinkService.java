@@ -2,10 +2,10 @@ package uk.ac.ceh.gateway.catalogue.linking;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Splitter;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,17 +40,17 @@ public class GitDocumentLinkService implements DocumentLinkService {
         try {
             linkDatabase.empty();
             String revision = repo.getLatestRevision().getRevisionID();
-            linkDocuments(repo.getFiles(revision));
+            linkDocuments(removeDuplicates(repo.getFiles(revision)));
         } catch (DataRepositoryException ex) {
             throw new DocumentLinkingException("Unable to get file names from Git", ex);
         }
     }
 
     @Override
-    public void linkDocuments(List<String> fileIdentifiers) throws DocumentLinkingException {
+    public void linkDocuments(Set<String> fileIdentifiers) throws DocumentLinkingException {
         DataRevision<CatalogueUser> latestRev;
-        List<Metadata> metadata = new ArrayList();
-        List<CoupledResource> coupledResources = new ArrayList<>();
+        Set<Metadata> metadata = new HashSet();
+        Set<CoupledResource> coupledResources = new HashSet<>();
         
         try {
             latestRev = repo.getLatestRevision();
@@ -60,8 +60,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
         
         DocumentLinkingException linkingException = new DocumentLinkingException("Errors from document linking");
         
-        fileIdentifiers.stream().forEach((fileIdentifier) -> {
-            fileIdentifier = stripFileExtension(fileIdentifier);
+        fileIdentifiers.forEach((fileIdentifier) -> {
             log.debug("linking with fileIdentifier: {}", fileIdentifier);
             try {
                 GeminiDocument document = documentBundleReader.readBundle(fileIdentifier, latestRev.getRevisionID());
@@ -87,7 +86,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
     }
 
     @Override
-    public Collection<Link> getLinks(GeminiDocument document, UriComponentsBuilder builder) {
+    public Set<Link> getLinks(GeminiDocument document, UriComponentsBuilder builder) {
         if (document.getResourceType() != null) {
             switch (document.getResourceType().getValue().toLowerCase()) {
                 case "dataset":
@@ -97,16 +96,24 @@ public class GitDocumentLinkService implements DocumentLinkService {
                     return createLinks(linkDatabase.findDatasetsForService(document.getId()), builder);
             }
         }
-        return Collections.EMPTY_LIST;
+        return Collections.EMPTY_SET;
     }
     
-    private Collection<Link> createLinks(Collection<Metadata> metadata, UriComponentsBuilder builder) {
-        final Collection<Link> toReturn = new ArrayList<>();
-        metadata.stream().forEach((meta) -> {
+    private Set<Link> createLinks(List<Metadata> metadata, UriComponentsBuilder builder) {
+        final Set<Link> toReturn = new HashSet<>();
+        metadata.forEach((meta) -> {
             toReturn.add(Link.builder()
                 .title(meta.getTitle())
                 .href(builder.buildAndExpand(meta.getFileIdentifier()).toUriString())
                 .build());
+        });
+        return toReturn;
+    }
+    
+    private Set<String> removeDuplicates(List<String> filenames) {
+        Set<String> toReturn = new HashSet<>();
+        filenames.forEach((filename) -> {
+            toReturn.add(stripFileExtension(filename));
         });
         return toReturn;
     }

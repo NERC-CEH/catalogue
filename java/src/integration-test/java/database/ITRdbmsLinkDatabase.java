@@ -3,12 +3,16 @@ package database;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.sql.DataSource;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.isIn;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -42,9 +46,9 @@ public class ITRdbmsLinkDatabase {
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         verifyDatabaseHasRows(jdbcTemplate);
-        List<CoupledResource> toDelete = Arrays.asList(
+        Set<CoupledResource> toDelete = new HashSet(Arrays.asList(
             CoupledResource.builder().fileIdentifier("793d5f7a-3926-4ccf-8995-1305c7b0374c").resourceIdentifier("CEH:EIDC:#1374152631039").build()
-        );
+        ));
         
         //When
         linkDatabase.deleteCoupledResources(toDelete);
@@ -61,10 +65,10 @@ public class ITRdbmsLinkDatabase {
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         verifyDatabaseIsEmpty(jdbcTemplate);
-        List<CoupledResource> resources = Arrays.asList(
+        Set<CoupledResource> resources = new HashSet(Arrays.asList(
             CoupledResource.builder().fileIdentifier("abcd").resourceIdentifier("CEH:EIDC:#0123456789").build(),
             CoupledResource.builder().fileIdentifier("abcd").resourceIdentifier("CEH:EIDC:#9876543210").build()
-        );
+        ));
         
         //When
         linkDatabase.addCoupledResources(resources);
@@ -82,10 +86,10 @@ public class ITRdbmsLinkDatabase {
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         verifyDatabaseHasRows(jdbcTemplate);
-        List<CoupledResource> resources = Arrays.asList(
+        Set<CoupledResource> resources = new HashSet(Arrays.asList(
             CoupledResource.builder().fileIdentifier("793d5f7a-3926-4ccf-8995-1305c7b0374c").resourceIdentifier("CEH:EIDC:#1374152631039").build(),
             CoupledResource.builder().fileIdentifier("793d5f7a-3926-4ccf-8995-1305c7b0374c").resourceIdentifier("CEH:EIDC:#1395932301823").build()
-        );
+        ));
         
         //When
         linkDatabase.addCoupledResources(resources);
@@ -102,9 +106,9 @@ public class ITRdbmsLinkDatabase {
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         verifyDatabaseHasRows(jdbcTemplate);
-        List<Metadata> metadata = Arrays.asList(
+        Set<Metadata> metadata = new HashSet(Arrays.asList(
             Metadata.builder().fileIdentifier("793d5f7a-3926-4ccf-8995-1305c7b0374c").build()
-        );
+        ));
         
         //When
         linkDatabase.addMetadata(metadata);
@@ -121,10 +125,10 @@ public class ITRdbmsLinkDatabase {
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         verifyDatabaseIsEmpty(jdbcTemplate);
-        List<Metadata> metadata = Arrays.asList(
+        Set<Metadata> metadata = new HashSet(Arrays.asList(
             Metadata.builder().fileIdentifier("1234-4321").build(),
             Metadata.builder().fileIdentifier("abcd-dcba").build()
-        );
+        ));
         
         //When
         linkDatabase.addMetadata(metadata);

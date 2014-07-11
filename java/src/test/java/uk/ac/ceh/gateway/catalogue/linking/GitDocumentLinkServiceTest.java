@@ -1,11 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Matchers.anySetOf;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -43,8 +44,8 @@ public class GitDocumentLinkServiceTest {
         //Then
         verify(linkDatabase).empty();
         verify(repo).getFiles(any(String.class));
-        verify(linkDatabase).addMetadata((List<Metadata>) anyCollectionOf(Metadata.class));
-        verify(linkDatabase).addCoupledResources((List<CoupledResource>) anyCollectionOf(CoupledResource.class));
+        verify(linkDatabase).addMetadata(anySetOf(Metadata.class));
+        verify(linkDatabase).addCoupledResources(anySetOf(CoupledResource.class));
     }
     
     @Test
@@ -55,11 +56,11 @@ public class GitDocumentLinkServiceTest {
         GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
         
         //When
-        service.linkDocuments(Arrays.asList("1bb", "234"));
+        service.linkDocuments(new HashSet(Arrays.asList("1bb", "234")));
         
         //Then
-        verify(linkDatabase).addMetadata((List<Metadata>) anyCollectionOf(Metadata.class));
-        verify(linkDatabase).addCoupledResources((List<CoupledResource>) anyCollectionOf(CoupledResource.class));
+        verify(linkDatabase).addMetadata((Set<Metadata>) anySetOf(Metadata.class));
+        verify(linkDatabase).addCoupledResources((Set<CoupledResource>) anySetOf(CoupledResource.class));
     }
     
     @Test

@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
 import java.util.List;
+import java.util.Set;
 
 public interface LinkDatabase {
     /**
@@ -21,7 +22,7 @@ public interface LinkDatabase {
      * 
      * @param coupledResources to delete 
      */
-    void deleteCoupledResources(List<CoupledResource> coupledResources);
+    void deleteCoupledResources(Set<CoupledResource> coupledResources);
     
     /**
      * Add metadata to the database.
@@ -31,18 +32,18 @@ public interface LinkDatabase {
     void addMetadata(Metadata metadata);
     
     /**
-     * Add list of Metadata to the database.
+     * Add set of Metadata to the database.
      * 
-     * @param metadata list of Metadata to add
+     * @param metadata set of Metadata to add
      */
-    void addMetadata(List<Metadata> metadata);
+    void addMetadata(Set<Metadata> metadata);
     
     /**
-     * Add list of CoupledResource to the database.
+     * Add set of CoupledResource to the database.
      * 
-     * @param coupledResources list of CoupledResource to add 
+     * @param coupledResources set of CoupledResource to add 
      */
-    void addCoupledResources(List<CoupledResource> coupledResources);
+    void addCoupledResources(Set<CoupledResource> coupledResources);
     
     /**
      * Get dataset metadata for a service.
@@ -56,7 +57,7 @@ public interface LinkDatabase {
      * Get service metadata for a dataset.
      * 
      * @param fileIdentifier of dataset
-     * @return Collection of metadata
+     * @return set of metadata
      */
     List<Metadata> findServicesForDataset(String fileIdentifier);
 }
