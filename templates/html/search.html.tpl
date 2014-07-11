@@ -5,6 +5,7 @@
 <div class="row">
   <div class="col-md-12 well">
     <form id="search-form" action="/documents" method="get">
+      <@addFacetFiltersToForm header.facetFilters/>
       <div class="input-group">
         <#if header.term="*">
           <#assign term="">
@@ -43,7 +44,7 @@
                  </li>
                 <#else>
                   <li class="facet-filter-inactive">
-                    <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getActiveFacetFiltersForUrl(header.facetFilters)}">
+                    <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getFacetFiltersAsQueryParams(header.facetFilters)}">
                       <span class="facet-result-name">${result.name} (${result.count})</span>
                     </a>
                  </li>
@@ -81,9 +82,9 @@
   <#return facetFilters?seq_contains(facetFieldName + "|" + facetValue)>
 </#function>
 
-<#function getActiveFacetFiltersForUrl facetFilters>
+<#function getFacetFiltersAsQueryParams facetFilters firstQueryStringCharacter='&'>
   <#if facetFilters?? && (facetFilters?size > 0)>
-    <#return '&facet=' + facetFilters?join('&facet=')>
+    <#return firstQueryStringCharacter + 'facet=' + facetFilters?join('&facet=')>
   <#else>
     <#return ''>
   </#if>
@@ -96,5 +97,13 @@
       <#assign toReturn = toReturn + [facetFilter]>
     </#if>
   </#list>
-  <#return getActiveFacetFiltersForUrl(toReturn)>
+  <#return getFacetFiltersAsQueryParams(toReturn)>
 </#function>
+
+<#macro addFacetFiltersToForm facetFilters>
+  <#if facetFilters?? && (facetFilters?size > 0)>
+    <#list facetFilters as facetFilter>
+      <input type='hidden' name='facet' value='${facetFilter}'>
+    </#list>
+  </#if>
+</#macro>
