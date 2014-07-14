@@ -18,6 +18,18 @@ public class HardcodedNamespaceResolverTest {
     }
     
     @Test
+    public void checkCanResolveSrvPrefix() {
+        //Given
+        String prefix = "srv";
+        
+        //When
+        String uri = resolver.getNamespaceURI(prefix);
+        
+        //Then
+        assertEquals("Expected the srv uri", "http://www.isotc211.org/2005/srv", uri);
+    }
+    
+    @Test
     public void checkCanResolveXlinkPrefix() {
         //Given
         String prefix = "xlink";

@@ -29,6 +29,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.http.MediaType;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -37,6 +38,8 @@ import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
@@ -55,6 +58,7 @@ public class DocumentControllerTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<GeminiDocument> documentBundleReader;
+    @Mock DocumentLinkService linkService;
     private DocumentController controller;
     
     @Rule
@@ -71,7 +75,15 @@ public class DocumentControllerTest {
                                             documentReader,
                                             documentInfoMapper,
                                             infoFactory,
-                                            documentBundleReader);
+                                            documentBundleReader,
+                                            linkService);
+    }
+    
+    private HttpServletRequest mockRequest() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getScheme()).thenReturn("http");
+        when(request.getServerPort()).thenReturn(80);
+        return request;
     }
     
     @Test
@@ -145,7 +157,7 @@ public class DocumentControllerTest {
         when(documentBundleReader.readBundle(file, revision)).thenReturn(bundledDocument);
         
         //When
-        GeminiDocument readDocument = controller.readMetadata(file, revision);
+        GeminiDocument readDocument = controller.readMetadata(file, revision, mockRequest());
         
         //Then
         verify(documentBundleReader).readBundle(file, revision);
@@ -153,10 +165,30 @@ public class DocumentControllerTest {
     }
     
     @Test
+    public void checkThatLinksAreAddedToDataset() throws IOException, DataRepositoryException, UnknownContentTypeException {
+        //Given
+        GeminiDocument bundledDocument = new GeminiDocument();
+        bundledDocument.setResourceType(CodeListItem.builder().value("dataset").build());
+        
+        String file = "myFile";
+        String revision = "revision";
+        
+        when(documentBundleReader.readBundle(file, revision)).thenReturn(bundledDocument);
+        
+        //When
+        controller.readMetadata(file, revision, mockRequest());
+        
+        //Then
+        verify(documentBundleReader).readBundle(file, revision);
+        verify(linkService).getLinks(any(GeminiDocument.class), any(UriComponentsBuilder.class));
+    }
+    
+    @Test
     public void checkThatReadingLatestFileComesFromLatestRevision() throws IOException, DataRepositoryException, UnknownContentTypeException {
         //Given
         String latestRevisionId = "latestRev";
         String file = "myFile";
+        HttpServletRequest request = mock(HttpServletRequest.class);
         
         GeminiDocument bundledDocument = mock(GeminiDocument.class);
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
@@ -166,7 +198,7 @@ public class DocumentControllerTest {
         doReturn(revision).when(repo).getLatestRevision();
         
         //When
-        controller.readMetadata(file);
+        controller.readMetadata(file, mockRequest());
         
         //Then
         verify(documentBundleReader).readBundle(file, latestRevisionId);
@@ -186,7 +218,7 @@ public class DocumentControllerTest {
         doReturn(revision).when(repo).getLatestRevision();
         
         //When
-        GeminiDocument readDocument = controller.readMetadata(file);
+        GeminiDocument readDocument = controller.readMetadata(file, mockRequest());
         
         //Then
         verify(documentBundleReader).readBundle(eq(file), any(String.class));
