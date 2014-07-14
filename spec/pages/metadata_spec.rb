@@ -46,6 +46,18 @@ BROWSERS.each do |browser|
           .map{ |e| e.text }
         expect(contacts).to match_array ["Author Black, H.I.J. Centre for Ecology & Hydrology enquiries@ceh.ac.uk", "Author Bunce, R.G.H. Alterra enquiries@ceh.ac.uk", "Author Corney, P.M. University of Liverpool enquiries@ceh.ac.uk", "Author Kirby, K.J. English Nature enquiries@ceh.ac.uk", "Author Shaw, M.W. The Nature Conservancy enquiries@ceh.ac.uk", "Author Smart, S.M. Centre for Ecology & Hydrology enquiries@ceh.ac.uk", "Author Smithers, R.J. Woodland Trust enquiries@ceh.ac.uk", "Custodian EIDC Hub eidc@ceh.ac.uk", "Point Of Contact Centre for Ecology & Hydrology Lancaster Environment Centre, Library Avenue, Bailrigg Lancashire Lancaster United Kingdom LA1 4AP enquiries@ceh.ac.uk", "Point Of Contact Centre for Ecology & Hydrology Lancaster Environment Centre, Library Avenue, Bailrigg Lancashire Lancaster United Kingdom LA1 4AP enquiries@ceh.ac.uk", "Point Of Contact Centre for Ecology & Hydrology Lancaster Environment Centre, Library Avenue, Bailrigg Lancashire Lancaster United Kingdom LA1 4AP enquries@ceh.ac.uk", "Resource Provider Parr Section enquiries@ceh.ac.uk"]
       end
+
+      it "should show a preview image for LiDAR based Digital Surface Model (DSM) data for South West England" do
+        visit '/documents/b81071f2-85b3-4e31-8506-cabe899f989a'
+        expect(page).to have_selector('.browseGraphic')
+      end
+
+      it "should show the correct temporal Extent 'Begin' date for the UK Environmental Change Network (ECN) - meteorology summary data " do
+      visit '/documents/ca3ff6cd-1d0a-4160-bfaf-bc42115b99d7'
+      expect(first('.extentBegin')).to have_content "Begin position: 1991-05-18"
+    end
+
+
     end
 
     describe "Get the data panel" do
