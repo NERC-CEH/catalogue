@@ -29,6 +29,11 @@
 <div class="row">
     <div class="col-md-12">
       <div><#include "_extent.html.tpl"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">      
       <div><#include "_temporalExtent.html.tpl"></div>
     </div>
 </div>
