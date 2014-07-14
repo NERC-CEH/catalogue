@@ -5847,6 +5847,9 @@ td.visible-print {
     display: none !important;
   }
 }
+.search-box {
+  padding-bottom: 10px;
+}
 .result {
   padding: 1em;
   border-top: 1px solid #AAA;
@@ -5866,8 +5869,26 @@ td.visible-print {
   border-radius: 5px;
   line-height: 1.4;
 }
+.nav > li > a {
+  color: #999;
+}
+.facet-heading {
+  font-weight: 700;
+  padding-top: 10px;
+  color: #999;
+}
+.facet-filter-inactive {
+  padding-left: facet-filter-left-padding;
+}
 .facet-filter-active {
   background-color: #C3FDB8;
+  border-radius: 5px;
+}
+.facet-filter-active hover {
+  background-color: #00f;
+}
+.results-container {
+  padding-left: 30px;
 }
 .column-sm {
   min-height: 55px;
