@@ -38,4 +38,10 @@
     </div>
 </div>
 
+<div class="row">
+  <div class="col-md-12">
+    <#include "_links.html.tpl">
+  </div>
+</div>
+
 </@skeleton.master>
