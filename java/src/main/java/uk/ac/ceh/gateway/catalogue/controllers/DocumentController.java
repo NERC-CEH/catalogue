@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,6 +38,7 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  * @author cjohn
  */
 @Controller
+@Slf4j
 public class DocumentController {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentReadingService<GeminiDocument> documentReader;
@@ -107,6 +109,7 @@ public class DocumentController {
             HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
         GeminiDocument document = documentBundleReader.readBundle(file, revision);
         document.setDocumentLinks(new HashSet<>(linkService.getLinks(document, getLinkUriBuilder(request, file))));
+        log.debug("document requested: {}", document);
         return document;
     }
     
