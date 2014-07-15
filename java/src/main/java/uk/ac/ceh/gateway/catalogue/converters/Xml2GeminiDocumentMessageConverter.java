@@ -38,7 +38,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final XPathExpression id, title, description, alternateTitle, 
             languageCodeList, languageCodeListValue, topicCategories, 
             resourceTypeCodeList, resourceTypeCodeListValue, 
-            otherCitationDetails, browseGraphicUrl, coupledResource;
+            otherCitationDetails, browseGraphicUrl, coupledResource,
+            resourceStatus;
     private final XPath xpath;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
@@ -70,6 +71,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.browseGraphicUrl = xpath.compile(XPaths.BROWSE_GRAPHIC_URL);
         this.temporalExtentConverter = new TemporalExtentConverter(xpath);
         this.coupledResource = xpath.compile(XPaths.COUPLED_RESOURCE);
+        this.resourceStatus = xpath.compile(XPaths.RESOURCE_STATUS);
     }
     
     @Override
@@ -117,6 +119,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setBrowseGraphicUrl(browseGraphicUrl.evaluate(document));
             toReturn.setTemporalExtent(temporalExtentConverter.convert(document));
             toReturn.setCoupleResources(getListOfStrings(document, coupledResource));
+            toReturn.setResourceStatus(resourceStatus.evaluate(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

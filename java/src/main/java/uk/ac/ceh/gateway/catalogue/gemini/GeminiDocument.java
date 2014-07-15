@@ -29,7 +29,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.TimePeriod;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument {
     
-    private String id, title, description, otherCitationDetails, browseGraphicUrl;
+    private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus;
     private List<String> alternateTitles, topicCategories, coupleResources;
     private CodeListItem datasetLanguage, resourceType;
     private List<DescriptiveKeywords> descriptiveKeywords;
