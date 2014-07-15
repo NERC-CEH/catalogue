@@ -80,6 +80,41 @@ BROWSERS.each do |browser|
       expect(first_visit).not_to match_array second_visit
     end
 
+    it "should have less results when a facetted search is performed" do
+      visit "/documents"
+      num_records_unfiltered = first('#num-records').text.to_i
+      find('.facet-link-inactive', :text => 'dataset').click()
+      num_records_filtered = first('#num-records').text.to_i
+      expect(num_records_filtered).to be < num_records_unfiltered
+    end
+
+    it "should have less results when a search term also includes a facet filter" do
+      visit "/documents?term=land"
+      num_records_unfiltered = first('#num-records').text.to_i
+      find('.facet-link-inactive', :text => 'service').click()
+      num_records_filtered = first('#num-records').text.to_i
+      expect(num_records_filtered).to be < num_records_unfiltered
+    end
+
+    it "should have correct class applied to an active facet filter" do
+      visit "/documents"
+      find('.facet-link-inactive', :text => 'dataset').click()
+      active_facet = find('.facet-filter-active')
+      expect(active_facet.text).to eq('dataset')
+    end
+
+    it "should have correct class applied when an active facet filter has been deselected" do
+      visit "/documents"
+      find('.facet-link-inactive', :text => 'dataset').click
+      find('.facet-link-active', :text => 'dataset').click
+
+      inactive_dataset_facet = all('.facet-filter-inactive')
+       .select{ |e| e.text[0,9] == 'dataset ('}
+       .map{ |e| e.text }
+
+      expect(inactive_dataset_facet.size).to eq(1)
+    end
+
   end
 
 end
