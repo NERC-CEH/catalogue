@@ -34,15 +34,15 @@
           <#list facet.results as result>
             <#if isActiveFacetFilter(header.facetFilters facet.fieldName result.name)>
               <li class="facet-filter-active"}>
-                <a href="/documents?term=${term}${removeFacetFilter(header.facetFilters, facet.fieldName + '|' + result.name)}">
+                <a href="/documents?term=${term}${removeFacetFilter(header.facetFilters, facet.fieldName + '|' + result.name)}" class="facet-link-active">
                   <span class="facet-result-name">${result.name}</span>
                   <span class="glyphicon glyphicon-remove-circle pull-right"></span>
                 </a>
               </li>
             <#else>
               <li class="facet-filter-inactive">
-                <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getFacetFiltersAsQueryParams(header.facetFilters)}">
-                  <span class="facet-result-name">${result.name} (${result.count})</span>
+                <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getFacetFiltersAsQueryParams(header.facetFilters)}" class="facet-link-inactive">
+                  <span class="facet-result-name">${result.name}</span> (${result.count})
                 </a>
               </li>
             </#if>
@@ -55,7 +55,7 @@
   <div class="col-md-9 results-container">
     <div class="row">
       <div class="col-md-12">
-        ${header.numFound} records found
+        <span id="num-records">${header.numFound}</span> records found
       </div>
     </div>
   
