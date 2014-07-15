@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -14,6 +16,7 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,6 +33,7 @@ public class SearchController {
     private final SolrServer solrServer;
     
     private static final Map<String, String> FACET_FIELDS;
+    protected static final String DEFAULT_SEARCH_TERM = "*";
     static
     {
         FACET_FIELDS = new HashMap<>();
@@ -45,22 +49,24 @@ public class SearchController {
     @RequestMapping(value = "documents",
                     method = RequestMethod.GET)
     public @ResponseBody SearchResults searchDocuments(
-            @RequestParam(value = "term", defaultValue="") String term,
+            @RequestParam(value = "term", defaultValue=DEFAULT_SEARCH_TERM) String term,
             @RequestParam(value = "start", defaultValue = "0") int start,
-            @RequestParam(value = "rows", defaultValue = "20") int rows
+            @RequestParam(value = "rows", defaultValue = "20") int rows,
+            @RequestParam(value = "facet", defaultValue = "") List<String> facetFilters
     ) throws SolrServerException{
-        SolrQuery query = getQuery(term, start, rows);
-        return performQuery(term, query);
+        SolrQuery query = getQuery(term, start, rows, facetFilters);
+        return performQuery(term, facetFilters, query);
     }
     
-    private SearchResults<GeminiDocumentSolrIndex> performQuery(String term, SolrQuery query) throws SolrServerException{
+    private SearchResults<GeminiDocumentSolrIndex> performQuery(String term, List<String> facetFilters, SolrQuery query) throws SolrServerException{
         QueryResponse response = solrServer.query(query, SolrRequest.METHOD.POST);
         List<GeminiDocumentSolrIndex> results = response.getBeans(GeminiDocumentSolrIndex.class);
         Header header = new SearchResults.Header()
                 .setNumFound(response.getResults().getNumFound())
                 .setTerm(term)
                 .setStart(query.getStart())
-                .setRows(query.getRows());  
+                .setRows(query.getRows())
+                .setFacetFilters(facetFilters);
         return new DocumentSearchResults()
                 .setHeader(header)
                 .setResults(results)
@@ -68,9 +74,7 @@ public class SearchController {
     }
     
     private List<Facet> getFacets(QueryResponse response){
-        
         List<SearchResults.Facet> toReturn = new ArrayList<>();
-        
         for(FacetField facetField : response.getFacetFields()){
             List<SearchResults.FacetResult> facetResults = new ArrayList<>();
             for(Count count : facetField.getValues()){
@@ -92,18 +96,45 @@ public class SearchController {
         return toReturn;
     }
     
-    private SolrQuery getQuery(String term, int start, int rows){
+    private SolrQuery getQuery(String term, int start, int rows, List<String> facetFilters){
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setStart(start)
                 .setRows(rows);
-        if(FACET_FIELDS.size() > 0){
-            query.setFacet(true);
-            for(Entry<String, String> entry : FACET_FIELDS.entrySet()){
-                query.addFacetField(entry.getKey());
+        setFacetFilters(query, facetFilters);
+        setFacetFields(query);
+        setSortOrder(query, term);
+        return query;
+    }
+    
+    private void setFacetFilters(SolrQuery query, List<String> facetFilters){
+        String delimiter = "|";
+        if(facetFilters != null && facetFilters.size() > 0){
+            for(String facetFilter : facetFilters){
+                if(StringUtils.countOccurrencesOf(facetFilter, delimiter) == 1){
+                    String[] facetFilterParts = facetFilter.split("\\" + delimiter);
+                    query.addFilterQuery(facetFilterParts[0] + ":" + facetFilterParts[1]);
+                }else{
+                    throw new IllegalArgumentException(String.format("This is an invalid facet filter: %s. It should contain one argument delimiter of the type '|'", facetFilter));
+                }
             }
         }
-        return query;
+    }
+    
+    private void setFacetFields(SolrQuery query){
+        query.setFacet(true);
+        query.setFacetMinCount(1);
+        for(Entry<String, String> entry : FACET_FIELDS.entrySet()){
+            query.addFacetField(entry.getKey());
+        }
+    }
+    
+    private void setSortOrder(SolrQuery query, String term){
+        Random randomGenerator = new Random(System.currentTimeMillis());
+        String randomDynamicFieldName = "random" + randomGenerator.nextInt();
+        if(DEFAULT_SEARCH_TERM.equals(term)){
+            query.setSort(randomDynamicFieldName, ORDER.asc);
+        }
     }
     
 }

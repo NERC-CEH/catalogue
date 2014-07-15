@@ -23,7 +23,9 @@ import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.BoundingBoxesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
@@ -36,12 +38,14 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final XPathExpression id, title, description, alternateTitle, 
             languageCodeList, languageCodeListValue, topicCategories, 
             resourceTypeCodeList, resourceTypeCodeListValue, 
-            otherCitationDetails;
+            otherCitationDetails, browseGraphicUrl, coupledResource;
     private final XPath xpath;
+    private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
     private final ResponsiblePartyConverter responsiblePartyConverter;
     private final DownloadOrderConverter downloadOrderConverter;
     private final BoundingBoxesConverter boundingBoxesConverter;
+    private final TemporalExtentConverter temporalExtentConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -58,10 +62,14 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.otherCitationDetails = xpath.compile(XPaths.OTHER_CITATION_DETAILS);
         this.resourceTypeCodeList = xpath.compile(XPaths.RESOURCE_TYPE_CODE_LIST);
         this.resourceTypeCodeListValue = xpath.compile(XPaths.RESOURCE_TYPE_CODE_LIST_VALUE);
+        this.resourceIdentifierConverter = new ResourceIdentifierConverter(xpath);
         this.descriptiveKeywordsConverter = new DescriptiveKeywordsConverter(xpath);
         this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath);
         this.downloadOrderConverter = new DownloadOrderConverter(xpath);
         this.boundingBoxesConverter = new BoundingBoxesConverter(xpath);
+        this.browseGraphicUrl = xpath.compile(XPaths.BROWSE_GRAPHIC_URL);
+        this.temporalExtentConverter = new TemporalExtentConverter(xpath);
+        this.coupledResource = xpath.compile(XPaths.COUPLED_RESOURCE);
     }
     
     @Override
@@ -99,12 +107,16 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
                     .value(resourceTypeCodeListValue.evaluate(document))
                     .build()
             );
+            toReturn.setResourceIdentifiers(resourceIdentifierConverter.convert(document));
             toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
             toReturn.setTopicCategories(getListOfStrings(document, topicCategories));
             toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
             toReturn.setOtherCitationDetails(otherCitationDetails.evaluate(document));
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
+            toReturn.setBrowseGraphicUrl(browseGraphicUrl.evaluate(document));
+            toReturn.setTemporalExtent(temporalExtentConverter.convert(document));
+            toReturn.setCoupleResources(getListOfStrings(document, coupledResource));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

@@ -1,3 +1,7 @@
+.search-box{
+  padding-bottom: 10px;
+}
+
 .result {
   padding: 1em;
   border-top: 1px solid #AAA;
@@ -17,8 +21,34 @@
     margin: 0 -15px;
     border-radius: 5px;
     line-height: 1.4;
-
-
-    &.label-Dataset { background-color: #5bc0de; }
   }
+}
+
+.nav > li > a {
+  color: #999;
+}
+
+.facet-heading {
+  font-weight: 700;
+  padding-top: 10px;
+  color: #999;
+}
+
+@facet-filter-left-padding: 20px;
+
+.facet-filter-inactive {
+  padding-left: facet-filter-left-padding;
+}
+
+.facet-filter-active {
+  background-color: #C3FDB8;
+  border-radius: 5px;
+  hover{
+    background-color: #00f;
+  }
+
+}
+
+.results-container{
+  padding-left: 30px;
 }

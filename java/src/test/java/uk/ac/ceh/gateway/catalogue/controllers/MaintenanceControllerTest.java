@@ -7,6 +7,8 @@ import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 
 /**
  *
@@ -14,13 +16,14 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
  */
 public class MaintenanceControllerTest {
     @Mock DocumentIndexingService indexService;
+    @Mock DocumentLinkService linkingService;
     
     private MaintenanceController controller;
     
     @Before
     public void createMaintenanceController() {
         MockitoAnnotations.initMocks(this);
-        controller = new MaintenanceController(indexService);
+        controller = new MaintenanceController(indexService, linkingService);
     }
     
     @Test
@@ -33,6 +36,18 @@ public class MaintenanceControllerTest {
         
         //Then
         verify(indexService).rebuildIndex();
+    }
+    
+    @Test
+    public void checkThatReindexingDelegatesToLinkingService() throws DocumentLinkingException {
+        //Given
+        //Nothing
+        
+        //When
+        controller.reindexLinks();
+        
+        //Then
+        verify(linkingService).rebuildLinks();
     }
     
 }
