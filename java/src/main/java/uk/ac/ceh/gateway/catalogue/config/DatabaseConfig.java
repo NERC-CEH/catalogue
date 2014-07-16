@@ -4,12 +4,10 @@ import javax.sql.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackages = "uk.ac.ceh.gateway.catalogue.linking")
-public class LinkConfig {
+public class DatabaseConfig {
     
     @Value("${postgresql.url}") String url;
     @Value("${postgresql.username}") String username;
