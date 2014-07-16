@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
 import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
+import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -43,6 +44,7 @@ public class ServiceConfigTest {
     @Mock ObjectMapper jacksonMapper;
     @Mock DataRepository dataRepository;
     @Mock SolrServer solrServer;
+    @Mock LinkDatabase linkDatabase;
     
     private ServiceConfig services;
     
@@ -54,6 +56,7 @@ public class ServiceConfigTest {
         services.dataRepository = dataRepository;
         services.solrServer = solrServer;
         services.bus = bus;
+        services.linkDatabase = linkDatabase;
     }
     
     @Test
@@ -233,6 +236,23 @@ public class ServiceConfigTest {
         assertEquals("Expected to find the listingService", listingService, documentIndexingService.getListingService());
         assertEquals("Expected to find the dataRepository", dataRepository, documentIndexingService.getRepo());
         assertEquals("Expected to find the solrServer", solrServer, documentIndexingService.getSolrServer());
+    }
+    
+    @Test
+    public void checkThatDocumentLinkingServiceIsComposedCorrectly() throws XPathExpressionException {
+        //Given
+        MetadataInfoBundledReaderService<GeminiDocument> reader = mock(MetadataInfoBundledReaderService.class);
+        
+        doReturn(reader).when(services).bundledReaderService();
+        doNothing().when(services).performRelinkIfNothingIsLinked(any(DocumentLinkService.class));
+        
+        //When
+        GitDocumentLinkService documentLinkingService = services.documentLinkingService();
+        
+        //Then
+        assertEquals("Expected to find the reader", reader, documentLinkingService.getDocumentBundleReader());
+        assertEquals("Expected to find the linking database", linkDatabase, documentLinkingService.getLinkDatabase());
+        assertEquals("Expected to find the dataRepository", dataRepository, documentLinkingService.getRepo());
     }
 
     @Test
