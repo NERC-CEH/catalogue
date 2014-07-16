@@ -24,6 +24,11 @@ public class GitDocumentLinkService implements DocumentLinkService {
     private final LinkDatabase linkDatabase;
 
     @Override
+    public boolean isEmpty() {
+        return linkDatabase.isEmpty();
+    }
+    
+    @Override
     public void rebuildLinks() throws DocumentLinkingException {
         try {
             linkDatabase.empty();

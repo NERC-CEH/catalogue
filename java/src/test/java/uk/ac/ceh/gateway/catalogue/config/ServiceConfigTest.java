@@ -12,6 +12,7 @@ import static org.mockito.Matchers.any;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -298,7 +299,8 @@ public class ServiceConfigTest {
         //Given
         DocumentLinkingException documentLinkingException = new DocumentLinkingException("Failed to check if index is empty");
         DocumentLinkService documentLinkingService = mock(DocumentLinkService.class);
-        when(documentLinkingService.isEmpty()).thenThrow(documentLinkingException);
+        when(documentLinkingService.isEmpty()).thenReturn(true);
+        doThrow(documentLinkingException).when(documentLinkingService).rebuildLinks();
         
         //When
         services.performRelinkIfNothingIsLinked(documentLinkingService);
