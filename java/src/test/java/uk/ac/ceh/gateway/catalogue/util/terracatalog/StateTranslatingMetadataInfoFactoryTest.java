@@ -27,4 +27,21 @@ public class StateTranslatingMetadataInfoFactoryTest {
         assertThat("MetadataInfo 'actual' should equal 'expected'", actual, equalTo(expected));
     }
     
+    @Test
+    public void getDocumentInfoForUnknownStatus() {
+        //Given
+        Map<String, String> stateTransalation = new HashMap<>();
+        stateTransalation.put("default", "draft");
+        TerraCatalogDocumentInfoFactory<MetadataInfo> factory = new StateTranslatingMetadataInfoFactory(stateTransalation);
+        GeminiDocument document = new GeminiDocument();
+        TerraCatalogExt ext = new TerraCatalogExt("testOwner", "testGroup", "internal", "protection");
+        MetadataInfo expected = new MetadataInfo("testGroup", null, "draft");
+        
+        //When
+        MetadataInfo actual = factory.getDocumentInfo(document, ext);
+        
+        //Then
+        assertThat("MetadataInfo 'actual' should equal 'expected'", actual, equalTo(expected));
+    }
+    
 }

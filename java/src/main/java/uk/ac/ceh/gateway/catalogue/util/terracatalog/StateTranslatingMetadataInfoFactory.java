@@ -25,7 +25,7 @@ public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocument
         if (stateTranslation.containsKey(terraCatalogStatus)) {
             return stateTranslation.get(terraCatalogStatus);
         } else {
-            return "draft";
+            return stateTranslation.get("default");
         }
     }
 
