@@ -3,6 +3,8 @@ package uk.ac.ceh.gateway.catalogue.linking;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.any;
@@ -95,6 +97,34 @@ public class GitDocumentLinkServiceTest {
         
         //Then
         verify(linkDatabase).findDatasetsForService(fileIdentifier);
+    }
+    
+    @Test
+    public void emptyValueDelegatesToDatabase() {
+        //Given
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        when(linkDatabase.isEmpty()).thenReturn(true);
+        
+        //When
+        boolean isEmpty = linkService.isEmpty();
+        
+        //Then
+        assertTrue("Expected to get isEmpty from linkDatabase", isEmpty);
+        verify(linkDatabase).isEmpty();
+    }
+    
+    @Test
+    public void populatedValueDelegatesToDatabase() {
+        //Given
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        when(linkDatabase.isEmpty()).thenReturn(false);
+        
+        //When
+        boolean isEmpty = linkService.isEmpty();
+        
+        //Then
+        assertFalse("Expected to get isEmpty from linkDatabase", isEmpty);
+        verify(linkDatabase).isEmpty();
     }
     
 }
