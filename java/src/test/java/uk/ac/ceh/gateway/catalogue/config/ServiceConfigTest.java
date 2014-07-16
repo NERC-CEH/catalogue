@@ -24,6 +24,9 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
+import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -230,5 +233,57 @@ public class ServiceConfigTest {
         assertEquals("Expected to find the listingService", listingService, documentIndexingService.getListingService());
         assertEquals("Expected to find the dataRepository", dataRepository, documentIndexingService.getRepo());
         assertEquals("Expected to find the solrServer", solrServer, documentIndexingService.getSolrServer());
-    }   
+    }
+
+    @Test
+    public void checkThatLinkingServiceIsRequestedToBeLinkedAfterCreation() throws XPathExpressionException {
+        //Given
+        doNothing().when(services).performRelinkIfNothingIsLinked(any(DocumentLinkService.class));
+        
+        //When
+        GitDocumentLinkService documentLinkingService = services.documentLinkingService();
+        
+        //Then
+        verify(services).performRelinkIfNothingIsLinked(documentLinkingService);
+    }
+    
+    @Test
+    public void checkThatLinkingServiceIsReLinkedIfEmpty() throws DocumentLinkingException {
+        //Given
+        DocumentLinkService documentLinkingService = mock(DocumentLinkService.class);
+        when(documentLinkingService.isEmpty()).thenReturn(true);
+        
+        //When
+        services.performRelinkIfNothingIsLinked(documentLinkingService);
+        
+        //Then
+        verify(documentLinkingService).rebuildLinks();
+    }
+    
+    @Test
+    public void checkThatLinkingServiceIsNotRelinkedIfPopulated() throws DocumentLinkingException {
+        //Given
+        DocumentLinkService documentLinkingService = mock(DocumentLinkService.class);
+        when(documentLinkingService.isEmpty()).thenReturn(false);
+        
+        //When
+        services.performRelinkIfNothingIsLinked(documentLinkingService);
+        
+        //Then
+        verify(documentLinkingService, never()).rebuildLinks();
+    }
+    
+    @Test
+    public void checkThatLinkExceptionWhenRelinkingIsPostedToEventBus() throws DocumentLinkingException {
+        //Given
+        DocumentLinkingException documentLinkingException = new DocumentLinkingException("Failed to check if index is empty");
+        DocumentLinkService documentLinkingService = mock(DocumentLinkService.class);
+        when(documentLinkingService.isEmpty()).thenThrow(documentLinkingException);
+        
+        //When
+        services.performRelinkIfNothingIsLinked(documentLinkingService);
+        
+        //Then
+        verify(bus).post(documentLinkingException);
+    }
 }

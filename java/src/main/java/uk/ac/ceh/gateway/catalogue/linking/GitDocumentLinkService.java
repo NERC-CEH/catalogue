@@ -1,14 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Splitter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -18,22 +16,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 
-@Service
+@Data
 @Slf4j
 public class GitDocumentLinkService implements DocumentLinkService {
     private final DataRepository<CatalogueUser> repo;
     private final BundledReaderService<GeminiDocument> documentBundleReader;
     private final LinkDatabase linkDatabase;
-
-    @Autowired
-    public GitDocumentLinkService(DataRepository<CatalogueUser> repo, 
-                                  BundledReaderService<GeminiDocument> documentBundleReader,
-                                  LinkDatabase linkingRepository) {
-        
-        this.repo = checkNotNull(repo);
-        this.documentBundleReader = checkNotNull(documentBundleReader);
-        this.linkDatabase = checkNotNull(linkingRepository);
-    }    
 
     @Override
     public void rebuildLinks() throws DocumentLinkingException {

@@ -13,6 +13,13 @@ public interface DocumentLinkService {
     void rebuildLinks() throws DocumentLinkingException;
     
     /**
+     * Checks if any links are present inside the document link service
+     * @return true if no links are present, otherwise false
+     * @throws DocumentLinkingException 
+     */
+    boolean isEmpty() throws DocumentLinkingException;
+    
+    /**
      * Link datasets and services
      * @param fileIdentifiers
      * @throws DocumentLinkingException 
