@@ -27,6 +27,11 @@ public class RdbmsLinkDatabase implements LinkDatabase {
         jdbcTemplate = new JdbcTemplate(dataSource);
         rowMapper = new MetadataRowMapper();
     }
+    
+    @Override
+    public boolean isEmpty() {
+        return 0 == jdbcTemplate.queryForObject("select count(*) from metadata", Integer.class);
+    }
 
     @Override
     public void empty() {

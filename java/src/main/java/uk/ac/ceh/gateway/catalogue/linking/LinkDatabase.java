@@ -5,6 +5,11 @@ import java.util.Set;
 
 public interface LinkDatabase {
     /**
+     * Check if the database is empty
+     */
+    boolean isEmpty();
+    
+    /**
      * Empty the database of all data.
      * 
      */

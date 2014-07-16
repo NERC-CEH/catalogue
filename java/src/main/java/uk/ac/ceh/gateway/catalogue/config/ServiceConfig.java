@@ -15,6 +15,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
+import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
+import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
@@ -33,6 +37,7 @@ import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 public class ServiceConfig {
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
+    @Autowired LinkDatabase linkDatabase;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
     
@@ -101,6 +106,18 @@ public class ServiceConfig {
         return toReturn;
     }
     
+    @Bean
+    public GitDocumentLinkService documentLinkingService() throws XPathExpressionException {
+        GitDocumentLinkService toReturn = new GitDocumentLinkService(
+                dataRepository,
+                bundledReaderService(),
+                linkDatabase
+        );
+        
+        performRelinkIfNothingIsLinked(toReturn);
+        return toReturn;
+    }
+    
     
     //Perform an initial index of solr if their is no content inside
     protected void performReindexIfNothingIsIndexed(SolrIndexingService<?> service) {
@@ -112,6 +129,18 @@ public class ServiceConfig {
         catch(DocumentIndexingException ex) {
             //Indexing or reading from solr failed... 
             bus.post(ex); //Silently hand over to the event bus
+        }
+    }
+    
+    //Perform an initial relink if there is no links already populated
+    protected void performRelinkIfNothingIsLinked(DocumentLinkService service) {
+        try {
+            if(service.isEmpty()) {
+                service.rebuildLinks();
+            }
+        }
+        catch(DocumentLinkingException ex) {
+            bus.post(ex);
         }
     }
 }
