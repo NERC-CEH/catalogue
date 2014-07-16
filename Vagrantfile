@@ -31,7 +31,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     puppet.puppet_node = "gateway-developer.ceh.ac.uk"
     puppet.options = "--verbose"
   end
-  
-  config.vm.provision :shell, :path => "vagrant_provision/create-db.sh"
-  
 end
