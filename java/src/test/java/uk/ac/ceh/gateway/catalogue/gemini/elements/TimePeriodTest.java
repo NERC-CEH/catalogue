@@ -35,5 +35,30 @@ public class TimePeriodTest {
         assertThat("TimePeriod 'begin' should equal '2007-12-01", actual.getBegin(), equalTo(begin));
         assertThat("TimePeriod 'end' should equal '2008-02-15", actual.getEnd(), equalTo(end));
     }
+    
+    @Test
+    public void parseIsoDateTime() {
+        //Given
+        LocalDate begin = LocalDate.of(2007, Month.DECEMBER, 1);
+        LocalDate end = LocalDate.of(2008, Month.FEBRUARY, 15);
+        
+        //When
+        TimePeriod actual = new TimePeriod("01-12-2007T01:34:56Z", "15-02-2008T13:22:08Z");
+        
+        //Then
+        assertThat("TimePeriod 'begin' should equal '2007-12-01", actual.getBegin(), equalTo(begin));
+        assertThat("TimePeriod 'end' should equal '2008-02-15", actual.getEnd(), equalTo(end));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void unrecognisedDate() {
+        //Given
+        
+        //When
+        new TimePeriod("10/12/2043", "15-02-2008T00:00:00Z");
+        
+        //Then
+        // Throws exception
+    }
 
 }
