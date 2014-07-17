@@ -129,7 +129,10 @@ public class DescriptiveKeywordsConverter {
     private List<String> getListOfStrings(NodeList nodeList) throws XPathExpressionException{
         ArrayList<String> toReturn = new ArrayList<>();
         for(int i=0; i<nodeList.getLength(); i++){
-            toReturn.add(nodeList.item(i).getFirstChild().getNodeValue());
+            Node item = nodeList.item(i);
+            if (item.getFirstChild() != null) {
+                toReturn.add(item.getFirstChild().getNodeValue());
+            }
         }
         return toReturn;
     }   
