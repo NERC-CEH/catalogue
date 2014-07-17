@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.gemini.elements;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.Builder;
 
@@ -19,7 +19,7 @@ public class SpatialReferenceSystem {
         temp.put(String.format("%s:%s", CODESPACE_EPSG, "29901"),"OSNI 1952 / Irish National Grid");
         temp.put(String.format("%s:%s", CODESPACE_EPSG, "29902"),"TM65 / Irish Grid");
         temp.put(String.format("%s:%s", CODESPACE_EPSG, "4326"),"WGS 84");
-        temp.put(String.format("%s:%s", CODESPACE_EPSG, "CRS:84"),"WGS 84 longitude-latitude");
+        temp.put(String.format("%s:%s", CODESPACE_EPSG, "CRS:84"),"WGS 84 longitude-latitude (CRS:84)");
         titleLookup = Collections.unmodifiableMap(temp);
     }
     private final String code, codeSpace;
@@ -27,15 +27,14 @@ public class SpatialReferenceSystem {
     
     @Builder
     private SpatialReferenceSystem(String code, String codeSpace){
-        this.code = code;
-        this.codeSpace = codeSpace;
+        this.code = nullToEmpty(code);
+        this.codeSpace = nullToEmpty(codeSpace);
     }
     
     public String getTitle(){
-        String fallBackAndLookup = String.format("%s:%s",codeSpace,code);
-        String toReturn = titleLookup.get(fallBackAndLookup);
-        if(toReturn == null){
-            toReturn = fallBackAndLookup;
+        String toReturn = String.format("%s:%s",codeSpace,code);
+        if(titleLookup.containsKey(toReturn)){
+            toReturn = titleLookup.get(toReturn);
         }
         return toReturn;
     }
