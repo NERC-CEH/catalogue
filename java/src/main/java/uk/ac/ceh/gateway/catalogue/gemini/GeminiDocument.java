@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.TimePeriod;
 
 /**
@@ -40,4 +41,5 @@ public class GeminiDocument {
     private List<TimePeriod> temporalExtent;
     private Set<Link> documentLinks;
     private Set<ResourceIdentifier> resourceIdentifiers;
+    private SpatialReferenceSystem spatialReferenceSystem;
 }
