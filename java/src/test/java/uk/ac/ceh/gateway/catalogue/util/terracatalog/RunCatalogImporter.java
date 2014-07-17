@@ -1,8 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.util.terracatalog;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,8 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.gateway.catalogue.config.ApplicationConfig;
 import uk.ac.ceh.gateway.catalogue.config.CrowdUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.ServiceConfig;
+import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -19,22 +24,30 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
+import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ApplicationConfig.class, CrowdUserStoreConfig.class,})
+@ContextConfiguration(classes = {ApplicationConfig.class, CrowdUserStoreConfig.class})
 public class RunCatalogImporter {
+    @Autowired ObjectMapper jacksonMapper;
     @Autowired private DataRepository<CatalogueUser> repo;
-    private final TerraCatalogUserFactory<CatalogueUser> userFactory;
-    @Autowired private DocumentReadingService<GeminiDocument> documentReader;
-    @Autowired private DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
-    private final TerraCatalogImporter<MetadataInfo, CatalogueUser> importer;
-
-    public RunCatalogImporter() {
+    
+    @BeforeClass
+    public static void before() {
+        System.setProperty("config.file", "E:\\repos\\cig\\vagrant\\catalogue_config\\development.properties");
+    }
+    
+    @Test
+    @Ignore("This is not really a test, it is a way of creating a Git repository from terraCatalog export Zips")
+    public void toImport() throws Exception {
+        DocumentReadingService<GeminiDocument> documentReader = new MessageConverterReadingService<>(GeminiDocument.class)
+                .addMessageConverter(new Xml2GeminiDocumentMessageConverter());
+        DocumentInfoMapper<MetadataInfo> documentInfoMapper = new JacksonDocumentInfoMapper(jacksonMapper, MetadataInfo.class);
         DocumentListingService documentList = new ExtensionDocumentListingService();
-        Map<String, String> groupToDomain = new  HashMap<>();
-        groupToDomain.put("ceh", "@ceh.ac.uk");
-        userFactory = new OfflineTerraCatalogUserFactory<>(groupToDomain, phantomUserBuilderFactory);
+        OfflineTerraCatalogUserFactory<CatalogueUser> userFactory = new OfflineTerraCatalogUserFactory<>(phantomUserBuilderFactory);
+        userFactory.put("ceh", "@ceh.ac.uk");
         Map<String, String> statusToState = new HashMap<>();
         statusToState.put("private", "draft");
         statusToState.put("public", "public");
@@ -42,7 +55,7 @@ public class RunCatalogImporter {
         CatalogueUser importUser = new CatalogueUser();
         importUser.setUsername("Import");
         importUser.setEmail("import@example.com");
-        importer = new TerraCatalogImporter<>(
+        TerraCatalogImporter<MetadataInfo, CatalogueUser> importer = new TerraCatalogImporter<>(
             repo,
             documentList,
             userFactory,
@@ -50,10 +63,6 @@ public class RunCatalogImporter {
             documentInfoMapper,
             infoFactory,
             importUser);
-    }
-    
-    @Test
-    public void toImport() throws Exception {
-        importer.importDirectory(new File("c:\temp\tcimport"));
+        importer.importDirectory(new File("c:\\temp\\tcimport"));
     }
 }
