@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
@@ -36,7 +36,6 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  * @author cjohn
  * @param <U> The type of user which this import will deal with
  */
-@Data
 @AllArgsConstructor(access=AccessLevel.PROTECTED)
 public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     private static final Pattern TC_EXPORT_REGEX = Pattern.compile("BACKUP_TC_[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*\\.zip");
@@ -163,7 +162,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
         return toReturn;
     }
        
-    @Data
+    @Value
     protected class TerraCatalogPair {
         private final ZipFile file;
         private final String name;
