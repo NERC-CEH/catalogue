@@ -14,10 +14,12 @@ public class SpatialReferenceSystem {
     private static final Map<String, String> titleLookup;
     static {
         Map<String,String> temp = new HashMap<>();
-        temp.put(String.format("%s.%s", CODESPACE_EPSG, "27700"),"OSGB 1936 / British National Grid");
-        temp.put(String.format("%s.%s", CODESPACE_EPSG, "29900"),"TM65 / Irish National Grid");
-        temp.put(String.format("%s.%s", CODESPACE_EPSG, "29901"),"OSNI 1952 / Irish National Grid");
-        temp.put(String.format("%s.%s", CODESPACE_EPSG, "4326"),"WGS 84");
+        temp.put(String.format("%s:%s", CODESPACE_EPSG, "27700"),"OSGB 1936 / British National Grid");
+        temp.put(String.format("%s:%s", CODESPACE_EPSG, "29900"),"TM65 / Irish National Grid");
+        temp.put(String.format("%s:%s", CODESPACE_EPSG, "29901"),"OSNI 1952 / Irish National Grid");
+        temp.put(String.format("%s:%s", CODESPACE_EPSG, "29902"),"TM65 / Irish Grid");
+        temp.put(String.format("%s:%s", CODESPACE_EPSG, "4326"),"WGS 84");
+        temp.put(String.format("%s:%s", CODESPACE_EPSG, "CRS:84"),"WGS 84 longitude-latitude");
         titleLookup = Collections.unmodifiableMap(temp);
     }
     private final String code, codeSpace;
@@ -30,15 +32,12 @@ public class SpatialReferenceSystem {
     }
     
     public String getTitle(){
-        String toReturn = titleLookup.get(getURI());
+        String fallBackAndLookup = String.format("%s:%s",codeSpace,code);
+        String toReturn = titleLookup.get(fallBackAndLookup);
         if(toReturn == null){
-            toReturn = getURI();
+            toReturn = fallBackAndLookup;
         }
         return toReturn;
-    }
-    
-    public String getURI(){
-        return String.format("%s.%s",codeSpace,code);
     }
     
 }
