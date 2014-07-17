@@ -42,7 +42,7 @@ public class OfflineTerraCatalogUserFactory<U> implements TerraCatalogUserFactor
     }
     
     protected String getEmailAddress(TerraCatalogExt externalInfo) {
-        String emailDomain = groupToDomain.get(externalInfo.getOwnerGroup());
+        String emailDomain = groupToDomain.get(externalInfo.getOwnerGroup().toLowerCase());
         if(emailDomain == null) {
             throw new IllegalArgumentException("The owner group is unknown : " + externalInfo.getOwnerGroup());
         }
