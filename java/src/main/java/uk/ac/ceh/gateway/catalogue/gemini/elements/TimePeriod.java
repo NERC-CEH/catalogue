@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.gemini.elements;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import lombok.Value;
 
 @Value
@@ -16,7 +18,11 @@ public class TimePeriod {
         if (date.isEmpty()) {
             return null;
         } else {
-            return LocalDate.parse(date);
+            try {
+                return LocalDate.parse(date);
+            } catch (DateTimeParseException ex) {
+                return LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            }
         }
     }
 }
