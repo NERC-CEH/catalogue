@@ -18,13 +18,13 @@ public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocument
         this.stateTranslation.put("default", "draft");
     }
     
-    public void put(String status, String state) {
-        stateTranslation.put(status.toLowerCase(), state.toLowerCase());
+    public void put(String protection, String state) {
+        stateTranslation.put(protection.toLowerCase(), state.toLowerCase());
     }
 
     @Override
     public MetadataInfo getDocumentInfo(GeminiDocument document, TerraCatalogExt ext) {
-        return new MetadataInfo(ext.getOwnerGroup(), "application/xml", translate(ext.getStatus()));
+        return new MetadataInfo("application/xml", translate(ext.getProtection()));
     }
     
     private String translate(String terraCatalogStatus) {
