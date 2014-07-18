@@ -18,17 +18,7 @@ public class DescriptiveKeywords {
         } else {
             this.keywords = keywords;
         }
-        
-        if (type == null) {
-            this.type = CodeListItem.EMPTY_CODE_LIST_ITEM;
-        } else {
-            this.type = type;
-        }
-        
-        if (thesaurusName == null) {
-            this.thesaurusName = ThesaurusName.EMPTY_THESAURUS_NAME; 
-        } else {
-            this.thesaurusName = thesaurusName;
-        }
+        this.type = type;
+        this.thesaurusName = thesaurusName;
     }
 }

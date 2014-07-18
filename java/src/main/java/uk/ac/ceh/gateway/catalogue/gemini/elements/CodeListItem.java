@@ -7,7 +7,6 @@ import static com.google.common.base.Strings.nullToEmpty;
 @Value
 public class CodeListItem {
     private final String codeList, value;
-    public static CodeListItem EMPTY_CODE_LIST_ITEM = new CodeListItem("", "");
 
     @Builder
     private CodeListItem(String codeList, String value) {
