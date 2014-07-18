@@ -2,14 +2,14 @@
 <schema name="example" version="1.5">
     <uniqueKey>identifier</uniqueKey>
     <fields>
-            <!--Searchable content-->
-            <field name="identifier" type="keyword" indexed="true" stored="true" required="true" multiValued="false" /> 
-            <field name="title" type="text_general" indexed="true" stored="true" required="true" multiValued="false"/>
-            <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>   
-            <field name="resourceType" type="keyword" indexed="true" stored="true" multiValued="false"/>
-			<field name="isOgl" type="boolean" indexed="true" stored="true" multiValued="false"/>
-            <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
-			<dynamicField name="random*" type="random" indexed="true" stored="false"/>
+      <field name="identifier" type="keyword" indexed="true" stored="true" required="true" multiValued="false" /> 
+      <field name="title" type="text_general" indexed="true" stored="true" required="true" multiValued="false"/>
+      <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>   
+      <field name="resourceType" type="keyword" indexed="true" stored="true" multiValued="false"/>
+      <field name="isOgl" type="boolean" indexed="true" stored="true" multiValued="false"/>
+      <field name="state" type="text_general" indexed="true" stored="true" required="false" multiValued="false"/>
+      <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
+      <dynamicField name="random*" type="random" indexed="true" stored="false"/>
     </fields>
     <types>
         <fieldType name="string" class="solr.StrField" sortMissingLast="true" />

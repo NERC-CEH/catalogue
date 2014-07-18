@@ -19,7 +19,8 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
                 .setTitle(document.getTitle())
                 .setIdentifier(document.getId())
                 .setResourceType(getResourceType(document))
-                .setIsOgl(getIsOgl(document));
+                .setIsOgl(getIsOgl(document))
+                .setState(getState(document));
     }
     
     private String getResourceType(GeminiDocument document){
@@ -33,6 +34,14 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
     private Boolean getIsOgl(GeminiDocument document){
         if(document.getDownloadOrder() != null){
             return document.getDownloadOrder().isOgl();
+        } else {
+            return null;
+        }
+    }
+
+    private String getState(GeminiDocument document) {
+        if (document.getMetadata() != null) {
+            return document.getMetadata().getState();
         } else {
             return null;
         }
@@ -51,5 +60,6 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
         private @Field String description;
         private @Field String resourceType;
         private @Field Boolean isOgl;
+        private @Field String state;
     }
 }
