@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.util.terracatalog;
 
+import java.util.HashMap;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,8 +13,13 @@ public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocument
     @Getter(AccessLevel.NONE)
     private final Map<String, String> stateTranslation;
 
-    public StateTranslatingMetadataInfoFactory(Map<String, String> stateTranslation) {
-        this.stateTranslation = stateTranslation;
+    public StateTranslatingMetadataInfoFactory() {
+        this.stateTranslation = new HashMap<>();
+        this.stateTranslation.put("default", "draft");
+    }
+    
+    public void put(String status, String state) {
+        stateTranslation.put(status.toLowerCase(), state.toLowerCase());
     }
 
     @Override

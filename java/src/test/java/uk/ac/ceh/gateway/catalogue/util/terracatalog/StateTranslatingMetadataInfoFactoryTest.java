@@ -1,7 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.util.terracatalog;
 
-import java.util.HashMap;
-import java.util.Map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -13,9 +11,8 @@ public class StateTranslatingMetadataInfoFactoryTest {
     @Test
     public void getDocumentInfo() {
         //Given
-        Map<String, String> stateTransalation = new HashMap<>();
-        stateTransalation.put("private", "draft");
-        TerraCatalogDocumentInfoFactory<MetadataInfo> factory = new StateTranslatingMetadataInfoFactory(stateTransalation);
+        StateTranslatingMetadataInfoFactory factory = new StateTranslatingMetadataInfoFactory();
+        factory.put("private", "draft");
         GeminiDocument document = new GeminiDocument();
         TerraCatalogExt ext = new TerraCatalogExt("testOwner", "testGroup", "private", "protection");
         MetadataInfo expected = new MetadataInfo("testGroup", null, "draft");
@@ -30,9 +27,7 @@ public class StateTranslatingMetadataInfoFactoryTest {
     @Test
     public void getDocumentInfoForUnknownStatus() {
         //Given
-        Map<String, String> stateTransalation = new HashMap<>();
-        stateTransalation.put("default", "draft");
-        TerraCatalogDocumentInfoFactory<MetadataInfo> factory = new StateTranslatingMetadataInfoFactory(stateTransalation);
+        StateTranslatingMetadataInfoFactory factory = new StateTranslatingMetadataInfoFactory();
         GeminiDocument document = new GeminiDocument();
         TerraCatalogExt ext = new TerraCatalogExt("testOwner", "testGroup", "internal", "protection");
         MetadataInfo expected = new MetadataInfo("testGroup", null, "draft");

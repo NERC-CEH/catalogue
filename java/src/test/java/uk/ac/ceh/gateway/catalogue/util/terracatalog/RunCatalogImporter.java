@@ -2,8 +2,6 @@ package uk.ac.ceh.gateway.catalogue.util.terracatalog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,10 +46,9 @@ public class RunCatalogImporter {
         DocumentListingService documentList = new ExtensionDocumentListingService();
         OfflineTerraCatalogUserFactory<CatalogueUser> userFactory = new OfflineTerraCatalogUserFactory<>(phantomUserBuilderFactory);
         userFactory.put("ceh", "@ceh.ac.uk");
-        Map<String, String> statusToState = new HashMap<>();
-        statusToState.put("private", "draft");
-        statusToState.put("public", "public");
-        TerraCatalogDocumentInfoFactory<MetadataInfo> infoFactory = new StateTranslatingMetadataInfoFactory(statusToState);
+        StateTranslatingMetadataInfoFactory infoFactory = new StateTranslatingMetadataInfoFactory();
+        infoFactory.put("private", "draft");
+        infoFactory.put("public", "public");
         CatalogueUser importUser = new CatalogueUser();
         importUser.setUsername("Import");
         importUser.setEmail("import@example.com");
