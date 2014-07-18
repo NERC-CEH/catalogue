@@ -6,7 +6,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import java.time.LocalDate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -17,7 +16,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
 
 public class DescriptiveKeywordsConverter {
-    private static LocalDateFactory FACTORY = new LocalDateFactory();
     private static final String DESCRIPTIVE_KEYWORDS = "/*/gmd:identificationInfo/*/gmd:descriptiveKeywords";
     private static final String CODE_LIST = "*/gmd:type/gmd:MD_KeywordTypeCode/@codeList";
     private static final String CODE_VALUE = "*/gmd:type/gmd:MD_KeywordTypeCode/@codeListValue";
@@ -58,7 +56,7 @@ public class DescriptiveKeywordsConverter {
             ThesaurusName thesaurusName = ThesaurusName
                     .builder()
                     .title(thesaurusTitle.evaluate(descriptiveKeywordsNode))
-                    .date(FACTORY.parse(thesaurusDate.evaluate(descriptiveKeywordsNode)))
+                    .date(LocalDateFactory.parse(thesaurusDate.evaluate(descriptiveKeywordsNode)))
                     .dateType(CodeListItem.builder()
                             .codeList(thesaurusDateTypeList.evaluate(descriptiveKeywordsNode))
                             .value(thesaurusDateTypeValue.evaluate(descriptiveKeywordsNode))
@@ -86,7 +84,7 @@ public class DescriptiveKeywordsConverter {
     
     private List<Keyword> getKeywordsFromCharacterString(Node descriptiveKeywordsNode) throws XPathExpressionException {
         List<Keyword> toReturn = new ArrayList<>();
-        List<String> keywords = getListOfStrings((NodeList) keywordCharacter.evaluate(descriptiveKeywordsNode, XPathConstants.NODESET));
+        List<String> keywords = NodeListConverter.getListOfStrings((NodeList) keywordCharacter.evaluate(descriptiveKeywordsNode, XPathConstants.NODESET));
         if(keywords != null && !keywords.isEmpty()){
             keywords.stream().forEach((keyword) -> {
                 toReturn.add(Keyword.builder()
@@ -113,16 +111,5 @@ public class DescriptiveKeywordsConverter {
             }
         }
         return toReturn;
-    }
-    
-    private List<String> getListOfStrings(NodeList nodeList) throws XPathExpressionException{
-        ArrayList<String> toReturn = new ArrayList<>();
-        for(int i=0; i<nodeList.getLength(); i++){
-            Node item = nodeList.item(i);
-            if (item.getFirstChild() != null) {
-                toReturn.add(item.getFirstChild().getNodeValue());
-            }
-        }
-        return toReturn;
-    }   
+    }  
 }

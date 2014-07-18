@@ -11,7 +11,7 @@ public class LocalDateFactory {
     private static final Pattern ISO_LOCAL_DATE = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})");
     private static final Pattern ENGLISH_DATE = Pattern.compile("(\\d{2}-\\d{2}-\\d{4})");
     
-    public LocalDate parse(String date) {
+    public static LocalDate parse(String date) {
         if (date.isEmpty()) {
             return null;
         } else {

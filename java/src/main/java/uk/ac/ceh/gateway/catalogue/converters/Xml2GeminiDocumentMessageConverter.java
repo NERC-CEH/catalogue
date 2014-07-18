@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,12 +17,12 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.BoundingBoxesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.NodeListConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
@@ -143,17 +142,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     }
     
     private List<String> getListOfStrings(Document document, XPathExpression expression) throws XPathExpressionException{
-        return getListOfStrings((NodeList) expression.evaluate(document, XPathConstants.NODESET));
-    }
-    
-    private List<String> getListOfStrings(NodeList nodeList) throws XPathExpressionException{
-        ArrayList<String> toReturn = new ArrayList<>();
-        for(int i=0; i<nodeList.getLength(); i++){
-            Node item = nodeList.item(i);
-            if (item.getFirstChild() != null) {
-                toReturn.add(item.getFirstChild().getNodeValue());
-            }
-        }
-        return toReturn;
-    }    
+        return NodeListConverter.getListOfStrings((NodeList) expression.evaluate(document, XPathConstants.NODESET));
+    }   
 }

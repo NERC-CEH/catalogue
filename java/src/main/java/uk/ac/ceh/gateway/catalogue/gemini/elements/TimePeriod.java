@@ -6,11 +6,10 @@ import lombok.Value;
 @Value
 
 public class TimePeriod {
-    private static LocalDateFactory FACTORY = new LocalDateFactory();
     private final LocalDate begin, end;
 
     public TimePeriod(String begin, String end) {
-        this.begin = FACTORY.parse(begin);
-        this.end = FACTORY.parse(end);
+        this.begin = LocalDateFactory.parse(begin);
+        this.end = LocalDateFactory.parse(end);
     }
 }
