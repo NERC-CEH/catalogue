@@ -7,7 +7,7 @@
   </div>
 </#if>
 <h3>Keywords</h3>
-<div class="document-keywords">
+<div id="document-keywords" property="dc:subject" class="document-keywords">
   <#list descriptiveKeywords as keywordsList>
     <#list keywordsList.keywords as keyword>
       <span class="label label-primary">${keyword.value}</span>
