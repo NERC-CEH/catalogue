@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.gemini.elements;
 import java.time.LocalDate;
 import java.time.Month;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
@@ -50,15 +51,14 @@ public class TimePeriodTest {
         assertThat("TimePeriod 'end' should equal '2008-02-15", actual.getEnd(), equalTo(end));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void unrecognisedDate() {
         //Given
-        
         //When
-        new TimePeriod("10/12/2043", "15-02-2008T00:00:00Z");
+        TimePeriod actual = new TimePeriod("10121943", "15-02-2008T00:00:00Z");
         
         //Then
-        // Throws exception
+        assertThat("Begin date should be null", actual.getBegin(), nullValue(LocalDate.class));
     }
 
 }
