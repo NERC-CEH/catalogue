@@ -31,7 +31,7 @@ public class OfflineTerraCatalogUserFactory<U> implements TerraCatalogUserFactor
     }
     
     public String put(String group, String domainSuffix) {
-        return groupToDomain.put(group, domainSuffix);
+        return groupToDomain.put(group.toLowerCase(), domainSuffix);
     }
     
     @Override
