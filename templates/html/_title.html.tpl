@@ -11,12 +11,12 @@
 	    <#if title?has_content>
 	      ${title}
 	    </#if>
-      <#--XXX: Somewhere to expose ID via RDFa, should it be here?-->
-      <#if id?has_content>
-      <span class="hide" id="identifier" property="dc:identifier">
-        ${id}
-      </span>
-      </#if>
     </h2>
+    <#--XXX: Somewhere to expose ID via RDFa, should it be here?-->
+    <#if id?has_content>
+    <span class="hide" id="identifier" property="dc:identifier">
+      ${id}
+    </span>
+    </#if>
    </div>
 </div>
