@@ -13,10 +13,9 @@ public class LocalDateFactoryTest {
     public void parseIsoLocalDate() {
         //Given
         LocalDate expected = LocalDate.of(2007, Month.DECEMBER, 1);
-        LocalDateFactory factory = new LocalDateFactory();
         
         //When
-        LocalDate actual = factory.parse("2007-12-01");
+        LocalDate actual = LocalDateFactory.parse("2007-12-01");
         
         //Then
         assertThat("LocalDate 'actual' should equal 'expected'", actual, equalTo(expected));
@@ -26,10 +25,9 @@ public class LocalDateFactoryTest {
     public void parseEnglishDate() {
         //Given
         LocalDate expected = LocalDate.of(2007, Month.DECEMBER, 1);
-        LocalDateFactory factory = new LocalDateFactory();
         
         //When
-        LocalDate actual = factory.parse("01-12-2007");
+        LocalDate actual = LocalDateFactory.parse("01-12-2007");
         
         //Then
         assertThat("LocalDate 'actual' should equal 'expected'", actual, equalTo(expected));
@@ -39,10 +37,21 @@ public class LocalDateFactoryTest {
     public void parseIsoDateTime() {
         //Given
         LocalDate expected = LocalDate.of(2007, Month.DECEMBER, 1);
-        LocalDateFactory factory = new LocalDateFactory();
         
         //When
-        LocalDate actual = factory.parse("01-12-2007T01:34:56Z");
+        LocalDate actual = LocalDateFactory.parse("01-12-2007T01:34:56Z");
+        
+        //Then
+        assertThat("LocalDate 'actual' should equal 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void parseAllNumberDate() {
+        //Given
+        LocalDate expected = LocalDate.of(2007, Month.DECEMBER, 1);
+        
+        //When
+        LocalDate actual = LocalDateFactory.parse("01122007");
         
         //Then
         assertThat("LocalDate 'actual' should equal 'expected'", actual, equalTo(expected));
@@ -51,10 +60,9 @@ public class LocalDateFactoryTest {
     @Test
     public void unrecognisedDate() {
         //Given
-        LocalDateFactory factory = new LocalDateFactory();
         
         //When
-        LocalDate actual = factory.parse("10121943");
+        LocalDate actual = LocalDateFactory.parse("10/12/1943");
         
         //Then
         assertThat("'actual' LocalDate should be null", actual, nullValue(LocalDate.class));
