@@ -24,7 +24,7 @@ public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocument
 
     @Override
     public MetadataInfo getDocumentInfo(GeminiDocument document, TerraCatalogExt ext) {
-        return new MetadataInfo(ext.getOwnerGroup(), null, translate(ext.getStatus()));
+        return new MetadataInfo(ext.getOwnerGroup(), "application/xml", translate(ext.getStatus()));
     }
     
     private String translate(String terraCatalogStatus) {
