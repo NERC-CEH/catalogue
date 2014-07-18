@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Data;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
@@ -162,7 +162,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
         return toReturn;
     }
        
-    @Value
+    @Data
     protected class TerraCatalogPair {
         private final ZipFile file;
         private final String name;
