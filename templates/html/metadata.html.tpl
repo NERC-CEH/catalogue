@@ -6,6 +6,7 @@
     <div class="col-md-12">      
       <div><#include "_title.html.tpl"></div>
       <div><#include "_description.html.tpl"></div>
+      <div><#include "_resourceStatus.html.tpl"></div>
     </div>
 </div>
 
