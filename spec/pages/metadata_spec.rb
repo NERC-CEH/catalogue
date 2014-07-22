@@ -76,7 +76,6 @@ BROWSERS.each do |browser|
 
         expect(page).to have_selector('.document-ordering')
         expect(first('.document-ordering')).to have_content "No Order/Download available"
-        expect(first('.document-ordering')).to have_content "Licence not found"
       end
     end
     
