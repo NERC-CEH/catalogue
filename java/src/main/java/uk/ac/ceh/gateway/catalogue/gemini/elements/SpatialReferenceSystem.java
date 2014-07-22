@@ -40,5 +40,9 @@ public class SpatialReferenceSystem {
         return toReturn;
     }
     
+    public boolean isEmpty(){
+        return nullToEmpty(this.code).isEmpty() && nullToEmpty(this.codeSpace).isEmpty();
+    }
+    
 }
 

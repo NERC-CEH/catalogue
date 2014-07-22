@@ -25,6 +25,10 @@ public class SpatialReferenceSystemConverter {
                 .code(code)
                 .codeSpace(codeSpace)
                 .build();
-        return toReturn;
+        if(toReturn.isEmpty()){
+            return null;
+        }else{
+            return toReturn;
+        }
     }
 }
