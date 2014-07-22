@@ -44,12 +44,6 @@
   </div>
 </div>
 
-<#if spatialReferenceSystem?? && spatialReferenceSystem.title?? && spatialReferenceSystem.title?has_content>
-  <div class="row">
-    <div class="col-md-12">
-      <#include "_spatialReferenceSystem.html.tpl">
-    </div>
-  </div>
-</#if>
+<#include "_spatialReferenceSystem.html.tpl">
 
 </@skeleton.master>
