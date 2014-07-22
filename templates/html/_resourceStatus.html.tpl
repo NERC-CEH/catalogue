@@ -1,5 +1,5 @@
+<#if resourceStatus?has_content>
 <div class="resource_status">
-  <#if resourceStatus?has_content>
-    <p><b>Resource status:</b> ${resourceStatus}</p>
-  </#if>
+  <b>Resource status:</b> ${resourceStatus}
 </div>
+</#if>

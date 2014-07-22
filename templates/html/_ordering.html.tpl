@@ -1,21 +1,15 @@
 <#if downloadOrder?has_content>
 <div class="panel panel-default document-ordering">
-  <div class="panel-heading"><p class="panel-title">Get the data</p></div>
+  <div class="panel-heading panel-title">Get the data</div>
     <div class="panel-body">
-      <#if downloadOrder.orderUrl?has_content>
-        <p>
-          <a href="${downloadOrder.orderUrl}">Order/Download</a>
-        </p>
+    <#if downloadOrder.orderUrl?has_content>
+      <a href="${downloadOrder.orderUrl}">Order/Download</a><br>
       <#else>
-        <p>
-          No Order/Download available
-        </p>
-      </#if>
-      <#if downloadOrder.supportingDocumentsUrl?has_content>
-        <p>
-          <a href="${downloadOrder.supportingDocumentsUrl}">Supporting documentation</a>
-        </p>
-      </#if>
+      No Order/Download available
+    </#if>
+    <#if downloadOrder.supportingDocumentsUrl?has_content>
+      <a href="${downloadOrder.supportingDocumentsUrl}">Supporting documentation</a>
+    </#if>
     </div>
     <div class="panel-footer column-sm">
     <#if downloadOrder.licenseUrl?has_content>

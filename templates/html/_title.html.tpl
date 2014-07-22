@@ -1,16 +1,16 @@
 <div class="page-header">
   <h2>  	
   <div class="row">
-    <div class="col-md-2 col-md-push-10">
-			<#if resourceType?has_content>
-			  <span class="label label-${resourceType.value} pull-right">${resourceType.value}</span>
-			</#if>  
+    <#if resourceType?has_content>
+    <div class="col-md-2 col-md-push-10">			
+			<span class="label label-${resourceType.value} pull-right">${resourceType.value}</span>  
     </div>
+    </#if>
+    <#if title?has_content>
     <div id="document-title" class="col-md-10 col-md-pull-2">
-	    <#if title?has_content>
-	      ${title}
-	    </#if>   
+	    ${title}  
     </div>
+    </#if>
    </div>
   </h2>
 </div>

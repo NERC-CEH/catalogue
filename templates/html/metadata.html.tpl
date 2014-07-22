@@ -4,9 +4,9 @@
 
 <div class="row">
     <div class="col-md-12">      
-      <div><#include "_title.html.tpl"></div>
-      <div><#include "_description.html.tpl"></div>
-      <div><#include "_resourceStatus.html.tpl"></div>
+      <#include "_title.html.tpl">
+      <#include "_description.html.tpl">
+      <#include "_resourceStatus.html.tpl">
     </div>
 </div>
 
@@ -29,13 +29,13 @@
 
 <div class="row">
     <div class="col-md-12">
-      <div><#include "_extent.html.tpl"></div>
+      <#include "_extent.html.tpl">
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-12">      
-      <div><#include "_temporalExtent.html.tpl"></div>
+      <#include "_temporalExtent.html.tpl">
     </div>
 </div>
 
