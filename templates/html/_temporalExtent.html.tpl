@@ -1,6 +1,6 @@
 <#if temporalExtent?has_content>
 <h3>Temporal Extent</h3>
-  <div property="dc:temporal">
+  <div id="temporal-extent" property="dc:temporal">
     <#list temporalExtent as extent>
     <#setting date_format = 'yyyy-MM-dd'>
 	  <#if extent.begin?has_content>
