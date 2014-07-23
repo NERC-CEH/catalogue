@@ -1,4 +1,4 @@
-<#macro master title>
+<#macro master title rdfa=false>
 <!DOCTYPE html>
 <html>
   <head>
@@ -12,7 +12,7 @@
     <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body prefix="dc: http://purl.org/dc/terms/ dcat: http://www.w3.org/ns/dcat# foaf: http://xmlns.com/foaf/0.1/">
+  <body <#if rdfa>prefix="dc: http://purl.org/dc/terms/ dcat: http://www.w3.org/ns/dcat# foaf: http://xmlns.com/foaf/0.1/"</#if>>
     <div class="container">
       <div class="row">
         <div class="col-md-12">
