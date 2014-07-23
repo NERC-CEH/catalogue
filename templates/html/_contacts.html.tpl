@@ -4,7 +4,7 @@
   <div class="row document-contacts">
    	<div class="col-md-4"><b>${contactsList.role}</b></div>
   	<div class="col-md-4">
-  			<#if contactsList.individualName?has_content>
+  		  <#if contactsList.individualName?has_content>
 	      	${contactsList.individualName}<br>
 	      </#if>
 
