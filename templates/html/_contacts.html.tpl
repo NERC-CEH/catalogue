@@ -3,7 +3,7 @@
   <#list responsibleParties as contactsList>
   <div class="row document-contacts">
    	<div class="col-md-4"><b>${contactsList.role}</b></div>
-  	<div class="col-md-4"
+  	<div class="col-md-4 ${contactsList.role?lower_case?trim?replace(" ", "-")}"
     <#if contactsList.role == "Distributor" || contactsList.role == "Resource Provider">
       property="dc:publisher"
     <#elseif contactsList.role == "Author">
