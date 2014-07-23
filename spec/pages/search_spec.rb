@@ -1,6 +1,6 @@
 BROWSERS.each do |browser|
-  
-  def perform_search(term) 
+
+  def perform_search(term)
       within("#search-form") do
         fill_in "term", :with => term
         click_button "Search"

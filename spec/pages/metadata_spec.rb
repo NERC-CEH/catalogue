@@ -53,11 +53,9 @@ BROWSERS.each do |browser|
       end
 
       it "should show the correct temporal Extent 'Begin' date for the UK Environmental Change Network (ECN) - meteorology summary data " do
-      visit '/documents/ca3ff6cd-1d0a-4160-bfaf-bc42115b99d7'
-      expect(first('.extentBegin')).to have_content "Begin position: 1991-05-18"
-    end
-
-
+        visit '/documents/ca3ff6cd-1d0a-4160-bfaf-bc42115b99d7'
+        expect(first('.extentBegin')).to have_content "Begin position: 1991-05-18"
+      end
     end
 
     describe "Get the data panel" do
@@ -79,38 +77,37 @@ BROWSERS.each do |browser|
         expect(first('.document-ordering')).to have_content "Licence not found"
       end
     end
-    
+
     describe "Document links on metadata page" do
       it "should have heading 'Associated Services'" do
-        visit '/documents/bb2d7874-7bf4-44de-aa43-348bd684a2fe' 
-        
+        visit '/documents/bb2d7874-7bf4-44de-aa43-348bd684a2fe'
+
         expect(page).to have_content('Associated Services')
       end
-      
+
       it "should have link to service" do
-        visit '/documents/bb2d7874-7bf4-44de-aa43-348bd684a2fe' 
-        
+        visit '/documents/bb2d7874-7bf4-44de-aa43-348bd684a2fe'
+
         expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales survey maps")
       end
-      
+
       it "should have heading 'Associated Datasets'" do
-        visit '/documents/fb495d1b-80a3-416b-8dc7-c85ed22ed1e3' 
-        
+        visit '/documents/fb495d1b-80a3-416b-8dc7-c85ed22ed1e3'
+
         expect(page).to have_content('Associated Datasets')
       end
-      
+
       it "should have link to dataset" do
-        visit '/documents/fb495d1b-80a3-416b-8dc7-c85ed22ed1e3' 
-        
+        visit '/documents/fb495d1b-80a3-416b-8dc7-c85ed22ed1e3'
+
         expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales")
       end
-      
+
       it "should not have heading 'Associated Datasets'" do
-        visit '/documents/88657668-1f28-4b72-9609-e993235c9428' 
-        
+        visit '/documents/88657668-1f28-4b72-9609-e993235c9428'
+
         expect(page).not_to have_content('Associated Datasets')
       end
     end
-
   end
 end
