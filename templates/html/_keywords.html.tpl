@@ -13,5 +13,6 @@
     <#list keywordsList.keywords as keyword>
       <span class="label label-primary">${keyword.value}</span>
     </#list>
-  </div>
+  </#list>
+</div>
 </#if>
