@@ -4,11 +4,11 @@
     <p id="citation" class="panel-body" property="dc:bibliographicCitation">
     	${otherCitationDetails}
     </p>
-    <div class="panel-footer">
     <#if id?has_content>
+    <div class="panel-footer">
 	    <a href="http://data.datacite.org/application/x-bibtex/10.5285/${id}">BibTeX</a>
 	    <a href="http://data.datacite.org/application/x-research-info-systems/10.5285/${id}">RIS</a>
-	</#if>
     </div>
+    </#if>
 </div>
 </#if>
