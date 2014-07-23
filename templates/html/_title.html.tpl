@@ -7,16 +7,16 @@
         </h2>
       </#if>
     </div>
-    <h2 property="dc:title" id="document-title" class="col-md-10 col-md-pull-2">
+    <h2 id="document-title" property="dc:title" class="col-md-10 col-md-pull-2">
 	    <#if title?has_content>
 	      ${title}
 	    </#if>
     </h2>
     <#--XXX: Somewhere to expose ID via RDFa, should it be here?-->
     <#if id?has_content>
-    <span class="hide" id="identifier" property="dc:identifier">
+    <p id="identifier" property="dc:identifier" class="hide" >
       ${id}
-    </span>
+    </p>
     </#if>
    </div>
 </div>
