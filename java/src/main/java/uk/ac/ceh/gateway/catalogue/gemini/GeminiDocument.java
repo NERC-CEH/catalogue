@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.SpatialReferenceSystem;
@@ -42,4 +43,5 @@ public class GeminiDocument {
     private Set<Link> documentLinks;
     private Set<ResourceIdentifier> resourceIdentifiers;
     private SpatialReferenceSystem spatialReferenceSystem;
+    private DatasetReferenceDate metadataDate;
 }

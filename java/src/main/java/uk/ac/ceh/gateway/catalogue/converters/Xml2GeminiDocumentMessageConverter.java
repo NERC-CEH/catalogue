@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.BoundingBoxesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DatasetReferenceDatesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
@@ -49,6 +50,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final BoundingBoxesConverter boundingBoxesConverter;
     private final TemporalExtentConverter temporalExtentConverter;
     private final SpatialReferenceSystemConverter spatialReferenceSystem;
+    private final DatasetReferenceDatesConverter metadataDateConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -75,6 +77,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.coupledResource = xpath.compile(XPaths.COUPLED_RESOURCE);
         this.resourceStatus = xpath.compile(XPaths.RESOURCE_STATUS);
         this.spatialReferenceSystem = new SpatialReferenceSystemConverter(xpath);
+        this.metadataDateConverter = new DatasetReferenceDatesConverter(xpath);
     }
     
     @Override
@@ -124,6 +127,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setCoupleResources(getListOfStrings(document, coupledResource));
             toReturn.setResourceStatus(resourceStatus.evaluate(document));
             toReturn.setSpatialReferenceSystem(spatialReferenceSystem.convert(document));
+            toReturn.setMetadataDate(metadataDateConverter.convert(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
