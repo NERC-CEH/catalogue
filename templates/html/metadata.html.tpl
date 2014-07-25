@@ -45,4 +45,6 @@
   </div>
 </div>
 
+<#include "_spatialReferenceSystem.html.tpl">
+
 </@skeleton.master>
