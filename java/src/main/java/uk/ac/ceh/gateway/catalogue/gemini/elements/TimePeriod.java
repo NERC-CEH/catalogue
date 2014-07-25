@@ -1,22 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.gemini.elements;
 
-import java.time.LocalDate;
 import lombok.Value;
+import org.joda.time.LocalDate;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.common.DateHandler;
 
 @Value
 public class TimePeriod {
     private final LocalDate begin, end;
 
     public TimePeriod(String begin, String end) {
-        this.begin = parseEmptyString(begin);
-        this.end = parseEmptyString(end);
-    }
-    
-    private LocalDate parseEmptyString(String date) {
-        if (date.isEmpty()) {
-            return null;
-        } else {
-            return LocalDate.parse(date);
-        }
+        this.begin = DateHandler.parseEmptyString(begin);
+        this.end = DateHandler.parseEmptyString(end);
     }
 }

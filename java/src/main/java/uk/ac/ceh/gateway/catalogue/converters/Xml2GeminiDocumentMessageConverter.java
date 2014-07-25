@@ -28,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentif
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.common.DateHandler;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
@@ -41,7 +42,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             languageCodeList, languageCodeListValue, topicCategories, 
             resourceTypeCodeList, resourceTypeCodeListValue, 
             otherCitationDetails, browseGraphicUrl, coupledResource,
-            resourceStatus;
+            resourceStatus, metadataDate;
     private final XPath xpath;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
@@ -50,7 +51,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final BoundingBoxesConverter boundingBoxesConverter;
     private final TemporalExtentConverter temporalExtentConverter;
     private final SpatialReferenceSystemConverter spatialReferenceSystem;
-    private final DatasetReferenceDatesConverter metadataDateConverter;
+    private final DatasetReferenceDatesConverter datasetReferenceDatesConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -77,7 +78,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.coupledResource = xpath.compile(XPaths.COUPLED_RESOURCE);
         this.resourceStatus = xpath.compile(XPaths.RESOURCE_STATUS);
         this.spatialReferenceSystem = new SpatialReferenceSystemConverter(xpath);
-        this.metadataDateConverter = new DatasetReferenceDatesConverter(xpath);
+        this.datasetReferenceDatesConverter = new DatasetReferenceDatesConverter(xpath);
+        this.metadataDate = xpath.compile(XPaths.METADATA_DATE);
     }
     
     @Override
@@ -127,7 +129,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setCoupleResources(getListOfStrings(document, coupledResource));
             toReturn.setResourceStatus(resourceStatus.evaluate(document));
             toReturn.setSpatialReferenceSystem(spatialReferenceSystem.convert(document));
-            toReturn.setMetadataDate(metadataDateConverter.convert(document));
+            toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
+            toReturn.setMetadataDate(DateHandler.parseEmptyString(metadataDate.evaluate(document)));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

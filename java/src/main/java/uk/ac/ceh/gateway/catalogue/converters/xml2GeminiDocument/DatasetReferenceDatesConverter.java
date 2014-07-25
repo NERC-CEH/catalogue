@@ -7,6 +7,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.joda.time.LocalDate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.common.DateHandler;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetReferenceDate;
 
 public class DatasetReferenceDatesConverter {
@@ -35,16 +36,8 @@ public class DatasetReferenceDatesConverter {
         LocalDate toReturn = null;
         Node dateNode = (Node) dateExpression.evaluate(document, XPathConstants.NODE);
         if(dateNode != null){
-            toReturn = parseEmptyString(this.date.evaluate(dateNode));
+            toReturn = DateHandler.parseEmptyString(this.date.evaluate(dateNode));
         }
         return toReturn;
-    }
-    
-    private LocalDate parseEmptyString(String date) {
-        if (date.isEmpty()) {
-            return null;
-        } else {
-            return LocalDate.parse(date);
-        }
     }
 }
