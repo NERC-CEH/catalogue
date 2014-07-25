@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.common;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 
 public class DateHandler {

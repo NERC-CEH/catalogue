@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;

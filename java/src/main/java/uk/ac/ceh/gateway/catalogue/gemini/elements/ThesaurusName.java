@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.gemini.elements;
 
 import lombok.Value;
 import lombok.experimental.Builder;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
@@ -10,7 +10,7 @@ public class ThesaurusName {
     private final String title;
     private final LocalDate date;
     private final CodeListItem dateType;
-    private static final LocalDate NULL_DATE = new LocalDate(-1000000, 1, 1);
+    private static final LocalDate NULL_DATE = LocalDate.parse("-1000000-01-01");
     public static final ThesaurusName EMPTY_THESAURUS_NAME = new ThesaurusName("", NULL_DATE, CodeListItem.EMPTY_CODE_LIST_ITEM);
     
     @Builder

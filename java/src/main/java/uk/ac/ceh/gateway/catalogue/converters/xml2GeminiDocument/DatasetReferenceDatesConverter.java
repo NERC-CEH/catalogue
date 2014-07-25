@@ -4,7 +4,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.common.DateHandler;
