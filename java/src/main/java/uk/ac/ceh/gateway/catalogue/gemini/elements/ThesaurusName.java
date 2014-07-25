@@ -10,7 +10,7 @@ public class ThesaurusName {
     private final String title;
     private final LocalDate date;
     private final CodeListItem dateType;
-    private static final LocalDate NULL_DATE = LocalDate.parse("-1000000-01-01");
+    private static final LocalDate NULL_DATE = LocalDate.of(-1000000, 1, 1);
     public static final ThesaurusName EMPTY_THESAURUS_NAME = new ThesaurusName("", NULL_DATE, CodeListItem.EMPTY_CODE_LIST_ITEM);
     
     @Builder
