@@ -10,6 +10,7 @@ import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import org.joda.time.LocalDate;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -734,7 +735,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
-    public void canGetSpatialReference() throws IOException {
+    public void spatialReference() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReference.xml"));
@@ -748,16 +749,29 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
-    public void defaultSpatialReferenceTitle() throws IOException {
+    public void spatialReferenceDefaultTitle() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReferenceUnknown.xml"));
-        String expected = "urn:ogc:def:crs:MadeUpCodeSpace:123456";
+        String expected = "";
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
 
         //Then
         assertThat("Actual title is as expected", document.getSpatialReferenceSystem().getTitle(), equalTo(expected));
+    }
+    
+    @Test
+    public void spatialReferenceNull() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReferenceMissing.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+
+        //Then
+        assertThat("Spatial reference is completely missing", document.getSpatialReferenceSystem(), is(nullValue()));
     }
 }

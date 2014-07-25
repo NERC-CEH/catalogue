@@ -14,12 +14,12 @@ public class SpatialReferenceSystem {
     private static final Map<String, String> titleLookup;
     static {
         Map<String,String> temp = new HashMap<>();
-        temp.put(String.format("%s:%s", CODESPACE_EPSG, "27700"),"OSGB 1936 / British National Grid");
-        temp.put(String.format("%s:%s", CODESPACE_EPSG, "29900"),"TM65 / Irish National Grid");
-        temp.put(String.format("%s:%s", CODESPACE_EPSG, "29901"),"OSNI 1952 / Irish National Grid");
-        temp.put(String.format("%s:%s", CODESPACE_EPSG, "29902"),"TM65 / Irish Grid");
-        temp.put(String.format("%s:%s", CODESPACE_EPSG, "4326"),"WGS 84");
-        temp.put(String.format("%s:%s", CODESPACE_EPSG, "CRS:84"),"WGS 84 longitude-latitude (CRS:84)");
+        temp.put(String.format("%s%s", CODESPACE_EPSG, "27700"),"OSGB 1936 / British National Grid");
+        temp.put(String.format("%s%s", CODESPACE_EPSG, "29900"),"TM65 / Irish National Grid");
+        temp.put(String.format("%s%s", CODESPACE_EPSG, "29901"),"OSNI 1952 / Irish National Grid");
+        temp.put(String.format("%s%s", CODESPACE_EPSG, "29902"),"TM65 / Irish Grid");
+        temp.put(String.format("%s%s", CODESPACE_EPSG, "4326"),"WGS 84");
+        temp.put(String.format("%s%s", CODESPACE_EPSG, "CRS:84"),"WGS 84 longitude-latitude (CRS:84)");
         titleLookup = Collections.unmodifiableMap(temp);
     }
     private final String code, codeSpace;
@@ -32,11 +32,16 @@ public class SpatialReferenceSystem {
     }
     
     public String getTitle(){
-        String toReturn = String.format("%s:%s",codeSpace,code);
-        if(titleLookup.containsKey(toReturn)){
-            toReturn = titleLookup.get(toReturn);
+        String toReturn = "";
+        String key = String.format("%s%s",codeSpace,code);
+        if(titleLookup.containsKey(key)){
+            toReturn = titleLookup.get(key);
         }
         return toReturn;
+    }
+    
+    public boolean isEmpty(){
+        return nullToEmpty(this.code).isEmpty() && nullToEmpty(this.codeSpace).isEmpty();
     }
     
 }
