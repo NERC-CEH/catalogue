@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentSearchResults;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults.Facet;
@@ -49,12 +51,13 @@ public class SearchController {
     @RequestMapping(value = "documents",
                     method = RequestMethod.GET)
     public @ResponseBody SearchResults searchDocuments(
+            @ActiveUser CatalogueUser user,
             @RequestParam(value = "term", defaultValue=DEFAULT_SEARCH_TERM) String term,
             @RequestParam(value = "start", defaultValue = "0") int start,
             @RequestParam(value = "rows", defaultValue = "20") int rows,
             @RequestParam(value = "facet", defaultValue = "") List<String> facetFilters
     ) throws SolrServerException{
-        SolrQuery query = getQuery(term, start, rows, facetFilters);
+        SolrQuery query = getQuery(user, term, start, rows, facetFilters);
         return performQuery(term, facetFilters, query);
     }
     
@@ -96,16 +99,25 @@ public class SearchController {
         return toReturn;
     }
     
-    private SolrQuery getQuery(String term, int start, int rows, List<String> facetFilters){
+    private SolrQuery getQuery(CatalogueUser user, String term, int start, int rows, List<String> facetFilters){
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
-                .addFilterQuery("state:public")
                 .setStart(start)
                 .setRows(rows);
+        setRecordVisibility(query, user);
         setFacetFilters(query, facetFilters);
         setFacetFields(query);
         setSortOrder(query, term);
         return query;
+    }
+    
+    private void setRecordVisibility(SolrQuery query, CatalogueUser user) {
+        if (user.isPublic()) {
+            query.addFilterQuery("state:public");
+        } else {
+            // TODO block access to records for everyone until fixed permissions 
+            query.addFilterQuery("state:public");
+        }
     }
     
     private void setFacetFilters(SolrQuery query, List<String> facetFilters){
