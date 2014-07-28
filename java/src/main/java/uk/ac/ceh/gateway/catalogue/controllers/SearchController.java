@@ -99,6 +99,7 @@ public class SearchController {
     private SolrQuery getQuery(String term, int start, int rows, List<String> facetFilters){
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
+                .addFilterQuery("state:public")
                 .setStart(start)
                 .setRows(rows);
         setFacetFilters(query, facetFilters);
