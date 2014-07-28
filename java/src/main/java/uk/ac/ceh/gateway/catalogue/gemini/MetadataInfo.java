@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MetadataInfo {
-    private String organisation, rawType, state;
+    private String rawType, state;
     
     @JsonIgnore
     public MediaType getRawMediaType() {

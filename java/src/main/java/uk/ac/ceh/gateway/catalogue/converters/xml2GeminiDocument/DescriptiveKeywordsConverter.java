@@ -13,6 +13,7 @@ import org.w3c.dom.NodeList;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
 
 public class DescriptiveKeywordsConverter {
@@ -56,7 +57,7 @@ public class DescriptiveKeywordsConverter {
             ThesaurusName thesaurusName = ThesaurusName
                     .builder()
                     .title(thesaurusTitle.evaluate(descriptiveKeywordsNode))
-                    .date(getDate(thesaurusDate.evaluate(descriptiveKeywordsNode)))
+                    .date(LocalDateFactory.parse(thesaurusDate.evaluate(descriptiveKeywordsNode)))
                     .dateType(CodeListItem.builder()
                             .codeList(thesaurusDateTypeList.evaluate(descriptiveKeywordsNode))
                             .value(thesaurusDateTypeValue.evaluate(descriptiveKeywordsNode))
@@ -97,7 +98,7 @@ public class DescriptiveKeywordsConverter {
     
     private List<Keyword> getKeywordsFromCharacterString(Node descriptiveKeywordsNode) throws XPathExpressionException {
         List<Keyword> toReturn = new ArrayList<>();
-        List<String> keywords = getListOfStrings((NodeList) keywordCharacter.evaluate(descriptiveKeywordsNode, XPathConstants.NODESET));
+        List<String> keywords = NodeListConverter.getListOfStrings((NodeList) keywordCharacter.evaluate(descriptiveKeywordsNode, XPathConstants.NODESET));
         if(keywords != null && !keywords.isEmpty()){
             keywords.stream().forEach((keyword) -> {
                 toReturn.add(Keyword.builder()
@@ -124,13 +125,5 @@ public class DescriptiveKeywordsConverter {
             }
         }
         return toReturn;
-    }
-    
-    private List<String> getListOfStrings(NodeList nodeList) throws XPathExpressionException{
-        ArrayList<String> toReturn = new ArrayList<>();
-        for(int i=0; i<nodeList.getLength(); i++){
-            toReturn.add(nodeList.item(i).getFirstChild().getNodeValue());
-        }
-        return toReturn;
-    }   
+    }  
 }
