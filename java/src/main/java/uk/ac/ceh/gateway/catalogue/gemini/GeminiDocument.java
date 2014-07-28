@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Set;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import java.time.LocalDate;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
@@ -42,4 +44,6 @@ public class GeminiDocument {
     private Set<Link> documentLinks;
     private Set<ResourceIdentifier> resourceIdentifiers;
     private SpatialReferenceSystem spatialReferenceSystem;
+    private DatasetReferenceDate datasetReferenceDate;
+    private LocalDate metadataDate;
 }
