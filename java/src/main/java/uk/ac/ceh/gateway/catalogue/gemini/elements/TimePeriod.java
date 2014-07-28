@@ -1,10 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.gemini.elements;
 
-import java.time.LocalDate;
 import lombok.Value;
+import java.time.LocalDate;
 
 @Value
-
 public class TimePeriod {
     private final LocalDate begin, end;
 

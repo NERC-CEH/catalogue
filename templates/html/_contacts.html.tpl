@@ -3,39 +3,45 @@
   <#list responsibleParties as contactsList>
   <div class="row document-contacts">
    	<div class="col-md-4"><b>${contactsList.role}</b></div>
-  	<div class="col-md-4">
+  	<div class="col-md-4 ${contactsList.role?lower_case?trim?replace(" ", "-")}"
+    <#if contactsList.role == "Distributor" || contactsList.role == "Resource Provider">
+      property="dc:publisher"
+    <#elseif contactsList.role == "Author">
+      property="dc:creator"
+    </#if>
+    >
   			<#if contactsList.individualName?has_content>
-	      	${contactsList.individualName}<br>
+	      	${contactsList.individualName}<br />
 	      </#if>
 
 	      <#if contactsList.organisationName?has_content>
-	      	${contactsList.organisationName}<br>
+	      	${contactsList.organisationName}<br />
 	      </#if>
 
 	      <#if contactsList.address.deliveryPoint?has_content>
-	      	${contactsList.address.deliveryPoint}<br>
+	      	${contactsList.address.deliveryPoint}<br />
 	      </#if>
 
 	      <#if contactsList.address.administrativeArea?has_content>
-	      	${contactsList.address.administrativeArea}<br>
+	      	${contactsList.address.administrativeArea}<br />
 	      </#if>
 
 	      <#if contactsList.address.city?has_content>
-	      	${contactsList.address.city}<br>
+	      	${contactsList.address.city}<br />
 	      </#if>
 
 	      <#if contactsList.address.country?has_content>
-	      	${contactsList.address.country}<br>
+	      	${contactsList.address.country}<br />
 	      </#if>
 
 	      <#if contactsList.address.postalCode?has_content>
-	      	${contactsList.address.postalCode}<br>
+	      	${contactsList.address.postalCode}<br />
 	      </#if>
 
 	      <#if contactsList.email?has_content>
-	      	<a href="mailto:${contactsList.email}">${contactsList.email}</a><br>
-	      </#if><br>
-	   </div>	 
+	      	<a href="mailto:${contactsList.email}">${contactsList.email}</a><br />
+	      </#if><br />
+	   </div>
   </div>
   </#list>
 </#if>

@@ -20,14 +20,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.BoundingBoxesConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DatasetReferenceDatesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.NodeListConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
 
 /**
@@ -39,7 +42,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             languageCodeList, languageCodeListValue, topicCategories, 
             resourceTypeCodeList, resourceTypeCodeListValue, 
             otherCitationDetails, browseGraphicUrl, coupledResource,
-            resourceStatus;
+            resourceStatus, metadataDate;
     private final XPath xpath;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
@@ -47,6 +50,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final DownloadOrderConverter downloadOrderConverter;
     private final BoundingBoxesConverter boundingBoxesConverter;
     private final TemporalExtentConverter temporalExtentConverter;
+    private final SpatialReferenceSystemConverter spatialReferenceSystem;
+    private final DatasetReferenceDatesConverter datasetReferenceDatesConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -72,6 +77,9 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.temporalExtentConverter = new TemporalExtentConverter(xpath);
         this.coupledResource = xpath.compile(XPaths.COUPLED_RESOURCE);
         this.resourceStatus = xpath.compile(XPaths.RESOURCE_STATUS);
+        this.spatialReferenceSystem = new SpatialReferenceSystemConverter(xpath);
+        this.datasetReferenceDatesConverter = new DatasetReferenceDatesConverter(xpath);
+        this.metadataDate = xpath.compile(XPaths.METADATA_DATE);
     }
     
     @Override
@@ -120,6 +128,9 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setTemporalExtent(temporalExtentConverter.convert(document));
             toReturn.setCoupleResources(getListOfStrings(document, coupledResource));
             toReturn.setResourceStatus(resourceStatus.evaluate(document));
+            toReturn.setSpatialReferenceSystem(spatialReferenceSystem.convert(document));
+            toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
+            toReturn.setMetadataDate(LocalDateFactory.parse(metadataDate.evaluate(document)));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

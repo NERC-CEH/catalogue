@@ -1,4 +1,3 @@
-
 package uk.ac.ceh.gateway.catalogue.converters;
 
 import java.io.IOException;
@@ -11,6 +10,7 @@ import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import java.time.LocalDate;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty.Address;
@@ -732,5 +733,94 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("actual resourceIdentifiers are equal to expected", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void spatialReference() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReference.xml"));
+        String expected = "OSGB 1936 / British National Grid";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+
+        //Then
+        assertThat("Actual title is as expected", document.getSpatialReferenceSystem().getTitle(), equalTo(expected));
+    }
+    
+    @Test
+    public void spatialReferenceDefaultTitle() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReferenceUnknown.xml"));
+        String expected = "";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+
+        //Then
+        assertThat("Actual title is as expected", document.getSpatialReferenceSystem().getTitle(), equalTo(expected));
+    }
+    
+    @Test
+    public void datasetReferenceDatesPublication() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("datasetReferenceDatesPublication.xml"));
+        DatasetReferenceDate expected = DatasetReferenceDate.builder()
+                .publicationDate(LocalDate.parse("2011-04-08"))
+                .build();
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        assertThat("MetadataDate is correct", document.getDatasetReferenceDate(), equalTo(expected));
+    }
+    
+    @Test
+    public void datasetReferenceDatesAll() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("datasetReferenceDatesAll.xml"));
+        DatasetReferenceDate expected = DatasetReferenceDate.builder()
+                .creationDate(LocalDate.parse("2011-04-08"))
+                .publicationDate(LocalDate.parse("2011-05-08"))
+                .revisionDate(LocalDate.parse("2011-06-08"))
+                .build();
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        assertThat("MetadataDate is correct", document.getDatasetReferenceDate(), equalTo(expected));
+    }
+    
+    @Test
+    public void metadataDate() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("metadataDate.xml"));
+        LocalDate expected = LocalDate.parse("2012-10-15");
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        assertThat("MetadataDate is correct", document.getMetadataDate(), equalTo(expected));
+    }
+    
+    @Test
+    public void spatialReferenceNull() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReferenceMissing.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+
+        //Then
+        assertThat("Spatial reference is completely missing", document.getSpatialReferenceSystem(), is(nullValue()));
     }
 }

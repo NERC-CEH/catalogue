@@ -1,18 +1,18 @@
-<#macro master title>
+<#macro master title rdfa=false>
 <!DOCTYPE html>
 <html>
   <head>
-     <meta charset="utf-8">
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>${title} - CEH Catalogue</title>
+    <title>${title} - CEH Catalogue</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>    
+    <!--[if lt IE 9]>
     <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body <#if rdfa>prefix="dc: http://purl.org/dc/terms/ dcat: http://www.w3.org/ns/dcat# foaf: http://xmlns.com/foaf/0.1/"</#if>>
     <div class="container">
       <div class="row">
         <div class="col-md-12">
@@ -27,8 +27,8 @@
             </div>
 
           <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">             
-              <li><a href="#">Help</a></li>              
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="#">Help</a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
                 <ul class="dropdown-menu">
@@ -53,7 +53,7 @@
 
     <script language="javascript" type="text/javascript" src="/static/vendor/jquery/jquery.min.js"></script>
     <script language="javascript" type="text/javascript" src="/static/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-  
+
   </body>
 </html>
 </#macro>
