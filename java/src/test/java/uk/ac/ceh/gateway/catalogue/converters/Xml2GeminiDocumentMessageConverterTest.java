@@ -11,7 +11,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
