@@ -11,7 +11,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -645,7 +645,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Then
         assertNotNull("Expected Thesaurus to not be null", thesaurusName);
         assertEquals("Title not as expected", "test thesaurus" , thesaurusName.getTitle());
-        assertEquals("Date not as expected", new LocalDate(2014, 6, 3), thesaurusName.getDate());
+        assertEquals("Date not as expected", LocalDate.of(2014, 6, 3), thesaurusName.getDate());
     }
 
     @Test

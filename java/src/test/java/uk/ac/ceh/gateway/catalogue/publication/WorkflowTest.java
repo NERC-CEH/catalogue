@@ -22,7 +22,7 @@ public class WorkflowTest {
     @Test
     public void getCurrentStateOfDocumentInDraft() {
         //Given
-        MetadataInfo info = new MetadataInfo("test", "", "draft");
+        MetadataInfo info = new MetadataInfo("", "draft");
         
         //When
         final State currentState = workflow.currentState(info);
@@ -34,7 +34,7 @@ public class WorkflowTest {
     @Test
     public void editorTransitionDraftToPending() {
         //Given
-        MetadataInfo original = new MetadataInfo("test", "", "draft");
+        MetadataInfo original = new MetadataInfo("", "draft");
         
         final State currentState = workflow.currentState(original);
         final Transition toPending = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "pending");
@@ -50,7 +50,7 @@ public class WorkflowTest {
     @Test
     public void editorCannotTransitionPendingToPublic() {
         //Given
-        MetadataInfo info = new MetadataInfo("test", "", "pending");
+        MetadataInfo info = new MetadataInfo("", "pending");
         
         final State currentState = workflow.currentState(info);
         final Transition toPublic = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "public");
@@ -65,7 +65,7 @@ public class WorkflowTest {
     @Test
     public void publisherCanTransitionPendingToPublic() {
         //Given
-        MetadataInfo info = new MetadataInfo("test", "", "pending");
+        MetadataInfo info = new MetadataInfo("", "pending");
         
         final State currentState = workflow.currentState(info);
         final Transition toPublic = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(publisher)), "public");
@@ -80,7 +80,7 @@ public class WorkflowTest {
     @Test
     public void editorCanNotTransitionFromPublicToDraft() {
         //Given
-        MetadataInfo info = new MetadataInfo("test", "", "public");
+        MetadataInfo info = new MetadataInfo("", "public");
         
         final State currentState = workflow.currentState(info);
         final Transition toDraft = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "draft");
