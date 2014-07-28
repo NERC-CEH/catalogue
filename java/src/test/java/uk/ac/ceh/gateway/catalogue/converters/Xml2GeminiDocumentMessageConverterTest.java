@@ -10,7 +10,6 @@ import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import java.time.LocalDate;
 import static org.hamcrest.core.IsNull.nullValue;
 import java.time.LocalDate;
 import static org.junit.Assert.*;

@@ -1,14 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument;
 
+import java.time.LocalDate;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import java.time.LocalDate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.common.DateHandler;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.LocalDateFactory;
 
 public class DatasetReferenceDatesConverter {
     private static final String CREATION = "/*/gmd:identificationInfo/*/gmd:citation/*/gmd:date[*/gmd:dateType/*/@codeListValue='creation']";
@@ -36,7 +36,7 @@ public class DatasetReferenceDatesConverter {
         LocalDate toReturn = null;
         Node dateNode = (Node) dateExpression.evaluate(document, XPathConstants.NODE);
         if(dateNode != null){
-            toReturn = DateHandler.parseEmptyString(this.date.evaluate(dateNode));
+            toReturn = LocalDateFactory.parse(this.date.evaluate(dateNode));
         }
         return toReturn;
     }

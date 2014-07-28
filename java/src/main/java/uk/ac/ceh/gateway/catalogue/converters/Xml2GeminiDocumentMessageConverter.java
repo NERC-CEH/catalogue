@@ -20,17 +20,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.BoundingBoxesConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DatasetReferenceDatesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DatasetReferenceDatesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.NodeListConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.common.DateHandler;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
 
 /**
@@ -130,7 +130,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setResourceStatus(resourceStatus.evaluate(document));
             toReturn.setSpatialReferenceSystem(spatialReferenceSystem.convert(document));
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
-            toReturn.setMetadataDate(DateHandler.parseEmptyString(metadataDate.evaluate(document)));
+            toReturn.setMetadataDate(LocalDateFactory.parse(metadataDate.evaluate(document)));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

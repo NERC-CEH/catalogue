@@ -6,7 +6,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import java.time.LocalDate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -70,19 +69,6 @@ public class DescriptiveKeywordsConverter {
                     .thesaurusName(thesaurusName)
                     .build()
             );
-        }
-        return toReturn;
-    }
-    
-    private LocalDate getDate(String nodeValue){
-        LocalDate toReturn = null;
-        if(nodeValue != null && !nodeValue.isEmpty()){
-            String[] dateParts = nodeValue.split("-");
-            if(dateParts.length == 3){
-                toReturn = LocalDate.parse(nodeValue);
-            }else{
-                throw new IllegalArgumentException(String.format("Unable to parse date.  Expected a date format of 'yyyy-mm-dd', eg 2014-06-03, but found this: %s.", nodeValue));
-            }
         }
         return toReturn;
     }
