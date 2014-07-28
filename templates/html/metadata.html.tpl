@@ -1,11 +1,12 @@
 <#import "skeleton.html.tpl" as skeleton>
 
-<@skeleton.master title=title>
+<@skeleton.master title=title rdfa=true>
 
 <div class="row">
-    <div class="col-md-12">      
-      <div><#include "_title.html.tpl"></div>
-      <div><#include "_description.html.tpl"></div>
+    <div class="col-md-12">
+      <#include "_title.html.tpl">
+      <#include "_description.html.tpl">
+      <#include "_resourceStatus.html.tpl">
     </div>
 </div>
 
@@ -17,7 +18,7 @@
     </div>
     <div class="col-md-8 col-md-pull-4">
       <#include "_contacts.html.tpl">
-    </div>    
+    </div>
 </div>
 
 <div class="row">
@@ -28,13 +29,13 @@
 
 <div class="row">
     <div class="col-md-12">
-      <div><#include "_extent.html.tpl"></div>
+      <#include "_extent.html.tpl">
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-12">      
-      <div><#include "_temporalExtent.html.tpl"></div>
+    <div class="col-md-12">
+      <#include "_temporalExtent.html.tpl">
     </div>
 </div>
 
@@ -43,5 +44,7 @@
     <#include "_links.html.tpl">
   </div>
 </div>
+
+<#include "_spatialReferenceSystem.html.tpl">
 
 </@skeleton.master>

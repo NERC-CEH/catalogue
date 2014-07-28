@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderCo
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.NodeListConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
@@ -47,6 +48,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final DownloadOrderConverter downloadOrderConverter;
     private final BoundingBoxesConverter boundingBoxesConverter;
     private final TemporalExtentConverter temporalExtentConverter;
+    private final SpatialReferenceSystemConverter spatialReferenceSystem;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -72,6 +74,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.temporalExtentConverter = new TemporalExtentConverter(xpath);
         this.coupledResource = xpath.compile(XPaths.COUPLED_RESOURCE);
         this.resourceStatus = xpath.compile(XPaths.RESOURCE_STATUS);
+        this.spatialReferenceSystem = new SpatialReferenceSystemConverter(xpath);
     }
     
     @Override
@@ -120,6 +123,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setTemporalExtent(temporalExtentConverter.convert(document));
             toReturn.setCoupleResources(getListOfStrings(document, coupledResource));
             toReturn.setResourceStatus(resourceStatus.evaluate(document));
+            toReturn.setSpatialReferenceSystem(spatialReferenceSystem.convert(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

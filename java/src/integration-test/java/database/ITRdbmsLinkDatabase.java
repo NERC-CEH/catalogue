@@ -4,16 +4,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.isIn;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -186,6 +184,32 @@ public class ITRdbmsLinkDatabase {
         
         //Then
         verifyDatabaseIsEmpty(jdbcTemplate);
+    }
+    
+    @Test
+    public void checkMetadataRowCountOnEmptySource() {
+        //Given
+        DataSource dataSource = createEmptyTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        
+        //When
+        boolean isEmpty = linkDatabase.isEmpty();
+        
+        //Then
+        assertTrue("Exepected the database to be empty", isEmpty);
+    }
+    
+    @Test
+    public void checkMetadataRowCountOnPopulatedDatasource() {
+        //Given
+        DataSource dataSource = createPopulatedTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        
+        //When
+        boolean isEmpty = linkDatabase.isEmpty();
+        
+        //Then
+        assertFalse("Exepected the database to be populated", isEmpty);
     }
     
     @Test
