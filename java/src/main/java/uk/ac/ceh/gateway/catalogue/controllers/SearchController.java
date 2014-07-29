@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class SearchController {
     
     private final SolrServer solrServer;
     
+    private static final String RANDOM_DYNAMIC_FIELD_NAME = "random";
     private static final Map<String, String> FACET_FIELDS;
     protected static final String DEFAULT_SEARCH_TERM = "*";
     static
@@ -130,11 +132,19 @@ public class SearchController {
     }
     
     private void setSortOrder(SolrQuery query, String term){
-        Random randomGenerator = new Random(System.currentTimeMillis());
-        String randomDynamicFieldName = "random" + randomGenerator.nextInt();
         if(DEFAULT_SEARCH_TERM.equals(term)){
-            query.setSort(randomDynamicFieldName, ORDER.asc);
+            query.setSort(getRandomFieldName(), ORDER.asc);
         }
+    }
+    
+    private String getRandomFieldName(){
+        Random randomGenerator = new Random(getRandomSeed());
+        return RANDOM_DYNAMIC_FIELD_NAME + randomGenerator.nextInt();
+    }
+    
+    private int getRandomSeed(){
+        Calendar calendar = Calendar.getInstance();
+        return calendar.get(Calendar.DAY_OF_YEAR);
     }
     
 }
