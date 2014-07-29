@@ -3,7 +3,7 @@ BROWSERS.each do |browser|
     describe "toggle button" do
       it "should show when the width is 760px" do
         page.driver.browser.manage.window.resize_to(760,400)
-    
+
         visit '/documents'
 
         expect(page).to have_selector('.navbar-toggle')
@@ -11,15 +11,15 @@ BROWSERS.each do |browser|
 
       it "should be hidden when the width is 900px" do
         page.driver.browser.manage.window.resize_to(900,400)
-    
+
         visit '/documents'
-        
+
         expect(page).to_not have_selector('.navbar-toggle')
       end
 
       it "should expand when clicked" do
         page.driver.browser.manage.window.resize_to(760,400)
-    
+
         visit '/documents'
         find('.navbar-toggle').click
 
@@ -28,7 +28,7 @@ BROWSERS.each do |browser|
 
       it "should be hidden by default" do
         page.driver.browser.manage.window.resize_to(760,400)
-    
+
         visit '/documents'
 
         expect(page).to_not have_selector('.navbar-nav')
@@ -38,7 +38,7 @@ BROWSERS.each do |browser|
     describe "the logo" do
       it "should be small when the width is 760px" do
         page.driver.browser.manage.window.resize_to(760,400)
-    
+
         visit '/documents'
 
         expect(page).to have_selector('.navbar-brand')
@@ -47,7 +47,7 @@ BROWSERS.each do |browser|
 
       it "should be big when the width is 900px" do
         page.driver.browser.manage.window.resize_to(900,400)
-    
+
         visit '/documents'
 
         expect(page).to have_selector('.navbar-brand')
