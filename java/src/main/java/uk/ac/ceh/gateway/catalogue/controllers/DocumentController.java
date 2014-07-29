@@ -62,6 +62,7 @@ public class DocumentController {
         this.linkService = linkService;
     }
     
+    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST)
     @ResponseBody
