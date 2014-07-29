@@ -53,10 +53,23 @@ BROWSERS.each do |browser|
       end
 
       it "should show the correct temporal Extent 'Begin' date for the UK Environmental Change Network (ECN) - meteorology summary data " do
-      visit '/documents/ca3ff6cd-1d0a-4160-bfaf-bc42115b99d7'
-      expect(first('.extentBegin')).to have_content "Begin position: 1991-05-18"
-    end
+        visit '/documents/ca3ff6cd-1d0a-4160-bfaf-bc42115b99d7'
+        expect(first('.extentBegin')).to have_content "Begin position: 1991-05-18"
+      end
 
+      it "it should have a spatial reference heading with the correct content for British National Grid" do
+        visit '/documents/88252783-0cd9-4837-b604-f024fb955bef'
+        expect(first('.spatial-reference-system').text).to have_content "Spatial Reference System"
+        expect(first('.spatial-reference-system').text).to have_content "OSGB 1936 / British National Grid"
+        expect(first('.spatial-reference-system').text).not_to have_content "WGS"
+      end
+
+      it "it should not have a spatial reference heading" do
+        visit '/documents/71a3f134-2833-4bcd-ace4-70b53b83c103'
+        spats = all('.spatial-reference-system')
+          .map{ |e| e.text }
+        expect(spats).to be_empty
+      end
 
     end
 
