@@ -149,7 +149,8 @@ public class DocumentControllerTest {
     @Test
     public void checkThatReadingDelegatesToBundledReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException {
         //Given
-        GeminiDocument bundledDocument = mock(GeminiDocument.class);
+        GeminiDocument bundledDocument = new GeminiDocument();
+        bundledDocument.setMetadata(new MetadataInfo("", "public"));
         
         String file = "myFile";
         String revision = "revision";
@@ -157,7 +158,7 @@ public class DocumentControllerTest {
         when(documentBundleReader.readBundle(file, revision)).thenReturn(bundledDocument);
         
         //When
-        GeminiDocument readDocument = controller.readMetadata(file, revision, mockRequest());
+        GeminiDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, revision, mockRequest());
         
         //Then
         verify(documentBundleReader).readBundle(file, revision);
@@ -168,6 +169,7 @@ public class DocumentControllerTest {
     public void checkThatLinksAreAddedToDataset() throws IOException, DataRepositoryException, UnknownContentTypeException {
         //Given
         GeminiDocument bundledDocument = new GeminiDocument();
+        bundledDocument.setMetadata(new MetadataInfo("", "public"));
         bundledDocument.setResourceType(CodeListItem.builder().value("dataset").build());
         
         String file = "myFile";
@@ -176,7 +178,7 @@ public class DocumentControllerTest {
         when(documentBundleReader.readBundle(file, revision)).thenReturn(bundledDocument);
         
         //When
-        controller.readMetadata(file, revision, mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, file, revision, mockRequest());
         
         //Then
         verify(documentBundleReader).readBundle(file, revision);
@@ -188,9 +190,9 @@ public class DocumentControllerTest {
         //Given
         String latestRevisionId = "latestRev";
         String file = "myFile";
-        HttpServletRequest request = mock(HttpServletRequest.class);
         
-        GeminiDocument bundledDocument = mock(GeminiDocument.class);
+        GeminiDocument bundledDocument = new GeminiDocument();
+        bundledDocument.setMetadata(new MetadataInfo("", "public"));
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         
         DataRevision revision = mock(DataRevision.class);
@@ -198,7 +200,7 @@ public class DocumentControllerTest {
         doReturn(revision).when(repo).getLatestRevision();
         
         //When
-        controller.readMetadata(file, mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
         
         //Then
         verify(documentBundleReader).readBundle(file, latestRevisionId);
@@ -210,7 +212,8 @@ public class DocumentControllerTest {
         String latestRevisionId = "latestRev";
         String file = "myFile";
         
-        GeminiDocument bundledDocument = mock(GeminiDocument.class);
+        GeminiDocument bundledDocument = new GeminiDocument();
+        bundledDocument.setMetadata(new MetadataInfo("", "public"));
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         
         DataRevision revision = mock(DataRevision.class);
@@ -218,7 +221,7 @@ public class DocumentControllerTest {
         doReturn(revision).when(repo).getLatestRevision();
         
         //When
-        GeminiDocument readDocument = controller.readMetadata(file, mockRequest());
+        GeminiDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
         
         //Then
         verify(documentBundleReader).readBundle(eq(file), any(String.class));

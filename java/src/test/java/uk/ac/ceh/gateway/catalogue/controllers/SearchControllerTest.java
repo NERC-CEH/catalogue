@@ -2,6 +2,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.SortClause;
@@ -9,8 +10,10 @@ import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocumentList;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults;
 
 public class SearchControllerTest {
@@ -46,11 +50,12 @@ public class SearchControllerTest {
         when(solrServer.query(any(SolrQuery.class), eq(SolrRequest.METHOD.POST)).getResults()).thenReturn(results);
         
         //When
+        CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String searchTerm = "testterm";
         int start = 2;
         int rows =5;
         String facet = "";
-        SearchResults searchResults = searchController.searchDocuments(searchTerm, start, rows, null);
+        SearchResults searchResults = searchController.searchDocuments(user, searchTerm, start, rows, null);
         
         //Then
         assertEquals("Term is wrong in results header.", searchTerm, searchResults.getHeader().getTerm());
@@ -67,12 +72,14 @@ public class SearchControllerTest {
             mockResults.add(mock(GeminiDocumentSolrIndex.class));
         }
         when(solrServer.query(any(SolrQuery.class), eq(SolrRequest.METHOD.POST)).getBeans(GeminiDocumentSolrIndex.class)).thenReturn(mockResults);
+        List<String> filterQueries = Arrays.asList("state:public");
         
         //When
+        CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String searchTerm = "testterm";
         Integer start = 3;
         Integer rows = 7;
-        searchController.searchDocuments(searchTerm, start, rows, null);
+        searchController.searchDocuments(user, searchTerm, start, rows, null);
         
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
@@ -81,12 +88,49 @@ public class SearchControllerTest {
         assertEquals("Incorrect search term passed to solrQuery", searchTerm, solrQuery.getValue().getQuery());
         assertEquals("Incorrect start value passed to solrQuery", start, solrQuery.getValue().getStart());
         assertEquals("Incorrect number of rows passed to solrQuery", rows, solrQuery.getValue().getRows());
+        assertEquals("Incorrect state FilterQuery passed to solrQuery", filterQueries, Arrays.asList(solrQuery.getValue().getFilterQueries()));
+    }
+    
+    @Test
+    public void annonymousUserCanOnlySearchForPublicRecords() throws SolrServerException {
+        //Given
+        CatalogueUser user = CatalogueUser.PUBLIC_USER;
+        List<String> filterQueries = Arrays.asList("state:public");
+        searchController.searchDocuments(user, "testterm", 3, 7, null);
+        ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
+        
+        //When
+        verify(solrServer).query(solrQuery.capture(), eq(SolrRequest.METHOD.POST));
+        
+        
+        //Then
+        assertEquals("FilterQuery should be 'state:public' for annonymous user", filterQueries, Arrays.asList(solrQuery.getValue().getFilterQueries()));
+    }
+    
+    @Test
+    public void loggedInUserCanOnlySearchForPublicRecords() throws SolrServerException {
+        //Given
+        CatalogueUser user = new CatalogueUser();
+        user.setUsername("testloggedin");
+        List<String> filterQueries = Arrays.asList("state:public");
+        searchController.searchDocuments(user, "testterm", 3, 7, null);
+        ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
+        
+        //When
+        verify(solrServer).query(solrQuery.capture(), eq(SolrRequest.METHOD.POST));
+        
+        
+        //Then
+        assertEquals("FilterQuery should be 'state:public' for logged in user", filterQueries, Arrays.asList(solrQuery.getValue().getFilterQueries()));
     }
     
     @Test
     public void facetMinCountIsSet() throws SolrServerException{
+        //Given
+        CatalogueUser user = CatalogueUser.PUBLIC_USER;
+        
         //When
-        searchController.searchDocuments("testterm", 1, 10, null);
+        searchController.searchDocuments(user, "testterm", 1, 10, null);
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
         verify(solrServer).query(solrQuery.capture(), eq(SolrRequest.METHOD.POST));
         
@@ -98,8 +142,11 @@ public class SearchControllerTest {
     
     @Test
     public void isRandomSortWhenTermIsDefault() throws SolrServerException{
+        //Given
+        CatalogueUser user = CatalogueUser.PUBLIC_USER;
+        
         //When 
-        searchController.searchDocuments(SearchController.DEFAULT_SEARCH_TERM, 1, 10, null);
+        searchController.searchDocuments(user, SearchController.DEFAULT_SEARCH_TERM, 1, 10, null);
 
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
@@ -113,8 +160,11 @@ public class SearchControllerTest {
     
     @Test
     public void isNotRandomSortWhenTermIsNotDefault() throws SolrServerException{
+        //Given
+        CatalogueUser user = CatalogueUser.PUBLIC_USER;
+        
         //When 
-        searchController.searchDocuments("Not default search term", 1, 10, null);
+        searchController.searchDocuments(user, "Not default search term", 1, 10, null);
 
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);

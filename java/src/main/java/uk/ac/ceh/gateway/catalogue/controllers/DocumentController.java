@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,6 +63,7 @@ public class DocumentController {
         this.linkService = linkService;
     }
     
+    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST)
     @ResponseBody
@@ -94,23 +96,35 @@ public class DocumentController {
                     method = RequestMethod.GET)   
     @ResponseBody
     public GeminiDocument readMetadata(
+            @ActiveUser CatalogueUser user,
             @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
         
-        return readMetadata(file, latestRev.getRevisionID(), request);
+        return readMetadata(user, file, latestRev.getRevisionID(), request);
     }
     
+    @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'DOCUMENT_READ')")
     @RequestMapping(value = "history/{revision}/{file}",
                     method = RequestMethod.GET)
     @ResponseBody
     public GeminiDocument readMetadata(
+            @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @PathVariable("revision") String revision,
             HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
         GeminiDocument document = documentBundleReader.readBundle(file, revision);
         document.setDocumentLinks(new HashSet<>(linkService.getLinks(document, getLinkUriBuilder(request, file))));
         log.debug("document requested: {}", document);
+        if ( !publiclyViewable(document, user)) {
+            throw new PermissionDeniedException(String.format("Unable to view resource: %s", file));
+        }
         return document;
+    }
+    
+    private boolean publiclyViewable(GeminiDocument document, CatalogueUser user) {
+        return document.getMetadata() != null
+            && "public".equalsIgnoreCase(document.getMetadata().getState())
+            && user.isPublic();
     }
     
     @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
