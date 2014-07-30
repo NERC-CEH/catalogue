@@ -71,9 +71,6 @@ BROWSERS.each do |browser|
       expect(all('.search-result-title')).not_to be_empty
     end
 
-      expect(first_visit).not_to match_array second_visit
-    end
-
     it "should have less results when a facetted search is performed" do
       visit "/documents"
       num_records_unfiltered = first('#num-records').text.to_i
