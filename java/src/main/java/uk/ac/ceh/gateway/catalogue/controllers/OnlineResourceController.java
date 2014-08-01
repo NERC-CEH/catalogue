@@ -136,14 +136,14 @@ public class OnlineResourceController {
     
     protected WmsCapabilities getWmsCapabilities(OnlineResource resource) {
         if(resource.getType().equals(Type.GET_CAPABILITIES)) {
-            return rest.getForEntity(resource.getUrl(), WmsCapabilities.class).getBody();
+            return rest.getForObject(resource.getUrl(), WmsCapabilities.class);
         }
         else {
             throw new NotAGetCapabilitiesResourceException("The specified online resource does not represent a get capabilities");
         }
     }
     
-    private void proxy(String url, String queryString, HttpServletResponse servletResponse) throws IOException {
+    protected void proxy(String url, String queryString, HttpServletResponse servletResponse) throws IOException {
         // The WMS Standard states that urls must end in either a ? or a &
         // If not, this method will create an invalid url
         HttpGet httpget = new HttpGet(url + Strings.nullToEmpty(queryString));
