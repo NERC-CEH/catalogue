@@ -106,6 +106,28 @@ BROWSERS.each do |browser|
       expect(inactive_dataset_facet.size).to eq(1)
     end
 
+    it "should have descriptions that are either short, or have been shortened" do
+      visit "/documents"
+      characterLimit = 300
+      descriptionSizes = all(".results-container .description")
+        .map{
+          |e|
+          description = e.text
+          endtext = description[description.length-3,description.length]
+          actualSize = description.length
+          if endtext == "..." then
+            endindex = description.rindex(" ")
+            actualSize = description[0,endindex].length
+         end
+         actualSize
+        }
+      maxDescriptionSize = descriptionSizes.max_by{
+        |e|
+        e
+      }
+      expect(maxDescriptionSize).to be < 301
+    end
+
   end
 
 end
