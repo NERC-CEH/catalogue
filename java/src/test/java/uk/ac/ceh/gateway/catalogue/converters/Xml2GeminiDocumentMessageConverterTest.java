@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty.Address;
@@ -822,5 +823,59 @@ public class Xml2GeminiDocumentMessageConverterTest {
 
         //Then
         assertThat("Spatial reference is completely missing", document.getSpatialReferenceSystem(), is(nullValue()));
+    }
+    
+    @Test
+    public void canReadOnlineResources() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("onlineResource.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+
+        //Then
+        List<OnlineResource> resources = document.getOnlineResources();
+        assertThat("Expected to find 2 online resources", resources.size(), is(2));
+        assertTrue("Expected to find land cover map resource", resources.contains(
+            new OnlineResource("http://www.ceh.ac.uk/LandCoverMap2007.html",
+                               "Essential technical details",
+                               "Link to further technical details about this data")
+        ));
+        assertTrue("Expected to find the country side survey resource", resources.contains(
+            new OnlineResource("http://www.countrysidesurvey.org.uk/",
+                               "Countryside Survey website",
+                               "Countryside Survey website")
+        ));
+    }
+    
+    @Test
+    public void noOnlineResources() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("noOnlineResource.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+
+        //Then
+        assertThat("Expected to find no online resources", document.getOnlineResources().size(), is(0));
+    }
+    
+    @Test
+    public void partialOnlineResource() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("partialOnlineResource.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+
+        //Then
+        List<OnlineResource> resources = document.getOnlineResources();
+        assertThat("Expected to find 1 online resources", resources.size(), is(1));
+        assertTrue("Expected to find the country side survey resource", resources.contains(
+            new OnlineResource("http://www.ceh.ac.uk/LandCoverMap2007.html","","")
+        ));
     }
 }

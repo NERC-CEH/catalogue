@@ -47,4 +47,6 @@
 
 <#include "_spatialReferenceSystem.html.tpl">
 
+<#include "_metadataDates.html.tpl">
+
 </@skeleton.master>
