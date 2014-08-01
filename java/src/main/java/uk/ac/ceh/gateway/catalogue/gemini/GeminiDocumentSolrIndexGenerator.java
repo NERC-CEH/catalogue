@@ -1,8 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGenerator;
@@ -85,7 +83,7 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
             }else{
                 toReturn = toBreak.substring(0,MAX_DESCRIPTION_CHARACTER_LENGTH);
             }
-            return toReturn + "... ";
+            return toReturn + "...";
         }
     }
 }
