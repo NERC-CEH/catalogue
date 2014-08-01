@@ -10,11 +10,11 @@ import org.junit.Test;
  * @author cjohn
  */
 public class HardcodedNamespaceResolverTest {
-    private HardcodedNamespaceResolver resolver;
+    private HardcodedGeminiNamespaceResolver resolver;
     
     @Before
     public void createHardcodedNamespaceResolver() {
-        resolver = new HardcodedNamespaceResolver();
+        resolver = new HardcodedGeminiNamespaceResolver();
     }
     
     @Test
