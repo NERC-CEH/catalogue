@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import java.io.File;
 import java.io.IOException;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +37,11 @@ public class ApplicationConfig {
     @Bean
     public EventBus communicationBus() {
         return new EventBus();
+    }
+    
+    @Bean
+    public CloseableHttpClient httpClient() {
+        return HttpClients.createDefault();
     }
     
     @Bean
