@@ -30,6 +30,7 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.IllegalOgcRequestTypeException;
 import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
 import uk.ac.ceh.gateway.catalogue.model.NotAGetCapabilitiesResourceException;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
@@ -180,5 +181,76 @@ public class OnlineResourceControllerTest {
         
         //Then
         verify(controller).proxyDirectServiceRequest("12", file, index, type, request, response);
+    }
+    
+    @Test
+    public void checkThatWMSRequestIsProxiedToService() throws IOException, UnknownContentTypeException {
+        //Given
+        String revision = "myrevision";
+        String file = "metadataid";
+        int index = 2;
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getQueryString()).thenReturn("My query string");
+        
+        WmsCapabilities capabilities = mock(WmsCapabilities.class);
+        when(capabilities.getDirectMap()).thenReturn("url to wms");
+        
+        OnlineResource onlineResource = new OnlineResource("url", "name", "description");
+        doReturn(onlineResource).when(controller).getOnlineResource(file, revision, index);
+        doReturn(capabilities).when(controller).getWmsCapabilities(onlineResource);
+        doNothing().when(controller).proxy(any(String.class), any(String.class), eq(response));
+        
+        //When
+        controller.proxyDirectServiceRequest(revision, file, index, "wms", request, response);
+        
+        //Then
+        verify(controller).proxy("url to wms", "My query string", response);
+    }
+    
+    @Test
+    public void checkThatFeatureInfoIsProxiedToService() throws IOException, UnknownContentTypeException {
+        //Given
+        String revision = "myrevision";
+        String file = "metadataid";
+        int index = 20;
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getQueryString()).thenReturn("My query string");
+        
+        WmsCapabilities capabilities = mock(WmsCapabilities.class);
+        when(capabilities.getDirectFeatureInfo()).thenReturn("url to feature");
+        
+        OnlineResource onlineResource = new OnlineResource("url", "name", "description");
+        doReturn(onlineResource).when(controller).getOnlineResource(file, revision, index);
+        doReturn(capabilities).when(controller).getWmsCapabilities(onlineResource);
+        doNothing().when(controller).proxy(any(String.class), any(String.class), eq(response));
+        
+        //When
+        controller.proxyDirectServiceRequest(revision, file, index, "feature", request, response);
+        
+        //Then
+        verify(controller).proxy("url to feature", "My query string", response);
+    }
+    
+    @Test(expected=IllegalOgcRequestTypeException.class)
+    public void checkThatRandomTypeCannotBeProxied() throws IOException, UnknownContentTypeException {
+        //Given
+        String revision = "myrevision";
+        String file = "metadataid";
+        int index = 4;
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        
+        WmsCapabilities capabilities = mock(WmsCapabilities.class);
+        OnlineResource onlineResource = new OnlineResource("url", "name", "description");
+        doReturn(onlineResource).when(controller).getOnlineResource(file, revision, index);
+        doReturn(capabilities).when(controller).getWmsCapabilities(onlineResource);
+        
+        //When
+        controller.proxyDirectServiceRequest(revision, file, index, "random", request, response);
+        
+        //Then
+        fail("Didn't expect to get this far. Should have failed with exception");
     }
 }
