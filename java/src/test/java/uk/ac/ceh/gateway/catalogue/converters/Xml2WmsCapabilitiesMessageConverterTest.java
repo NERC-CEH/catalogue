@@ -12,6 +12,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.springframework.http.HttpInputMessage;
+import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 
 /**
@@ -38,7 +39,7 @@ public class Xml2WmsCapabilitiesMessageConverterTest {
         //Then
         List<String> layers = capabilities.getLayers()
                                           .stream()
-                                          .map((l) -> l.getName())
+                                          .map(Layer::getName)
                                           .collect(Collectors.toList());
         
         assertThat("Expected 3 layers", layers.size(), equalTo(3));
