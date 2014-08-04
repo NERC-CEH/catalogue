@@ -12,11 +12,11 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Answers;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
@@ -30,11 +30,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource;
+import static uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource.Type.OTHER;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.IllegalOgcRequestTypeException;
 import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
@@ -168,6 +170,48 @@ public class OnlineResourceControllerTest {
         verify(controller).processOrRedirectToOnlineResource("12", file, index);
     }
     
+    @Test
+    public void checkThatGetCapabilitesResourceIsProcessed() throws IOException, UnknownContentTypeException {
+        //Given
+        String file = "file";
+        String revision = "revision";
+        int index = 10;
+        
+        GeminiDocument geminiDocument = mock(GeminiDocument.class);
+        when(documentBundleReader.readBundle(file, revision)).thenReturn(geminiDocument);
+        
+        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
+        
+        WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
+        doReturn(wmsCapabilities).when(controller).getWmsCapabilities(onlineResource);
+        
+        //When
+        Object result = controller.processOrRedirectToOnlineResource(revision, file, index);
+        
+        //Then
+        assertEquals("Expected to the mocked wms capabilities", result, wmsCapabilities);
+    }
+    
+    @Test
+    public void checkThatOtherResourceIsRedirectedTo() throws IOException, UnknownContentTypeException {
+        //Given
+        String file = "file";
+        String revision = "revision";
+        int index = 10;
+        
+        GeminiDocument geminiDocument = mock(GeminiDocument.class);
+        when(documentBundleReader.readBundle(file, revision)).thenReturn(geminiDocument);
+        
+        OnlineResource onlineResource = new OnlineResource("random url", "name", "description");
+        doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
+        
+        //When
+        RedirectView result = (RedirectView)controller.processOrRedirectToOnlineResource(revision, file, index);
+        
+        //Then
+        assertEquals("Expected to find a redirect view with the correct url", "random url", result.getUrl());
+    }
     @Test
     public void checkThatProxyDirectServiceRequestDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException {
         //Given
