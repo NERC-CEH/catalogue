@@ -4,18 +4,24 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Answers;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -252,5 +258,30 @@ public class OnlineResourceControllerTest {
         
         //Then
         fail("Didn't expect to get this far. Should have failed with exception");
+    }
+    
+    @Test
+    public void checkThatProxyingCopiesData() throws IOException {
+        //Given
+        String url = "url";
+        String query = "query";
+        HttpServletResponse servletResponse = mock(HttpServletResponse.class);
+        
+        ServletOutputStream outputStream = mock(ServletOutputStream.class);
+        when(servletResponse.getOutputStream()).thenReturn(outputStream);
+        CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+        
+        HttpEntity entity = mock(HttpEntity.class, RETURNS_DEEP_STUBS);
+        when(entity.getContentType().getValue()).thenReturn("content-type");
+        
+        when(response.getEntity()).thenReturn(entity);
+        when(httpClient.execute(any(HttpGet.class))).thenReturn(response);
+        
+        //When
+        controller.proxy(url, query, servletResponse);
+        
+        //Then
+        verify(entity).writeTo(outputStream);
+        verify(servletResponse).setContentType("content-type");
     }
 }
