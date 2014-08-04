@@ -104,6 +104,8 @@ public class SearchController {
     private SolrQuery getQuery(CatalogueUser user, String term, int start, int rows, List<String> facetFilters){
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
+                .setParam("defType", "edismax")
+                .setParam("qf", "title^5 description")
                 .setStart(start)
                 .setRows(rows);
         setRecordVisibility(query, user);
