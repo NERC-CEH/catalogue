@@ -66,7 +66,7 @@
         </div>
         <div class="col-md-10">
           <a href="/documents/${result.identifier}" class="search-result-title">${result.title}</a>
-            ${result.shortenedDescription}
+            <span class="description">${result.shortenedDescription}</span>
         </div>
       </div>
     </#list>
