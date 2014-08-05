@@ -4,12 +4,10 @@
   <#elseif resourceType.value == 'service'>
     <#assign documentLinksTitle="Associated Datasets">
   </#if>
-
-<h3>${documentLinksTitle}</h3>
-
-<ul class="list-inline">
-  <#list documentLinks as link>
-    <li><a href="${link.href}">${link.title}</a></li>
-  </#list>
-</ul>
+  <tr>
+    <td>${documentLinksTitle}</td>
+    <td>
+      <#list documentLinks as link><#if link_index gt 0>,</#if> <a href="${link.href}">${link.title}</a></#list>
+    </td>
+  </tr>
 </#if>

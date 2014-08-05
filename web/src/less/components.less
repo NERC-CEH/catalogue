@@ -1,0 +1,32 @@
+@import "bootstrap";
+
+// 'Get The Data' and 'Citation' panels
+#document-ordering, #document-citation {
+
+}
+
+.blocks {
+  .make-row();
+  .block {
+    .make-sm-column(3);
+    img {
+      .img-responsive;
+      .img-rounded;
+    }
+  }
+}
+
+// 'Contacts' and 'Additional Information' tables
+#document-contacts, #document-additional-info {
+  .table-responsive;
+  table {
+    .table;
+    .table-hover;
+  }
+}
+
+// resourceType is historicArchive
+#not-current {
+  .alert;
+  .alert-info;
+}

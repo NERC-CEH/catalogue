@@ -1,9 +1,9 @@
 <#if otherCitationDetails?has_content>
-<div class="panel panel-default">
-    <div class="panel-heading"><p class="panel-title">Cite this data</p></div>
-    <p id="citation" class="panel-body" property="dc:bibliographicCitation">
+<div id="document-citation" class="panel panel-default">
+    <div class="panel-heading"><h2 class="panel-title">Cite this data</h2></div>
+    <div id="citation" class="panel-body" property="dc:bibliographicCitation">
     	${otherCitationDetails}
-    </p>
+    </div>
     <#if id?has_content>
     <div class="panel-footer">
 	    <a href="http://data.datacite.org/application/x-bibtex/10.5285/${id}">BibTeX</a>

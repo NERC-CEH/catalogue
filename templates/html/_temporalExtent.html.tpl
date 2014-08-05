@@ -1,14 +1,18 @@
 <#if temporalExtent?has_content>
-<h3>Temporal Extent</h3>
-  <div id="temporal-extent" property="dc:temporal">
+<tr>
+  <td>Temporal Extent</td>
+  <td id="temporal-extent" property="dc:temporal">
     <#list temporalExtent as extent>
-    <#setting date_format = 'yyyy-MM-dd'>
-	  <#if extent.begin?has_content>
-	  <p class="extentBegin">Begin position: ${extent.begin?date}</p>
-	  </#if>
-	  <#if extent.end?has_content>
-	  <p class="extentEnd">End position: ${extent.end?date}</p>
-	  </#if>
+      <#if extent_index gt 0>, </#if>
+      <#setting date_format = 'yyyy-MM-dd'>
+      <#if extent.begin?has_content>
+        <span class="extentBegin">${extent.begin?date}</span>
+      </#if>
+      to
+      <#if extent.end?has_content>
+        <span class="extentEnd">${extent.end?date}</span>
+      </#if>
     </#list>
-  </div>
+  </td>
+</tr>
 </#if>

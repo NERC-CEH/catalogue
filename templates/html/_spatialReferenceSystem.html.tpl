@@ -1,11 +1,6 @@
-
 <#if spatialReferenceSystem?? && spatialReferenceSystem.title?? && spatialReferenceSystem.title?has_content>
-  <div class="row">
-    <div class="col-md-12">
-			<div class="spatial-reference-system">
-			  <h3>Spatial Reference System</h3>
-			  <p>${spatialReferenceSystem.title}</p>
-			</div>
-    </div>
-  </div>
+  <tr>
+    <td>Spatial Reference System</td>
+    <td id="spatial-reference-system">${spatialReferenceSystem.title}</td>
+  </tr>
 </#if>

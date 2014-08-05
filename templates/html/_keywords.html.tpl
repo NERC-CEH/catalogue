@@ -1,22 +1,22 @@
 <#if topicCategories?has_content>
-<h3>Topic Categories</h3>
-<div class="document-categories">
-  <#list topicCategories as topics>
-    <span class="label label-default">${topics}</span>
-  </#list>
-</div>
+<tr>
+  <td>Topic Categories</td>
+  <td id="topic-categories">
+    <#list topicCategories as topic><#if topic_index gt 0>,</#if> ${topic}</#list>
+  </td>
+</tr>
 </#if>
 <#if descriptiveKeywords?has_content>
-<h3>Keywords</h3>
-<div id="document-keywords" property="dc:subject" class="document-keywords">
-  <#list descriptiveKeywords as keywordsList>
-    <#list keywordsList.keywords as keyword>
-      <#if keyword.URI?has_content>
-        <a class="btn btn-default btn-xs" href="${keyword.URI}" target="_blank">${keyword.value} <span  class="glyphicon glyphicon-link"></span></a>
+  <#list descriptiveKeywords?sort_by("type") as descriptiveKeyword>
+    <tr>
+      <#if (descriptiveKeyword.type.value)??>
+        <td>${descriptiveKeyword.type.value?cap_first} Keywords</td>
       <#else>
-        <span class="label label-default">${keyword.value}</span>
+        <td>Keywords</td>
       </#if>
-    </#list>
-  </#list>
-</div>
+      <td id="descriptive-keywords" property="dc:subject">
+          <#list descriptiveKeyword.keywords as keyword><#if keyword_index gt 0>,</#if> ${keyword.value}</#list>
+      </td>
+    </tr>
+</#list>
 </#if>
