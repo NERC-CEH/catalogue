@@ -128,6 +128,16 @@ BROWSERS.each do |browser|
       expect(maxDescriptionSize).to be < 301
     end
 
+    it "should find a search term that only occurs in the description" do
+      visit "/documents?term=subcontract"
+
+      result = all('.search-result-title')
+        .select{ |e| e.text == 'UK acid gases and aerosols measurements' }
+        .map{ |e| e.text}
+
+      expect(result).to match_array ['UK acid gases and aerosols measurements']
+    end
+
   end
 
 end
