@@ -55,7 +55,7 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
     @Data
     @Accessors(chain=true)
     public static class GeminiDocumentSolrIndex {
-        protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 300;
+        protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 680;
         private @Field String identifier;
         private @Field String title;
         private @Field String description;

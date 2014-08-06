@@ -119,7 +119,7 @@ public class GeminiDocumentSolrIndexGeneratorTest {
     public void checkThatLongDescriptionWithSpacesIsShortened(){
         //Given
         int maxDescriptionLength = GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
-        String description = "Once upon a time, there was a metadata description that had to be more than " + maxDescriptionLength + " characters in length.  It started its life at only 30 characters long, but it ate its porridge every morning and soon started to grow.  After a month it was 241 characters in length.  At this stage Description Growth Hormone (DGH) really kicked in and in now time it was all grown up happily exceeded the required number of characters and ready to be used for junit testing.";
+        String description = "Once_upon_a_time,_there_was_a_metadata_description_that_had_to_be_more_than_" + maxDescriptionLength + "_characters_in_length.__It_started_its_life_at_only_30_characters_long,_but_it_ate_its_porridge_every_morning_and_soon_started_to_grow.__After_a_month_it_was_241_characters_in_length.__At_this_stage_Description_Growth_Hormone_(DGH)_really_kicked_in_and_in_now_time_it_was_all_grown_up_happily_exceeded_the_required_number_of_characters_and_ready_to_be_used_for_junit_testing._And_here_is_more_guff._And_here_is_more_guff_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more.";
         GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex document = new GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex();
         document.setDescription(description);
         
@@ -132,10 +132,10 @@ public class GeminiDocumentSolrIndexGeneratorTest {
     public void checkThatLongDescriptionWithoutSpacesIsShortened(){
         //Given
         int maxDescriptionLength = GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
-        String description = "Once_upon_a_time,_there_was_a_metadata_description_that_had_to_be_more_than_" + maxDescriptionLength + "_characters_in_length.__It_started_its_life_at_only_30_characters_long,_but_it_ate_its_porridge_every_morning_and_soon_started_to_grow.__After_a_month_it_was_241_characters_in_length.__At_this_stage_Description_Growth_Hormone_(DGH)_really_kicked_in_and_in_now_time_it_was_all_grown_up_happily_exceeded_the_required_number_of_characters_and_ready_to_be_used_for_junit_testing.";
+        String description = "Once_upon_a_time,_there_was_a_metadata_description_that_had_to_be_more_than_" + maxDescriptionLength + "_characters_in_length.__It_started_its_life_at_only_30_characters_long,_but_it_ate_its_porridge_every_morning_and_soon_started_to_grow.__After_a_month_it_was_241_characters_in_length.__At_this_stage_Description_Growth_Hormone_(DGH)_really_kicked_in_and_in_now_time_it_was_all_grown_up_happily_exceeded_the_required_number_of_characters_and_ready_to_be_used_for_junit_testing._And_here_is_more_guff._And_here_is_more_guff_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more.";
         GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex document = new GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex();
         document.setDescription(description);
-        
+
         //Then
         assertThat("Expected description to be longer than the threshold length of " + maxDescriptionLength, maxDescriptionLength, lessThan(description.length()));
         assertThat("Shortened description is shorter than original description", description.length(), greaterThan(document.getShortenedDescription().length()));
