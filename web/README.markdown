@@ -5,11 +5,11 @@ This is the Web section to the CEH Catalogue. It is where we manage *JavaScript/
 
 Building this section of the project is handled with [Grunt](http://gruntjs.com/):
 
-- To perform a complete build:
+To perform a complete build
 
     grunt build
 
-- To Start developing:
+To Start developing
 
     grunt develop
 
