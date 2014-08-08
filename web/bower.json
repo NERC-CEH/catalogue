@@ -4,6 +4,13 @@
   "dependencies": {
     "bootstrap": "3.2.0",
     "respond": "1.3.0",
-    "jquery": "1.10.2"
+    "jquery": "1.10.2",
+    "openlayers": "2.13.1",
+    "coffee-script": "1.7.1",
+    "requirejs": "2.1.14",
+    "backbone-amd": "1.1.0",
+    "underscore-amd": "1.5.2",
+    "requirejs-text": "2.0.12",
+    "require-cs": "0.5.0"
   }
 }

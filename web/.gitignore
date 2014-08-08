@@ -1,0 +1,2 @@
+# Ignore the custom build of the openlayers file
+src/vendor/OpenLayers-custom.js
