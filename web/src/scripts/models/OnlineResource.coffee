@@ -1,9 +1,10 @@
 define [
   'underscore'
   'backbone'
-], (_, Backbone) -> Backbone.Model.extend
+  'cs!collections/Layers'
+], (_, Backbone, Layers) -> Backbone.Model.extend
 
-  url: -> '/documents/#{@metadataId}/onlineResources/#{@id}'
+  url: -> "/documents/#{@metadataId}/onlineResources/#{@id}"
 
   initialize:->
     #Grab the metadata id off the metadata document. Store for easy access
@@ -16,7 +17,8 @@ define [
   isWms:-> @get('type') is 'GET_CAPABILITIES'
 
   ###
-  Generate a url to the wms endpoint for this online resource. The url will
-  only be valid if this online resource #isWms
+  Generate a Layers collection for each of the layers which this OnlineResource
+  can render
   ###
-  getWms:-> "#{@url()}/wms"
+  getLayers:-> _.map @attributes.layers, (layer) => 
+    _.extend layer, onlineResource: @

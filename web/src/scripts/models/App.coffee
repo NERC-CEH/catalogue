@@ -1,5 +1,10 @@
 define [
-  'underscore',
+  'underscore'
   'backbone'
-], (_, Backbone) -> Backbone.Model.extend
-  initialize: () ->
+  'cs!collections/Layers'
+], (_, Backbone, Layers) -> Backbone.Model.extend
+
+  defaults:
+    layers: new Layers
+
+  getLayers: -> @get 'layers'

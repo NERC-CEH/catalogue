@@ -29,7 +29,10 @@ require.config({
   waitSeconds:1000
 });
 
-require(['cs!models/App', 'cs!views/AppView', 'cs!models/MetadataDocument'], function(App, AppView, MetadataDocument){
+require(['cs!models/App', 'cs!views/AppView', 'cs!routers/LayersRouter'], function(App, AppView, LayersRouter){
   app = new App();
   view = new AppView({model : app});
+
+  router = new LayersRouter({model: app});
+  Backbone.history.start();
 });
