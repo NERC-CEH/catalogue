@@ -26,7 +26,7 @@ require.config({
     'backbone': '../vendor/backbone-amd/backbone',
     'openlayers': '../vendor/OpenLayers-custom',
     'proj4js' : '../vendor/proj4js/lib/proj4js-combined',
-    'jquery.ui': '../vendor/jquery-ui/ui'
+    'jquery-ui': '../vendor/jquery-ui/ui'
   },
   waitSeconds:1000
 });

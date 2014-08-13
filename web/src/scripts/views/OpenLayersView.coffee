@@ -16,6 +16,7 @@ define [
     @map.zoomToExtent new OpenLayers.Bounds(-1885854.36, 6623727.12, 1245006.31, 7966572.83)
 
     @listenTo @model.getLayers(), "add", @addLayer
+    @listenTo @model.getLayers(), "position", @positionLayer
     @listenTo @model.getLayers(), "reset", @resetLayers
     @listenTo @model.getLayers(), "remove", @removeLayer
 
@@ -28,6 +29,13 @@ define [
     @map.addLayer layer._openlayersWMS = OpenLayersLayerFactory.createLayer layer
     @map.setLayerIndex layer._openlayersWMS, @map.getNumLayers() - 1
     
+  ###
+  Listens to when layers have been repositioned. Notify the OpenLayers Map and set the 
+  new index for that layer
+  ###
+  positionLayer: (layer, collection, newPosition)->
+    @map.setLayerIndex layer._openlayersWMS, newPosition + 1
+
   ###
   Remove the wms layer associated with the given layer
   ###

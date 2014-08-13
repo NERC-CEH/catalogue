@@ -3,20 +3,21 @@ define [
   'underscore'
   'backbone'
   'cs!views/LayerControlsView'
+  'jquery-ui/sortable'
 ], ($, _, Backbone, LayerControlsView) -> Backbone.View.extend
 
   initialize: ->
     @listenTo @collection, 'add', @addLayer
     @listenTo @collection, 'remove', @removeLayer
     @listenTo @collection, 'reset', @resetLayers
-    ###
+    
     @$el.sortable
       start: (event, ui) => 
         @_oldPosition = (@collection.length - 1) - ui.item.index()
       update: (event, ui) =>
         newPosition = (@collection.length - 1) - ui.item.index()
         @collection.position @_oldPosition, newPosition
-    ###
+
   addLayer: (layer) -> 
     layer._layerView = new LayerControlsView
       model: layer

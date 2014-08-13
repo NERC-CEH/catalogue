@@ -1,7 +1,7 @@
 define [
   'backbone'
   'tpl!templates/LayerControls.tpl'
-  'jquery.ui/slider'
+  'jquery-ui/slider'
 ], (Backbone, template) -> Backbone.View.extend
 
   events:
