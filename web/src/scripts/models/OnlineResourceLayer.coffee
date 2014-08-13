@@ -9,6 +9,8 @@ define [
   initialize: (attr, options) ->
     @onlineResource = attr.onlineResource
 
+    Layer.prototype.initialize.call this, arguments #Initialize parent
+
   ###
   Returns the name of the layer as should be displayed in the legend
   ###

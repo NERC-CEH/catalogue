@@ -3,6 +3,9 @@ define [
   'backbone'
 ], (_, Backbone) -> Backbone.Model.extend
 
+  initialize: ->
+    @on 'change:opacity', -> @set 'visibility', true
+
   ###
   Get the current opacity value between 0-1 for this layer
   ###

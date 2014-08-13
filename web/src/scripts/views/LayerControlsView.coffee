@@ -18,7 +18,7 @@ define [
   Updates the toggle based upon the state of the visibility property
   ###
   updateToggle: ->
-    @$("input.visibility").prop "checked", model.get "visibility"
+    @$("input.visibility").prop "checked", @model.get "visibility"
 
   ###
   Updates the visibility property on the model based upon the state of the of 
