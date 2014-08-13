@@ -3,8 +3,9 @@ define [
   'cs!models/Layer'
 ], (_, Layer) -> Layer.extend
   defaults:
-    opacity: 1
-    visibility: 1
+    opacity: 0.5
+    visibility: false
+    infoVisible: false
 
   initialize: (attr, options) ->
     @onlineResource = attr.onlineResource

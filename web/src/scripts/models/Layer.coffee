@@ -32,3 +32,16 @@ define [
   wms request
   ###
   getLayer:-> @get "layer"
+
+  ###
+  Sets the info visibility for this layer to the value specified. If we are 
+  going to show then hide any other layers info in the collection
+  ###
+  setInfoVisibility: (visible)->
+    do @collection.hideLayerInfo if visible
+    @set 'infoVisible', visible
+
+  ###
+  Returns the address to an image which represents the legend of this layer
+  ###
+  getLegend: -> "#{@getWMS()}?REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=#{@getLayer()}&SERVICE=WMS&"
