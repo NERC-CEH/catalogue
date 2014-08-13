@@ -2,7 +2,8 @@ define [
   'jquery'
   'backbone'
   'cs!views/OpenLayersView'
-], ($, Backbone, OpenLayersView) -> Backbone.View.extend
+  'cs!views/LayersControlPanelView'
+], ($, Backbone, OpenLayersView, LayersControlPanelView) -> Backbone.View.extend
   el: '#mapviewer'
 
   initialize: ->
@@ -12,3 +13,7 @@ define [
     @openlayersView = new OpenLayersView
       model: @model
       el: @$('.openlayers')
+
+    @layersView = new LayersControlPanelView
+      collection: @model.getLayers()
+      el: @$('.layers .list-group')

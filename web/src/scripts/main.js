@@ -12,19 +12,21 @@ means that you are running in development mode. You will want to call grunt
 default to create an optimized version of this file.
 */
 require.config({
-  stubModules: ['cs'],
+  stubModules: ['cs', 'tpl'],
   shim: {
     'openlayers': { exports: 'OpenLayers'}
   },
   paths: {
     'cs' : '../vendor/require-cs/cs',
     'coffee-script': '../vendor/coffee-script/extras/coffee-script',
+    'tpl' : '../vendor/requirejs-tpl/tpl',
     'text' : '../vendor/requirejs-text/text',
     'jquery' : '../vendor/jquery/jquery',
     'underscore': '../vendor/underscore-amd/underscore',
     'backbone': '../vendor/backbone-amd/backbone',
     'openlayers': '../vendor/OpenLayers-custom',
-    'proj4js' : '../vendor/proj4js/lib/proj4js-combined'
+    'proj4js' : '../vendor/proj4js/lib/proj4js-combined',
+    'jquery.ui': '../vendor/jquery-ui/ui'
   },
   waitSeconds:1000
 });

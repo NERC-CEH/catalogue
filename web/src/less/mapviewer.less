@@ -1,5 +1,6 @@
 // This is the stylesheet for the mapviewer. Hopefully we can add the majority
 // of this to the general stylesheet for ceh applications
+@import "../vendor/jquery-ui/themes/smoothness/jquery-ui.css";
 
 .openlayers {
   font-size: smaller;
@@ -7,4 +8,41 @@
     left: 10px;
     bottom: 10px;
   }
+}
+
+.layers {
+  @layerControlWidth: 250px;
+
+  position: absolute;
+  display:block;
+  top:93px;
+  left:0;
+  bottom:0;
+  width: @layerControlWidth;
+
+  background-color: rgba(0,0,0,0.3);
+  z-index:1000;
+
+  li { 
+    @horizontalPadding: 15px;
+
+    min-height: 55px; 
+    .info, .visibility { float: right; }
+    .slider, .title {
+      float: left;
+      width: @layerControlWidth - (@horizontalPadding*3) - 13px;
+    }
+
+    // Style the slider to a low profile view
+    .slider { 
+      margin-top: 7px; 
+      height: 5px;
+      .ui-slider-handle { 
+        @handleWidth: 6px;
+        top: -7px; 
+        width: @handleWidth; 
+        margin-left: -@handleWidth/2;
+      }
+    }
+  }  
 }
