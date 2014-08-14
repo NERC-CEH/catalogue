@@ -7,7 +7,7 @@ BROWSERS.each do |browser|
       end
   end
 
-  describe "Search page in #{browser}", :type => :feature, :driver => browser do
+   describe "Search page in #{browser}", :type => :feature, :driver => browser do
     it "should find land cover map 2007 as top result" do
       visit "/documents"
 
@@ -38,7 +38,7 @@ BROWSERS.each do |browser|
 
       perform_search 'Land Cover Map 2007 vector'
 
-      expect(first('.result')).to have_selector 'span.label-dataset'
+      expect(first('.result')).to have_selector '.label-dataset'
     end
 
     it "should not find the facet 'application'" do
@@ -68,7 +68,7 @@ BROWSERS.each do |browser|
     it "should have search results when no search term" do
       visit "/documents"
 
-      expect(all('.search-result-title')).not_to be_empty
+      expect(all('.result .title')).not_to be_empty
     end
 
     it "should have less results when a facetted search is performed" do
@@ -108,7 +108,7 @@ BROWSERS.each do |browser|
 
     it "should have descriptions that are either short, or have been shortened" do
       visit "/documents"
-      characterLimit = 300
+      characterLimit = 530
       descriptionSizes = all(".results-container .description")
         .map{
           |e|
@@ -125,13 +125,13 @@ BROWSERS.each do |browser|
         |e|
         e
       }
-      expect(maxDescriptionSize).to be < 301
+      expect(maxDescriptionSize).to be < (characterLimit + 1)
     end
 
     it "should find a search term that only occurs in the description" do
       visit "/documents?term=subcontract"
 
-      result = all('.search-result-title')
+      result = all('.result .title')
         .select{ |e| e.text == 'UK acid gases and aerosols measurements' }
         .map{ |e| e.text}
 
