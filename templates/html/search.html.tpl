@@ -53,23 +53,18 @@
   </div>
 
   <div class="col-md-9 results-container">
-    <div class="row">
-      <div class="col-md-12">
-        <span id="num-records">${header.numFound}</span> records found
-      </div>
-    </div>
-  
+
+  <div class="search-results-heading">
+    <span id="num-records">${header.numFound}</span> records found
+  </div>
+
     <#list results as result>
-      <div class="result row">
-        <div class="col-md-2">
-          <span class="label label-${result.resourceType}">${result.resourceType}</span>
-        </div>
-        <div class="col-md-10">
-          <a href="/documents/${result.identifier}" class="search-result-title">${result.title}</a>
-            <span class="description">${result.shortenedDescription}</span>
-        </div>
+      <div class="result">
+        <a href="/documents/${result.identifier}" class="title">${result.title}</a>
+        <div class="description">${result.shortenedDescription}</div>
+        <div class="resource-type label label-${result.resourceType}">${result.resourceType}</div>
       </div>
-    </#list>
+     </#list>
   </div>
 
 </div>
