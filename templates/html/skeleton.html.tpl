@@ -1,5 +1,4 @@
-<#macro master title rdfa=false><#compress>
-<!DOCTYPE html>
+<#macro master title><#compress><!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -12,7 +11,7 @@
     <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body <#if rdfa>prefix="dc: http://purl.org/dc/terms/ dcat: http://www.w3.org/ns/dcat# foaf: http://xmlns.com/foaf/0.1/"</#if>>
+  <body>
     <div class="container">
       <div class="navbar navbar-default navbar-static-top">
         <div class="navbar-header">
@@ -45,12 +44,14 @@
         </div>
       </div>
     </div>
-    <div class="container">
-      <#nested>
-    </div>
-    <script language="javascript" type="text/javascript" src="/static/vendor/jquery/jquery.min.js"></script>
-    <script language="javascript" type="text/javascript" src="/static/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <#nested>
+    <script type="text/javascript" src="/static/vendor/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/vendor/zeroclipboard/dist/ZeroClipboard.js"></script>
+    <script type="text/javascript">
+      ZeroClipboard.config({swfPath: "/static/vendor/zeroclipboard/dist/ZeroClipboard.swf"});
+      var client = new ZeroClipboard($(".clipboard"));
+    </script>
 
   </body>
-</html>
-</#compress></#macro>
+</html></#compress></#macro>

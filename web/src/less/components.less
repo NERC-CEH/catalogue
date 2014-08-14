@@ -1,8 +1,53 @@
 @import "bootstrap";
+@import "_links";
 
-// 'Get The Data' and 'Citation' panels
-#document-ordering, #document-citation {
+#document-description {
+  font-size: 16px;
+  line-height: 1.6;
+  word-spacing: 0.3em;
+}
 
+#document-ordering {
+  .default-link;
+  #ordering-url {
+    .btn-primary;
+  }
+}
+
+.zero-clipboard {
+  position: relative;
+  .clipboard {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    display: block;
+    padding: 5px 8px;
+    border: 1px solid @panel-default-border;
+    border-radius: 0 4px 0 4px;
+  }
+  .zeroclipboard-is-hover {
+    color: @btn-primary-color;
+    background-color: @btn-primary-bg;
+    cursor: pointer;
+  }
+}
+
+#citation {
+  .panel;
+  .panel-default;
+  #citation-text {
+    .panel-body;
+    padding: 30px 15px 15px 15px;
+  }
+}
+
+#citation-links {
+  &:extend(.btn-group);
+  a {
+    .btn;
+    .btn-default;
+  }
 }
 
 .blocks {
@@ -11,17 +56,34 @@
     .make-sm-column(3);
     img {
       .img-responsive;
-      .img-rounded;
+      .thumbnail;
     }
   }
 }
 
-// 'Contacts' and 'Additional Information' tables
-#document-contacts, #document-additional-info {
-  .table-responsive;
+#document-contacts {
+  .contact {
+    .panel;
+    .panel-default;
+    .contact-text {
+      background-color: @gray-lighter;
+      .panel-body;
+      .default-link;
+      address {
+        margin-top: 20px;
+      }
+    }
+  }
+}
+
+// 'Additional Information' tables
+#document-additional-info {
   table {
     .table;
-    .table-hover;
+  }
+  .default-link;
+  @media(min-width: @screen-sm-min) {
+    .inline-link;
   }
 }
 

@@ -2,7 +2,9 @@
 <tr>
   <td>Topic Categories</td>
   <td id="topic-categories">
-    <#list topicCategories as topic><#if topic_index gt 0>,</#if> ${topic}</#list>
+    <#list topicCategories as topic>
+      <span property="dc:subject">${topic}</span><#if topic_has_next>, </#if>
+    </#list>
   </td>
 </tr>
 </#if>
@@ -14,8 +16,10 @@
       <#else>
         <td>Keywords</td>
       </#if>
-      <td id="descriptive-keywords" property="dc:subject">
-          <#list descriptiveKeyword.keywords as keyword><#if keyword_index gt 0>,</#if> ${keyword.value}</#list>
+      <td class="descriptive-keywords">
+          <#list descriptiveKeyword.keywords as keyword>
+            <span property="dc:subject">${keyword.value}</span><#if keyword_has_next>, </#if>
+          </#list>
       </td>
     </tr>
 </#list>
