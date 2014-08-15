@@ -1,6 +1,6 @@
 <#if resourceStatus?has_content>
   <tr>
-    <td>Resource Status</td>
+    <th scope="row">Resource Status</th>
 	  <td id="resource-status">${resourceStatus}</td>
   </tr>
 </#if>

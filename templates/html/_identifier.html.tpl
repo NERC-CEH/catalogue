@@ -1,6 +1,6 @@
 <#if id?has_content>
   <tr>
-    <td>File Identifier</td>
+    <th scope="row">File Identifier</th>
     <td id="file-identifier" property="dc:identifier">${id}</td>
   </tr>
 </#if>

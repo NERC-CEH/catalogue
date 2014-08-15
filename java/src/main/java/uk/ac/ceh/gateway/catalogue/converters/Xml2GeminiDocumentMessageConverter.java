@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.NodeListConverter;
 import java.io.IOException;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
@@ -23,7 +24,7 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.BoundingBoxesCo
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DatasetReferenceDatesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.NodeListConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.OnlineResourceConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
@@ -52,12 +53,13 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final TemporalExtentConverter temporalExtentConverter;
     private final SpatialReferenceSystemConverter spatialReferenceSystem;
     private final DatasetReferenceDatesConverter datasetReferenceDatesConverter;
+    private final OnlineResourceConverter onlineResourceConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
         
         xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(new HardcodedNamespaceResolver());
+        xpath.setNamespaceContext(new HardcodedGeminiNamespaceResolver());
         this.id = xpath.compile(XPaths.ID);
         this.title = xpath.compile(XPaths.TITLE);
         this.description = xpath.compile(XPaths.DESCRIPTION);
@@ -80,6 +82,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.spatialReferenceSystem = new SpatialReferenceSystemConverter(xpath);
         this.datasetReferenceDatesConverter = new DatasetReferenceDatesConverter(xpath);
         this.metadataDate = xpath.compile(XPaths.METADATA_DATE);
+        this.onlineResourceConverter = new OnlineResourceConverter(xpath);
     }
     
     @Override
@@ -131,6 +134,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setSpatialReferenceSystem(spatialReferenceSystem.convert(document));
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
             toReturn.setMetadataDate(LocalDateFactory.parse(metadataDate.evaluate(document)));
+            toReturn.setOnlineResources(onlineResourceConverter.convert(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
@@ -152,7 +156,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         return false; // I can never write
     }
     
-    private List<String> getListOfStrings(Document document, XPathExpression expression) throws XPathExpressionException{
+    public static List<String> getListOfStrings(Document document, XPathExpression expression) throws XPathExpressionException{
         return NodeListConverter.getListOfStrings((NodeList) expression.evaluate(document, XPathConstants.NODESET));
-    }   
+    }
 }

@@ -8,9 +8,9 @@ import javax.xml.namespace.NamespaceContext;
  * Hardcode the namespaces you need
  * 
  * @see http://www.ibm.com/developerworks/xml/library/x-nmspccontext/index.html
- * @author RJSC
+ * @author cjohn
  */
-public class HardcodedNamespaceResolver implements NamespaceContext {
+public class HardcodedOGCNamespaceResolver implements NamespaceContext {
 
     @Override
     public String getNamespaceURI(String prefix) {
@@ -19,12 +19,7 @@ public class HardcodedNamespaceResolver implements NamespaceContext {
         }
         
         switch(prefix) {
-            case "gmd": return "http://www.isotc211.org/2005/gmd";
-            case "gco": return "http://www.isotc211.org/2005/gco";
-            case "csw": return "http://www.opengis.net/cat/csw/2.0.2";
-            case "gml": return "http://www.opengis.net/gml/3.2";
-            case "gmx": return "http://www.isotc211.org/2005/gmx";
-            case "srv": return "http://www.isotc211.org/2005/srv";
+            case "wms": return "http://www.opengis.net/wms";
             case "xlink": return "http://www.w3.org/1999/xlink";
             default:    return "";
         }

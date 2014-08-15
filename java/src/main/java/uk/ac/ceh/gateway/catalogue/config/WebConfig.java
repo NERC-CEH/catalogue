@@ -3,7 +3,9 @@ package uk.ac.ceh.gateway.catalogue.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.cache.FileTemplateLoader;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
+import javax.xml.xpath.XPathExpressionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
@@ -12,11 +14,13 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.DocumentSearchResults;
 
@@ -51,6 +55,15 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         catch(Exception e) {
             return null;
         }
+    }
+    
+    @Bean
+    public RestTemplate restTemplate() throws XPathExpressionException {
+        RestTemplate toReturn = new RestTemplate();
+        toReturn.setMessageConverters(Arrays.asList(
+            new Xml2WmsCapabilitiesMessageConverter()
+        ));
+        return toReturn;
     }
     
     @Override

@@ -16,5 +16,5 @@ public class NodeListConverter {
             }
         }
         return toReturn;
-    }    
+    }
 }

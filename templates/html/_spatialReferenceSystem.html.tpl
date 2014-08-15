@@ -1,6 +1,6 @@
 <#if spatialReferenceSystem?? && spatialReferenceSystem.title?? && spatialReferenceSystem.title?has_content>
   <tr>
-    <td>Spatial Reference System</td>
+    <th scope="row">Spatial Reference System</th>
     <td id="spatial-reference-system">${spatialReferenceSystem.title}</td>
   </tr>
 </#if>

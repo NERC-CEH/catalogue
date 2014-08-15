@@ -1,6 +1,6 @@
 <#if topicCategories?has_content>
 <tr>
-  <td>Topic Categories</td>
+  <th scope="row">Topic Categories</th>
   <td id="topic-categories">
     <#list topicCategories as topic>
       <span property="dc:subject">${topic}</span><#if topic_has_next>, </#if>
@@ -11,10 +11,10 @@
 <#if descriptiveKeywords?has_content>
   <#list descriptiveKeywords?sort_by("type") as descriptiveKeyword>
     <tr>
-      <#if (descriptiveKeyword.type.value)??>
-        <td>${descriptiveKeyword.type.value?cap_first} Keywords</td>
+      <#if (descriptiveKeyword.type.value)?? && descriptiveKeyword.type.value?has_content>
+        <th scope="row">${descriptiveKeyword.type.value?cap_first} Keywords</th>
       <#else>
-        <td>Keywords</td>
+        <th scope="row">Keywords</th>
       </#if>
       <td class="descriptive-keywords">
           <#list descriptiveKeyword.keywords as keyword>

@@ -55,11 +55,35 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
     @Data
     @Accessors(chain=true)
     public static class GeminiDocumentSolrIndex {
+        protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 300;
         private @Field String identifier;
         private @Field String title;
         private @Field String description;
         private @Field String resourceType;
         private @Field Boolean isOgl;
         private @Field String state;
+        
+        public String getShortenedDescription(){
+            return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);
+        }
+        
+        private String shortenLongString(String toShorten, int desiredLength){
+            if(toShorten.length() > desiredLength){
+                return breakAtNextSpace(toShorten);
+            }else{
+                return toShorten;
+            }
+        }
+        
+        private String breakAtNextSpace(String toBreak){
+            int nextSpace = toBreak.indexOf(" ", MAX_DESCRIPTION_CHARACTER_LENGTH);
+            String toReturn = "";
+            if(nextSpace != -1){
+                toReturn = toBreak.substring(0,nextSpace);
+            }else{
+                toReturn = toBreak.substring(0,MAX_DESCRIPTION_CHARACTER_LENGTH);
+            }
+            return toReturn + "...";
+        }
     }
 }
