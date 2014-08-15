@@ -1,7 +1,7 @@
 <#import "skeleton.html.tpl" as skeleton>
 <@skeleton.master title="Search">
-
-<div class="row">
+<div class="container">
+  <div class="row">
 
   <!--http://jsfiddle.net/22cyX/-->
   <div class="col-md-3 well">
@@ -72,6 +72,7 @@
     </#list>
   </div>
 
+  </div>
 </div>
 
 </@skeleton.master>
