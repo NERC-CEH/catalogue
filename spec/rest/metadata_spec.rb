@@ -4,8 +4,8 @@ describe "Metadata page generated HTML" do
       $site['/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3'].get
     )
 
-    it "should define prefixes on the body element" do
-      expect(res.css('body')[0]['prefix']).to include('dc: http://purl.org/dc/terms/','dcat: http://www.w3.org/ns/dcat#','foaf: http://xmlns.com/foaf/0.1/')
+    it "should define prefixes on the metadata element" do
+      expect(res.css('#metadata')[0]['prefix']).to include('dc: http://purl.org/dc/terms/','dcat: http://www.w3.org/ns/dcat#')
     end
 
     it "should have dc:title property on title element" do
@@ -17,15 +17,15 @@ describe "Metadata page generated HTML" do
     end
 
     it "should have dc:identifier property on identifier element" do
-      expect(res.css('#identifier')[0]['property']).to include('dc:identifier')
+      expect(res.css('#file-identifier')[0]['property']).to include('dc:identifier')
     end
 
     it "should have dc:bibliographicCitation property on citation element" do
-      expect(res.css('#citation')[0]['property']).to include('dc:bibliographicCitation')
+      expect(res.css('#citation-text')[0]['property']).to include('dc:bibliographicCitation')
     end
 
     it "should have dc:creator property on elements with author class" do
-      res.css('div.document-contacts > div.author').each do |contact|
+      res.css('#document-contacts > .contact-text').each do |contact|
         expect(contact.attribute('property').to_str).to include('dc:creator')
       end
     end
@@ -37,11 +37,11 @@ describe "Metadata page generated HTML" do
     end
 
     it "should have dc:description property on document-description element" do
-      expect(res.css('div.document-description > p')[0]['property']).to include('dc:description')
+      expect(res.css('#document-description')[0]['property']).to include('dc:description')
     end
 
     it "should have dc:abstract property on document-description element" do
-      expect(res.css('div.document-description > p')[0]['property']).to include('dc:abstract')
+      expect(res.css('#document-description')[0]['property']).to include('dc:abstract')
     end
 
     it "should have dc:spatial property on all extent elements" do
@@ -51,15 +51,15 @@ describe "Metadata page generated HTML" do
     end
 
     it "should have dc:subject property on document-keywords element" do
-      expect(res.css('#document-keywords')[0]['property']).to include('dc:subject')
+      expect(res.css('.descriptive-keywords > span')[0]['property']).to include('dc:subject')
     end
 
-    it "should have dcat:accessURL property on download link" do
-      expect(res.css('#download-link > p:first')[0]['property']).to include('dcat:accessURL')
+    it "should have dcat:accessURL property on ordering link" do
+      expect(res.css('#ordering-url')[0]['property']).to include('dcat:accessURL')
     end
 
     it "should have dc:rights property on license" do
-      expect(res.css('#license > p:first')[0]['property']).to include('dc:rights')
+      expect(res.css('#license')[0]['property']).to include('dc:rights')
     end
 
     it "should have dc:temporal property on temporal extent element" do
