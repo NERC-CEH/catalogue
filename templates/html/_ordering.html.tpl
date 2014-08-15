@@ -13,7 +13,7 @@
     <#else>
       <#assign licenseText>Licence terms and conditions apply</#assign>
     </#if>
-    <a href="${downloadOrder.licenseUrl}" property="dc:rights" rel="license">
+    <a id="license" href="${downloadOrder.licenseUrl}" property="dc:rights" rel="license">
       ${licenseText} <span class="external-link"></span>
     </a>
   </#if>

@@ -1,4 +1,4 @@
 <h2>Dataset Image</h2>
 <#if browseGraphicUrl?has_content>
-  <img src="${browseGraphicUrl}" />
+  <img id="browse-graphic" src="${browseGraphicUrl}" />
 </#if>

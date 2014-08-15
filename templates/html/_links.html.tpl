@@ -6,7 +6,7 @@
   </#if>
   <tr>
     <td>${documentLinksTitle}</td>
-    <td>
+    <td id="document-links">
       <#list documentLinks as link><#if link_index gt 0>,</#if> <a href="${link.href}">${link.title}</a></#list>
     </td>
   </tr>
