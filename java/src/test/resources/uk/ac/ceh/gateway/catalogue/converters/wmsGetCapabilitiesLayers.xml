@@ -4,12 +4,15 @@
         <Layer>
             <Layer>
                 <Name>Layer 1</Name>
+                <Title>Title 1</Title>
             </Layer>            
             <Layer>
                 <Name>Layer 2</Name>
+                <Title>Title 2</Title>
             </Layer>            
             <Layer>
                 <Name>Layer 3</Name>
+                <Title>Title 3</Title>
             </Layer>
         </Layer>
     </Capability>
