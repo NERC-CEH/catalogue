@@ -3,7 +3,7 @@
 <div class="container">
 
   <!--http://jsfiddle.net/22cyX/-->
-    <div class="search-container">
+  <div class="search-container">
     <div class="search">
       <div class="search-box">
         <form id="search-form" action="/documents" method="get">
@@ -22,46 +22,47 @@
         </form>
       </div>
 
-      <ul class="nav nav-pills nav-stacked">
-        <#list facets as facet>
-          <li class="facet-heading">
+      <div class="facets">
+        <ul class="nav nav-pills nav-stacked">
+          <#list facets as facet>
+            <li class="facet-heading">
               ${facet.displayName}
-            </a>
-          </li>
-
-          <#list facet.results as result>
-            <#if isActiveFacetFilter(header.facetFilters facet.fieldName result.name)>
-              <li class="facet-filter-active"}>
-                <a href="/documents?term=${term}${removeFacetFilter(header.facetFilters, facet.fieldName + '|' + result.name)}" class="facet-link-active">
-                  <span class="facet-result-name">${result.name}</span>
-                  <span class="glyphicon glyphicon-remove-circle pull-right"></span>
-                </a>
-              </li>
-            <#else>
-              <li class="facet-filter-inactive">
-                <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getFacetFiltersAsQueryParams(header.facetFilters)}" class="facet-link-inactive">
-                  <span class="facet-result-name">${result.name} (${result.count})</span>
-                </a>
-              </li>
-            </#if>
-          </#list>
-        </#list>   
-      </ul> 
+              </a>
+            </li>
+            <#list facet.results as result>
+              <#if isActiveFacetFilter(header.facetFilters facet.fieldName result.name)>
+                <li class="facet-filter-active"}>
+                  <a href="/documents?term=${term}${removeFacetFilter(header.facetFilters, facet.fieldName + '|' + result.name)}" class="facet-link-active">
+                    <span class="facet-result-name">${result.name}</span>
+                    <span class="glyphicon glyphicon-remove-circle pull-right"></span>
+                  </a>
+                </li>
+              <#else>
+                <li class="facet-filter-inactive">
+                  <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getFacetFiltersAsQueryParams(header.facetFilters)}" class="facet-link-inactive">
+                    <span class="facet-result-name">${result.name} (${result.count})</span>
+                  </a>
+                </li>
+              </#if>
+            </#list>
+          </#list>   
+        </ul> 
+      </div>
     </div>
 
-  <div class="results">
-
-  <div class="search-results-heading">
-    <span id="num-records">${header.numFound}</span> records found
-  </div>
-  <#list results as result>
-    <div class="result">
-      <a href="/documents/${result.identifier}" class="title">${result.title}</a>
-      <div class="description">${result.shortenedDescription}</div>
-      <#if result.publicationDate??><div class="publication-date">Published: ${result.publicationDate}</div></#if>
-      <div class="resource-type label label-${result.resourceType}">${result.resourceType}</div>
+    <div class="results">
+      <div class="search-results-heading">
+        <span id="num-records">${header.numFound}</span> records found
+      </div>
+      <#list results as result>
+        <div class="result">
+          <a href="/documents/${result.identifier}" class="title">${result.title}</a>
+          <div class="description">${result.shortenedDescription}</div>
+          <#if result.publicationDate??><div class="publication-date">Published: ${result.publicationDate}</div></#if>
+          <div class="resource-type label label-${result.resourceType}">${result.resourceType}</div>
+        </div>
+      </#list>
     </div>
-   </#list>
   </div>
 </div>
 

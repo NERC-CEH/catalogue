@@ -1,88 +1,61 @@
 @import "bootstrap";
 
-.search-box{
-  padding-bottom: 10px;
-}
-
-.result {
-  padding: 0em 0em 3em;
-  font-size: 90%;
-  
-  .title {
-    display: block;
-    font-weight: 700;
-    font-size: 120%;
-  }
-
-  .description {
-  }
-
-  .resource-type {
-    text-transform: uppercase;
-    float: right;
-    display: block;
-    padding: 5px;
-    margin-top: 3px;
-    font-size: 90%;
-    border-radius: 5px;
-    line-height: 1.4;
-    font-weight: normal;
-  }
-
-  .publication-date {
-    float: left;
-    padding-top:  8px;
-    color: #999;
-  }
-
-}
-
-.search-results-heading {
-  font-weight: bold;
-  margin-bottom: 1em;
-}
-
-.nav > li > a {
-  color: #999;
-}
-
-.facet-heading {
-  font-weight: 700;
-  padding-top: 10px;
-}
-
-@facet-filter-left-padding: 20px;
-
-.facet-result-name {
-  color: #000;
-}
-
-.facet-filter-inactive {
-  padding-left: facet-filter-left-padding;
-}
-
-.facet-filter-active {
-  background-color: #C3FDB8;
-  border-radius: 5px;
-  hover{
-    background-color: #00f;
-  }
-
-}
-
-.results-container{
-  padding-left: 30px;
-  border-left: 1px;
-}
-
 .search-container {
   .make-row();
   .search {
     .make-sm-column(3);
-    padding-bottom: 2em;
+    .search-box{
+      padding-bottom: 10px;
+    }
+    .facets {
+      .hidden-xs;
+      .facet-heading {
+        font-weight: 700;
+        padding-top: 10px;
+      }
+      .facet-result-name {
+        color: #000;
+      }
+      .facet-filter-active {
+        background-color: #C3FDB8;
+        border-radius: 5px;
+        hover{
+          background-color: #00f;
+        }
+      }
+    }
   }
   .results {
     .make-sm-column(9);
+    .search-results-heading {
+      font-weight: bold;
+      margin-bottom: 1em;
+    }
+    .result {
+      padding: 0em 0em 3em;
+      font-size: 90%;
+      
+      .title {
+        display: block;
+        font-weight: 700;
+        font-size: 120%;
+      }
+      .resource-type {
+        text-transform: uppercase;
+        float: right;
+        display: block;
+        padding: 5px 10px;
+        margin-top: 3px;
+        font-size: 90%;
+        border-radius: 5px;
+        line-height: 1.4;
+        font-weight: normal;
+      }
+      .publication-date {
+        float: left;
+        padding-top:  8px;
+        color: #777;
+      }
+    }
   }
-
 }
