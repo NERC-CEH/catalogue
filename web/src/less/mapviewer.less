@@ -1,18 +1,22 @@
 // This is the stylesheet for the mapviewer. Hopefully we can add the majority
 // of this to the general stylesheet for ceh applications
 @import "../vendor/jquery-ui/themes/smoothness/jquery-ui.css";
+@import "../vendor/openlayers/theme/default/style.css";
+@layerControlWidth: 250px;
 
 .openlayers {
   font-size: smaller;
   .olControlAttribution {
-    left: 10px;
+    right: 10px;
     bottom: 10px;
+  }
+  div.olControlZoom {
+    top: 100px;
+    left: @layerControlWidth + 10px;
   }
 }
 
 .layers {
-  @layerControlWidth: 250px;
-
   position: absolute;
   display:block;
   top:93px;
