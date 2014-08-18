@@ -7,6 +7,7 @@ Building this section of the project is handled with [Grunt](http://gruntjs.com/
 
 To perform a complete build
 
+    npm install
     grunt build
 
 To Start developing
