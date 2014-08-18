@@ -1,4 +1,4 @@
-<span class="title"><%=title%></span>
 <i class="glyphicon glyphicon-info-sign info"/>
-<div class="slider"></div>
+<span class="title"><%=title%></span>
 <input type="checkbox" class="visibility" <% if(visibility) {%>checked="checked"<%}%>>
+<div class="slider"></div>

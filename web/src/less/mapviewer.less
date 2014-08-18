@@ -32,14 +32,14 @@
 
     min-height: 55px; 
     .info, .visibility { float: right; }
+    .visibility { margin-top: 6px; }
     .slider, .title {
-      float: left;
+      display: inline-block;
       width: @layerControlWidth - (@horizontalPadding*3) - 13px;
     }
 
     // Style the slider to a low profile view
-    .slider { 
-      margin-top: 7px; 
+    .slider {
       height: 5px;
       .ui-slider-handle { 
         @handleWidth: 6px;
