@@ -48,6 +48,26 @@ public class Xml2WmsCapabilitiesMessageConverterTest {
     }
     
     @Test
+    public void canGetLayerTitlesFromGetCapabilities() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("wmsGetCapabilitiesLayers.xml"));
+        
+        //When
+        WmsCapabilities capabilities = capabilitiesReader.readInternal(WmsCapabilities.class, message);
+        
+        //Then
+        List<String> layers = capabilities.getLayers()
+                                          .stream()
+                                          .map(Layer::getTitle)
+                                          .collect(Collectors.toList());
+        
+        assertThat("Expected 3 layers", layers.size(), equalTo(3));
+        assertThat("Expected three layers", layers, equalTo(Arrays.asList(
+                "Title 1", "Title 2", "Title 3")));
+    }
+    
+    @Test
     public void canGetMapUrl() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);

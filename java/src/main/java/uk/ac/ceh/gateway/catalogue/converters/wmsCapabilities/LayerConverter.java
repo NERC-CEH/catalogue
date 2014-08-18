@@ -9,7 +9,6 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 
 /**
@@ -17,11 +16,12 @@ import uk.ac.ceh.gateway.catalogue.ogc.Layer;
  * @author cjohn
  */
 public class LayerConverter {    
-    private final XPathExpression layer, name;
+    private final XPathExpression layer, name, title;
     
     public LayerConverter(XPath xpath) throws XPathExpressionException {
         this.layer = xpath.compile("//wms:Layer[wms:Name]");
         this.name = xpath.compile("wms:Name");
+        this.title = xpath.compile("wms:Title");
     }
     
     public List<Layer> convert(Document document) throws XPathExpressionException {
@@ -32,6 +32,7 @@ public class LayerConverter {
             
             Layer toAdd = new Layer();
             toAdd.setName(name.evaluate(layerNode));
+            toAdd.setTitle(title.evaluate(layerNode));
             
             toReturn.add(toAdd);
         }
