@@ -1,11 +1,10 @@
 <#import "skeleton.html.tpl" as skeleton>
 <@skeleton.master title="Search">
 <div class="container">
-  <div class="row">
 
   <!--http://jsfiddle.net/22cyX/-->
-  <div class="col-md-3 well">
     <div class="search-container">
+    <div class="search">
       <div class="search-box">
         <form id="search-form" action="/documents" method="get">
           <@addFacetFiltersToForm header.facetFilters/>
@@ -22,11 +21,13 @@
           </div>
         </form>
       </div>
+  <div class="search-results-heading">
+    <span id="num-records">${header.numFound}</span> records found
+  </div>
 
       <ul class="nav nav-pills nav-stacked">
         <#list facets as facet>
           <li class="facet-heading">
-            <!-- <a href="#"> -->
               ${facet.displayName}
             </a>
           </li>
@@ -42,7 +43,7 @@
             <#else>
               <li class="facet-filter-inactive">
                 <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getFacetFiltersAsQueryParams(header.facetFilters)}" class="facet-link-inactive">
-                  <span class="facet-result-name">${result.name}</span> (${result.count})
+                  <span class="facet-result-name">${result.name} (${result.count})</span>
                 </a>
               </li>
             </#if>
@@ -50,23 +51,16 @@
         </#list>   
       </ul> 
     </div>
-  </div>
 
-  <div class="col-md-9 results-container">
+  <div class="results">
 
-  <div class="search-results-heading">
-    <span id="num-records">${header.numFound}</span> records found
-  </div>
-
-    <#list results as result>
-      <div class="result">
-        <a href="/documents/${result.identifier}" class="title">${result.title}</a>
-        <div class="description">${result.shortenedDescription}</div>
-        <div class="resource-type label label-${result.resourceType}">${result.resourceType}</div>
-      </div>
-     </#list>
-  </div>
-
+  <#list results as result>
+    <div class="result">
+      <a href="/documents/${result.identifier}" class="title">${result.title}</a>
+      <div class="description">${result.shortenedDescription}</div>
+      <div class="resource-type label label-${result.resourceType}">${result.resourceType}</div>
+    </div>
+   </#list>
   </div>
 </div>
 
