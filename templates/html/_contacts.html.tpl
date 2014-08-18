@@ -1,47 +1,54 @@
 <#if responsibleParties?has_content>
-  <h3>Contacts</h3>
-  <#list responsibleParties as contactsList>
-  <div class="row document-contacts">
-   	<div class="col-md-4"><b>${contactsList.role}</b></div>
-  	<div class="col-md-4 ${contactsList.role?lower_case?trim?replace(" ", "-")}"
-    <#if contactsList.role == "Distributor" || contactsList.role == "Resource Provider">
-      property="dc:publisher"
-    <#elseif contactsList.role == "Author">
-      property="dc:creator"
-    </#if>
-    >
-  			<#if contactsList.individualName?has_content>
-	      	${contactsList.individualName}<br />
-	      </#if>
-
-	      <#if contactsList.organisationName?has_content>
-	      	${contactsList.organisationName}<br />
-	      </#if>
-
-	      <#if contactsList.address.deliveryPoint?has_content>
-	      	${contactsList.address.deliveryPoint}<br />
-	      </#if>
-
-	      <#if contactsList.address.administrativeArea?has_content>
-	      	${contactsList.address.administrativeArea}<br />
-	      </#if>
-
-	      <#if contactsList.address.city?has_content>
-	      	${contactsList.address.city}<br />
-	      </#if>
-
-	      <#if contactsList.address.country?has_content>
-	      	${contactsList.address.country}<br />
-	      </#if>
-
-	      <#if contactsList.address.postalCode?has_content>
-	      	${contactsList.address.postalCode}<br />
-	      </#if>
-
-	      <#if contactsList.email?has_content>
-	      	<a href="mailto:${contactsList.email}">${contactsList.email}</a><br />
-	      </#if><br />
-	   </div>
+  <h2>Contacts</h2>
+  <div id="document-contacts">
+    <#list responsibleParties?sort_by("role") as contact>
+      <#if contact.role == "Distributor" || contact.role == "Resource Provider">
+        <#assign roleProperty> property="dc:publisher"</#assign>
+      <#elseif contact.role == "Author">
+        <#assign roleProperty> property="dc:creator"</#assign>
+      <#else>
+        <#assign roleProperty></#assign>
+      </#if>
+      <#if contact_index % 4 == 0>
+        <#if contact_index gt 0>
+          </div>
+        </#if>
+        <div class="blocks">
+      </#if>
+      <div class="block">
+        <div class="contact">
+          <div class="contact-text">
+            <strong>${contact.role}</strong>
+            <#if contact.individualName?has_content>
+              <span${roleProperty}>${contact.individualName}</span><br />
+            </#if>
+            <#if contact.organisationName?has_content>
+              <#if !contact.individualName?has_content><span${roleProperty}></#if>${contact.organisationName}<#if !contact.individualName?has_content></span></#if><br />
+            </#if>
+            <address>
+              <#if contact.address.deliveryPoint?has_content>
+                ${contact.address.deliveryPoint}<br />
+              </#if>
+              <#if contact.address.city?has_content>
+                ${contact.address.city}<br />
+              </#if>
+              <#if contact.address.administrativeArea?has_content>
+                ${contact.address.administrativeArea}<br />
+              </#if>
+              <#if contact.address.postalCode?has_content>
+                ${contact.address.postalCode}<br />
+              </#if>
+              <#if contact.address.country?has_content>
+                ${contact.address.country}<br />
+              </#if>
+            </address>
+            <a href="mailto:${contact.email}">${contact.email} <span class="external-link"></span></a>
+          </div>
+        </div>
+      </div>
+      <#if !contact_has_next>
+        </div>
+      </#if>
+    </#list>
   </div>
-  </#list>
 </#if>
