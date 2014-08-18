@@ -6182,7 +6182,7 @@ button.close {
   padding-bottom: 10px;
 }
 .result {
-  padding: 0em 0em 2em;
+  padding: 0em 0em 3em;
   font-size: 90%;
 }
 .result .title {
@@ -6195,13 +6195,20 @@ button.close {
   float: right;
   display: block;
   padding: 5px;
+  margin-top: 3px;
   font-size: 90%;
   border-radius: 5px;
   line-height: 1.4;
   font-weight: normal;
 }
-.search-results-heading {
+.result .publication-date {
+  float: left;
+  padding-top: 8px;
   color: #999;
+}
+.search-results-heading {
+  font-weight: bold;
+  margin-bottom: 1em;
 }
 .nav > li > a {
   color: #999;
@@ -6209,7 +6216,6 @@ button.close {
 .facet-heading {
   font-weight: 700;
   padding-top: 10px;
-  /*color: #999;*/
 }
 .facet-result-name {
   color: #000;

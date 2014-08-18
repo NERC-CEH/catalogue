@@ -21,9 +21,6 @@
           </div>
         </form>
       </div>
-  <div class="search-results-heading">
-    <span id="num-records">${header.numFound}</span> records found
-  </div>
 
       <ul class="nav nav-pills nav-stacked">
         <#list facets as facet>
@@ -54,10 +51,14 @@
 
   <div class="results">
 
+  <div class="search-results-heading">
+    <span id="num-records">${header.numFound}</span> records found
+  </div>
   <#list results as result>
     <div class="result">
       <a href="/documents/${result.identifier}" class="title">${result.title}</a>
       <div class="description">${result.shortenedDescription}</div>
+      <#if result.publicationDate??><div class="publication-date">Published: ${result.publicationDate}</div></#if>
       <div class="resource-type label label-${result.resourceType}">${result.resourceType}</div>
     </div>
    </#list>
