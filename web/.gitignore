@@ -1,2 +1,7 @@
 # Ignore the custom build of the openlayers file
 src/vendor/OpenLayers-custom.js
+
+# Ignore testing code
+_SpecRunner.html
+test-compiled
+junit

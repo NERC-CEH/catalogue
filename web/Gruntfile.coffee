@@ -4,6 +4,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-concurrent'
   grunt.loadNpmTasks 'grunt-combine-harvester'
   grunt.loadNpmTasks 'grunt-contrib-requirejs'
+  grunt.loadNpmTasks 'grunt-contrib-jasmine'
+  grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-less'
@@ -14,7 +16,25 @@ module.exports = (grunt) ->
   grunt.initConfig
     exec:
       git_status: 'git diff --exit-code'
+    
+    jasmine :
+      test:
+        options :
+          specs : 'test-compiled/**/*spec.js'
+          template: require 'grunt-template-jasmine-requirejs'
+          templateOptions: 
+            requireConfigFile: 'src/scripts/main.js'
+            requireConfig: baseUrl: 'src/scripts' 
+          junit : path : 'junit' 
 
+    coffee: 
+      test :
+        expand: true
+        cwd: 'test'
+        src: ['**/*.coffee']
+        dest: 'test-compiled'
+        ext: '.spec.js'
+    
     less: 
       development:
         files: 'src/css/style.css' : 'src/less/style.less'
@@ -72,6 +92,7 @@ module.exports = (grunt) ->
         dest: 'src/scripts/main-out.js'
 
     clean:
+      test:['test-compiled']
       prep: ['src/css']
 
     cssmin:
@@ -80,6 +101,7 @@ module.exports = (grunt) ->
         dest: 'src/css/style.css'
 
   grunt.registerTask 'prep', ['clean', 'combine_harvester:openlayers']
+  grunt.registerTask 'test', ['clean:test', 'coffee', 'jasmine']
   grunt.registerTask 'develop', ['less', 'copy:requirejs', 'concurrent:watch']
   grunt.registerTask 'build', ['clean', 'less', 'cssmin', 'requirejs']
-  grunt.registerTask 'default', ['prep', 'build', 'exec:git_status']
+  grunt.registerTask 'default', ['prep', 'build', 'test', 'exec:git_status']
