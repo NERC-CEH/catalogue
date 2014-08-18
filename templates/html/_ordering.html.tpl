@@ -4,6 +4,9 @@
   <#if downloadOrder.orderUrl?has_content>
     <a id="ordering-url" href="${downloadOrder.orderUrl?trim}" property="dcat:accessURL">Order/Download <span class="external-link"></span></a>
   </#if>
+  <#if mapViewable>
+    <a href="${mapViewerUrl}">Preview on map</a>
+  </#if>
   <#if downloadOrder.supportingDocumentsUrl?has_content>
     <a href="${downloadOrder.supportingDocumentsUrl}" rel="help">Supporting documentation  <span class="external-link"></span></a>
   </#if>
