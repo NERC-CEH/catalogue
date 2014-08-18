@@ -31,4 +31,4 @@ require.config({
   waitSeconds:1000
 });
 
-require(['cs!helpers/Main'], function(Main){ Main.initialize(); });
+require(['cs!Main'], function(Main){ Main.initialize(); });
