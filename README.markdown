@@ -47,6 +47,16 @@ To get around this, we maintain a bash script of all the services which need res
 
 Once you are up and running, try visiting one of the [metadata](https://localhost:8080/documents/ff55462e-38a4-4f30-b562-f82ff263d9c3) documents in your browser. Note that the server is using **https** on port 8080
 
+### Java development
+
+To have the code you are currently developing running in the vagrant box link the WAR file in the build directory to the Tomcat webapps folder.
+
+    sudo service tomcat7-ceh-catalogue stop
+    sudo rm -rf /home/tomcat7/ceh-catalogue/webapps/ROOT*
+    ln -s /opt/ceh-catalogue/java/target/ROOT.war /home/tomcat7/ceh-catalogue/webapps/
+    ls -lAh /home/tomcat7/ceh-catalogue/webapps/
+    sudo service tomcat7-ceh-catalogue start
+
 ## Testing
 
 The vagrant box can be functionally tested using capybara and selenium. The tests for this are written in rspec, to run these and drive the chrome browser from a windows box you will need to:
