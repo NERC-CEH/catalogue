@@ -1,0 +1,25 @@
+@import "bootstrap";
+
+.default-link() {
+  a {
+    .btn;
+    .btn-default;
+    .btn-block;
+    white-space: normal;
+  }
+  a + a {
+    margin-top: 5px;
+  }
+}
+
+.inline-link() {
+  .default-link;
+  a {
+    display: inline;
+  }
+}
+
+.external-link {
+  .glyphicon;
+  .glyphicon-new-window;
+}

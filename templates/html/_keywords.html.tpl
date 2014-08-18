@@ -1,22 +1,26 @@
 <#if topicCategories?has_content>
-<h3>Topic Categories</h3>
-<div class="document-categories">
-  <#list topicCategories as topics>
-    <span class="label label-default">${topics}</span>
-  </#list>
-</div>
+<tr>
+  <th scope="row">Topic Categories</th>
+  <td id="topic-categories">
+    <#list topicCategories as topic>
+      <span property="dc:subject">${topic}</span><#if topic_has_next>, </#if>
+    </#list>
+  </td>
+</tr>
 </#if>
 <#if descriptiveKeywords?has_content>
-<h3>Keywords</h3>
-<div id="document-keywords" property="dc:subject" class="document-keywords">
-  <#list descriptiveKeywords as keywordsList>
-    <#list keywordsList.keywords as keyword>
-      <#if keyword.URI?has_content>
-        <a class="btn btn-default btn-xs" href="${keyword.URI}" target="_blank">${keyword.value} <span  class="glyphicon glyphicon-link"></span></a>
+  <#list descriptiveKeywords?sort_by("type") as descriptiveKeyword>
+    <tr>
+      <#if (descriptiveKeyword.type.value)?? && descriptiveKeyword.type.value?has_content>
+        <th scope="row">${descriptiveKeyword.type.value?cap_first} Keywords</th>
       <#else>
-        <span class="label label-default">${keyword.value}</span>
+        <th scope="row">Keywords</th>
       </#if>
-    </#list>
-  </#list>
-</div>
+      <td class="descriptive-keywords">
+          <#list descriptiveKeyword.keywords as keyword>
+            <span property="dc:subject">${keyword.value}</span><#if keyword_has_next>, </#if>
+          </#list>
+      </td>
+    </tr>
+</#list>
 </#if>
