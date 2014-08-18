@@ -14,5 +14,7 @@
     "requirejs-text": "2.0.12",
     "requirejs-tpl": "7438735aa84b76af0fb266d8373b5fbaab2a1a03",
     "require-cs": "0.5.0"
+    "jquery": "1.10.2",
+    "zeroclipboard": "2.1.6"
   }
 }
