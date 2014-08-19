@@ -329,6 +329,28 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Then
         assertThat("BoundingBoxes 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
+    
+    @Test
+    public void canGetServiceBoundingBox() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("serviceSpatialExtent.xml"));
+        List<BoundingBox> expected = Arrays.asList(
+            BoundingBox.builder()
+                .westBoundLongitude("-8.21")
+                .eastBoundLongitude("-5.26")
+                .southBoundLatitude("53.68")
+                .northBoundLatitude("55.77")
+                .build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<BoundingBox> actual = document.getBoundingBoxes();
+        
+        //Then
+        assertThat("BoundingBoxes 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
 
     @Test
     public void canGetId() throws IOException {
