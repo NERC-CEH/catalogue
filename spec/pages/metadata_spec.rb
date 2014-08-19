@@ -32,6 +32,7 @@ BROWSERS.each do |browser|
         expect(find('#document-ordering')).to have_link("Order/Download", href: "http://gateway.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
         expect(find('#document-ordering')).to have_link("Supporting documentation", href: "http://eidchub.ceh.ac.uk/metadata/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
         expect(find('#document-ordering')).to have_link("Resource available under an Open Government Licence", href: "http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
+        expect(find('#document-ordering')).not_to have_link("Preview on map")
       end
 
       it "it should not have a spatial reference heading" do
@@ -51,6 +52,12 @@ BROWSERS.each do |browser|
         visit buzzPage
         expect(page).not_to have_selector('#document-ordering')
       end
+      
+      it "should show a Preview on map link" do
+        visit radionuclideServicePage
+        expect(page).to have_selector('#document-ordering')
+        expect(find('#document-ordering')).to have_link("Preview on map")
+      end
     end
 
     describe "Document links on metadata page" do
@@ -58,20 +65,12 @@ BROWSERS.each do |browser|
         visit radionuclideServicePage
         expect(find('#document-additional-info')).to have_content('Associated Services')
         expect(page).to have_selector('#document-links')
-      end
-
-      it "should have link to service" do
-        visit radionuclideServicePage
         expect(find('#document-links')).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales survey maps")
       end
 
       it "should have heading 'Associated Datasets'" do
         visit radionuclideDatasetPage
         expect(find('#document-additional-info')).to have_content('Associated Datasets')
-      end
-
-      it "should have link to dataset" do
-        visit radionuclideDatasetPage
         expect(find('#document-links')).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales")
       end
 
