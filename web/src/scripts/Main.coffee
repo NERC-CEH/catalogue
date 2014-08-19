@@ -3,6 +3,8 @@ define [
   'cs!models/MapViewerApp'
   'cs!views/MapViewerAppView'
   'cs!routers/LayersRouter'
+  'cs!enables/CopyToClipboard'
+  'bootstrap'
 ], ($, MapViewerApp, MapViewerAppView, LayersRouter) ->
   
   ###
