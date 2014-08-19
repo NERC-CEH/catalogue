@@ -58,7 +58,6 @@
         <div class="result">
           <a href="/documents/${result.identifier}" class="title">${result.title}</a>
           <div class="description">${result.shortenedDescription}</div>
-          <#if result.publicationDate??><div class="publication-date">Published: ${result.publicationDate}</div></#if>
           <div class="resource-type label label-${result.resourceType}">${result.resourceType}</div>
         </div>
       </#list>
