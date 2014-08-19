@@ -5,6 +5,10 @@ This is the Web section to the CEH Catalogue. It is where we manage *JavaScript/
 
 Building this section of the project is handled with [Grunt](http://gruntjs.com/):
 
+If you are running in cygwin (Babun) you will need to **fix** npm
+
+    dos2unix /cygdrive/c/Program\ Files/nodejs/npm
+
 To perform a complete build
 
     npm install
