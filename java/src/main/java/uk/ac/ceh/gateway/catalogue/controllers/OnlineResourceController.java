@@ -144,15 +144,24 @@ public class OnlineResourceController {
     }
     
     protected void proxy(String url, String queryString, HttpServletResponse servletResponse) throws IOException {
-        // The WMS Standard states that urls must end in either a ? or a &
-        // If not, this method will create an invalid url
-        HttpGet httpget = new HttpGet(url + Strings.nullToEmpty(queryString));
+        HttpGet httpget = new HttpGet(getCompliantWMSURL(url) + Strings.nullToEmpty(queryString));
         
         try (CloseableHttpResponse response = httpClient.execute(httpget)) {
             HttpEntity entity = response.getEntity();
             servletResponse.setContentType(entity.getContentType().getValue());
             copyAndClose(entity, servletResponse);
         }
+    }
+    
+    // It turns out that even the wms url in the get capabilities from an ESRI
+    // WMS Service may not be a compliant wms url (ends in either ? or &). This
+    // Method ensure that it does in the correct scenario.
+    private String getCompliantWMSURL(String url) {
+        String suffix = "";
+        if (! (url.endsWith("?") || url.endsWith("&"))) {
+          suffix = url.contains("?") ? "&" : "?";
+        }
+        return url + suffix;
     }
     
     private static void copyAndClose(HttpEntity in, HttpServletResponse response) throws IOException {
