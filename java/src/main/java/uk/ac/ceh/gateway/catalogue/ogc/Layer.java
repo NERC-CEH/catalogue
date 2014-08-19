@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.ogc;
 
-import java.util.List;
 import lombok.Data;
 
 /**
@@ -9,5 +8,5 @@ import lombok.Data;
  */
 @Data
 public class Layer {
-    private String name;
+    private String name, title;
 }

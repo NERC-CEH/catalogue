@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.BoundingBox;
 
 public class BoundingBoxesConverter {
-    private static final String BOUNDING_BOXES = "/*/gmd:identificationInfo/*/gmd:extent/*/gmd:geographicElement/gmd:EX_GeographicBoundingBox";
+    private static final String BOUNDING_BOXES = "/*/gmd:identificationInfo/*/gmd:extent/*/gmd:geographicElement/gmd:EX_GeographicBoundingBox | /*/gmd:identificationInfo/*/srv:extent/*/gmd:geographicElement/gmd:EX_GeographicBoundingBox";
     private static final String WEST_BOUNDING_LONGITUDE = "gmd:westBoundLongitude/gco:Decimal";
     private static final String EAST_BOUNDING_LONGITUDE = "gmd:eastBoundLongitude/gco:Decimal";
     private static final String SOUTH_BOUNDING_LATITUDE = "gmd:southBoundLatitude/gco:Decimal";

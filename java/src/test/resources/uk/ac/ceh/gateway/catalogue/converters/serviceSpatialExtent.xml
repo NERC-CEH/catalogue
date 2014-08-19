@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv">
+	<gmd:identificationInfo>
+		<srv:SV_ServiceIdentification>
+			<srv:extent>
+				<gmd:EX_Extent>
+					<gmd:geographicElement>
+						<gmd:EX_GeographicBoundingBox>
+							<gmd:extentTypeCode>
+								<gco:Boolean>true</gco:Boolean>
+							</gmd:extentTypeCode>
+							<gmd:westBoundLongitude>
+								<gco:Decimal>-8.21</gco:Decimal>
+							</gmd:westBoundLongitude>
+							<gmd:eastBoundLongitude>
+								<gco:Decimal>-5.26</gco:Decimal>
+							</gmd:eastBoundLongitude>
+							<gmd:southBoundLatitude>
+								<gco:Decimal>53.68</gco:Decimal>
+							</gmd:southBoundLatitude>
+							<gmd:northBoundLatitude>
+								<gco:Decimal>55.77</gco:Decimal>
+							</gmd:northBoundLatitude>
+						</gmd:EX_GeographicBoundingBox>
+					</gmd:geographicElement>
+				</gmd:EX_Extent>
+			</srv:extent>
+		</srv:SV_ServiceIdentification>
+	</gmd:identificationInfo>
+</gmd:MD_Metadata>
