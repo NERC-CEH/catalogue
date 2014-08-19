@@ -1,11 +1,10 @@
 <#import "skeleton.html.tpl" as skeleton>
 <@skeleton.master title="Search">
 <div class="container">
-  <div class="row">
 
   <!--http://jsfiddle.net/22cyX/-->
-  <div class="col-md-3 well">
-    <div class="search-container">
+  <div class="search-container">
+    <div class="search">
       <div class="search-box">
         <form id="search-form" action="/documents" method="get">
           <@addFacetFiltersToForm header.facetFilters/>
@@ -23,55 +22,46 @@
         </form>
       </div>
 
-      <ul class="nav nav-pills nav-stacked">
-        <#list facets as facet>
-          <li class="facet-heading">
-            <!-- <a href="#"> -->
+      <div class="facets">
+        <ul class="nav nav-pills nav-stacked">
+          <#list facets as facet>
+            <li class="facet-heading">
               ${facet.displayName}
-            </a>
-          </li>
-
-          <#list facet.results as result>
-            <#if isActiveFacetFilter(header.facetFilters facet.fieldName result.name)>
-              <li class="facet-filter-active"}>
-                <a href="/documents?term=${term}${removeFacetFilter(header.facetFilters, facet.fieldName + '|' + result.name)}" class="facet-link-active">
-                  <span class="facet-result-name">${result.name}</span>
-                  <span class="glyphicon glyphicon-remove-circle pull-right"></span>
-                </a>
-              </li>
-            <#else>
-              <li class="facet-filter-inactive">
-                <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getFacetFiltersAsQueryParams(header.facetFilters)}" class="facet-link-inactive">
-                  <span class="facet-result-name">${result.name}</span> (${result.count})
-                </a>
-              </li>
-            </#if>
-          </#list>
-        </#list>   
-      </ul> 
+              </a>
+            </li>
+            <#list facet.results as result>
+              <#if isActiveFacetFilter(header.facetFilters facet.fieldName result.name)>
+                <li class="facet-filter-active"}>
+                  <a href="/documents?term=${term}${removeFacetFilter(header.facetFilters, facet.fieldName + '|' + result.name)}" class="facet-link-active">
+                    <span class="facet-result-name">${result.name}</span>
+                    <span class="glyphicon glyphicon-remove-circle pull-right"></span>
+                  </a>
+                </li>
+              <#else>
+                <li class="facet-filter-inactive">
+                  <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getFacetFiltersAsQueryParams(header.facetFilters)}" class="facet-link-inactive">
+                    <span class="facet-result-name">${result.name} (${result.count})</span>
+                  </a>
+                </li>
+              </#if>
+            </#list>
+          </#list>   
+        </ul> 
+      </div>
     </div>
-  </div>
 
-  <div class="col-md-9 results-container">
-    <div class="row">
-      <div class="col-md-12">
+    <div class="results">
+      <div class="search-results-heading">
         <span id="num-records">${header.numFound}</span> records found
       </div>
+      <#list results as result>
+        <div class="result">
+          <a href="/documents/${result.identifier}" class="title">${result.title}</a>
+          <div class="description">${result.shortenedDescription}</div>
+          <div class="resource-type label label-${result.resourceType}">${result.resourceType}</div>
+        </div>
+      </#list>
     </div>
-  
-    <#list results as result>
-      <div class="result row">
-        <div class="col-md-2">
-          <span class="label label-${result.resourceType}">${result.resourceType}</span>
-        </div>
-        <div class="col-md-10">
-          <a href="/documents/${result.identifier}" class="search-result-title">${result.title}</a>
-            <span class="description">${result.shortenedDescription}</span>
-        </div>
-      </div>
-    </#list>
-  </div>
-
   </div>
 </div>
 

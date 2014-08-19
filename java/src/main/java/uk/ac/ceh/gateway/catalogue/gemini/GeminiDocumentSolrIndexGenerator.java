@@ -20,7 +20,8 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
                 .setIdentifier(document.getId())
                 .setResourceType(getResourceType(document))
                 .setIsOgl(getIsOgl(document))
-                .setState(getState(document));
+                .setState(getState(document))
+                .setPublicationDate(getPublicationDate(document));
     }
     
     private String getResourceType(GeminiDocument document){
@@ -47,6 +48,14 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
         }
     }
     
+    private String getPublicationDate(GeminiDocument document) {
+        if(document.getMetadataDate() != null) {
+            return document.getMetadataDate().toString();
+        } else {
+            return null;
+        }
+    }
+    
     /**
     * The following represents the elements of a gemini document which can be indexed
     * by solr
@@ -55,13 +64,14 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
     @Data
     @Accessors(chain=true)
     public static class GeminiDocumentSolrIndex {
-        protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 300;
+        protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 530;
         private @Field String identifier;
         private @Field String title;
         private @Field String description;
         private @Field String resourceType;
         private @Field Boolean isOgl;
         private @Field String state;
+        private @Field String publicationDate;
         
         public String getShortenedDescription(){
             return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);
