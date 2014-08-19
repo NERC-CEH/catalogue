@@ -29,8 +29,8 @@ BROWSERS.each do |browser|
 
       perform_search 'Land Cover Map 2007 (25m Raster GB) Licensed Web Map Service'
 
-      expect(first('.result')).to have_content 'OS OnDemand Web Map Service'
-      expect(first('.result .label')).to have_content 'service'
+      expect(first('.result .title')).to have_content 'Land Cover Map 2007 (25m Raster GB) Licensed Web Map Service'
+      expect(first('.result .label')).to have_content 'SERVICE'
     end
 
     it "should have dataset results with the label-dataset class applied" do
