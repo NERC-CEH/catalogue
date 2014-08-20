@@ -45,13 +45,5 @@
       </div>
     </div>
     <#nested>
-    <script type="text/javascript" src="/static/vendor/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/static/vendor/zeroclipboard/dist/ZeroClipboard.js"></script>
-    <script type="text/javascript">
-      ZeroClipboard.config({swfPath: "/static/vendor/zeroclipboard/dist/ZeroClipboard.swf"});
-      var client = new ZeroClipboard($(".clipboard"));
-    </script>
-
   </body>
 </html></#compress></#macro>

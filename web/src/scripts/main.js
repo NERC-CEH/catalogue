@@ -17,6 +17,7 @@ require.config({
     'openlayers': { exports: 'OpenLayers'}
   },
   paths: {
+    'bootstrap': '../vendor/bootstrap/dist/js/bootstrap',
     'cs' : '../vendor/require-cs/cs',
     'coffee-script': '../vendor/coffee-script/extras/coffee-script',
     'tpl' : '../vendor/requirejs-tpl/tpl',
@@ -26,7 +27,8 @@ require.config({
     'backbone': '../vendor/backbone-amd/backbone',
     'openlayers': '../vendor/OpenLayers-custom',
     'proj4js' : '../vendor/proj4js/lib/proj4js-combined',
-    'jquery-ui': '../vendor/jquery-ui/ui'
+    'jquery-ui': '../vendor/jquery-ui/ui',
+    'zeroclipboard': '../vendor/zeroclipboard/dist/ZeroClipboard'
   },
   waitSeconds:1000
 });
