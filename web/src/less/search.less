@@ -1,5 +1,3 @@
-@import "bootstrap";
-
 .search-container {
   .make-row();
   .search {
@@ -33,29 +31,29 @@
     }
     .result {
       padding: 0em 0em 3em;
-      font-size: 90%;
-      
       .title {
-        display: block;
-        font-weight: 700;
-        font-size: 120%;
+        color: @brand-success;
+        &:hover, &:focus {
+          color: darken(@brand-success, 15%);
+          text-decoration: none;
+        }
       }
       .resource-type {
+        .label;
         text-transform: uppercase;
         float: right;
         display: block;
         padding: 5px 10px;
         margin-top: 3px;
-        font-size: 90%;
+        font-size: @font-size-small;
         border-radius: 5px;
         line-height: 1.4;
         font-weight: normal;
+        background-color: #cccccc;
       }
-      .publication-date {
-        float: left;
-        padding-top:  8px;
-        color: #777;
-      }
+      .dataset { background-color: #C9EAF3; color: #000;}
+      .service { background-color: #FFDFDF; color: #000;}
+      .series { background-color: #D2FFC4;  color: #000;}
     }
   }
 }

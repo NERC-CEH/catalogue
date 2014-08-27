@@ -7,5 +7,4 @@
       </ul>
     </div>
   </div>
-  <script data-main="static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
 </@skeleton.master>

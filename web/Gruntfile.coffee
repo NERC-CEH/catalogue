@@ -14,6 +14,8 @@ module.exports = (grunt) ->
 
   #Configure tasks
   grunt.initConfig
+    bowerDirectory: require('bower').config.directory
+
     exec:
       git_status: 'git diff --exit-code'
     
@@ -37,6 +39,9 @@ module.exports = (grunt) ->
     
     less: 
       development:
+        options:
+          compress: false
+          paths: ['less', '<%= bowerDirectory %>/bootstrap/less']
         files: 'src/css/style.css' : 'src/less/style.less'
 
     requirejs: 

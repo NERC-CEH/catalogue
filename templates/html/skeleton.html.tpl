@@ -12,32 +12,31 @@
     <![endif]-->
   </head>
   <body>
-    <div class="container">
-      <div class="navbar navbar-default navbar-static-top">
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a href="#" class="navbar-brand"><img src="/static/img/header_logo.png" alt="CEH Logo" class="img-responsive"/></a>
+          <a href="#" class="navbar-brand"><img src="/static/img/CEHlogoSmall.png" alt="CEH Logo"/></a>
         </div>
 
         <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/documents">Search CEH Data</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Help</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i> Peter Hamilton <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="#">BLAH</a></li>
-                <li><a href="#">BLAH</a></li>
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Username<b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">CHANGE PASSWORD</a></li>
-                <li><a href="#">LOGOUT</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Logout</a></li>
               </ul>
             </li>
           </ul>
@@ -45,5 +44,6 @@
       </div>
     </div>
     <#nested>
+    <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
   </body>
 </html></#compress></#macro>
