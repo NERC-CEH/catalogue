@@ -16,32 +16,16 @@
         <div class="blocks">
       </#if>
       <div class="block">
+        <H3>${contact.role}</h3>
         <div class="contact">
           <div class="contact-text">
-            <strong>${contact.role}</strong>
+            <strong></strong>
             <#if contact.individualName?has_content>
               <span${roleProperty}>${contact.individualName}</span><br />
             </#if>
             <#if contact.organisationName?has_content>
               <#if !contact.individualName?has_content><span${roleProperty}></#if>${contact.organisationName}<#if !contact.individualName?has_content></span></#if><br />
             </#if>
-            <address>
-              <#if contact.address.deliveryPoint?has_content>
-                ${contact.address.deliveryPoint}<br />
-              </#if>
-              <#if contact.address.city?has_content>
-                ${contact.address.city}<br />
-              </#if>
-              <#if contact.address.administrativeArea?has_content>
-                ${contact.address.administrativeArea}<br />
-              </#if>
-              <#if contact.address.postalCode?has_content>
-                ${contact.address.postalCode}<br />
-              </#if>
-              <#if contact.address.country?has_content>
-                ${contact.address.country}<br />
-              </#if>
-            </address>
             <a href="mailto:${contact.email}">${contact.email} <span class="external-link"></span></a>
           </div>
         </div>

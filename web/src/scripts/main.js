@@ -14,6 +14,7 @@ default to create an optimized version of this file.
 require.config({
   stubModules: ['cs', 'tpl'],
   shim: {
+    'bootstrap': { deps: ["jquery"]},
     'openlayers': { exports: 'OpenLayers'}
   },
   paths: {

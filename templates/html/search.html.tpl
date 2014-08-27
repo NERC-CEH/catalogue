@@ -2,7 +2,6 @@
 <@skeleton.master title="Search">
 <div class="container">
 
-  <!--http://jsfiddle.net/22cyX/-->
   <div class="search-container">
     <div class="search">
       <div class="search-box">
@@ -56,9 +55,11 @@
       </div>
       <#list results as result>
         <div class="result">
-          <a href="/documents/${result.identifier}" class="title">${result.title}</a>
+          <h2>
+            <a href="/documents/${result.identifier}" class="title">${result.title}</a>
+            <div class="resource-type ${result.resourceType}">${result.resourceType}</div>
+          </h2>
           <div class="description">${result.shortenedDescription}</div>
-          <div class="resource-type label label-${result.resourceType}">${result.resourceType}</div>
         </div>
       </#list>
     </div>
