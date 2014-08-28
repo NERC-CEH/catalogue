@@ -20,7 +20,7 @@ public class GeminiDocumentSolrIndexGeneratorTest {
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
-        generator = new GeminiDocumentSolrIndexGenerator();
+        generator = new GeminiDocumentSolrIndexGenerator(new CrazyScienceAreaIndexer());
     }
     
     @Test

@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
@@ -11,6 +12,11 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGenerator;
  * @author cjohn
  */
 public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<GeminiDocument> {
+    private final ScienceAreaIndexer scienceAreaIndexer;
+
+    public GeminiDocumentSolrIndexGenerator(ScienceAreaIndexer scienceAreaIndexer) {
+        this.scienceAreaIndexer = scienceAreaIndexer;
+    }
 
     @Override
     public GeminiDocumentSolrIndex generateIndex(GeminiDocument document) {
@@ -21,7 +27,7 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
                 .setResourceType(getResourceType(document))
                 .setIsOgl(getIsOgl(document))
                 .setState(getState(document))
-                .setPublicationDate(getPublicationDate(document));
+                .setScienceArea(scienceAreaIndexer.index(document));
     }
     
     private String getResourceType(GeminiDocument document){
@@ -48,14 +54,6 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
         }
     }
     
-    private String getPublicationDate(GeminiDocument document) {
-        if(document.getMetadataDate() != null) {
-            return document.getMetadataDate().toString();
-        } else {
-            return null;
-        }
-    }
-    
     /**
     * The following represents the elements of a gemini document which can be indexed
     * by solr
@@ -71,7 +69,7 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
         private @Field String resourceType;
         private @Field Boolean isOgl;
         private @Field String state;
-        private @Field String publicationDate;
+        private @Field List<String> scienceArea;
         
         public String getShortenedDescription(){
             return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);

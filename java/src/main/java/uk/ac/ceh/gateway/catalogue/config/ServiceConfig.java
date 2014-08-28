@@ -10,9 +10,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.gemini.CrazyScienceAreaIndexer;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.gemini.ScienceAreaIndexer;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
@@ -40,7 +42,7 @@ public class ServiceConfig {
     @Autowired LinkDatabase linkDatabase;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
-    
+        
     @Bean
     public DocumentReadingService<GeminiDocument> documentReadingService() throws XPathExpressionException {
         return new MessageConverterReadingService<>(GeminiDocument.class)
@@ -98,7 +100,7 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new GeminiDocumentSolrIndexGenerator(),
+                new GeminiDocumentSolrIndexGenerator(new CrazyScienceAreaIndexer()),
                 solrServer
         );
         
