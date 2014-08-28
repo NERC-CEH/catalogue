@@ -22,5 +22,4 @@
   <#include "_additionalInfo.html.tpl">
   <#include "_contacts.html.tpl">
 </div>
-<script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
 </@skeleton.master>

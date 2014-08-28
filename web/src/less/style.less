@@ -1,63 +1,7 @@
 // Import our own style sheets
-
-@import "bootstrap";
+@import "../vendor/bootstrap-theme-ceh/less/theme";
 @import "search";
 @import "mapviewer";
 @import "components";
 
-@color:#fff;
-@bg:#999999;
-
-
-// Define the ceh navbar
-.navbar-static-top {margin-bottom: 19px;}
-
-.navbar {
-  background-color: @color;
-  border-bottom:  #38CCD7 3px solid;
-  min-height: 60px;
-
-  li {
-    a {
-      &:hover { color: @bg; }
-      &:visited, &:link {
-        text-shadow: none;
-        color: @bg;
-        border-left: 1px solid #B7ECF0;
-        font-weight: bold;        
-      }
-    }
-
-    &:first-child a { border-left-style: none; }
-
-    ul a:visited, li ul a:link {
-      border-left-style:none;       
-    }
-
-    ul a:hover {
-      background-color: @bg;
-      color: @color;
-    }
-  }
-}
-
-.navbar-right { padding-top:40px; }
-
-.navbar-inverse .navbar-toggle { border-color: #000}
-
-.label-dataset { background-color: #C9EAF3; color: #000;}
-.label-service { background-color: #FFDFDF; color: #000;}
-.label-series { background-color: #D2FFC4;  color: #000;}
-.label-application, .label-nonGeographicDataset, .label-feature, .label-model  { background-color: #cccccc; }
-
-
-@media (max-width: @grid-float-breakpoint) {
-  .navbar-brand {
-    width:50%
-  }
-
-  .navbar-right {
-    padding-top: 0px;
-  }
-
-}
+@icon-font-path: "../vendor/bootstrap/fonts/";
