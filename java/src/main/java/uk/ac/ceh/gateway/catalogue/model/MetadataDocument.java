@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.gemini;
+package uk.ac.ceh.gateway.catalogue.model;
 
 /**
  * This is the interface for a metadata document. Specific implementations such 

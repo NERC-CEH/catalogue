@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import static org.hamcrest.CoreMatchers.*;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
 

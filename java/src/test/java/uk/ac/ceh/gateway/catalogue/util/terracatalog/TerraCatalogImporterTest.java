@@ -35,7 +35,7 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataWriter;
 import uk.ac.ceh.components.userstore.UserStore;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;

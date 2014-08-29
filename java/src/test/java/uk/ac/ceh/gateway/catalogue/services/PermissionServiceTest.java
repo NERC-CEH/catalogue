@@ -8,7 +8,7 @@ import org.junit.Test;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Matchers.any;
 import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class PermissionServiceTest {

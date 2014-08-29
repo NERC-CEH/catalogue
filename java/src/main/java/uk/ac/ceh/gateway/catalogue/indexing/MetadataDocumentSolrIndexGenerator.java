@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 /**
  * The following class is responsible for taking a gemini document and creating 

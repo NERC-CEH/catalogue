@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.springframework.http.MediaType;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 
 /**
  *
