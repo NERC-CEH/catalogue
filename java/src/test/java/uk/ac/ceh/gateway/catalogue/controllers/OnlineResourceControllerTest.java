@@ -134,6 +134,18 @@ public class OnlineResourceControllerTest {
         fail("Expected to fail with execption");
     }
     
+    @Test(expected=NoSuchOnlineResourceException.class)
+    public void checkThatFailsToGetOnlineResourcesFromUnknownMetadataDocumentType() {
+        //Given
+        MetadataDocument document = mock(MetadataDocument.class);
+        
+        //When
+        OnlineResource resource = controller.getOnlineResource(document, 0);
+        
+        //Then
+        fail("Expected an NoSuchOnlineResourceException when dealing with an unknown document type");
+    }
+    
     @Test
     public void checkThatGettingOnlineResourceDelegatesToDocumentReader() throws IOException, UnknownContentTypeException {
         //Given
