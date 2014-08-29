@@ -20,7 +20,7 @@ public class PermissionServiceTest {
     public void annonymousCanAccessPublicRecord() throws IOException {
         //Given
         given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo("", "public"));
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo("", "public", "any metadatadocument"));
         
         //When
         boolean actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "DOCUMENT_READ");
@@ -33,7 +33,7 @@ public class PermissionServiceTest {
     public void annonymousCanNotAccessDraftRecord() throws IOException {
         //Given
         given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo("", "draft"));
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo("", "draft", "any metadatadocument"));
         
         //When
         boolean actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "DOCUMENT_READ");

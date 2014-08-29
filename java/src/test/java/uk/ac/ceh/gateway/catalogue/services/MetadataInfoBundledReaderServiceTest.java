@@ -1,12 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import com.google.common.eventbus.EventBus;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doReturn;
@@ -14,16 +11,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.git.GitDataDocument;
-import uk.ac.ceh.components.datastore.git.GitDataRepository;
-import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
-import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
-import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
@@ -33,10 +26,9 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
  */
 public class MetadataInfoBundledReaderServiceTest {    
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DataRepository<CatalogueUser> repo;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService<GeminiDocument> documentReader;
+    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService documentReader;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentBundleService<GeminiDocument, MetadataInfo> documentBundler;
     private MetadataInfoBundledReaderService service;
     
     
@@ -45,8 +37,7 @@ public class MetadataInfoBundledReaderServiceTest {
         MockitoAnnotations.initMocks(this);
         service = new MetadataInfoBundledReaderService(repo,
                                             documentReader,
-                                            documentInfoMapper,
-                                            documentBundler);
+                                            documentInfoMapper);
     }
     
     @Test
@@ -68,15 +59,16 @@ public class MetadataInfoBundledReaderServiceTest {
         
         MetadataInfo metadata = mock(MetadataInfo.class);
         when(metadata.getRawMediaType()).thenReturn(MediaType.TEXT_XML);
+        when(metadata.getDocumentClass()).thenReturn((Class)GeminiDocument.class);
         when(documentInfoMapper.readInfo(metadataInfoInputStream)).thenReturn(metadata);
         
         GeminiDocument geminiDocument = mock(GeminiDocument.class);
-        when(documentReader.read(rawInputStream, MediaType.TEXT_XML)).thenReturn(geminiDocument);
+        when(documentReader.read(rawInputStream, MediaType.TEXT_XML, GeminiDocument.class)).thenReturn(geminiDocument);
         
         //When
         service.readBundle(fileToRead, revision);
         
         //Then
-        verify(documentBundler).bundle(geminiDocument, metadata);
+        verify(geminiDocument).attachMetadata(metadata);
     }
 }

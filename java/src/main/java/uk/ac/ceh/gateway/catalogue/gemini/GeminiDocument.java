@@ -32,7 +32,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.TimePeriod;
     @Template(called="html/metadata.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GeminiDocument {
+public class GeminiDocument implements MetadataDocument {
     
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus;
     private List<String> alternateTitles, topicCategories, coupleResources;
@@ -49,6 +49,14 @@ public class GeminiDocument {
     private SpatialReferenceSystem spatialReferenceSystem;
     private DatasetReferenceDate datasetReferenceDate;
     private LocalDate metadataDate;
+    
+    public String getType() {
+        if(getResourceType() != null){
+            return getResourceType().getValue();
+        } else {
+            return null;
+        }
+    }
     
     /**
      * Return a link to the map viewer for this Gemini record if it can be
@@ -71,5 +79,10 @@ public class GeminiDocument {
         return onlineResources
                 .stream()
                 .anyMatch((o)-> GET_CAPABILITIES == o.getType());
+    }
+
+    @Override
+    public void attachMetadata(MetadataInfo metadata) {
+        setMetadata(metadata);
     }
 }

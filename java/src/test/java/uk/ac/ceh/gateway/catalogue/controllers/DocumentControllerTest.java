@@ -37,6 +37,7 @@ import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
@@ -54,10 +55,10 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 public class DocumentControllerTest {
     
     @Spy DataRepository<CatalogueUser> repo;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService<GeminiDocument> documentReader;
+    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService documentReader;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<GeminiDocument> documentBundleReader;
+    @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock DocumentLinkService linkService;
     private DocumentController controller;
     
@@ -98,7 +99,7 @@ public class DocumentControllerTest {
         
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getId()).thenReturn("id");
-        when(documentReader.read(any(InputStream.class), eq(MediaType.APPLICATION_JSON))).thenReturn(document);
+        when(documentReader.read(any(InputStream.class), eq(MediaType.APPLICATION_JSON), eq(GeminiDocument.class))).thenReturn(document);
         
         MetadataInfo metadataDocument = mock(MetadataInfo.class);
         when(infoFactory.createInfo(eq(document), eq(MediaType.APPLICATION_JSON))).thenReturn(metadataDocument);
@@ -150,7 +151,7 @@ public class DocumentControllerTest {
     public void checkThatReadingDelegatesToBundledReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException {
         //Given
         GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo("", "public"));
+        bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
         
         String file = "myFile";
         String revision = "revision";
@@ -158,7 +159,7 @@ public class DocumentControllerTest {
         when(documentBundleReader.readBundle(file, revision)).thenReturn(bundledDocument);
         
         //When
-        GeminiDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, revision, mockRequest());
+        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, revision, mockRequest());
         
         //Then
         verify(documentBundleReader).readBundle(file, revision);
@@ -169,7 +170,7 @@ public class DocumentControllerTest {
     public void checkThatLinksAreAddedToDataset() throws IOException, DataRepositoryException, UnknownContentTypeException {
         //Given
         GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo("", "public"));
+        bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
         bundledDocument.setResourceType(CodeListItem.builder().value("dataset").build());
         
         String file = "myFile";
@@ -192,7 +193,7 @@ public class DocumentControllerTest {
         String file = "myFile";
         
         GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo("", "public"));
+        bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         
         DataRevision revision = mock(DataRevision.class);
@@ -213,7 +214,7 @@ public class DocumentControllerTest {
         String file = "myFile";
         
         GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo("", "public"));
+        bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         
         DataRevision revision = mock(DataRevision.class);
@@ -221,7 +222,7 @@ public class DocumentControllerTest {
         doReturn(revision).when(repo).getLatestRevision();
         
         //When
-        GeminiDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
+        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
         
         //Then
         verify(documentBundleReader).readBundle(eq(file), any(String.class));

@@ -8,6 +8,6 @@ import org.springframework.http.MediaType;
  *
  * @author cjohn
  */
-public interface DocumentReadingService<T> {
-    T read(InputStream inputStream, MediaType contentType) throws UnknownContentTypeException, IOException;
+public interface DocumentReadingService {
+    <T> T read(InputStream inputStream, MediaType contentType, Class<T> clazz) throws UnknownContentTypeException, IOException;
 }

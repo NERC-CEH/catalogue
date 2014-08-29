@@ -18,13 +18,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 
 public class GitDocumentLinkServiceTest {
     @Mock private DataRepository<CatalogueUser> repo;
-    @Mock private BundledReaderService<GeminiDocument> documentBundleReader;
+    @Mock private BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock private LinkDatabase linkDatabase;
 
     @Before

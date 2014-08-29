@@ -12,6 +12,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -20,7 +21,7 @@ import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 @Slf4j
 public class GitDocumentLinkService implements DocumentLinkService {
     private final DataRepository<CatalogueUser> repo;
-    private final BundledReaderService<GeminiDocument> documentBundleReader;
+    private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final LinkDatabase linkDatabase;
 
     @Override
@@ -56,15 +57,18 @@ public class GitDocumentLinkService implements DocumentLinkService {
         fileIdentifiers.forEach((fileIdentifier) -> {
             log.debug("linking with fileIdentifier: {}", fileIdentifier);
             try {
-                GeminiDocument document = documentBundleReader.readBundle(fileIdentifier, latestRev.getRevisionID());
-                metadata.add(new Metadata(document));
-                document.getCoupleResources().forEach((coupleResource) -> {
-                    coupledResources.add(
-                        CoupledResource.builder()
-                            .fileIdentifier(document.getId())
-                            .resourceIdentifier(coupleResource)
-                            .build());
-                });
+                MetadataDocument document = documentBundleReader.readBundle(fileIdentifier, latestRev.getRevisionID());
+                if(document instanceof GeminiDocument) {
+                    GeminiDocument geminiDocument = (GeminiDocument)document;
+                    metadata.add(new Metadata(geminiDocument));
+                    geminiDocument.getCoupleResources().forEach((coupleResource) -> {
+                        coupledResources.add(
+                            CoupledResource.builder()
+                                .fileIdentifier(document.getId())
+                                .resourceIdentifier(coupleResource)
+                                .build());
+                    });
+                }
             } catch (Exception ex) {
                 linkingException.addSuppressed(ex);
             }

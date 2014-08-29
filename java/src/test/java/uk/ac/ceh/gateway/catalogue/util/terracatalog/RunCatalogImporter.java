@@ -40,7 +40,7 @@ public class RunCatalogImporter {
     @Ignore("This is not really a test, it is a way of creating a Git repository from terraCatalog export Zips")
     // N.B. change data.repository.location in developer.properties to a temp location before running.
     public void toImport() throws Exception {
-        DocumentReadingService<GeminiDocument> documentReader = new MessageConverterReadingService<>(GeminiDocument.class)
+        DocumentReadingService documentReader = new MessageConverterReadingService()
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter());
         DocumentInfoMapper<MetadataInfo> documentInfoMapper = new JacksonDocumentInfoMapper(jacksonMapper, MetadataInfo.class);
         DocumentListingService documentList = new ExtensionDocumentListingService();

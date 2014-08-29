@@ -10,47 +10,32 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGenerator;
  * beans which are solr indexable
  * @author cjohn
  */
-public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<GeminiDocument> {
+public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
 
     @Override
-    public GeminiDocumentSolrIndex generateIndex(GeminiDocument document) {
-        return new GeminiDocumentSolrIndex()
+    public DocumentSolrIndex generateIndex(MetadataDocument document) {
+        return new DocumentSolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
                 .setIdentifier(document.getId())
-                .setResourceType(getResourceType(document))
+                .setResourceType(document.getType())
                 .setIsOgl(getIsOgl(document))
-                .setState(getState(document))
-                .setPublicationDate(getPublicationDate(document));
-    }
+                .setState(getState(document));
+    }    
     
-    private String getResourceType(GeminiDocument document){
-        if(document.getResourceType() != null){
-            return document.getResourceType().getValue();
-        } else {
-            return null;
+    private Boolean getIsOgl(MetadataDocument document){
+        if(document instanceof GeminiDocument) {
+            GeminiDocument geminiDocument = (GeminiDocument)document;
+            if(geminiDocument.getDownloadOrder() != null){
+                return geminiDocument.getDownloadOrder().isOgl();
+            }
         }
-    }
-    
-    private Boolean getIsOgl(GeminiDocument document){
-        if(document.getDownloadOrder() != null){
-            return document.getDownloadOrder().isOgl();
-        } else {
-            return null;
-        }
+        return null;
     }
 
-    private String getState(GeminiDocument document) {
+    private String getState(MetadataDocument document) {
         if (document.getMetadata() != null) {
             return document.getMetadata().getState();
-        } else {
-            return null;
-        }
-    }
-    
-    private String getPublicationDate(GeminiDocument document) {
-        if(document.getMetadataDate() != null) {
-            return document.getMetadataDate().toString();
         } else {
             return null;
         }
@@ -63,7 +48,7 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
     */
     @Data
     @Accessors(chain=true)
-    public static class GeminiDocumentSolrIndex {
+    public static class DocumentSolrIndex {
         protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 530;
         private @Field String identifier;
         private @Field String title;
@@ -71,7 +56,6 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
         private @Field String resourceType;
         private @Field Boolean isOgl;
         private @Field String state;
-        private @Field String publicationDate;
         
         public String getShortenedDescription(){
             return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);

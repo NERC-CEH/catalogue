@@ -53,7 +53,7 @@ public class TerraCatalogImporterTest {
     @Mock DocumentListingService listingService;
     @Mock UserStore<CatalogueUser> userstore;
     @Mock TerraCatalogUserFactory userFactory;
-    @Mock DocumentReadingService<GeminiDocument> documentReader;
+    @Mock DocumentReadingService documentReader;
     @Mock DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     @Mock TerraCatalogExtReader tcExtReader;
     @Mock TerraCatalogDocumentInfoFactory<MetadataInfo> terraCatalogDocumentInfoFactory;

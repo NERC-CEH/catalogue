@@ -25,6 +25,7 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -42,18 +43,18 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 @Slf4j
 public class DocumentController {
     private final DataRepository<CatalogueUser> repo;
-    private final DocumentReadingService<GeminiDocument> documentReader;
+    private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
-    private final BundledReaderService<GeminiDocument> documentBundleReader;
+    private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final DocumentLinkService linkService;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
-                                DocumentReadingService<GeminiDocument> documentReader,
+                                DocumentReadingService documentReader,
                                 DocumentInfoMapper documentInfoMapper,
                                 DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory,
-                                BundledReaderService<GeminiDocument> documentBundleReader,
+                                BundledReaderService<MetadataDocument> documentBundleReader,
                                 DocumentLinkService linkService) {
         this.repo = repo;
         this.documentReader = documentReader;
@@ -79,7 +80,7 @@ public class DocumentController {
             Files.copy(request.getInputStream(), tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
             
             //the documentReader will close the underlying inputstream
-            GeminiDocument data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType); 
+            GeminiDocument data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType, GeminiDocument.class); 
             MetadataInfo metadataDocument = infoFactory.createInfo(data, contentMediaType); //get the metadata info
             
             repo.submitData(data.getId() + ".meta", (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
@@ -95,7 +96,7 @@ public class DocumentController {
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.GET)   
     @ResponseBody
-    public GeminiDocument readMetadata(
+    public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
@@ -107,26 +108,20 @@ public class DocumentController {
     @RequestMapping(value = "history/{revision}/{file}",
                     method = RequestMethod.GET)
     @ResponseBody
-    public GeminiDocument readMetadata(
+    public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @PathVariable("revision") String revision,
             HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
-        GeminiDocument document = documentBundleReader.readBundle(file, revision);
-        document.setDocumentLinks(new HashSet<>(linkService.getLinks(document, getLinkUriBuilder(request, file))));
-        log.debug("document requested: {}", document);
-        if ( !publiclyViewable(document, user)) {
-            throw new PermissionDeniedException(String.format("Unable to view resource: %s", file));
+        MetadataDocument document = documentBundleReader.readBundle(file, revision);
+        if(document instanceof GeminiDocument) {
+            GeminiDocument geminiDocument = (GeminiDocument)document;
+            geminiDocument.setDocumentLinks(new HashSet<>(linkService.getLinks(geminiDocument, getLinkUriBuilder(request, file))));
         }
+        log.debug("document requested: {}", document);
         return document;
     }
-    
-    private boolean publiclyViewable(GeminiDocument document, CatalogueUser user) {
-        return document.getMetadata() != null
-            && "public".equalsIgnoreCase(document.getMetadata().getState())
-            && user.isPublic();
-    }
-    
+
     @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.DELETE)

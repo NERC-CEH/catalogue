@@ -15,7 +15,7 @@ public class StateTranslatingMetadataInfoFactoryTest {
         factory.put("private", "draft");
         GeminiDocument document = new GeminiDocument();
         TerraCatalogExt ext = new TerraCatalogExt("testOwner", "testGroup", "private", "protection");
-        MetadataInfo expected = new MetadataInfo("application/xml", "draft");
+        MetadataInfo expected = new MetadataInfo("application/xml", "draft", "GEMINI_DOCUMENT");
         
         //When
         MetadataInfo actual = factory.getDocumentInfo(document, ext);
@@ -30,7 +30,7 @@ public class StateTranslatingMetadataInfoFactoryTest {
         StateTranslatingMetadataInfoFactory factory = new StateTranslatingMetadataInfoFactory();
         GeminiDocument document = new GeminiDocument();
         TerraCatalogExt ext = new TerraCatalogExt("testOwner", "testGroup", "internal", "protection");
-        MetadataInfo expected = new MetadataInfo("application/xml", "draft");
+        MetadataInfo expected = new MetadataInfo("application/xml", "draft", "GEMINI_DOCUMENT");
         
         //When
         MetadataInfo actual = factory.getDocumentInfo(document, ext);

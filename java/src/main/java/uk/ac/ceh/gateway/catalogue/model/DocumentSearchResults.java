@@ -12,6 +12,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator;
 @ConvertUsing({
     @Template(called = "/html/search.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
-public class DocumentSearchResults extends SearchResults<GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex> {
+public class DocumentSearchResults extends SearchResults<GeminiDocumentSolrIndexGenerator.DocumentSolrIndex> {
     
 }
