@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator.DocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentSearchResults;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults;

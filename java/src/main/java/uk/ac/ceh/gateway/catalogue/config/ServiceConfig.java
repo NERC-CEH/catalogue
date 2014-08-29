@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
@@ -88,7 +88,7 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new GeminiDocumentSolrIndexGenerator(),
+                new MetadataDocumentSolrIndexGenerator(),
                 solrServer
         );
         

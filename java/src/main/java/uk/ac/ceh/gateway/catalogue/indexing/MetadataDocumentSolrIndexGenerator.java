@@ -1,16 +1,17 @@
-package uk.ac.ceh.gateway.catalogue.gemini;
+package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.MetadataDocument;
 
 /**
  * The following class is responsible for taking a gemini document and creating 
  * beans which are solr indexable
  * @author cjohn
  */
-public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
+public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
 
     @Override
     public DocumentSolrIndex generateIndex(MetadataDocument document) {
