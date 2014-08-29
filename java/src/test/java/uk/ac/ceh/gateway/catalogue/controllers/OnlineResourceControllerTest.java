@@ -36,9 +36,9 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource;
-import static uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource.Type.OTHER;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.IllegalOgcRequestTypeException;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
 import uk.ac.ceh.gateway.catalogue.model.NotAGetCapabilitiesResourceException;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
@@ -52,7 +52,7 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 public class OnlineResourceControllerTest {
     @Mock DataRepository<CatalogueUser> repo;
     @Mock CloseableHttpClient httpClient;
-    @Mock BundledReaderService<GeminiDocument> documentBundleReader;
+    @Mock BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock RestTemplate rest;
     
     private OnlineResourceController controller;

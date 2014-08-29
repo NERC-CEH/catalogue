@@ -57,7 +57,7 @@ public class DocumentControllerTest {
     @Spy DataRepository<CatalogueUser> repo;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService documentReader;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
+    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock DocumentLinkService linkService;
     private DocumentController controller;

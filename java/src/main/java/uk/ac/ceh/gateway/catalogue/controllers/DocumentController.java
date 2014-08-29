@@ -45,7 +45,7 @@ public class DocumentController {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
-    private final DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
+    private final DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final DocumentLinkService linkService;
     
@@ -53,7 +53,7 @@ public class DocumentController {
     public DocumentController(  DataRepository<CatalogueUser> repo,
                                 DocumentReadingService documentReader,
                                 DocumentInfoMapper documentInfoMapper,
-                                DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory,
+                                DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory,
                                 BundledReaderService<MetadataDocument> documentBundleReader,
                                 DocumentLinkService linkService) {
         this.repo = repo;
