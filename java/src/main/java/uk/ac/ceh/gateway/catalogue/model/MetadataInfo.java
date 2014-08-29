@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 /**
  * The following class represents the state at which a document is in along with 
@@ -29,6 +30,7 @@ public class MetadataInfo {
     public Class<? extends MetadataDocument> getDocumentClass() {
         switch(documentType) {
             case "GEMINI_DOCUMENT" : return GeminiDocument.class;
+            case "UKEOF_DOCUMENT" :  return UKEOFDocument.class;
             default: throw new IllegalArgumentException(documentType + ": does not have a corresponding class");
         }
     }
@@ -37,6 +39,9 @@ public class MetadataInfo {
     public void setDocumentClass(Class<? extends MetadataDocument> clazz) {
         if(GeminiDocument.class.isAssignableFrom(clazz)) {
             setDocumentType("GEMINI_DOCUMENT");
+        }
+        else if(UKEOFDocument.class.isAssignableFrom(clazz)) {
+            setDocumentType("UKEOF_DOCUMENT");
         }
         else {
             throw new IllegalArgumentException(clazz + " cannot be mapped to a known metadata document");

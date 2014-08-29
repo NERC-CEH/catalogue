@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.DocumentSearchResults;
+import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 @Configuration
 @EnableWebMvc
@@ -39,6 +40,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         mappingJackson2HttpMessageConverter.setObjectMapper(mapper);
         
         converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class, configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(UKEOFDocument.class, configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(DocumentSearchResults.class, configureFreeMarker().getConfiguration()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);

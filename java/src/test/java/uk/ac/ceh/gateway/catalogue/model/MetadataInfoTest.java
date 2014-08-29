@@ -7,6 +7,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 /**
  *
@@ -62,6 +63,31 @@ public class MetadataInfoTest {
         
         //Then
         assertEquals("Expected to find gemini document class", GeminiDocument.class, clazz);
+    }
+    
+        
+    @Test
+    public void checkThatUKEOFDocumentIsAssignedCorrectType() {
+        //Given
+        MetadataInfo info = new MetadataInfo();
+        
+        //When
+        info.setDocumentClass(UKEOFDocument.class);
+        
+        //Then
+        assertEquals("Expected to find ukeof document", "UKEOF_DOCUMENT", info.getDocumentType());
+    }
+    
+    @Test
+    public void checkThatUKEOFDocumentTypeReturnsCorrectClass() {
+        //Given
+        MetadataInfo info = new MetadataInfo("", "dataset","UKEOF_DOCUMENT");
+        
+        //When
+        Class<? extends MetadataDocument> clazz = info.getDocumentClass();
+        
+        //Then
+        assertEquals("Expected to find ukeof document class", UKEOFDocument.class, clazz);
     }
     
     @Test(expected=IllegalArgumentException.class)

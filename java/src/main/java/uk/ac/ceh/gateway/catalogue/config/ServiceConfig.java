@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.Xml2UKEOFDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -43,7 +44,8 @@ public class ServiceConfig {
     @Bean
     public DocumentReadingService documentReadingService() throws XPathExpressionException {
         return new MessageConverterReadingService()
-                .addMessageConverter(new Xml2GeminiDocumentMessageConverter());
+                .addMessageConverter(new Xml2GeminiDocumentMessageConverter())
+                .addMessageConverter(new Xml2UKEOFDocumentMessageConverter());
     }
     
     @Bean
