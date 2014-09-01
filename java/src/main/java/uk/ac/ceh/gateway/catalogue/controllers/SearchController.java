@@ -5,15 +5,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -80,24 +78,46 @@ public class SearchController {
     
     private List<Facet> getFacets(QueryResponse response){
         List<SearchResults.Facet> toReturn = new ArrayList<>();
-        for(FacetField facetField : response.getFacetFields()){
+        response.getFacetFields().stream().forEach((facetField) -> {
             List<SearchResults.FacetResult> facetResults = new ArrayList<>();
-            for(Count count : facetField.getValues()){
+            facetField.getValues().stream().forEach((count) -> {
                 facetResults.add(SearchResults.FacetResult
-                        .builder()
-                        .name(count.getName())
-                        .count(count.getCount())
-                        .build()
-                );
-            }
-            toReturn.add(Facet
                     .builder()
-                    .fieldName(facetField.getName())
-                    .displayName(FACET_FIELDS.get(facetField.getName()))
-                    .results(facetResults)
+                    .name(count.getName())
+                    .count(count.getCount())
                     .build()
+                );
+            });
+            toReturn.add(Facet
+                .builder()
+                .fieldName(facetField.getName())
+                .displayName(FACET_FIELDS.get(facetField.getName()))
+                .results(facetResults)
+                .build()
             );
-        }
+        });
+        List<SearchResults.FacetResult> pivots = new ArrayList<>();
+        response.getFacetPivot().get("sci0,sci1").stream().forEach((pivotField) -> {
+            List<SearchResults.FacetResult> subPivots = new ArrayList<>();
+            pivotField.getPivot().stream().forEach((sub) -> {
+                subPivots.add(SearchResults.FacetResult.builder()
+                    .name(sub.getValue().toString())
+                    .count(sub.getCount())
+                    .build());
+            });
+            pivots.add(SearchResults.FacetResult
+                .builder()
+                .name(pivotField.getValue().toString())
+                .count(pivotField.getCount())
+                .facetResults(subPivots)
+                .build()
+            );
+        });
+        toReturn.add(Facet.builder()
+            .fieldName("sci0")
+            .displayName("Science Area")
+            .results(pivots)
+            .build());
         return toReturn;
     }
     
@@ -130,7 +150,7 @@ public class SearchController {
             for(String facetFilter : facetFilters){
                 if(StringUtils.countOccurrencesOf(facetFilter, delimiter) == 1){
                     String[] facetFilterParts = facetFilter.split("\\" + delimiter);
-                    query.addFilterQuery(facetFilterParts[0] + ":" + facetFilterParts[1]);
+                    query.addFilterQuery("{!term f=" +facetFilterParts[0] + "}" + facetFilterParts[1]);
                 }else{
                     throw new IllegalArgumentException(String.format("This is an invalid facet filter: %s. It should contain one argument delimiter of the type '|'", facetFilter));
                 }
@@ -141,9 +161,11 @@ public class SearchController {
     private void setFacetFields(SolrQuery query){
         query.setFacet(true);
         query.setFacetMinCount(1);
-        for(Entry<String, String> entry : FACET_FIELDS.entrySet()){
+        query.setFacetSort("index");
+        FACET_FIELDS.entrySet().stream().forEach((entry) -> {
             query.addFacetField(entry.getKey());
-        }
+        });
+        query.addFacetPivotField("sci0,sci1");
     }
     
     private void setSortOrder(SolrQuery query, String term){
@@ -161,5 +183,5 @@ public class SearchController {
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.DAY_OF_YEAR);
     }
-    
+
 }

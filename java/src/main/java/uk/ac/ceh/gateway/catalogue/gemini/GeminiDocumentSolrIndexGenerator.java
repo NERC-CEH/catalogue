@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import java.util.List;
+import java.util.Map;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
@@ -20,6 +21,7 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
 
     @Override
     public GeminiDocumentSolrIndex generateIndex(GeminiDocument document) {
+        Map<String, String> sci = scienceAreaIndexer.index(document);
         return new GeminiDocumentSolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
@@ -27,7 +29,8 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
                 .setResourceType(getResourceType(document))
                 .setIsOgl(getIsOgl(document))
                 .setState(getState(document))
-                .setScienceArea(scienceAreaIndexer.index(document));
+                .setSci0(sci.get("sci0"))
+                .setSci1(sci.get("sci1"));
     }
     
     private String getResourceType(GeminiDocument document){
@@ -69,7 +72,8 @@ public class GeminiDocumentSolrIndexGenerator implements SolrIndexGenerator<Gemi
         private @Field String resourceType;
         private @Field Boolean isOgl;
         private @Field String state;
-        private @Field List<String> scienceArea;
+        private @Field String sci0;
+        private @Field String sci1;
         
         public String getShortenedDescription(){
             return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);

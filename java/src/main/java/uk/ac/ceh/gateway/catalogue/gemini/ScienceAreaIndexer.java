@@ -1,12 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import java.util.List;
+import java.util.Map;
 
 public interface ScienceAreaIndexer {
     /**
-     * Extracts Science Area keywords from GeminiDocument in Solr hierarchical format.
+     * Extracts Science Area keywords from GeminiDocument for Solr facet pivot.
      * 
-     * The strings need to represent the flattened hierarchy, see http://wiki.apache.org/solr/HierarchicalFaceting
+     * The keywords need to represent the flattened hierarchy, see http://wiki.apache.org/solr/HierarchicalFaceting
      * 
      * A hierarchy of Soil > Erosion needs to be represented as a list of two strings
      * 
@@ -15,7 +15,7 @@ public interface ScienceAreaIndexer {
      * The number prefix represents the depth into the hierarchy.
      * 
      * @param document the GeminiDocument to extract Science Area keywords from
-     * @return list of Solr hierarchical facet strings
+     * @return map of Solr column name to Science Area
      */
-    List<String> index(GeminiDocument document);
+    Map<String, String> index(GeminiDocument document);
 }

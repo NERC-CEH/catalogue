@@ -34,5 +34,6 @@ public abstract class SearchResults<T> {
     public static class FacetResult{
         private String name;
         private long count;
+        private List<FacetResult> facetResults;
     }
 }

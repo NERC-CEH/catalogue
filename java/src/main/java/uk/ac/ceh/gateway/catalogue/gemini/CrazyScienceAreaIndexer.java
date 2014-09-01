@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -14,44 +15,55 @@ import java.util.Random;
  * @author rjsc
  */
 public class CrazyScienceAreaIndexer implements ScienceAreaIndexer {
-    private final List<List<String>> categories;
+    private final List<Map<String, String>> categories;
     private final Random random;
 
     public CrazyScienceAreaIndexer() {
         categories = new ArrayList<>();
-        categories.add(Arrays.asList("0/BiosphereAtmosphereInteractions/"));
-        categories.add(Arrays.asList("0/BiosphereAtmosphereInteractions/", "1/BiosphereAtmosphereInteractions/Aerosols/"));
-        categories.add(Arrays.asList("0/BiosphereAtmosphereInteractions/", "1/BiosphereAtmosphereInteractions/AirQuality/"));
-        categories.add(Arrays.asList("0/EcologicalProcessesAndResilience/"));
-        categories.add(Arrays.asList("0/EcologicalProcessesAndResilience/", "1/EcologicalProcessesAndResilience/HabitatLoss/"));
-        categories.add(Arrays.asList("0/EcologicalProcessesAndResilience/", "1/EcologicalProcessesAndResilience/EcosystemServices/"));
-        categories.add(Arrays.asList("0/NaturalCapital/"));
-        categories.add(Arrays.asList("0/NaturalCapital/", "1/NaturalCapital/EnvironmentalAssets/"));
-        categories.add(Arrays.asList("0/NaturalCapital/", "1/NaturalCapital/InsectPollinators/"));
-        categories.add(Arrays.asList("0/NaturalHazards/"));
-        categories.add(Arrays.asList("0/NaturalHazards/", "1/NaturalHazards/PopulationGrowth/"));
-        categories.add(Arrays.asList("0/NaturalHazards/", "1/NaturalHazards/MitigationStrategies/"));
-        categories.add(Arrays.asList("0/PollutionAndEnvironmentalRisk/"));
-        categories.add(Arrays.asList("0/PollutionAndEnvironmentalRisk/", "1/PollutionAndEnvironmentalRisk/Radionuclides/"));
-        categories.add(Arrays.asList("0/PollutionAndEnvironmentalRisk/", "1/PollutionAndEnvironmentalRisk/Health/"));
-        categories.add(Arrays.asList("0/Soil/"));
-        categories.add(Arrays.asList("0/Soil/", "1/Soil/Nutrients/"));
-        categories.add(Arrays.asList("0/Soil/", "1/Soil/SoilQuality/"));
-        categories.add(Arrays.asList("0/SustainableLandMangement/"));
-        categories.add(Arrays.asList("0/SustainableLandMangement/", "1/SustainableLandMangement/RenewableEnergy/"));
-        categories.add(Arrays.asList("0/SustainableLandMangement/", "1/SustainableLandMangement/CleanWater/"));
-        categories.add(Arrays.asList("0/WaterResources/"));
-        categories.add(Arrays.asList("0/WaterResources/", "1/WaterResources/Agriculture/"));
-        categories.add(Arrays.asList("0/WaterResources/", "1/WaterResources/PowerGeneration/"));
-        categories.add(Arrays.asList("0/MonitoringAndObservationSystems/"));
-        categories.add(Arrays.asList("0/MonitoringAndObservationSystems/", "1/MonitoringAndObservationSystems/Surveillance/"));
-        categories.add(Arrays.asList("0/MonitoringAndObservationSystems/", "1/MonitoringAndObservationSystems/Analysis/"));
+        categories.add(make("Biosphere Atmosphere Interactions", null));
+        categories.add(make("Biosphere Atmosphere Interactions", "Aerosols"));
+        categories.add(make("Biosphere Atmosphere Interactions", "Air Quality"));
+        categories.add(make("Ecological Processes & Resilience", null));
+        categories.add(make("Ecological Processes & Resilience", "Habitat Loss"));
+        categories.add(make("Ecological Processes & Resilience", "Ecosystem Services"));
+        categories.add(make("Natural Capital", null));
+        categories.add(make("Natural Capital", "Environmental Assets"));
+        categories.add(make("Natural Capital", "Insect Pollinators"));
+        categories.add(make("Natural Hazards", null));
+        categories.add(make("Natural Hazards", "Population Growth"));
+        categories.add(make("Natural Hazards", "Mitigation Strategies"));
+        categories.add(make("Pollution & Environmental Risk", null));
+        categories.add(make("Pollution & Environmental Risk", "Radionuclides"));
+        categories.add(make("Pollution & Environmental Risk", "Health"));
+        categories.add(make("Soil", null));
+        categories.add(make("Soil", "Nutrients"));
+        categories.add(make("Soil", "Soil Quality"));
+        categories.add(make("Sustainable Land Mangement", null));
+        categories.add(make("Sustainable Land Mangement", "Renewable Energy"));
+        categories.add(make("Sustainable Land Mangement", "Clean Water"));
+        categories.add(make("Water Resources", null));
+        categories.add(make("Water Resources", "Agriculture"));
+        categories.add(make("Water Resources", "Power Generation"));
+        categories.add(make("Monitoring & Observation Systems", null));
+        categories.add(make("Monitoring & Observation Systems", "Surveillance"));
+        categories.add(make("Monitoring & Observation Systems", "Analysis"));
         random = new Random(System.currentTimeMillis());
+    }
+    
+    private Map<String, String> make (String value0, String value1) {
+        Map<String, String> toReturn = new HashMap<>();
+        if (value0 != null) {
+            toReturn.put("sci0", value0);
+        }
+        if (value1 != null) {
+            toReturn.put("sci1", value1);
+        }
+        return toReturn;
     }
     
 
     @Override
-    public List<String> index(GeminiDocument document) {
+    public Map<String, String> index(GeminiDocument document) {
         return categories.get(random.nextInt(categories.size()));
     }
 

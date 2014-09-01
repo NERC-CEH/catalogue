@@ -2,11 +2,15 @@
 <@skeleton.master title="Search">
 <div class="container">
 
-  <div class="search-container">
+  <div id="search">
     <div class="search">
       <div class="search-box">
         <form id="search-form" action="/documents" method="get">
-          <@addFacetFiltersToForm header.facetFilters/>
+          <#if header.facetFilters??>
+            <#list header.facetFilters as facetFilter>
+              <input type='hidden' name='facet' value='${facetFilter}'>
+            </#list>
+          </#if>
           <div class="input-group">
             <#if header.term="*">
               <#assign term="">
@@ -24,13 +28,10 @@
       <div class="facets">
         <ul class="nav nav-pills nav-stacked">
           <#list facets as facet>
-            <li class="facet-heading">
-              ${facet.displayName}
-              </a>
-            </li>
+            <li class="facet-heading">${facet.displayName}</li>
             <#list facet.results as result>
               <#if isActiveFacetFilter(header.facetFilters facet.fieldName result.name)>
-                <li class="facet-filter-active"}>
+                <li class="facet-filter-active">
                   <a href="/documents?term=${term}${removeFacetFilter(header.facetFilters, facet.fieldName + '|' + result.name)}" class="facet-link-active">
                     <span class="facet-result-name">${result.name}</span>
                     <span class="glyphicon glyphicon-remove-circle pull-right"></span>
@@ -41,11 +42,22 @@
                   <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getFacetFiltersAsQueryParams(header.facetFilters)}" class="facet-link-inactive">
                     <span class="facet-result-name">${result.name} (${result.count})</span>
                   </a>
+                  <#if result.facetResults?? && result.facetResults?has_content>
+                    <ul>
+                      <#list result.facetResults as sub>
+                        <li class="facet-filter-inactive">
+                          <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}&facet=sci1|${sub.name}${getFacetFiltersAsQueryParams(header.facetFilters)}" class="facet-link-inactive">
+                            <span class="facet-result-name">${sub.name} (${sub.count})</span>
+                          </a>
+                        </li>
+                      </#list>
+                    </ul>
+                  </#if>
                 </li>
               </#if>
             </#list>
-          </#list>   
-        </ul> 
+          </#list>
+        </ul>
       </div>
     </div>
 
@@ -89,11 +101,3 @@
   </#list>
   <#return getFacetFiltersAsQueryParams(toReturn)>
 </#function>
-
-<#macro addFacetFiltersToForm facetFilters>
-  <#if facetFilters?? && (facetFilters?size > 0)>
-    <#list facetFilters as facetFilter>
-      <input type='hidden' name='facet' value='${facetFilter}'>
-    </#list>
-  </#if>
-</#macro>
