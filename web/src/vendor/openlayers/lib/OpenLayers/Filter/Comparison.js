@@ -115,9 +115,6 @@ OpenLayers.Filter.Comparison = OpenLayers.Class(OpenLayers.Filter, {
         }
         var result = false;
         var got = context[this.property];
-        if (got === undefined) {
-            return false;
-        }
         var exp;
         switch(this.type) {
             case OpenLayers.Filter.Comparison.EQUAL_TO:

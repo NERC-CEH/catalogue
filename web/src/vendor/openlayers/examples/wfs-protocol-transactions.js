@@ -46,7 +46,7 @@ function init() {
     });
     var gphy = new OpenLayers.Layer.Google(
         "Google Physical",
-        {type: google.maps.MapTypeId.PHYSICAL, sphericalMercator: true}
+        {type: G_PHYSICAL_MAP, sphericalMercator: true}
     );
 
     var saveStrategy = new OpenLayers.Strategy.Save();

@@ -61,13 +61,6 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
     featureNS: null,
 
     /**
-     * APIProperty: featurePrefix
-     * {String} Namespace alias (or prefix) for feature nodes.  Default is
-     *     "feature".
-     */
-    featurePrefix: "feature",
-
-    /**
      * APIProperty: geometry
      * {String} Name of geometry element.  Defaults to "geometry". If null, it
      * will be set on <read> when the first geometry is parsed.
@@ -154,7 +147,7 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
         OpenLayers.Format.XML.prototype.initialize.apply(this, [options]);
         this.setGeometryTypes();
         if(options && options.featureNS) {
-            this.setNamespace(this.featurePrefix, options.featureNS);
+            this.setNamespace("feature", options.featureNS);
         }
         this.singleFeatureType = !options || (typeof options.featureType === "string");
     },
@@ -574,7 +567,7 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
         },
         "feature": {
             "_typeName": function(feature) {
-                var node = this.createElementNSPlus(this.featurePrefix + ":" + this.featureType, {
+                var node = this.createElementNSPlus("feature:" + this.featureType, {
                     attributes: {fid: feature.fid}
                 });
                 if(feature.geometry) {
@@ -598,7 +591,7 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
                     );
                 }    
                 var node = this.createElementNSPlus(
-                    this.featurePrefix + ":" + this.geometryName
+                    "feature:" + this.geometryName
                 );
                 var type = this.geometryTypes[geometry.CLASS_NAME];
                 var child = this.writeNode("gml:" + type, geometry, node);
@@ -608,7 +601,7 @@ OpenLayers.Format.GML.Base = OpenLayers.Class(OpenLayers.Format.XML, {
                 return node;
             },
             "_attribute": function(obj) {
-                return this.createElementNSPlus(this.featurePrefix + ":" + obj.name, {
+                return this.createElementNSPlus("feature:" + obj.name, {
                     value: obj.value
                 });
             }

@@ -42,22 +42,8 @@ OpenLayers.Symbolizer.Text = OpenLayers.Class(OpenLayers.Symbolizer, {
      */
     
     /**
-     * APIProperty: fontStyle
+     * Property: fontStyle
      * {String} The font style for the label.
-     * 
-     * No default set here.  Use OpenLayers.Renderer.defaultRenderer for defaults.
-     */
-
-    /**
-     * APIProperty: fontColor
-     * {String} The font color for the label.
-     * 
-     * No default set here.  Use OpenLayers.Renderer.defaultRenderer for defaults.
-     */
-
-    /**
-     * APIProperty: fontOpacity
-     * {String} The font opacity for the label.
      * 
      * No default set here.  Use OpenLayers.Renderer.defaultRenderer for defaults.
      */

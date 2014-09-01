@@ -29,8 +29,7 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         wfs: "http://www.opengis.net/wfs",
         gml: "http://www.opengis.net/gml",
         ogc: "http://www.opengis.net/ogc",
-        ows: "http://www.opengis.net/ows",
-        xmlns: "http://www.w3.org/2000/xmlns/"
+        ows: "http://www.opengis.net/ows"
     },
     
     /**
@@ -189,8 +188,8 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
      * - *modified.geometry* is set (null or a geometry): The geometry will be
      *     included. If *modified.attributes* is not set, all attributes will
      *     be included.
-     * - *modified.attributes* is set: Only the attributes set in 
-     *     *modified.attributes* will be included.
+     * - *modified.attributes* is set: Only the attributes set (i.e. to null or
+     *     a value) in *modified.attributes* will be included. 
      *     If *modified.geometry* is not set, the geometry will not be included.
      *
      * Valid options include:
@@ -230,7 +229,6 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
                         handle: options && options.handle,
                         outputFormat: options && options.outputFormat,
                         maxFeatures: options && options.maxFeatures,
-                        viewParams: options && options.viewParams,
                         "xsi:schemaLocation": this.schemaLocationAttr(options)
                     }
                 });
@@ -322,10 +320,7 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
                     }
                 });
                 if(this.featureNS) {
-                    this.setAttributeNS(
-                        node, this.namespaces.xmlns,
-                        "xmlns:" + this.featurePrefix, this.featureNS
-                    );
+                    node.setAttribute("xmlns:" + this.featurePrefix, this.featureNS);
                 }
                 
                 // add in geometry
@@ -341,7 +336,7 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
                 for(var key in feature.attributes) {
                     if(feature.attributes[key] !== undefined &&
                                 (!modified || !modified.attributes ||
-                                (modified.attributes && (key in modified.attributes)))) {
+                                (modified.attributes && modified.attributes[key] !== undefined))) {
                         this.writeNode(
                             "Property", {name: key, value: feature.attributes[key]}, node
                         );
@@ -388,10 +383,7 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
                     }
                 });
                 if(this.featureNS) {
-                    this.setAttributeNS(
-                        node, this.namespaces.xmlns,
-                        "xmlns:" + this.featurePrefix, this.featureNS
-                    );
+                    node.setAttribute("xmlns:" + this.featurePrefix, this.featureNS);
                 }
                 this.writeNode("ogc:Filter", new OpenLayers.Filter.FeatureId({
                     fids: [feature.fid]

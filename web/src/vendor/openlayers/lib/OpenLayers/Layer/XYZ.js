@@ -73,8 +73,7 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
         if (options && options.sphericalMercator || this.sphericalMercator) {
             options = OpenLayers.Util.extend({
                 projection: "EPSG:900913",
-                numZoomLevels: this.serverResolutions ?
-                        this.serverResolutions.length : 19
+                numZoomLevels: 19
             }, options);
         }
         OpenLayers.Layer.Grid.prototype.initialize.apply(this, [
@@ -140,9 +139,9 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
      */
     getXYZ: function(bounds) {
         var res = this.getServerResolution();
-        var x = Math.round((bounds.left - this.tileOrigin.lon) /
+        var x = Math.round((bounds.left - this.maxExtent.left) /
             (res * this.tileSize.w));
-        var y = Math.round((this.tileOrigin.lat - bounds.top) /
+        var y = Math.round((this.maxExtent.top - bounds.top) /
             (res * this.tileSize.h));
         var z = this.getServerZoom();
 
@@ -165,7 +164,7 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
         OpenLayers.Layer.Grid.prototype.setMap.apply(this, arguments);
         if (!this.tileOrigin) { 
             this.tileOrigin = new OpenLayers.LonLat(this.maxExtent.left,
-                                                this.maxExtent.top);
+                                                this.maxExtent.bottom);
         }                                       
     },
 

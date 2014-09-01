@@ -14,6 +14,6 @@
     "requirejs-tpl": "7438735aa84b76af0fb266d8373b5fbaab2a1a03",
     "require-cs": "0.5.0",
     "zeroclipboard": "2.1.6",
-    "openlayers": "*"
+    "openlayers": "release-2.13.1"
   }
 }

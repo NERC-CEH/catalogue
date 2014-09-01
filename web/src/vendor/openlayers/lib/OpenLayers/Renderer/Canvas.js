@@ -69,7 +69,6 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
         this.root = document.createElement("canvas");
         this.container.appendChild(this.root);
         this.canvas = this.root.getContext("2d");
-        this._clearRectId = OpenLayers.Util.createUniqueID();
         this.features = {};
         if (this.hitDetection) {
             this.hitCanvas = document.createElement("canvas");
@@ -207,9 +206,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
             (className == "OpenLayers.Geometry.MultiPoint") ||
             (className == "OpenLayers.Geometry.MultiLineString") ||
             (className == "OpenLayers.Geometry.MultiPolygon")) {
-            var worldBounds = (this.map.baseLayer && this.map.baseLayer.wrapDateLine) && this.map.getMaxExtent();
             for (var i = 0; i < geometry.components.length; i++) {
-                this.calculateFeatureDx(geometry.components[i].getBounds(), worldBounds);
                 this.drawGeometry(geometry.components[i], style, featureId);
             }
             return;
@@ -257,13 +254,11 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
            style.graphicXOffset : -(0.5 * width);
         var yOffset = (style.graphicYOffset != undefined) ?
            style.graphicYOffset : -(0.5 * height);
-        var _clearRectId = this._clearRectId;
 
         var opacity = style.graphicOpacity || style.fillOpacity;
         
         var onLoad = function() {
-            if(!this.features[featureId] ||
-                                     _clearRectId !== this._clearRectId) {
+            if(!this.features[featureId]) {
                 return;
             }
             var pt = this.getLocalXY(geometry);
@@ -290,12 +285,9 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
                 }
             }
         };
+
         img.onload = OpenLayers.Function.bind(onLoad, this);
         img.src = style.externalGraphic;
-        if (img.complete) {
-            img.onload();
-            img.onload = null;
-        }
     },
 
     /**
@@ -650,7 +642,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
         // erase inner rings
         for (var i=1; i<len; ++i) {
             /** 
-             * Note that this is overly aggressive.  Here we punch holes through 
+             * Note that this is overly agressive.  Here we punch holes through 
              * all previously rendered features on the same canvas.  A better 
              * solution for polygons with interior rings would be to draw the 
              * polygon on a sketch canvas first.  We could erase all holes 
@@ -775,19 +767,10 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
      * Clear all vectors from the renderer.
      */    
     clear: function() {
-        this.clearCanvas();
-        this.features = {};
-    },
-
-    /**
-     * Method: clearCanvas
-     * Clear the canvas element of the renderer.
-     */    
-    clearCanvas: function() {
         var height = this.root.height;
         var width = this.root.width;
         this.canvas.clearRect(0, 0, width, height);
-        this._clearRectId = OpenLayers.Util.createUniqueID();
+        this.features = {};
         if (this.hitDetection) {
             this.hitContext.clearRect(0, 0, width, height);
         }
@@ -861,7 +844,12 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
      */
     redraw: function() {
         if (!this.locked) {
-            this.clearCanvas();
+            var height = this.root.height;
+            var width = this.root.width;
+            this.canvas.clearRect(0, 0, width, height);
+            if (this.hitDetection) {
+                this.hitContext.clearRect(0, 0, width, height);
+            }
             var labelMap = [];
             var feature, geometry, style;
             var worldBounds = (this.map.baseLayer && this.map.baseLayer.wrapDateLine) && this.map.getMaxExtent();

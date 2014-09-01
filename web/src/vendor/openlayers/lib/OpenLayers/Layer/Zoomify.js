@@ -79,18 +79,18 @@ OpenLayers.Layer.Zoomify = OpenLayers.Class(OpenLayers.Layer.Grid, {
      * Parameters:
      * name - {String} A name for the layer.
      * url - {String} - Relative or absolute path to the image or more
-     *        precisely to the TileGroup[X] directories root.
+     *        precisly to the TileGroup[X] directories root.
      *        Flash plugin use the variable name "zoomifyImagePath" for this.
      * size - {<OpenLayers.Size>} The size (in pixels) of the image.
      * options - {Object} Hashtable of extra options to tag onto the layer
      */
     initialize: function(name, url, size, options) {
 
-        // initialize the Zoomify pyramid for given size
+        // initilize the Zoomify pyramid for given size
         this.initializeZoomify(size);
 
         OpenLayers.Layer.Grid.prototype.initialize.apply(this, [
-            name, url, {}, options
+            name, url, size, {}, options
         ]);
     },
 
@@ -188,27 +188,6 @@ OpenLayers.Layer.Zoomify = OpenLayers.Class(OpenLayers.Layer.Grid, {
     },
 
     /**
-     * Method: createBackBuffer
-     * Create a back buffer.
-     *
-     * Returns:
-     * {DOMElement} The DOM element for the back buffer, undefined if the
-     * grid isn't initialized yet.
-     */
-    createBackBuffer: function() {
-        var backBuffer = OpenLayers.Layer.Grid.prototype.createBackBuffer.apply(this, arguments);
-        if(backBuffer) {
-            var image;
-            for (var i=backBuffer.childNodes.length-1; i>=0; --i) {
-                image = backBuffer.childNodes[i];
-                image._w = image.width;
-                image._h = image.height;
-            }
-        }
-        return backBuffer;
-    },
-
-    /**
      * Method: getURL
      *
      * Parameters:
@@ -253,22 +232,9 @@ OpenLayers.Layer.Zoomify = OpenLayers.Class(OpenLayers.Layer.Grid, {
             var h = this.standardTileSize;
             if (x == this.tierSizeInTiles[z].w -1 ) {
                 var w = this.tierImageSize[z].w % this.standardTileSize;
-                if (w == 0) {
-                    w = this.standardTileSize;
-                }
             }
             if (y == this.tierSizeInTiles[z].h -1 ) {
                 var h = this.tierImageSize[z].h % this.standardTileSize;
-                if (h == 0) {
-                    h = this.standardTileSize;
-                }
-            }
-            // in jp2 format, dimensions of tiles are ceiled, that means there may be requested part of image (1px usually) above dimension stated in tierImageSize. 
-            if (x == this.tierSizeInTiles[z].w) {
-                w = Math.ceil(this.size.w / Math.pow(2, this.numberOfTiers - 1 - z) - this.tierImageSize[z].w);
-            }
-            if (y == this.tierSizeInTiles[z].h) {
-                h = Math.ceil(this.size.h / Math.pow(2, this.numberOfTiers - 1 - z) - this.tierImageSize[z].h);
             }
             return (new OpenLayers.Size(w, h));
         } else {

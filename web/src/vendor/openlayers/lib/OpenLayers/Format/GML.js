@@ -187,13 +187,11 @@ OpenLayers.Format.GML = OpenLayers.Class(OpenLayers.Format.XML, {
         var feature = new OpenLayers.Feature.Vector(geometry, attributes);
         feature.bounds = bounds;
         
-        var firstChild = this.getFirstElementChild(node);
         feature.gml = {
-            featureType: firstChild.nodeName.split(":")[1],
-            featureNS: firstChild.namespaceURI,
-            featureNSPrefix: firstChild.prefix
+            featureType: node.firstChild.nodeName.split(":")[1],
+            featureNS: node.firstChild.namespaceURI,
+            featureNSPrefix: node.firstChild.prefix
         };
-        feature.type = feature.gml.featureType;
                 
         // assign fid - this can come from a "fid" or "id" attribute
         var childNode = node.firstChild;

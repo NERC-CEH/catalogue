@@ -4,7 +4,6 @@
  * full text of the license. */
 
 /**
- * @requires OpenLayers/BaseTypes.js
  * @requires OpenLayers/Rule.js
  * @requires OpenLayers/Format/SLD.js
  * @requires OpenLayers/Format/Filter/v1_0_0.js
@@ -33,8 +32,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
         ogc: "http://www.opengis.net/ogc",
         gml: "http://www.opengis.net/gml",
         xlink: "http://www.w3.org/1999/xlink",
-        xsi: "http://www.w3.org/2001/XMLSchema-instance",
-        xmlns: "http://www.w3.org/2000/xmlns/"
+        xsi: "http://www.w3.org/2001/XMLSchema-instance"
     },
     
     /**
@@ -159,7 +157,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
             },
             "NamedStyle": function(node, layer) {
                 layer.namedStyles.push(
-                    this.getChildValue(node.firstChild)
+                    this.getChildName(node.firstChild)
                 );
             },
             "UserStyle": function(node, layer) {
@@ -297,7 +295,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
             "Label": function(node, symbolizer) {
                 var value = this.readers.ogc._expression.call(this, node);
                 if (value) {
-                    symbolizer.label = OpenLayers.String.trim(value);
+                    symbolizer.label = value;
                 }
             },
             "Font": function(node, symbolizer) {
@@ -655,14 +653,8 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
 
                 // For ArcGIS Server it is necessary to define this
                 // at the root level (see ticket:2166).
-                this.setAttributeNS(
-                    root, this.namespaces.xmlns,
-                    "xmlns:ogc", this.namespaces.ogc
-                );
-                this.setAttributeNS(
-                    root, this.namespaces.xmlns,
-                    "xmlns:gml", this.namespaces.gml
-                );
+                root.setAttribute("xmlns:ogc", this.namespaces.ogc);
+                root.setAttribute("xmlns:gml", this.namespaces.gml);
 
                 // add in optional name
                 if(sld.name) {
@@ -902,10 +894,6 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
             },
             "LineSymbolizer": function(symbolizer) {
                 var node = this.createElementNSPlus("sld:LineSymbolizer");
-                // add in optional Geometry
-                if (symbolizer.geometry) {
-                    this.writeNode("Geometry", symbolizer.geometry, node);
-                }
                 this.writeNode("Stroke", symbolizer, node);
                 return node;
             },
@@ -963,10 +951,6 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
             },
             "TextSymbolizer": function(symbolizer) {
                 var node = this.createElementNSPlus("sld:TextSymbolizer");
-                // add in optional Geometry
-                if (symbolizer.geometry) {
-                    this.writeNode("Geometry", symbolizer.geometry, node);
-                }
                 // add in optional Label
                 if(symbolizer.label != null) {
                     this.writeNode("Label", symbolizer.label, node);
@@ -1205,10 +1189,6 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
             },
             "PolygonSymbolizer": function(symbolizer) {
                 var node = this.createElementNSPlus("sld:PolygonSymbolizer");
-                // add in optional Geometry
-                if (symbolizer.geometry) {
-                    this.writeNode("Geometry", symbolizer.geometry, node);
-                }
                 if(symbolizer.fill !== false) {
                     this.writeNode("Fill", symbolizer, node);
                 }
@@ -1241,10 +1221,6 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
             },
             "PointSymbolizer": function(symbolizer) {
                 var node = this.createElementNSPlus("sld:PointSymbolizer");
-                // add in optional Geometry
-                if (symbolizer.geometry) {
-                    this.writeNode("Geometry", symbolizer.geometry, node);
-                }
                 this.writeNode("Graphic", symbolizer, node);
                 return node;
             },

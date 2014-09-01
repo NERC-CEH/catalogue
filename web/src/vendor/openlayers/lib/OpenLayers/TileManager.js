@@ -215,7 +215,6 @@ OpenLayers.TileManager = OpenLayers.Class({
         if (layer instanceof OpenLayers.Layer.Grid) {
             layer.events.on({
                 addtile: this.addTile,
-                refresh: this.handleLayerRefresh,
                 retile: this.clearTileQueue,
                 scope: this
             });
@@ -246,7 +245,6 @@ OpenLayers.TileManager = OpenLayers.Class({
             if (layer.events) {
                 layer.events.un({
                     addtile: this.addTile,
-                    refresh: this.handleLayerRefresh,
                     retile: this.clearTileQueue,
                     scope: this
                 });
@@ -258,27 +256,6 @@ OpenLayers.TileManager = OpenLayers.Class({
                         tile = layer.grid[i][j];
                         this.unloadTile({object: tile});
                     }
-                }
-            }
-        }
-    },
-
-    /**
-     * Method: handleLayerRefresh
-     * Clears the cache when a redraw is forced on a layer
-     *
-     * Parameters:
-     * evt - {Object} The listener argument
-     */
-    handleLayerRefresh: function(evt) {
-        var layer = evt.object;
-        if (layer.grid) {
-            var i, j, tile;
-            for (i=layer.grid.length-1; i>=0; --i) {
-                for (j=layer.grid[i].length-1; j>=0; --j) {
-                    tile = layer.grid[i][j];
-                    OpenLayers.Util.removeItem(this.tileCacheIndex, tile.url);
-                    delete this.tileCache[tile.url];
                 }
             }
         }
@@ -323,7 +300,6 @@ OpenLayers.TileManager = OpenLayers.Class({
      */
     addTile: function(evt) {
         if (evt.tile instanceof OpenLayers.Tile.Image) {
-          if (!evt.tile.layer.singleTile) {
             evt.tile.events.on({
                 beforedraw: this.queueTileDraw,
                 beforeload: this.manageTileCache,
@@ -331,7 +307,6 @@ OpenLayers.TileManager = OpenLayers.Class({
                 unload: this.unloadTile,
                 scope: this
             });        
-          }
         } else {
             // Layer has the wrong tile type, so don't handle it any longer
             this.removeLayer({layer: evt.tile.layer});

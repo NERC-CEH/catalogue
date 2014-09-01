@@ -23,24 +23,15 @@ OpenLayers.Control.Attribution =
      * {String} String used to separate layers.
      */
     separator: ", ",
-
+    
     /**
      * APIProperty: template
-     * {String} Template for the global attribution markup. This has to include the
-     *     substring "${layers}", which will be replaced by the layer specific
+     * {String} Template for the attribution. This has to include the substring
+     *     "${layers}", which will be replaced by the layer specific
      *     attributions, separated by <separator>. The default is "${layers}".
      */
     template: "${layers}",
-
-    /**
-     * APIProperty: layerTemplate
-     * {String} Template for the layer specific attribution. This has to include
-     *     the substrings "${href}" and "${title}", which will be replaced by
-     *     the layer specific attribution object properties.
-     *     The default is '<a href="${href}" target="_blank">${title}</a>'.
-     */
-    layerTemplate: '<a href="${href}" target="_blank">${title}</a>',
-
+    
     /**
      * Constructor: OpenLayers.Control.Attribution 
      * 
@@ -91,19 +82,15 @@ OpenLayers.Control.Attribution =
      * Update attribution string.
      */
     updateAttribution: function() {
-        var attributions = [], attribution;
+        var attributions = [];
         if (this.map && this.map.layers) {
             for(var i=0, len=this.map.layers.length; i<len; i++) {
                 var layer = this.map.layers[i];
                 if (layer.attribution && layer.getVisibility()) {
-                    attribution = (typeof layer.attribution == "object") ?
-                        OpenLayers.String.format(
-                            this.layerTemplate, layer.attribution) :
-                        layer.attribution;
                     // add attribution only if attribution text is unique
                     if (OpenLayers.Util.indexOf(
-                                    attributions, attribution) === -1) {
-                        attributions.push( attribution );
+                                    attributions, layer.attribution) === -1) {
+                        attributions.push( layer.attribution );
                     }
                 }
             } 

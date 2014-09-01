@@ -65,7 +65,7 @@ OpenLayers.Control.PanZoom = OpenLayers.Class(OpenLayers.Control, {
      * APIMethod: destroy
      */
     destroy: function() {
-        if (this.map && !this.outsideViewport) {
+        if (this.map) {
             this.map.events.unregister("buttonclick", this, this.onButtonClick);
         }
         this.removeButtons();
@@ -82,14 +82,7 @@ OpenLayers.Control.PanZoom = OpenLayers.Class(OpenLayers.Control, {
      */
     setMap: function(map) {
         OpenLayers.Control.prototype.setMap.apply(this, arguments);
-        var target;
-        if (this.outsideViewport) {
-            this.events.attachToElement(this.div);
-            target = this;
-        } else {
-            target = this.map;
-        }
-        target.events.register('buttonclick', this, this.onButtonClick);
+        this.map.events.register("buttonclick", this, this.onButtonClick);
     },
 
     /**

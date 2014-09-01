@@ -35,8 +35,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
         ogc: "http://www.opengis.net/ogc",
         ows: "http://www.opengis.net/ows",
         xlink: "http://www.w3.org/1999/xlink",
-        xsi: "http://www.w3.org/2001/XMLSchema-instance",
-        xmlns: "http://www.w3.org/2000/xmlns/"
+        xsi: "http://www.w3.org/2001/XMLSchema-instance"
     },
     
     /**
@@ -311,10 +310,7 @@ OpenLayers.Format.CSWGetRecords.v2_0_2 = OpenLayers.Class(OpenLayers.Format.XML,
      */
     write: function(options) {
         var node = this.writeNode("csw:GetRecords", options);
-        this.setAttributeNS(
-            node, this.namespaces.xmlns,
-            "xmlns:gmd", this.namespaces.gmd
-        );
+        node.setAttribute("xmlns:gmd", this.namespaces.gmd);
         return OpenLayers.Format.XML.prototype.write.apply(this, [node]);
     },
 

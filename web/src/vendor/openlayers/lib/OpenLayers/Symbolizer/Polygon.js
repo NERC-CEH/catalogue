@@ -43,7 +43,7 @@ OpenLayers.Symbolizer.Polygon = OpenLayers.Class(OpenLayers.Symbolizer, {
      */
     
     /**
-     * APIProperty: strokeDashstyle
+     * Property: strokeDashstyle
      * {String} Stroke dash style according to the SLD spec. Note that the
      *     OpenLayers values for strokeDashstyle ("dot", "dash", "dashdot",
      *     "longdash", "longdashdot", or "solid") will not work in SLD, but

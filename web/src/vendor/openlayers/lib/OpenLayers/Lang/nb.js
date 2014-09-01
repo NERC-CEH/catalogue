@@ -61,14 +61,7 @@ OpenLayers.Lang["nb"] = {
         "<a href='http://trac.openlayers.org/wiki/${layerLib}' " +
         "target='_blank'>her</a>.",
 
-    'Scale = 1 : ${scaleDenom}': "Skala = 1 : ${scaleDenom}",
-    
-    //labels for the graticule control
-    'W': 'V',
-    'E': 'Ø',
-    'N': 'N',
-    'S': 'S',
-    'Graticule': 'Gradnett',
+    'Scale = 1 : ${scaleDenom}': "<strong>Skala</strong> 1 : ${scaleDenom}",
 
     // console message
     'reprojectDeprecated':
