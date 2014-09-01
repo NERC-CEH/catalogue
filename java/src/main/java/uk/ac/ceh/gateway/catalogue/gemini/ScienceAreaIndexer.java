@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import java.util.Map;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 public interface ScienceAreaIndexer {
     /**
@@ -17,5 +18,5 @@ public interface ScienceAreaIndexer {
      * @param document the GeminiDocument to extract Science Area keywords from
      * @return map of Solr column name to Science Area
      */
-    Map<String, String> index(GeminiDocument document);
+    Map<String, String> index(MetadataDocument document);
 }

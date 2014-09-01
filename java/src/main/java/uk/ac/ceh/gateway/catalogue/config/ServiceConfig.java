@@ -92,7 +92,6 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new GeminiDocumentSolrIndexGenerator(),
                 new MetadataDocumentSolrIndexGenerator(new CrazyScienceAreaIndexer()),
                 solrServer
         );

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 /**
  * Provides a random list of Science Area strings for Solr faceted search.
@@ -63,7 +64,7 @@ public class CrazyScienceAreaIndexer implements ScienceAreaIndexer {
     
 
     @Override
-    public Map<String, String> index(GeminiDocument document) {
+    public Map<String, String> index(MetadataDocument document) {
         return categories.get(random.nextInt(categories.size()));
     }
 

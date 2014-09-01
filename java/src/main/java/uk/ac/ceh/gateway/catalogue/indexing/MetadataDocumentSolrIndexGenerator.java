@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ScienceAreaIndexer;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 /**
@@ -16,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
     private final ScienceAreaIndexer scienceAreaIndexer;
 
-    public GeminiDocumentSolrIndexGenerator(ScienceAreaIndexer scienceAreaIndexer) {
+    public MetadataDocumentSolrIndexGenerator(ScienceAreaIndexer scienceAreaIndexer) {
         this.scienceAreaIndexer = scienceAreaIndexer;
     }
 
