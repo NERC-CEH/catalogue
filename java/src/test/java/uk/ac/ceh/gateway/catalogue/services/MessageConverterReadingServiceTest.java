@@ -25,13 +25,13 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 public class MessageConverterReadingServiceTest {
     @Spy List<HttpMessageConverter<?>> httpConverters;
     
-    MessageConverterReadingService<Object> messageConverter;
+    MessageConverterReadingService messageConverter;
     
     @Before
     public void createMessageConverter() {
         httpConverters = new ArrayList<>();
         MockitoAnnotations.initMocks(this);
-        messageConverter = new MessageConverterReadingService(Object.class, httpConverters);
+        messageConverter = new MessageConverterReadingService(httpConverters);
     }
     
     @Test
@@ -52,7 +52,7 @@ public class MessageConverterReadingServiceTest {
         InputStream in = mock(InputStream.class);
         
         //When
-        messageConverter.read(in, MediaType.TEXT_HTML);
+        messageConverter.read(in, MediaType.TEXT_HTML, Object.class);
         
         //Then
         fail("Didn't expect to be able to read HTML");
@@ -71,7 +71,7 @@ public class MessageConverterReadingServiceTest {
                         .addMessageConverter(converter2);
         
         //When
-        messageConverter.read(in, MediaType.TEXT_XML);
+        messageConverter.read(in, MediaType.TEXT_XML, Object.class);
         
         //Then
         verify(converter2, never()).canRead(Object.class, MediaType.TEXT_XML);
@@ -88,7 +88,7 @@ public class MessageConverterReadingServiceTest {
         messageConverter.addMessageConverter(converter);
         
         //When
-        messageConverter.read(in, MediaType.TEXT_XML);
+        messageConverter.read(in, MediaType.TEXT_XML, Object.class);
         
         //Then
         ArgumentCaptor<HttpInputMessage> argument = ArgumentCaptor.forClass(HttpInputMessage.class);
@@ -106,7 +106,7 @@ public class MessageConverterReadingServiceTest {
         messageConverter.addMessageConverter(converter);
         
         //When
-        messageConverter.read(in, MediaType.TEXT_XML);
+        messageConverter.read(in, MediaType.TEXT_XML, Object.class);
         
         //Then
         ArgumentCaptor<HttpInputMessage> argument = ArgumentCaptor.forClass(HttpInputMessage.class);

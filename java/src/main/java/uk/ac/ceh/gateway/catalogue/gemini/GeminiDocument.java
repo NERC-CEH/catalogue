@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import java.util.Set;
@@ -29,10 +31,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.TimePeriod;
 @Data
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/metadata.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GeminiDocument {
+public class GeminiDocument implements MetadataDocument {
     
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus;
     private List<String> alternateTitles, topicCategories, coupleResources;
@@ -49,6 +51,15 @@ public class GeminiDocument {
     private SpatialReferenceSystem spatialReferenceSystem;
     private DatasetReferenceDate datasetReferenceDate;
     private LocalDate metadataDate;
+    
+    @Override
+    public String getType() {
+        if(getResourceType() != null){
+            return getResourceType().getValue();
+        } else {
+            return null;
+        }
+    }
     
     /**
      * Return a link to the map viewer for this Gemini record if it can be
@@ -71,5 +82,10 @@ public class GeminiDocument {
         return onlineResources
                 .stream()
                 .anyMatch((o)-> GET_CAPABILITIES == o.getType());
+    }
+
+    @Override
+    public void attachMetadata(MetadataInfo metadata) {
+        setMetadata(metadata);
     }
 }

@@ -35,7 +35,7 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataWriter;
 import uk.ac.ceh.components.userstore.UserStore;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
@@ -53,7 +53,7 @@ public class TerraCatalogImporterTest {
     @Mock DocumentListingService listingService;
     @Mock UserStore<CatalogueUser> userstore;
     @Mock TerraCatalogUserFactory userFactory;
-    @Mock DocumentReadingService<GeminiDocument> documentReader;
+    @Mock DocumentReadingService documentReader;
     @Mock DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     @Mock TerraCatalogExtReader tcExtReader;
     @Mock TerraCatalogDocumentInfoFactory<MetadataInfo> terraCatalogDocumentInfoFactory;

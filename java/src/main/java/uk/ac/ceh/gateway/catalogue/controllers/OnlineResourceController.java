@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource.Type;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.IllegalOgcRequestTypeException;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
 import uk.ac.ceh.gateway.catalogue.model.NotAGetCapabilitiesResourceException;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
@@ -42,13 +43,13 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 public class OnlineResourceController {
     private final DataRepository<CatalogueUser> repo;
     private final CloseableHttpClient httpClient;
-    private final BundledReaderService<GeminiDocument> documentBundleReader;
+    private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final RestTemplate rest;
     
     @Autowired
     public OnlineResourceController(DataRepository<CatalogueUser> repo,
                                     CloseableHttpClient httpClient,
-                                    BundledReaderService<GeminiDocument> documentBundleReader,
+                                    BundledReaderService<MetadataDocument> documentBundleReader,
                                     RestTemplate rest) {
         this.repo = repo;
         this.httpClient = httpClient;
@@ -124,13 +125,19 @@ public class OnlineResourceController {
         return getOnlineResource(documentBundleReader.readBundle(file, revision), index);
     }
     
-    protected OnlineResource getOnlineResource(GeminiDocument document, int index) {
-        List<OnlineResource> onlineResources = document.getOnlineResources();
-        if(index < 0 || onlineResources.size() <= index) {
-            throw new NoSuchOnlineResourceException("No online resource exists on this document at index " + index);
+    protected OnlineResource getOnlineResource(MetadataDocument document, int index) {
+        if(document instanceof GeminiDocument) {
+            GeminiDocument geminiDocument = (GeminiDocument)document;
+            List<OnlineResource> onlineResources = geminiDocument.getOnlineResources();
+            if(index < 0 || onlineResources.size() <= index) {
+                throw new NoSuchOnlineResourceException("No online resource exists on this document at index " + index);
+            }
+            else {
+                return onlineResources.get(index);
+            }
         }
         else {
-            return onlineResources.get(index);
+            throw new NoSuchOnlineResourceException("This document is not a gemini document, so does not have online resources");
         }
     }
     

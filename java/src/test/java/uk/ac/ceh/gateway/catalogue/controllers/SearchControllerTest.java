@@ -25,7 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults;
 
@@ -67,11 +67,11 @@ public class SearchControllerTest {
     @Test
     public void isSolrQueryBuiltCorrectly() throws SolrServerException {
         //Given
-        List<GeminiDocumentSolrIndex> mockResults = new ArrayList<>();
+        List<DocumentSolrIndex> mockResults = new ArrayList<>();
         for(int i =0; i<9; i++){
-            mockResults.add(mock(GeminiDocumentSolrIndex.class));
+            mockResults.add(mock(DocumentSolrIndex.class));
         }
-        when(solrServer.query(any(SolrQuery.class), eq(SolrRequest.METHOD.POST)).getBeans(GeminiDocumentSolrIndex.class)).thenReturn(mockResults);
+        when(solrServer.query(any(SolrQuery.class), eq(SolrRequest.METHOD.POST)).getBeans(DocumentSolrIndex.class)).thenReturn(mockResults);
         List<String> filterQueries = Arrays.asList("state:public");
         
         //When

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ukeof:activity xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.ukeof.org.uk/schema/1 http://eofcat-dev.nerc-lancaster.ac.uk/schema/ukeof.1.0.0.xsd" xmlns:ukeof="http://www.ukeof.org.uk/schema/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ukeof:metadata>
+        <ukeof:fileIdentifier>00a1aab5-3e82-498a-a78f-b41e1955248b</ukeof:fileIdentifier>
+    </ukeof:metadata>
+    <ukeof:name>UKEOF Title</ukeof:name>
+    <ukeof:description>Ukeof Description</ukeof:description>
+</ukeof:activity>

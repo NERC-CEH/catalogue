@@ -5,28 +5,31 @@ import lombok.Data;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 /**
  *
  * @author cjohn
  */
 @Data
-public class MetadataInfoBundledReaderService<D> implements BundledReaderService<D> {
+public class MetadataInfoBundledReaderService implements BundledReaderService<MetadataDocument> {
     private final DataRepository<?> repo;
-    private final DocumentReadingService<D> documentReader;
+    private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
-    private final DocumentBundleService<D, MetadataInfo> documentBundler;
     
     @Override
-    public D readBundle(String file, String revision) throws DataRepositoryException, IOException, UnknownContentTypeException {
+    public MetadataDocument readBundle(String file, String revision) throws DataRepositoryException, IOException, UnknownContentTypeException {
         MetadataInfo documentInfo = documentInfoMapper.readInfo(
                                         repo.getData(revision, file + ".meta")
                                             .getInputStream());
-        
+
         DataDocument dataDoc = repo.getData(revision, file + ".raw");
-        D document = documentReader.read(dataDoc.getInputStream(),
-                                                    documentInfo.getRawMediaType());
-        return documentBundler.bundle(document, documentInfo);
+        MetadataDocument document = documentReader.read(dataDoc.getInputStream(),
+                                        documentInfo.getRawMediaType(),
+                                        documentInfo.getDocumentClass());
+        document.attachMetadata(documentInfo);
+        documentInfo.hideMediaType();
+        return document;
     }
 }

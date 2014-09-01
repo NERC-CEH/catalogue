@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentSearchResults;
 import uk.ac.ceh.gateway.catalogue.model.SearchResults;
@@ -61,9 +61,9 @@ public class SearchController {
         return performQuery(term, facetFilters, query);
     }
     
-    private SearchResults<GeminiDocumentSolrIndex> performQuery(String term, List<String> facetFilters, SolrQuery query) throws SolrServerException{
+    private SearchResults<DocumentSolrIndex> performQuery(String term, List<String> facetFilters, SolrQuery query) throws SolrServerException{
         QueryResponse response = solrServer.query(query, SolrRequest.METHOD.POST);
-        List<GeminiDocumentSolrIndex> results = response.getBeans(GeminiDocumentSolrIndex.class);
+        List<DocumentSolrIndex> results = response.getBeans(DocumentSolrIndex.class);
         Header header = new SearchResults.Header()
                 .setNumFound(response.getResults().getNumFound())
                 .setTerm(term)

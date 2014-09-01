@@ -43,7 +43,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     private final DataRepository<U> repo;
     private final DocumentListingService documentList;
     private final TerraCatalogUserFactory<U> userFactory;
-    private final DocumentReadingService<GeminiDocument> documentReader;
+    private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<M> documentInfoMapper;
     private final TerraCatalogDocumentInfoFactory<M> metadataDocument;
     private final TerraCatalogExtReader tcExtReader;
@@ -52,7 +52,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     public TerraCatalogImporter(DataRepository<U> repo,
                                 DocumentListingService documentList,
                                 TerraCatalogUserFactory<U> userFactory,
-                                DocumentReadingService<GeminiDocument> documentReader,
+                                DocumentReadingService documentReader,
                                 DocumentInfoMapper<M> documentInfoMapper,
                                 TerraCatalogDocumentInfoFactory<M> metadataDocument,
                                 U importUser) {
@@ -177,7 +177,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
             this.name = name;
             
             //Harvest all the data from the parts using the injected dependencies
-            this.document = documentReader.read(getXmlInputStream(), MediaType.APPLICATION_XML);
+            this.document = documentReader.read(getXmlInputStream(), MediaType.APPLICATION_XML, GeminiDocument.class);
             this.tcExt = tcExtReader.readTerraCatalogExt(getInputStream("tcext"));
             this.info = metadataDocument.getDocumentInfo(document, tcExt);
             this.owner = userFactory.getAuthor(tcExt);

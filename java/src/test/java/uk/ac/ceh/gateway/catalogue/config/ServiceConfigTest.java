@@ -22,14 +22,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
 import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
-import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -63,7 +63,7 @@ public class ServiceConfigTest {
     @Test
     public void checkDocumentInfoFactorySetsMediaType() {
         //Given
-        DocumentInfoFactory<GeminiDocument, MetadataInfo> documentInfoFactory = services.documentInfoFactory();
+        DocumentInfoFactory<MetadataDocument, MetadataInfo> documentInfoFactory = services.documentInfoFactory();
         GeminiDocument document = mock(GeminiDocument.class);
         MediaType type = MediaType.TEXT_HTML;
         
@@ -75,37 +75,9 @@ public class ServiceConfigTest {
     }
     
     @Test
-    public void checkDocumentCanHaveMetadataBundled() {
-        //Given
-        DocumentBundleService<GeminiDocument, MetadataInfo> documentBundleService = services.documentBundleService();
-        GeminiDocument document = new GeminiDocument();
-        MetadataInfo info = mock(MetadataInfo.class);
-        
-        //When
-        GeminiDocument bundled = documentBundleService.bundle(document, info);
-        
-        //Then
-        assertEquals("Expected to find the metadata bundled", info, bundled.getMetadata());
-    }
-    
-    @Test
-    public void isTheMediaTypeObscuredWhenBundled() {
-        //Given
-        DocumentBundleService<GeminiDocument, MetadataInfo> documentBundleService = services.documentBundleService();
-        GeminiDocument document = mock(GeminiDocument.class);
-        MetadataInfo info = mock(MetadataInfo.class);
-        
-        //When
-        documentBundleService.bundle(document, info);
-        
-        //Then
-        verify(info).hideMediaType();
-    }
-    
-    @Test
     public void checkThatAProvidedMediaTypeIsOverwritten() {
         //Given
-        DocumentInfoFactory<GeminiDocument, MetadataInfo> documentInfoFactory = services.documentInfoFactory();
+        DocumentInfoFactory<MetadataDocument, MetadataInfo> documentInfoFactory = services.documentInfoFactory();
         GeminiDocument documentWithMetadataInfo = mock(GeminiDocument.class);
         MetadataInfo providedInfo = new MetadataInfo();
         //set the value of the raw type. This needs to be hidden
@@ -122,7 +94,7 @@ public class ServiceConfigTest {
     @Test
     public void checkIfNoMetadataDocumentIsPresentInGeminiANewOneIsCreated() {
         //Given
-        DocumentInfoFactory<GeminiDocument, MetadataInfo> documentInfoFactory = services.documentInfoFactory();
+        DocumentInfoFactory<MetadataDocument, MetadataInfo> documentInfoFactory = services.documentInfoFactory();
         GeminiDocument documentWithMetadataInfo = mock(GeminiDocument.class);
         when(documentWithMetadataInfo.getMetadata()).thenReturn(null);
         
@@ -140,7 +112,7 @@ public class ServiceConfigTest {
         doNothing().when(services).performReindexIfNothingIsIndexed(any(SolrIndexingService.class));
         
         //When
-        SolrIndexingService<GeminiDocument> documentIndexingService = services.documentIndexingService();
+        SolrIndexingService<MetadataDocument> documentIndexingService = services.documentIndexingService();
         
         //Then
         verify(services).performReindexIfNothingIsIndexed(documentIndexingService);
@@ -201,28 +173,25 @@ public class ServiceConfigTest {
     @Test
     public void checkThatBundledReaderServiceIsComposedCorrectly() throws XPathExpressionException {
         //Given
-        DocumentReadingService<GeminiDocument> readingService = mock(DocumentReadingService.class);
+        DocumentReadingService readingService = mock(DocumentReadingService.class);
         DocumentInfoMapper infoMapper = mock(DocumentInfoMapper.class);
-        DocumentBundleService<GeminiDocument, MetadataInfo> bundleService = mock(DocumentBundleService.class);
         
         doReturn(readingService).when(services).documentReadingService();
         doReturn(infoMapper).when(services).documentInfoMapper();
-        doReturn(bundleService).when(services).documentBundleService();
         
         //When
-        MetadataInfoBundledReaderService<GeminiDocument> reader = services.bundledReaderService();
+        MetadataInfoBundledReaderService reader = services.bundledReaderService();
         
         //Then
         assertEquals("Expected to find the dataRepository", dataRepository, reader.getRepo());
         assertEquals("Expected to find the readingService", readingService, reader.getDocumentReader());
         assertEquals("Expected to find the infoMapper", infoMapper, reader.getDocumentInfoMapper());
-        assertEquals("Expected to find the bundleService", bundleService, reader.getDocumentBundler());
     }
     
     @Test
     public void checkThatDocumentIndexingServiceIsComposedCorrectly() throws XPathExpressionException {
         //Given
-        MetadataInfoBundledReaderService<GeminiDocument> reader = mock(MetadataInfoBundledReaderService.class);
+        MetadataInfoBundledReaderService reader = mock(MetadataInfoBundledReaderService.class);
         ExtensionDocumentListingService listingService = mock(ExtensionDocumentListingService.class);
         
         doReturn(reader).when(services).bundledReaderService();
@@ -230,7 +199,7 @@ public class ServiceConfigTest {
         doNothing().when(services).performReindexIfNothingIsIndexed(any(SolrIndexingService.class));
         
         //When
-        SolrIndexingService<GeminiDocument> documentIndexingService = services.documentIndexingService();
+        SolrIndexingService<MetadataDocument> documentIndexingService = services.documentIndexingService();
         
         //Then
         assertEquals("Expected to find the reader", reader, documentIndexingService.getReader());
@@ -242,7 +211,7 @@ public class ServiceConfigTest {
     @Test
     public void checkThatDocumentLinkingServiceIsComposedCorrectly() throws XPathExpressionException {
         //Given
-        MetadataInfoBundledReaderService<GeminiDocument> reader = mock(MetadataInfoBundledReaderService.class);
+        MetadataInfoBundledReaderService reader = mock(MetadataInfoBundledReaderService.class);
         
         doReturn(reader).when(services).bundledReaderService();
         doNothing().when(services).performRelinkIfNothingIsLinked(any(DocumentLinkService.class));

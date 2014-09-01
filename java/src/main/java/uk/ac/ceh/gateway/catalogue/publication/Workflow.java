@@ -5,7 +5,7 @@ import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 @Value
 public class Workflow {
@@ -27,7 +27,7 @@ public class Workflow {
         State fromState = currentState(info);
         
         if (fromState.canTransition(roles, transition)) {
-            toReturn = new MetadataInfo(info.getRawType(), transition.getToState().getId());
+            toReturn = new MetadataInfo(info.getRawType(), transition.getToState().getId(), info.getDocumentType());
         }
         return toReturn;
     }
