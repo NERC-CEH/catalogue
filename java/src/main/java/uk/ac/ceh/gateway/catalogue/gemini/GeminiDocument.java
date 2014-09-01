@@ -52,6 +52,7 @@ public class GeminiDocument implements MetadataDocument {
     private DatasetReferenceDate datasetReferenceDate;
     private LocalDate metadataDate;
     
+    @Override
     public String getType() {
         if(getResourceType() != null){
             return getResourceType().getValue();
