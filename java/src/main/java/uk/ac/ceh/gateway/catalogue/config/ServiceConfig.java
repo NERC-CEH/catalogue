@@ -10,9 +10,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.converters.Xml2UKEOFDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
@@ -20,7 +21,6 @@ import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
 import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.services.DocumentBundleService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -42,14 +42,15 @@ public class ServiceConfig {
     @Autowired EventBus bus;
     
     @Bean
-    public DocumentReadingService<GeminiDocument> documentReadingService() throws XPathExpressionException {
-        return new MessageConverterReadingService<>(GeminiDocument.class)
-                .addMessageConverter(new Xml2GeminiDocumentMessageConverter());
+    public DocumentReadingService documentReadingService() throws XPathExpressionException {
+        return new MessageConverterReadingService()
+                .addMessageConverter(new Xml2GeminiDocumentMessageConverter())
+                .addMessageConverter(new Xml2UKEOFDocumentMessageConverter());
     }
     
     @Bean
-    public DocumentInfoFactory<GeminiDocument, MetadataInfo> documentInfoFactory() {
-        return (GeminiDocument document, MediaType contentType) -> {
+    public DocumentInfoFactory<MetadataDocument, MetadataInfo> documentInfoFactory() {
+        return (MetadataDocument document, MediaType contentType) -> {
             MetadataInfo toReturn = document.getMetadata();
             
             //If no MetadataInfo is attached to the document, we need to create 
@@ -59,6 +60,7 @@ public class ServiceConfig {
             }
             
             toReturn.setRawType(contentType.toString()); //set the raw type
+            toReturn.setDocumentClass(document.getClass()); //set the document class
             return toReturn;
         };
     }
@@ -69,21 +71,11 @@ public class ServiceConfig {
     }
     
     @Bean
-    public DocumentBundleService<GeminiDocument, MetadataInfo> documentBundleService() {
-        return (GeminiDocument document, MetadataInfo info) -> {
-            info.hideMediaType();
-            document.setMetadata(info);
-            return document;
-        };
-    }
-    
-    @Bean
-    public MetadataInfoBundledReaderService<GeminiDocument> bundledReaderService() throws XPathExpressionException {
-        return new MetadataInfoBundledReaderService<>(
+    public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException {
+        return new MetadataInfoBundledReaderService(
                 dataRepository,
                 documentReadingService(),
-                documentInfoMapper(),
-                documentBundleService()
+                documentInfoMapper()
         );
     }
     
@@ -93,12 +85,12 @@ public class ServiceConfig {
     } 
     
     @Bean
-    public SolrIndexingService<GeminiDocument> documentIndexingService() throws XPathExpressionException {
+    public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException {
         SolrIndexingService toReturn = new SolrIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new GeminiDocumentSolrIndexGenerator(),
+                new MetadataDocumentSolrIndexGenerator(),
                 solrServer
         );
         

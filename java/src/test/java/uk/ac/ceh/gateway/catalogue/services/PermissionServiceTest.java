@@ -8,7 +8,7 @@ import org.junit.Test;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Matchers.any;
 import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class PermissionServiceTest {
@@ -20,7 +20,7 @@ public class PermissionServiceTest {
     public void annonymousCanAccessPublicRecord() throws IOException {
         //Given
         given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo("", "public"));
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo("", "public", "any metadatadocument"));
         
         //When
         boolean actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "DOCUMENT_READ");
@@ -33,7 +33,7 @@ public class PermissionServiceTest {
     public void annonymousCanNotAccessDraftRecord() throws IOException {
         //Given
         given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo("", "draft"));
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo("", "draft", "any metadatadocument"));
         
         //When
         boolean actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "DOCUMENT_READ");

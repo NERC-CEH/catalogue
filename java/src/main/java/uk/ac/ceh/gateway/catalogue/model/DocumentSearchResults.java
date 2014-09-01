@@ -3,7 +3,7 @@ package uk.ac.ceh.gateway.catalogue.model;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
 
 /**
  * A search results object for documents
@@ -12,6 +12,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocumentSolrIndexGenerator;
 @ConvertUsing({
     @Template(called = "/html/search.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
-public class DocumentSearchResults extends SearchResults<GeminiDocumentSolrIndexGenerator.GeminiDocumentSolrIndex> {
+public class DocumentSearchResults extends SearchResults<MetadataDocumentSolrIndexGenerator.DocumentSolrIndex> {
     
 }

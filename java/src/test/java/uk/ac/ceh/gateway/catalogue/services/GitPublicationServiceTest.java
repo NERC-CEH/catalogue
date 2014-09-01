@@ -25,7 +25,7 @@ import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
@@ -67,7 +67,7 @@ public class GitPublicationServiceTest {
     public void successfullyTransitionState() throws DataRepositoryException, IOException {
         //Given
         GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("", "draft"));
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("", "draft", "any metadata document"));
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(new Group() {
 
             @Override
@@ -92,7 +92,7 @@ public class GitPublicationServiceTest {
     public void editorCannotTransitionFromPublic() throws DataRepositoryException, IOException {
         //Given
         GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("", "public"));
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("", "public", "any metadata document"));
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(new Group() {
 
             @Override
@@ -117,7 +117,7 @@ public class GitPublicationServiceTest {
     public void publisherCanTransitionFromPublic() throws DataRepositoryException, IOException {
         //Given
         GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("", "public"));
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("", "public", "any metadata document"));
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(new Group() {
 
             @Override
@@ -142,7 +142,7 @@ public class GitPublicationServiceTest {
     public void unknownCannotTransitionFromPublic() throws DataRepositoryException, IOException {
         //Given
         GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("", "public"));
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("", "public", "any metadata document"));
         when(groupStore.getGroups(editor)).thenReturn(Collections.EMPTY_LIST);
         
         //When
@@ -156,7 +156,7 @@ public class GitPublicationServiceTest {
     public void successfullyGetCurrentState() throws DataRepositoryException, IOException {
         //Given
         GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("", "draft"));
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo("", "draft", "any metadata document"));
         
         
         //When

@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 @Value
 public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocumentInfoFactory<MetadataInfo>{
@@ -24,7 +24,7 @@ public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocument
 
     @Override
     public MetadataInfo getDocumentInfo(GeminiDocument document, TerraCatalogExt ext) {
-        return new MetadataInfo("application/xml", translate(ext.getProtection()));
+        return new MetadataInfo("application/xml", translate(ext.getProtection()), "GEMINI_DOCUMENT");
     }
     
     private String translate(String terraCatalogStatus) {
