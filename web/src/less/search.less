@@ -1,11 +1,14 @@
-#search {
+#layout {
   .make-row();
   .search {
     .make-sm-column(4);
-    .search-box{
+    #search-form {
       padding-bottom: 10px;
     }
     .facets {
+      .nav;
+      .nav-pills;
+      .nav-stacked;
       .hidden-xs;
       .facet-heading {
         font-weight: 700;
@@ -14,7 +17,7 @@
       .facet-result-name {
         color: #000;
       }
-      .facet-filter-active {
+      .facet-filter.active {
         background-color: #C3FDB8;
         border-radius: 5px;
         hover{

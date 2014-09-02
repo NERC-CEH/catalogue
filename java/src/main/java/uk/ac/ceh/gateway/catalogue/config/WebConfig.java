@@ -23,7 +23,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgu
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.DocumentSearchResults;
+import uk.ac.ceh.gateway.catalogue.search.DocumentSearchResults;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 @Configuration

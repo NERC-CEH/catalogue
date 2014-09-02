@@ -20,6 +20,7 @@ import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -27,7 +28,8 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.SearchResults;
+import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
+import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 
 @Ignore
 public class SearchControllerTest {
@@ -58,10 +60,10 @@ public class SearchControllerTest {
         SearchResults searchResults = searchController.searchDocuments(user, searchTerm, start, rows, null);
         
         //Then
-        assertEquals("Term is wrong in results header.", searchTerm, searchResults.getHeader().getTerm());
-        assertEquals("Start is wrong in results header.", start, searchResults.getHeader().getStart());
-        assertEquals("Rows is wrong in results header.", rows, searchResults.getHeader().getRows());
-        assertEquals("Number of search results is wrong in results header.", 100L, searchResults.getHeader().getNumFound());
+        assertEquals("Term is wrong in results header.", searchTerm, searchResults.getTerm());
+        assertEquals("Start is wrong in results header.", start, searchResults.getStart());
+        assertEquals("Rows is wrong in results header.", rows, searchResults.getRows());
+        assertEquals("Number of search results is wrong in results header.", 100L, searchResults.getNumFound());
     }
     
     @Test
@@ -146,7 +148,7 @@ public class SearchControllerTest {
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         
         //When 
-        searchController.searchDocuments(user, SearchController.DEFAULT_SEARCH_TERM, 1, 10, null);
+        searchController.searchDocuments(user, SearchQuery.DEFAULT_SEARCH_TERM, 1, 10, null);
 
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
