@@ -10,6 +10,7 @@ import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.springframework.http.MediaType;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
@@ -24,12 +25,14 @@ import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.D
 public class DocumentSearchResults extends SearchResults<DocumentSolrIndex> {
     private static final Escaper escaper = UrlEscapers.urlFormParameterEscaper();
     private final List<FacetFilter> filters;
+    private final UriComponentsBuilder builder;
         
-    public DocumentSearchResults(QueryResponse response, SearchQuery query) {
+    public DocumentSearchResults(QueryResponse response, SearchQuery query, UriComponentsBuilder builder) {
         List<DocumentSolrIndex> docs = response.getBeans(DocumentSolrIndex.class);
         SolrDocumentList results = response.getResults();
         
         this.filters = (query.getFacetFilters() != null)? query.getFacetFilters() : Collections.EMPTY_LIST;
+        this.builder = builder;
         this.setNumFound(results.getNumFound());
         this.setTerm(query.getTermNotDefault());
         this.setStart(query.getStart());
@@ -100,18 +103,22 @@ public class DocumentSearchResults extends SearchResults<DocumentSolrIndex> {
     } 
     
     private String getUrl(String field, String value, String state) {
-        StringBuilder url = new StringBuilder("/documents?term=")
+        StringBuilder queryParam = new StringBuilder();
+            
+        if ( !getTerm().isEmpty()) {
+            queryParam.append("term=")
             .append(escaper.escape(getTerm()));
+        }
         
         if (state.equals("inactive")) {
-            url.append("&facet=")
+            queryParam.append("&facet=")
                 .append(field)
                 .append("|")
                 .append(escaper.escape(value));
         }
         
         if ( !filters.isEmpty()) {
-            url.append("&")
+            queryParam.append("&")
                 .append(
                     filters.stream()
                         .filter(filter -> !filter.equals(new FacetFilter(field, value)))
@@ -120,6 +127,6 @@ public class DocumentSearchResults extends SearchResults<DocumentSolrIndex> {
                         .collect(Collectors.joining("&", "facet=", ""))
                 );
         }
-        return url.toString();
+        return builder.replaceQuery(queryParam.toString()).build().toUriString();
     }
 }

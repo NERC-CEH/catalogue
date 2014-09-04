@@ -57,7 +57,7 @@ public class SearchControllerTest {
         int start = 2;
         int rows =5;
         String facet = "";
-        SearchResults searchResults = searchController.searchDocuments(user, searchTerm, start, rows, null);
+        SearchResults searchResults = searchController.searchDocuments(user, searchTerm, start, rows, null, null);
         
         //Then
         assertEquals("Term is wrong in results header.", searchTerm, searchResults.getTerm());
@@ -81,7 +81,7 @@ public class SearchControllerTest {
         String searchTerm = "testterm";
         Integer start = 3;
         Integer rows = 7;
-        searchController.searchDocuments(user, searchTerm, start, rows, null);
+        searchController.searchDocuments(user, searchTerm, start, rows, null, null);
         
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
@@ -98,7 +98,7 @@ public class SearchControllerTest {
         //Given
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         List<String> filterQueries = Arrays.asList("state:public");
-        searchController.searchDocuments(user, "testterm", 3, 7, null);
+        searchController.searchDocuments(user, "testterm", 3, 7, null, null);
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
         
         //When
@@ -115,7 +115,7 @@ public class SearchControllerTest {
         CatalogueUser user = new CatalogueUser();
         user.setUsername("testloggedin");
         List<String> filterQueries = Arrays.asList("state:public");
-        searchController.searchDocuments(user, "testterm", 3, 7, null);
+        searchController.searchDocuments(user, "testterm", 3, 7, null, null);
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
         
         //When
@@ -132,7 +132,7 @@ public class SearchControllerTest {
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         
         //When
-        searchController.searchDocuments(user, "testterm", 1, 10, null);
+        searchController.searchDocuments(user, "testterm", 1, 10, null, null);
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
         verify(solrServer).query(solrQuery.capture(), eq(SolrRequest.METHOD.POST));
         
@@ -148,7 +148,7 @@ public class SearchControllerTest {
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         
         //When 
-        searchController.searchDocuments(user, SearchQuery.DEFAULT_SEARCH_TERM, 1, 10, null);
+        searchController.searchDocuments(user, SearchQuery.DEFAULT_SEARCH_TERM, 1, 10, null, null);
 
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
@@ -166,7 +166,7 @@ public class SearchControllerTest {
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         
         //When 
-        searchController.searchDocuments(user, "Not default search term", 1, 10, null);
+        searchController.searchDocuments(user, "Not default search term", 1, 10, null, null);
 
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
