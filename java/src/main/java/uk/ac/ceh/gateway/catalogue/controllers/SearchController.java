@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.search.DocumentSearchResults;
-import uk.ac.ceh.gateway.catalogue.search.FacetFilter;
 import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 
@@ -33,14 +32,15 @@ public class SearchController {
             @RequestParam(value = "term", defaultValue=SearchQuery.DEFAULT_SEARCH_TERM) String term,
             @RequestParam(value = "start", defaultValue = "0") int start,
             @RequestParam(value = "rows", defaultValue = "20") int rows,
-            @RequestParam(value = "facet", defaultValue = "") List<FacetFilter> facetFilters
+            @RequestParam(value = "facet", defaultValue = "") List<String> facetFilters
     ) throws SolrServerException {
+        SearchQuery searchQuery = new SearchQuery(user, term, start, rows, facetFilters);
         return new DocumentSearchResults(
             solrServer.query(
-                new SearchQuery(user, term, start, rows, facetFilters).build(),
+                searchQuery.build(),
                 SolrRequest.METHOD.POST
             ),
-            facetFilters
+            searchQuery
         );
     }
 }

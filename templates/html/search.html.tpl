@@ -11,12 +11,7 @@
           </#list>
         </#if>
         <div class="input-group">
-          <#if term="*">
-            <#assign q="">
-          <#else>
-            <#assign q=term>
-          </#if>
-          <input type="text" class="form-control" placeholder="Search the Catalogue" id="term" name="term" value="${q}">
+          <input type="text" class="form-control" placeholder="Search the Catalogue" id="term" name="term" value="${term}">
           <div class="input-group-btn">
             <button type="submit" id="Search" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
           </div>
@@ -26,15 +21,15 @@
         <#list facets as facet>
           <li class="facet-heading">${facet.displayName}</li>
           <#list facet.results as result>
-            <li class="facet-filter ${result.state!''}">
+            <li class="facet-filter-${result.state!'inactive'}">
               <a href="${result.url}">
-                <span class="facet-result-name">${result.name}</span>
-                <span class="glyphicon glyphicon-remove-circle pull-right"></span>
+                <span class="facet-result-name">${result.name} (${result.count})</span>
+                <span class="facet-result-remove"></span>
               </a>
               <#if result.subFacetResults?? && result.subFacetResults?has_content>
                 <ul>
                   <#list result.subFacetResults as sub>
-                    <li class="facet-filter ${sub.state}">
+                    <li class="facet-filter-${sub.state}">
                       <a href="${sub.url}">
                         <span class="facet-result-name">${sub.name} (${sub.count})</span>
                       </a>

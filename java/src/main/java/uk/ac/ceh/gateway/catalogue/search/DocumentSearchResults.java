@@ -1,11 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import java.util.ArrayList;
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.util.NamedList;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -19,81 +22,104 @@ import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.D
     @Template(called = "/html/search.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 public class DocumentSearchResults extends SearchResults<DocumentSolrIndex> {
+    private static final Escaper escaper = UrlEscapers.urlFormParameterEscaper();
+    private final List<FacetFilter> filters;
         
-    public DocumentSearchResults(QueryResponse response, List<FacetFilter> facetFilters) {
+    public DocumentSearchResults(QueryResponse response, SearchQuery query) {
         List<DocumentSolrIndex> docs = response.getBeans(DocumentSolrIndex.class);
         SolrDocumentList results = response.getResults();
-        NamedList responseHeader = response.getResponseHeader();
         
+        this.filters = (query.getFacetFilters() != null)? query.getFacetFilters() : Collections.EMPTY_LIST;
         this.setNumFound(results.getNumFound());
-        this.setTerm((responseHeader.get("q") != null)? responseHeader.get("q").toString() : "");
-        this.setStart(response.getResults().getStart());
-        this.setRows(Long.parseLong(responseHeader.get("rows").toString(), 10));
-        this.setFacetFilters(facetFilters.stream().map(FacetFilter::asFormContent).collect(Collectors.toList()));
+        this.setTerm(query.getTermNotDefault());
+        this.setStart(query.getStart());
+        this.setRows(query.getRows());
         this.setResults(docs);
-        this.setFacets(getFacets(response, facetFilters));
-
+        this.setFacets(getFacets(response));
+        this.setFacetFilters(this.filters.stream().map(FacetFilter::asFormContent).collect(Collectors.toList()));
     }
     
-    private List<Facet> getFacets(QueryResponse response, List<FacetFilter> facetFilters){
-        String filterQuery = facetFilters.stream().map(f -> f.asURIContent()).collect(Collectors.joining("&", "facet=", null));
+    private List<Facet> getFacets(QueryResponse response){
         
-        
-        List<Facet> toReturn = new ArrayList<>();
-        response.getFacetFields().stream().forEach((facetField) -> {
-            
-            List<FacetResult> facetResults = new ArrayList<>();
-                       
-            facetField.getValues().stream().forEach((facetResult) -> {
-                facetResults.add(FacetResult.builder()
-                    .name(facetResult.getName())
-                    .count(facetResult.getCount())
-                    .state(getState(facetField.getName(), facetResult.getName(), facetFilters))
-                    .url(new StringBuilder("/documents?term=").append(this.getTerm()).append("&").append(filterQuery).toString())
-                    .build()
-                );
-            });
-            
-            toReturn.add(Facet
-                .builder()
+        List<Facet> toReturn = response.getFacetFields().stream().map((facetField) -> {
+            return Facet.builder()
                 .fieldName(facetField.getName())
                 .displayName(SearchQuery.FACET_FIELDS.get(facetField.getName()))
-                .results(facetResults)
-                .build()
-            );
-        });
-        List<FacetResult> pivots = new ArrayList<>();
-        response.getFacetPivot().get("sci0,sci1").stream().forEach((pivotField) -> {
-            List<FacetResult> subPivots = new ArrayList<>();
-            pivotField.getPivot().stream().forEach((sub) -> {
-                subPivots.add(FacetResult.builder()
-                    .name(sub.getValue().toString())
-                    .count(sub.getCount())
-                    .build());
-            });
-            pivots.add(FacetResult
-                .builder()
-                .name(pivotField.getValue().toString())
-                .count(pivotField.getCount())
-                .subFacetResults(subPivots)
-                .build()
-            );
-        });
+                .results(getFacetResults(facetField))
+                .build();
+        }).collect(Collectors.toList());
+        
         toReturn.add(Facet.builder()
             .fieldName("sci0")
             .displayName("Science Area")
-            .results(pivots)
+            .results(getFacetResults(response.getFacetPivot().get("sci0,sci1")))
             .build());
+            
         return toReturn;
     }
+
+    private List<FacetResult> getFacetResults(FacetField facetField) {
+        return facetField.getValues().stream()
+            .map(count -> {
+                String field = facetField.getName();
+                String name = count.getName();
+                String state = getState(field, name);
+                return FacetResult.builder()
+                    .name(name)
+                    .count(count.getCount())
+                    .state(state)
+                    .url(getUrl(field, name, state))
+                    .build();
+            })
+            .collect(Collectors.toList());
+    }
     
-    private String getState(String facetField, String facetValue, List<FacetFilter> facetFilters) {
-        if (facetFilters.contains(new FacetFilter(facetField, facetValue))) {
+    private List<FacetResult> getFacetResults(List<PivotField> pivotFields) {
+        return pivotFields.stream()
+            .map(pivotField -> {
+                String field = pivotField.getField();
+                String name = pivotField.getValue().toString();
+                String state = getState(field, name);
+                return FacetResult.builder()
+                    .name(name)
+                    .count(pivotField.getCount())
+                    .state(state)
+                    .url(getUrl(field, name, state))
+                    .subFacetResults((pivotField.getPivot() != null)? getFacetResults(pivotField.getPivot()) : Collections.EMPTY_LIST)
+                    .build();
+            })
+            .collect(Collectors.toList());
+    }
+
+    private String getState(String facetField, String facetValue) {
+        if (filters.contains(new FacetFilter(facetField, facetValue))) {
             return "active";
         } else {
             return "inactive";
         }
+    } 
+    
+    private String getUrl(String field, String value, String state) {
+        StringBuilder url = new StringBuilder("/documents?term=")
+            .append(escaper.escape(getTerm()));
+        
+        if (state.equals("inactive")) {
+            url.append("&facet=")
+                .append(field)
+                .append("|")
+                .append(escaper.escape(value));
+        }
+        
+        if ( !filters.isEmpty()) {
+            url.append("&")
+                .append(
+                    filters.stream()
+                        .filter(filter -> !filter.equals(new FacetFilter(field, value)))
+                        .filter(filter -> !(filter.getField().equals("sci1") && field.equals("sci0")))
+                        .map(FacetFilter::asURIContent)
+                        .collect(Collectors.joining("&", "facet=", ""))
+                );
+        }
+        return url.toString();
     }
-    
-    
 }

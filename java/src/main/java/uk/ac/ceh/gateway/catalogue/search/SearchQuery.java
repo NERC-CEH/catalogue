@@ -1,16 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.springframework.util.StringUtils;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 @Value
+@Slf4j
 public class SearchQuery {
     public static final String DEFAULT_SEARCH_TERM = "*";
     private static final String RANDOM_DYNAMIC_FIELD_NAME = "random";
@@ -22,10 +25,23 @@ public class SearchQuery {
         FACET_FIELDS.put("isOgl", "OGL license");
     }
     
-    private CatalogueUser user; 
-    String term;
-    int start, rows;
-    List<FacetFilter> facetFilters;
+    private final CatalogueUser user; 
+    private final String term;
+    private final int start, rows;
+    private final List<FacetFilter> facetFilters;
+    
+    public SearchQuery(CatalogueUser user, String term, int start, int rows, List<String> facetFilters) {
+        log.debug("facet filter strings: {}", facetFilters);
+        this.user = user;
+        this.term = term;
+        this.start = start;
+        this.rows = rows;
+        this.facetFilters = facetFilters.stream()
+            .filter(filter -> !nullToEmpty(filter).isEmpty())
+            .map(filter -> new FacetFilter(filter))
+            .collect(Collectors.toList());
+        log.debug("processed filters: {}", this.facetFilters);
+    }
       
     public SolrQuery build(){
         SolrQuery query = new SolrQuery()
@@ -34,14 +50,18 @@ public class SearchQuery {
                 .setParam("qf", "title^5 description")
                 .setStart(start)
                 .setRows(rows);
-        setRecordVisibility(query, user);
-        setFacetFilters(query, facetFilters);
+        setRecordVisibility(query);
+        setFacetFilters(query);
         setFacetFields(query);
-        setSortOrder(query, term);
+        setSortOrder(query);
         return query;
     }
     
-    private void setRecordVisibility(SolrQuery query, CatalogueUser user) {
+    public String getTermNotDefault() {
+        return (DEFAULT_SEARCH_TERM.equals(term))? "" : term;
+    }
+    
+    private void setRecordVisibility(SolrQuery query) {
         if (user.isPublic()) {
             query.addFilterQuery("state:public");
         } else {
@@ -50,12 +70,10 @@ public class SearchQuery {
         }
     }
     
-    private void setFacetFilters(SolrQuery query, List<FacetFilter> facetFilters){
+    private void setFacetFilters(SolrQuery query){
         if(facetFilters != null){
             facetFilters.stream().forEach((filter) -> {
-                query.addFilterQuery(
-                    
-                );
+                query.addFilterQuery(filter.asSolrFilterQuery());
             });
         }
     }
@@ -70,7 +88,7 @@ public class SearchQuery {
         query.addFacetPivotField("sci0,sci1");
     }
     
-    private void setSortOrder(SolrQuery query, String term){
+    private void setSortOrder(SolrQuery query){
         if(DEFAULT_SEARCH_TERM.equals(term)){
             query.setSort(getRandomFieldName(), SolrQuery.ORDER.asc);
         }
