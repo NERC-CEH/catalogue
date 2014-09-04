@@ -3,27 +3,28 @@
   .search {
     .make-sm-column(4);
     #search-form {
-      padding-bottom: 10px;
+      padding-bottom: @padding-large-vertical;
     }
     .facets {
       .nav;
       .nav-pills;
       .nav-stacked;
       .hidden-xs;
+      .sub {
+        padding-left: @padding-large-horizontal * 2;
+      }
       .facet-heading {
-        font-weight: 700;
-        padding-top: 10px;
+        font-weight: @headings-font-weight;
+        padding-top: @padding-large-vertical;
       }
       .facet-result-name {
-        color: #000;
+        color: @gray-darker;
       }
-      .facet-filter-active {
+      .facet-filter-active > a {
         background-color: @gray-lighter;
-        border-radius: 5px;
-        hover{
-          background-color: #00f;
-        }
+        border-radius: @border-radius-base;
         .facet-result-remove {
+          color: @gray-darker;
           .glyphicon;
           .glyphicon-remove-circle;
           .pull-right;

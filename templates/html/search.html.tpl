@@ -18,7 +18,7 @@
         </div>
       </form>
       <ul class="facets">
-        <#list facets as facet>
+        <#list facets?sort_by("displayName")?reverse as facet>
           <li class="facet-heading">${facet.displayName}</li>
           <#list facet.results as result>
             <li class="facet-filter-${result.state!'inactive'}">
@@ -27,11 +27,12 @@
                 <span class="facet-result-remove"></span>
               </a>
               <#if result.subFacetResults?? && result.subFacetResults?has_content>
-                <ul>
+                <ul class="facets sub">
                   <#list result.subFacetResults as sub>
                     <li class="facet-filter-${sub.state}">
                       <a href="${sub.url}">
                         <span class="facet-result-name">${sub.name} (${sub.count})</span>
+                        <span class="facet-result-remove"></span>
                       </a>
                     </li>
                   </#list>
