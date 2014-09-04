@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 public abstract class SearchResults<T> {
-    private long numFound, start, rows;
+    private int start, rows;
+    private long numFound;
     private String term;
     private List<String> facetFilters;
     private List<T> results;

@@ -63,10 +63,10 @@ public class SearchQuery {
     
     private void setRecordVisibility(SolrQuery query) {
         if (user.isPublic()) {
-            query.addFilterQuery("state:public");
+            query.addFilterQuery("{!term f=state}public");
         } else {
             // TODO block access to records for everyone until fixed permissions 
-            query.addFilterQuery("state:public");
+            query.addFilterQuery("{!term f=state}public");
         }
     }
     
