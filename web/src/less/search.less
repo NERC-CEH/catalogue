@@ -35,11 +35,10 @@
   .results {
     .make-sm-column(8);
     .search-results-heading {
-      font-weight: bold;
-      margin-bottom: 1em;
+      font-weight: @headings-font-weight;
     }
     .result {
-      padding: 0em 0em 3em;
+      padding-bottom: @padding-small-vertical;
       .title {
         color: @brand-success;
         &:hover, &:focus {
@@ -52,10 +51,9 @@
         text-transform: uppercase;
         float: right;
         display: block;
-        padding: 5px 10px;
-        margin-top: 3px;
+        padding: @padding-small-vertical @padding-small-horizontal;
         font-size: @font-size-small;
-        border-radius: 5px;
+        border-radius: @border-radius-base;
         line-height: 1.4;
         font-weight: normal;
         background-color: #cccccc;
