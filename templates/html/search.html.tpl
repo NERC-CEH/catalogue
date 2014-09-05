@@ -22,18 +22,12 @@
           <li class="facet-heading">${facet.displayName}</li>
           <#list facet.results as result>
             <li class="facet-filter-${result.state!'inactive'}">
-              <a href="${result.url}">
-                <span class="facet-result-name">${result.name} (${result.count})</span>
-                <span class="facet-result-remove"></span>
-              </a>
+              <@facetUrl result.url result.name result.count result.state />
               <#if result.subFacetResults?? && result.subFacetResults?has_content>
                 <ul class="facets sub">
                   <#list result.subFacetResults as sub>
                     <li class="facet-filter-${sub.state}">
-                      <a href="${sub.url}">
-                        <span class="facet-result-name">${sub.name} (${sub.count})</span>
-                        <span class="facet-result-remove"></span>
-                      </a>
+                      <@facetUrl sub.url sub.name sub.count sub.state />
                     </li>
                   </#list>
                 </ul>
@@ -60,3 +54,9 @@
   </div>
 </div>
 </@skeleton.master>
+<#macro facetUrl url name count state>
+<a href="${url}">
+  <span class="facet-result-name">${name} <#if state=='inactive'>(${count})</#if></span>
+  <span class="facet-result-remove"></span>
+</a>
+</#macro>
