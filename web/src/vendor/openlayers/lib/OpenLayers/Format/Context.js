@@ -109,7 +109,6 @@ OpenLayers.Format.Context = OpenLayers.Class(OpenLayers.Format.XML.VersionedOGC,
             units: layerContext.units,
             isBaseLayer: layerContext.isBaseLayer,
             opacity: layerContext.opacity,
-            gutter: layerContext.gutter,
             displayInLayerSwitcher: layerContext.displayInLayerSwitcher,
             singleTile: layerContext.singleTile,
             tileSize: (layerContext.tileSize) ? 
@@ -121,8 +120,7 @@ OpenLayers.Format.Context = OpenLayers.Class(OpenLayers.Format.XML.VersionedOGC,
             maxScale: layerContext.maxScale || layerContext.minScaleDenominator,
             srs: layerContext.srs,
             dimensions: layerContext.dimensions,
-            metadataURL: layerContext.metadataURL,
-            attribution: layerContext.attribution
+            metadataURL: layerContext.metadataURL
         };
         if (this.layerOptions) {
             OpenLayers.Util.applyDefaults(options, this.layerOptions);

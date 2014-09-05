@@ -16,15 +16,6 @@
  */
 OpenLayers.Layer.HTTPRequest = OpenLayers.Class(OpenLayers.Layer, {
 
-    /**
-     * APIProperty: events
-     * {<OpenLayers.Events>}
-     *
-     * Supported event types (in addition to those from <OpenLayers.Layer.events>):
-     * refresh - Triggered when a redraw is forced, to re-fetch data from the
-     *     server.
-     */
-
     /** 
      * Constant: URL_HASH_FACTOR
      * {Float} Used to hash URL param strings for multi-WMS server selection.
@@ -153,7 +144,6 @@ OpenLayers.Layer.HTTPRequest = OpenLayers.Class(OpenLayers.Layer, {
      */
     redraw: function(force) { 
         if (force) {
-            this.events.triggerEvent('refresh');
             return this.mergeNewParams({"_olSalt": Math.random()});
         } else {
             return OpenLayers.Layer.prototype.redraw.apply(this, []);

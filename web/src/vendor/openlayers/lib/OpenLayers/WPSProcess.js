@@ -86,7 +86,7 @@ OpenLayers.WPSProcess = OpenLayers.Class({
      * Parameters:
      * options - {Object} Object whose properties will be set on the instance.
      *
-     * Available options:
+     * Avaliable options:
      * client - {<OpenLayers.WPSClient>} Mandatory. Client that manages this
      *     process.
      * server - {String} Mandatory. Local client identifier of this process's
@@ -222,29 +222,17 @@ OpenLayers.WPSProcess = OpenLayers.Class({
                         data: new OpenLayers.Format.WPSExecute().write(me.description),
                         success: function(response) {
                             var output = me.description.processOutputs[outputIndex];
-                            var result;
-                            if (output.literalOutput) {
-                                 if (output.literalOutput.dataType === "boolean") {
-                                   result = (OpenLayers.String.trim(
-                                       response.responseText).toLowerCase() === 'true');
-                                 } else if (output.literalOutput.dataType === "double") {
-                                   result = parseFloat(response.responseText);
-                                 } else {
-                                   result = response.responseText;
-                                 }
-                            } else if (output.complexOutput) {
-                                var mimeType = me.findMimeType(
-                                    output.complexOutput.supported.formats
-                                );
-                                //TODO For now we assume a spatial output
-                                result = me.formats[mimeType].read(response.responseText);
-                                if (result instanceof OpenLayers.Feature.Vector) {
-                                    result = [result];
-                                }
+                            var mimeType = me.findMimeType(
+                                output.complexOutput.supported.formats
+                            );
+                            //TODO For now we assume a spatial output
+                            var features = me.formats[mimeType].read(response.responseText);
+                            if (features instanceof OpenLayers.Feature.Vector) {
+                                features = [features];
                             }
                             if (options.success) {
                                 var outputs = {};
-                                outputs[options.output || 'result'] = result;
+                                outputs[options.output || 'result'] = features;
                                 options.success.call(options.scope, outputs);
                             }
                         },
@@ -362,14 +350,10 @@ OpenLayers.WPSProcess = OpenLayers.Class({
     setResponseForm: function(options) {
         options = options || {};
         var output = this.description.processOutputs[options.outputIndex || 0];
-        var mimeType;
-        if (output.complexOutput) {
-            mimeType = this.findMimeType(output.complexOutput.supported.formats, options.supportedFormats);
-        }
         this.description.responseForm = {
             rawDataOutput: {
                 identifier: output.identifier,
-                mimeType: mimeType
+                mimeType: this.findMimeType(output.complexOutput.supported.formats, options.supportedFormats)
             }
         };
     },

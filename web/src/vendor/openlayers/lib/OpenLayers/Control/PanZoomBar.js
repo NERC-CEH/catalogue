@@ -117,11 +117,6 @@ OpenLayers.Control.PanZoomBar = OpenLayers.Class(OpenLayers.Control.PanZoom, {
      */
     setMap: function(map) {
         OpenLayers.Control.PanZoom.prototype.setMap.apply(this, arguments);
-        
-        if (this.outsideViewport) {
-            this.events.attachToElement(this.div);
-        }
-
         this.map.events.on({
             "changebaselayer": this.redraw,
             "updatesize": this.redraw,
@@ -321,14 +316,12 @@ OpenLayers.Control.PanZoomBar = OpenLayers.Class(OpenLayers.Control.PanZoom, {
         if (!OpenLayers.Event.isLeftClick(evt) && !OpenLayers.Event.isSingleTouch(evt)) {
             return;
         }
-        var target = this.outsideViewport ? this : this.map;
-        target.events.on({
-            touchmove: this.passEventToSlider,
-            mousemove: this.passEventToSlider,
-            mouseup: this.passEventToSlider,
+        this.map.events.on({
+            "touchmove": this.passEventToSlider,
+            "mousemove": this.passEventToSlider,
+            "mouseup": this.passEventToSlider,
             scope: this
         });
-        
         this.mouseDragStart = evt.xy.clone();
         this.zoomStart = evt.xy.clone();
         this.div.style.cursor = "move";
@@ -377,8 +370,7 @@ OpenLayers.Control.PanZoomBar = OpenLayers.Class(OpenLayers.Control.PanZoom, {
         }
         if (this.mouseDragStart) {
             this.div.style.cursor="";
-            var target = this.outsideViewport ? this : this.map;
-            target.events.un({
+            this.map.events.un({
                 "touchmove": this.passEventToSlider,
                 "mouseup": this.passEventToSlider,
                 "mousemove": this.passEventToSlider,

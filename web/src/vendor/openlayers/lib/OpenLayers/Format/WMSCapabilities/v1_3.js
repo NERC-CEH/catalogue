@@ -13,14 +13,6 @@
  * SLD 1.1.0 adds in the extra operations DescribeLayer and GetLegendGraphic, 
  * see: http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd
  * 
- * Note on <MinScaleDenominator> and <MaxScaleDenominator> parsing: If
- * the <MinScaleDenominator> value is set to "0", no maxScale will be
- * set on the layer object. If the <MaxScaleDenominator> value is set to
- * "Infinity", no minScale will be set. This makes it easy to create proper
- * {<OpenLayers.Layer.WMS>} configurations directly from the layer object
- * literals returned by this format, because no minScale/maxScale modifications
- * need to be made.
- *
  * Inherits from:
  *  - <OpenLayers.Format.WMSCapabilities.v1>
  */
@@ -77,16 +69,10 @@ OpenLayers.Format.WMSCapabilities.v1_3 = OpenLayers.Class(
                 obj[3] = this.getChildValue(node);
             },
             "MinScaleDenominator": function(node, obj) {
-                var maxScale = parseFloat(this.getChildValue(node)).toPrecision(16);
-                if (maxScale != 0) {
-                    obj.maxScale = maxScale;
-                }
+                obj.maxScale = parseFloat(this.getChildValue(node)).toPrecision(16);
             },
             "MaxScaleDenominator": function(node, obj) {
-                var minScale = parseFloat(this.getChildValue(node)).toPrecision(16);
-                if (minScale != Number.POSITIVE_INFINITY) {
-                    obj.minScale = minScale;
-                }
+                obj.minScale = parseFloat(this.getChildValue(node)).toPrecision(16);
             },
             "Dimension": function(node, obj) {
                 // dimension has extra attributes: default, multipleValues, 

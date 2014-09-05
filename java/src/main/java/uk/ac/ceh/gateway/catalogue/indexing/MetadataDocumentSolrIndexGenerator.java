@@ -1,8 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import java.util.Map;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ScienceAreaIndexer;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
@@ -12,17 +16,25 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
  * @author cjohn
  */
 public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
+    private final ScienceAreaIndexer scienceAreaIndexer;
+
+    public MetadataDocumentSolrIndexGenerator(ScienceAreaIndexer scienceAreaIndexer) {
+        this.scienceAreaIndexer = scienceAreaIndexer;
+    }
 
     @Override
     public DocumentSolrIndex generateIndex(MetadataDocument document) {
+        Map<String, String> sci = scienceAreaIndexer.index(document);
         return new DocumentSolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
                 .setIdentifier(document.getId())
                 .setResourceType(document.getType())
                 .setIsOgl(getIsOgl(document))
-                .setState(getState(document));
-    }    
+                .setState(getState(document))
+                .setSci0(sci.get("sci0"))
+                .setSci1(sci.get("sci1"));
+    }
     
     private Boolean getIsOgl(MetadataDocument document){
         if(document instanceof GeminiDocument) {
@@ -57,6 +69,8 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         private @Field String resourceType;
         private @Field Boolean isOgl;
         private @Field String state;
+        private @Field String sci0;
+        private @Field String sci1;
         
         public String getShortenedDescription(){
             return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);

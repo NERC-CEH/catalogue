@@ -137,10 +137,7 @@ OpenLayers.Format.GML.v3 = OpenLayers.Class(OpenLayers.Format.GML.Base, {
                         coords[1], coords[0], coords[2]
                     );
                 }
-                if(!!!obj.points) {
-                    obj.points = [];
-                }
-                obj.points.push(point);
+                obj.points = [point];
             },
             "posList": function(node, obj) {
                 var str = this.getChildValue(node).replace(
@@ -231,7 +228,6 @@ OpenLayers.Format.GML.v3 = OpenLayers.Class(OpenLayers.Format.GML.Base, {
                 if(!container.components) {
                     container.components = [];
                 }
-
                 var min = obj.points[0];
                 var max = obj.points[1];
                 container.components.push(

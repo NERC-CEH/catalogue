@@ -99,7 +99,7 @@ OpenLayers.Layer.Image = OpenLayers.Class(OpenLayers.Layer, {
      * Method: clone
      * Create a clone of this layer
      *
-     * Parameters:
+     * Paramters:
      * obj - {Object} An optional layer (is this ever used?)
      *
      * Returns:

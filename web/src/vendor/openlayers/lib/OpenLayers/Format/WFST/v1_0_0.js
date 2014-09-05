@@ -147,10 +147,7 @@ OpenLayers.Format.WFST.v1_0_0 = OpenLayers.Class(
                     node.setAttribute("srsName", options.srsName);
                 }
                 if(options.featureNS) {
-                    this.setAttributeNS(
-                        node, this.namespaces.xmlns,
-                        "xmlns:" + prefix, options.featureNS
-                    );
+                    node.setAttribute("xmlns:" + prefix, options.featureNS);
                 }
                 if(options.propertyNames) {
                     for(var i=0,len = options.propertyNames.length; i<len; i++) {

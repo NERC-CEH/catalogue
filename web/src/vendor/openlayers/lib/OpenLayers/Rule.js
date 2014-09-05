@@ -180,7 +180,7 @@ OpenLayers.Rule = OpenLayers.Class({
      * Method: getContext
      * Gets the context for evaluating this rule
      * 
-     * Parameters:
+     * Paramters:
      * feature - {<OpenLayers.Feature>} feature to take the context from if
      *           none is specified.
      */

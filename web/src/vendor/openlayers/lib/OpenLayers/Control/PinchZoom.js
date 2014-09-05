@@ -135,7 +135,7 @@ OpenLayers.Control.PinchZoom = OpenLayers.Class(OpenLayers.Control, {
             location.lat -= resolution * ((size.h / 2) - zoomPixel.y);
 
             // Force a reflow before calling setCenter. This is to work
-            // around an issue occurring in iOS.
+            // around an issue occuring in iOS.
             //
             // See https://github.com/openlayers/openlayers/pull/351.
             //

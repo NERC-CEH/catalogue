@@ -205,7 +205,6 @@ OpenLayers.Format.XML.VersionedOGC = OpenLayers.Class(OpenLayers.Format.XML, {
             obj.error = format.read(data);
         }
         obj.version = version;
-        obj.requestType = this.name;
         return obj;
     },
 

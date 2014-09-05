@@ -210,13 +210,16 @@ OpenLayers.ElementsIndexer = OpenLayers.Class({
      *     null.
      */
     getNextElement: function(index) {
-        for (var nextIndex = index + 1, nextElement = undefined;
-            (nextIndex < this.order.length) && (nextElement == undefined);
-            nextIndex++) {
-            nextElement = OpenLayers.Util.getElement(this.order[nextIndex]);
-        }
-        
-        return nextElement || null;
+        var nextIndex = index + 1;
+        if (nextIndex < this.order.length) {
+            var nextElement = OpenLayers.Util.getElement(this.order[nextIndex]);
+            if (nextElement == undefined) {
+                nextElement = this.getNextElement(nextIndex);
+            }
+            return nextElement;
+        } else {
+            return null;
+        } 
     },
     
     CLASS_NAME: "OpenLayers.ElementsIndexer"

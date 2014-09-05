@@ -5,11 +5,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.gemini.CrazyScienceAreaIndexer;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
+import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 
 /**
  *
@@ -20,7 +21,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
-        generator = new MetadataDocumentSolrIndexGenerator();
+        generator = new MetadataDocumentSolrIndexGenerator(new CrazyScienceAreaIndexer());
     }
     
     @Test

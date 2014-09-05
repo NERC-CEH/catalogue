@@ -35,13 +35,6 @@ OpenLayers.Control.Scale = OpenLayers.Class(OpenLayers.Control, {
     geodesic: false,
 
     /**
-     * APIProperty: template
-     * {String} Template string for the scale label.
-     * Scale denominator value is substituted for token ${scaleDenom}. 
-     */
-	template: "Scale = 1 : ${scaleDenom}",
-
-    /**
      * Constructor: OpenLayers.Control.Scale
      * 
      * Parameters:
@@ -99,8 +92,7 @@ OpenLayers.Control.Scale = OpenLayers.Class(OpenLayers.Control, {
             scale = Math.round(scale);
         }    
         
-        var scaleStr = OpenLayers.i18n(this.template, {'scaleDenom':scale});
-        this.element.innerHTML = scaleStr;
+        this.element.innerHTML = OpenLayers.i18n("Scale = 1 : ${scaleDenom}", {'scaleDenom':scale});
     }, 
 
     CLASS_NAME: "OpenLayers.Control.Scale"
