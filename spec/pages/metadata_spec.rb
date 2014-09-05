@@ -26,7 +26,7 @@ BROWSERS.each do |browser|
         expect(find('#resource-status')).to have_content "completed"
         expect(find('#topic-categories')).to have_content "biota, environment"
         expect(first('.descriptive-keywords')).to have_content "NERC_DDC"
-        expect(find('#document-contacts').first('.contact-text')).to have_content "Author Kirby, K.J. English Nature enquiries@ceh.ac.uk"
+        expect(find('#document-contacts').first('.contact-text')).to have_content "Kirby, K.J. English Nature enquiries@ceh.ac.uk"
         expect(page).to have_selector('#browse-graphic')
         expect(page).to have_selector('#document-ordering')
         expect(find('#document-ordering')).to have_link("Order/Download", href: "http://gateway.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
@@ -50,7 +50,7 @@ BROWSERS.each do |browser|
     describe "Get the data" do
       it "should show a Get the data panel with no links on The BUZZ project page" do
         visit buzzPage
-        expect(page).not_to have_selector('#document-ordering')
+        expect(page).not_to have_selector('#ordering-url')
       end
       
       it "should show a Preview on map link" do

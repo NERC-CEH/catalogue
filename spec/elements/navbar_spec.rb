@@ -34,25 +34,5 @@ BROWSERS.each do |browser|
         expect(page).to_not have_selector('.navbar-nav')
       end
     end
-
-    describe "the logo" do
-      it "should be small when the width is 760px" do
-        page.driver.browser.manage.window.resize_to(760,400)
-
-        visit '/documents'
-
-        expect(page).to have_selector('.navbar-brand')
-        expect(page).to have_selector('.img-responsive')     
-      end
-
-      it "should be big when the width is 900px" do
-        page.driver.browser.manage.window.resize_to(900,400)
-
-        visit '/documents'
-
-        expect(page).to have_selector('.navbar-brand')
-        expect(page).to have_selector('.img-responsive')
-      end
-    end
   end
 end

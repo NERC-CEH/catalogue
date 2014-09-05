@@ -29,8 +29,8 @@ BROWSERS.each do |browser|
 
       perform_search 'Land Cover Map 2007 (25m Raster GB) Licensed Web Map Service'
 
-      expect(first('.result .title')).to have_content 'Land Cover Map 2007 (25m Raster GB) Licensed Web Map Service'
-      expect(first('.result .label')).to have_content 'SERVICE'
+      expect(first('.result .title')).to have_content 'Land Cover Map 2007'
+      expect(first('.result .resource-type')).to have_content 'SERVICE'
     end
 
     it "should have dataset results with the label-dataset class applied" do
@@ -38,7 +38,7 @@ BROWSERS.each do |browser|
 
       perform_search 'Land Cover Map 2007 vector'
 
-      expect(first('.result')).to have_selector '.label-dataset'
+      expect(first('.result')).to have_selector '.dataset'
     end
 
     it "should not find the facet 'application'" do
@@ -73,8 +73,9 @@ BROWSERS.each do |browser|
 
     it "should have less results when a facetted search is performed" do
       visit "/documents"
+      perform_search 'herbicide'
       num_records_unfiltered = first('#num-records').text.to_i
-      find('.facet-link-inactive', :text => 'dataset').click()
+      find('.facet-filter-inactive', :text => 'dataset').click()
       num_records_filtered = first('#num-records').text.to_i
       expect(num_records_filtered).to be < num_records_unfiltered
     end
@@ -82,22 +83,22 @@ BROWSERS.each do |browser|
     it "should have less results when a search term also includes a facet filter" do
       visit "/documents?term=land"
       num_records_unfiltered = first('#num-records').text.to_i
-      find('.facet-link-inactive', :text => 'service').click()
+      find('.facet-filter-inactive', :text => 'service').click()
       num_records_filtered = first('#num-records').text.to_i
       expect(num_records_filtered).to be < num_records_unfiltered
     end
 
     it "should have correct class applied to an active facet filter" do
       visit "/documents"
-      find('.facet-link-inactive', :text => 'dataset').click()
+      find('.facet-filter-inactive', :text => 'dataset').click()
       active_facet = find('.facet-filter-active')
       expect(active_facet.text).to eq('dataset')
     end
 
     it "should have correct class applied when an active facet filter has been deselected" do
       visit "/documents"
-      find('.facet-link-inactive', :text => 'dataset').click
-      find('.facet-link-active', :text => 'dataset').click
+      find('.facet-filter-inactive', :text => 'dataset').click
+      find('.facet-filter-active', :text => 'dataset').click
 
       inactive_dataset_facet = all('.facet-filter-inactive')
        .select{ |e| e.text[0,9] == 'dataset ('}
