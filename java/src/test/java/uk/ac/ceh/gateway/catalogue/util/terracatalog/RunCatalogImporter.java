@@ -60,6 +60,6 @@ public class RunCatalogImporter {
             documentInfoMapper,
             infoFactory,
             importUser);
-        importer.importDirectory(new File("c:\\temp\\tcimport"));
+        importer.importDirectory(new File("S:\\Environmental Informatics\\EIDC\\Hub Operations\\Catalogue Backups"));
     }
 }
