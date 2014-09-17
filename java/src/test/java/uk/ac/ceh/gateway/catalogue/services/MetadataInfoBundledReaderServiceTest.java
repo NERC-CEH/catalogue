@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
+import static org.mockito.Matchers.any;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -16,7 +17,6 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.git.GitDataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
@@ -29,6 +29,7 @@ public class MetadataInfoBundledReaderServiceTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService documentReader;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
+    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentTypeLookupService representationService;
     private MetadataInfoBundledReaderService service;
     
     
@@ -37,7 +38,8 @@ public class MetadataInfoBundledReaderServiceTest {
         MockitoAnnotations.initMocks(this);
         service = new MetadataInfoBundledReaderService(repo,
                                             documentReader,
-                                            documentInfoMapper);
+                                            documentInfoMapper,
+                                            representationService);
     }
     
     @Test
@@ -59,7 +61,7 @@ public class MetadataInfoBundledReaderServiceTest {
         
         MetadataInfo metadata = mock(MetadataInfo.class);
         when(metadata.getRawMediaType()).thenReturn(MediaType.TEXT_XML);
-        when(metadata.getDocumentClass()).thenReturn((Class)GeminiDocument.class);
+        when(representationService.getType(any(String.class))).thenReturn((Class)GeminiDocument.class);
         when(documentInfoMapper.readInfo(metadataInfoInputStream)).thenReturn(metadata);
         
         GeminiDocument geminiDocument = mock(GeminiDocument.class);

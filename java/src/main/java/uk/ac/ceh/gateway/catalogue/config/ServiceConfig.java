@@ -12,6 +12,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.CrazyScienceAreaIndexer;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2UKEOFDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -22,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
 import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -29,6 +31,8 @@ import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 /**
  * The following spring configuration will populate service beans
@@ -50,6 +54,13 @@ public class ServiceConfig {
     }
     
     @Bean
+    public DocumentTypeLookupService metadataRepresentationService() {
+        return new HashMapDocumentTypeLookupService()
+                .register("GEMINI_DOCUMENT", GeminiDocument.class)
+                .register("UKEOF_DOCUMENT", UKEOFDocument.class);
+    }
+    
+    @Bean
     public DocumentInfoFactory<MetadataDocument, MetadataInfo> documentInfoFactory() {
         return (MetadataDocument document, MediaType contentType) -> {
             MetadataInfo toReturn = document.getMetadata();
@@ -61,7 +72,8 @@ public class ServiceConfig {
             }
             
             toReturn.setRawType(contentType.toString()); //set the raw type
-            toReturn.setDocumentClass(document.getClass()); //set the document class
+            toReturn.setDocumentType(metadataRepresentationService() //set the document class
+                                        .getName(document.getClass()));
             return toReturn;
         };
     }
@@ -76,7 +88,8 @@ public class ServiceConfig {
         return new MetadataInfoBundledReaderService(
                 dataRepository,
                 documentReadingService(),
-                documentInfoMapper()
+                documentInfoMapper(),
+                metadataRepresentationService()
         );
     }
     
