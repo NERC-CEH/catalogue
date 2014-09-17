@@ -30,9 +30,9 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePart
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.LocalDateFactory;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.XPaths;
+import uk.ac.ceh.gateway.catalogue.gemini.CodeListItem;
+import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
+import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
 
 /**
  *

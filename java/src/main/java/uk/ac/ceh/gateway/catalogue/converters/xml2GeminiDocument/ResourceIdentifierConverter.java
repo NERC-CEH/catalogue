@@ -9,7 +9,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 
 public class ResourceIdentifierConverter {
     private final static String RESOURCE_IDENTIFIERS = "/*/gmd:identificationInfo/*/gmd:citation/*/gmd:identifier/*";

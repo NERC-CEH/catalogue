@@ -4,7 +4,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
+import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
 
 public class DownloadOrderConverter {
     private static final String ORDER_URL = "/*/gmd:distributionInfo/*/gmd:transferOptions/*/gmd:onLine[*/gmd:function/*/@codeListValue=\"order\"]/*/gmd:linkage/gmd:URL[starts-with(text(), \"http://gateway.ceh.ac.uk/download?fileIdentifier\")]";

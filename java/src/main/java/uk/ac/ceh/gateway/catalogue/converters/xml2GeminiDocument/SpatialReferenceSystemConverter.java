@@ -4,7 +4,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.SpatialReferenceSystem;
+import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 
 public class SpatialReferenceSystemConverter {
     

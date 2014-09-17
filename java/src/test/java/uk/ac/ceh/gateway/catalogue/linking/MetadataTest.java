@@ -7,7 +7,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 
 public class MetadataTest {
     

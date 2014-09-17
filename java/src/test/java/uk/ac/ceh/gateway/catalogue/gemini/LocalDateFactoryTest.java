@@ -1,5 +1,6 @@
-package uk.ac.ceh.gateway.catalogue.gemini.elements;
+package uk.ac.ceh.gateway.catalogue.gemini;
 
+import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 import java.time.LocalDate;
 import java.time.Month;
 import static org.hamcrest.CoreMatchers.equalTo;

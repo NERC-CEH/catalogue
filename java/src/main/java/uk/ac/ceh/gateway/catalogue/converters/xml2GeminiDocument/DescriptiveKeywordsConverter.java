@@ -9,11 +9,11 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.LocalDateFactory;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
+import uk.ac.ceh.gateway.catalogue.gemini.CodeListItem;
+import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
+import uk.ac.ceh.gateway.catalogue.gemini.ThesaurusName;
 
 public class DescriptiveKeywordsConverter {
     private static final String DESCRIPTIVE_KEYWORDS = "/*/gmd:identificationInfo/*/gmd:descriptiveKeywords";

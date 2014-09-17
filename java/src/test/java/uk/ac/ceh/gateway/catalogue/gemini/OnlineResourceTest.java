@@ -1,5 +1,6 @@
-package uk.ac.ceh.gateway.catalogue.gemini.elements;
+package uk.ac.ceh.gateway.catalogue.gemini;
 
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 

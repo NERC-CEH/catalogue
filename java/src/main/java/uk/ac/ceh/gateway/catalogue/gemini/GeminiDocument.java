@@ -11,18 +11,7 @@ import java.time.LocalDate;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetReferenceDate;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource;
-import static uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource.Type.GET_CAPABILITIES;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.SpatialReferenceSystem;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.TimePeriod;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.GET_CAPABILITIES;
 
 /**
  *

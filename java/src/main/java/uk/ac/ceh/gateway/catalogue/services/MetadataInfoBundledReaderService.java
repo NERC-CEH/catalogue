@@ -17,6 +17,7 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
     private final DataRepository<?> repo;
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
+    private final DocumentTypeLookupService representationService;
     
     @Override
     public MetadataDocument readBundle(String file, String revision) throws DataRepositoryException, IOException, UnknownContentTypeException {
@@ -27,7 +28,7 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
         DataDocument dataDoc = repo.getData(revision, file + ".raw");
         MetadataDocument document = documentReader.read(dataDoc.getInputStream(),
                                         documentInfo.getRawMediaType(),
-                                        documentInfo.getDocumentClass());
+                                        representationService.getType(documentInfo.getDocumentType()));
         document.attachMetadata(documentInfo);
         documentInfo.hideMediaType();
         return document;
