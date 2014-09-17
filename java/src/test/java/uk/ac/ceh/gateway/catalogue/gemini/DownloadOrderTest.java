@@ -1,5 +1,6 @@
-package uk.ac.ceh.gateway.catalogue.gemini.elements;
+package uk.ac.ceh.gateway.catalogue.gemini;
 
+import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
 import static org.hamcrest.CoreMatchers.equalTo;
 import org.junit.Test;
 import static org.junit.Assert.*;

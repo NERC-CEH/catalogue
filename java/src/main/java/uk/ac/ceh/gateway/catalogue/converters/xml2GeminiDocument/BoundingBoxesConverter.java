@@ -9,7 +9,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 
 public class BoundingBoxesConverter {
     private static final String BOUNDING_BOXES = "/*/gmd:identificationInfo/*/gmd:extent/*/gmd:geographicElement/gmd:EX_GeographicBoundingBox | /*/gmd:identificationInfo/*/srv:extent/*/gmd:geographicElement/gmd:EX_GeographicBoundingBox";

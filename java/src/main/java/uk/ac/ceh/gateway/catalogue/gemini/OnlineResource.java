@@ -1,9 +1,9 @@
-package uk.ac.ceh.gateway.catalogue.gemini.elements;
+package uk.ac.ceh.gateway.catalogue.gemini;
 
 import java.util.regex.Pattern;
 import lombok.Value;
-import static uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource.Type.GET_CAPABILITIES;
-import static uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource.Type.OTHER;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.GET_CAPABILITIES;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.OTHER;
 
 /**
  *

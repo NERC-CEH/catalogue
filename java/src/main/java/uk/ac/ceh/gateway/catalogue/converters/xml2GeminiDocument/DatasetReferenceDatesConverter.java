@@ -7,8 +7,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetReferenceDate;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.LocalDateFactory;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 
 public class DatasetReferenceDatesConverter {
     private static final String CREATION = "/*/gmd:identificationInfo/*/gmd:citation/*/gmd:date[*/gmd:dateType/*/@codeListValue='creation']";

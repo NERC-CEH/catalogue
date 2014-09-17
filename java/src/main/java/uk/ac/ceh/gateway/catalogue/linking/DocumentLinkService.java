@@ -3,7 +3,7 @@ package uk.ac.ceh.gateway.catalogue.linking;
 import java.util.Set;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
+import uk.ac.ceh.gateway.catalogue.gemini.Link;
 
 public interface DocumentLinkService {
     /**

@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.gemini.elements;
+package uk.ac.ceh.gateway.catalogue.gemini;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static java.lang.String.format;

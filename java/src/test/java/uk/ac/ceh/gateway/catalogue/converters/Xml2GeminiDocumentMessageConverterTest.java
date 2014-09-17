@@ -18,18 +18,18 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.CodeListItem;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.DescriptiveKeywords;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.DownloadOrder;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.DatasetReferenceDate;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty.Address;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ThesaurusName;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.TimePeriod;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.gemini.CodeListItem;
+import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty.Address;
+import uk.ac.ceh.gateway.catalogue.gemini.ThesaurusName;
+import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 /**
  *
  * @author cjohn

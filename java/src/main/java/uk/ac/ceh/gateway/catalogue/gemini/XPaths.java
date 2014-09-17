@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.gemini.elements;
+package uk.ac.ceh.gateway.catalogue.gemini;
 
 public class XPaths {
     public static final String ID = "/*/gmd:fileIdentifier/gco:CharacterString";

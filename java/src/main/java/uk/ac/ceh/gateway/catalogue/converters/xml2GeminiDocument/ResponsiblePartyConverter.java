@@ -9,8 +9,8 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty.Address;
+import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty.Address;
 
 public class ResponsiblePartyConverter {
     private static final String RESPONSIBLE_PARTY = "//gmd:CI_ResponsibleParty";

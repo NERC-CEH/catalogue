@@ -4,7 +4,7 @@ import static com.google.common.base.Strings.nullToEmpty;
 import lombok.Value;
 import lombok.experimental.Builder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 
 @Value
 public class Metadata {

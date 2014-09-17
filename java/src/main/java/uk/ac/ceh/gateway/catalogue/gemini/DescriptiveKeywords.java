@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.gemini.elements;
+package uk.ac.ceh.gateway.catalogue.gemini;
 
 import java.util.Collections;
 import java.util.List;

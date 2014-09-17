@@ -10,7 +10,6 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.OnlineResource;
 
 /**
  *
