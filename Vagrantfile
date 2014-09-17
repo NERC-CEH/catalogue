@@ -15,8 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 443, host: 8080, auto_correct: true
   config.vm.network :forwarded_port, guest: 7000, host: 7000, auto_correct: true
 
-  config.vm.synced_folder "catalogue",        "/opt/ceh-catalogue", create: true, disabled: DISABLE_SHARING
-  config.vm.synced_folder "catalogue_config", "/etc/ceh-catalogue", create: true, disabled: DISABLE_SHARING
+  config.vm.synced_folder "catalogue", "/opt/ceh-catalogue", create: true, disabled: DISABLE_SHARING
 
   config.vm.provider "vmware_workstation" do |v|
     v.vmx["memsize"] = "4096"
