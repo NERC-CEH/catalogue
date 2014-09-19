@@ -21,25 +21,25 @@ define [
     @listenTo @model.getLayers(), "remove", @removeLayer
 
   ###
-  Add the given layer to the map by creating a new OpenLayers WMS layer and 
+  Add the given layer to the map by creating a new OpenLayers TMS layer and 
   then appending this to the layer object. Position this layer such that it
   appears above the baselayer and any other layers
   ###
   addLayer: (layer) ->
-    @map.addLayer layer._openlayersWMS = OpenLayersLayerFactory.createLayer layer
-    @map.setLayerIndex layer._openlayersWMS, @map.getNumLayers() - 1
+    @map.addLayer layer._openlayersTMS = OpenLayersLayerFactory.createLayer layer
+    @map.setLayerIndex layer._openlayersTMS, @map.getNumLayers() - 1
     
   ###
   Listens to when layers have been repositioned. Notify the OpenLayers Map and set the 
   new index for that layer
   ###
   positionLayer: (layer, collection, newPosition)->
-    @map.setLayerIndex layer._openlayersWMS, newPosition + 1
+    @map.setLayerIndex layer._openlayersTMS, newPosition + 1
 
   ###
   Remove the wms layer associated with the given layer
   ###
-  removeLayer: (layer)-> @map.removeLayer layer._openlayersWMS
+  removeLayer: (layer)-> @map.removeLayer layer._openlayersTMS
 
   ###
   Remove all the old wms layers and replace with the reset collection

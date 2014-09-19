@@ -18,10 +18,10 @@ define [
   getName:-> @get "name"
 
   ###
-  Returns the address to the wms end point which should be used when
+  Returns the address to the tms end point which should be used when
   making wms requests
   ###
-  getWMS:-> "#{@onlineResource.url()}/wms"
+  getTMS:-> "#{@onlineResource.url()}/tms/"
 
   ###
   Gets the name of the wms layer which should be requested on each

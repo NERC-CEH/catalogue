@@ -6,16 +6,13 @@ define [
   of the layer change
   ###
   createLayer: (layer) -> 
-    wmsLayer = new OpenLayers.Layer.WMS layer.getName(), layer.getWMS(), 
-        layers: [layer.getLayer()]
-        format:"image/png"
-        transparent: true
-      ,
-        isBaseLayer:false
+    tmsLayer = new OpenLayers.Layer.TMS layer.getName(), layer.getTMS(),
+        layername: layer.getName()
+        type: 'png'
+        isBaseLayer: false
         opacity: layer.getOpacity()
         visibility: layer.isVisible()
-        projection: new OpenLayers.Projection "EPSG:102100"
 
-    layer.on 'change:opacity', -> wmsLayer.setOpacity layer.getOpacity()
-    layer.on 'change:visibility', -> wmsLayer.setVisibility layer.isVisible()
-    return wmsLayer
+    layer.on 'change:opacity', -> tmsLayer.setOpacity layer.getOpacity()
+    layer.on 'change:visibility', -> tmsLayer.setVisibility layer.isVisible()
+    return tmsLayer

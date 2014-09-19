@@ -22,10 +22,10 @@ define [
   getName:-> @get "name"
 
   ###
-  Returns the address to the wms end point which should be used when
-  making wms requests
+  Returns the address to the tms end point which should be used when
+  making tms requests
   ###
-  getWMS:-> @get "wms"
+  getTMS:-> @get "tms"
 
   ###
   Gets the name of the wms layer which should be requested on each
@@ -44,4 +44,4 @@ define [
   ###
   Returns the address to an image which represents the legend of this layer
   ###
-  getLegend: -> "#{@getWMS()}?REQUEST=GetLegendGraphic&VERSION=1.1.1&FORMAT=image/png&LAYER=#{@getLayer()}&SERVICE=WMS&"
+  getLegend: -> "TODO: no legend set"
