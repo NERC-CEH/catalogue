@@ -2,12 +2,16 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import java.io.File;
+import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.CrazyScienceAreaIndexer;
@@ -32,6 +36,8 @@ import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.services.MapProxyService;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 /**
@@ -40,11 +46,13 @@ import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
  */
 @Configuration
 public class ServiceConfig {
+    @Autowired RestTemplate restTemplate;
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
     @Autowired LinkDatabase linkDatabase;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
+    @Value("${mapproxy_location}") String mapProxyLocation;
         
     @Bean
     public DocumentReadingService documentReadingService() throws XPathExpressionException {
@@ -58,6 +66,19 @@ public class ServiceConfig {
         return new HashMapDocumentTypeLookupService()
                 .register("GEMINI_DOCUMENT", GeminiDocument.class)
                 .register("UKEOF_DOCUMENT", UKEOFDocument.class);
+    }
+    
+    @Bean
+    public GetCapabilitiesObtainerService getCapabilitiesObtainerService() {
+        return new GetCapabilitiesObtainerService(restTemplate);
+    }
+    
+    @Bean
+    public MapProxyService mapProxyService() throws IOException {
+        return new MapProxyService(
+                new File(mapProxyLocation),
+                getCapabilitiesObtainerService()
+        );
     }
     
     @Bean
