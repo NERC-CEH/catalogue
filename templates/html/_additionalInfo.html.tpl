@@ -6,7 +6,6 @@
       <#include "_resourceType.html.tpl">
       <#include "_resourceStatus.html.tpl">
       <#include "_spatialReferenceSystem.html.tpl">
-      <#include "_keywords.html.tpl">
       <#include "_temporalExtent.html.tpl">
       <#include "_metadataDates.html.tpl">
       <#include "_links.html.tpl">

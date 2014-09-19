@@ -1,4 +1,7 @@
-<h2>Dataset Image</h2>
 <#if browseGraphicUrl?has_content>
-  <img id="browse-graphic" src="${browseGraphicUrl}" />
+<div class="panel panel-default hidden-sm hidden-xs" id="section-preview">
+	<div class="panel-body">
+		 <img src="${browseGraphicUrl}" class="img-responsive">
+	</div>
+</div>
 </#if>

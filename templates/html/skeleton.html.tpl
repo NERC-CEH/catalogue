@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${title} - CEH Catalogue</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-    <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
+    
+	
+	<!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
     <![endif]-->

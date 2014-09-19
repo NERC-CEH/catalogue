@@ -1,26 +1,26 @@
-<#if topicCategories?has_content>
-<tr>
-  <th scope="row">Topic Categories</th>
-  <td id="topic-categories">
-    <#list topicCategories as topic>
-      <span property="dc:subject">${topic}</span><#if topic_has_next>, </#if>
-    </#list>
-  </td>
-</tr>
-</#if>
-<#if descriptiveKeywords?has_content>
-  <#list descriptiveKeywords?sort_by("type") as descriptiveKeyword>
-    <tr>
-      <#if (descriptiveKeyword.type.value)?? && descriptiveKeyword.type.value?has_content>
-        <th scope="row">${descriptiveKeyword.type.value?cap_first} Keywords</th>
-      <#else>
-        <th scope="row">Keywords</th>
-      </#if>
-      <td class="descriptive-keywords">
-          <#list descriptiveKeyword.keywords as keyword>
-            <span property="dc:subject">${keyword.value}</span><#if keyword_has_next>, </#if>
-          </#list>
-      </td>
-    </tr>
-</#list>
-</#if>
+<div id="section-keywords">
+	<h3><a id="keywords"></a>Keywords</h3>
+	<dl class="dl-horizontal">
+		<#if topicCategories?has_content>
+		<dt>Topic category</dt>
+		<#list topicCategories as topic>
+		<dd><span property="dct:subject">${topic}</span><#if topic_has_next><br></#if></dd>
+		</#list>
+		</#if>
+		<!--<dt>INSPIRE theme</dt>
+		<dd><a href="http://inspire.ec.europa.eu/theme/ef/" target="_blank" property="dct:subject">Environmental monitoring facilities</a></dd>-->
+		<dt>Other keywords</dt>
+		<dd class="truncate">
+			<#if descriptiveKeywords?has_content>
+			  <#list descriptiveKeywords as descriptiveKeyword>
+				  <#list descriptiveKeyword.keywords as keyword>
+					<span property="dc:subject">${keyword.value}</span><#if keyword_has_next><br></#if>
+				  </#list>
+			</#list>
+			</#if>
+		</dd>
+	</dl>
+</div>
+
+
+
