@@ -86,7 +86,7 @@ public class OnlineResourceController {
     
     @RequestMapping (value = "documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
                      method = RequestMethod.GET)
-    public void proxyDirectServiceRequest(
+    public void proxyMapProxyTileRequest(
             @PathVariable("file") String file,
             @PathVariable("index") int index,
             @PathVariable("layer") String layer,
@@ -96,12 +96,12 @@ public class OnlineResourceController {
             HttpServletRequest request,
             HttpServletResponse response) throws IOException, UnknownContentTypeException, MapProxyServiceException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        proxyDirectServiceRequest(latestRev.getRevisionID(), file, index, layer, z, x, y, request, response);
+        proxyMapProxyTileRequest(latestRev.getRevisionID(), file, index, layer, z, x, y, request, response);
     }
     
     @RequestMapping (value = "history/{revision}/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
                      method = RequestMethod.GET)
-    public void proxyDirectServiceRequest(
+    public void proxyMapProxyTileRequest(
             @PathVariable("revision") String revision,
             @PathVariable("file") String file,
             @PathVariable("index") int index,

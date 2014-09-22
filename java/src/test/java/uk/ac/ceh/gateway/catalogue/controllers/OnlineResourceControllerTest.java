@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doNothing;
@@ -29,7 +28,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -37,12 +35,13 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.IllegalOgcRequestTypeException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
-import uk.ac.ceh.gateway.catalogue.model.NotAGetCapabilitiesResourceException;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.services.MapProxyService;
+import uk.ac.ceh.gateway.catalogue.services.MapProxyServiceException;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -53,7 +52,8 @@ public class OnlineResourceControllerTest {
     @Mock DataRepository<CatalogueUser> repo;
     @Mock CloseableHttpClient httpClient;
     @Mock BundledReaderService<MetadataDocument> documentBundleReader;
-    @Mock RestTemplate rest;
+    @Mock GetCapabilitiesObtainerService getCapabilitiesObtainerService;
+    @Mock MapProxyService mapProxyFactoryService;
     
     private OnlineResourceController controller;
     
@@ -61,38 +61,9 @@ public class OnlineResourceControllerTest {
     public void createOnlineController() {
         MockitoAnnotations.initMocks(this);
         
-        controller = spy(new OnlineResourceController(repo, httpClient, documentBundleReader, rest));
+        controller = spy(new OnlineResourceController(repo, httpClient, documentBundleReader, getCapabilitiesObtainerService, mapProxyFactoryService));
     }
     
-    @Test(expected=NotAGetCapabilitiesResourceException.class)
-    public void checkThatGetWMSCapabilitiesDoesntWorkWithIncorrectOnlineResource() {
-        //Given
-        OnlineResource resource = new OnlineResource(
-                "http://not.a.wms", "nothing", "nothing");
-        
-        //When
-        controller.getWmsCapabilities(resource);
-        
-        //Then
-        fail("Expected to fail with invalid capabilites exception");
-    }
-    
-    @Test
-    public void checkThatRestTemplateIsCalledWithValidWMSCapabilitesType() {
-        //Given
-        OnlineResource resource = new OnlineResource(
-                "https://www.google.com/wms?REQUEST=GetCapabilities", "test wms", "test wms");
-        
-        WmsCapabilities wmsCaps = mock(WmsCapabilities.class);
-        
-        when(rest.getForObject(eq("https://www.google.com/wms?REQUEST=GetCapabilities"), eq(WmsCapabilities.class))).thenReturn(wmsCaps);
-        
-        //When
-        WmsCapabilities result = controller.getWmsCapabilities(resource);
-        
-        //Then
-        assertThat("Expected my wms mock to come out", result, equalTo(wmsCaps));
-    }
     
     @Test
     public void checkThatCanGetOnlineResourceWhichExists() {
@@ -196,7 +167,7 @@ public class OnlineResourceControllerTest {
         doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
         
         WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
-        doReturn(wmsCapabilities).when(controller).getWmsCapabilities(onlineResource);
+        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
         
         //When
         Object result = controller.processOrRedirectToOnlineResource(revision, file, index);
@@ -225,10 +196,10 @@ public class OnlineResourceControllerTest {
         assertEquals("Expected to find a redirect view with the correct url", "random url", result.getUrl());
     }
     @Test
-    public void checkThatProxyDirectServiceRequestDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException {
+    public void checkProxyingOfLatestRevisionDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException, MapProxyServiceException {
         //Given
-        String file = "my filename", type="wms";
-        int index = 1;
+        String file = "my filename", layer="wms layer";
+        int index = 1, z = 1, x=3, y =2;
         
         DataRevision revision = mock(DataRevision.class);
         when(revision.getRevisionID()).thenReturn("12");
@@ -236,91 +207,22 @@ public class OnlineResourceControllerTest {
         
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        doNothing().when(controller).proxyDirectServiceRequest("12", file, index, type, request, response);
+        doNothing().when(controller).proxyMapProxyTileRequest("12", file, index, layer, z, x, y, request, response);
         
         //When
-        controller.proxyDirectServiceRequest(file, index, type, request, response);
+        controller.proxyMapProxyTileRequest(file, index, layer, z, x, y, request, response);
         
         //Then
-        verify(controller).proxyDirectServiceRequest("12", file, index, type, request, response);
-    }
-    
-    @Test
-    public void checkThatWMSRequestIsProxiedToService() throws IOException, UnknownContentTypeException {
-        //Given
-        String revision = "myrevision";
-        String file = "metadataid";
-        int index = 2;
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getQueryString()).thenReturn("My query string");
-        
-        WmsCapabilities capabilities = mock(WmsCapabilities.class);
-        when(capabilities.getDirectMap()).thenReturn("url to wms");
-        
-        OnlineResource onlineResource = new OnlineResource("url", "name", "description");
-        doReturn(onlineResource).when(controller).getOnlineResource(file, revision, index);
-        doReturn(capabilities).when(controller).getWmsCapabilities(onlineResource);
-        doNothing().when(controller).proxy(any(String.class), any(String.class), eq(response));
-        
-        //When
-        controller.proxyDirectServiceRequest(revision, file, index, "wms", request, response);
-        
-        //Then
-        verify(controller).proxy("url to wms", "My query string", response);
-    }
-    
-    @Test
-    public void checkThatFeatureInfoIsProxiedToService() throws IOException, UnknownContentTypeException {
-        //Given
-        String revision = "myrevision";
-        String file = "metadataid";
-        int index = 20;
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getQueryString()).thenReturn("My query string");
-        
-        WmsCapabilities capabilities = mock(WmsCapabilities.class);
-        when(capabilities.getDirectFeatureInfo()).thenReturn("url to feature");
-        
-        OnlineResource onlineResource = new OnlineResource("url", "name", "description");
-        doReturn(onlineResource).when(controller).getOnlineResource(file, revision, index);
-        doReturn(capabilities).when(controller).getWmsCapabilities(onlineResource);
-        doNothing().when(controller).proxy(any(String.class), any(String.class), eq(response));
-        
-        //When
-        controller.proxyDirectServiceRequest(revision, file, index, "feature", request, response);
-        
-        //Then
-        verify(controller).proxy("url to feature", "My query string", response);
-    }
-    
-    @Test(expected=IllegalOgcRequestTypeException.class)
-    public void checkThatRandomTypeCannotBeProxied() throws IOException, UnknownContentTypeException {
-        //Given
-        String revision = "myrevision";
-        String file = "metadataid";
-        int index = 4;
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        
-        WmsCapabilities capabilities = mock(WmsCapabilities.class);
-        OnlineResource onlineResource = new OnlineResource("url", "name", "description");
-        doReturn(onlineResource).when(controller).getOnlineResource(file, revision, index);
-        doReturn(capabilities).when(controller).getWmsCapabilities(onlineResource);
-        
-        //When
-        controller.proxyDirectServiceRequest(revision, file, index, "random", request, response);
-        
-        //Then
-        fail("Didn't expect to get this far. Should have failed with exception");
+        verify(controller).proxyMapProxyTileRequest("12", file, index, layer, z, x, y, request, response);
     }
     
     @Test
     public void checkThatProxyingCopiesData() throws IOException {
         //Given
-        String url = "url";
-        String query = "query";
+        String mapService = "hashOfWMSToProxy";
+        String layer = "layerInWMS";
+        int z = 1, x =2, y=3;
+        
         HttpServletResponse servletResponse = mock(HttpServletResponse.class);
         
         ServletOutputStream outputStream = mock(ServletOutputStream.class);
@@ -334,7 +236,7 @@ public class OnlineResourceControllerTest {
         when(httpClient.execute(any(HttpGet.class))).thenReturn(response);
         
         //When
-        controller.proxy(url, query, servletResponse);
+        controller.proxy(mapService, layer, z, x, y, servletResponse);
         
         //Then
         verify(entity).writeTo(outputStream);
