@@ -5,10 +5,31 @@
             <Layer>
                 <Name>Layer 1</Name>
                 <Title>Title 1</Title>
+                <Style>
+                    <Name>default</Name>
+                    <LegendURL>
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://default/wms/legend.png" xlink:type="simple"/>
+                    </LegendURL>
+                </Style>
             </Layer>            
             <Layer>
                 <Name>Layer 2</Name>
                 <Title>Title 2</Title>
+                <Style>
+                    <Name>non-default</Name>
+                    <LegendURL>
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://default/wms/custom-style-legend.png" xlink:type="simple"/>
+                    </LegendURL>
+                </Style>
+                <Style>
+                    <Name>default</Name>
+                    <LegendURL>
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://default/wms/default.png" xlink:type="simple"/>
+                    </LegendURL>
+                </Style>
             </Layer>            
             <Layer>
                 <Name>Layer 3</Name>

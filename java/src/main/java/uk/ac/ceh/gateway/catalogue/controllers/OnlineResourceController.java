@@ -2,13 +2,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
 import java.util.List;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,8 +17,12 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
+import uk.ac.ceh.gateway.catalogue.mvc.TransparentProxyView;
+import uk.ac.ceh.gateway.catalogue.ogc.Layer;
+import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.MapProxyService;
@@ -86,34 +84,63 @@ public class OnlineResourceController {
     
     @RequestMapping (value = "documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
                      method = RequestMethod.GET)
-    public void proxyMapProxyTileRequest(
+    public TransparentProxyView proxyMapProxyTileRequest(
             @PathVariable("file") String file,
             @PathVariable("index") int index,
             @PathVariable("layer") String layer,
             @PathVariable("z") int z,
             @PathVariable("x") int x,
-            @PathVariable("y") int y,
-            HttpServletRequest request,
-            HttpServletResponse response) throws IOException, UnknownContentTypeException, MapProxyServiceException {
+            @PathVariable("y") int y) throws IOException, UnknownContentTypeException, MapProxyServiceException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        proxyMapProxyTileRequest(latestRev.getRevisionID(), file, index, layer, z, x, y, request, response);
+        return proxyMapProxyTileRequest(latestRev.getRevisionID(), file, index, layer, z, x, y);
     }
     
     @RequestMapping (value = "history/{revision}/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
                      method = RequestMethod.GET)
-    public void proxyMapProxyTileRequest(
+    public TransparentProxyView proxyMapProxyTileRequest(
             @PathVariable("revision") String revision,
             @PathVariable("file") String file,
             @PathVariable("index") int index,
             @PathVariable("layer") String layer,
             @PathVariable("z") int z,
             @PathVariable("x") int x,
-            @PathVariable("y") int y,
-            HttpServletRequest request,
-            HttpServletResponse response) throws IOException, UnknownContentTypeException, MapProxyServiceException {
+            @PathVariable("y") int y) throws IOException, UnknownContentTypeException, MapProxyServiceException {
         OnlineResource resource = getOnlineResource(file, revision, index);
         String mapService = mapProxyFactoryService.getTiledMapService(resource);
-        proxy(mapService, layer, z, x, y, response);
+        String tmsUrl = "http://localhost:8080/" + mapService + "/tiles/1.0.0/" + layer + "/" + z + "/" + x + "/" + y + ".png";
+        return new TransparentProxyView(httpClient, tmsUrl);
+    }
+    
+    @RequestMapping (value = "documents/{file}/onlineResources/{index}/{layer}/legend",
+                     method = RequestMethod.GET)
+    public TransparentProxyView getMapLayerLegend(
+            @PathVariable("file") String file,
+            @PathVariable("index") int index,
+            @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException {
+        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
+        return getMapLayerLegend(latestRev.getRevisionID(), file, index, layer);
+    }
+    
+    @RequestMapping (value = "history/{revision}/{file}/onlineResources/{index}/{layer}/legend",
+                     method = RequestMethod.GET)
+    public TransparentProxyView getMapLayerLegend(
+            @PathVariable("revision") String revision,
+            @PathVariable("file") String file,
+            @PathVariable("index") int index,
+            @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException {
+        OnlineResource onlineResource = getOnlineResource(documentBundleReader.readBundle(file, revision), index);
+        WmsCapabilities wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
+        for(Layer wmsLayer : wmsCapabilities.getLayers()) {
+            if(wmsLayer.getName().equals(layer)) {
+                if(wmsLayer.getLegendUrl() != null) {
+                    return new TransparentProxyView(httpClient, wmsLayer.getLegendUrl());
+                }
+                else {
+                    throw new LegendGraphicMissingException("No legend graphic is present for this layer");
+                }
+            }
+        }
+        throw new IllegalArgumentException("The layer: " + layer + " is not present in the given service" );
     }
     
     protected OnlineResource getOnlineResource(String file, String revision, int index) throws IOException, UnknownContentTypeException {
@@ -134,21 +161,5 @@ public class OnlineResourceController {
         else {
             throw new NoSuchOnlineResourceException("This document is not a gemini document, so does not have online resources");
         }
-    }
-    
-    protected void proxy(String mapService, String layer, int z, int x, int y, HttpServletResponse servletResponse) throws IOException {
-        HttpGet httpget = new HttpGet("http://localhost:8080/" + mapService + "/tiles/1.0.0/" + layer + "/" + z + "/" + x + "/" + y + ".png");
-        
-        try (CloseableHttpResponse response = httpClient.execute(httpget)) {
-            HttpEntity entity = response.getEntity();
-            servletResponse.setContentType(entity.getContentType().getValue());
-            copyAndClose(entity, servletResponse);
-        }
-    }
-    
-    private static void copyAndClose(HttpEntity in, HttpServletResponse response) throws IOException {
-        try (ServletOutputStream out = response.getOutputStream()) {
-            in.writeTo(out);
-        }
-    }
+    }    
 }

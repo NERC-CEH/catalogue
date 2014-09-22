@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.converters.wmsCapabilities;
 
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.xpath.XPath;
@@ -16,12 +17,13 @@ import uk.ac.ceh.gateway.catalogue.ogc.Layer;
  * @author cjohn
  */
 public class LayerConverter {    
-    private final XPathExpression layer, name, title;
+    private final XPathExpression layer, name, title, legendUrl;
     
     public LayerConverter(XPath xpath) throws XPathExpressionException {
         this.layer = xpath.compile("//wms:Layer[wms:Name]");
         this.name = xpath.compile("wms:Name");
         this.title = xpath.compile("wms:Title");
+        this.legendUrl = xpath.compile("wms:Style[wms:Name = 'default']/wms:LegendURL/wms:OnlineResource/@xlink:href");
     }
     
     public List<Layer> convert(Document document) throws XPathExpressionException {
@@ -33,6 +35,7 @@ public class LayerConverter {
             Layer toAdd = new Layer();
             toAdd.setName(name.evaluate(layerNode));
             toAdd.setTitle(title.evaluate(layerNode));
+            toAdd.setLegendUrl(Strings.emptyToNull(legendUrl.evaluate(layerNode)));
             
             toReturn.add(toAdd);
         }
