@@ -1,9 +1,9 @@
 <div id="section-extent">
-<h3><a id="extent"></a>Extent PLACEHOLDER TEXT</h3>
+<h3><a id="extent"></a>Extent</h3>
 	<dl class=" dl-horizontal">
 	 
 	<#if boundingBoxes?has_content && boundingBoxes??>
-	  <dt>Spatial extent</dt>
+	  <dt>Bounding box</dt>
 	  <dd>
 			<#list boundingBoxes as extent>
 			<figure title="Map showing the spatial extent of this data resource"><img property="dc:spatial" src="${extent.googleStaticMapUrl}" alt="Spatial Extent"></figure>
@@ -34,3 +34,8 @@
 
 	</dl>            
 </div>
+
+	<div class="alert alert-danger alert-dismissible" role="alert">
+	<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	Does extent need to be added to this page (i.e. country codes)?
+	</div>

@@ -1,10 +1,31 @@
 @import "_links";
 
+//just for testing - roll up to master template?
+
+@import url(//fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+body {background-color:#FFF;}
+h1, h2, h3, h4 {font-family: 'Open Sans' !important; font-weight: 300; color:#222;} 
+h1 {font-size: 30px;}
+h2 {}
+h3 {font-size: 24px;}
+.panel-default > .panel-heading { background-color:#F5F5F5;} //this should revert to bootstrap default
+
+//end testing//
+
+//This is a temporary style to highlight placeholder text
+.placeholder { background-color:#fffdd3;}
+
 #document-description {
-  font-size: @font-size-large;
-  line-height: 1.6;
-  word-spacing: 0.3em;
+  margin-bottom:1em;
 }
+
+
+h3 {
+	margin-top:2.5em;
+	border-bottom: 1px solid #DFDFDF;
+	padding-bottom:6px;
+}
+
 
 #document-ordering {
   .default-link;
@@ -12,18 +33,18 @@
     .btn-primary;
   }
 }
-
 .zero-clipboard {
   position: relative;
   .clipboard {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -12pt;
+    right: -12pt;
     z-index: 10;
     display: block;
     padding: 5px 8px;
-    border: 1px solid @panel-default-border;
-    border-radius: 0 4px 0 4px;
+    border: 1px solid @panel-default-border; border-width: 0 0 1px 1px;
+	border-bottom-left-radius: 4px;
+	font-size:8pt;
   }
   .zeroclipboard-is-hover {
     color: @btn-primary-color;
@@ -32,67 +53,18 @@
   }
 }
 
-#citation {
-  .panel;
-  .panel-default;
-  #citation-text {
-    .panel-body;
-    padding: 30px 15px 15px 15px;
-  }
+
+#document-authors {
+	 #author-detail {
+	  margin-top:1em;
+	}
 }
 
-#citation-links {
-  &:extend(.btn-group);
-  a {
-    .btn;
-    .btn-default;
-  }
-}
-
-.blocks {
-  .make-row();
-  .block {
-    .make-sm-column(3);
-    img {
-      .img-responsive;
-      .thumbnail;
-    }
-  }
-}
-
-#document-contacts {
-  h3 {
-    padding-left: @panel-body-padding;
-    margin-top: 0;
-  }
-  .contact {
-    .panel;
-    .panel-default;
-    .contact-text {
-      .panel-body;
-      .default-link;
-      a {
-        margin-top: 15px;
-      }
-    }
-  }
-}
-
-// 'Additional Information' tables
-#document-additional-info {
-  table {
-    .table;
-    .table-condensed;
-    .table-hover;
-  }
-  .default-link;
-  @media(min-width: @screen-sm-min) {
-    .inline-link;
-  }
-}
 
 // resourceType is historicArchive
 #not-current {
   .alert;
-  .alert-info;
+  .alert-danger;
 }
+
+

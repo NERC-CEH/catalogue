@@ -1,5 +1,5 @@
 <#if responsibleParties?has_content>
-  <h2>Contacts</h2>
+  <h2>Further contacts</h2>
   <div id="document-contacts">
     <#list responsibleParties?sort_by("role") as contact>
       <#if contact.role == "Distributor" || contact.role == "Resource Provider">

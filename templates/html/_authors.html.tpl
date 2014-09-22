@@ -1,11 +1,11 @@
-<div id="section-authors">
+<div id="document-authors">
 <h3><a id="authors"></a>Authors</h3>
 <#if responsibleParties?has_content><!-- this needs sorting out-->
 	<#list responsibleParties as author> 
 		
 		<#if author.role == "Author">
 
-			<div property="dct:contributor">      
+			<div property="dct:contributor" id="author-detail">      
 
 				<#if author.email?has_content>
 					<#if author.individualName?has_content>

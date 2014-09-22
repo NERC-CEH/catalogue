@@ -11,7 +11,7 @@
       .nav-stacked;
       .hidden-xs;
       .sub {
-        padding-left: @padding-large-horizontal * 2;
+        padding-left: @padding-large-horizontal * 1.5;
       }
       .facet-heading {
         font-weight: @headings-font-weight;
@@ -20,7 +20,11 @@
       .facet-result-name {
         color: @gray-darker;
       }
-      .facet-filter-active > a {
+      .facet-filter-inactive a {
+          padding:@padding-large-horizontal * 0.5;
+      }
+
+	  .facet-filter-active > a {
         background-color: @gray-lighter;
         border-radius: @border-radius-base;
         .facet-result-remove {
