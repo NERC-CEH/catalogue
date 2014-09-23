@@ -18,6 +18,18 @@ public class BoundingBox {
         this.northBoundLatitude = new BigDecimal(northBoundLatitude);
         googleStaticMapUrl = generateUrl();
     }
+    
+    public String getSolrGeometry() {
+        return new StringBuilder()
+                .append(westBoundLongitude)
+                .append(" ")
+                .append(southBoundLatitude)
+                .append(" ")
+                .append(eastBoundLongitude)
+                .append(" ")
+                .append(northBoundLatitude)
+                .toString();
+    }
 
     private String generateUrl() { 
         return new StringBuilder(STATIC_MAP_BASE_URL)

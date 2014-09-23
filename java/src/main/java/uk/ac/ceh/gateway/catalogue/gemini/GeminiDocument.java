@@ -8,6 +8,7 @@ import java.util.Set;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -48,6 +49,15 @@ public class GeminiDocument implements MetadataDocument {
         } else {
             return null;
         }
+    }
+    
+    
+    @Override
+    public List<String> getLocations() {
+        return boundingBoxes
+                .stream()
+                .map(BoundingBox::getSolrGeometry)
+                .collect(Collectors.toList());
     }
     
     /**
