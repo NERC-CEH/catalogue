@@ -28,3 +28,8 @@ define [
   wms request
   ###
   getLayer:-> @get "name"
+
+  ###
+  Gets the address to the legend
+  ###
+  getLegend: -> "#{@onlineResource.url()}/#{@getLayer()}/legend"

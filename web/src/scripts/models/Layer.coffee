@@ -28,6 +28,11 @@ define [
   getTMS:-> @get "tms"
 
   ###
+  Returns the address to an image which represents the legend of this layer
+  ###
+  getLegend: -> @get "legend"
+
+  ###
   Gets the name of the wms layer which should be requested on each
   wms request
   ###
@@ -40,8 +45,3 @@ define [
   setInfoVisibility: (visible)->
     do @collection.hideLayerInfo if visible
     @set 'infoVisible', visible
-
-  ###
-  Returns the address to an image which represents the legend of this layer
-  ###
-  getLegend: -> "TODO: no legend set"
