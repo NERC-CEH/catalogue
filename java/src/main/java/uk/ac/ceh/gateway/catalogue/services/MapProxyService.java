@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.codec.digest.DigestUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
@@ -38,7 +40,10 @@ public class MapProxyService {
             //Create a new Map Proxy Config.yaml file
             WmsCapabilities capabilities = getCapabilitiesService.getWmsCapabilities(resource);
             try (Writer writer = new FileWriter(mapProxyConfig)) {
-                freeMarker.process(capabilities, writer);
+                Map<String, Object> model = new HashMap<>();
+                model.put("capabilities", capabilities);
+                model.put("id", mapProxyConfigName);
+                freeMarker.process(model, writer);
             }
             catch(IOException | TemplateException ex) {
                 throw new MapProxyServiceException("Failed to generate mapproxy.yaml file", ex);
