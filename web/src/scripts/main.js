@@ -15,6 +15,7 @@ require.config({
   stubModules: ['cs', 'tpl'],
   shim: {
     'bootstrap': { deps: ["jquery"]},
+    'isInViewport': { deps: ["jquery"]},
     'openlayers': { exports: 'OpenLayers'}
   },
   paths: {
@@ -23,6 +24,7 @@ require.config({
     'coffee-script': '../vendor/coffee-script/extras/coffee-script',
     'tpl' : '../vendor/requirejs-tpl/tpl',
     'text' : '../vendor/requirejs-text/text',
+    'isInViewport': '../vendor/isInViewport/lib/isInViewport',
     'jquery' : '../vendor/jquery/jquery',
     'underscore': '../vendor/underscore-amd/underscore',
     'backbone': '../vendor/backbone-amd/backbone',
