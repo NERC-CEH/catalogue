@@ -212,8 +212,29 @@ public class OnlineResourceControllerTest {
     }
     
     @Test
-    public void checkThatTMSProxies() {
-        //TODO
+    public void checkThatTMSProxies() throws IOException, UnknownContentTypeException {
+        //Given        
+        String file = "file";
+        int index = 2;
+        String layerName = "layer";
+        
+        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+        
+        Layer layer = mock(Layer.class);
+        when(layer.getName()).thenReturn(layerName);
+        when(layer.getLegendUrl()).thenReturn("http://wwww.whereever.com/legend.png");
+        
+        WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
+        when(wmsCapabilities.getLayers()).thenReturn(Arrays.asList(layer));
+        
+        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
+        
+        //When
+        TransparentProxyView proxy = controller.getMapLayerLegend("12", file, index, layerName);
+        
+        //Then
+        assertThat("Expected url to proxy mapProxy", "http://wwww.whereever.com/legend.png", equalTo(proxy.getUrl()));
     }
     
     @Test
