@@ -50,6 +50,7 @@ public class SearchQuery {
                 .setParam("qf", "title^5 description")
                 .setStart(start)
                 .setRows(rows);
+        setSpatialFilter(query);
         setRecordVisibility(query);
         setFacetFilters(query);
         setFacetFields(query);
@@ -61,6 +62,12 @@ public class SearchQuery {
         return (DEFAULT_SEARCH_TERM.equals(term))? "" : term;
     }
     
+    private void setSpatialFilter(SolrQuery query) {
+        //if(bbox != null) {
+            query.addFilterQuery(
+                    "locations:\"isWithin(-19.03379 43.27549 10.23379 63.67446)\"");
+        //}
+    }
     private void setRecordVisibility(SolrQuery query) {
         if (user.isPublic()) {
             query.addFilterQuery("{!term f=state}public");

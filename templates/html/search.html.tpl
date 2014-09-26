@@ -37,6 +37,7 @@
         </#list>
       </#list>
     </ul>-->
+
   <div class="results">
     <div class="search-results-heading">
       <span id="num-records">${numFound}</span> records found
