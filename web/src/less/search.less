@@ -8,6 +8,11 @@
     left:0;
     width:500px;
     bottom:0;
+    div.olControlZoom {
+      bottom: 0;
+      left: 0;
+      top: auto;
+    }
   }
 
   #search-form {
@@ -42,6 +47,17 @@
     }
   }
 }
+
+.viewport {
+  height:250px;
+  border:solid black 5px;
+  position: absolute;
+  top:350px;
+  left:0;
+  right:0;
+  margin-left: 510px;
+  background-color: rgba(0,255,0,0.3);
+}
 .results {
   position: absolute;
   top:50px;
@@ -54,6 +70,15 @@
     font-weight: @headings-font-weight;
   }
   .result {
+    border-left: 8px solid #f8f8f8;
+
+    padding-left: 1em;
+
+    &.selected { 
+      border-left: 8px solid #8fca89;  
+      background-color: rgba(143,202,137,0.2);
+    }
+
     padding-bottom: @padding-small-vertical;
     .title {
       color: @brand-success;
@@ -77,5 +102,6 @@
     .dataset { background-color: #C9EAF3; color: #000;}
     .service { background-color: #FFDFDF; color: #000;}
     .series { background-color: #D2FFC4;  color: #000;}
+
   }
 }

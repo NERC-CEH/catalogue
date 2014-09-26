@@ -11,14 +11,19 @@ define [
       maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34)
       displayProjection: new OpenLayers.Projection("EPSG:3857")
       theme: null
+      eventListeners: 
+        moveend: => @model.set "bbox", @getOpenlayersViewport()
 
-    @map.addLayers [new OpenLayers.Layer.OSM(), OpenLayersLayerFactory.createSearchResultsLayer(@model.getSearchResults())]
+    @map.addLayers [new OpenLayers.Layer.OSM()]
+    @map.addLayers OpenLayersLayerFactory.createSearchResultsLayers(@model.getSearchResults())
     @map.zoomToExtent new OpenLayers.Bounds(-1885854.36, 6623727.12, 1245006.31, 7966572.83)
 
     @listenTo @model.getLayers(), "add", @addLayer
     @listenTo @model.getLayers(), "position", @positionLayer
     @listenTo @model.getLayers(), "reset", @resetLayers
     @listenTo @model.getLayers(), "remove", @removeLayer
+
+    @listenTo @model, "change:bbox", -> console.log @model.get 'bbox'
 
   ###
   Add the given layer to the map by creating a new OpenLayers TMS layer and 
@@ -47,3 +52,14 @@ define [
   resetLayers: (layers, options) ->
     _.each options.previousModels, (layer) => @removeLayer layer
     layers.forEach (layer) => @addLayer layer
+
+  ###
+  Get the current bbox object for the viewport of the openlayers map
+  ###
+  getOpenlayersViewport: ->
+    extent = @map.getExtent()
+                 .transform @map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")
+    left: extent.left
+    bottom: extent.bottom
+    right: extent.right
+    top: extent.top

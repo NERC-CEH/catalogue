@@ -20,22 +20,32 @@ define [
   ###
   Create a drawing layer which represents the currently displayed search results
   ###
-  createSearchResultsLayer: (searchResults) ->
+  createSearchResultsLayers: (searchResults) ->
     wktFactory = new OpenLayers.Format.WKT #Create the wktFactory to convert openlayers features to wkt
-    drawingLayer = new OpenLayers.Layer.Vector "Vector Layer",
-      style:
-        strokeColor: '#ff0000'
-        fillOpacity: 0
+    drawingLayer = new OpenLayers.Layer.Vector "Vector Layer"
+    markerLayer = new OpenLayers.Layer.Markers "Marker Layer"
 
     epsg4326 = new OpenLayers.Projection("EPSG:4326")
 
     updateDrawingLayer =->
       do drawingLayer.removeAllFeatures
+      do markerLayer.clearMarkers
 
       _.forEach searchResults.getResultsOnScreen(), (result) ->
         vector = wktFactory.read result.getLocations()
         vector.geometry.transform epsg4326, drawingLayer.map.getProjectionObject()
+        vector.style =
+          strokeColor: '#8fca89' 
+          fillColor: '#8fca89'
+          fillOpacity: 0.3
+
+        console.log vector
         drawingLayer.addFeatures vector
+        markerLayer.addMarker new OpenLayers.Marker( new OpenLayers.LonLat(
+          vector.geometry.bounds.right,
+          vector.geometry.bounds.top
+        ), new OpenLayers.Icon('/static/img/marker.png', {h:34, w:21}, {x:-10,y:-34}))
+
 
     searchResults.onscreen.on 'change', updateDrawingLayer
-    return drawingLayer
+    return [drawingLayer, markerLayer]

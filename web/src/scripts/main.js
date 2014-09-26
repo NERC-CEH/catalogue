@@ -16,6 +16,7 @@ require.config({
   shim: {
     'bootstrap': { deps: ["jquery"]},
     'isInViewport': { deps: ["jquery"]},
+    'jquery-scrollsnap' : { deps: ["jquery", "jquery-scrollstop"]},
     'openlayers': { exports: 'OpenLayers'}
   },
   paths: {
@@ -31,6 +32,8 @@ require.config({
     'openlayers': '../vendor/OpenLayers-custom',
     'proj4js' : '../vendor/proj4js/lib/proj4js-combined',
     'jquery-ui': '../vendor/jquery-ui/ui',
+    'jquery-scrollsnap' : '../vendor/jquery-scrollsnap/src/jquery.scrollsnap',
+    'jquery-scrollstop' : '../vendor/jquery-scrollstop/jquery.scrollstop',
     'zeroclipboard': '../vendor/zeroclipboard/dist/ZeroClipboard'
   },
   waitSeconds:1000

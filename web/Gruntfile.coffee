@@ -60,6 +60,7 @@ module.exports = (grunt) ->
         files:
           'src/vendor/OpenLayers-custom.js': [
             'src/vendor/openlayers/lib/OpenLayers/Map.js'
+            'src/vendor/openlayers/lib/OpenLayers/Marker.js'
             'src/vendor/openlayers/lib/OpenLayers/Kinetic.js'
             'src/vendor/openlayers/lib/OpenLayers/Projection.js'
             'src/vendor/openlayers/lib/OpenLayers/Layer/OSM.js'
@@ -70,6 +71,7 @@ module.exports = (grunt) ->
             'src/vendor/openlayers/lib/OpenLayers/Control/Attribution.js'
             'src/vendor/openlayers/lib/OpenLayers/Layer/TMS.js'
             'src/vendor/openlayers/lib/OpenLayers/Layer/Vector.js'
+            'src/vendor/openlayers/lib/OpenLayers/Layer/Markers.js'
             'src/vendor/openlayers/lib/OpenLayers/Renderer/SVG.js'
             'src/vendor/openlayers/lib/OpenLayers/Renderer/VML.js'
             'src/vendor/openlayers/lib/OpenLayers/Renderer/Canvas.js'

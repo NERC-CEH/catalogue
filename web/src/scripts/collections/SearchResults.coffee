@@ -4,6 +4,8 @@ define [
 ], (Backbone, SearchResult) -> Backbone.Collection.extend
   model: SearchResult
 
+  url: "/documents"
+
   initialize:->
     @onscreen = new Backbone.Model
 
@@ -11,4 +13,4 @@ define [
     @slice @onscreen.get('start'), @onscreen.get('end')
 
   setOnScreen: (start, length) ->
-    @onscreen.set start: start, end: start + length
+    @onscreen.set start: start, end: start + 1

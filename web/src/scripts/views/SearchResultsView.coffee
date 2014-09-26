@@ -17,6 +17,9 @@ define [
     @collection.add results
 
   updateResultsOnScreen: ->
-    results = @$ '.result:in-viewport'
-    first = parseInt $(results[0]).attr('data-id'), 10
+    results = @$ 'h2:in-viewport(.results)'
+    firstResult = $(results[0]).parent()
+    @$('.result').removeClass("selected")
+    firstResult.addClass("selected")
+    first = parseInt firstResult.attr('data-id'), 10
     @collection.setOnScreen first, results.length
