@@ -1,26 +1,37 @@
 define [
+  'jquery'
+  'underscore'
+  'backbone'
   'openlayers'
-], (OpenLayers) ->
-  ###
-  Create an openlayers layer given some model/Layer which updates when different parts
-  of the layer change
-  ###
-  createLayer: (layer) -> 
-    tmsLayer = new OpenLayers.Layer.TMS layer.getName(), layer.getTMS(),
-        layername: layer.getName()
-        type: 'png'
-        isBaseLayer: false
-        opacity: layer.getOpacity()
-        visibility: layer.isVisible()
+], ($, _, Backbone, OpenLayers) -> Backbone.View.extend
+  initialize: ->
+    @map = new OpenLayers.Map
+      div: @el
+      maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34)
+      displayProjection: new OpenLayers.Projection("EPSG:3857")
+      theme: null
+      eventListeners: 
+        moveend: => @model.set "bbox", @getOpenlayersViewport()
 
-    layer.on 'change:opacity', -> tmsLayer.setOpacity layer.getOpacity()
-    layer.on 'change:visibility', -> tmsLayer.setVisibility layer.isVisible()
-    return tmsLayer
+    @map.addLayers [new OpenLayers.Layer.OSM()]
+    @map.addLayers @_createSearchResultsLayers(@model.getSearchResults())
+    @map.zoomToExtent new OpenLayers.Bounds(-1885854.36, 6623727.12, 1245006.31, 7966572.83)
+
+  ###
+  Get the current bbox object for the viewport of the openlayers map
+  ###
+  getOpenlayersViewport: ->
+    extent = @map.getExtent()
+                 .transform @map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")
+    left: extent.left
+    bottom: extent.bottom
+    right: extent.right
+    top: extent.top
 
   ###
   Create a drawing layer which represents the currently displayed search results
   ###
-  createSearchResultsLayers: (searchResults) ->
+  _createSearchResultsLayers: (searchResults) ->
     wktFactory = new OpenLayers.Format.WKT #Create the wktFactory to convert openlayers features to wkt
     drawingLayer = new OpenLayers.Layer.Vector "Vector Layer"
     markerLayer = new OpenLayers.Layer.Markers "Marker Layer"
@@ -39,7 +50,6 @@ define [
           fillColor: '#8fca89'
           fillOpacity: 0.3
 
-        console.log vector
         drawingLayer.addFeatures vector
         markerLayer.addMarker new OpenLayers.Marker( new OpenLayers.LonLat(
           vector.geometry.bounds.right,

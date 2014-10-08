@@ -8,7 +8,6 @@ define [
     "scroll" : "updateResultsOnScreen"
 
   initialize: ->
-
     results = _.map @$('.result'), (r) -> 
       title:       $('.title', r).text()
       description: $('.description', r).text()
@@ -16,10 +15,19 @@ define [
 
     @collection.add results
 
+
+    @firstResultPosition = @$('.result .description').offset().top
+
+    do @updateResultsOnScreen
+    $(window).scroll => do @updateResultsOnScreen
+
   updateResultsOnScreen: ->
-    results = @$ 'h2:in-viewport(.results)'
-    firstResult = $(results[0]).parent()
+    results = $ ".result:in-viewport(#{@firstResultPosition})"
+    firstResult = $(results[0])
+
+    #if firstResult.length
     @$('.result').removeClass("selected")
     firstResult.addClass("selected")
     first = parseInt firstResult.attr('data-id'), 10
+
     @collection.setOnScreen first, results.length

@@ -1,16 +1,16 @@
 define [
   'jquery'
   'backbone'
-  'cs!views/OpenLayersView'
+  'cs!views/SpatialSearchView'
   'cs!views/SearchResultsView'
-], ($, Backbone, OpenLayersView, SearchResultsView) -> Backbone.View.extend
+], ($, Backbone, SpatialSearchView, SearchResultsView) -> Backbone.View.extend
   el: '#search'
 
   initialize: ->
     do @render
 
   render: ->
-    @openlayersView = new OpenLayersView
+    @spatialSearchView = new SpatialSearchView
       model: @model
       el: @$('.openlayers')
       

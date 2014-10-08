@@ -3,8 +3,7 @@ define [
   'underscore'
   'backbone'
   'openlayers'
-  'cs!helpers/OpenLayersLayerFactory'
-], ($, _, Backbone, OpenLayers, OpenLayersLayerFactory) -> Backbone.View.extend
+], ($, _, Backbone, OpenLayers) -> Backbone.View.extend
   initialize: ->
     @map = new OpenLayers.Map
       div: @el
@@ -26,7 +25,7 @@ define [
   appears above the baselayer and any other layers
   ###
   addLayer: (layer) ->
-    @map.addLayer layer._openlayersWMS = OpenLayersLayerFactory.createLayer layer
+    @map.addLayer layer._openlayersWMS = @_createLayer layer
     @map.setLayerIndex layer._openlayersWMS, @map.getNumLayers() - 1
     
   ###
@@ -47,3 +46,19 @@ define [
   resetLayers: (layers, options) ->
     _.each options.previousModels, (layer) => @removeLayer layer
     layers.forEach (layer) => @addLayer layer
+
+  ###
+  Create an openlayers layer given some model/Layer which updates when different parts
+  of the layer change
+  ###
+  _createLayer: (layer) -> 
+    tmsLayer = new OpenLayers.Layer.TMS layer.getName(), layer.getTMS(),
+        layername: layer.getName()
+        type: 'png'
+        isBaseLayer: false
+        opacity: layer.getOpacity()
+        visibility: layer.isVisible()
+
+    layer.on 'change:opacity', -> tmsLayer.setOpacity layer.getOpacity()
+    layer.on 'change:visibility', -> tmsLayer.setVisibility layer.isVisible()
+    return tmsLayer
