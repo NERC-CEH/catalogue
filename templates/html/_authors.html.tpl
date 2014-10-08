@@ -5,7 +5,7 @@
 		
 		<#if author.role == "Author">
 
-			<div property="dct:contributor" id="author-detail">      
+		<div property="dct:contributor" id="author-detail">      
 
 				<#if author.email?has_content>
 					<#if author.individualName?has_content>
@@ -35,5 +35,6 @@
 
 		</#if>
 	</#list>
+	
 </#if>
 </div>

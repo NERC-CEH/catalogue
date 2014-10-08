@@ -10,14 +10,17 @@
 		<p><i class="glyphicon glyphicon-map-marker text-info"></i> Preview on map</p>
 		</#if>
 		<#if downloadOrder.supportingDocumentsUrl?has_content>
-		<p><span class="popover-dismiss" data-toggle="popover" data-content="Link to the EIDC Hub landing page (which will have to be redesigned)" data-original-title="" title=""><i class="glyphicon glyphicon-book text-info"></i> <a href="#" title="Supporting information important for the re-use of this dataset, and also link to data citation details">Supporting documentation</a></span></p>
+		<p><i class="glyphicon glyphicon-book text-info"></i> <a href="#" title="Supporting information important for the re-use of this dataset">Supporting documentation</a></p>
+		</#if>
+	</div>
+	<div class="panel-footer">
+		<#if downloadOrder.isOgl()><img src="../../_assets/images/ogl.png" alt="OGL" class="pull-right hidden-xs"> </#if>	
+		<#if downloadOrder.licenseUrl?has_content>
+			<a href="${downloadOrder.licenseUrl}" target="_blank" property="dct:rights">${downloadOrder.licenseUrl}</a>
+		<#else>
+			<span class="placeholder">Licence text</span>
 		</#if>
 	</div>
 	
-	<#if downloadOrder.licenseUrl?has_content>
-	<div class="panel-footer">
-		<a href="${downloadOrder.licenseUrl}" target="_blank" property="dct:rights"><#if downloadOrder.isOgl()><img src="../../_assets/images/ogl.png" alt="OGL" class="pull-right hidden-xs"> </#if>${downloadOrder.licenseUrl}</a>
-	</div>
-	</#if>
 </div>
 </#if>

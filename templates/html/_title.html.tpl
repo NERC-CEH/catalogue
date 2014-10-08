@@ -5,7 +5,7 @@
   
   <#if (resourceType.value)?has_content>
   <small class="resource-type ${resourceType}" property="dc:type">${resourceType.value}</small>
-  </#if>
+  </#if><br>
   
   ${title}
   

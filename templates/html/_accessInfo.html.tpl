@@ -1,8 +1,8 @@
-<div id="section-access">
+<div id="section-access" class="placeholder">
 <h3><a id="access"></a>Access information [PLACEHOLDER TEXT]</h3>
-	<dl class=" dl-horizontal">
+	<dl class="dl-horizontal">
 	  <dt>Access conditions</dt>
-	  <dd><span class="placeholder"><a href="http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain" target="_blank">This resource is available under the Open Government Licence (OGL)</a></span></dd>
+	  <dd><span ><a href="http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain" target="_blank">This resource is available under the Open Government Licence (OGL)</a></span></dd>
 	  <dt>Use limitations</dt>
 	  <dd>
 		<p><span class="placeholder">Terms and conditions apply</span></p>
@@ -22,5 +22,7 @@
 		</address>
 		</div>
 	  </dd>
+	  <dt>Data available as:</dt>
+	  <dd>ESRI Shapefile format<br>application/gml+xml</dd>
   </dl>   
 </div>
