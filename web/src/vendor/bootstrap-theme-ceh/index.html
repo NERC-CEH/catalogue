@@ -15,7 +15,7 @@
       <div class="row">
         <div class="col-lg-6 col-lg-offset-3">
           <h1 class="page-header"> CEH Bootstrap Theme
-            <small>(0.0.4)</small>
+            <small>(1.0.0)</small>
           </h1>
           <p class="lead">A theme for <a href="http://www.getbootstrap.com/">Bootstrap 3</a> by <b>CEH Application Development Team &lt;oss@ceh.ac.uk&gt;</b></p>
           <div class="list-group">
@@ -38,8 +38,18 @@
             <div class="panel-body">
               <h1 id="ceh-theme-for-bootstrap-3-2-x">CEH Theme for Bootstrap 3.2.x</h1>
 <p>A theme for CEH sites using the <a href="http://getbootstrap.com/">Bootstrap</a> framework.  It has been built using <a href="https://github.com/divshot/themestrap">Themestrap</a>.</p>
-<p>You can install it using bower:</p>
+<p>You can install it using bower eg.:</p>
 <pre><code>bower install bootstrap-theme-ceh</code></pre>
+<h2 id="customisation">Customisation</h2>
+<p>To customise this theme, first clone the repository,</p>
+<pre><code>git clone https://github.com/NERC-CEH/bootstrap-theme-ceh</code></pre>
+<p>Now install all the required dependencies,</p>
+<pre><code>npm install
+bower install</code></pre>
+<p>Now you&#39;re ready to go, simply edit the <code>less/variables.less</code> and <code>less/theme.less</code> to your liking.  When you&#39;re ready, just run <code>grunt</code> and it will compile and minify the distribution for you.  You can also run <code>grunt watch</code> to automatically compile as your work.  In addition you can use <code>grunt serve</code> to run a basic web server at <code>http://localhost:8000</code> for you to check how your changes look against the <code>examples/kitchen-sink.html</code> example provided.</p>
+<h2 id="releasing-a-new-version">Releasing a new version</h2>
+<p>To release a new version commit your changes and create a new tag in git with the latest version number as listed in <code>bower.json</code>.  Use <a href="http://semver.org/">semantic versioning</a>.</p>
+<p>After release update <code>bower.json</code> with the next version number and run <code>grunt assemble</code> to update templates that use the version number.</p>
 <h2 id="copyright-and-license">Copyright and license</h2>
 <p>Copyright 2014 Centre for Ecology &amp; Hydrology under <a href="LICENSE">the GNU Public license 2.0</a>.</p>
 
