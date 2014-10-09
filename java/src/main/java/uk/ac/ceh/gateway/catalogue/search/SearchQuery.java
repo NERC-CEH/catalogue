@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import com.google.common.base.Splitter;
 import static com.google.common.base.Strings.nullToEmpty;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -26,13 +27,14 @@ public class SearchQuery {
     }
     
     private final CatalogueUser user; 
-    private final String term;
+    private final String term, bbox;
     private final int start, rows;
     private final List<FacetFilter> facetFilters;
     
-    public SearchQuery(CatalogueUser user, String term, int start, int rows, List<String> facetFilters) {
+    public SearchQuery(CatalogueUser user, String term, String bbox, int start, int rows, List<String> facetFilters) {
         log.debug("facet filter strings: {}", facetFilters);
         this.user = user;
+        this.bbox = bbox;
         this.term = term;
         this.start = start;
         this.rows = rows;
@@ -63,10 +65,12 @@ public class SearchQuery {
     }
     
     private void setSpatialFilter(SolrQuery query) {
-        //if(bbox != null) {
+        if(bbox != null) {
+            validateBBox(bbox);
+            String solrBBox = bbox.replace(',', ' ');
             query.addFilterQuery(
-                    "locations:\"isWithin(-19.03379 43.27549 10.23379 63.67446)\"");
-        //}
+                    "locations:\"isWithin(" + solrBBox + ")\"");
+        }
     }
     private void setRecordVisibility(SolrQuery query) {
         if (user.isPublic()) {
@@ -109,5 +113,22 @@ public class SearchQuery {
     private int getRandomSeed(){
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.DAY_OF_YEAR);
+    }
+    
+    private void validateBBox(String bbox) {
+        //Validate that the bbox is in the format minx,miny,maxx,maxxy
+            String[] bboxParts = bbox.split(",");
+            if(bboxParts.length != 4) {
+                throw new IllegalArgumentException("The bbox must be in the form minx,miny,maxx,maxy");
+            }
+            for(String bboxPart :bboxParts) {
+                try {
+                    Double.parseDouble(bboxPart);
+                }
+                catch(NumberFormatException ex) {
+                    throw new IllegalArgumentException("The bbox must be in the form minx,miny,maxx,maxy", ex);
+                }
+            }
+            
     }
 }

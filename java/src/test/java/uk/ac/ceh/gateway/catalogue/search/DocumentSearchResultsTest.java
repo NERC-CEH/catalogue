@@ -1,8 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import java.util.Collections;
-import java.util.List;
-import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.util.NamedList;
@@ -22,6 +20,7 @@ public class DocumentSearchResultsTest {
         SearchQuery query = new SearchQuery(
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
+            SearchQueryTest.DEFAULT_BBOX,
             SearchQueryTest.DEFAULT_START,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FITLERS);

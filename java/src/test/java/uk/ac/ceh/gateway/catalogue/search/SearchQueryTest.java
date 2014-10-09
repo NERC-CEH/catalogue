@@ -11,6 +11,7 @@ import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class SearchQueryTest {
+    public static final String DEFAULT_BBOX = null;
     public static final int DEFAULT_START = 0;
     public static final int DEFAULT_ROWS = 20;
     public static final List<String> DEFAULT_FITLERS = Collections.EMPTY_LIST;
@@ -21,6 +22,7 @@ public class SearchQueryTest {
         SearchQuery query = new SearchQuery(
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
             DEFAULT_START,
             DEFAULT_ROWS,
             DEFAULT_FITLERS);
@@ -45,6 +47,7 @@ public class SearchQueryTest {
         SearchQuery query = new SearchQuery(
             CatalogueUser.PUBLIC_USER,
             term,
+            DEFAULT_BBOX,
             DEFAULT_START,
             DEFAULT_ROWS,
             DEFAULT_FITLERS);
@@ -62,6 +65,7 @@ public class SearchQueryTest {
         SearchQuery query = new SearchQuery(
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
             DEFAULT_START,
             DEFAULT_ROWS,
             Arrays.asList("resourceType|dataset", "sci0|Green & yellow"));
@@ -82,6 +86,7 @@ public class SearchQueryTest {
         SearchQuery query = new SearchQuery(
             user,
             SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,                
             DEFAULT_START,
             DEFAULT_ROWS,
             DEFAULT_FITLERS);
@@ -91,6 +96,46 @@ public class SearchQueryTest {
 
         //Then
         assertThat("FilterQuery should be 'state:public' for logged in user", solrQuery.getFilterQueries(), hasItemInArray("{!term f=state}public"));
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void exceptionThrownWhenBBOXIsContainsText() {
+        //Given
+        String bbox = "my,invalid,bbox,attempt";
+        
+        SearchQuery query = new SearchQuery(
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            bbox,
+            DEFAULT_START,
+            DEFAULT_ROWS,
+            DEFAULT_FITLERS);
+        
+        //When
+        SolrQuery solrQuery = query.build();
+        
+        //Then
+        fail("Expected to get an illegal argument exception");
+    }
+    
+    @Test
+    public void noExceptionThrownWhenBBoxIsValid() {
+        //Given
+        String bbox = "1.11,2.22,3.33,4.44";
+        
+        SearchQuery query = new SearchQuery(
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            bbox,
+            DEFAULT_START,
+            DEFAULT_ROWS,
+            DEFAULT_FITLERS);
+        
+        //When
+        SolrQuery solrQuery = query.build();
+        
+        //Then
+        assertThat("Expected to fild a solr bbox filter", solrQuery.getFilterQueries(), hasItemInArray("locations:\"isWithin(1.11 2.22 3.33 4.44)\""));
     }
     
 }

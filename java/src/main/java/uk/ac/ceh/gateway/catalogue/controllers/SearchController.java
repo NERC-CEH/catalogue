@@ -33,12 +33,13 @@ public class SearchController {
     public @ResponseBody SearchResults searchDocuments(
             @ActiveUser CatalogueUser user,
             @RequestParam(value = "term", defaultValue=SearchQuery.DEFAULT_SEARCH_TERM) String term,
+            @RequestParam(value = "bbox", required = false) String bbox,
             @RequestParam(value = "start", defaultValue = "0") int start,
             @RequestParam(value = "rows", defaultValue = "20") int rows,
             @RequestParam(value = "facet", defaultValue = "") List<String> facetFilters,
             HttpServletRequest request
     ) throws SolrServerException {
-        SearchQuery searchQuery = new SearchQuery(user, term, start, rows, facetFilters);
+        SearchQuery searchQuery = new SearchQuery(user, term, bbox, start, rows, facetFilters);
         return new DocumentSearchResults(
             solrServer.query(
                 searchQuery.build(),
