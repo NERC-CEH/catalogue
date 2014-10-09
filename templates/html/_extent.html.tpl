@@ -1,9 +1,9 @@
 <div id="section-extent">
-<h3><a id="extent"></a>Extent</h3>
+<h3><a id="extent"></a>Where/When<!--Extent--></h3>
 	<dl class=" dl-horizontal">
 	 
 	<#if boundingBoxes?has_content && boundingBoxes??>
-	  <dt>Bounding box</dt>
+	  <dt>Resource's study area</dt>
 	  <dd>
 			<#list boundingBoxes as extent>
 			<figure title="Map showing the spatial extent of this data resource"><img property="dc:spatial" src="${extent.googleStaticMapUrl}" alt="Spatial Extent"></figure>
@@ -21,8 +21,8 @@
 				<span property="dc:start" class="extentBegin">${extent.begin?date}</span>
 				<#else>...
 			  </#if>
-			  to
 			  <#if extent.end?has_content>
+			  &nbsp;&nbsp;&nbsp;to&nbsp;&nbsp;&nbsp;
 				<span property="dc:end" class="extentEnd">${extent.end?date}</span>
 			  <#elseif resourceStatus?has_content && resourceStatus == "onGoing">present
 			  <#else>...

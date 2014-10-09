@@ -3,7 +3,7 @@
  -->
 
 <div id="document-otherResponsibleParties">
-<h3><a id="authors"></a>Contacts</h3>
+<h3><a id="authors"></a>Other contacts</h3>
 <#if responsibleParties?has_content>
 	<#list responsibleParties?sort_by("role") as author> <!-- this needs sorting out-->
 		<dl class="dl-horizontal">

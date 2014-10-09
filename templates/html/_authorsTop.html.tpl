@@ -1,18 +1,20 @@
 <#if otherCitationDetails?has_content> <!-- this should be if doi exists -->
-	<div id="section-cite" property="dct:bibliographicCitation" about="_:0">
-	<hr>
+	<div id="section-authorsTop">
 	  
-	 <p id="citation-text"><small>  
+	<p><small>  
 	<#list responsibleParties as author> 		
 		<#if author.role == "Author">
 			${author.individualName} , <!-- need to sort out trailing comma-->
 		</#if>
 	</#list>
 	
-	(<span class="placeholder">2014</span>) 
-	${title} . NERC-Environmental Information Data Centre doi:10.5285/${id}
+		<#if datasetReferenceDate.publicationDate??>
+			<#setting date_format = 'yyyy-MM-dd'>
+			(${datasetReferenceDate.publicationDate?substring(0, 4)})
+		</#if>
+	.<br>doi:10.5285/${id}
 	  
 	</small></p>
-	<hr>
+	
 	</div>
 </#if>

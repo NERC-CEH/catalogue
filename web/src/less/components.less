@@ -1,19 +1,19 @@
 @import "_links";
 
 //just for testing - roll up to master template?
-
 @import url(//fonts.googleapis.com/css?family=Open+Sans:300,400,700);
 body {background-color:#FFF;}
 h1, h2, h3, h4 {font-family: 'Open Sans' !important; font-weight: 300; color:#222;} 
 h1 {font-size: 30px;}
 h2 {}
 h3 {font-size: 24px;}
-.panel-default > .panel-heading { background-color:#F5F5F5;} //this should revert to bootstrap default
-
+.panel-default > .panel-heading { background-color:#F5F5F5;} //this colour should revert to bootstrap default
 //end testing//
+
 
 //This is a temporary style to highlight placeholder text
 .placeholder { background-color:#fffdd3;}
+
 
 #document-description {
   margin-bottom:1em;
@@ -27,13 +27,27 @@ h3 {
 }
 
 
+#section-authorsTop{
+	border:1px solid #DFDFDF;
+	border-width: 1px 0;
+	margin:.75em 0;
+	padding-top:0.6em;
+}
+
+
+#section-licence {
+	border-top:1px solid #DFDFDF;
+}
+
+
 #document-ordering {
   .default-link;
   #ordering-url {
     .btn-primary;
   }
 }
-.zero-clipboard {
+
+/*.zero-clipboard {
   position: relative;
   .clipboard {
     position: absolute;
@@ -52,6 +66,7 @@ h3 {
     cursor: pointer;
   }
 }
+*/
 
 
 #document-authors {

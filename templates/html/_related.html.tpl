@@ -5,7 +5,13 @@
     <#assign documentLinksTitle="Associated Datasets">
   </#if>
   <h3>Related records</h3>
-    <p>
-      <#list documentLinks as link><#if link_index gt 0></p><p></#if> <a href="${link.href}">${link.title}</a></#list>
-	</p>
+	 	
+	<dl>
+		<dt>This resource is part of the series:</dt>
+		<dd><a href="#">Land Cover Map 2007</a></dd>
+		<dt>Related services:</dt>
+		<dd><#list documentLinks as link><#if link_index gt 0></p><p></#if> <a href="${link.href}">${link.title}</a></#list></dd>
+	</dl>
+	
+	
 </#if>

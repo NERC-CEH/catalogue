@@ -22,7 +22,5 @@
 		</address>
 		</div>
 	  </dd>
-	  <dt>Data available as:</dt>
-	  <dd>ESRI Shapefile format<br>application/gml+xml</dd>
   </dl>   
 </div>

@@ -6482,6 +6482,15 @@ h3 {
   border-bottom: 1px solid #DFDFDF;
   padding-bottom: 6px;
 }
+#section-authorsTop {
+  border: 1px solid #DFDFDF;
+  border-width: 1px 0;
+  margin: .75em 0;
+  padding-top: 0.6em;
+}
+#section-licence {
+  border-top: 1px solid #DFDFDF;
+}
 #document-ordering a {
   display: inline-block;
   margin-bottom: 0;
@@ -6616,26 +6625,26 @@ fieldset[disabled] #document-ordering #ordering-url.active {
   color: #3fc3cb;
   background-color: #ffffff;
 }
-.zero-clipboard {
+/*.zero-clipboard {
   position: relative;
+  .clipboard {
+    position: absolute;
+    top: -12pt;
+    right: -12pt;
+    z-index: 10;
+    display: block;
+    padding: 5px 8px;
+    border: 1px solid @panel-default-border; border-width: 0 0 1px 1px;
+	border-bottom-left-radius: 4px;
+	font-size:8pt;
+  }
+  .zeroclipboard-is-hover {
+    color: @btn-primary-color;
+    background-color: @btn-primary-bg;
+    cursor: pointer;
+  }
 }
-.zero-clipboard .clipboard {
-  position: absolute;
-  top: -12pt;
-  right: -12pt;
-  z-index: 10;
-  display: block;
-  padding: 5px 8px;
-  border: 1px solid #dddddd;
-  border-width: 0 0 1px 1px;
-  border-bottom-left-radius: 4px;
-  font-size: 8pt;
-}
-.zero-clipboard .zeroclipboard-is-hover {
-  color: #ffffff;
-  background-color: #3fc3cb;
-  cursor: pointer;
-}
+*/
 #document-authors #author-detail {
   margin-top: 1em;
 }
