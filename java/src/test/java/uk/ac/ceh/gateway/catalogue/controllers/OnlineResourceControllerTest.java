@@ -4,12 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -19,17 +13,13 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -37,12 +27,16 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.IllegalOgcRequestTypeException;
+import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
-import uk.ac.ceh.gateway.catalogue.model.NotAGetCapabilitiesResourceException;
+import uk.ac.ceh.gateway.catalogue.mvc.TransparentProxyView;
+import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.services.MapProxyService;
+import uk.ac.ceh.gateway.catalogue.services.MapProxyServiceException;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -53,7 +47,8 @@ public class OnlineResourceControllerTest {
     @Mock DataRepository<CatalogueUser> repo;
     @Mock CloseableHttpClient httpClient;
     @Mock BundledReaderService<MetadataDocument> documentBundleReader;
-    @Mock RestTemplate rest;
+    @Mock GetCapabilitiesObtainerService getCapabilitiesObtainerService;
+    @Mock MapProxyService mapProxyFactoryService;
     
     private OnlineResourceController controller;
     
@@ -61,37 +56,7 @@ public class OnlineResourceControllerTest {
     public void createOnlineController() {
         MockitoAnnotations.initMocks(this);
         
-        controller = spy(new OnlineResourceController(repo, httpClient, documentBundleReader, rest));
-    }
-    
-    @Test(expected=NotAGetCapabilitiesResourceException.class)
-    public void checkThatGetWMSCapabilitiesDoesntWorkWithIncorrectOnlineResource() {
-        //Given
-        OnlineResource resource = new OnlineResource(
-                "http://not.a.wms", "nothing", "nothing");
-        
-        //When
-        controller.getWmsCapabilities(resource);
-        
-        //Then
-        fail("Expected to fail with invalid capabilites exception");
-    }
-    
-    @Test
-    public void checkThatRestTemplateIsCalledWithValidWMSCapabilitesType() {
-        //Given
-        OnlineResource resource = new OnlineResource(
-                "https://www.google.com/wms?REQUEST=GetCapabilities", "test wms", "test wms");
-        
-        WmsCapabilities wmsCaps = mock(WmsCapabilities.class);
-        
-        when(rest.getForObject(eq("https://www.google.com/wms?REQUEST=GetCapabilities"), eq(WmsCapabilities.class))).thenReturn(wmsCaps);
-        
-        //When
-        WmsCapabilities result = controller.getWmsCapabilities(resource);
-        
-        //Then
-        assertThat("Expected my wms mock to come out", result, equalTo(wmsCaps));
+        controller = spy(new OnlineResourceController(repo, httpClient, documentBundleReader, getCapabilitiesObtainerService, mapProxyFactoryService));
     }
     
     @Test
@@ -196,7 +161,7 @@ public class OnlineResourceControllerTest {
         doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
         
         WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
-        doReturn(wmsCapabilities).when(controller).getWmsCapabilities(onlineResource);
+        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
         
         //When
         Object result = controller.processOrRedirectToOnlineResource(revision, file, index);
@@ -224,120 +189,150 @@ public class OnlineResourceControllerTest {
         //Then
         assertEquals("Expected to find a redirect view with the correct url", "random url", result.getUrl());
     }
+    
     @Test
-    public void checkThatProxyDirectServiceRequestDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException {
+    public void checkProxyingOfLatestRevisionDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException, MapProxyServiceException {
         //Given
-        String file = "my filename", type="wms";
-        int index = 1;
+        String file = "my filename", layer="wms layer";
+        int index = 1, z = 1, x=3, y =2;
         
         DataRevision revision = mock(DataRevision.class);
         when(revision.getRevisionID()).thenReturn("12");
         when(repo.getLatestRevision()).thenReturn(revision);
         
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        doNothing().when(controller).proxyDirectServiceRequest("12", file, index, type, request, response);
+        TransparentProxyView proxy = mock(TransparentProxyView.class);
+        doReturn(proxy).when(controller).proxyMapProxyTileRequest("12", file, index, layer, z, x, y);
         
         //When
-        controller.proxyDirectServiceRequest(file, index, type, request, response);
+        TransparentProxyView proxyView = controller.proxyMapProxyTileRequest(file, index, layer, z, x, y);
         
         //Then
-        verify(controller).proxyDirectServiceRequest("12", file, index, type, request, response);
+        verify(controller).proxyMapProxyTileRequest("12", file, index, layer, z, x, y);
+        assertThat("expected mocked response to be passed through", proxyView, equalTo(proxy));
     }
     
     @Test
-    public void checkThatWMSRequestIsProxiedToService() throws IOException, UnknownContentTypeException {
-        //Given
-        String revision = "myrevision";
-        String file = "metadataid";
+    public void checkThatTMSProxies() throws IOException, UnknownContentTypeException {
+        //Given        
+        String file = "file";
         int index = 2;
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getQueryString()).thenReturn("My query string");
+        String layerName = "layer";
         
-        WmsCapabilities capabilities = mock(WmsCapabilities.class);
-        when(capabilities.getDirectMap()).thenReturn("url to wms");
+        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
         
-        OnlineResource onlineResource = new OnlineResource("url", "name", "description");
-        doReturn(onlineResource).when(controller).getOnlineResource(file, revision, index);
-        doReturn(capabilities).when(controller).getWmsCapabilities(onlineResource);
-        doNothing().when(controller).proxy(any(String.class), any(String.class), eq(response));
+        Layer layer = mock(Layer.class);
+        when(layer.getName()).thenReturn(layerName);
+        when(layer.getLegendUrl()).thenReturn("http://wwww.whereever.com/legend.png");
+        
+        WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
+        when(wmsCapabilities.getLayers()).thenReturn(Arrays.asList(layer));
+        
+        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
         
         //When
-        controller.proxyDirectServiceRequest(revision, file, index, "wms", request, response);
+        TransparentProxyView proxy = controller.getMapLayerLegend("12", file, index, layerName);
         
         //Then
-        verify(controller).proxy("url to wms", "My query string", response);
+        assertThat("Expected url to proxy mapProxy", "http://wwww.whereever.com/legend.png", equalTo(proxy.getUrl()));
     }
     
     @Test
-    public void checkThatFeatureInfoIsProxiedToService() throws IOException, UnknownContentTypeException {
+    public void checkThatLatestLegendUrlDelegatesToRevision() throws IOException, UnknownContentTypeException {
         //Given
-        String revision = "myrevision";
-        String file = "metadataid";
-        int index = 20;
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getQueryString()).thenReturn("My query string");
+        String file = "file";
+        int index = 2;
+        String layer = "layer";
         
-        WmsCapabilities capabilities = mock(WmsCapabilities.class);
-        when(capabilities.getDirectFeatureInfo()).thenReturn("url to feature");
+        DataRevision dataRevision = mock(DataRevision.class);
+        when(dataRevision.getRevisionID()).thenReturn("12");
+        when(repo.getLatestRevision()).thenReturn(dataRevision);
         
-        OnlineResource onlineResource = new OnlineResource("url", "name", "description");
-        doReturn(onlineResource).when(controller).getOnlineResource(file, revision, index);
-        doReturn(capabilities).when(controller).getWmsCapabilities(onlineResource);
-        doNothing().when(controller).proxy(any(String.class), any(String.class), eq(response));
+        TransparentProxyView proxy = mock(TransparentProxyView.class);
+        doReturn(proxy).when(controller).getMapLayerLegend("12", file, index, layer);
         
         //When
-        controller.proxyDirectServiceRequest(revision, file, index, "feature", request, response);
+        TransparentProxyView mapLayerLegendView = controller.getMapLayerLegend(file, index, layer);
         
         //Then
-        verify(controller).proxy("url to feature", "My query string", response);
-    }
-    
-    @Test(expected=IllegalOgcRequestTypeException.class)
-    public void checkThatRandomTypeCannotBeProxied() throws IOException, UnknownContentTypeException {
-        //Given
-        String revision = "myrevision";
-        String file = "metadataid";
-        int index = 4;
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        
-        WmsCapabilities capabilities = mock(WmsCapabilities.class);
-        OnlineResource onlineResource = new OnlineResource("url", "name", "description");
-        doReturn(onlineResource).when(controller).getOnlineResource(file, revision, index);
-        doReturn(capabilities).when(controller).getWmsCapabilities(onlineResource);
-        
-        //When
-        controller.proxyDirectServiceRequest(revision, file, index, "random", request, response);
-        
-        //Then
-        fail("Didn't expect to get this far. Should have failed with exception");
+        assertThat("Expected the call to the map legend to be delegated", proxy, equalTo(mapLayerLegendView));
     }
     
     @Test
-    public void checkThatProxyingCopiesData() throws IOException {
+    public void checkThatGetLegendUrlIsProxied() throws IOException, UnknownContentTypeException {
         //Given
-        String url = "url";
-        String query = "query";
-        HttpServletResponse servletResponse = mock(HttpServletResponse.class);
+        String revision = "revision";
+        String file = "file";
+        int index = 2;
+        String layerName = "layer";
         
-        ServletOutputStream outputStream = mock(ServletOutputStream.class);
-        when(servletResponse.getOutputStream()).thenReturn(outputStream);
-        CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
         
-        HttpEntity entity = mock(HttpEntity.class, RETURNS_DEEP_STUBS);
-        when(entity.getContentType().getValue()).thenReturn("content-type");
+        Layer layer = mock(Layer.class);
+        when(layer.getName()).thenReturn(layerName);
+        when(layer.getLegendUrl()).thenReturn("http://wwww.whereever.com/legend.png");
         
-        when(response.getEntity()).thenReturn(entity);
-        when(httpClient.execute(any(HttpGet.class))).thenReturn(response);
+        WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
+        when(wmsCapabilities.getLayers()).thenReturn(Arrays.asList(layer));
+        
+        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
         
         //When
-        controller.proxy(url, query, servletResponse);
+        TransparentProxyView proxy = controller.getMapLayerLegend(revision, file, index, layerName);
         
         //Then
-        verify(entity).writeTo(outputStream);
-        verify(servletResponse).setContentType("content-type");
+        assertThat("Expected to proxy the legend url", proxy.getUrl(), equalTo("http://wwww.whereever.com/legend.png") );
+    }
+    
+    @Test(expected=LegendGraphicMissingException.class)
+    public void checkThatExceptionIsThrownWhenNoLegendGraphicIsPresentForGivenLayer() throws IOException, UnknownContentTypeException {
+        //Given
+        String revision = "revision";
+        String file = "file";
+        int index = 2;
+        String layerName = "layer";
+        
+        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+        
+        Layer layer = mock(Layer.class);
+        when(layer.getName()).thenReturn(layerName);
+        when(layer.getLegendUrl()).thenReturn(null);
+        
+        WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
+        when(wmsCapabilities.getLayers()).thenReturn(Arrays.asList(layer));
+        
+        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
+        
+        //When
+        controller.getMapLayerLegend(revision, file, index, layerName);
+        
+        //Then
+        fail("Expected to fail with legend graphic missing exception");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void checkThatIllegalArgumentExceptionIsThrownIfLayerDoesNotExistWhenGettingLegend() throws IOException, UnknownContentTypeException {
+        //Given
+        String revision = "revision";
+        String file = "file";
+        int index = 2;
+        String layerName = "layer";
+        
+        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+
+        
+        WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
+        when(wmsCapabilities.getLayers()).thenReturn(Collections.EMPTY_LIST);
+        
+        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
+        
+        //When
+        controller.getMapLayerLegend(revision, file, index, layerName);
+        
+        //Then
+        fail("Expected to fail with illegal argument exception");
     }
 }

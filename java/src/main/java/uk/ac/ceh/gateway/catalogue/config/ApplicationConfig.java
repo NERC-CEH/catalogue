@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +42,13 @@ public class ApplicationConfig {
     
     @Bean
     public CloseableHttpClient httpClient() {
-        return HttpClients.createDefault();
+        PoolingHttpClientConnectionManager connPool = new PoolingHttpClientConnectionManager();
+        connPool.setMaxTotal(100);
+        connPool.setDefaultMaxPerRoute(20);
+        
+        return HttpClients.custom()
+                          .setConnectionManager(connPool)
+                          .build();
     }
     
     @Bean
