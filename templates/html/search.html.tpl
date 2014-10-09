@@ -7,11 +7,11 @@
       <div class="openlayers"></div>
       <div class="mapsearch-toggle"><input type="checkbox">Use the Map to Search?</div>
     </div>
-    <div class="results">
-      <form id="search-form" action="/${docroot}" method="get">
+    <div class="text-search">
+      <form class="search-form" action="/${docroot}" method="get">
         <div class="input-group">
           <@facets/>
-          <input type="text" class="form-control">
+          <input name="term" type="text" class="form-control">
           <div class="input-group-btn">
             <button tabindex="-1" class="btn btn-success" type="button">
               <span class="glyphicon glyphicon-search"></span>
@@ -19,17 +19,19 @@
           </div>
         </div>
       </form>
-      <div class="search-results-heading">
-        <span id="num-records">${numFound}</span> records found
-      </div>
-      <#list results as result>
-        <div class="result" data-location="${result.locations[0]}" data-id="${result_index}">
-          <h2>
-            <a href="/${docroot}/${result.identifier}" class="title">${result.title}</a>
-          </h2>
-          <div class="description">${result.shortenedDescription}</div>
+      <div class="results">
+        <div class="search-results-heading">
+          <span id="num-records">${numFound}</span> records found
         </div>
-      </#list>
+        <#list results as result>
+          <div class="result" data-location="${result.locations[0]}" id="${result.identifier}">
+            <h2>
+              <a href="/${docroot}/${result.identifier}" class="title">${result.title}</a>
+            </h2>
+            <div class="description">${result.shortenedDescription}</div>
+          </div>
+        </#list>
+      </div>
     </div>
   </div>
 </@skeleton.master>

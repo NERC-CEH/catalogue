@@ -32,5 +32,5 @@ define [
   Initialize the search application
   ###
   initSearch: ->
-    app = new SearchApp();
-    view = new SearchAppView model: app
+    window.app = new SearchApp();
+    window.view = new SearchAppView model: window.app
