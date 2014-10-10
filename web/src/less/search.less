@@ -8,34 +8,33 @@
 
   .spatial-search {
     .make-md-column(@spatial-columns);
-    display: none;     //Hide the spatial search in small screen mode
+    min-height: 250px; // Define a min height when the map is in small screen mode
+    
+    .openlayers {
+      position: absolute;
+      top:      0;
+      bottom:   0;
+      left:     0;
+      right:    0;
+      div.olControlZoom {
+        left: 2px;
+        top:  5px;
+      }
+    }
+
+    .mapsearch-toggle {
+      position:         absolute;
+      left:             36px;
+      top:              14px;
+      background-color: @body-bg;
+      padding:          0.4em;
+    }
 
     @media (min-width: @screen-md-min) {
-      display:  block; //Show it in big screen mode
       position: fixed; //Spatial search based on http://getbootstrap.com/examples/dashboard/
       top:      @nav-bar-height;
       bottom:   0;
       left:     0;
-
-      .openlayers {
-        position: absolute;
-        top:      0;
-        bottom:   0;
-        left:     0;
-        right:    0;
-        div.olControlZoom {
-          left: 2px;
-          top:  5px;
-        }
-      }
-
-      .mapsearch-toggle {
-        position:         absolute;
-        left:             36px;
-        top:              14px;
-        background-color: @body-bg;
-        padding:          0.4em;
-      }
     }
   }
   
