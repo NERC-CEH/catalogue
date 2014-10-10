@@ -46,9 +46,12 @@
     .make-md-column(@results-columns);
     .make-md-column-offset(@spatial-columns);
 
+    .result { 
+      display: inline-block; //Disable margin-collapsing
+      width:   100%;         //But keep the width of the results at 100%
+    }
     @media (min-width: @screen-md-min) {
       .result {
-        display:      inline-block;       //Disable margin-collapsing
         border-left:  8px solid @body-bg;
         padding-left: 1em;
 
