@@ -4,7 +4,8 @@ define [
   'cs!views/SearchFormView'
   'cs!views/SpatialSearchView'
   'cs!views/SearchPageView'
-], ($, Backbone, SearchFormView, SpatialSearchView, SearchPageView) -> Backbone.View.extend
+  'cs!views/ToggleView'
+], ($, Backbone, SearchFormView, SpatialSearchView, SearchPageView, ToggleView) -> Backbone.View.extend
   el: '#search'
 
   initialize: ->
@@ -29,12 +30,17 @@ define [
   render: ->
     @searchFormView = new SearchFormView
       model: @model
-      el: @$('.search-form')
+      el:    @$('.search-form')
+
+    @spatialSearchToggleView = new ToggleView
+      model:    @model
+      el:       @$('.mapsearch-toggle')
+      property: 'spatialSearch'
       
     @spatialSearchView = new SpatialSearchView
       model: @model
-      el: @$('.openlayers')
+      el:    @$('.openlayers')
 
     @searchResultsView = new SearchPageView
       model: @model.getSearchResults()
-      el: @$('.results')
+      el:    @$('.results')

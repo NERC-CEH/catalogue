@@ -25,7 +25,7 @@ define [
     do @createSelectedResultLayers
     @listenTo @model, 'change:results', @createSelectedResultLayers
 
-    @map.events.register 'moveend', @map, => @model.set "bbox", @getOpenlayersViewport()
+    @map.events.register 'moveend', @map, => @model.setBBox @getOpenlayersViewport()
 
   ###
 
