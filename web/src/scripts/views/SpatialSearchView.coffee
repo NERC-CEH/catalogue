@@ -4,8 +4,7 @@ define [
   'backbone'
   'openlayers'
 ], ($, _, Backbone, OpenLayers) -> Backbone.View.extend
-  events:
-    "moveend" : -> console.log 'move'
+
   initialize: ->
     console.log 'Creating a map page ' + @model.getSearchResults().cid
     @map = new OpenLayers.Map

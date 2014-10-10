@@ -9,3 +9,8 @@
     <div class="description"><%=result.shortenedDescription%></div>
   </div>
 <% }); %>
+<ul class="pager">
+  <li class="previous"><a href="#">&larr; Older</a></li>
+  <li>Page 1</li>
+  <li class="next"><a href="#">Next &rarr;</a></li>
+</ul>
