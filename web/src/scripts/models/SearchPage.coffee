@@ -5,6 +5,9 @@ define [
 
   url: "/documents"
 
+  defaults:
+    results: []
+
   ###
   This SearchPage may have the selected id populated. If it does, this method
   will return the full result which is selected. If nothing is selected, return

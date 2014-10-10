@@ -12,7 +12,23 @@ define [
 
   initialize:->
     # Listen to all the events which mean that a search should be performed
+    do @proxyResultsEvents
     @on 'change:term change:bbox change:spatialSearch', @performSearch
+
+
+  ###
+  Proxy the current results objects events through the search application model
+  This means that views (and other models) can listen to the events of this 
+  model rather than having to manually keep track of the current search page.
+  Events from old search pages will be suppressed, only the current events will
+  propergate out.
+
+  To bind to a search prefix the event listener with 'results-'. E.g. 
+      results-change:selected
+
+  ###
+  proxyResultsEvents:-> 
+    @get('results')?.on 'all', (evt) => @trigger "results-#{evt}"
 
   ###
   Perform a search based upon the currently set properties of this model.
@@ -22,6 +38,7 @@ define [
 
     results = new SearchPage    
     @set 'results', results
+    do @proxyResultsEvents
 
     bbox = @get 'bbox'
     results.fetch
@@ -39,17 +56,8 @@ define [
     @set 'bbox', bbox, silent: not @get 'spatialSearch'
 
   ###
-  Obtain the current page of search results. This will return undefined if a
-  search is currently being performed
+  Remove the search results object and remove the proxied event listener.
   ###
-  getSearchResults: -> @get 'results'
-
-  ###
-  Remove the search results object 
-  ###
-  clearResults:-> @unset 'results'
-
-  ###
-  Checks to see if this search app currently has a results page
-  ###
-  hasResults: -> @has 'results'
+  clearResults:-> 
+    @get('results')?.off null, @proxyResultsEvents
+    @unset 'results'

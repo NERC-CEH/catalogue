@@ -9,8 +9,9 @@ define [
   initialize: ->
     do @readModelFromHTML
 
-    @listenTo @model, 'sync', @render
-    @listenTo @model, 'change:selected', @updateSelected
+    @listenTo @model, 'change:results', @clear
+    @listenTo @model, 'results-sync', @render
+    @listenTo @model, 'results-change:selected', @updateSelected
 
     do @findSelected # Find selected, after @updateSelected has been registered
     do @padResults   # Change the padding of the results page
@@ -44,7 +45,7 @@ define [
   trigger a change on the model.
   ###
   readModelFromHTML:->
-    @model.set 
+    @model.get('results').set 
       numFound: @$('#num-records').val()
       results: _.map @$('.result'), (r) -> 
         identifier:  $(r).attr('id')
@@ -57,9 +58,9 @@ define [
   Highlight that search result, with the selected class
   ###
   updateSelected: ->
+    selected = @model.get('results').get 'selected'
     @$('.result').removeClass 'selected'
-    @$("##{@model.get 'selected' }").addClass 'selected'
-
+    @$("##{selected}").addClass 'selected'
 
   ###
   The following method will identify the result at the top of the screen and
@@ -71,19 +72,17 @@ define [
       results = @$ ".result:in-viewport(#{offset})"
       # if no result was detected, default to the last result
       selected = if results.length then $(results[0]) else $('.result').last()
-      @model.set selected: selected.attr 'id'
+      @model.get('results').set selected: selected.attr 'id'
 
-
+  ###
+  Clear the dom of any content
+  ###
+  clear: -> do @$el.empty
+  
+  ###
+  Draw in the new content
+  ###
   render: ->
-    @$el.html template @model.attributes
+    @$el.html template @model.get('results').attributes
     do @findSelected # Find the selected
     do @padResults   # Pad the results pane
-    
-  ###
-  Override the view remove method, when called we need to unbind the scroll
-  listener from the window
-  ###
-  remove: ->
-    $(window).off 'scroll', @findSelected
-    Backbone.View.prototype.remove.apply this, arguments
-
