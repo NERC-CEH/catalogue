@@ -18,4 +18,5 @@ public class XPaths {
     public static final String LINEAGE = "/*/gmd:dataQualityInfo/*/gmd:lineage/*/gmd:statement/*";
     public static final String METADATA_STANDARD = "/*/gmd:metadataStandardName/*";
     public static final String METADATA_VERSION = "/*/gmd:metadataStandardVersion/*";
+    public static final String SUPPLEMENTAL_INFO = "/*/gmd:identificationInfo/*/gmd:supplementalInformation/*";
 }

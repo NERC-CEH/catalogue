@@ -25,7 +25,8 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.GET_CAPABIL
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument implements MetadataDocument {
     
-    private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage, metadataStandardName, metadataStandardVersion;
+    private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
+        metadataStandardName, metadataStandardVersion, supplementalInfo;
     private List<String> alternateTitles, topicCategories, coupleResources;
     private CodeListItem datasetLanguage, resourceType;
     private List<DistributionInfo> distributionFormats;

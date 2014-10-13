@@ -46,7 +46,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             languageCodeList, languageCodeListValue, topicCategories, 
             resourceTypeCodeList, resourceTypeCodeListValue, 
             otherCitationDetails, browseGraphicUrl, coupledResource,
-            resourceStatus, metadataDate, lineage, metadataStandardName, metadataStandardVersion;
+            resourceStatus, metadataDate, lineage, metadataStandardName, metadataStandardVersion,
+            supplementalInfo;
     private final XPath xpath;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
@@ -95,6 +96,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.spatialResolutionConverter = new SpatialResolutionConverter(xpath);
         this.metadataStandardName = xpath.compile(XPaths.METADATA_STANDARD);
         this.metadataStandardVersion = xpath.compile(XPaths.METADATA_VERSION);
+        this.supplementalInfo = xpath.compile(XPaths.SUPPLEMENTAL_INFO);
     }
     
     @Override
@@ -153,6 +155,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setSpatialResolutions(spatialResolutionConverter.convert(document));
             toReturn.setMetadataStandardName(metadataStandardName.evaluate(document));
             toReturn.setMetadataStandardVersion(metadataStandardVersion.evaluate(document));
+            toReturn.setSupplementalInfo(supplementalInfo.evaluate(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
