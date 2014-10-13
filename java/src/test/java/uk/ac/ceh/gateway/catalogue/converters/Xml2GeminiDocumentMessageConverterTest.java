@@ -879,14 +879,20 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<OnlineResource> resources = document.getOnlineResources();
         assertThat("Expected to find 2 online resources", resources.size(), is(2));
         assertTrue("Expected to find land cover map resource", resources.contains(
-            new OnlineResource("http://www.ceh.ac.uk/LandCoverMap2007.html",
-                               "Essential technical details",
-                               "Link to further technical details about this data")
+            OnlineResource.builder()
+                .url("http://www.ceh.ac.uk/LandCoverMap2007.html")
+                .name("Essential technical details")
+                .description("Link to further technical details about this data")
+                .function("information")
+                .build()
         ));
         assertTrue("Expected to find the country side survey resource", resources.contains(
-            new OnlineResource("http://www.countrysidesurvey.org.uk/",
-                               "Countryside Survey website",
-                               "Countryside Survey website")
+            OnlineResource.builder()
+                .url("http://www.countrysidesurvey.org.uk/")
+                .name("Countryside Survey website")
+                .description("Countryside Survey website")
+                .function("information")
+                .build()
         ));
     }
     
@@ -916,7 +922,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<OnlineResource> resources = document.getOnlineResources();
         assertThat("Expected to find 1 online resources", resources.size(), is(1));
         assertTrue("Expected to find the country side survey resource", resources.contains(
-            new OnlineResource("http://www.ceh.ac.uk/LandCoverMap2007.html","","")
+            OnlineResource.builder().url("http://www.ceh.ac.uk/LandCoverMap2007.html").build()
         ));
     }
 }

@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -12,7 +11,7 @@ public class OnlineResourceTest {
     @Test
     public void checkThatWMSURLReturnsGetCapabilitiesType() {
         //Given
-        OnlineResource resource = new OnlineResource("http://wms.com?REQUEST=GetCapabilities&SERVICE=WMS&","","");
+        OnlineResource resource = OnlineResource.builder().url("http://wms.com?REQUEST=GetCapabilities&SERVICE=WMS&").build();
         
         //When
         OnlineResource.Type type = resource.getType();
@@ -24,7 +23,7 @@ public class OnlineResourceTest {
     @Test
     public void checkThatCaseForGetCapabilitesDoesntMatter() {
         //Given
-        OnlineResource resource = new OnlineResource("http://wms.com?request=getcapabilities","","");
+        OnlineResource resource = OnlineResource.builder().url("http://wms.com?request=getcapabilities").build();
         
         //When
         OnlineResource.Type type = resource.getType();
@@ -36,7 +35,7 @@ public class OnlineResourceTest {
     @Test
     public void checkThatURLWithGetCapabilitesInsideItIsNotFlagged() {
         //Given
-        OnlineResource resource = new OnlineResource("http://www.google.com/getcapabilities/somethingelse","","");
+        OnlineResource resource = OnlineResource.builder().url("http://www.google.com/getcapabilities/somethingelse").build();
         
         //When
         OnlineResource.Type type = resource.getType();
@@ -48,7 +47,7 @@ public class OnlineResourceTest {
     @Test
     public void checkThatURLWithParameterAfterAmpersandMatchesGetCapabilites() {
         //Given
-        OnlineResource resource = new OnlineResource("http://wms.com?SERVICE=WMS&REQUEST=GetCapabilities&","","");
+        OnlineResource resource = OnlineResource.builder().url("http://wms.com?SERVICE=WMS&REQUEST=GetCapabilities&").build();
         
         //When
         OnlineResource.Type type = resource.getType();
