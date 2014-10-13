@@ -16,4 +16,6 @@ public class XPaths {
     public static final String RESOURCE_STATUS = "/*/gmd:identificationInfo/*/gmd:status/*/@codeListValue";
     public static final String METADATA_DATE = "/*/gmd:dateStamp/gco:Date";
     public static final String LINEAGE = "/*/gmd:dataQualityInfo/*/gmd:lineage/*/gmd:statement/*";
+    public static final String METADATA_STANDARD = "/*/gmd:metadataStandardName/*";
+    public static final String METADATA_VERSION = "/*/gmd:metadataStandardVersion/*";
 }

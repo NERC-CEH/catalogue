@@ -406,6 +406,23 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
+    public void canGetMetadataStandardNameAndVersion() throws IOException {
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("metadataStandard.xml"));
+        String expectedName = "NERC profile of ISO19115:2003";
+        String expectedVersion = "1.0";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        assertThat("Expected standard name to equal actual", document.getMetadataStandardName(), equalTo(expectedName));
+        assertThat("Expected standard version equal to actual", document.getMetadataStandardVersion(), equalTo(expectedVersion));
+    }
+    
+    @Test
     public void canGetLineage() throws IOException {
         
         //Given
