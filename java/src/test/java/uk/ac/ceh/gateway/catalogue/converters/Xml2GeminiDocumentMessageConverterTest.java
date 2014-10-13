@@ -779,7 +779,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceIdentifiers.xml"));
         Set<ResourceIdentifier> expected = new HashSet(Arrays.asList(
-            ResourceIdentifier.builder().code("1374152631039").codeSpace("CEH:EIDC:").build(),
+            ResourceIdentifier.builder().code("1374152631039").codeSpace("CEH:EIDC:").version("123").build(),
             ResourceIdentifier.builder().code("10.5285/05e5d538-6be7-476d-9141-76d9328738a4").codeSpace("doi:").build(),
             ResourceIdentifier.builder().code("10/nt9").codeSpace("doi:").build()
         ));

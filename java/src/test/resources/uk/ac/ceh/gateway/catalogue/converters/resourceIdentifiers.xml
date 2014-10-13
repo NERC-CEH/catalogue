@@ -12,6 +12,9 @@
 							<gmd:codeSpace>
 								<gco:CharacterString>CEH:EIDC:</gco:CharacterString>
 							</gmd:codeSpace>
+							<gmd:version>
+								<gco:CharacterString>123</gco:CharacterString>
+							</gmd:version>
 						</gmd:RS_Identifier>
 					</gmd:identifier>
 					<gmd:identifier>
