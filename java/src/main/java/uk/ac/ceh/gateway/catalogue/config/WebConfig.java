@@ -23,7 +23,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgu
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.search.DocumentSearchResults;
+import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 @Configuration
@@ -41,7 +41,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         
         converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class, configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(UKEOFDocument.class, configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(DocumentSearchResults.class, configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(SearchResults.class, configureFreeMarker().getConfiguration()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
     }

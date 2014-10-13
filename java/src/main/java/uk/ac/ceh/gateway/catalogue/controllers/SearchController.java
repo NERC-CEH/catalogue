@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.search.DocumentSearchResults;
-import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
+import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
 
 @Controller
 public class SearchController {
@@ -39,7 +38,7 @@ public class SearchController {
             HttpServletRequest request
     ) throws SolrServerException {
         SearchQuery searchQuery = new SearchQuery(user, term, bbox, page, rows, facetFilters);
-        return new DocumentSearchResults(
+        return new SearchResults(
             solrServer.query(
                 searchQuery.build(),
                 SolrRequest.METHOD.POST

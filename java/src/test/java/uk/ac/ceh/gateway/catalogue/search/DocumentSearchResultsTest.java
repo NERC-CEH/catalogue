@@ -35,7 +35,7 @@ public class DocumentSearchResultsTest {
         given(pivots.get("sci0,sci1")).willReturn(Collections.EMPTY_LIST);
         
         //When
-        DocumentSearchResults searchResults = new DocumentSearchResults(response, query, UriComponentsBuilder.fromHttpUrl("https://localhost:8080/documents"));
+        SearchResults searchResults = new SearchResults(response, query, UriComponentsBuilder.fromHttpUrl("https://localhost:8080/documents"));
         
         //Then
         assertThat("Term is wrong in results", searchResults.getTerm(), equalTo(""));
