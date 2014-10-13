@@ -31,6 +31,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty.Address;
+import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
 import uk.ac.ceh.gateway.catalogue.gemini.ThesaurusName;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 /**
@@ -822,6 +823,29 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("actual conformanceResults are equal to expected", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetSpatialResoloutions() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialResolutions.xml"));
+        List<SpatialResolution> expected = Arrays.asList(
+            SpatialResolution.builder()
+                .equivalentScale("25000")
+                .build(),
+            SpatialResolution.builder()
+                .distance("10")
+                .uom("m")
+                .build()
+        );
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //When
+        List<SpatialResolution> actual = document.getSpatialResolutions();
+        
+        //Then
+        assertThat("actual spatialResolutions are equal to expected", actual, equalTo(expected));
     }
     
     @Test

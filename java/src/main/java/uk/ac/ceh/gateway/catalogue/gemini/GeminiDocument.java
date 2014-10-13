@@ -31,6 +31,7 @@ public class GeminiDocument implements MetadataDocument {
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<ConformanceResult> conformanceResults;
+    private List<SpatialResolution> spatialResolutions;
     private DownloadOrder downloadOrder;
     private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;
