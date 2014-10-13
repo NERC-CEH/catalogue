@@ -15,4 +15,5 @@ public class XPaths {
     public static final String COUPLED_RESOURCE = "/*/gmd:identificationInfo/*/srv:coupledResource/*/srv:identifier/gco:CharacterString[starts-with(text(),'CEH:EIDC:#')]";
     public static final String RESOURCE_STATUS = "/*/gmd:identificationInfo/*/gmd:status/*/@codeListValue";
     public static final String METADATA_DATE = "/*/gmd:dateStamp/gco:Date";
+    public static final String LINEAGE = "/*/gmd:dataQualityInfo/*/gmd:lineage/*/gmd:statement/*";
 }
