@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.BoundingBoxesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DatasetReferenceDatesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DistributionInfoConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.OnlineResourceConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
@@ -54,6 +55,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final SpatialReferenceSystemConverter spatialReferenceSystem;
     private final DatasetReferenceDatesConverter datasetReferenceDatesConverter;
     private final OnlineResourceConverter onlineResourceConverter;
+    private final DistributionInfoConverter distributionInfoConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -83,6 +85,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.datasetReferenceDatesConverter = new DatasetReferenceDatesConverter(xpath);
         this.metadataDate = xpath.compile(XPaths.METADATA_DATE);
         this.onlineResourceConverter = new OnlineResourceConverter(xpath);
+        this.distributionInfoConverter = new DistributionInfoConverter(xpath);
     }
     
     @Override
@@ -135,6 +138,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
             toReturn.setMetadataDate(LocalDateFactory.parse(metadataDate.evaluate(document)));
             toReturn.setOnlineResources(onlineResourceConverter.convert(document));
+            toReturn.setDistributionFormats(distributionInfoConverter.convert(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

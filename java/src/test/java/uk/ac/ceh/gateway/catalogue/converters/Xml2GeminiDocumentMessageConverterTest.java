@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
@@ -150,6 +151,24 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("TemporalExtent 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetDistributionInfo() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("distributionInfo.xml"));
+        List<DistributionInfo> expected = Arrays.asList(
+            DistributionInfo.builder().name("first").version("some").build(),
+            DistributionInfo.builder().name("another").version("asd").build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<DistributionInfo> actual = document.getDistributionFormats();
+        
+        //Then
+        assertThat("DistributionInfo 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
     
     @Test
