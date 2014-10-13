@@ -5,7 +5,7 @@ import com.google.common.net.UrlEscapers;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Data;
+import lombok.Getter;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -23,33 +23,31 @@ import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.D
 @ConvertUsing({
     @Template(called = "/html/search.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
-@Data
 public class SearchResults {
-    private int page, rows;
-    private long numFound;
-    private String term;
-    private List<String> facetFilters;
-    private List<DocumentSolrIndex> results;
-    private List<Facet> facets;
-    
-    
     private static final Escaper escaper = UrlEscapers.urlFormParameterEscaper();
     private final List<FacetFilter> filters;
     private final UriComponentsBuilder builder;
+    
+    private final @Getter int page;
+    private final @Getter int rows;
+    private final @Getter long numFound;
+    private final @Getter String term;
+    private final @Getter List<String> facetFilters;
+    private final @Getter List<DocumentSolrIndex> results;
+    private final @Getter List<Facet> facets;
         
     public SearchResults(QueryResponse response, SearchQuery query, UriComponentsBuilder builder) {
         List<DocumentSolrIndex> docs = response.getBeans(DocumentSolrIndex.class);
-        SolrDocumentList results = response.getResults();
         
         this.filters = (query.getFacetFilters() != null)? query.getFacetFilters() : Collections.EMPTY_LIST;
         this.builder = builder;
-        this.setNumFound(results.getNumFound());
-        this.setTerm(query.getTermNotDefault());
-        this.setPage(query.getPage());
-        this.setRows(query.getRows());
-        this.setResults(docs);
-        this.setFacets(getFacets(response));
-        this.setFacetFilters(this.filters.stream().map(FacetFilter::asFormContent).collect(Collectors.toList()));
+        this.numFound = response.getResults().getNumFound();
+        this.term = query.getTermNotDefault();
+        this.page = query.getPage();
+        this.rows = query.getRows();
+        this.results = docs;
+        this.facets = getFacets(response);
+        this.facetFilters =this.filters.stream().map(FacetFilter::asFormContent).collect(Collectors.toList());
     }
     
     private List<Facet> getFacets(QueryResponse response){
