@@ -30,6 +30,7 @@ public class GeminiDocument implements MetadataDocument {
     private CodeListItem datasetLanguage, resourceType;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
+    private List<ConformanceResult> conformanceResults;
     private DownloadOrder downloadOrder;
     private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;

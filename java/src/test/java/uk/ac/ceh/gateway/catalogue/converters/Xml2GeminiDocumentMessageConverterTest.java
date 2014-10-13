@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import java.time.LocalDate;
+import java.time.Month;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.CodeListItem;
+import uk.ac.ceh.gateway.catalogue.gemini.ConformanceResult;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -790,6 +792,36 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("actual resourceIdentifiers are equal to expected", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetConformanceResults() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("conformanceResults.xml"));
+        List<ConformanceResult> expected = Arrays.asList(
+            ConformanceResult.builder()
+                .title("specification title")
+                .date(LocalDate.of(2014, Month.OCTOBER, 7))
+                .dateType("publication")
+                .explanation("explanation")
+                .pass(false)
+                .build(),
+            ConformanceResult.builder()
+                .title("specification 2")
+                .date(LocalDate.of(2014, Month.OCTOBER, 13))
+                .dateType("revision")
+                .explanation("another")
+                .pass(true)
+                .build()
+        );
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //When
+        List<ConformanceResult> actual = document.getConformanceResults();
+        
+        //Then
+        assertThat("actual conformanceResults are equal to expected", actual, equalTo(expected));
     }
     
     @Test
