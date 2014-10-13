@@ -28,15 +28,15 @@ public class SearchQuery {
     
     private final CatalogueUser user; 
     private final String term, bbox;
-    private final int start, rows;
+    private final int page, rows;
     private final List<FacetFilter> facetFilters;
     
-    public SearchQuery(CatalogueUser user, String term, String bbox, int start, int rows, List<String> facetFilters) {
+    public SearchQuery(CatalogueUser user, String term, String bbox, int page, int rows, List<String> facetFilters) {
         log.debug("facet filter strings: {}", facetFilters);
         this.user = user;
         this.bbox = bbox;
         this.term = term;
-        this.start = start;
+        this.page = page;
         this.rows = rows;
         this.facetFilters = facetFilters.stream()
             .filter(filter -> !nullToEmpty(filter).isEmpty())
@@ -50,7 +50,7 @@ public class SearchQuery {
                 .setQuery(term)
                 .setParam("defType", "edismax")
                 .setParam("qf", "title^5 description")
-                .setStart(start)
+                .setStart((page-1)*rows)
                 .setRows(rows);
         setSpatialFilter(query);
         setRecordVisibility(query);

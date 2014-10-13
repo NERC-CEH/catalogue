@@ -35,7 +35,7 @@ public class DocumentSearchResults extends SearchResults<DocumentSolrIndex> {
         this.builder = builder;
         this.setNumFound(results.getNumFound());
         this.setTerm(query.getTermNotDefault());
-        this.setStart(query.getStart());
+        this.setPage(query.getPage());
         this.setRows(query.getRows());
         this.setResults(docs);
         this.setFacets(getFacets(response));

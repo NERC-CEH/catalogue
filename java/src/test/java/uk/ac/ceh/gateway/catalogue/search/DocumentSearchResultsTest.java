@@ -21,7 +21,7 @@ public class DocumentSearchResultsTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             SearchQueryTest.DEFAULT_BBOX,
-            SearchQueryTest.DEFAULT_START,
+            SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FITLERS);
         
@@ -39,7 +39,7 @@ public class DocumentSearchResultsTest {
         
         //Then
         assertThat("Term is wrong in results", searchResults.getTerm(), equalTo(""));
-        assertThat("Start is wrong in results", searchResults.getStart(), equalTo(SearchQueryTest.DEFAULT_START));
+        assertThat("Page is wrong in results", searchResults.getPage(), equalTo(SearchQueryTest.DEFAULT_PAGE));
         assertThat("Rows is wrong in results", searchResults.getRows(), equalTo(SearchQueryTest.DEFAULT_ROWS));
         assertThat("Number of search results is wrong in results", searchResults.getNumFound(), equalTo(resultFound));
     }
