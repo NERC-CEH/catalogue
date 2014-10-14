@@ -5,18 +5,36 @@ This is the Web section to the CEH Catalogue. It is where we manage *JavaScript/
 
 Building this section of the project is handled with [Grunt](http://gruntjs.com/):
 
-If you are running in cygwin (Babun) you will need to **fix** npm
+1. Install Grunt-Cli
 
-    dos2unix /cygdrive/c/Program\ Files/nodejs/npm
+    npm install -g grunt-cli
 
-To perform a complete build
+2. To perform a complete build
 
     npm install
     grunt build
 
-To Start developing
+3. To Start developing
 
     grunt develop
+
+# Troubleshooting
+
+## ENOENT when npm installing
+
+If when you are installing npm modules for the first time you encounter an error 
+like:
+
+    $ npm install 
+      Error: ENOENT, stat 'C:\Users\User\AppData\Roaming\npm'
+
+Try to creating an empty directory at the path which is mentioned
+
+# Running npm in babun (or cygwin)
+
+If you are running in cygwin (Babun) you will need to **fix** npm
+
+    dos2unix /cygdrive/c/Program\ Files/nodejs/npm
 
 ## Contributing
 
