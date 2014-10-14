@@ -190,18 +190,17 @@ public class SearchQuery {
     
     private void validateBBox(String bbox) {
         //Validate that the bbox is in the format minx,miny,maxx,maxxy
-            String[] bboxParts = bbox.split(",");
-            if(bboxParts.length != 4) {
-                throw new IllegalArgumentException("The bbox must be in the form minx,miny,maxx,maxy");
+        String[] bboxParts = bbox.split(",");
+        if(bboxParts.length != 4) {
+            throw new IllegalArgumentException("The bbox must be in the form minx,miny,maxx,maxy");
+        }
+        for(String bboxPart :bboxParts) {
+            try {
+                Double.parseDouble(bboxPart);
             }
-            for(String bboxPart :bboxParts) {
-                try {
-                    Double.parseDouble(bboxPart);
-                }
-                catch(NumberFormatException ex) {
-                    throw new IllegalArgumentException("The bbox must be in the form minx,miny,maxx,maxy", ex);
-                }
+            catch(NumberFormatException ex) {
+                throw new IllegalArgumentException("The bbox must be in the form minx,miny,maxx,maxy", ex);
             }
-            
+        }
     }
 }
