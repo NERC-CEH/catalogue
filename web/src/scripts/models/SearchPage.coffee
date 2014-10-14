@@ -6,7 +6,9 @@ define [
   url: "/documents"
 
   defaults:
-    results: []
+    results:  []
+    prevPage: null
+    nextPage: null
 
   ###
   This SearchPage may have the selected id populated. If it does, this method

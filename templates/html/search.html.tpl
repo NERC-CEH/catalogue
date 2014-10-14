@@ -20,22 +20,7 @@
         </div>
       </form>
       <div class="results">
-        <div class="search-results-heading">
-          <span id="num-records">${numFound}</span> records found
-        </div>
-        <#list results as result>
-          <div class="result" data-location="${result.locations[0]}" id="${result.identifier}">
-            <h2>
-              <a href="/${docroot}/${result.identifier}" class="title">${result.title}</a>
-            </h2>
-            <div class="description">${result.shortenedDescription}</div>
-          </div>
-        </#list>
-        <ul class="pager">
-          <li class="previous"><a href="#">&larr; Older</a></li>
-          <li>Page 1</li>
-          <li class="next"><a href="#">Next &rarr;</a></li>
-        </ul>
+        <#include "_searchPage.html.tpl">
       </div>
     </div>
   </div>

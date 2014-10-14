@@ -8,13 +8,13 @@ define [
     spatialSearch: false
     facets:        []
     term:          ''
+    page:          1
     results:       new SearchPage [], {}
 
   initialize:->
     # Listen to all the events which mean that a search should be performed
     do @proxyResultsEvents
-    @on 'change:term change:bbox change:spatialSearch', @performSearch
-
+    @on 'change:term change:bbox change:spatialSearch change:page', @performSearch
 
   ###
   Proxy the current results objects events through the search application model
@@ -47,6 +47,7 @@ define [
       data:
         bbox: if @get 'spatialSearch' then @get 'bbox' 
         term: @get 'term'
+        page: @get 'page'
 
   ###
   Sets the spatial search bounding box. The change event will be silenced if

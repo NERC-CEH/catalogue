@@ -1,3 +1,9 @@
+<% /*
+ This underscore template generates the search results client side.
+
+ IMPORTANT: If you change the structure of this, please update the 
+ corresponding freemarker template /templates/_searchPage.tpl
+*/ %>
 <div class="search-results-heading">
   <span id="num-records"><%=numFound%></span> records found
 </div>
@@ -10,7 +16,11 @@
   </div>
 <% }); %>
 <ul class="pager">
-  <li class="previous"><a href="#">&larr; Older</a></li>
-  <li>Page 1</li>
-  <li class="next"><a href="#">Next &rarr;</a></li>
+  <% if(prevPage) { %>
+    <li class="previous"><a href="<%=prevPage%>">&larr; Older</a></li>
+  <% } %>
+  <li>Page <%=page%></li>          
+  <% if(nextPage) { %>
+    <li class="next"><a href="<%=nextPage%>">Next &rarr;</a></li>
+  <% } %>
 </ul>
