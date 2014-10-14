@@ -37,7 +37,9 @@ define [
     @map.zoomToExtent new OpenLayers.Bounds(-1885854.36, 6623727.12, 1245006.31, 7966572.83)
 
     do @updateHighlightedRecord
+    do @updateBBox
     @listenTo @model, 'change:results results-change:selected', @updateHighlightedRecord
+    @listenTo @model, 'change:spatialSearch', @updateBBox
 
     # Create a debounced method of @updateBBox, this one will wait until the interaction
     # with the map has completed before triggering @updateBBox proper
@@ -45,21 +47,23 @@ define [
     @map.events.register 'move', @map, => do @handleMove 
       
   ###
-  An event listener for handling when the map has been moved. If spatial
-  searching is enabled then clear the results first. 
+  An event listener for handling when the map has been moved. Only update the
+  model if spatialSearching is enabled
   ###
   handleMove:->
-    do @model.clearResults if @model.get 'spatialSearch'
-    do @delayedUpdateBBox
+    if @model.get 'spatialSearch'
+      do @model.clearResults
+      do @delayedUpdateBBox
 
   ###
   Update the current value of the bbox value on the model to match the 
   current viewport
   ###
-  updateBBox:-> 
-    extent = @map.getExtent()
-                 .transform @map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")
-    @model.setBBox [extent.left, extent.bottom, extent.right, extent.top].join ','
+  updateBBox:->
+    if @model.get 'spatialSearch'
+      extent = @map.getExtent()
+                   .transform @map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")
+      @model.setBBox [extent.left, extent.bottom, extent.right, extent.top].join ','
   
   ###
   Clear any markers or features which represent the old selected record. Then
