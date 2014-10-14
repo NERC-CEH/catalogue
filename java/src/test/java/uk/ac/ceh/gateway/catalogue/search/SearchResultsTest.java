@@ -11,7 +11,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
-public class DocumentSearchResultsTest {
+public class SearchResultsTest {
 
     @Test
     public void simpleSearchResults() {
