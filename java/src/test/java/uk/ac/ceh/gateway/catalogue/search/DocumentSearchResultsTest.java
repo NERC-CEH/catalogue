@@ -9,7 +9,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class DocumentSearchResultsTest {
@@ -18,6 +17,7 @@ public class DocumentSearchResultsTest {
     public void simpleSearchResults() {
         //Given
         SearchQuery query = new SearchQuery(
+            SearchQueryTest.ENDPOINT,
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             SearchQueryTest.DEFAULT_BBOX,
@@ -35,7 +35,7 @@ public class DocumentSearchResultsTest {
         given(pivots.get("sci0,sci1")).willReturn(Collections.EMPTY_LIST);
         
         //When
-        SearchResults searchResults = new SearchResults(response, query, UriComponentsBuilder.fromHttpUrl("https://localhost:8080/documents"));
+        SearchResults searchResults = new SearchResults(response, query);
         
         //Then
         assertThat("Term is wrong in results", searchResults.getTerm(), equalTo(""));

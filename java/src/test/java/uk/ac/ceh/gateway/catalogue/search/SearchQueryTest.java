@@ -11,15 +11,17 @@ import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class SearchQueryTest {
+    public static final String ENDPOINT = "http://catalogue.com/documents";
     public static final String DEFAULT_BBOX = null;
     public static final int DEFAULT_PAGE = 1;
     public static final int DEFAULT_ROWS = 20;
-    public static final List<String> DEFAULT_FITLERS = Collections.EMPTY_LIST;
+    public static final List<FacetFilter> DEFAULT_FITLERS = Collections.EMPTY_LIST;
     
     @Test
     public void buildQueryWithNoExtraParameters() {
         //Given
         SearchQuery query = new SearchQuery(
+            ENDPOINT,
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
@@ -44,6 +46,7 @@ public class SearchQueryTest {
     public void buildQueryOnSecondPage() {
         //Given
         SearchQuery query = new SearchQuery(
+            ENDPOINT,
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
@@ -64,6 +67,7 @@ public class SearchQueryTest {
         //Given
         String term = "land cover";
         SearchQuery query = new SearchQuery(
+            ENDPOINT,
             CatalogueUser.PUBLIC_USER,
             term,
             DEFAULT_BBOX,
@@ -82,12 +86,15 @@ public class SearchQueryTest {
     public void buildQueryWithDefaultTermAndFilter() {
         //Given
         SearchQuery query = new SearchQuery(
+            ENDPOINT,
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            Arrays.asList("resourceType|dataset", "sci0|Green & yellow"));
+            Arrays.asList(
+                new FacetFilter("resourceType","dataset"),
+                new FacetFilter("sci0","Green & yellow")));
         //When
         SolrQuery solrQuery = query.build();
         
@@ -103,6 +110,7 @@ public class SearchQueryTest {
         CatalogueUser user = new CatalogueUser();
         user.setUsername("testloggedin");
         SearchQuery query = new SearchQuery(
+            ENDPOINT,
             user,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,                
@@ -123,6 +131,7 @@ public class SearchQueryTest {
         String bbox = "my,invalid,bbox,attempt";
         
         SearchQuery query = new SearchQuery(
+            ENDPOINT,
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             bbox,
@@ -143,6 +152,7 @@ public class SearchQueryTest {
         String bbox = "1.11,2.22,3.33,4.44";
         
         SearchQuery query = new SearchQuery(
+            ENDPOINT,
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             bbox,

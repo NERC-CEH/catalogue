@@ -1,17 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import com.google.common.escape.Escaper;
-import com.google.common.net.UrlEscapers;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocumentList;
 import org.springframework.http.MediaType;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
@@ -23,35 +20,32 @@ import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.D
 @ConvertUsing({
     @Template(called = "/html/search.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
+@AllArgsConstructor
 public class SearchResults {
-    private static final Escaper escaper = UrlEscapers.urlFormParameterEscaper();
-    private final List<FacetFilter> filters;
-    private final UriComponentsBuilder builder;
+    private final QueryResponse response;
+    private final SearchQuery query;
     
-    private final @Getter int page;
-    private final @Getter int rows;
-    private final @Getter long numFound;
-    private final @Getter String term;
-    private final @Getter List<String> facetFilters;
-    private final @Getter List<DocumentSolrIndex> results;
-    private final @Getter List<Facet> facets;
-        
-    public SearchResults(QueryResponse response, SearchQuery query, UriComponentsBuilder builder) {
-        List<DocumentSolrIndex> docs = response.getBeans(DocumentSolrIndex.class);
-        
-        this.filters = (query.getFacetFilters() != null)? query.getFacetFilters() : Collections.EMPTY_LIST;
-        this.builder = builder;
-        this.numFound = response.getResults().getNumFound();
-        this.term = query.getTermNotDefault();
-        this.page = query.getPage();
-        this.rows = query.getRows();
-        this.results = docs;
-        this.facets = getFacets(response);
-        this.facetFilters =this.filters.stream().map(FacetFilter::asFormContent).collect(Collectors.toList());
+    public long getNumFound() {
+        return response.getResults().getNumFound();
     }
     
-    private List<Facet> getFacets(QueryResponse response){
-        
+    public String getTerm() {
+        return query.getTermNotDefault();
+    }
+    
+    public int getPage() {
+        return query.getPage();
+    }
+    
+    public int getRows() {
+        return query.getRows();
+    }
+    
+    public List<DocumentSolrIndex> getResults() {
+        return response.getBeans(DocumentSolrIndex.class);
+    }
+    
+    public List<Facet> getFacets(){        
         List<Facet> toReturn = response.getFacetFields().stream().map((facetField) -> {
             return Facet.builder()
                 .fieldName(facetField.getName())
@@ -74,12 +68,13 @@ public class SearchResults {
             .map(count -> {
                 String field = facetField.getName();
                 String name = count.getName();
-                String state = getState(field, name);
+                FacetFilter filter = new FacetFilter(field, name);
+                boolean active = query.containsFacetFilter(filter);
                 return FacetResult.builder()
                     .name(name)
                     .count(count.getCount())
-                    .state(state)
-                    .url(getUrl(field, name, state))
+                    .active(active)
+                    .url(((active) ? query.withoutFacetFilter(filter) : query.withFacetFilter(filter)).toUrl())
                     .build();
             })
             .collect(Collectors.toList());
@@ -90,51 +85,18 @@ public class SearchResults {
             .map(pivotField -> {
                 String field = pivotField.getField();
                 String name = pivotField.getValue().toString();
-                String state = getState(field, name);
+                FacetFilter filter = new FacetFilter(field, name);
+                boolean active = query.containsFacetFilter(filter);
+
                 return FacetResult.builder()
                     .name(name)
                     .count(pivotField.getCount())
-                    .state(state)
-                    .url(getUrl(field, name, state))
+                    .active(active)
+                    .url(((active) ? query.withoutFacetFilter(filter) : query.withFacetFilter(filter)).toUrl())
                     .subFacetResults((pivotField.getPivot() != null)? getFacetResults(pivotField.getPivot()) : Collections.EMPTY_LIST)
                     .build();
             })
             .collect(Collectors.toList());
     }
 
-    private String getState(String facetField, String facetValue) {
-        if (filters.contains(new FacetFilter(facetField, facetValue))) {
-            return "active";
-        } else {
-            return "inactive";
-        }
-    } 
-    
-    private String getUrl(String field, String value, String state) {
-        StringBuilder queryParam = new StringBuilder();
-            
-        if ( !getTerm().isEmpty()) {
-            queryParam.append("term=")
-            .append(escaper.escape(getTerm()));
-        }
-        
-        if (state.equals("inactive")) {
-            queryParam.append("&facet=")
-                .append(field)
-                .append("|")
-                .append(escaper.escape(value));
-        }
-        
-        if ( !filters.isEmpty()) {
-            queryParam.append("&")
-                .append(
-                    filters.stream()
-                        .filter(filter -> !filter.equals(new FacetFilter(field, value)))
-                        .filter(filter -> !(filter.getField().equals("sci1") && field.equals("sci0")))
-                        .map(FacetFilter::asURIContent)
-                        .collect(Collectors.joining("&", "facet=", ""))
-                );
-        }
-        return builder.replaceQuery(queryParam.toString()).build().toUriString();
-    }
 }

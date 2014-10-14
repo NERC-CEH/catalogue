@@ -1,16 +1,24 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import com.google.common.base.Splitter;
-import static com.google.common.base.Strings.nullToEmpty;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 import lombok.Value;
+import lombok.experimental.Wither;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.springframework.web.util.UriComponentsBuilder;
+import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.BBOX_QUERY_PARAM;
+import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.FACET_QUERY_PARAM;
+import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.PAGE_DEFAULT;
+import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.PAGE_QUERY_PARAM;
+import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_DEFAULT;
+import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_QUERY_PARAM;
+import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.TERM_QUERY_PARAM;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 @Value
@@ -26,24 +34,13 @@ public class SearchQuery {
         FACET_FIELDS.put("isOgl", "OGL license");
     }
     
+    private final String endpoint;
     private final CatalogueUser user; 
-    private final String term, bbox;
-    private final int page, rows;
-    private final List<FacetFilter> facetFilters;
-    
-    public SearchQuery(CatalogueUser user, String term, String bbox, int page, int rows, List<String> facetFilters) {
-        log.debug("facet filter strings: {}", facetFilters);
-        this.user = user;
-        this.bbox = bbox;
-        this.term = term;
-        this.page = page;
-        this.rows = rows;
-        this.facetFilters = facetFilters.stream()
-            .filter(filter -> !nullToEmpty(filter).isEmpty())
-            .map(filter -> new FacetFilter(filter))
-            .collect(Collectors.toList());
-        log.debug("processed filters: {}", this.facetFilters);
-    }
+    private final @NotNull String term;
+    private final @Wither String bbox;
+    private final @Wither int page;
+    private final int rows;
+    private final @NotNull List<FacetFilter> facetFilters;
       
     public SolrQuery build(){
         SolrQuery query = new SolrQuery()
@@ -64,6 +61,84 @@ public class SearchQuery {
         return (DEFAULT_SEARCH_TERM.equals(term))? "" : term;
     }
     
+    /**
+     * Create a clone of this search query but apply the additional facet filter
+     * 
+     * The logic of this method has been designed to match that of lomboks 
+     * @Wither methods.
+     * 
+     * If the filter has already been applied, just return this search query
+     * @param filter to ensure is present
+     * @return a new search query or this one if no change is needed
+     */
+    public SearchQuery withFacetFilter(FacetFilter filter) {
+        if (!containsFacetFilter(filter)) {
+            List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
+            newFacetFilters.add(filter);
+            return new SearchQuery(endpoint, user, term, bbox, page, rows, newFacetFilters);
+        }
+        else {
+            return this;
+        }
+    }
+    
+    /**
+     * Create a clone of this search query be ensure that the given facet filter
+     * is not applied.
+     * 
+     * If the filter is not applied, just return this search query
+     * @param filter to ensure is missing
+     * @return a new search query or this one if no change is needed
+     */
+    public SearchQuery withoutFacetFilter(FacetFilter filter) {
+        if(containsFacetFilter(filter) ) {
+            List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
+            newFacetFilters.remove(filter);
+            return new SearchQuery(endpoint, user, term, bbox, page, rows, newFacetFilters);
+        }
+        else {
+            return this;
+        }
+    }
+    
+    /**
+     * Check to see if the given facet filter is being applied by this search 
+     * query.
+     * @param filter to see if it is being applied
+     * @return true if it is false if it isn't
+     */
+    public boolean containsFacetFilter(FacetFilter filter) {
+        return facetFilters.contains(filter);
+    }
+    
+    /**
+     * @return the url to call to perform this solr query. 
+     */
+    public String toUrl() {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(endpoint);
+        if(PAGE_DEFAULT != page) {
+            builder.queryParam(PAGE_QUERY_PARAM, page);
+        }
+        
+        if(ROWS_DEFAULT != rows) {
+            builder.queryParam(ROWS_QUERY_PARAM, rows);
+        }
+        
+        if(!DEFAULT_SEARCH_TERM.equals(term)) {
+            builder.queryParam(TERM_QUERY_PARAM, term);
+        }
+        
+        if(bbox != null) {
+            builder.queryParam(BBOX_QUERY_PARAM, bbox);
+        }
+        
+        if(!facetFilters.isEmpty()) {
+            facetFilters.forEach((f)-> builder.queryParam(FACET_QUERY_PARAM, f.asURIContent()));
+        }
+        
+        return builder.build().toUriString();
+    }
+    
     private void setSpatialFilter(SolrQuery query) {
         if(bbox != null) {
             validateBBox(bbox);
@@ -82,11 +157,9 @@ public class SearchQuery {
     }
     
     private void setFacetFilters(SolrQuery query){
-        if(facetFilters != null){
-            facetFilters.stream().forEach((filter) -> {
-                query.addFilterQuery(filter.asSolrFilterQuery());
-            });
-        }
+        facetFilters.stream().forEach((filter) -> {
+            query.addFilterQuery(filter.asSolrFilterQuery());
+        });
     }
     
     private void setFacetFields(SolrQuery query){
