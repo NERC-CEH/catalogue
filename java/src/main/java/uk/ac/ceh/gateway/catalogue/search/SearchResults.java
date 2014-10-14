@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -41,6 +40,32 @@ public class SearchResults {
         return query.getRows();
     }
     
+    /**
+     * Return a link to the previous page as long as we are not currently on the
+     * first page.
+     * @return url to the previous page or null.
+     */
+    public String getPrevPage() {
+        if(getPage() != 1) {
+            return query.withPage(getPage() - 1).toUrl();
+        }
+        else {
+            return null;
+        }
+    }
+    
+    /**
+     * Return a link to the next page as long as there is a page to go to.
+     * @return A link to the next page if there is one to go to.
+     */
+    public String getNextPage() {
+        if(getNumFound() > getPage() * getRows()) {
+            return query.withPage(getPage() + 1).toUrl();
+        }
+        else {
+            return null;
+        }
+    }
     public List<DocumentSolrIndex> getResults() {
         return response.getBeans(DocumentSolrIndex.class);
     }

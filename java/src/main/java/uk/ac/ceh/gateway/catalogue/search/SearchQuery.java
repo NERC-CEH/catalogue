@@ -37,7 +37,7 @@ public class SearchQuery {
     private final String endpoint;
     private final CatalogueUser user; 
     private final @NotNull String term;
-    private final @Wither String bbox;
+    private final String bbox;
     private final @Wither int page;
     private final int rows;
     private final @NotNull List<FacetFilter> facetFilters;
@@ -75,7 +75,7 @@ public class SearchQuery {
         if (!containsFacetFilter(filter)) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.add(filter);
-            return new SearchQuery(endpoint, user, term, bbox, page, rows, newFacetFilters);
+            return new SearchQuery(endpoint, user, term, bbox, PAGE_DEFAULT, rows, newFacetFilters);
         }
         else {
             return this;
@@ -94,7 +94,7 @@ public class SearchQuery {
         if(containsFacetFilter(filter) ) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.remove(filter);
-            return new SearchQuery(endpoint, user, term, bbox, page, rows, newFacetFilters);
+            return new SearchQuery(endpoint, user, term, bbox, PAGE_DEFAULT, rows, newFacetFilters);
         }
         else {
             return this;
