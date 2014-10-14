@@ -9,12 +9,23 @@ define [
     facets:        []
     term:          ''
     page:          1
-    results:       new SearchPage [], {}
 
   initialize:->
+    # Create a empty search page, 
+    @results = new SearchPage [], {}
+
     # Listen to all the events which mean that a search should be performed
     do @proxyResultsEvents
-    @on 'change:term change:bbox change:spatialSearch change:page', @performSearch
+    @on 'change:facets change:term change:spatialSearch', @jumpToPageOne
+    @on 'change', @performSearch
+
+  ###
+  On certain changes we want to switch to the first page. For example, if the
+  term has changed, we won't want to fetch a middle search page. Since this 
+  method is fired from an event listener which is registered before any other 
+  listeners, then catch all 'change' listeners will only fire once.
+  ###
+  jumpToPageOne:-> @set 'page', 1
 
   ###
   Proxy the current results objects events through the search application model
@@ -28,7 +39,7 @@ define [
 
   ###
   proxyResultsEvents:-> 
-    @get('results')?.on 'all', (evt) => @trigger "results-#{evt}"
+    @results?.on 'all', (evt) => @trigger "results-#{evt}"
 
   ###
   Perform a search based upon the currently set properties of this model.
@@ -36,12 +47,11 @@ define [
   performSearch:->
     do @clearResults # Make sure that the results have been cleared 
 
-    results = new SearchPage    
-    @set 'results', results
+    @results = new SearchPage    
     do @proxyResultsEvents
 
     bbox = @get 'bbox'
-    results.fetch
+    @results.fetch
       remove: true
       cache:  false
       data:
@@ -53,12 +63,18 @@ define [
   Sets the spatial search bounding box. The change event will be silenced if
   the spatialSearch property is false  
   ###
-  setBBox: (bbox) ->
-    @set 'bbox', bbox, silent: not @get 'spatialSearch'
+  setBBox: (bbox) -> @set 'bbox', bbox, silent: not @get 'spatialSearch'
 
   ###
-  Remove the search results object and remove the proxied event listener.
+  Returns the current results set which this app has fetched or is fetching.
+  ###
+  getResults: -> @results
+
+  ###
+  Remove the search results object and remove the proxied event listener. 
+  This method will trigger a 'cleared:results' event
   ###
   clearResults:-> 
-    @get('results')?.off null, @proxyResultsEvents
-    @unset 'results'
+    @results?.off null, @proxyResultsEvents
+    @results = null
+    @trigger 'cleared:results'

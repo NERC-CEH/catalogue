@@ -38,7 +38,7 @@ define [
 
     do @updateHighlightedRecord
     do @updateBBox
-    @listenTo @model, 'change:results results-change:selected', @updateHighlightedRecord
+    @listenTo @model, 'cleared:results results-change:selected', @updateHighlightedRecord
     @listenTo @model, 'change:spatialSearch', @updateBBox
 
     # Create a debounced method of @updateBBox, this one will wait until the interaction
@@ -60,10 +60,9 @@ define [
   current viewport
   ###
   updateBBox:->
-    if @model.get 'spatialSearch'
-      extent = @map.getExtent()
-                   .transform @map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")
-      @model.setBBox [extent.left, extent.bottom, extent.right, extent.top].join ','
+    extent = @map.getExtent()
+                 .transform @map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")
+    @model.setBBox [extent.left, extent.bottom, extent.right, extent.top].join ','
   
   ###
   Clear any markers or features which represent the old selected record. Then
@@ -75,7 +74,7 @@ define [
     do @markerLayer.clearMarkers
 
     # Get the selected result
-    selected = @model.get('results')?.getSelectedResult()
+    selected = @model.getResults()?.getSelectedResult()
 
     # If that result is not undefined then render as a marker and polygon
     if selected

@@ -13,7 +13,7 @@ define [
   initialize: ->
     do @readModelFromHTML
 
-    @listenTo @model, 'change:results', @clear
+    @listenTo @model, 'cleared:results', @clear
     @listenTo @model, 'results-sync', @render
     @listenTo @model, 'results-change:selected', @updateSelected
 
@@ -65,7 +65,7 @@ define [
   trigger a change on the model.
   ###
   readModelFromHTML:->
-    @model.get('results').set 
+    @model.getResults().set 
       numFound: @$('#num-records').val()
       results: _.map @$('.result'), (r) -> 
         identifier:  $(r).attr('id')
@@ -78,7 +78,7 @@ define [
   Highlight that search result, with the selected class
   ###
   updateSelected: ->
-    selected = @model.get('results').get 'selected'
+    selected = @model.getResults().get 'selected'
     @$('.result').removeClass 'selected'
     @$("##{selected}").addClass 'selected'
 
@@ -92,7 +92,7 @@ define [
       results = @$ ".result:in-viewport(#{offset})"
       # if no result was detected, default to the last result
       selected = if results.length then $(results[0]) else $('.result').last()
-      @model.get('results').set selected: selected.attr 'id'
+      @model.getResults().set selected: selected.attr 'id'
 
   ###
   Clear the dom of any content
@@ -103,6 +103,6 @@ define [
   Draw in the new content
   ###
   render: ->
-    @$el.html template @model.get('results').attributes
+    @$el.html template @model.getResults().attributes
     do @findSelected # Find the selected
     do @padResults   # Pad the results pane
