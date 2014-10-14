@@ -9,32 +9,27 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ceh.gateway.catalogue.gemini.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.ThesaurusName;
 
 public class DescriptiveKeywordsConverter {
-    private static final String DESCRIPTIVE_KEYWORDS = "/*/gmd:identificationInfo/*/gmd:descriptiveKeywords";
-    private static final String CODE_LIST = "*/gmd:type/gmd:MD_KeywordTypeCode/@codeList";
-    private static final String CODE_VALUE = "*/gmd:type/gmd:MD_KeywordTypeCode/@codeListValue";
-    private static final String THESAURUS_TITLE = "*/gmd:thesaurusName/*/gmd:title/gco:CharacterString";
-    private static final String THESAURUS_DATE = "*/gmd:thesaurusName/*/gmd:date/*/gmd:date/gco:Date";
-    private static final String THESAURUS_DATE_TYPE_LIST = "*/gmd:date/*/gmd:dateType/*/@codeList";
-    private static final String THESAURUS_DATE_TYPE_VALUE = "*/gmd:date/*/gmd:dateType/*/@codeListValue";
-    private static final String KEYWORD_CHARACTER = "*/gmd:keyword/gco:CharacterString";
-    private static final String KEYWORD_ANCHOR = "*/gmd:keyword/gmx:Anchor";
-    private final XPathExpression descriptiveKeywords, codeList, codeValue, thesaurusTitle, thesaurusDate,
-        thesaurusDateTypeList, thesaurusDateTypeValue, keywordCharacter, keywordAnchor;
+    private static final String DESCRIPTIVE_KEYWORDS = "/*/gmd:identificationInfo/*/gmd:descriptiveKeywords/*";
+    private static final String TYPE = "gmd:type/*/@codeListValue";
+    private static final String THESAURUS_TITLE = "gmd:thesaurusName/*/gmd:title/*";
+    private static final String THESAURUS_DATE = "gmd:thesaurusName/*/gmd:date/*/gmd:date/gco:Date";
+    private static final String THESAURUS_DATE_TYPE_VALUE = "gmd:date/*/gmd:dateType/*/@codeListValue";
+    private static final String KEYWORD_CHARACTER = "gmd:keyword/*";
+    private static final String KEYWORD_ANCHOR = "gmd:keyword/gmx:Anchor";
+    private final XPathExpression descriptiveKeywords, type, thesaurusTitle, thesaurusDate,
+        thesaurusDateTypeValue, keywordCharacter, keywordAnchor;
 
     public DescriptiveKeywordsConverter(XPath xpath) throws XPathExpressionException {
         this.descriptiveKeywords = xpath.compile(DESCRIPTIVE_KEYWORDS);
-        this.codeList = xpath.compile(CODE_LIST);
-        this.codeValue = xpath.compile(CODE_VALUE);
+        this.type = xpath.compile(TYPE);
         this.thesaurusTitle = xpath.compile(THESAURUS_TITLE);
         this.thesaurusDate = xpath.compile(THESAURUS_DATE);
-        this.thesaurusDateTypeList = xpath.compile(THESAURUS_DATE_TYPE_LIST);
         this.thesaurusDateTypeValue = xpath.compile(THESAURUS_DATE_TYPE_VALUE);
         this.keywordCharacter = xpath.compile(KEYWORD_CHARACTER);
         this.keywordAnchor = xpath.compile(KEYWORD_ANCHOR);
@@ -44,28 +39,17 @@ public class DescriptiveKeywordsConverter {
         List<DescriptiveKeywords> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) descriptiveKeywords.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
-            Node descriptiveKeywordsNode = nodeList.item(i);
+            Node node = nodeList.item(i);
             
-            List<Keyword> keywords = getKeywordsFromDescriptiveKeywordsNode(descriptiveKeywordsNode);
-            
-            CodeListItem type = CodeListItem.builder()
-                    .codeList(codeList.evaluate(descriptiveKeywordsNode))
-                    .value(codeValue.evaluate(descriptiveKeywordsNode))
-                    .build();
-            
-            ThesaurusName thesaurusName = ThesaurusName
-                    .builder()
-                    .title(thesaurusTitle.evaluate(descriptiveKeywordsNode))
-                    .date(LocalDateFactory.parse(thesaurusDate.evaluate(descriptiveKeywordsNode)))
-                    .dateType(CodeListItem.builder()
-                            .codeList(thesaurusDateTypeList.evaluate(descriptiveKeywordsNode))
-                            .value(thesaurusDateTypeValue.evaluate(descriptiveKeywordsNode))
-                            .build())
+            ThesaurusName thesaurusName = ThesaurusName.builder()
+                    .title(thesaurusTitle.evaluate(node))
+                    .date(LocalDateFactory.parse(thesaurusDate.evaluate(node)))
+                    .dateType(thesaurusDateTypeValue.evaluate(node))
                     .build();
                     
             toReturn.add(DescriptiveKeywords.builder()
-                    .keywords(keywords)
-                    .type(type)
+                    .keywords(getKeywordsFromDescriptiveKeywordsNode(node))
+                    .type(type.evaluate(node))
                     .thesaurusName(thesaurusName)
                     .build()
             );

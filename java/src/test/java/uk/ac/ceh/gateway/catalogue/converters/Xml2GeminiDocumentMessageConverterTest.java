@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.ConformanceResult;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
@@ -686,6 +685,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
+        String expected = "theme";
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
@@ -695,16 +695,12 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
 
         //When
-        CodeListItem actualType = descriptiveKeywords.get(0).getType();
-        CodeListItem expectedType = CodeListItem
-                .builder()
-                .codeList("http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_KeywordTypeCode")
-                .value("theme")
-                .build();
+        String actual = descriptiveKeywords.get(0).getType();
+        
         
         //Then
-        assertNotNull("Expected Type to not be null", actualType);
-        assertThat("Content of Type not as expected", actualType, is(expectedType));
+        assertNotNull("Expected Type to not be null", actual);
+        assertThat("Content of Type not as expected", actual, is(expected));
     }
     
     @Test
