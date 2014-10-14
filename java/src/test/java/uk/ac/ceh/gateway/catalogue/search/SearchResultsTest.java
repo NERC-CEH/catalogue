@@ -26,7 +26,7 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_BBOX,
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
-            SearchQueryTest.DEFAULT_FITLERS);
+            SearchQueryTest.DEFAULT_FILTERS);
         
         QueryResponse response = mock(QueryResponse.class);
         long resultFound = 34553450359345l;
@@ -57,7 +57,7 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_BBOX,
             2,
             SearchQueryTest.DEFAULT_ROWS,
-            SearchQueryTest.DEFAULT_FITLERS);
+            SearchQueryTest.DEFAULT_FILTERS);
         
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
@@ -79,7 +79,7 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_BBOX,
             1,
             SearchQueryTest.DEFAULT_ROWS,
-            SearchQueryTest.DEFAULT_FITLERS);
+            SearchQueryTest.DEFAULT_FILTERS);
         
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
@@ -101,7 +101,7 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_BBOX,
             2,
             20,
-            SearchQueryTest.DEFAULT_FITLERS);
+            SearchQueryTest.DEFAULT_FILTERS);
         
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = spy(new SearchResults(response, query));
@@ -124,7 +124,7 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_BBOX,
             2,
             20,
-            SearchQueryTest.DEFAULT_FITLERS);
+            SearchQueryTest.DEFAULT_FILTERS);
         
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = spy(new SearchResults(response, query));
