@@ -42,9 +42,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
  */
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id, title, description, alternateTitle, topicCategories, resourceType, 
-            otherCitationDetails, browseGraphicUrl, coupledResource,
-            resourceStatus, metadataDate, lineage, metadataStandardName, metadataStandardVersion,
-            supplementalInfo, spatialRepresentationType, datasetLanguage;
+        otherCitationDetails, browseGraphicUrl, coupledResource,
+        resourceStatus, metadataDate, lineage, metadataStandardName, metadataStandardVersion,
+        supplementalInfo, spatialRepresentationType, datasetLanguage,
+        useLimitations, accessConstraints, otherConstraints, securityConstraints;
     private final XPath xpath;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
@@ -93,6 +94,10 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.supplementalInfo = xpath.compile(XPaths.SUPPLEMENTAL_INFO);
         this.spatialRepresentationType = xpath.compile(XPaths.SPATIAL_REPRESENTATION_TYPE);
         this.datasetLanguage = xpath.compile(XPaths.DATASET_LANGUAGE);
+        this.useLimitations = xpath.compile(XPaths.USE_LIMITATION);
+        this.accessConstraints = xpath.compile(XPaths.ACCESS_CONSTRAINT);
+        this.otherConstraints = xpath.compile(XPaths.OTHER_CONSTRAINT);
+        this.securityConstraints = xpath.compile(XPaths.SECURITY_CONSTRAINT);
     }
     
     @Override
@@ -143,6 +148,10 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setMetadataStandardVersion(metadataStandardVersion.evaluate(document));
             toReturn.setSupplementalInfo(supplementalInfo.evaluate(document));
             toReturn.setSpatialRepresentationTypes(getListOfStrings(document, spatialRepresentationType));
+            toReturn.setUseLimitations(getListOfStrings(document, useLimitations));
+            toReturn.setAccessConstraints(getListOfStrings(document, accessConstraints));
+            toReturn.setOtherConstraints(getListOfStrings(document, otherConstraints));
+            toReturn.setSecurityConstraints(getListOfStrings(document, securityConstraints));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

@@ -472,6 +472,70 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
+    public void canGetUseLimitations() throws IOException {
+       
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
+        List<String> expected = Arrays.asList("use constraint 1", "use constraint 2");
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<String> actual = document.getUseLimitations();
+        
+        //Then
+        assertThat("Actual useLimitations should equal expected", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetAccessConstraints() throws IOException {
+       
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
+        List<String> expected = Arrays.asList("copyright", "intellectualPropertyRights");
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<String> actual = document.getAccessConstraints();
+        
+        //Then
+        assertThat("Actual accessConstraints should equal expected", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetOtherConstraints() throws IOException {
+       
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
+        List<String> expected = Arrays.asList("limitations on public access 0", "lopa2", "description", "2");
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<String> actual = document.getOtherConstraints();
+        
+        //Then
+        assertThat("Actual otherConstraints should equal expected", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetSecurityConstraints() throws IOException {
+       
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
+        List<String> expected = Arrays.asList("confidential", "topSecret");
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<String> actual = document.getSecurityConstraints();
+        
+        //Then
+        assertThat("Actual securityConstraints should equal expected", actual, equalTo(expected));
+    }
+    
+    @Test
     public void canGetDatasetLanguages() throws IOException {
         
         //Given
