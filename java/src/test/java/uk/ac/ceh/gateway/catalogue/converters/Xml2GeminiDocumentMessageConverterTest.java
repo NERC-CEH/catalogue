@@ -540,7 +540,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("datasetlanguages.xml"));
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("datasetLanguages.xml"));
         List<String> expected = Arrays.asList("eng", "fin");
         
         //When
