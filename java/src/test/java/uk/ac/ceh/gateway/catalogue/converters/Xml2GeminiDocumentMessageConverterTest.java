@@ -473,30 +473,19 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
-    public void canGetDatasetLanguage() throws IOException {
+    public void canGetDatasetLanguages() throws IOException {
         
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("language.xml"));
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("datasetlanguages.xml"));
+        List<String> expected = Arrays.asList("eng", "fin");
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        CodeListItem actual = document.getDatasetLanguage();
-        CodeListItem expected = CodeListItem
-                .builder()
-                .codeList("http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode")
-                .value("eng")
-                .build();
+        List<String> actual = document.getDatasetLanguages();
         
         //Then
-        assertNotNull("Expected language type not to be null", actual);
-        assertNotNull("Expected language code not to be null", actual.getValue());
-        assertNotNull("Expected language code list to not be null", actual.getCodeList());
-        assertFalse("Expected language code not be empty string", actual.getValue().isEmpty());
-        assertFalse("Expected language code list not be empty string", actual.getCodeList().isEmpty());
-        assertEquals("Language not as expected", "eng", actual.getValue());
-        assertEquals("Codelist not as expected", "http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode", actual.getCodeList());
-        assertEquals("Content of DatasetLanguage not as expected", expected, actual);
+        assertThat("actual DatasetLanguages should be equal to expected", actual, equalTo(expected));
     }
     
     @Test
@@ -739,26 +728,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertNotNull("Expected Thesaurus to not be null", thesaurusName);
         assertEquals("Title not as expected", "test thesaurus" , thesaurusName.getTitle());
         assertEquals("Date not as expected", LocalDate.of(2014, 6, 3), thesaurusName.getDate());
-    }
-
-    @Test
-    public void canGetWhereXmlnsInline() throws IOException {
-        
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("languageInlineXmlns.xml"));
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        CodeListItem actual = document.getDatasetLanguage();
-        CodeListItem expected = CodeListItem
-                .builder()
-                .codeList("http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode")
-                .value("eng")
-                .build();
-        
-        //Then
-        assertEquals("Content of DatasetLanguage not as expected", expected, actual);
     }
 
     @Test

@@ -47,7 +47,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             resourceTypeCodeList, resourceTypeCodeListValue, 
             otherCitationDetails, browseGraphicUrl, coupledResource,
             resourceStatus, metadataDate, lineage, metadataStandardName, metadataStandardVersion,
-            supplementalInfo, spatialRepresentationType;
+            supplementalInfo, spatialRepresentationType, datasetLanguage;
     private final XPath xpath;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
@@ -98,6 +98,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.metadataStandardVersion = xpath.compile(XPaths.METADATA_VERSION);
         this.supplementalInfo = xpath.compile(XPaths.SUPPLEMENTAL_INFO);
         this.spatialRepresentationType = xpath.compile(XPaths.SPATIAL_REPRESENTATION_TYPE);
+        this.datasetLanguage = xpath.compile(XPaths.DATASET_LANGUAGE);
     }
     
     @Override
@@ -118,12 +119,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setTitle(title.evaluate(document));
             toReturn.setDescription(description.evaluate(document));
             toReturn.setAlternateTitles(getListOfStrings(document, alternateTitle));
-            toReturn.setDatasetLanguage(CodeListItem
-                    .builder()
-                    .codeList(languageCodeList.evaluate(document))
-                    .value(languageCodeListValue.evaluate(document))
-                    .build()
-            );
+            toReturn.setDatasetLanguages(getListOfStrings(document, datasetLanguage));
             toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
             toReturn.setTopicCategories(getListOfStrings(document, topicCategories));
             toReturn.setDownloadOrder(downloadOrderConverter.convert(document));

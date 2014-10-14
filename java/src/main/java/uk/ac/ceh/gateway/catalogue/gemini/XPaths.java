@@ -20,4 +20,5 @@ public class XPaths {
     public static final String METADATA_VERSION = "/*/gmd:metadataStandardVersion/*";
     public static final String SUPPLEMENTAL_INFO = "/*/gmd:identificationInfo/*/gmd:supplementalInformation/*";
     public static final String SPATIAL_REPRESENTATION_TYPE = "/*/gmd:identificationInfo/*/gmd:spatialRepresentationType/*/@codeListValue";
+    public static final String DATASET_LANGUAGE = "/*/gmd:identificationInfo/*/gmd:language/*/@codeListValue";
 }

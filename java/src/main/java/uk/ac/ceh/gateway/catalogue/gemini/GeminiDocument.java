@@ -27,8 +27,8 @@ public class GeminiDocument implements MetadataDocument {
     
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
         metadataStandardName, metadataStandardVersion, supplementalInfo;
-    private List<String> alternateTitles, topicCategories, coupleResources, spatialRepresentationTypes;
-    private CodeListItem datasetLanguage, resourceType;
+    private List<String> alternateTitles, topicCategories, coupleResources, spatialRepresentationTypes, datasetLanguages;
+    private CodeListItem resourceType;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<ConformanceResult> conformanceResults;
