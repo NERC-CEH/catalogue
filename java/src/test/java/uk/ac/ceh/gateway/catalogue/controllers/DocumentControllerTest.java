@@ -171,7 +171,7 @@ public class DocumentControllerTest {
         //Given
         GeminiDocument bundledDocument = new GeminiDocument();
         bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
-        bundledDocument.setResourceType(CodeListItem.builder().value("dataset").build());
+        bundledDocument.setResourceType("dataset");
         
         String file = "myFile";
         String revision = "revision";

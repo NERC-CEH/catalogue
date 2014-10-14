@@ -497,7 +497,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<String> actual = document.getCoupleResources();
+        List<String> actual = document.getCoupledResources();
         
         //Then
         assertThat("CoupledResources 'actual' should be equal to 'expected'", actual, equalTo(expected));   
@@ -754,27 +754,14 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceType.xml"));
+        String expected = "dataset";
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        CodeListItem actual = document.getResourceType();
-        CodeListItem expected = CodeListItem
-                .builder()
-                .codeList("http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode")
-                .value("dataset")
-                .build();
+        String actual = document.getResourceType();
         
         //Then
-        assertNotNull("Expected resourceType not to be null", actual);
-        assertNotNull("Expected resourceType value not to be null", actual.getValue());
-        assertNotNull("Expected resourcetType code list to not be null", actual.getCodeList());
-        assertFalse("Expected resourceType value to not be an empty string", actual.getValue().isEmpty());
-        assertFalse("Expected resourceType code list not be empty string", actual.getCodeList().isEmpty());
-        assertEquals("resourceType not as expected", expected.getValue(), actual.getValue());
-        assertEquals("Codelist not as expected", expected.getCodeList(), actual.getCodeList());
-        assertEquals("Content of resourceType not as expected", expected, actual);
-
-    
+        assertThat("Actual resourceType shoould be equal to expected", actual, equalTo(expected));
     }
     
     @Test

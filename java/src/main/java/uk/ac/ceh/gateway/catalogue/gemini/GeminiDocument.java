@@ -26,9 +26,8 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.GET_CAPABIL
 public class GeminiDocument implements MetadataDocument {
     
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
-        metadataStandardName, metadataStandardVersion, supplementalInfo;
-    private List<String> alternateTitles, topicCategories, coupleResources, spatialRepresentationTypes, datasetLanguages;
-    private CodeListItem resourceType;
+        metadataStandardName, metadataStandardVersion, supplementalInfo, resourceType;
+    private List<String> alternateTitles, topicCategories, coupledResources, spatialRepresentationTypes, datasetLanguages;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<ConformanceResult> conformanceResults;
@@ -47,11 +46,7 @@ public class GeminiDocument implements MetadataDocument {
     
     @Override
     public String getType() {
-        if(getResourceType() != null){
-            return getResourceType().getValue();
-        } else {
-            return null;
-        }
+        return getResourceType();
     }
     
     /**

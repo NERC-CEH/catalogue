@@ -33,7 +33,6 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenc
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialResolutionConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
 
@@ -42,9 +41,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
  * @author jcoop, cjohn
  */
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
-    private final XPathExpression id, title, description, alternateTitle, 
-            languageCodeList, languageCodeListValue, topicCategories, 
-            resourceTypeCodeList, resourceTypeCodeListValue, 
+    private final XPathExpression id, title, description, alternateTitle, topicCategories, resourceType, 
             otherCitationDetails, browseGraphicUrl, coupledResource,
             resourceStatus, metadataDate, lineage, metadataStandardName, metadataStandardVersion,
             supplementalInfo, spatialRepresentationType, datasetLanguage;
@@ -71,12 +68,9 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.title = xpath.compile(XPaths.TITLE);
         this.description = xpath.compile(XPaths.DESCRIPTION);
         this.alternateTitle = xpath.compile(XPaths.ALTERNATE_TITLE);
-        this.languageCodeList = xpath.compile(XPaths.LANGUAGE_CODE_LIST);
-        this.languageCodeListValue = xpath.compile(XPaths.LANGUAGE_CODE_LIST_VALUE);
         this.topicCategories = xpath.compile(XPaths.TOPIC_CATEGORIES);
         this.otherCitationDetails = xpath.compile(XPaths.OTHER_CITATION_DETAILS);
-        this.resourceTypeCodeList = xpath.compile(XPaths.RESOURCE_TYPE_CODE_LIST);
-        this.resourceTypeCodeListValue = xpath.compile(XPaths.RESOURCE_TYPE_CODE_LIST_VALUE);
+        this.resourceType = xpath.compile(XPaths.RESOURCE_TYPE);
         this.resourceIdentifierConverter = new ResourceIdentifierConverter(xpath);
         this.descriptiveKeywordsConverter = new DescriptiveKeywordsConverter(xpath);
         this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath);
@@ -125,12 +119,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
             toReturn.setOtherCitationDetails(otherCitationDetails.evaluate(document));
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
-            toReturn.setResourceType(CodeListItem
-                    .builder()
-                    .codeList(resourceTypeCodeList.evaluate(document))
-                    .value(resourceTypeCodeListValue.evaluate(document))
-                    .build()
-            );
+            toReturn.setResourceType(resourceType.evaluate(document));
             toReturn.setResourceIdentifiers(resourceIdentifierConverter.convert(document));
             toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
             toReturn.setTopicCategories(getListOfStrings(document, topicCategories));
@@ -140,7 +129,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
             toReturn.setBrowseGraphicUrl(browseGraphicUrl.evaluate(document));
             toReturn.setTemporalExtent(temporalExtentConverter.convert(document));
-            toReturn.setCoupleResources(getListOfStrings(document, coupledResource));
+            toReturn.setCoupledResources(getListOfStrings(document, coupledResource));
             toReturn.setResourceStatus(resourceStatus.evaluate(document));
             toReturn.setSpatialReferenceSystem(spatialReferenceSystem.convert(document));
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));

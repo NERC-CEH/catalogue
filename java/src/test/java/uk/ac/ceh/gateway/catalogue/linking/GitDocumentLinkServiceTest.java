@@ -72,7 +72,7 @@ public class GitDocumentLinkServiceTest {
         String fileIdentifier = "absd-asd";
         GeminiDocument dataset = new GeminiDocument();
         dataset.setId(fileIdentifier);
-        dataset.setResourceType(CodeListItem.builder().value("dataset").build());
+        dataset.setResourceType("dataset");
         GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8080").path("documents/{fileIdentifier}");
         
@@ -89,7 +89,7 @@ public class GitDocumentLinkServiceTest {
         String fileIdentifier = "absd-asd";
         GeminiDocument service = new GeminiDocument();
         service.setId(fileIdentifier);
-        service.setResourceType(CodeListItem.builder().value("service").build());
+        service.setResourceType("service");
         GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8080").path("documents/{fileIdentifier}");
         
