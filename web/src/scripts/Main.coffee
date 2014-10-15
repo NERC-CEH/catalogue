@@ -5,9 +5,10 @@ define [
   'cs!models/SearchApp'
   'cs!views/SearchAppView'
   'cs!routers/LayersRouter'
+  'cs!routers/SearchRouter'
   'cs!enables/CopyToClipboard'
   'bootstrap'
-], ($, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, LayersRouter) ->
+], ($, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, LayersRouter, SearchRouter) ->
   
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -26,7 +27,7 @@ define [
     view = new MapViewerAppView model: app
 
     router = new LayersRouter model: app
-    Backbone.history.start();
+    do Backbone.history.start
 
   ###
   Initialize the search application
@@ -34,3 +35,7 @@ define [
   initSearch: ->
     window.app = new SearchApp();
     window.view = new SearchAppView model: window.app
+
+    router = new SearchRouter model: app, location: window.location
+    
+    do Backbone.history.start

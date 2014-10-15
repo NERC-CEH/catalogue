@@ -6,7 +6,7 @@ define [
 
   defaults:
     spatialSearch: false
-    facets:        []
+    facet:         []
     term:          ''
     page:          1
 
@@ -16,7 +16,7 @@ define [
 
     # Listen to all the events which mean that a search should be performed
     do @proxyResultsEvents
-    @on 'change:facets change:term change:spatialSearch', @jumpToPageOne
+    @on 'change', @jumpToPageOne
     @on 'change', @performSearch
 
   ###
@@ -25,7 +25,7 @@ define [
   method is fired from an event listener which is registered before any other 
   listeners, then catch all 'change' listeners will only fire once.
   ###
-  jumpToPageOne:-> @set 'page', 1
+  jumpToPageOne:(evt)-> @set('page', 1) unless evt.changed.page
 
   ###
   Proxy the current results objects events through the search application model
@@ -51,19 +51,34 @@ define [
     do @proxyResultsEvents
 
     bbox = @get 'bbox'
-    @results.fetch
-      remove: true
-      cache:  false
-      data:
-        bbox: if @get 'spatialSearch' then @get 'bbox' 
-        term: @get 'term'
-        page: @get 'page'
+    @results.fetch cache: false, data:  @getState()
 
   ###
   Sets the spatial search bounding box. The change event will be silenced if
   the spatialSearch property is false  
   ###
   setBBox: (bbox) -> @set 'bbox', bbox, silent: not @get 'spatialSearch'
+
+  ###
+  Returns the current search state of this model. This method will generate
+  an object which can be used for querying the search api
+  ###
+  getState: ->
+    state = 
+      term:  @get 'term'
+      page:  @get 'page'
+      facet: @get 'facet'
+
+    state.bbox = @get 'bbox' if @get 'spatialSearch'
+    return state
+
+  ###
+  Updates this model with the given state object. Additional options can be
+  passed to the @set method
+  ###
+  setState: (state, options) ->
+    state.spatialSearch = state.bbox?
+    @set state, options
 
   ###
   Returns the current results set which this app has fetched or is fetching.

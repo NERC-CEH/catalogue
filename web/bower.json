@@ -7,6 +7,7 @@
     "isInViewport": "2.1.0",
     "jquery": "1.10.2",
     "jquery-ui": "1.11.0",
+    "jquery-deparam": "0.2.0",
     "coffee-script": "1.7.1",
     "requirejs": "2.1.14",
     "backbone-amd": "1.1.0",

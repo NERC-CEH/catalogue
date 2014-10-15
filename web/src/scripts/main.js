@@ -27,6 +27,7 @@ require.config({
     'text' : '../vendor/requirejs-text/text',
     'isInViewport': '../vendor/isInViewport/lib/isInViewport',
     'jquery' : '../vendor/jquery/jquery',
+    'jquery-deparam' : '../vendor/jquery-deparam/jquery-deparam',
     'underscore': '../vendor/underscore-amd/underscore',
     'backbone': '../vendor/backbone-amd/backbone',
     'openlayers': '../vendor/OpenLayers-custom',
