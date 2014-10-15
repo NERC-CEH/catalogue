@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +66,48 @@ public class Xml2WmsCapabilitiesMessageConverterTest {
         assertThat("Expected 3 layers", layers.size(), equalTo(3));
         assertThat("Expected three layers", layers, equalTo(Arrays.asList(
                 "Title 1", "Title 2", "Title 3")));
+    }
+    
+    @Test
+    public void canGetLegendFromLayerWithOnlyOnStyle() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("wmsGetCapabilitiesLayers.xml"));
+        
+        //When
+        WmsCapabilities capabilities = capabilitiesReader.readInternal(WmsCapabilities.class, message);
+        Layer firstLayer = capabilities.getLayers().get(0);
+        
+        //Then
+        assertThat("Expected to find legend url on first layer", firstLayer.getLegendUrl(), equalTo("http://default/wms/legend.png"));
+    }
+    
+    @Test
+    public void canGetDefaultLegendFromLayerWithMultipleStylesDefined() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("wmsGetCapabilitiesLayers.xml"));
+        
+        //When
+        WmsCapabilities capabilities = capabilitiesReader.readInternal(WmsCapabilities.class, message);
+        Layer firstLayer = capabilities.getLayers().get(1);
+        
+        //Then
+        assertThat("Expected to find default legend url on second layer", firstLayer.getLegendUrl(), equalTo("http://default/wms/default.png"));
+    }
+    
+    @Test
+    public void checkThatLayerWithNoStyleDoesNotReturnLegend() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("wmsGetCapabilitiesLayers.xml"));
+        
+        //When
+        WmsCapabilities capabilities = capabilitiesReader.readInternal(WmsCapabilities.class, message);
+        Layer firstLayer = capabilities.getLayers().get(2);
+        
+        //Then
+        assertNull("Expected to not find any legend info", firstLayer.getLegendUrl());    
     }
     
     @Test

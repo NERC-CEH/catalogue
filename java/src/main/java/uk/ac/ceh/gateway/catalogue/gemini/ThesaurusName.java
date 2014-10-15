@@ -7,14 +7,13 @@ import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
 public class ThesaurusName {
-    private final String title;
+    private final String title, dateType;
     private final LocalDate date;
-    private final CodeListItem dateType;
     
     @Builder
-    private ThesaurusName(String title, LocalDate date, CodeListItem dateType) {
+    private ThesaurusName(String title, LocalDate date, String dateType) {
         this.title = nullToEmpty(title);
         this.date = date;
-        this.dateType = dateType;
+        this.dateType = nullToEmpty(dateType);
     }
 }

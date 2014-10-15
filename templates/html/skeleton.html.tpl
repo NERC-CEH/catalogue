@@ -23,14 +23,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a href="#" class="navbar-brand"><img src="/static/img/CEHlogoSmall.png" alt="CEH Logo"/></a>
+          <a href="#" class="navbar-brand"><img src="/static/img/cehlogo-reverse.png" alt="CEH Logo"/></a>
         </div>
 
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a href="/">Home</a></li>
-            <li><a href="/documents">Search CEH Data</a></li>
-            <li><a href="#">About</a></li>
+            <li><a href="http://lwisportal-staging.nerc-lancaster.ac.uk/">Home</a></li>
+            <li class="active"><a href="/documents">Search CEH Data</a></li>
+            <li><a href="http://lwisportal-staging.nerc-lancaster.ac.uk/about">About</a></li>
             <li><a href="#">Contact</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">

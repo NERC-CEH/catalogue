@@ -8,5 +8,5 @@ import lombok.Data;
  */
 @Data
 public class Layer {
-    private String name, title;
+    private String name, title, legendUrl;
 }

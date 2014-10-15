@@ -8,12 +8,13 @@ import lombok.experimental.Builder;
 @Value
 public class ResourceIdentifier {
     private final static String CEH_CODE_SPACE = "CEH:EIDC:";
-    private final String code, codeSpace;
+    private final String code, codeSpace, version;
     
     @Builder
-    private ResourceIdentifier(String code, String codeSpace) {
+    private ResourceIdentifier(String code, String codeSpace, String version) {
         this.code = nullToEmpty(code);
         this.codeSpace = nullToEmpty(codeSpace);
+        this.version = nullToEmpty(version);
     }
     
     public String getCoupleResource() {

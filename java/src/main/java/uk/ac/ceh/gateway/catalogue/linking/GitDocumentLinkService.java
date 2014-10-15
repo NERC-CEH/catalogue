@@ -61,7 +61,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
                 if(document instanceof GeminiDocument) {
                     GeminiDocument geminiDocument = (GeminiDocument)document;
                     metadata.add(new Metadata(geminiDocument));
-                    geminiDocument.getCoupleResources().forEach((coupleResource) -> {
+                    geminiDocument.getCoupledResources().forEach((coupleResource) -> {
                         coupledResources.add(
                             CoupledResource.builder()
                                 .fileIdentifier(document.getId())
@@ -85,7 +85,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
     @Override
     public Set<Link> getLinks(GeminiDocument document, UriComponentsBuilder builder) {
         if (document.getResourceType() != null) {
-            switch (document.getResourceType().getValue().toLowerCase()) {
+            switch (document.getResourceType().toLowerCase()) {
                 case "dataset":
                     return createLinks(linkDatabase.findServicesForDataset(document.getId()), builder);
 

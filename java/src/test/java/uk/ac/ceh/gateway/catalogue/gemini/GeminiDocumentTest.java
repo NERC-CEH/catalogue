@@ -19,10 +19,11 @@ public class GeminiDocumentTest {
     @Test
     public void checkIfIsMapViewableIfGetCapabilitiesOnlineResourceExists() {
         //Given
-        OnlineResource wmsResource = new OnlineResource(
-                "http://www.com?request=GetCapabilities", 
-                "wms resource", 
-                "wms description");
+        OnlineResource wmsResource = OnlineResource.builder()
+            .url("http://www.com?request=GetCapabilities")
+            .name("wms resource") 
+            .description("wms description")
+            .build();
         GeminiDocument document = new GeminiDocument();
         document.setOnlineResources(Arrays.asList(wmsResource));
         
@@ -37,10 +38,11 @@ public class GeminiDocumentTest {
     @Test
     public void checkIfIsntMapViewableIfGetCapabilitiesOnlineResourceDoesntExists() {
         //Given
-        OnlineResource wmsResource = new OnlineResource(
-                "http://www.google.com", 
-                "wms resource", 
-                "wms description");
+        OnlineResource wmsResource = OnlineResource.builder()
+                .url("http://www.google.com") 
+                .name("wms resource")
+                .description("wms description")
+                .build();
         GeminiDocument document = new GeminiDocument();
         document.setOnlineResources(Arrays.asList(wmsResource));
         
