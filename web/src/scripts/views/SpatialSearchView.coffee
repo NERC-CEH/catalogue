@@ -80,25 +80,19 @@ define [
 
     # If that result is not undefined then render as a marker and polygon
     if selected
-      vector = @wktFactory.read @convertToWKT selected.locations
-      vector.geometry.transform @epsg4326, @drawingLayer.map.getProjectionObject()
-      vector.style = @highlighted
+      _.each selected.locations, (location) =>
+        vector = @wktFactory.read @convertToWKT location
+        vector.geometry.transform @epsg4326, @drawingLayer.map.getProjectionObject()
+        vector.style = @highlighted
 
-      centroid = vector.geometry.components[0].getCentroid()
-      lonLat = new OpenLayers.LonLat centroid.x, centroid.y
-      @markerLayer.addMarker new OpenLayers.Marker lonLat, @marker
-      @drawingLayer.addFeatures vector
+        centroid = vector.geometry.components[0].getCentroid()
+        lonLat = new OpenLayers.LonLat centroid.x, centroid.y
+        @markerLayer.addMarker new OpenLayers.Marker lonLat, @marker
+        @drawingLayer.addFeatures vector
 
   ###
   Get the locations of this search result
   ###
   convertToWKT: (location) ->
-    ###
-    TODO: REMOVE DIRTY HACK
-    ###
-    if _.isArray(location)
-      location = location[0]
-
     [minx,miny,maxx,maxy] = location.split ' '
-
     return "POLYGON((#{minx} #{miny}, #{minx} #{maxy}, #{maxx} #{maxy}, #{maxx} #{miny}, #{minx} #{miny}))"

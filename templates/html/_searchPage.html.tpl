@@ -9,7 +9,7 @@
   <span id="num-records">${numFound}</span> records found
 </div>
 <#list results as result>
-  <div class="result" data-location="${result.locations[0]}" id="${result.identifier}">
+  <div class="result" data-location="${result.locations?join(',')}" id="${result.identifier}">
     <h2>
       <a href="/${docroot}/${result.identifier}" class="title">${result.title}</a>
     </h2>
