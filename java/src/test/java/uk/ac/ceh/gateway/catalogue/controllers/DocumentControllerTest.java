@@ -39,7 +39,6 @@ import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.gemini.CodeListItem;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -171,7 +170,7 @@ public class DocumentControllerTest {
         //Given
         GeminiDocument bundledDocument = new GeminiDocument();
         bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
-        bundledDocument.setResourceType(CodeListItem.builder().value("dataset").build());
+        bundledDocument.setResourceType("dataset");
         
         String file = "myFile";
         String revision = "revision";

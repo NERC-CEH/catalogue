@@ -43,7 +43,7 @@ public class MapProxyServiceTest {
         when(wmsCapabilities.getDirectMap()).thenReturn("directmap");
         when(wmsCapabilities.getLayers()).thenReturn(Arrays.asList(layer));
                 
-        OnlineResource resource = new OnlineResource("http://wms.service", "named", "with this description");
+        OnlineResource resource = OnlineResource.builder().url("http://wms.service").name("named").description("with this description").build();
         when(getCapabilitiesService.getWmsCapabilities(resource)).thenReturn(wmsCapabilities);
         
         //When
