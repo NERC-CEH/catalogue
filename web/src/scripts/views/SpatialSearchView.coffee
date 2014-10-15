@@ -62,8 +62,10 @@ define [
   updateBBox:->
     extent = @map.getExtent()
                  .transform @map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")
-    @model.setBBox [extent.left, extent.bottom, extent.right, extent.top].join ','
-  
+    
+    viewportArr = [extent.left, extent.bottom, extent.right, extent.top]
+    @model.setBBox _.map(viewportArr, (num) -> num.toFixed(3)).join ','
+
   ###
   Clear any markers or features which represent the old selected record. Then
   check to see if a record has been selected, if so populate
