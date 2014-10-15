@@ -63,7 +63,7 @@ public class OnlineResourceControllerTest {
     public void checkThatCanGetOnlineResourceWhichExists() {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        List<OnlineResource> resources = Arrays.asList(new OnlineResource("a","b","c"));
+        List<OnlineResource> resources = Arrays.asList(OnlineResource.builder().url("a").build());
         when(document.getOnlineResources()).thenReturn(resources);
         
         //When
@@ -118,7 +118,7 @@ public class OnlineResourceControllerTest {
         String revision = "bob";
         int index = 10;
         
-        OnlineResource resource = new OnlineResource("a", "b", "c");
+        OnlineResource resource = OnlineResource.builder().url("a").build();
         doReturn(resource).when(controller).getOnlineResource(any(GeminiDocument.class), anyInt());
         
         //When
@@ -157,7 +157,7 @@ public class OnlineResourceControllerTest {
         GeminiDocument geminiDocument = mock(GeminiDocument.class);
         when(documentBundleReader.readBundle(file, revision)).thenReturn(geminiDocument);
         
-        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
         doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
         
         WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
@@ -180,7 +180,7 @@ public class OnlineResourceControllerTest {
         GeminiDocument geminiDocument = mock(GeminiDocument.class);
         when(documentBundleReader.readBundle(file, revision)).thenReturn(geminiDocument);
         
-        OnlineResource onlineResource = new OnlineResource("random url", "name", "description");
+        OnlineResource onlineResource = OnlineResource.builder().url("random url").build();
         doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
         
         //When
@@ -218,7 +218,7 @@ public class OnlineResourceControllerTest {
         int index = 2;
         String layerName = "layer";
         
-        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
         doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
         
         Layer layer = mock(Layer.class);
@@ -266,7 +266,7 @@ public class OnlineResourceControllerTest {
         int index = 2;
         String layerName = "layer";
         
-        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
         doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
         
         Layer layer = mock(Layer.class);
@@ -293,7 +293,7 @@ public class OnlineResourceControllerTest {
         int index = 2;
         String layerName = "layer";
         
-        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
         doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
         
         Layer layer = mock(Layer.class);
@@ -320,7 +320,7 @@ public class OnlineResourceControllerTest {
         int index = 2;
         String layerName = "layer";
         
-        OnlineResource onlineResource = new OnlineResource("http://wms?REQUEST=GetCapabilities", "name", "description");
+        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
         doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
 
         

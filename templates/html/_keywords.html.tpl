@@ -11,8 +11,8 @@
 <#if descriptiveKeywords?has_content>
   <#list descriptiveKeywords?sort_by("type") as descriptiveKeyword>
     <tr>
-      <#if (descriptiveKeyword.type.value)?? && descriptiveKeyword.type.value?has_content>
-        <th scope="row">${descriptiveKeyword.type.value?cap_first} Keywords</th>
+      <#if (descriptiveKeyword.type)?? && descriptiveKeyword.type?has_content>
+        <th scope="row">${descriptiveKeyword.type?cap_first} Keywords</th>
       <#else>
         <th scope="row">Keywords</th>
       </#if>

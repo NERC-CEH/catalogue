@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco">
+	<gmd:identificationInfo>
+		<gmd:MD_DataIdentification>
+			<gmd:language>
+				<LanguageCode codeListValue="eng"/>
+			</gmd:language>
+			<gmd:language>
+				<LanguageCode codeListValue="fin"/>
+			</gmd:language>
+		</gmd:MD_DataIdentification>
+	</gmd:identificationInfo>
+</gmd:MD_Metadata>

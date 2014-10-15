@@ -12,7 +12,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestTemplate;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.controller;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.NotAGetCapabilitiesResourceException;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
@@ -36,8 +35,7 @@ public class GetCapabilitiesObtainerServiceTest {
     @Test(expected=NotAGetCapabilitiesResourceException.class)
     public void checkThatGetWMSCapabilitiesDoesntWorkWithIncorrectOnlineResource() {
         //Given
-        OnlineResource resource = new OnlineResource(
-                "http://not.a.wms", "nothing", "nothing");
+        OnlineResource resource = OnlineResource.builder().url("http://not.a.wms").build();
         
         //When
         service.getWmsCapabilities(resource);
@@ -49,8 +47,7 @@ public class GetCapabilitiesObtainerServiceTest {
     @Test
     public void checkThatRestTemplateIsCalledWithValidWMSCapabilitesType() {
         //Given
-        OnlineResource resource = new OnlineResource(
-                "https://www.google.com/wms?REQUEST=GetCapabilities", "test wms", "test wms");
+        OnlineResource resource = OnlineResource.builder().url("https://www.google.com/wms?REQUEST=GetCapabilities").build();
         
         WmsCapabilities wmsCaps = mock(WmsCapabilities.class);
         
