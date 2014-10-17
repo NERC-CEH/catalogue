@@ -9,6 +9,10 @@ define [
     fillColor:   '#8fca89'
     fillOpacity: 0.3
 
+  restriction:
+    strokeColor: '#1c1b1e'
+    fillOpacity: 0
+
   ###
   Define some openlayer constants
   ###
@@ -30,41 +34,60 @@ define [
     ]
 
     # Create the layers to draw the search results on
-    @drawingLayer = new OpenLayers.Layer.Vector "Vector Layer"
+    @highlightedLayer = new OpenLayers.Layer.Vector "Selected Layer"
     @markerLayer = new OpenLayers.Layer.Markers "Marker Layer"
-    @map.addLayers [backdrop, @drawingLayer, @markerLayer]
+    @drawingLayer = new OpenLayers.Layer.Vector "Drawing Layer", style: @restriction
+
+    @drawingControl = new OpenLayers.Control.DrawFeature @drawingLayer, 
+      OpenLayers.Handler.RegularPolygon, 
+      handlerOptions:
+        sides: 4,
+        irregular: true
+
+    # Bind the handle drawn feature method to this class before registering it
+    # as an openlayers event listener
+    _.bindAll this, 'handleDrawnFeature'
+    @drawingLayer.events.register "featureadded", @drawingLayer, @handleDrawnFeature
+
+    @map.addLayers [backdrop, @highlightedLayer, @markerLayer, @drawingLayer]
+    @map.addControl @drawingControl
 
     @map.zoomToExtent new OpenLayers.Bounds(-1885854.36, 6623727.12, 1245006.31, 7966572.83)
 
     do @updateHighlightedRecord
-    do @updateBBox
     @listenTo @model, 'cleared:results results-change:selected', @updateHighlightedRecord
-    @listenTo @model, 'change:spatialSearch', @updateBBox
+    @listenTo @model, 'change:drawing', @updateDrawingMode
+    @listenTo @model, 'change:bbox', @updateDrawingLayer
 
-    # Create a debounced method of @updateBBox, this one will wait until the interaction
-    # with the map has completed before triggering @updateBBox proper
-    @delayedUpdateBBox = _.debounce @updateBBox, 500
-    @map.events.register 'move', @map, => do @handleMove 
-      
-  ###
-  An event listener for handling when the map has been moved. Only update the
-  model if spatialSearching is enabled
-  ###
-  handleMove:->
-    if @model.get 'spatialSearch'
-      do @model.clearResults
-      do @delayedUpdateBBox
 
   ###
-  Update the current value of the bbox value on the model to match the 
-  current viewport
+  Update the drawing layer with the restricted bounding box used for searching.
   ###
-  updateBBox:->
-    extent = @map.getExtent()
-                 .transform @map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")
-    
+  updateDrawingLayer: ->
+    do @drawingLayer.removeAllFeatures # Remove all the drawn features
+    if @model.has 'bbox'               # Draw the bbox if specified
+      bbox = @model.get('bbox').replace /,/g, ' '  # TODO: STANDARDISE BBOX OUTPUT
+      @drawingLayer.addFeatures @readBoundingBox bbox
+
+  ###
+  Toggle the drawing control depending on weather or not the model is in 
+  drawing mode
+  ###
+  updateDrawingMode:->
+    mode = if @model.get('drawing') then 'activate' else 'deactivate'
+    do @drawingControl[mode]
+
+  ###
+  Obtain the drawn bounding box from the drawing layer and register it as a new
+  bounding box to search within on the model
+  ###
+  handleDrawnFeature: (evt) ->
+    feature = evt.feature.clone() #clone the feature so we can perform a transformation
+    feature.geometry.transform @map.getProjectionObject(), @epsg4326 #convert to 4326
+
+    extent = feature.geometry.getBounds()
     viewportArr = [extent.left, extent.bottom, extent.right, extent.top]
-    @model.setBBox _.map(viewportArr, (num) -> num.toFixed(3)).join ','
+    @model.set 'bbox', _.map(viewportArr, (num) -> num.toFixed(3)).join ','
 
   ###
   Clear any markers or features which represent the old selected record. Then
@@ -72,7 +95,7 @@ define [
   ###
   updateHighlightedRecord: ->
     # Remove all the old markers
-    do @drawingLayer.removeAllFeatures
+    do @highlightedLayer.removeAllFeatures
     do @markerLayer.clearMarkers
 
     # Get the selected result
@@ -81,18 +104,24 @@ define [
     # If that result is not undefined then render as a marker and polygon
     if selected
       _.each selected.locations, (location) =>
-        vector = @wktFactory.read @convertToWKT location
-        vector.geometry.transform @epsg4326, @drawingLayer.map.getProjectionObject()
+        vector = @readBoundingBox location
         vector.style = @highlighted
 
         centroid = vector.geometry.components[0].getCentroid()
         lonLat = new OpenLayers.LonLat centroid.x, centroid.y
         @markerLayer.addMarker new OpenLayers.Marker lonLat, @marker
-        @drawingLayer.addFeatures vector
+        @highlightedLayer.addFeatures vector
 
   ###
-  Get the locations of this search result
+  Convert the given location string into a Openlayers feature which is in the
+  same projection system as that of the map
   ###
-  convertToWKT: (location) ->
+  readBoundingBox: (location) ->
     [minx,miny,maxx,maxy] = location.split ' '
-    return "POLYGON((#{minx} #{miny}, #{minx} #{maxy}, #{maxx} #{maxy}, #{maxx} #{miny}, #{minx} #{miny}))"
+    vector = @wktFactory.read """POLYGON((#{minx} #{miny}, \
+                                          #{minx} #{maxy}, \
+                                          #{maxx} #{maxy}, \
+                                          #{maxx} #{miny}, \
+                                          #{minx} #{miny}))"""
+    vector.geometry.transform @epsg4326, @map.getProjectionObject()
+    return vector

@@ -69,6 +69,8 @@ module.exports = (grunt) ->
             'src/vendor/openlayers/lib/OpenLayers/Control/Navigation.js'
             'src/vendor/openlayers/lib/OpenLayers/Control/Zoom.js'
             'src/vendor/openlayers/lib/OpenLayers/Control/Attribution.js'
+            'src/vendor/openlayers/lib/OpenLayers/Control/DrawFeature.js'
+            'src/vendor/openlayers/lib/OpenLayers/Handler/RegularPolygon.js'
             'src/vendor/openlayers/lib/OpenLayers/Layer/TMS.js'
             'src/vendor/openlayers/lib/OpenLayers/Layer/Vector.js'
             'src/vendor/openlayers/lib/OpenLayers/Layer/Markers.js'

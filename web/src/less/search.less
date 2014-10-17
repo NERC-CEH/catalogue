@@ -1,49 +1,95 @@
 #search {
-  @spatial-columns: 4;
-  @results-columns: @grid-columns - @spatial-columns;
+  @search-form-height:    52px;
+  @filters-columns:       4;
+  @results-columns:       @grid-columns - @filters-columns;
+  @filter-heading-height: 40px;
+  @filter-heading-gap:    3px;
 
   .make-row();
   .container-fixed();
   padding: 0;          // Remove the padding when in small screen mode
 
-  .spatial-search {
-    .make-md-column(@spatial-columns);
-    min-height: 250px; // Define a min height when the map is in small screen mode
-    
-    .openlayers {
-      position: absolute;
-      top:      0;
-      bottom:   0;
-      left:     0;
-      right:    0;
-      div.olControlZoom {
-        left: 2px;
-        top:  5px;
-      }
-    }
+  .filters-panel { display: none; } //Hide the filters panel in small screen mode
 
-    .mapsearch-toggle {
-      position:         absolute;
-      left:             36px;
-      top:              14px;
-      background-color: @body-bg;
-      padding:          0.4em;
-    }
-
-    @media (min-width: @screen-md-min) {
-      position: fixed; //Spatial search based on http://getbootstrap.com/examples/dashboard/
+  @media (min-width: @screen-md-min) {
+    .filters-panel {
+      .make-md-column(@filters-columns);
+      display: block;
+      position: fixed;
+      padding:  0;
       top:      @nav-bar-height;
       bottom:   0;
       left:     0;
+      background-color: @panel-bg;
+    }
+
+    .header {
+      height:           @filter-heading-height;
+      width:            100%;
+      background-color: @panel-default-heading-bg;
+      padding:          10px 15px;
+
+      h3 {
+        display: inline;
+        margin: 0px;
+        font-size: 15px;
+        a { color: black; }
+      }
+    }
+
+    &.facets-mode {
+      .map-heading {
+        position: absolute;
+        bottom: 0;
+      }
+      .facet-filter {
+        position:   absolute;
+        top:        @filter-heading-height;
+        bottom:     @filter-heading-height;
+        left:       0;
+        right:      0;
+        overflow-y: auto;
+      }
+    }
+
+    &.map-mode {
+      @selected-color: #8fca89;
+      .facet-filter { display: none; }
+      .map-heading  { margin-top: @filter-heading-gap; }
+
+      .result.selected { 
+        border-left:      8px solid @selected-color;  
+        background-color: lighten(@selected-color, 25%);
+      }
+
+      .map-filter {
+        position: absolute;
+        top:      @filter-heading-height * 2 + @filter-heading-gap;
+        bottom:   0;
+        left:     0;
+        right:    0;
+        div.olControlZoom {
+          left: 2px;
+          top:  5px;
+        }
+      }
     }
   }
   
-  .text-search {
-    @selected-color: #8fca89;
+  // Keep the search box onscreen at all times
+  form.search-form {
+    .make-md-column-offset(@filters-columns);
+    position:         fixed;
+    top:              @nav-bar-height;
+    padding:          8px;
+    height:           @search-form-height;
+    background-color: @body-bg;
+  }
 
-    padding: 20px;
+  .results {
+    margin-top: @search-form-height;
     .make-md-column(@results-columns);
-    .make-md-column-offset(@spatial-columns);
+    .make-md-column-offset(@filters-columns);
 
     .result { 
       display: inline-block; //Disable margin-collapsing
@@ -53,11 +99,6 @@
       .result {
         border-left:  8px solid @body-bg;
         padding-left: 1em;
-
-        &.selected { 
-          border-left:      8px solid @selected-color;  
-          background-color: lighten(@selected-color, 25%);
-        }
       }
     }
   }

@@ -51,7 +51,8 @@ define [
   ###
   padResults:->
     if @$('.result').length
-      topPosition = $('.navbar').height() # Where the top result should start
+      # Where the top result should start
+      topPosition = $('.navbar').height() + $('.search-form').height()
       onScreen = @$('.result').last().nextAll().andSelf() # Elements to show
       onScreenHeight = _.reduce onScreen,
                                 (height, e) -> height + $(e).outerHeight true,
