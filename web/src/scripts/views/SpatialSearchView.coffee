@@ -52,13 +52,20 @@ define [
     @map.addLayers [backdrop, @highlightedLayer, @markerLayer, @drawingLayer]
     @map.addControl @drawingControl
 
-    @map.zoomToExtent new OpenLayers.Bounds(-1885854.36, 6623727.12, 1245006.31, 7966572.83)
+    do @refresh
 
     do @updateHighlightedRecord
     @listenTo @model, 'cleared:results results-change:selected', @updateHighlightedRecord
     @listenTo @model, 'change:drawing', @updateDrawingMode
     @listenTo @model, 'change:bbox', @updateDrawingLayer
 
+  ###
+  Reset the position and size of the map. Parent views should call this method 
+  when the map reappears onscreen
+  ###
+  refresh:->
+    do @map.updateSize
+    @map.zoomToExtent new OpenLayers.Bounds -1885854.36, 6623727.12, 1245006.31, 7966572.83
 
   ###
   Update the drawing layer with the restricted bounding box used for searching.

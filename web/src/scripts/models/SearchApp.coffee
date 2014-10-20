@@ -5,10 +5,12 @@ define [
 ], (_, Backbone, SearchPage) -> Backbone.Model.extend
 
   defaults:
-    drawing: false
-    facet:   []
-    term:    ''
-    page:    1
+    drawing:   false
+    mapsearch: false
+    bbox:      undefined
+    facet:     []
+    term:      undefined
+    page:      1
 
   ###
   Define the set of fields which contribute to searching
@@ -32,7 +34,7 @@ define [
   method is fired from an event listener which is registered before any other 
   listeners, then catch all 'change' listeners will only fire once.
   ###
-  jumpToPageOne:(evt)-> @set('page', 1) unless evt.changed.page
+  jumpToPageOne:(evt)-> @set('page', @defaults.page) unless evt.changed.page
 
   ###
   If any aspect of the model is updated we will want to disable drawing. 
@@ -66,19 +68,26 @@ define [
 
       @results = new SearchPage    
       do @proxyResultsEvents
-      @results.fetch cache: false, data:  @getState()
+      @results.fetch cache: false, data: @getState()
 
   ###
   Returns the current search state of this model. This method will generate
-  an object which can be used for querying the search api
+  an object which can be used for querying the search api.
   ###
-  getState: -> @pick @searchFields...
+  getState: ->
+    state = @pick @searchFields...
+    _.each state, (v, k) -> delete state[k] if not v
+    return state
 
   ###
-  Updates this model with the given state object. Additional options can be
-  passed to the @set method
+  Updates this model with the given state object. The state object only 
+  represents the query aspect of the application. Additional options can be
+  passed to the @set method. If properties are omitted, grab these from 
+  @defaults
   ###
-  setState: (state, options) -> @set state, options
+  setState: (state, options) ->
+    searchDefaults = _.pick @defaults, @searchFields...
+    @set _.defaults state, searchDefaults
 
   ###
   Returns the current results set which this app has fetched or is fetching.

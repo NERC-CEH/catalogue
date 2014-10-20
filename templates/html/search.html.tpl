@@ -2,30 +2,25 @@
 <#assign docroot="documents">
 
 <@skeleton.master title="Search">
-  <div class="search map-mode" id="search">
+  <div class="search facets-mode" id="search">
 
 
     <div class="filters-panel">
       <div class="header facet-heading">
-        <h3><a href="">Topics</a></h3>
+        <h3>Topics</h3>
       </div>
-      <div class="facet-filter">
-        <@facets/>
-      </div>
+      <div class="facet-filter"><@facets/></div>
       
       <div class="header map-heading">
-        <h3><a href="">Map Search</a></h3>
+        <h3>Map Search</h3>
 
-        <button type="button" class="pull-right btn btn-default btn-xs">
-          <span class="glyphicon glyphicon-pencil"></span>
-        </button>
-
+        <div class="drawing-control pull-right"><#include "search/_drawing.html.tpl"></div>
       </div>
       <div class="map-filter openlayers"></div>
     </div>
 
 
-    <div class="results"><#include "_searchPage.html.tpl"></div>
+    <div class="results"><#include "search/_page.html.tpl"></div>
     <form class="search-form" action="/${docroot}" method="get">
       <div class="input-group">
         <input placeholder="Search the catalogue" name="term" type="text" class="form-control">

@@ -1,9 +1,11 @@
 define [
   'jquery'
   'backbone'
-], ($, Backbone) -> Backbone.View.extend
+  'tpl!templates/DrawingControl.tpl'
+], ($, Backbone, template) -> Backbone.View.extend
   events:
-    "click": "handleClick"
+    "click button": "toggleDrawing"
+    "click a": "removeBbox"
 
   ###
   This is the drawing control view. If not bounding box is currently set, it 
@@ -11,29 +13,26 @@ define [
   ###
   initialize: ->
     do @render
-    #@listenTo @model, 'change:bbox', @updateBBox
-    @listenTo @model, 'change:drawing change:bbox', @render
+    @listenTo @model, 'results-change', @render
+    @listenTo @model, 'change:drawing', @updateDrawingToggle
 
+  ###
+  Toggle the drawing mode of the model
+  ###
+  toggleDrawing: -> @model.set 'drawing', not @model.get 'drawing'
 
-  handleClick: ->
-    if @model.has 'bbox'  # If the model already has a filter then remove it
-      @model.unset 'bbox'
-    else                  # Otherwise just toggle drawing mode
-      @model.set 'drawing', not @model.get 'drawing'
+  ###
+  Remove the bounding box filter which has been applied to the model
+  ###
+  removeBbox: -> @model.set 'bbox', undefined
 
-  removeBbox: -> @model.unset 'bbox'
+  ###
+  Update the state of the drawing toggle button. Add and remove the active
+  class depending on the drawing state of the model
+  ###
+  updateDrawingToggle:-> 
+    toggle = if @model.get 'drawing' then 'addClass' else 'removeClass'
+    @$('button')[toggle] 'active'
 
-  render: ->
-    @$el.removeClass 'active'
-
-    if @model.get 'drawing'
-      @$el.addClass 'active'
-    else if @model.has 'bbox'
-      @$el.html '''
-      Spatial Filter
-        <span class="glyphicon glyphicon-remove"></span>
-      '''
-    else
-      @$el.html '''
-        <span class="glyphicon glyphicon-pencil"></span>
-      '''
+  render: -> @$el.html template
+    removeBbox: @model.getResults().get('withoutBBox')

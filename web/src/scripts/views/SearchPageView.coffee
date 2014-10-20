@@ -6,10 +6,6 @@ define [
   'isInViewport'
 ], (_, $, Backbone, template) -> Backbone.View.extend
 
-  events:
-    "click .next" :    "nextPage"
-    "click .previous": "prevPage"
-
   initialize: ->
     do @readModelFromHTML
 
@@ -27,22 +23,6 @@ define [
     _.bindAll this, 'findSelected', 'padResults'
     $(window).on 'scroll', @findSelected
     $(window).on 'resize', @padResults
-
-  ###
-  Request the next page from the model. This will initiate a request of a new
-  page by the model
-  ###
-  nextPage: (e) ->
-    @model.set 'page', @model.get('page') + 1
-    do e.preventDefault
-
-  ###
-  Request the previous page to the one currently shown. This will initiate a
-  fetch of a new page
-  ### 
-  prevPage: (e) ->
-    @model.set 'page', @model.get('page') - 1
-    do e.preventDefault
 
   ###
   Since we update the selected result based upon the scroll position, we need
