@@ -8,6 +8,12 @@ define [
   initialize: ->
     @listenTo @model, 'results-change', @render
 
+  ###
+  Render the facet results panel as long as we have some results currently set.
+
+  The template panelTpl requires a sub template which renders the each facet 
+  results set.
+  ###
   render: ->
     if @model.getResults()
       @$el.html panelTpl 
