@@ -68,7 +68,7 @@ define [
 
       @results = new SearchPage    
       do @proxyResultsEvents
-      @results.fetch cache: false, data: @getState()
+      @results.fetch cache: false, traditional:true, data: @getState()
 
   ###
   Returns the current search state of this model. This method will generate
