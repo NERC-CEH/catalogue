@@ -17,9 +17,12 @@ define [
     @listenTo @model, 'change:drawing', @updateDrawingToggle
 
   ###
-  Toggle the drawing mode of the model
+  Toggle the drawing mode of the model and ensure app is in map search mode
   ###
-  toggleDrawing: -> @model.set 'drawing', not @model.get 'drawing'
+  toggleDrawing: -> 
+    @model.set
+      drawing:   not @model.get 'drawing'
+      mapsearch: true
 
   ###
   Remove the bounding box filter which has been applied to the model
