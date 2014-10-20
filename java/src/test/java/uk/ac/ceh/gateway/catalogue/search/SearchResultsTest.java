@@ -6,6 +6,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.util.NamedList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import static org.mockito.BDDMockito.given;
@@ -136,5 +137,48 @@ public class SearchResultsTest {
         //Then
         assertNotNull("Expected to not get a page url", pageUrl);
         assertThat("Expected page=3 in url", pageUrl, containsString("page=3"));
+    }
+    
+    @Test
+    public void checkThatNoWithoutBoundingBoxUrlIsGeneratedIfNotFilteringWithBoundingBox() {
+        //Given
+        SearchQuery query = new SearchQuery(
+            SearchQueryTest.ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            SearchQueryTest.DEFAULT_BBOX,
+            2,
+            20,
+            SearchQueryTest.DEFAULT_FILTERS);
+        
+        //When
+        QueryResponse response = mock(QueryResponse.class);
+        SearchResults results = new SearchResults(response, query);
+        String url = results.getWithoutBBox();
+        
+        //Then
+        assertNull("Expected to not get a url for without bbox", url);
+    }
+    
+    @Test
+    public void checkThatWithoutBBoxUrlIsGeneratedWhenBBoxIsApplied() {
+        //Given
+        SearchQuery query = new SearchQuery(
+            SearchQueryTest.ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            "10,23,23,40",
+            2,
+            20,
+            SearchQueryTest.DEFAULT_FILTERS);
+        
+        //When
+        QueryResponse response = mock(QueryResponse.class);
+        SearchResults results = new SearchResults(response, query);
+        String url = results.getWithoutBBox();
+        
+        //Then
+        assertNotNull("Expected to not get a page url", url);
+        assertThat("Didn't expect bbox to be applied", url, not(containsString("bbox")));
     }
 }

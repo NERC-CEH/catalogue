@@ -66,6 +66,21 @@ public class SearchResults {
             return null;
         }
     }
+    
+    /**
+     * Return a link to a search which is not applying the applied bounding box
+     * filter
+     * @return url to a search without the bbox component
+     */
+    public String getWithoutBBox() {
+        if(query.getBbox() != null) {
+            return query.withBbox(null).toUrl();
+        }
+        else {
+            return null;   
+        }
+    }
+    
     public List<DocumentSolrIndex> getResults() {
         return response.getBeans(DocumentSolrIndex.class);
     }

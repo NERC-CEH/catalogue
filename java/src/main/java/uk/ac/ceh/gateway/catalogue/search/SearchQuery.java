@@ -62,6 +62,21 @@ public class SearchQuery {
     }
     
     /**
+     * Generate a search query with a new bbox value. This will fundamentally
+     * change the search query so we will jump back to page one.
+     * @param newBbox the new bbox value or null to remove bbox filtering
+     * @return A new search query if the new bbox value would result in a search change
+     */
+    public SearchQuery withBbox(String newBbox) {
+        if ( (bbox == null && newBbox != null) || (bbox !=null && !bbox.equals(newBbox)) ) {
+            return new SearchQuery(endpoint, user, term, newBbox, PAGE_DEFAULT, rows, facetFilters);
+        }
+        else {
+            return this;
+        }
+    }
+    
+    /**
      * Create a clone of this search query but apply the additional facet filter
      * 
      * The logic of this method has been designed to match that of lomboks 

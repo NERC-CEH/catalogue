@@ -316,4 +316,44 @@ public class SearchQueryTest {
         //Then
         assertThat("Excepted url to be just endpoint", url, equalTo(ENDPOINT));
     }
+    
+    @Test
+    public void changeInBBoxFilterReturnsANewSearchQuery() {
+        //Given 
+        String newBbox = "10,20,30,40";
+        
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS);
+        
+        //When
+        SearchQuery newQuery = query.withBbox(newBbox);
+        
+        //Then
+        assertNotSame("Expected the new query to differ from the last", newQuery, query);
+    }
+    
+    @Test
+    public void sameBBoxReturnsSameSearchQuery() {
+        //Given        
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS);
+        
+        //When
+        SearchQuery newQuery = query.withBbox(DEFAULT_BBOX);
+        
+        //Then
+        assertSame("Expected the new query to be exactly the same", newQuery, query);
+    }
 }
