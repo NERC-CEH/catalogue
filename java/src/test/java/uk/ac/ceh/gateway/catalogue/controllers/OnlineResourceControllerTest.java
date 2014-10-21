@@ -35,8 +35,7 @@ import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
-import uk.ac.ceh.gateway.catalogue.services.MapProxyService;
-import uk.ac.ceh.gateway.catalogue.services.MapProxyServiceException;
+import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -48,7 +47,7 @@ public class OnlineResourceControllerTest {
     @Mock CloseableHttpClient httpClient;
     @Mock BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock GetCapabilitiesObtainerService getCapabilitiesObtainerService;
-    @Mock MapProxyService mapProxyFactoryService;
+    @Mock TMSToWMSGetMapService tmsToWMSGetMapService;
     
     private OnlineResourceController controller;
     
@@ -56,7 +55,7 @@ public class OnlineResourceControllerTest {
     public void createOnlineController() {
         MockitoAnnotations.initMocks(this);
         
-        controller = spy(new OnlineResourceController(repo, httpClient, documentBundleReader, getCapabilitiesObtainerService, mapProxyFactoryService));
+        controller = spy(new OnlineResourceController(repo, httpClient, documentBundleReader, getCapabilitiesObtainerService, tmsToWMSGetMapService));
     }
     
     @Test
@@ -191,7 +190,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test
-    public void checkProxyingOfLatestRevisionDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException, MapProxyServiceException {
+    public void checkProxyingOfLatestRevisionDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException {
         //Given
         String file = "my filename", layer="wms layer";
         int index = 1, z = 1, x=3, y =2;

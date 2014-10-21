@@ -25,8 +25,7 @@ import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
-import uk.ac.ceh.gateway.catalogue.services.MapProxyService;
-import uk.ac.ceh.gateway.catalogue.services.MapProxyServiceException;
+import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -40,19 +39,19 @@ public class OnlineResourceController {
     private final CloseableHttpClient httpClient;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final GetCapabilitiesObtainerService getCapabilitiesObtainerService;
-    private final MapProxyService mapProxyFactoryService;
+    private final TMSToWMSGetMapService tmsToWmsGetMapService;
     
     @Autowired
     public OnlineResourceController(DataRepository<CatalogueUser> repo,
                                     CloseableHttpClient httpClient,
                                     BundledReaderService<MetadataDocument> documentBundleReader,
                                     GetCapabilitiesObtainerService getCapabilitiesObtainerService,
-                                    MapProxyService mapProxyFactoryService) {
+                                    TMSToWMSGetMapService tmsToWmsGetMapService) {
         this.repo = repo;
         this.httpClient = httpClient;
         this.documentBundleReader = documentBundleReader;
         this.getCapabilitiesObtainerService = getCapabilitiesObtainerService;
-        this.mapProxyFactoryService = mapProxyFactoryService;
+        this.tmsToWmsGetMapService = tmsToWmsGetMapService;
     }
     
     @RequestMapping (value = "documents/{file}/onlineResources/{index}",
@@ -90,7 +89,7 @@ public class OnlineResourceController {
             @PathVariable("layer") String layer,
             @PathVariable("z") int z,
             @PathVariable("x") int x,
-            @PathVariable("y") int y) throws IOException, UnknownContentTypeException, MapProxyServiceException {
+            @PathVariable("y") int y) throws IOException, UnknownContentTypeException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
         return proxyMapProxyTileRequest(latestRev.getRevisionID(), file, index, layer, z, x, y);
     }
@@ -104,11 +103,12 @@ public class OnlineResourceController {
             @PathVariable("layer") String layer,
             @PathVariable("z") int z,
             @PathVariable("x") int x,
-            @PathVariable("y") int y) throws IOException, UnknownContentTypeException, MapProxyServiceException {
-        OnlineResource resource = getOnlineResource(file, revision, index);
-        String mapService = mapProxyFactoryService.getTiledMapService(resource);
-        String tmsUrl = "http://localhost:8080/" + mapService + "/tiles/1.0.0/" + layer + "/" + z + "/" + x + "/" + y + ".png";
-        return new TransparentProxyView(httpClient, tmsUrl);
+            @PathVariable("y") int y) throws IOException, UnknownContentTypeException {
+        OnlineResource resource = getOnlineResource(file, revision, index); 
+        WmsCapabilities wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(resource);
+        String url = tmsToWmsGetMapService.getWMSMapRequest(wmsCapabilities.getDirectMap(), layer, z, x, y);
+        
+        return new TransparentProxyView(httpClient, url);
     }
     
     @RequestMapping (value = "documents/{file}/onlineResources/{index}/{layer}/legend",
@@ -161,5 +161,5 @@ public class OnlineResourceController {
         else {
             throw new NoSuchOnlineResourceException("This document is not a gemini document, so does not have online resources");
         }
-    }    
+    }
 }
