@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.GET_CAPABILITIES;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
 /**
  *
@@ -80,7 +80,7 @@ public class GeminiDocument implements MetadataDocument {
     public boolean isMapViewable() {
         return onlineResources
                 .stream()
-                .anyMatch((o)-> GET_CAPABILITIES == o.getType());
+                .anyMatch((o)-> WMS_GET_CAPABILITIES == o.getType());
     }
 
     @Override

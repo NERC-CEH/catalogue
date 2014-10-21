@@ -17,7 +17,7 @@ public class GetCapabilitiesObtainerService {
     }
     
     public WmsCapabilities getWmsCapabilities(OnlineResource resource) {
-        if(resource.getType().equals(OnlineResource.Type.GET_CAPABILITIES)) {
+        if(resource.getType().equals(OnlineResource.Type.WMS_GET_CAPABILITIES)) {
             return rest.getForObject(resource.getUrl(), WmsCapabilities.class);
         }
         else {

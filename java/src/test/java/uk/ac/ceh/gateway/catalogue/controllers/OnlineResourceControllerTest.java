@@ -156,7 +156,7 @@ public class OnlineResourceControllerTest {
         GeminiDocument geminiDocument = mock(GeminiDocument.class);
         when(documentBundleReader.readBundle(file, revision)).thenReturn(geminiDocument);
         
-        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
+        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities&SERVICE=WMS").build();
         doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
         
         WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);

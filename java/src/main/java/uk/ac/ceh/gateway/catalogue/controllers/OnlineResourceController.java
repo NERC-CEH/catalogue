@@ -74,7 +74,7 @@ public class OnlineResourceController {
         
         OnlineResource onlineResource = getOnlineResource(documentBundleReader.readBundle(file, revision), index);
         switch(onlineResource.getType()) {
-            case GET_CAPABILITIES : 
+            case WMS_GET_CAPABILITIES : 
                 return getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
             default: 
                 return new RedirectView(onlineResource.getUrl());

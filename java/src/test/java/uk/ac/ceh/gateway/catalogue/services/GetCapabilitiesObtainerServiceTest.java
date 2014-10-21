@@ -47,11 +47,11 @@ public class GetCapabilitiesObtainerServiceTest {
     @Test
     public void checkThatRestTemplateIsCalledWithValidWMSCapabilitesType() {
         //Given
-        OnlineResource resource = OnlineResource.builder().url("https://www.google.com/wms?REQUEST=GetCapabilities").build();
+        OnlineResource resource = OnlineResource.builder().url("https://www.google.com/wms?REQUEST=GetCapabilities&SERVICE=WMS").build();
         
         WmsCapabilities wmsCaps = mock(WmsCapabilities.class);
         
-        when(rest.getForObject(eq("https://www.google.com/wms?REQUEST=GetCapabilities"), eq(WmsCapabilities.class))).thenReturn(wmsCaps);
+        when(rest.getForObject(eq("https://www.google.com/wms?REQUEST=GetCapabilities&SERVICE=WMS"), eq(WmsCapabilities.class))).thenReturn(wmsCaps);
         
         //When
         WmsCapabilities result = service.getWmsCapabilities(resource);
