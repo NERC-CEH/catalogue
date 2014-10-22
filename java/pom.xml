@@ -146,6 +146,13 @@
             <version>${spring-security.version}</version>
         </dependency>
         
+        <!-- EH Caching -->
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        
         <!-- Database Connection Pooling -->
         <dependency>
             <groupId>org.apache.tomcat</groupId>

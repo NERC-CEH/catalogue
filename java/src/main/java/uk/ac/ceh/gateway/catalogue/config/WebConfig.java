@@ -8,6 +8,7 @@ import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -29,6 +30,7 @@ import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 @Configuration
 @EnableWebMvc
 @EnableScheduling
+@EnableCaching
 @ComponentScan(basePackages = "uk.ac.ceh.gateway.catalogue")
 public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${template.location}") File templates;

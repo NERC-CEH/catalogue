@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
@@ -18,6 +19,7 @@ public class GetCapabilitiesObtainerService {
         this.rest = rest;
     }
     
+    @Cacheable("capabilities")
     public WmsCapabilities getWmsCapabilities(OnlineResource resource) {
         if(resource.getType().equals(OnlineResource.Type.WMS_GET_CAPABILITIES)) {
             try {
