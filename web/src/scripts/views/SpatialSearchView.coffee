@@ -2,8 +2,9 @@ define [
   'jquery'
   'underscore'
   'backbone'
+  'cs!views/OpenLayersView'
   'openlayers'
-], ($, _, Backbone, OpenLayers) -> Backbone.View.extend
+], ($, _, Backbone, OpenLayersView, OpenLayers) -> OpenLayersView.extend
   highlighted:
     strokeColor: '#8fca89' 
     fillColor:   '#8fca89'
@@ -21,17 +22,7 @@ define [
   epsg4326:   new OpenLayers.Projection "EPSG:4326"
 
   initialize: ->
-    @map = new OpenLayers.Map
-      div: @el
-      maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34)
-      displayProjection: new OpenLayers.Projection("EPSG:3857")
-      theme: null
-
-    backdrop = new OpenLayers.Layer.OSM "OSM", [
-      "//a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-      "//b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-      "//c.tile.openstreetmap.org/${z}/${x}/${y}.png"
-    ]
+    OpenLayersView.prototype.initialize.call this, arguments #Initialize super
 
     # Create the layers to draw the search results on
     @highlightedLayer = new OpenLayers.Layer.Vector "Selected Layer"
@@ -49,23 +40,13 @@ define [
     _.bindAll this, 'handleDrawnFeature'
     @drawingLayer.events.register "featureadded", @drawingLayer, @handleDrawnFeature
 
-    @map.addLayers [backdrop, @highlightedLayer, @markerLayer, @drawingLayer]
+    @map.addLayers [@highlightedLayer, @markerLayer, @drawingLayer]
     @map.addControl @drawingControl
-
-    do @refresh
 
     do @updateHighlightedRecord
     @listenTo @model, 'cleared:results results-change:selected', @updateHighlightedRecord
     @listenTo @model, 'change:drawing', @updateDrawingMode
     @listenTo @model, 'change:bbox', @updateDrawingLayer
-
-  ###
-  Reset the position and size of the map. Parent views should call this method 
-  when the map reappears onscreen
-  ###
-  refresh:->
-    do @map.updateSize
-    @map.zoomToExtent new OpenLayers.Bounds -1885854.36, 6623727.12, 1245006.31, 7966572.83
 
   ###
   Update the drawing layer with the restricted bounding box used for searching.

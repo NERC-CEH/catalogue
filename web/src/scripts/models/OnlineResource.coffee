@@ -14,7 +14,7 @@ define [
   Determing if this online resource represents an WMS online resource.
   Do this by checking if the type is Get Capabilities
   ###
-  isWms:-> @get('type') is 'GET_CAPABILITIES'
+  isWms:-> @get('type') is 'WMS_GET_CAPABILITIES'
 
   ###
   Generate a Layers collection for each of the layers which this OnlineResource
