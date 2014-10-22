@@ -29,7 +29,9 @@ public class TMSToWMSGetMapService {
                 .append("&TRANSPARENT=TRUE")
                 .append("&FORMAT=image%2Fpng")
                 .append("&SRS=EPSG%3A3857")
-                .append("&SERVICE=WMS&REQUEST=GetMap&")
+                .append("&VERSION=1.1.1")
+                .append("&SERVICE=WMS")
+                .append("&REQUEST=GetMap&")
                 .toString();
     }
     
