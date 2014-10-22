@@ -10,6 +10,17 @@ define [
     @onlineResources = new OnlineResources [], metadataDocument: this
     @on 'change:onlineResources', @_populateOnlineResources
 
+    do @proxyResultsEvents
+
+  ###
+  Proxy the events of the only resources through this metadata document.
+  This means that when a onlineResource is fetched. The events of the 
+  collection will bubble out of this metadata document
+  ###
+  proxyResultsEvents:-> 
+    @onlineResources.on 'all', (evt, args...) =>
+      @trigger "resources-#{evt}", args...
+
   ###
   Return the Backbone collection of online resources
   ###
@@ -21,4 +32,9 @@ define [
   ###
   _populateOnlineResources:->
     onlineResources = _.map @get('onlineResources'), (e,id) -> _.extend(e, id:id)
-    @getOnlineResources().reset onlineResources
+    @onlineResources.reset onlineResources
+
+    # Fetch those online resources which have more information (wms)
+    @onlineResources.chain()
+                    .filter  (e) -> e.isWms()
+                    .forEach (e) -> do e.fetch
