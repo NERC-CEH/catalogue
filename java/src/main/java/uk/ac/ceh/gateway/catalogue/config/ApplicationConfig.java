@@ -41,17 +41,6 @@ public class ApplicationConfig {
     }
     
     @Bean
-    public CloseableHttpClient httpClient() {
-        PoolingHttpClientConnectionManager connPool = new PoolingHttpClientConnectionManager();
-        connPool.setMaxTotal(100);
-        connPool.setDefaultMaxPerRoute(20);
-        
-        return HttpClients.custom()
-                          .setConnectionManager(connPool)
-                          .build();
-    }
-    
-    @Bean
     public DataRepository<CatalogueUser> catalogDataRepository() throws IOException, UsernameAlreadyTakenException {
         return new GitDataRepository<>(new File(dataRespository), 
                                         new InMemoryUserStore(), 

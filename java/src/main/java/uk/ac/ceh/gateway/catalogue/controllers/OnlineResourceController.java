@@ -1,10 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,8 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
-import uk.ac.ceh.gateway.catalogue.mvc.TransparentProxyView;
+import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
+import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -36,19 +38,16 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 @Slf4j
 public class OnlineResourceController {
     private final DataRepository<CatalogueUser> repo;
-    private final CloseableHttpClient httpClient;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final GetCapabilitiesObtainerService getCapabilitiesObtainerService;
     private final TMSToWMSGetMapService tmsToWmsGetMapService;
     
     @Autowired
     public OnlineResourceController(DataRepository<CatalogueUser> repo,
-                                    CloseableHttpClient httpClient,
                                     BundledReaderService<MetadataDocument> documentBundleReader,
                                     GetCapabilitiesObtainerService getCapabilitiesObtainerService,
                                     TMSToWMSGetMapService tmsToWmsGetMapService) {
         this.repo = repo;
-        this.httpClient = httpClient;
         this.documentBundleReader = documentBundleReader;
         this.getCapabilitiesObtainerService = getCapabilitiesObtainerService;
         this.tmsToWmsGetMapService = tmsToWmsGetMapService;
@@ -81,59 +80,67 @@ public class OnlineResourceController {
         }
     }
     
-    @RequestMapping (value = "documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
-                     method = RequestMethod.GET)
-    public TransparentProxyView proxyMapProxyTileRequest(
+    @RequestMapping (value    = "documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
+                     method   = RequestMethod.GET,
+                     produces = "image/png")
+    @ResponseBody
+    public TransparentProxy proxyMapProxyTileRequest(
             @PathVariable("file") String file,
             @PathVariable("index") int index,
             @PathVariable("layer") String layer,
             @PathVariable("z") int z,
             @PathVariable("x") int x,
-            @PathVariable("y") int y) throws IOException, UnknownContentTypeException {
+            @PathVariable("y") int y) throws IOException, UnknownContentTypeException, TransparentProxyException, URISyntaxException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
         return proxyMapProxyTileRequest(latestRev.getRevisionID(), file, index, layer, z, x, y);
     }
     
-    @RequestMapping (value = "history/{revision}/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
-                     method = RequestMethod.GET)
-    public TransparentProxyView proxyMapProxyTileRequest(
+    @RequestMapping (value    = "history/{revision}/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
+                     method   = RequestMethod.GET,
+                     produces = "image/png")
+    @ResponseBody
+    public TransparentProxy proxyMapProxyTileRequest(
             @PathVariable("revision") String revision,
             @PathVariable("file") String file,
             @PathVariable("index") int index,
             @PathVariable("layer") String layer,
             @PathVariable("z") int z,
             @PathVariable("x") int x,
-            @PathVariable("y") int y) throws IOException, UnknownContentTypeException {
+            @PathVariable("y") int y) throws IOException, UnknownContentTypeException, URISyntaxException {
         OnlineResource resource = getOnlineResource(file, revision, index); 
         WmsCapabilities wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(resource);
         String url = tmsToWmsGetMapService.getWMSMapRequest(wmsCapabilities.getDirectMap(), layer, z, x, y);
         
-        return new TransparentProxyView(httpClient, url);
+        return new TransparentProxy(url, MediaType.IMAGE_PNG);
     }
     
-    @RequestMapping (value = "documents/{file}/onlineResources/{index}/{layer}/legend",
-                     method = RequestMethod.GET)
-    public TransparentProxyView getMapLayerLegend(
+    @RequestMapping (value    = "documents/{file}/onlineResources/{index}/{layer}/legend",
+                     method   = RequestMethod.GET,
+                     produces = "image/*")
+    @ResponseBody
+    public TransparentProxy getMapLayerLegend(
             @PathVariable("file") String file,
             @PathVariable("index") int index,
-            @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException {
+            @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException, URISyntaxException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
         return getMapLayerLegend(latestRev.getRevisionID(), file, index, layer);
     }
     
-    @RequestMapping (value = "history/{revision}/{file}/onlineResources/{index}/{layer}/legend",
-                     method = RequestMethod.GET)
-    public TransparentProxyView getMapLayerLegend(
+    @RequestMapping (value    = "history/{revision}/{file}/onlineResources/{index}/{layer}/legend",
+                     method   = RequestMethod.GET,
+                     produces = "image/*")
+    @ResponseBody
+    public TransparentProxy getMapLayerLegend(
             @PathVariable("revision") String revision,
             @PathVariable("file") String file,
             @PathVariable("index") int index,
-            @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException {
+            @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException, URISyntaxException {
         OnlineResource onlineResource = getOnlineResource(documentBundleReader.readBundle(file, revision), index);
         WmsCapabilities wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
         for(Layer wmsLayer : wmsCapabilities.getLayers()) {
             if(wmsLayer.getName().equals(layer)) {
                 if(wmsLayer.getLegendUrl() != null) {
-                    return new TransparentProxyView(httpClient, wmsLayer.getLegendUrl());
+                    return new TransparentProxy(wmsLayer.getLegendUrl(), MediaType.parseMediaType("image/*"));
                 }
                 else {
                     throw new LegendGraphicMissingException("No legend graphic is present for this layer");

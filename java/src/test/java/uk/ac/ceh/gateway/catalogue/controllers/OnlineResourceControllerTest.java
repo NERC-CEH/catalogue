@@ -1,12 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.http.impl.client.CloseableHttpClient;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Before;
@@ -30,7 +32,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
-import uk.ac.ceh.gateway.catalogue.mvc.TransparentProxyView;
+import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -44,7 +46,6 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  */
 public class OnlineResourceControllerTest {
     @Mock DataRepository<CatalogueUser> repo;
-    @Mock CloseableHttpClient httpClient;
     @Mock BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock GetCapabilitiesObtainerService getCapabilitiesObtainerService;
     @Mock TMSToWMSGetMapService tmsToWMSGetMapService;
@@ -55,7 +56,7 @@ public class OnlineResourceControllerTest {
     public void createOnlineController() {
         MockitoAnnotations.initMocks(this);
         
-        controller = spy(new OnlineResourceController(repo, httpClient, documentBundleReader, getCapabilitiesObtainerService, tmsToWMSGetMapService));
+        controller = spy(new OnlineResourceController(repo, documentBundleReader, getCapabilitiesObtainerService, tmsToWMSGetMapService));
     }
     
     @Test
@@ -190,7 +191,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test
-    public void checkProxyingOfLatestRevisionDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException {
+    public void checkProxyingOfLatestRevisionDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String file = "my filename", layer="wms layer";
         int index = 1, z = 1, x=3, y =2;
@@ -199,11 +200,11 @@ public class OnlineResourceControllerTest {
         when(revision.getRevisionID()).thenReturn("12");
         when(repo.getLatestRevision()).thenReturn(revision);
         
-        TransparentProxyView proxy = mock(TransparentProxyView.class);
+        TransparentProxy proxy = mock(TransparentProxy.class);
         doReturn(proxy).when(controller).proxyMapProxyTileRequest("12", file, index, layer, z, x, y);
         
         //When
-        TransparentProxyView proxyView = controller.proxyMapProxyTileRequest(file, index, layer, z, x, y);
+        TransparentProxy proxyView = controller.proxyMapProxyTileRequest(file, index, layer, z, x, y);
         
         //Then
         verify(controller).proxyMapProxyTileRequest("12", file, index, layer, z, x, y);
@@ -211,7 +212,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test
-    public void checkThatTMSProxies() throws IOException, UnknownContentTypeException {
+    public void checkThatTMSProxies() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given        
         String file = "file";
         int index = 2;
@@ -230,14 +231,14 @@ public class OnlineResourceControllerTest {
         doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
         
         //When
-        TransparentProxyView proxy = controller.getMapLayerLegend("12", file, index, layerName);
+        TransparentProxy proxy = controller.getMapLayerLegend("12", file, index, layerName);
         
         //Then
-        assertThat("Expected url to proxy mapProxy", "http://wwww.whereever.com/legend.png", equalTo(proxy.getUrl()));
+        assertThat("Expected url to proxy mapProxy", "http://wwww.whereever.com/legend.png", equalTo(proxy.getUri().toString()));
     }
     
     @Test
-    public void checkThatLatestLegendUrlDelegatesToRevision() throws IOException, UnknownContentTypeException {
+    public void checkThatLatestLegendUrlDelegatesToRevision() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String file = "file";
         int index = 2;
@@ -247,18 +248,18 @@ public class OnlineResourceControllerTest {
         when(dataRevision.getRevisionID()).thenReturn("12");
         when(repo.getLatestRevision()).thenReturn(dataRevision);
         
-        TransparentProxyView proxy = mock(TransparentProxyView.class);
+        TransparentProxy proxy = mock(TransparentProxy.class);
         doReturn(proxy).when(controller).getMapLayerLegend("12", file, index, layer);
         
         //When
-        TransparentProxyView mapLayerLegendView = controller.getMapLayerLegend(file, index, layer);
+        TransparentProxy mapLayerLegendView = controller.getMapLayerLegend(file, index, layer);
         
         //Then
         assertThat("Expected the call to the map legend to be delegated", proxy, equalTo(mapLayerLegendView));
     }
     
     @Test
-    public void checkThatGetLegendUrlIsProxied() throws IOException, UnknownContentTypeException {
+    public void checkThatGetLegendUrlIsProxied() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String revision = "revision";
         String file = "file";
@@ -278,14 +279,14 @@ public class OnlineResourceControllerTest {
         doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
         
         //When
-        TransparentProxyView proxy = controller.getMapLayerLegend(revision, file, index, layerName);
+        TransparentProxy proxy = controller.getMapLayerLegend(revision, file, index, layerName);
         
         //Then
-        assertThat("Expected to proxy the legend url", proxy.getUrl(), equalTo("http://wwww.whereever.com/legend.png") );
+        assertThat("Expected to proxy the legend url", proxy.getUri().toString(), equalTo("http://wwww.whereever.com/legend.png") );
     }
     
     @Test(expected=LegendGraphicMissingException.class)
-    public void checkThatExceptionIsThrownWhenNoLegendGraphicIsPresentForGivenLayer() throws IOException, UnknownContentTypeException {
+    public void checkThatExceptionIsThrownWhenNoLegendGraphicIsPresentForGivenLayer() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String revision = "revision";
         String file = "file";
@@ -312,7 +313,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test(expected=IllegalArgumentException.class)
-    public void checkThatIllegalArgumentExceptionIsThrownIfLayerDoesNotExistWhenGettingLegend() throws IOException, UnknownContentTypeException {
+    public void checkThatIllegalArgumentExceptionIsThrownIfLayerDoesNotExistWhenGettingLegend() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String revision = "revision";
         String file = "file";
