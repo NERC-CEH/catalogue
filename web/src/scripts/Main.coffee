@@ -24,8 +24,8 @@ define [
   Initialize the map viewer app, view and router
   ###
   initMapviewer: ->
-    app = new MapViewerApp();
-    view = new MapViewerAppView model: app
+    app    = new MapViewerApp()
+    view   = new MapViewerAppView model: app
     router = new LayersRouter model: app
 
     @createErrorMessageViewFor app
@@ -35,8 +35,8 @@ define [
   Initialize the search application
   ###
   initSearch: ->
-    app = new SearchApp();
-    view = new SearchAppView model: window.app
+    app    = new SearchApp()
+    view   = new SearchAppView model: app
     router = new SearchRouter model: app, location: window.location
     
     @createErrorMessageViewFor app
