@@ -11,7 +11,7 @@
       <li>
         <a href="${facet.url}">${facet.name}</a> <small class="text-muted">(${facet.count})</small></span>
         <#if facet.active >
-          <a href="<%=facet.url%>">
+          <a href="${facet.url}">
             <span class="glyphicon glyphicon-remove"></span>
           </a>
         </#if>

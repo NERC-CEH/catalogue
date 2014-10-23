@@ -62,7 +62,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
     @Data
     @Accessors(chain=true)
     public static class DocumentSolrIndex {
-        protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 530;
+        protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 265;
         private @Field String identifier;
         private @Field String title;
         private @Field String description;
