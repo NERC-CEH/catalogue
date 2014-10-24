@@ -10,7 +10,6 @@ define [
 
       expect(documents.length).toBe 3
     
-
     it "delegates setById to the set method", ->
       documents = new MetadataDocuments
       options   = {}
