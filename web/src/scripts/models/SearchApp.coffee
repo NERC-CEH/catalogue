@@ -56,7 +56,7 @@ define [
 
   ###
   proxyResultsEvents:-> 
-    @results?.on 'all', (evt) => @trigger "results-#{evt}"
+    @results.on 'all', (evt) => @trigger "results-#{evt}"
 
   ###
   Perform a search based upon the currently set properties of this model. Only
