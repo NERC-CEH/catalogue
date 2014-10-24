@@ -29,5 +29,5 @@ define [
   Updates the model given the specified state object. Options can be passed to 
   avoid unnessersary triggering of events
   ###
-  updateModel: (state, options = {}) -> 
-    @model.setState(deparam(state, true), options: options) if state
+  updateModel: (state, options) -> 
+    @model.setState(deparam(state, true), options) if state
