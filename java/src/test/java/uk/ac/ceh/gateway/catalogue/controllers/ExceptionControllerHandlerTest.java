@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import java.net.URISyntaxException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +42,19 @@ public class ExceptionControllerHandlerTest {
         
         //Then
         assertThat("Expected message to be pulled of exception", res.getMessage(), equalTo(mess));
+    }
+    
+    
+    @Test
+    public void checkThatURISyntaxExceptionReturnsImage() {
+        //Given
+        URISyntaxException ex = mock(URISyntaxException.class);
+        
+        //When
+        ResponseEntity response = controller.handleURISyntaxException(ex);
+        
+        //Then
+        assertResponseImageExists(response);
     }
     
     @Test

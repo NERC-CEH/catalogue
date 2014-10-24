@@ -23,3 +23,5 @@ Below are the images which are displayed and there meaning:
 ![Upstream Failure](java/src/main/resources/proxy-failure.png) The call to the server failed for some unspecified reason, this may be because the connection failed.
 
 ![Invalid response](java/src/main/resources/proxy-invalid-response.png) The upstream service returned some content, but it was not in the format which was expected. It maybe that the upstream service replied with an error message rather than an image.
+
+|[Invalid Resource](java/src/main/resources/proxy-invalid-resource.png) The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or an corrupt external get capabilities.
