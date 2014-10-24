@@ -31,7 +31,7 @@ define [
   models state
   ###
   handleUrl: (e) ->
-    query = $(e.target).attr('href').split('?')[1]
+    query = $(e.currentTarget).attr('href').split('?')[1]
     @model.setState deparam(query, true)
     do e.preventDefault
 
