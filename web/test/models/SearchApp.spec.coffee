@@ -91,3 +91,15 @@ define [
       app.set 'term', 'start searching please'
 
       expect(searching).toHaveBeenCalled()
+
+    it "does not listen to the events of old searches", ->
+      app = new SearchApp
+      events = jasmine.createSpy 'events'
+      oldresults = app.results
+      app.on 'results-dummy', events
+      do app.clearResults
+
+      oldresults.trigger 'dummy'
+
+      expect(events).not.toHaveBeenCalled()
+      
