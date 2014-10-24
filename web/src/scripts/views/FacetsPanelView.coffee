@@ -6,7 +6,7 @@ define [
 ], ($, Backbone, panelTpl, resultsTpl) -> Backbone.View.extend
 
   initialize: ->
-    @listenTo @model, 'results-change', @render
+    @listenTo @model, 'results-change:facets', @render
 
   ###
   Render the facet results panel as long as we have some results currently set.

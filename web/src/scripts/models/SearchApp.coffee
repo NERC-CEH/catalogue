@@ -18,15 +18,26 @@ define [
   searchFields: ['term', 'page', 'facet', 'bbox']
 
   initialize:->
-    # Create a empty search page, 
-    @results = new SearchPage [], {}
-
-    # Listen to all the events which mean that a search should be performed
-    do @proxyResultsEvents
+    do @createSearchPage          #Create initial search page
     @on 'change', @jumpToPageOne
     @on 'change', @disableDrawing
     @on 'change', @performSearch
 
+  ###
+  Define a new search page which proxies its events through the this model.
+  This means that views (and other models) can listen to the events of this 
+  model rather than having to manually keep track of the current search page.
+  Events from old search pages will be suppressed, only the current events will
+  propergate out.
+
+  To bind to a search prefix the event listener with 'results-'. E.g. 
+      results-change:selected
+
+  ###
+  createSearchPage: ->
+    @_proxyResultsEvents = (evt) => @trigger "results-#{evt}"
+    @results = new SearchPage [], {}
+    @results.on 'all', @_proxyResultsEvents
 
   ###
   On certain changes we want to switch to the first page. For example, if the
@@ -45,29 +56,13 @@ define [
   disableDrawing:(evt) -> @set('drawing', false) unless evt.changed.drawing
 
   ###
-  Proxy the current results objects events through the search application model
-  This means that views (and other models) can listen to the events of this 
-  model rather than having to manually keep track of the current search page.
-  Events from old search pages will be suppressed, only the current events will
-  propergate out.
-
-  To bind to a search prefix the event listener with 'results-'. E.g. 
-      results-change:selected
-
-  ###
-  proxyResultsEvents:-> 
-    @results?.on 'all', (evt) => @trigger "results-#{evt}"
-
-  ###
   Perform a search based upon the currently set properties of this model. Only
   fetch the results if the change event contains search related fields
   ###
   performSearch:(evt) ->
     if not _.chain(evt.changed).pick(@searchFields...).isEmpty().value()
-      do @clearResults # Make sure that the results have been cleared 
-
-      @results = new SearchPage    
-      do @proxyResultsEvents
+      do @clearResults     # Make sure that the results have been cleared    
+      do @createSearchPage # Redefine a new search page
       @results.fetch cache: false, traditional:true, data: @getState()
 
   ###
@@ -99,6 +94,6 @@ define [
   This method will trigger a 'cleared:results' event
   ###
   clearResults:-> 
-    @results?.off null, @proxyResultsEvents
+    @results?.off null, @_proxyResultsEvents
     @results = null
     @trigger 'cleared:results'

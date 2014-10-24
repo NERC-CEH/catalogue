@@ -43,4 +43,4 @@ define [
   Handle any sync errors from either a resource or metadata document. Flag an
   error event so that we can display this in the message panel.
   ###
-  handleError: (model, xhr) -> @trigger 'error', this, xhr
+  handleError: (args...) -> @trigger 'error', args...

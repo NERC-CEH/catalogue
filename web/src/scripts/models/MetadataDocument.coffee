@@ -8,16 +8,11 @@ define [
 
   initialize:->
     @onlineResources = new OnlineResources [], metadataDocument: this
-    @on 'change:onlineResources', @_populateOnlineResources
+    @on 'change:onlineResources', @populateOnlineResources
 
-    do @proxyResultsEvents
-
-  ###
-  Proxy the events of the only resources through this metadata document.
-  This means that when a onlineResource is fetched. The events of the 
-  collection will bubble out of this metadata document
-  ###
-  proxyResultsEvents:-> 
+    # Proxy the events of the only resources through this metadata document.
+    # This means that when a onlineResource is fetched. The events of the 
+    # collection will bubble out of this metadata document
     @onlineResources.on 'all', (evt, args...) =>
       @trigger "resources-#{evt}", args...
 
@@ -30,7 +25,7 @@ define [
   When the online resources attribute of this metadata document change,
   populate the OnlineResources collection
   ###
-  _populateOnlineResources:->
+  populateOnlineResources:->
     onlineResources = _.map @get('onlineResources'), (e,id) -> _.extend(e, id:id)
     @onlineResources.reset onlineResources
 
