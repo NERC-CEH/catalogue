@@ -3,8 +3,8 @@
 <#if title?has_content>
   <h1 id="document-title" property="dc:title">
   
-  <#if (resourceType.value)?has_content>
-  <small class="resource-type ${resourceType}" property="dc:type">${resourceType.value}</small>
+  <#if (resourceType)?has_content>
+  <small class="resource-type" property="dc:type">${resourceType}</small>
   </#if><br>
   
   ${title}

@@ -22,17 +22,7 @@
 	</div>
 	
 	<div class="panel-body" id="section-licence">
-		<p class="placeholder" name="use constraints">Terms and conditions apply</p>
-		<#if downloadOrder.isOgl()><img src="../../_assets/images/ogl.png" alt="OGL" class="pull-right hidden-xs"></#if>	
-		<#if downloadOrder.licenseUrl?has_content>
-			<a href="${downloadOrder.licenseUrl}" target="_blank" property="dct:rights">${downloadOrder.licenseUrl}</a>
-		<#else>
-			<span class="placeholder">Licence text</span>
-		</#if>
-	</div>
-	
-	<div class="panel-body" id="section-rights">
-		<#include "_rights.html.tpl">
+		<#include "_accessInfo.html.tpl">
 	</div>
 
 </div>

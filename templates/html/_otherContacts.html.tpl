@@ -1,51 +1,51 @@
- <!--
- **metadata and distributor responsibleParties should not show up in this list
- -->
+ <!-- **metadata and distributor responsibleParties should not show up in this list -->
+	
+<#if otherContacts?has_content>
+	<div id="document-otherContacts">
+	
+	<h3><a id="otherContacts"></a>otherContacts</h3>
 
-<div id="document-otherResponsibleParties">
-<h3><a id="authors"></a>Other contacts</h3>
-<#if responsibleParties?has_content>
-	<#list responsibleParties?sort_by("role") as author> <!-- this needs sorting out-->
-		<dl class="dl-horizontal">
-		<#if author.role != "Author">
-
-			<dt>${author.role}</dt>
-			<dd property="">      
-
-				<#if author.email?has_content>
-					<#if author.individualName?has_content>
-						<a href="mailto:${author.email}&subject=RE:${title}">${author.individualName}</a><br>
-						<#if author.organisationName?has_content>
-							<span>${author.organisationName}</span><br>
-						</#if>
-					<#else>
-						<a href="mailto:${author.email}&subject=RE:${title}">${author.organisationName}</a><br>
-					</#if>
-				<#else>
-					<#if author.individualName?has_content>
-					  <span>${author.individualName}</span><br>
-					</#if>
-					<#if author.organisationName?has_content>
-						<span>${author.organisationName}</span><br>
-					</#if>
-				</#if>
-
-				<!--I want to add the address here too-->
-				<!--<address class="hidden-xs">
-				Address line 1<br>
-				Address line 2<br>
-				etc<br>
-				</address>-->
-			</dd>
-		</dl>
-
-		</#if>
-	</#list>
-</#if>
-
+<div class="alert alert-danger alert-dismissible" role="alert">
+<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+This needs some work - metadata point of contact (and possibly distributor) should not be in this list
 </div>
 
-	<div class="alert alert-danger alert-dismissible" role="alert">
-	<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-	This needs some work - metadata point of contact (and possibly distributor) should not be in this list
+	
+		<dl class="dl-horizontal">
+		<#list otherContacts as otherContact>
+		<dt>${otherContact.role}</dt>
+			<dd id="otherContact-detail">      
+
+			<#if otherContact.email?has_content>
+					<#if otherContact.individualName?has_content>
+						<a href="mailto:${otherContact.email}&subject=RE:${title}">${otherContact.individualName}</a><br>
+						<#if otherContact.organisationName?has_content>
+							<span>${otherContact.organisationName}</span><br>
+						</#if>
+					<#else>
+						<a href="mailto:${otherContact.email}&subject=RE:${title}">${otherContact.organisationName}</a><br>
+					</#if>
+				<#else>
+					<#if otherContact.individualName?has_content>
+					  <span>${otherContact.individualName}</span><br>
+					</#if>
+					<#if otherContact.organisationName?has_content>
+						<span>${otherContact.organisationName}</span><br>
+					</#if>
+				</#if>
+								
+				<#if otherContact.address?has_content>
+					<address class="hidden-xs">
+						<#if otherContact.address.deliveryPoint?has_content>${otherContact.address.deliveryPoint}<br></#if>
+						<#if otherContact.address.city?has_content>${otherContact.address.city}<br></#if>
+						<#if otherContact.address.administrativeArea?has_content>${otherContact.address.administrativeArea}<br></#if>
+						<#if otherContact.address.postalCode?has_content>${otherContact.address.postalCode}<br></#if>
+						<#if otherContact.address.country?has_content>${otherContact.address.country}</#if>
+					</address>
+				</#if>
+			</dd>
+		</#list>
+		</dl>
+
 	</div>
+</#if>	

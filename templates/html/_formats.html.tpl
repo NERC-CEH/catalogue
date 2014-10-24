@@ -1,8 +1,10 @@
-<div class="placeholder">
+<#if distributionFormats?has_content>
+<div>
 	<p><b>Data are available in these formats:</b></p>
 	<ul class="">
-	<li>GeoTIFF</li>
-	<li>ASCII grid</li>
-	<li>Esri Raw raster (.hdr)</li>
+		<#list distributionFormats as format>
+		<li>${format.name}</li>
+		</#list>
 	</ul>
 </div>
+</#if>

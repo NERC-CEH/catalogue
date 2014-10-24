@@ -10,11 +10,6 @@ h3 {font-size: 24px;}
 .panel-default > .panel-heading { background-color:#F5F5F5;} //this colour should revert to bootstrap default
 //end testing//
 
-
-//This is a temporary style to highlight placeholder text
-.placeholder { background-color:#fffdd3;}
-
-
 #document-description {
   margin-bottom:1em;
 }
@@ -26,6 +21,7 @@ h3 {
 	padding-bottom:6px;
 }
 
+.placeholderText {color:#F00; background-color:#FF0;}
 
 #section-authorsTop{
 	border:1px solid #DFDFDF;
@@ -34,6 +30,8 @@ h3 {
 	padding-top:0.6em;
 }
 
+.additionalDates::before {content: "(";}
+.additionalDates::after {content: ")";}
 
 #section-licence {
 	border-top:1px solid #DFDFDF;
@@ -46,28 +44,6 @@ h3 {
     .btn-primary;
   }
 }
-
-/*.zero-clipboard {
-  position: relative;
-  .clipboard {
-    position: absolute;
-    top: -12pt;
-    right: -12pt;
-    z-index: 10;
-    display: block;
-    padding: 5px 8px;
-    border: 1px solid @panel-default-border; border-width: 0 0 1px 1px;
-	border-bottom-left-radius: 4px;
-	font-size:8pt;
-  }
-  .zeroclipboard-is-hover {
-    color: @btn-primary-color;
-    background-color: @btn-primary-bg;
-    cursor: pointer;
-  }
-}
-*/
-
 
 #document-authors {
 	 #author-detail {

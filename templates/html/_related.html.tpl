@@ -1,7 +1,7 @@
 <#if documentLinks?size gt 0 && documentLinks??>
-  <#if resourceType.value == 'dataset'>
+  <#if resourceType == 'dataset'>
     <#assign documentLinksTitle="Associated Services">
-  <#elseif resourceType.value == 'service'>
+  <#elseif resourceType == 'service'>
     <#assign documentLinksTitle="Associated Datasets">
   </#if>
   <h3>Related records</h3>

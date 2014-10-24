@@ -1,20 +1,27 @@
-<#if otherCitationDetails?has_content> <!-- this should be if doi exists -->
-	<div id="section-authorsTop">
-	  
+
+<#if authors?has_content>
+<div id="section-authorsTop">
 	<p><small>  
-	<#list responsibleParties as author> 		
-		<#if author.role == "Author">
-			${author.individualName} , <!-- need to sort out trailing comma-->
-		</#if>
+	
+	<#list authors as author>
+		${author.individualName}<#if author_has_next>,</#if>
 	</#list>
+
 	
-		<#if datasetReferenceDate.publicationDate??>
-			<#setting date_format = 'yyyy-MM-dd'>
-			(${datasetReferenceDate.publicationDate?substring(0, 4)})
-		</#if>
-	.<br>doi:10.5285/${id}
-	  
-	</small></p>
-	
-	</div>
+	<#if datasetReferenceDate.publicationDate??>
+		(${datasetReferenceDate.publicationDate.year?c})
+	</#if>
+
+	<#if resourceIdentifiers?has_content>
+			<#list resourceIdentifiers as uri>
+			<#if uri.codeSpace="doi:" >
+			<#if uri.code?length == 44>
+			<br>${uri.coupleResource}, ${uri.code?length}
+			</#if>
+			</#if>
+			</#list>
+	</#if>
+
+	</small></p>	
+</div>
 </#if>

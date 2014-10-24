@@ -1,40 +1,41 @@
-<div id="document-authors">
-<h3><a id="authors"></a>Authors</h3>
-<#if responsibleParties?has_content><!-- this needs sorting out-->
-	<#list responsibleParties as author> 
-		
-		<#if author.role == "Author">
+<#if authors?has_content>
+	<div id="document-authors">
+	
+	<h3><a id="authors"></a>Authors</h3>
+			
+		<#list authors as author>
+			<div property="dct:contributor" id="author-detail">      
 
-		<div property="dct:contributor" id="author-detail">      
-
-				<#if author.email?has_content>
-					<#if author.individualName?has_content>
-						<a href="mailto:${author.email}&subject=RE:${title}">${author.individualName}</a><br>
+					<#if author.email?has_content>
+						<#if author.individualName?has_content>
+							<a href="mailto:${author.email}&subject=RE:${title}">${author.individualName}</a><br>
+							<#if author.organisationName?has_content>
+								<span>${author.organisationName}</span><br>
+							</#if>
+						<#else>
+							<a href="mailto:${author.email}&subject=RE:${title}">${author.organisationName}</a><br>
+						</#if>
+					<#else>
+						<#if author.individualName?has_content>
+						  <span>${author.individualName}</span><br>
+						</#if>
 						<#if author.organisationName?has_content>
 							<span>${author.organisationName}</span><br>
 						</#if>
-					<#else>
-						<a href="mailto:${author.email}&subject=RE:${title}">${author.organisationName}</a><br>
 					</#if>
-				<#else>
-					<#if author.individualName?has_content>
-					  <span>${author.individualName}</span><br>
-					</#if>
-					<#if author.organisationName?has_content>
-						<span>${author.organisationName}</span><br>
-					</#if>
-				</#if>
 
-				<!--I want to add the address here too-->
-				<!--<address class="hidden-xs">
-				Address line 1<br>
-				Address line 2<br>
-				etc<br>
-				</address>-->
-			</div>
+									
+					<#if author.address?has_content>
+						<address class="hidden-xs">
+							<#if author.address.deliveryPoint?has_content>${author.address.deliveryPoint}<br></#if>
+							<#if author.address.city?has_content>${author.address.city}<br></#if>
+							<#if author.address.administrativeArea?has_content>${author.address.administrativeArea}<br></#if>
+							<#if author.address.postalCode?has_content>${author.address.postalCode}<br></#if>
+							<#if author.address.country?has_content>${author.address.country}</#if>
+						</address>
+					</#if>
+				</div>
+		</#list>
 
-		</#if>
-	</#list>
-	
+	</div>
 </#if>
-</div>

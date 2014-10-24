@@ -1,11 +1,20 @@
 <div id="section-spatial">
 	<h3>Spatial</h3>
-	<dl class="">
-		<dt class="placeholder">Spatial representation type(s)</dt>
-		<dd class="placeholder">Grid, Table, Triangulated irregular network</dd>
-		<#if spatialReferenceSystem?? && spatialReferenceSystem.title?? && spatialReferenceSystem.title?has_content>
-		<dt>Spatial Reference System(s)</dt>
-		<dd =>${spatialReferenceSystem.title}</dd><!-- there could be multiple!-->
+	<dl>
+
+		<#if spatialRepresentationTypes?has_content>
+		<dt>Spatial representation type</dt>
+		<#list spatialRepresentationTypes as spatialRepresentationType>
+		  <dd>${spatialRepresentationType}<#if spatialRepresentationType_has_next><br></#if></dd>
+		</#list>
 		</#if>
+
+
+		<#if spatialReferenceSystem?has_content>
+		<dt>Spatial reference system</dt>
+		  <p>${spatialReferenceSystem.title}</p>
+		</#if>
+		
+			
 	</dl>
 </div>
