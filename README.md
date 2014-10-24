@@ -18,10 +18,22 @@ The Catalogue api will gracefully handle certain upstream mapping failures. Thes
 
 Below are the images which are displayed and there meaning:
 
-![Legend not found](java/src/main/resources/legend-not-found.png) Displayed when a Legend image is requested but one has not been specified in the GetCapabilities
+## Legend not found
+![Legend not found](java/src/main/resources/legend-not-found.png) 
 
-![Upstream Failure](java/src/main/resources/proxy-failure.png) The call to the server failed for some unspecified reason, this may be because the connection failed.
+Displayed when a Legend image is requested but one has not been specified in the GetCapabilities
 
-![Invalid response](java/src/main/resources/proxy-invalid-response.png) The upstream service returned some content, but it was not in the format which was expected. It maybe that the upstream service replied with an error message rather than an image.
+## Upstream Failure
+![Upstream Failure](java/src/main/resources/proxy-failure.png) 
 
-|[Invalid Resource](java/src/main/resources/proxy-invalid-resource.png) The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or an corrupt external get capabilities.
+The call to the server failed for some unspecified reason, this may be because the connection failed.
+
+## Invalid response
+![Invalid response](java/src/main/resources/proxy-invalid-response.png) 
+
+The upstream service returned some content, but it was not in the format which was expected. It maybe that the upstream service replied with an error message rather than an image.
+
+## Invalid Resource
+![Invalid Resource](java/src/main/resources/proxy-invalid-resource.png) 
+
+The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or an corrupt external get capabilities.
