@@ -9,12 +9,16 @@
   .container-fixed();
   padding: 0;          // Remove the padding when in small screen mode
 
-  .filters-panel { display: none; } //Hide the filters panel in small screen mode
+  //Hide the filters panel in small screen mode
+  .filters-panel { 
+    height: 0;         // WARNING: We would usually just set display:none to
+    overflow: hidden;  // hide the panel. This causes OpenLayers to fail to load
+  }
 
   @media (min-width: @screen-md-min) {
     .filters-panel {
       .make-md-column(@filters-columns);
-      display: block;
+      height:   auto;  // Re allow height
       position: fixed;
       padding:  0;
       top:      @nav-bar-height;
@@ -96,6 +100,8 @@
     .make-md-column-offset(@filters-columns);
     position:         fixed;
     top:              @nav-bar-height;
+    left:             0;
+    right:            0;
     padding:          8px;
     height:           @search-form-height;
     background-color: @body-bg;

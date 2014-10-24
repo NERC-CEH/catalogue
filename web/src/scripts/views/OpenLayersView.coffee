@@ -19,8 +19,6 @@ define [
     ]
 
     @map.addLayers [backdrop]
-    @map.zoomToExtent new OpenLayers.Bounds(-1885854.36, 6623727.12, 1245006.31, 7966572.83)
-
     do @refresh
 
   ###
