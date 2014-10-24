@@ -5,7 +5,7 @@ define [
   describe "OnlineResources Collection", ->
     it "can filter online resources to only those which are wms", ->
       metadataDocument = id: 10
-      resource1 = type: 'GET_CAPABILITIES'
+      resource1 = type: 'WMS_GET_CAPABILITIES'
       resource2 = type: 'OTHER'
 
       onlineResources = new OnlineResources [], metadataDocument: metadataDocument
