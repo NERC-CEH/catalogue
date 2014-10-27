@@ -2,7 +2,7 @@
   "name": "ceh-catalogue",
   "version": "0.0.0",
   "dependencies": {
-    "bootstrap-theme-ceh": "c9d31fa47deab4a63f864da5e66e74343e7a2dc7",
+    "bootstrap-theme-ceh": "1.0.1",
     "respond": "1.3.0",
     "isInViewport": "2.1.0",
     "jquery": "1.10.2",
