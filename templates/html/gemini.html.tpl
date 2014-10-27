@@ -33,7 +33,6 @@
 	
 	<div class="row">
         <div class="col-sm-4 pull-right">
-			<!--<#include "_browsegraphic.html.tpl">-->
 			<#include "_ordering.html.tpl">
 		</div>
 		<div class="col-sm-8">
