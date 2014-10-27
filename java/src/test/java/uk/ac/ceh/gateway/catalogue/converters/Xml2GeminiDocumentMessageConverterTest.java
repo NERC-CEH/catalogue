@@ -10,7 +10,6 @@ import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 import java.time.LocalDate;
 import java.time.Month;
 import static org.junit.Assert.*;
@@ -53,19 +52,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("responsibleParty.xml"));
         List<ResponsibleParty> expected = Arrays.asList(
             ResponsibleParty.builder()
-                .organisationName("Centre for Ecology & Hydrology")
-                .role("pointOfContact")
-                .email("enquiries@ceh.ac.uk")
-                .address(Address.builder()
-                    .deliveryPoint("Maclean Building, Benson Lane, Crowmarsh Gifford")
-                    .city("Wallingford")
-                    .administrativeArea("Oxfordshire")
-                    .postalCode("OX10 8BB")
-                    .country("UK")
-                    .build()
-                )
-                .build(),
-            ResponsibleParty.builder()
                 .individualName("Reynolds,B.")
                 .organisationName("Centre for Ecology & Hydrology")
                 .role("author")
@@ -77,8 +63,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
                     .postalCode("LL57 2UW")
                     .country("UK")
                     .build()
-                )
-                .build(),
+                ).build(),
             ResponsibleParty.builder()
                 .individualName("Neal,C.")
                 .organisationName("Centre for Ecology & Hydrology")
@@ -91,8 +76,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
                     .postalCode("OX10 8BB")
                     .country("UK")
                     .build()
-                )
-                .build(),
+                ).build(),
             ResponsibleParty.builder()
                 .individualName("Kirchner,J.")
                 .organisationName("University of California, Berkley")
@@ -112,8 +96,23 @@ public class Xml2GeminiDocumentMessageConverterTest {
                     .postalCode("LL57 2UW")
                     .country("UK")
                     .build()
-                )
-                .build(),
+                ).build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<ResponsibleParty> actual = document.getResponsibleParties();
+        
+        //Then
+        assertThat("ResponsibleParties 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetDistributors() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("responsibleParty.xml"));
+        List<ResponsibleParty> expected = Arrays.asList(
             ResponsibleParty.builder()
                 .organisationName("Centre for Ecology & Hydrology")
                 .role("distributor")
@@ -125,16 +124,55 @@ public class Xml2GeminiDocumentMessageConverterTest {
                     .postalCode("OX10 8BB")
                     .country("UK")
                     .build()
-                )
-                .build()
+                ).build(),
+            ResponsibleParty.builder()
+                .individualName("Peter")
+                .organisationName("ceh")
+                .role("distributor")
+                .address(Address.builder().build()
+                ).build()
         );
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<ResponsibleParty> actual = document.getResponsibleParties();
+        List<ResponsibleParty> actual = document.getDistributorContacts();
         
         //Then
-        assertThat("ResponsibleParties 'actual' should be equal to 'expected'", actual, equalTo(expected));
+        assertThat("Distributor 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetMetadataPointsOfContact() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("responsibleParty.xml"));
+        List<ResponsibleParty> expected = Arrays.asList(
+            ResponsibleParty.builder()
+                .organisationName("Shore Section")
+                .role("pointOfContact")
+                .email("enquiries@ceh.ac.uk")
+                .address(Address.builder().build())
+                .build(),
+            ResponsibleParty.builder()
+                .organisationName("Centre for Ecology & Hydrology")
+                .role("pointOfContact")
+                .email("enquiries@ceh.ac.uk")
+                .address(Address.builder()
+                    .deliveryPoint("Maclean Building, Benson Lane, Crowmarsh Gifford")
+                    .city("Wallingford")
+                    .administrativeArea("Oxfordshire")
+                    .postalCode("OX10 8BB")
+                    .country("UK")
+                    .build()
+                ).build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<ResponsibleParty> actual = document.getMetadataPointsOfContact();
+        
+        //Then
+        assertThat("PointOfContact 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
     
     @Test

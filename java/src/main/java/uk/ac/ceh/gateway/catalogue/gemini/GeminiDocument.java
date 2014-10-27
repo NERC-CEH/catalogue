@@ -37,6 +37,8 @@ public class GeminiDocument implements MetadataDocument {
     private DownloadOrder downloadOrder;
     private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;
+    private List<ResponsibleParty> metadataPointsOfContact;
+    private List<ResponsibleParty> distributorContacts;
     private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> temporalExtent;
     private List<OnlineResource> onlineResources;
