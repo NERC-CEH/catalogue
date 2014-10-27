@@ -20,7 +20,6 @@
 <#assign authors = filter(responsibleParties, "role", "Author", 0) >
 <#assign otherContacts = filter(responsibleParties, "role", "Author", 1) >
 
-
 <#import "skeleton.html.tpl" as skeleton>
 
 <@skeleton.master title=title>

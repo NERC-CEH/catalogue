@@ -13,8 +13,6 @@
 		<p><i class="glyphicon glyphicon-book text-info"></i> <a href="#" title="Supporting information important for the re-use of this dataset">Supporting documentation</a></p>
 		</#if>
 		
-		
-		
 	</div>
 	
 	<div class="panel-body" id="section-formats">

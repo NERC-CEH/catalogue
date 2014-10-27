@@ -1,5 +1,5 @@
 <div id="section-metadata">
-	<h3><a id="metadata"></a>Metadata [PLACEHOLDER TEXT]</h3>
+	<h3><a id="metadata"></a>Metadata</h3>
 	<dl class="dl-horizontal">
 		<dt><span class="element" data-content="Unique identifier for this record" data-trigger="hover" data-placement="right">Record identifier</span></dt>
 		<dd property="dct:identifier iso:fileIdentifier" >${id}</dd>
