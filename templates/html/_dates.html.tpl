@@ -4,6 +4,7 @@
 		Publication date: ${datasetReferenceDate.publicationDate}
 	</#if>
 	
+	<#if datasetReferenceDate.creationDate?? || datasetReferenceDate.revisionDate??>
 	<span class="additionalDates">
 
 		<#if datasetReferenceDate.creationDate??>
@@ -17,5 +18,6 @@
 		</#if>
 
 	</span>
+	</#if>
 </p>
 
