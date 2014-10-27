@@ -30,6 +30,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty.Address;
+import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
 import uk.ac.ceh.gateway.catalogue.gemini.ThesaurusName;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
@@ -920,9 +921,10 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getSpatialReferenceSystems().get(0).getTitle();
 
         //Then
-        assertThat("Actual title is as expected", document.getSpatialReferenceSystem().getTitle(), equalTo(expected));
+        assertThat("Actual title is as expected", actual, equalTo(expected));
     }
     
     @Test
@@ -934,9 +936,25 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getSpatialReferenceSystems().get(0).getTitle();
 
         //Then
-        assertThat("Actual title is as expected", document.getSpatialReferenceSystem().getTitle(), equalTo(expected));
+        assertThat("Actual title is as expected", actual, equalTo(expected));
+    }
+    
+     @Test
+    public void spatialReferenceReferenceString() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReferenceUnknown.xml"));
+        String expected = "urn:ogc:def:crs:MadeUpCodeSpace::123456";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getSpatialReferenceSystems().get(0).getReference();
+
+        //Then
+        assertThat("Actual reference is equal to expected", actual, equalTo(expected));
     }
     
     @Test
@@ -953,6 +971,33 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("MetadataDate is correct", document.getDatasetReferenceDate(), equalTo(expected));
+    }
+    
+    @Test
+    public void multipleSpatialResprentations() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("multipleSpatialReferences.xml"));
+        List<SpatialReferenceSystem> expected = Arrays.asList(
+            SpatialReferenceSystem.builder()
+                .code("27700")
+                .codeSpace("urn:ogc:def:crs:EPSG")
+                .build(),
+            SpatialReferenceSystem.builder()
+                .code("4188")
+                .codeSpace("urn:ogc:def:crs:EPSG")
+                .build(),
+            SpatialReferenceSystem.builder()
+                .code("29901")
+                .codeSpace("urn:ogc:def:crs:EPSG")
+                .build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        assertThat("MetadataDate is correct", document.getSpatialReferenceSystems(), equalTo(expected));
     }
     
     @Test
@@ -997,7 +1042,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
 
         //Then
-        assertThat("Spatial reference is completely missing", document.getSpatialReferenceSystem(), is(nullValue()));
+        assertThat("Spatial reference is completely missing", document.getSpatialReferenceSystems(), equalTo(Collections.EMPTY_LIST));
     }
     
     @Test

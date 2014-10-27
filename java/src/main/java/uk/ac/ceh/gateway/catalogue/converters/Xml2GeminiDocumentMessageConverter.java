@@ -136,7 +136,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setTemporalExtent(temporalExtentConverter.convert(document));
             toReturn.setCoupledResources(getListOfStrings(document, coupledResource));
             toReturn.setResourceStatus(resourceStatus.evaluate(document));
-            toReturn.setSpatialReferenceSystem(spatialReferenceSystem.convert(document));
+            toReturn.setSpatialReferenceSystems(spatialReferenceSystem.convert(document));
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
             toReturn.setMetadataDate(LocalDateFactory.parse(metadataDate.evaluate(document)));
             toReturn.setOnlineResources(onlineResourceConverter.convert(document));

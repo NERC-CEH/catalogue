@@ -42,7 +42,7 @@ public class GeminiDocument implements MetadataDocument {
     private List<OnlineResource> onlineResources;
     private Set<Link> documentLinks;
     private Set<ResourceIdentifier> resourceIdentifiers;
-    private SpatialReferenceSystem spatialReferenceSystem;
+    private List<SpatialReferenceSystem> spatialReferenceSystems;
     private DatasetReferenceDate datasetReferenceDate;
     private LocalDate metadataDate;
     
