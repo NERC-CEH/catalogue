@@ -47,11 +47,11 @@ define [
   ###
   _createLayer: (layer) -> 
     tmsLayer = new OpenLayers.Layer.TMS layer.getName(), layer.getTMS(),
-        layername: layer.getName()
-        type: 'png'
+        layername:   layer.getName()
+        type:        'png'
         isBaseLayer: false
-        opacity: layer.getOpacity()
-        visibility: layer.isVisible()
+        opacity:     layer.getOpacity()
+        visibility:  layer.isVisible()
 
     layer.on 'change:opacity', -> tmsLayer.setOpacity layer.getOpacity()
     layer.on 'change:visibility', -> tmsLayer.setVisibility layer.isVisible()

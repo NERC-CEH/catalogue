@@ -11,7 +11,7 @@ define [
 
   describe "OnlineResourceLayer", ->
     it "can generate a legend url", ->
-      layer.getLayer = -> 'layer'
+      layer.getName = -> 'layer'
       resource.url = -> 'somewhere'
 
       expect(layer.getLegend()).toBe 'somewhere/layer/legend'

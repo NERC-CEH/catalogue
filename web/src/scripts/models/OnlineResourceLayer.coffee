@@ -21,4 +21,4 @@ define [
   ###
   Gets the address to the legend
   ###
-  getLegend: -> "#{@onlineResource.url()}/#{@getLayer()}/legend"
+  getLegend: -> "#{@onlineResource.url()}/#{@getName()}/legend"
