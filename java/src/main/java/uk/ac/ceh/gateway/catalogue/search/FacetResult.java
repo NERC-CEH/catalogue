@@ -7,7 +7,8 @@ import lombok.experimental.Builder;
 @Value
 @Builder
 public class FacetResult {
-    private final String name, state, url;
+    private final String name, url;
+    private final boolean active;
     private final long count;
     private final List<FacetResult> subFacetResults;
 }

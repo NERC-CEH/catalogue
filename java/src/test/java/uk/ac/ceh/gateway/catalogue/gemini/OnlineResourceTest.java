@@ -17,19 +17,19 @@ public class OnlineResourceTest {
         OnlineResource.Type type = resource.getType();
         
         //Then
-        assertEquals("Expected to find get capabilites type", OnlineResource.Type.GET_CAPABILITIES, type);
+        assertEquals("Expected to find get capabilites type", OnlineResource.Type.WMS_GET_CAPABILITIES, type);
     }
     
     @Test
     public void checkThatCaseForGetCapabilitesDoesntMatter() {
         //Given
-        OnlineResource resource = OnlineResource.builder().url("http://wms.com?request=getcapabilities").build();
+        OnlineResource resource = OnlineResource.builder().url("http://wms.com?request=getcapabilities&SERVICE=WMS").build();
         
         //When
         OnlineResource.Type type = resource.getType();
         
         //Then
-        assertEquals("Expected to find get capabilites type", OnlineResource.Type.GET_CAPABILITIES, type);
+        assertEquals("Expected to find get capabilites type", OnlineResource.Type.WMS_GET_CAPABILITIES, type);
     }
     
     @Test
@@ -53,7 +53,7 @@ public class OnlineResourceTest {
         OnlineResource.Type type = resource.getType();
         
         //Then
-        assertEquals("Expected to find get capabilites type", OnlineResource.Type.GET_CAPABILITIES, type);
+        assertEquals("Expected to find get capabilites type", OnlineResource.Type.WMS_GET_CAPABILITIES, type);
     }
     
 }

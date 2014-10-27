@@ -37,7 +37,7 @@ import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
-import uk.ac.ceh.gateway.catalogue.services.MapProxyService;
+import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 /**
@@ -52,7 +52,6 @@ public class ServiceConfig {
     @Autowired LinkDatabase linkDatabase;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
-    @Value("${mapproxy_location}") String mapProxyLocation;
         
     @Bean
     public DocumentReadingService documentReadingService() throws XPathExpressionException {
@@ -74,11 +73,8 @@ public class ServiceConfig {
     }
     
     @Bean
-    public MapProxyService mapProxyService() throws IOException {
-        return new MapProxyService(
-                new File(mapProxyLocation),
-                getCapabilitiesObtainerService()
-        );
+    public TMSToWMSGetMapService tmsToWmsGetMapService() {
+        return new TMSToWMSGetMapService();
     }
     
     @Bean

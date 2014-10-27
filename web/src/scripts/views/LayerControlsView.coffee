@@ -52,10 +52,12 @@ define [
     
     @infoPopover = @$('.info').popover
       placement: 'right'
-      content: infoTemplate @model # Generate some info content
-      trigger: 'manual'            # We will handle the popover in backbone
-      html: true
-      animation: false
+      content:    infoTemplate @model # Generate some info content
+      trigger:    'manual'            # We will handle the popover in backbone
+      html:       true
+      animation:  false
+      viewport:   '#mapviewer'
+      container:  '#mapviewer'
 
     do @updateOpacity #Ensure that the opacity value is set correctly
     do @updateInfoVisibility

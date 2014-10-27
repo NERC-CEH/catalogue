@@ -1,70 +1,126 @@
-#layout {
+#search {
+  @search-form-height:    52px;
+  @filters-columns:       4;
+  @results-columns:       @grid-columns - @filters-columns;
+  @filter-heading-height: 40px;
+  @filter-heading-gap:    3px;
+
   .make-row();
-  .search {
-    .make-sm-column(4);
-    #search-form {
-      padding-bottom: @padding-large-vertical;
+  .container-fixed();
+  padding: 0;          // Remove the padding when in small screen mode
+
+  //Hide the filters panel in small screen mode
+  .filters-panel { 
+    height: 0;         // WARNING: We would usually just set display:none to
+    overflow: hidden;  // hide the panel. This causes OpenLayers to fail to load
+  }
+
+  @media (min-width: @screen-md-min) {
+    .filters-panel {
+      .make-md-column(@filters-columns);
+      height:   auto;  // Re allow height
+      position: fixed;
+      padding:  0;
+      top:      @nav-bar-height;
+      bottom:   0;
+      left:     0;
+      background-color: @panel-bg;
     }
-    .facets {
-      .nav;
-      .nav-pills;
-      .nav-stacked;
-      .hidden-xs;
-      .sub {
-        padding-left: @padding-large-horizontal * 1.5;
+
+    .header {
+      height:           @filter-heading-height;
+      width:            100%;
+      background-color: @panel-default-heading-bg;
+      padding:          10px 15px;
+
+      h3 {
+        display:   inline;
+        margin:    0px;
+        font-size: 15px;
+        color:     black;
+        cursor:    pointer;
+        &:hover {text-decoration: underline;}
       }
-      .facet-heading {
-        font-weight: @headings-font-weight;
-        padding-top: @padding-large-vertical;
+    }
+
+    &.facets-mode {
+      .map-heading {
+        position: absolute;
+        bottom: 0;
       }
-      .facet-result-name {
-        color: @gray-darker;
+      .facet-filter {
+        position:   absolute;
+        top:        @filter-heading-height;
+        bottom:     @filter-heading-height;
+        left:       0;
+        right:      0;
+        overflow-y: auto;
+
+        // Style the facet panel
+        padding-left: 1em;
+        ul {
+          padding-left: 0;
+          margin-left:  20px;
+
+          li { 
+            list-style:     none; 
+            padding-bottom: 3px;
+            a {color:black;}
+          }
+        }
       }
-      .facet-filter-inactive a {
-          padding:@padding-large-horizontal * 0.5;
+    }
+
+    &.map-mode {
+      @selected-color: #8fca89;
+      .facet-filter { display: none; }
+      .map-heading  { margin-top: @filter-heading-gap; }
+
+      .result.selected { 
+        border-left:      8px solid @selected-color;  
+        background-color: lighten(@selected-color, 25%);
       }
 
-	  .facet-filter-active > a {
-        background-color: @gray-lighter;
-        border-radius: @border-radius-base;
-        .facet-result-remove {
-          color: @gray-darker;
-          .glyphicon;
-          .glyphicon-remove-circle;
-          .pull-right;
+      .map-filter {
+        position: absolute;
+        top:      @filter-heading-height * 2 + @filter-heading-gap;
+        bottom:   0;
+        left:     0;
+        right:    0;
+        div.olControlZoom {
+          left: 2px;
+          top:  5px;
         }
       }
     }
   }
+  
+  // Keep the search box onscreen at all times
+  form.search-form {
+    .make-md-column-offset(@filters-columns);
+    position:         fixed;
+    top:              @nav-bar-height;
+    left:             0;
+    right:            0;
+    padding:          8px;
+    height:           @search-form-height;
+    background-color: @body-bg;
+  }
+
   .results {
-    .make-sm-column(8);
-    .search-results-heading {
-      font-weight: @headings-font-weight;
+    margin-top: @search-form-height;
+    .make-md-column(@results-columns);
+    .make-md-column-offset(@filters-columns);
+
+    .result { 
+      display: inline-block; //Disable margin-collapsing
+      width:   100%;         //But keep the width of the results at 100%
     }
-    .result {
-      padding-bottom: @padding-small-vertical;
-      .title {
-        color: @brand-success;
-        &:hover, &:focus {
-          color: darken(@brand-success, 15%);
-          text-decoration: none;
-        }
+    @media (min-width: @screen-md-min) {
+      .result {
+        border-left:  8px solid @body-bg;
+        padding-left: 1em;
       }
-      .resource-type {
-        .label;
-        text-transform: uppercase;
-        float: right;
-        display: block;
-        padding: @padding-small-vertical @padding-small-horizontal;
-        font-size: @font-size-small;
-        border-radius: @border-radius-base;
-        line-height: 1.4;
-        font-weight: normal;
-        background-color: #cccccc;
-      }
-      .dataset { background-color: #C9EAF3; color: #000;}
-      .service { background-color: #FFDFDF; color: #000;}
-      .series { background-color: #D2FFC4;  color: #000;}
     }
   }
 }

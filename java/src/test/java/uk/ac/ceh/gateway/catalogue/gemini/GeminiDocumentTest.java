@@ -20,7 +20,7 @@ public class GeminiDocumentTest {
     public void checkIfIsMapViewableIfGetCapabilitiesOnlineResourceExists() {
         //Given
         OnlineResource wmsResource = OnlineResource.builder()
-            .url("http://www.com?request=GetCapabilities")
+            .url("http://www.com?request=GetCapabilities&SERVICE=WMS")
             .name("wms resource") 
             .description("wms description")
             .build();

@@ -14,7 +14,7 @@
     <![endif]-->
   </head>
   <body>
-    <div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -46,6 +46,7 @@
       </div>
     </div>
     <#nested>
+    <div id="message-panel"></div>
     <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
   </body>
 </html></#compress></#macro>

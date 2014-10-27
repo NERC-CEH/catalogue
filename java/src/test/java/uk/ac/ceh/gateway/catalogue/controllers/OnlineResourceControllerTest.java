@@ -1,10 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.apache.http.impl.client.CloseableHttpClient;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -30,13 +31,12 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
-import uk.ac.ceh.gateway.catalogue.mvc.TransparentProxyView;
+import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
-import uk.ac.ceh.gateway.catalogue.services.MapProxyService;
-import uk.ac.ceh.gateway.catalogue.services.MapProxyServiceException;
+import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -45,10 +45,9 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  */
 public class OnlineResourceControllerTest {
     @Mock DataRepository<CatalogueUser> repo;
-    @Mock CloseableHttpClient httpClient;
     @Mock BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock GetCapabilitiesObtainerService getCapabilitiesObtainerService;
-    @Mock MapProxyService mapProxyFactoryService;
+    @Mock TMSToWMSGetMapService tmsToWMSGetMapService;
     
     private OnlineResourceController controller;
     
@@ -56,76 +55,80 @@ public class OnlineResourceControllerTest {
     public void createOnlineController() {
         MockitoAnnotations.initMocks(this);
         
-        controller = spy(new OnlineResourceController(repo, httpClient, documentBundleReader, getCapabilitiesObtainerService, mapProxyFactoryService));
+        controller = spy(new OnlineResourceController(repo, documentBundleReader, getCapabilitiesObtainerService, tmsToWMSGetMapService));
     }
-    
+        
     @Test
-    public void checkThatCanGetOnlineResourceWhichExists() {
+    public void checkThatCanGetOnlineResourceWhichExists() throws IOException, UnknownContentTypeException {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
+        String file = "file";
+        String revision = "revision";
         List<OnlineResource> resources = Arrays.asList(OnlineResource.builder().url("a").build());
-        when(document.getOnlineResources()).thenReturn(resources);
+        doReturn(resources).when(controller).getOnlineResources(revision, file);
         
         //When
-        OnlineResource resource = controller.getOnlineResource(document, 0);
+        OnlineResource resource = controller.getOnlineResource(revision, file, 0);
         
         //Then
         assertThat("the online resource url is a", resource.getUrl(), equalTo("a"));
     }
     
     @Test(expected=NoSuchOnlineResourceException.class)
-    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNotPresent() {
+    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNotPresent() throws IOException, UnknownContentTypeException  {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getOnlineResources()).thenReturn(Collections.EMPTY_LIST);
+        String file = "file";
+        String revision = "revision";
+        doReturn(Collections.EMPTY_LIST).when(controller).getOnlineResources(revision, file);
         
         //When
-        OnlineResource resource = controller.getOnlineResource(document, 0);
+        OnlineResource resource = controller.getOnlineResource(revision, file, 0);
         
         //Then
         fail("Expected to fail with execption");
     }
     
     @Test(expected=NoSuchOnlineResourceException.class)
-    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNegative() {
+    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNegative() throws IOException, UnknownContentTypeException  {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getOnlineResources()).thenReturn(Collections.EMPTY_LIST);
+        String file = "file";
+        String revision = "revision";
+        doReturn(Collections.EMPTY_LIST).when(controller).getOnlineResources(revision, file);
         
         //When
-        OnlineResource resource = controller.getOnlineResource(document, -10);
+        OnlineResource resource = controller.getOnlineResource(file, revision, -10);
         
         //Then
         fail("Expected to fail with execption");
     }
     
     @Test(expected=NoSuchOnlineResourceException.class)
-    public void checkThatFailsToGetOnlineResourcesFromUnknownMetadataDocumentType() {
+    public void checkThatFailsToGetOnlineResourcesFromUnknownMetadataDocumentType() throws IOException, UnknownContentTypeException {
         //Given
         MetadataDocument document = mock(MetadataDocument.class);
+        String file = "file";
+        String revision = "revision";
+        doReturn(document).when(documentBundleReader).readBundle(revision, file);
         
         //When
-        OnlineResource resource = controller.getOnlineResource(document, 0);
+        OnlineResource resource = controller.getOnlineResource(revision, file, 0);
         
         //Then
         fail("Expected an NoSuchOnlineResourceException when dealing with an unknown document type");
     }
     
     @Test
-    public void checkThatGettingOnlineResourceDelegatesToDocumentReader() throws IOException, UnknownContentTypeException {
+    public void checkThatGettingOnlineResourcesDelegatesToDocumentReader() throws IOException, UnknownContentTypeException {
         //Given
         String file = "bob";
         String revision = "bob";
-        int index = 10;
-        
-        OnlineResource resource = OnlineResource.builder().url("a").build();
-        doReturn(resource).when(controller).getOnlineResource(any(GeminiDocument.class), anyInt());
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(documentBundleReader.readBundle(revision, file)).thenReturn(document);
         
         //When
-        controller.getOnlineResource(file, revision, index);
+        controller.getOnlineResources(revision, file);
         
         //Then
-        verify(documentBundleReader).readBundle(file, revision);
+        verify(documentBundleReader).readBundle(revision, file);
     }
     
     @Test
@@ -157,8 +160,8 @@ public class OnlineResourceControllerTest {
         GeminiDocument geminiDocument = mock(GeminiDocument.class);
         when(documentBundleReader.readBundle(file, revision)).thenReturn(geminiDocument);
         
-        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
+        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities&SERVICE=WMS").build();
+        doReturn(onlineResource).when(controller).getOnlineResource(revision, file, index);
         
         WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
         doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
@@ -178,10 +181,10 @@ public class OnlineResourceControllerTest {
         int index = 10;
         
         GeminiDocument geminiDocument = mock(GeminiDocument.class);
-        when(documentBundleReader.readBundle(file, revision)).thenReturn(geminiDocument);
+        when(documentBundleReader.readBundle(revision, file)).thenReturn(geminiDocument);
         
         OnlineResource onlineResource = OnlineResource.builder().url("random url").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
+        doReturn(onlineResource).when(controller).getOnlineResource(revision, file, index);
         
         //When
         RedirectView result = (RedirectView)controller.processOrRedirectToOnlineResource(revision, file, index);
@@ -191,7 +194,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test
-    public void checkProxyingOfLatestRevisionDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException, MapProxyServiceException {
+    public void checkProxyingOfLatestRevisionDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String file = "my filename", layer="wms layer";
         int index = 1, z = 1, x=3, y =2;
@@ -200,11 +203,11 @@ public class OnlineResourceControllerTest {
         when(revision.getRevisionID()).thenReturn("12");
         when(repo.getLatestRevision()).thenReturn(revision);
         
-        TransparentProxyView proxy = mock(TransparentProxyView.class);
+        TransparentProxy proxy = mock(TransparentProxy.class);
         doReturn(proxy).when(controller).proxyMapProxyTileRequest("12", file, index, layer, z, x, y);
         
         //When
-        TransparentProxyView proxyView = controller.proxyMapProxyTileRequest(file, index, layer, z, x, y);
+        TransparentProxy proxyView = controller.proxyMapProxyTileRequest(file, index, layer, z, x, y);
         
         //Then
         verify(controller).proxyMapProxyTileRequest("12", file, index, layer, z, x, y);
@@ -212,14 +215,14 @@ public class OnlineResourceControllerTest {
     }
     
     @Test
-    public void checkThatTMSProxies() throws IOException, UnknownContentTypeException {
+    public void checkThatTMSProxies() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given        
         String file = "file";
         int index = 2;
         String layerName = "layer";
         
         OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+        doReturn(onlineResource).when(controller).getOnlineResource(any(String.class), eq(file), anyInt());
         
         Layer layer = mock(Layer.class);
         when(layer.getName()).thenReturn(layerName);
@@ -231,14 +234,14 @@ public class OnlineResourceControllerTest {
         doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
         
         //When
-        TransparentProxyView proxy = controller.getMapLayerLegend("12", file, index, layerName);
+        TransparentProxy proxy = controller.getMapLayerLegend("12", file, index, layerName);
         
         //Then
-        assertThat("Expected url to proxy mapProxy", "http://wwww.whereever.com/legend.png", equalTo(proxy.getUrl()));
+        assertThat("Expected url to proxy mapProxy", "http://wwww.whereever.com/legend.png", equalTo(proxy.getUri().toString()));
     }
     
     @Test
-    public void checkThatLatestLegendUrlDelegatesToRevision() throws IOException, UnknownContentTypeException {
+    public void checkThatLatestLegendUrlDelegatesToRevision() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String file = "file";
         int index = 2;
@@ -248,18 +251,18 @@ public class OnlineResourceControllerTest {
         when(dataRevision.getRevisionID()).thenReturn("12");
         when(repo.getLatestRevision()).thenReturn(dataRevision);
         
-        TransparentProxyView proxy = mock(TransparentProxyView.class);
+        TransparentProxy proxy = mock(TransparentProxy.class);
         doReturn(proxy).when(controller).getMapLayerLegend("12", file, index, layer);
         
         //When
-        TransparentProxyView mapLayerLegendView = controller.getMapLayerLegend(file, index, layer);
+        TransparentProxy mapLayerLegendView = controller.getMapLayerLegend(file, index, layer);
         
         //Then
         assertThat("Expected the call to the map legend to be delegated", proxy, equalTo(mapLayerLegendView));
     }
     
     @Test
-    public void checkThatGetLegendUrlIsProxied() throws IOException, UnknownContentTypeException {
+    public void checkThatGetLegendUrlIsProxied() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String revision = "revision";
         String file = "file";
@@ -267,7 +270,7 @@ public class OnlineResourceControllerTest {
         String layerName = "layer";
         
         OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+        doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
         
         Layer layer = mock(Layer.class);
         when(layer.getName()).thenReturn(layerName);
@@ -279,14 +282,14 @@ public class OnlineResourceControllerTest {
         doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
         
         //When
-        TransparentProxyView proxy = controller.getMapLayerLegend(revision, file, index, layerName);
+        TransparentProxy proxy = controller.getMapLayerLegend(revision, file, index, layerName);
         
         //Then
-        assertThat("Expected to proxy the legend url", proxy.getUrl(), equalTo("http://wwww.whereever.com/legend.png") );
+        assertThat("Expected to proxy the legend url", proxy.getUri().toString(), equalTo("http://wwww.whereever.com/legend.png") );
     }
     
     @Test(expected=LegendGraphicMissingException.class)
-    public void checkThatExceptionIsThrownWhenNoLegendGraphicIsPresentForGivenLayer() throws IOException, UnknownContentTypeException {
+    public void checkThatExceptionIsThrownWhenNoLegendGraphicIsPresentForGivenLayer() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String revision = "revision";
         String file = "file";
@@ -294,7 +297,7 @@ public class OnlineResourceControllerTest {
         String layerName = "layer";
         
         OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+        doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
         
         Layer layer = mock(Layer.class);
         when(layer.getName()).thenReturn(layerName);
@@ -313,7 +316,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test(expected=IllegalArgumentException.class)
-    public void checkThatIllegalArgumentExceptionIsThrownIfLayerDoesNotExistWhenGettingLegend() throws IOException, UnknownContentTypeException {
+    public void checkThatIllegalArgumentExceptionIsThrownIfLayerDoesNotExistWhenGettingLegend() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String revision = "revision";
         String file = "file";
@@ -321,7 +324,7 @@ public class OnlineResourceControllerTest {
         String layerName = "layer";
         
         OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+        doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
 
         
         WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);

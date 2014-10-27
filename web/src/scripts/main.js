@@ -14,22 +14,28 @@ default to create an optimized version of this file.
 require.config({
   stubModules: ['cs', 'tpl'],
   shim: {
-    'bootstrap': { deps: ["jquery"]},
-    'openlayers': { exports: 'OpenLayers'}
+    'bootstrap':         { deps: ["jquery"]},
+    'isInViewport':      { deps: ["jquery"]},
+    'jquery-scrollsnap': { deps: ["jquery", "jquery-scrollstop"]},
+    'openlayers':        { exports: 'OpenLayers'}
   },
   paths: {
-    'bootstrap': '../vendor/bootstrap/dist/js/bootstrap',
-    'cs' : '../vendor/require-cs/cs',
-    'coffee-script': '../vendor/coffee-script/extras/coffee-script',
-    'tpl' : '../vendor/requirejs-tpl/tpl',
-    'text' : '../vendor/requirejs-text/text',
-    'jquery' : '../vendor/jquery/jquery',
-    'underscore': '../vendor/underscore-amd/underscore',
-    'backbone': '../vendor/backbone-amd/backbone',
-    'openlayers': '../vendor/OpenLayers-custom',
-    'proj4js' : '../vendor/proj4js/lib/proj4js-combined',
-    'jquery-ui': '../vendor/jquery-ui/ui',
-    'zeroclipboard': '../vendor/zeroclipboard/dist/ZeroClipboard'
+    'bootstrap':         '../vendor/bootstrap/dist/js/bootstrap',
+    'cs' :               '../vendor/require-cs/cs',
+    'coffee-script':     '../vendor/coffee-script/extras/coffee-script',
+    'tpl' :              '../vendor/requirejs-tpl/tpl',
+    'text' :             '../vendor/requirejs-text/text',
+    'isInViewport':      '../vendor/isInViewport/lib/isInViewport',
+    'jquery' :           '../vendor/jquery/jquery',
+    'jquery-deparam' :   '../vendor/jquery-deparam/jquery-deparam',
+    'underscore':        '../vendor/underscore-amd/underscore',
+    'backbone':          '../vendor/backbone-amd/backbone',
+    'openlayers':        '../vendor/OpenLayers-custom',
+    'proj4js' :          '../vendor/proj4js/lib/proj4js-combined',
+    'jquery-ui':         '../vendor/jquery-ui/ui',
+    'jquery-scrollsnap': '../vendor/jquery-scrollsnap/src/jquery.scrollsnap',
+    'jquery-scrollstop': '../vendor/jquery-scrollstop/jquery.scrollstop',
+    'zeroclipboard':     '../vendor/zeroclipboard/dist/ZeroClipboard'
   },
   waitSeconds:1000
 });

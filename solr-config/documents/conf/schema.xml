@@ -10,6 +10,7 @@
       <field name="state" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="sci0" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="sci1" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
+      <field name="locations" type="spatial" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
       <dynamicField name="random*" type="random" indexed="true" stored="false"/>
     </fields>
@@ -37,5 +38,12 @@
                 <filter class="solr.SnowballPorterFilterFactory" language="English"/>
             </analyzer>
         </fieldType>
+        <fieldType name="spatial"   
+            class="solr.SpatialRecursivePrefixTreeFieldType"
+            spatialContextFactory="com.spatial4j.core.context.jts.JtsSpatialContextFactory"
+            distErrPct="0.025"
+            maxDistErr="0.000009"
+            units="degrees"
+        />
     </types>
 </schema>

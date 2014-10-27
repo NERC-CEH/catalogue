@@ -1,16 +1,16 @@
 define [
   'jquery'
   'backbone'
-  'cs!views/OpenLayersView'
+  'cs!views/MapViewerMapView'
   'cs!views/LayersControlPanelView'
-], ($, Backbone, OpenLayersView, LayersControlPanelView) -> Backbone.View.extend
+], ($, Backbone, MapViewerMapView, LayersControlPanelView) -> Backbone.View.extend
   el: '#mapviewer'
 
   initialize: ->
     do @render
 
   render: ->
-    @openlayersView = new OpenLayersView
+    @mapViewerMapView = new MapViewerMapView
       model: @model
       el: @$('.openlayers')
 

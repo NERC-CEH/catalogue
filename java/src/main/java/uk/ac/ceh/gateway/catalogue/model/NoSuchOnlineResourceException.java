@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *
  * @author cjohn
  */
-@ResponseStatus(HttpStatus.NOT_FOUND)
 public class NoSuchOnlineResourceException extends IllegalArgumentException {
     public NoSuchOnlineResourceException(String mess) {
         super(mess);

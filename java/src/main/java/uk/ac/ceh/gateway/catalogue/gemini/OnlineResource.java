@@ -4,7 +4,7 @@ import static com.google.common.base.Strings.nullToEmpty;
 import java.util.regex.Pattern;
 import lombok.Value;
 import lombok.experimental.Builder;
-import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.GET_CAPABILITIES;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.OTHER;
 
 /**
@@ -14,10 +14,11 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.OTHER;
 @Value
 public class OnlineResource {
     private static final Pattern GET_CAPABILITIES_URL_PATTERN = Pattern.compile("[\\?\\&]request=getcapabilities");
+    private static final Pattern WMS_SERVICE_URL_PATTERN = Pattern.compile("[\\?\\&]service=wms");
     private String url, name, description, function;
      
     public enum Type {
-        GET_CAPABILITIES, OTHER
+        WMS_GET_CAPABILITIES, OTHER
     }
     
     @Builder
@@ -29,11 +30,12 @@ public class OnlineResource {
     }
     
     public Type getType() {
-        if(GET_CAPABILITIES_URL_PATTERN.matcher(url.toLowerCase()).find()) {
-            return GET_CAPABILITIES;
+        String lowercaseUrl = url.toLowerCase();
+        if(GET_CAPABILITIES_URL_PATTERN.matcher(lowercaseUrl).find()) {
+            if(WMS_SERVICE_URL_PATTERN.matcher(lowercaseUrl).find()) {
+                return WMS_GET_CAPABILITIES;
+            }
         }
-        else {
-            return OTHER;
-        }
+        return OTHER;
     }
 }

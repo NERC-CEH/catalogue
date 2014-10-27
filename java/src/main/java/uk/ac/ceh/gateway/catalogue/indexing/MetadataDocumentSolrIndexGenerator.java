@@ -1,13 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import java.util.List;
 import java.util.Map;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ScienceAreaIndexer;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 /**
@@ -30,6 +29,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                 .setTitle(document.getTitle())
                 .setIdentifier(document.getId())
                 .setResourceType(document.getType())
+                .setLocations(document.getLocations())
                 .setIsOgl(getIsOgl(document))
                 .setState(getState(document))
                 .setSci0(sci.get("sci0"))
@@ -62,11 +62,12 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
     @Data
     @Accessors(chain=true)
     public static class DocumentSolrIndex {
-        protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 530;
+        protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 265;
         private @Field String identifier;
         private @Field String title;
         private @Field String description;
         private @Field String resourceType;
+        private @Field List<String> locations;
         private @Field Boolean isOgl;
         private @Field String state;
         private @Field String sci0;

@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import java.util.List;
+
 /**
  * This is the interface for a metadata document. Specific implementations such 
  * as #GeminiDocument and #UKEOFDocument must implement this in order to be used
@@ -11,6 +13,7 @@ public interface MetadataDocument {
     String getTitle();
     String getId();
     String getType();
+    List<String> getLocations();
     MetadataInfo getMetadata();
     void attachMetadata(MetadataInfo metadata);
 }

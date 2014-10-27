@@ -17,9 +17,15 @@ define [
   isVisible: -> @get "visibility"
 
   ###
-  Returns the name of the layer as should be displayed in the legend
+  Returns the name of the layer which should be used to reference this layer
+  when called agaist its tms end point
   ###
   getName:-> @get "name"
+
+  ###
+  Returns the name of the layer as should be displayed in the legend
+  ###
+  getTitle:-> @get "title"
 
   ###
   Returns the address to the tms end point which should be used when
@@ -31,12 +37,6 @@ define [
   Returns the address to an image which represents the legend of this layer
   ###
   getLegend: -> @get "legend"
-
-  ###
-  Gets the name of the wms layer which should be requested on each
-  wms request
-  ###
-  getLayer:-> @get "layer"
 
   ###
   Sets the info visibility for this layer to the value specified. If we are 
