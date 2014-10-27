@@ -53,6 +53,33 @@ public class OnlineResourceController {
         this.tmsToWmsGetMapService = tmsToWmsGetMapService;
     }
     
+    @RequestMapping (value = "documents/{file}/onlineResources",
+                     method = RequestMethod.GET)
+    @ResponseBody
+    public List<OnlineResource> getOnlineResources(
+            @PathVariable("file") String file
+    ) throws DataRepositoryException, IOException, UnknownContentTypeException {
+        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
+        return getOnlineResources(latestRev.getRevisionID(), file);
+    }
+    
+    @RequestMapping (value = "history/{revision}/{file}/onlineResources",
+                     method = RequestMethod.GET)
+    @ResponseBody
+    public List<OnlineResource> getOnlineResources(
+            @PathVariable("revision") String revision,
+            @PathVariable("file") String file
+    ) throws DataRepositoryException, IOException, UnknownContentTypeException {
+        MetadataDocument document = documentBundleReader.readBundle(file, revision);
+        if(document instanceof GeminiDocument) {
+            GeminiDocument geminiDocument = (GeminiDocument)document;
+            return geminiDocument.getOnlineResources();
+        }
+        else {
+            throw new NoSuchOnlineResourceException("This document is not a gemini document, so does not have online resources");
+        }
+    }
+    
     @RequestMapping (value = "documents/{file}/onlineResources/{index}",
                      method = RequestMethod.GET)
     @ResponseBody
@@ -71,7 +98,7 @@ public class OnlineResourceController {
             @PathVariable("file") String file,
             @PathVariable("index") int index) throws DataRepositoryException, IOException, UnknownContentTypeException {
         
-        OnlineResource onlineResource = getOnlineResource(documentBundleReader.readBundle(file, revision), index);
+        OnlineResource onlineResource = getOnlineResource(revision, file, index);
         switch(onlineResource.getType()) {
             case WMS_GET_CAPABILITIES : 
                 return getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
@@ -107,7 +134,7 @@ public class OnlineResourceController {
             @PathVariable("z") int z,
             @PathVariable("x") int x,
             @PathVariable("y") int y) throws IOException, UnknownContentTypeException, URISyntaxException {
-        OnlineResource resource = getOnlineResource(file, revision, index); 
+        OnlineResource resource = getOnlineResource(revision, file, index); 
         WmsCapabilities wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(resource);
         String url = tmsToWmsGetMapService.getWMSMapRequest(wmsCapabilities.getDirectMap(), layer, z, x, y);
         
@@ -135,7 +162,7 @@ public class OnlineResourceController {
             @PathVariable("file") String file,
             @PathVariable("index") int index,
             @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException, URISyntaxException {
-        OnlineResource onlineResource = getOnlineResource(documentBundleReader.readBundle(file, revision), index);
+        OnlineResource onlineResource = getOnlineResource(revision, file, index);
         WmsCapabilities wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
         for(Layer wmsLayer : wmsCapabilities.getLayers()) {
             if(wmsLayer.getName().equals(layer)) {
@@ -147,26 +174,16 @@ public class OnlineResourceController {
                 }
             }
         }
-        throw new IllegalArgumentException("The layer: " + layer + " is not present in the given service" );
+        throw new NoSuchOnlineResourceException("The layer: " + layer + " is not present in the given service" );
     }
     
-    protected OnlineResource getOnlineResource(String file, String revision, int index) throws IOException, UnknownContentTypeException {
-        return getOnlineResource(documentBundleReader.readBundle(file, revision), index);
-    }
-    
-    protected OnlineResource getOnlineResource(MetadataDocument document, int index) {
-        if(document instanceof GeminiDocument) {
-            GeminiDocument geminiDocument = (GeminiDocument)document;
-            List<OnlineResource> onlineResources = geminiDocument.getOnlineResources();
-            if(index < 0 || onlineResources.size() <= index) {
-                throw new NoSuchOnlineResourceException("No online resource exists on this document at index " + index);
-            }
-            else {
-                return onlineResources.get(index);
-            }
+    protected OnlineResource getOnlineResource(String revision, String file, int index) throws IOException, UnknownContentTypeException {
+        List<OnlineResource> onlineResources = getOnlineResources(revision, file);
+        if(index < 0 || onlineResources.size() <= index) {
+            throw new NoSuchOnlineResourceException("No online resource exists on this document at index " + index);
         }
         else {
-            throw new NoSuchOnlineResourceException("This document is not a gemini document, so does not have online resources");
+            return onlineResources.get(index);
         }
     }
 }

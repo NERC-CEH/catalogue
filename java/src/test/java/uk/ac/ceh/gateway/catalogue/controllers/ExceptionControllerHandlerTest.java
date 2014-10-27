@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
+import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
 
@@ -44,6 +45,19 @@ public class ExceptionControllerHandlerTest {
         assertThat("Expected message to be pulled of exception", res.getMessage(), equalTo(mess));
     }
     
+    @Test
+    public void checkThatNotFoundExceptionsAreWrapped() {
+        //Given
+        String mess = "no online resource";
+        NoSuchOnlineResourceException ex = mock(NoSuchOnlineResourceException.class);
+        when(ex.getMessage()).thenReturn(mess);
+        
+        //When
+        ErrorResponse res = controller.handleNotFoundExceptions(ex);
+        
+        //Then
+        assertThat("Expected message to be pulled of exception", res.getMessage(), equalTo(mess));
+    }
     
     @Test
     public void checkThatURISyntaxExceptionReturnsImage() {

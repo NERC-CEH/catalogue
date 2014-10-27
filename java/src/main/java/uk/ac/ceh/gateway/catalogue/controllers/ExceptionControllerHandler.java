@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
+import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
 
@@ -22,14 +24,22 @@ import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
  */
 @ControllerAdvice
 public class ExceptionControllerHandler {
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({
+        GitFileNotFoundException.class,
+        NoSuchOnlineResourceException.class
+    })
+    @ResponseBody
+    public ErrorResponse handleNotFoundExceptions(Exception ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+    
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     @ExceptionHandler(ExternalResourceFailureException.class)
     @ResponseBody
     public ErrorResponse handleExternalResourceFailureException(ExternalResourceFailureException ex) {
         return new ErrorResponse(ex.getMessage());
     }
-    
-    
     
     @ExceptionHandler(TransparentProxyException.class)
     @ResponseBody

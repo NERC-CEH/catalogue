@@ -5,16 +5,15 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.apache.http.impl.client.CloseableHttpClient;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -58,74 +57,78 @@ public class OnlineResourceControllerTest {
         
         controller = spy(new OnlineResourceController(repo, documentBundleReader, getCapabilitiesObtainerService, tmsToWMSGetMapService));
     }
-    
+        
     @Test
-    public void checkThatCanGetOnlineResourceWhichExists() {
+    public void checkThatCanGetOnlineResourceWhichExists() throws IOException, UnknownContentTypeException {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
+        String file = "file";
+        String revision = "revision";
         List<OnlineResource> resources = Arrays.asList(OnlineResource.builder().url("a").build());
-        when(document.getOnlineResources()).thenReturn(resources);
+        doReturn(resources).when(controller).getOnlineResources(revision, file);
         
         //When
-        OnlineResource resource = controller.getOnlineResource(document, 0);
+        OnlineResource resource = controller.getOnlineResource(revision, file, 0);
         
         //Then
         assertThat("the online resource url is a", resource.getUrl(), equalTo("a"));
     }
     
     @Test(expected=NoSuchOnlineResourceException.class)
-    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNotPresent() {
+    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNotPresent() throws IOException, UnknownContentTypeException  {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getOnlineResources()).thenReturn(Collections.EMPTY_LIST);
+        String file = "file";
+        String revision = "revision";
+        doReturn(Collections.EMPTY_LIST).when(controller).getOnlineResources(revision, file);
         
         //When
-        OnlineResource resource = controller.getOnlineResource(document, 0);
+        OnlineResource resource = controller.getOnlineResource(revision, file, 0);
         
         //Then
         fail("Expected to fail with execption");
     }
     
     @Test(expected=NoSuchOnlineResourceException.class)
-    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNegative() {
+    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNegative() throws IOException, UnknownContentTypeException  {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getOnlineResources()).thenReturn(Collections.EMPTY_LIST);
+        String file = "file";
+        String revision = "revision";
+        doReturn(Collections.EMPTY_LIST).when(controller).getOnlineResources(revision, file);
         
         //When
-        OnlineResource resource = controller.getOnlineResource(document, -10);
+        OnlineResource resource = controller.getOnlineResource(file, revision, -10);
         
         //Then
         fail("Expected to fail with execption");
     }
     
     @Test(expected=NoSuchOnlineResourceException.class)
-    public void checkThatFailsToGetOnlineResourcesFromUnknownMetadataDocumentType() {
+    public void checkThatFailsToGetOnlineResourcesFromUnknownMetadataDocumentType() throws IOException, UnknownContentTypeException {
         //Given
         MetadataDocument document = mock(MetadataDocument.class);
+        String file = "file";
+        String revision = "revision";
+        doReturn(document).when(documentBundleReader).readBundle(revision, file);
         
         //When
-        OnlineResource resource = controller.getOnlineResource(document, 0);
+        OnlineResource resource = controller.getOnlineResource(revision, file, 0);
         
         //Then
         fail("Expected an NoSuchOnlineResourceException when dealing with an unknown document type");
     }
     
     @Test
-    public void checkThatGettingOnlineResourceDelegatesToDocumentReader() throws IOException, UnknownContentTypeException {
+    public void checkThatGettingOnlineResourcesDelegatesToDocumentReader() throws IOException, UnknownContentTypeException {
         //Given
         String file = "bob";
         String revision = "bob";
-        int index = 10;
-        
-        OnlineResource resource = OnlineResource.builder().url("a").build();
-        doReturn(resource).when(controller).getOnlineResource(any(GeminiDocument.class), anyInt());
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(documentBundleReader.readBundle(revision, file)).thenReturn(document);
         
         //When
-        controller.getOnlineResource(file, revision, index);
+        controller.getOnlineResources(revision, file);
         
         //Then
-        verify(documentBundleReader).readBundle(file, revision);
+        verify(documentBundleReader).readBundle(revision, file);
     }
     
     @Test
@@ -158,7 +161,7 @@ public class OnlineResourceControllerTest {
         when(documentBundleReader.readBundle(file, revision)).thenReturn(geminiDocument);
         
         OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities&SERVICE=WMS").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
+        doReturn(onlineResource).when(controller).getOnlineResource(revision, file, index);
         
         WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
         doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
@@ -178,10 +181,10 @@ public class OnlineResourceControllerTest {
         int index = 10;
         
         GeminiDocument geminiDocument = mock(GeminiDocument.class);
-        when(documentBundleReader.readBundle(file, revision)).thenReturn(geminiDocument);
+        when(documentBundleReader.readBundle(revision, file)).thenReturn(geminiDocument);
         
         OnlineResource onlineResource = OnlineResource.builder().url("random url").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(geminiDocument, index);
+        doReturn(onlineResource).when(controller).getOnlineResource(revision, file, index);
         
         //When
         RedirectView result = (RedirectView)controller.processOrRedirectToOnlineResource(revision, file, index);
@@ -219,7 +222,7 @@ public class OnlineResourceControllerTest {
         String layerName = "layer";
         
         OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+        doReturn(onlineResource).when(controller).getOnlineResource(any(String.class), eq(file), anyInt());
         
         Layer layer = mock(Layer.class);
         when(layer.getName()).thenReturn(layerName);
@@ -267,7 +270,7 @@ public class OnlineResourceControllerTest {
         String layerName = "layer";
         
         OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+        doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
         
         Layer layer = mock(Layer.class);
         when(layer.getName()).thenReturn(layerName);
@@ -294,7 +297,7 @@ public class OnlineResourceControllerTest {
         String layerName = "layer";
         
         OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+        doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
         
         Layer layer = mock(Layer.class);
         when(layer.getName()).thenReturn(layerName);
@@ -321,7 +324,7 @@ public class OnlineResourceControllerTest {
         String layerName = "layer";
         
         OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(any(MetadataDocument.class), anyInt());
+        doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
 
         
         WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
