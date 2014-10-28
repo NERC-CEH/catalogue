@@ -29,7 +29,7 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="http://lwisportal-staging.nerc-lancaster.ac.uk/">Home</a></li>
-            <li class="active"><a href="/documents">Search CEH Data</a></li>
+            <li class="active"><a href="/documents">Search Data</a></li>
             <li><a href="http://lwisportal-staging.nerc-lancaster.ac.uk/about">About</a></li>
             <li><a href="#">Contact</a></li>
           </ul>
