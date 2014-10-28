@@ -81,7 +81,7 @@
 		<rightsList>
 	</#if>
 	<descriptions>
-		<description>${description}</description>
+		<description descriptionType="Abstract">${description}</description>
 	</descriptions>
 	<#if boundingBoxes?has_content && boundingBoxes??>
 	<geoLocations>
