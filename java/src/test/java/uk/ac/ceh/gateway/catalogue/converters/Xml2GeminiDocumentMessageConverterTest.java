@@ -586,6 +586,26 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
+    public void canGetTopic() throws IOException{
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("topics.xml"));
+        List<String> expected = Arrays.asList(
+            "http://onto.nerc.ac.uk/CEHMD/21",
+            "http://onto.nerc.ac.uk/CEHMD/111",
+            "http://onto.nerc.ac.uk/CEHMD/8"
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<String> actual = document.getTopics();        
+        
+        //Then
+        assertThat("Actual Topic keywords equals expected", actual, equalTo(expected));
+    }
+    
+    @Test
     public void canGetUncitedKeywords() throws IOException {
         
         //Given

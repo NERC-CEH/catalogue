@@ -32,6 +32,11 @@ public class UKEOFDocument implements MetadataDocument {
 
     @Override
     public List<String> getLocations() {
-       return Collections.EMPTY_LIST;
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public List<String> getTopics() {
+        return Collections.EMPTY_LIST;
     }
 }

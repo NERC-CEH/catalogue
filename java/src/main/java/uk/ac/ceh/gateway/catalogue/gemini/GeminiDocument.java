@@ -25,7 +25,7 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument implements MetadataDocument {
-    
+    private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
         metadataStandardName, metadataStandardVersion, supplementalInfo, resourceType;
     private List<String> alternateTitles, topicCategories, coupledResources, spatialRepresentationTypes, datasetLanguages,
@@ -86,5 +86,15 @@ public class GeminiDocument implements MetadataDocument {
     @Override
     public void attachMetadata(MetadataInfo metadata) {
         setMetadata(metadata);
+    }
+    
+    @Override
+    public List<String> getTopics() {
+        return descriptiveKeywords
+            .stream()
+            .flatMap(dk -> dk.getKeywords().stream())
+            .filter(k -> k.getURI().startsWith(TOPIC_PROJECT_URL))
+            .map(Keyword::getURI)
+            .collect(Collectors.toList());
     }
 }

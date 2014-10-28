@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ public interface MetadataDocument {
     String getId();
     String getType();
     List<String> getLocations();
+    List<String> getTopics();
     MetadataInfo getMetadata();
     void attachMetadata(MetadataInfo metadata);
 }

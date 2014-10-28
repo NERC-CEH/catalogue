@@ -8,8 +8,8 @@
       <field name="resourceType" type="keyword" indexed="true" stored="true" multiValued="false"/>
       <field name="isOgl" type="boolean" indexed="true" stored="true" multiValued="false"/>
       <field name="state" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
-      <field name="sci0" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
-      <field name="sci1" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
+      <field name="sci0" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="sci1" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="locations" type="spatial" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
       <dynamicField name="random*" type="random" indexed="true" stored="false"/>
