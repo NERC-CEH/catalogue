@@ -7,7 +7,7 @@
 
     <div class="filters-panel">
       <div class="header facet-heading">
-        <h3>Topics</h3>
+        <h3>Filters</h3>
       </div>
       <div class="facet-filter"><#include "search/_facets.html.tpl"></div>
       

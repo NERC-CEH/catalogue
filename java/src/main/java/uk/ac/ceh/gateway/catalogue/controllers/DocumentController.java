@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
