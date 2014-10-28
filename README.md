@@ -10,14 +10,30 @@ This is the code base for the CEH gemini catalogue. The intention here is the ma
 
 - [web](web/README.md). Any static or pre built content which can be hosted to help power your catalogue. (Javascripts/Images and the like)
 
-# MapProxy
+# Map Viewer
 
-The catalogues map viewer uses MapProxy to ensure that upstream wms services specified in Metadata Records respond quickly and are previewable in the desired EPSG:3587 projection system.
+All requests for maps go through our catalogue api as TMS coordinates (i.e. z, x, y). When a map request comes in, the catalogue api transforms the z, x, y coordinates into a wms GetMap request in the EPSG:3857 projection system. This is the projection system which is used by Google Maps style web mapping applications.
 
-1. Creating the wms proxy file
+The Catalogue api will gracefully handle certain upstream mapping failures. These failures will be represented as images so that they can be displayed by the normal mapping application.
 
-  All requests for maps go through our catalogue api. When a map request comes in, a corresponding mapproxy yaml configuration file will be created (if not already created before) for the wms to be proxied. This yaml file will be saved in the directory which MapProxy is hosting, as such it will automatically be registered.
+Below are the images which are displayed and there meaning:
 
-2. Requesting a tile
+## Legend not found
+![Legend not found](java/src/main/resources/legend-not-found.png) 
 
-  The api will then go ahead and request the tile (which the client requested) from the newly created map proxy service. This will be transparently proxied back to the client. MapProxy will cache this tile so subsequent requests will respond without interaction from the upstream wms.
+Displayed when a Legend image is requested but one has not been specified in the GetCapabilities
+
+## Upstream Failure
+![Upstream Failure](java/src/main/resources/proxy-failure.png) 
+
+The call to the server failed for some unspecified reason, this may be because the connection failed.
+
+## Invalid response
+![Invalid response](java/src/main/resources/proxy-invalid-response.png) 
+
+The upstream service returned some content, but it was not in the format which was expected. It maybe that the upstream service replied with an error message rather than an image.
+
+## Invalid Resource
+![Invalid Resource](java/src/main/resources/proxy-invalid-resource.png) 
+
+The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or an corrupt external get capabilities.

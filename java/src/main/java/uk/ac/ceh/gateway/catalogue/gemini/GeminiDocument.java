@@ -8,10 +8,11 @@ import java.util.Set;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.GET_CAPABILITIES;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
 /**
  *
@@ -20,7 +21,8 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.GET_CAPABIL
 @Data
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="datacite/datacite.xml.tpl", whenRequestedAs="application/x-datacite+xml")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument implements MetadataDocument {
@@ -50,6 +52,15 @@ public class GeminiDocument implements MetadataDocument {
         return getResourceType();
     }
     
+    
+    @Override
+    public List<String> getLocations() {
+        return boundingBoxes
+                .stream()
+                .map(BoundingBox::getSolrGeometry)
+                .collect(Collectors.toList());
+    }
+    
     /**
      * Return a link to the map viewer for this Gemini record if it can be
      * rendered in the map viewer
@@ -70,7 +81,7 @@ public class GeminiDocument implements MetadataDocument {
     public boolean isMapViewable() {
         return onlineResources
                 .stream()
-                .anyMatch((o)-> GET_CAPABILITIES == o.getType());
+                .anyMatch((o)-> WMS_GET_CAPABILITIES == o.getType());
     }
 
     @Override

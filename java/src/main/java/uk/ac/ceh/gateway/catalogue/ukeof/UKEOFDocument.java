@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.ukeof;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.Collections;
+import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
@@ -26,5 +28,10 @@ public class UKEOFDocument implements MetadataDocument {
     @Override
     public void attachMetadata(MetadataInfo metadata) {
         setMetadata(metadata);
+    }
+
+    @Override
+    public List<String> getLocations() {
+       return Collections.EMPTY_LIST;
     }
 }

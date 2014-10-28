@@ -8,8 +8,7 @@
  * https://github.com/divshot/themestrap
  */
 
-@import url(//fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic);
-@import url(//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic,700italic);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:300,400,700);
 @import url(//fonts.googleapis.com/css?family=Source+Code+Pro:400,500,700);
 @import "bootstrap.less";
 @import "variables.less";
@@ -18,4 +17,14 @@
 
 .navbar-brand {
   padding: 0 @navbar-padding-horizontal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  a {
+    color: @brand-success;
+    &:hover, &:focus {
+      color: darken(@brand-success, 15%);
+      text-decoration: none;
+    }
+  }
 }

@@ -13,14 +13,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.search.DocumentSearchResults;
-import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
+import uk.ac.ceh.gateway.catalogue.search.FacetFilter;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
+import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
 
 @Controller
 public class SearchController {
+    public static final String PAGE_DEFAULT_STRING = "1";
+    public static final String ROWS_DEFAULT_STRING = "20";
+    
+    public static final String TERM_QUERY_PARAM = "term";
+    public static final String BBOX_QUERY_PARAM = "bbox";
+    public static final String PAGE_QUERY_PARAM = "page";
+    public static final String ROWS_QUERY_PARAM = "rows";
+    public static final String FACET_QUERY_PARAM = "facet";
+    
+    public static final int PAGE_DEFAULT = Integer.parseInt(PAGE_DEFAULT_STRING);
+    public static final int ROWS_DEFAULT = Integer.parseInt(ROWS_DEFAULT_STRING);
+    
     private final SolrServer solrServer;  
       
     @Autowired
@@ -32,20 +43,21 @@ public class SearchController {
                     method = RequestMethod.GET)
     public @ResponseBody SearchResults searchDocuments(
             @ActiveUser CatalogueUser user,
-            @RequestParam(value = "term", defaultValue=SearchQuery.DEFAULT_SEARCH_TERM) String term,
-            @RequestParam(value = "start", defaultValue = "0") int start,
-            @RequestParam(value = "rows", defaultValue = "20") int rows,
-            @RequestParam(value = "facet", defaultValue = "") List<String> facetFilters,
+            @RequestParam(value = TERM_QUERY_PARAM, defaultValue=SearchQuery.DEFAULT_SEARCH_TERM) String term,
+            @RequestParam(value = BBOX_QUERY_PARAM, required = false) String bbox,
+            @RequestParam(value = PAGE_QUERY_PARAM, defaultValue = PAGE_DEFAULT_STRING) int page,
+            @RequestParam(value = ROWS_QUERY_PARAM, defaultValue = ROWS_DEFAULT_STRING) int rows,
+            @RequestParam(value = FACET_QUERY_PARAM, defaultValue = "") List<FacetFilter> facetFilters,
             HttpServletRequest request
     ) throws SolrServerException {
-        SearchQuery searchQuery = new SearchQuery(user, term, start, rows, facetFilters);
-        return new DocumentSearchResults(
+        SearchQuery searchQuery = new SearchQuery(
+            request.getRequestURL().toString(), user, term, bbox, page, rows, facetFilters);
+        return new SearchResults(
             solrServer.query(
                 searchQuery.build(),
                 SolrRequest.METHOD.POST
             ),
-            searchQuery,
-            ServletUriComponentsBuilder.fromRequestUri(request)
+            searchQuery
         );
     }
 }
