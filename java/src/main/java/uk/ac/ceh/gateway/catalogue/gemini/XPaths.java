@@ -22,4 +22,7 @@ public class XPaths {
     public static final String ACCESS_CONSTRAINT = "/*/gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:accessConstraints/*/@codeListValue";
     public static final String OTHER_CONSTRAINT = "/*/gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:otherConstraints/*";
     public static final String SECURITY_CONSTRAINT = "/*/gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:classification/*/@codeListValue";
+    public static final String RESPONSIBLE_PARTY = "/*/gmd:identificationInfo/*/gmd:pointOfContact/*";
+    public static final String DISTRIBUTOR = "/*/gmd:distributionInfo/*/gmd:distributor/*/gmd:distributorContact/*";
+    public static final String METADATA_POINT_OF_CONTACT = "/*/gmd:contact/*";
 }

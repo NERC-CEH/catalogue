@@ -94,12 +94,12 @@ public class SearchResults {
                 .build();
         }).collect(Collectors.toList());
         
-        toReturn.add(Facet.builder()
+        toReturn.add(0, Facet.builder()
             .fieldName("sci0")
-            .displayName("Science Area")
+            .displayName("Topics")
             .results(getFacetResults(response.getFacetPivot().get("sci0,sci1")))
             .build());
-            
+        
         return toReturn;
     }
 

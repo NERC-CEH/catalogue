@@ -49,6 +49,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final XPath xpath;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
+    private final ResponsiblePartyConverter distributorConverter;
+    private final ResponsiblePartyConverter metadataPointOfContactConverter;
     private final ResponsiblePartyConverter responsiblePartyConverter;
     private final DownloadOrderConverter downloadOrderConverter;
     private final BoundingBoxesConverter boundingBoxesConverter;
@@ -74,7 +76,9 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.resourceType = xpath.compile(XPaths.RESOURCE_TYPE);
         this.resourceIdentifierConverter = new ResourceIdentifierConverter(xpath);
         this.descriptiveKeywordsConverter = new DescriptiveKeywordsConverter(xpath);
-        this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath);
+        this.metadataPointOfContactConverter = new ResponsiblePartyConverter(xpath, XPaths.METADATA_POINT_OF_CONTACT);
+        this.distributorConverter = new ResponsiblePartyConverter(xpath, XPaths.DISTRIBUTOR);
+        this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath, XPaths.RESPONSIBLE_PARTY);
         this.downloadOrderConverter = new DownloadOrderConverter(xpath);
         this.boundingBoxesConverter = new BoundingBoxesConverter(xpath);
         this.browseGraphicUrl = xpath.compile(XPaths.BROWSE_GRAPHIC_URL);
@@ -130,13 +134,15 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setTopicCategories(getListOfStrings(document, topicCategories));
             toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
             toReturn.setOtherCitationDetails(otherCitationDetails.evaluate(document));
+            toReturn.setMetadataPointsOfContact(metadataPointOfContactConverter.convert(document));
+            toReturn.setDistributorContacts(distributorConverter.convert(document));
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
             toReturn.setBrowseGraphicUrl(browseGraphicUrl.evaluate(document));
             toReturn.setTemporalExtent(temporalExtentConverter.convert(document));
             toReturn.setCoupledResources(getListOfStrings(document, coupledResource));
             toReturn.setResourceStatus(resourceStatus.evaluate(document));
-            toReturn.setSpatialReferenceSystem(spatialReferenceSystem.convert(document));
+            toReturn.setSpatialReferenceSystems(spatialReferenceSystem.convert(document));
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
             toReturn.setMetadataDate(LocalDateFactory.parse(metadataDate.evaluate(document)));
             toReturn.setOnlineResources(onlineResourceConverter.convert(document));
