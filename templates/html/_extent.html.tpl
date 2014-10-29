@@ -3,7 +3,7 @@
 	<dl class=" dl-horizontal">
 	 
 	<#if boundingBoxes?has_content && boundingBoxes??>
-	  <dt>Resource's study area</dt>
+	  <dt>Study area</dt>
 	  <dd>
 			<#list boundingBoxes as extent>
 			<figure title="Map showing the spatial extent of this data resource"><img property="dc:spatial" src="${extent.googleStaticMapUrl}" alt="Spatial Extent"></figure>
