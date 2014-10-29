@@ -31,10 +31,11 @@
 	<#include "_dates.html.tpl">
 	
 	<div class="row">
-        <div class="col-sm-4 pull-right">
+        <div class="col-sm-4 col-xs-12 pull-right">
+			<#include "_children.html.tpl">
 			<#include "_ordering.html.tpl">
 		</div>
-		<div class="col-sm-8">
+		<div class="col-sm-8 col-xs-12">
 			<#include "_extent.html.tpl">
 			<#include "_onlineResources.html.tpl">
 			<#include "_quality.html.tpl">

@@ -8,8 +8,6 @@
     </#list>
 	</#if>
 
-	
-	
 	<#if descriptiveKeywords?has_content>
 		<!--INSPIRE Theme(s)-->
 		<#list descriptiveKeywords as descriptiveKeyword>
@@ -17,7 +15,12 @@
 			<dt>INSPIRE Theme</dt>
 			<dd>
 			<#list descriptiveKeyword.keywords as keyword>
-				<span property="dc:subject">${keyword.value}</span><#if keyword_has_next><br></#if>
+					<#if keyword.uri??>
+						<a href="${keyword.uri}" property="dc:subject" target="_blank">${keyword.value}</a>
+					<#else>
+						<span property="dc:subject">${keyword.value}</span>
+					</#if>
+					<#if keyword_has_next><br></#if>
 			</#list>
 			</dd>
 	    </#if>
@@ -31,7 +34,12 @@
 		 </dt>
 		  <dd class="descriptive-keywords">
 			  <#list descriptiveKeyword.keywords as keyword>
-				<span property="dc:subject">${keyword.value}</span><#if keyword_has_next><br></#if>
+					<#if keyword.uri??>
+						<a href="${keyword.uri}" property="dc:subject" target="_blank">${keyword.value}</a>
+					<#else>
+						<span property="dc:subject">${keyword.value}</span>
+					</#if>
+					<#if keyword_has_next><br></#if>
 			  </#list>
 		  </dd>
 	  </#if>

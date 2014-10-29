@@ -1,4 +1,3 @@
-
 <#if authors?has_content>
 <div id="section-authorsTop">
 	<p><small>  
@@ -14,10 +13,9 @@
 
 	<#if resourceIdentifiers?has_content>
 			<#list resourceIdentifiers as uri>
-			<#if uri.codeSpace="doi:" >
-			<#if uri.code?length == 44>
-			<br>${uri.coupleResource}, ${uri.code?length}
-			</#if>
+			<#if uri.codeSpace="doi:" &&  uri.code?length == 44 >
+				<br>
+				<a href="http://doi.org/${uri.code}">${uri.coupleResource}</a>
 			</#if>
 			</#list>
 	</#if>
