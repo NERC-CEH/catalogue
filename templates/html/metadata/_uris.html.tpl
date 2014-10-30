@@ -4,10 +4,11 @@
   <p>
     <#list resourceIdentifiers as uri>
       <#if uri.codeSpace="doi:">
-        <a href="http://doi.org/${uri.code}">${uri.coupleResource}</a> <#if uri_has_next><br></#if>
+        <a href="http://doi.org/${uri.code}">${uri.coupleResource}</a>
       <#else>
-        ${uri.coupleResource} <#if uri_has_next><br></#if>
+        ${uri.coupleResource}
       </#if>
+      <#if uri_has_next><br></#if>
     </#list>
   </p>
 </#if>
