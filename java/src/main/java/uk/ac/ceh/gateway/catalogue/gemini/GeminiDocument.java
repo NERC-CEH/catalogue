@@ -1,18 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.time.LocalDate;
-import java.util.stream.Collectors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 /**
  *
@@ -26,8 +27,8 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument implements MetadataDocument {
-    
-    private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
+    private URI uri;
+    private String id, title, description, browseGraphicUrl, resourceStatus, lineage,
         metadataStandardName, metadataStandardVersion, supplementalInfo, resourceType;
     private List<String> alternateTitles, topicCategories, coupledResources, spatialRepresentationTypes, datasetLanguages,
         useLimitations, accessConstraints, otherConstraints, securityConstraints;
@@ -46,6 +47,7 @@ public class GeminiDocument implements MetadataDocument {
     private Set<Link> documentLinks;
     private Set<ResourceIdentifier> resourceIdentifiers;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
+    private Citation citation;
     private DatasetReferenceDate datasetReferenceDate;
     private LocalDate metadataDate;
     
@@ -53,7 +55,6 @@ public class GeminiDocument implements MetadataDocument {
     public String getType() {
         return getResourceType();
     }
-    
     
     @Override
     public List<String> getLocations() {
@@ -89,5 +90,10 @@ public class GeminiDocument implements MetadataDocument {
     @Override
     public void attachMetadata(MetadataInfo metadata) {
         setMetadata(metadata);
+    }
+    
+    @Override
+    public void attachUri(URI uri) {
+        setUri(uri);
     }
 }

@@ -42,10 +42,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
  */
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id, title, description, alternateTitle, topicCategories, resourceType, 
-        otherCitationDetails, browseGraphicUrl, coupledResource,
-        resourceStatus, metadataDate, lineage, metadataStandardName, metadataStandardVersion,
-        supplementalInfo, spatialRepresentationType, datasetLanguage,
-        useLimitations, accessConstraints, otherConstraints, securityConstraints;
+        browseGraphicUrl, coupledResource, resourceStatus, metadataDate, lineage, 
+        metadataStandardName, metadataStandardVersion, supplementalInfo, 
+        spatialRepresentationType, datasetLanguage, useLimitations, 
+        accessConstraints, otherConstraints, securityConstraints;
     private final XPath xpath;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
@@ -72,7 +72,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.description = xpath.compile(XPaths.DESCRIPTION);
         this.alternateTitle = xpath.compile(XPaths.ALTERNATE_TITLE);
         this.topicCategories = xpath.compile(XPaths.TOPIC_CATEGORIES);
-        this.otherCitationDetails = xpath.compile(XPaths.OTHER_CITATION_DETAILS);
         this.resourceType = xpath.compile(XPaths.RESOURCE_TYPE);
         this.resourceIdentifierConverter = new ResourceIdentifierConverter(xpath);
         this.descriptiveKeywordsConverter = new DescriptiveKeywordsConverter(xpath);
@@ -126,17 +125,14 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
             toReturn.setTopicCategories(getListOfStrings(document, topicCategories));
             toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
-            toReturn.setOtherCitationDetails(otherCitationDetails.evaluate(document));
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
             toReturn.setResourceType(resourceType.evaluate(document));
             toReturn.setResourceIdentifiers(resourceIdentifierConverter.convert(document));
             toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
             toReturn.setTopicCategories(getListOfStrings(document, topicCategories));
             toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
-            toReturn.setOtherCitationDetails(otherCitationDetails.evaluate(document));
             toReturn.setMetadataPointsOfContact(metadataPointOfContactConverter.convert(document));
             toReturn.setDistributorContacts(distributorConverter.convert(document));
-            toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
             toReturn.setBrowseGraphicUrl(browseGraphicUrl.evaluate(document));
             toReturn.setTemporalExtent(temporalExtentConverter.convert(document));
@@ -168,7 +164,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             throw new HttpMessageNotReadableException("An xpath failed to evaluate", ex);
         }
     }
-
+    
     @Override
     protected void writeInternal(GeminiDocument t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
         throw new HttpMessageNotWritableException("I will not be able to write that document for you");
