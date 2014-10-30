@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<#function filter things name value>
-    <#local result = []>
-    <#list things as thing>
-		<#if thing[name] == value>
-            <#local result = result + [thing]>
-        </#if>
-	</#list>
-    <#return result>
-</#function>
-<#assign authors = filter(responsibleParties, "role", "Author") >
+<#assign authors = responsibleParties["Author"] >
 <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-3" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd">
 	<identifier identifierType="DOI">10.5285/${id}</identifier>
 	<#if authors?has_content>

@@ -7,15 +7,12 @@
 	
 	<#if datasetReferenceDate.creationDate?? || datasetReferenceDate.revisionDate??>
 	<span class="additionalDates">
-
-		<#if datasetReferenceDate.creationDate??>
-		<span>created  ${datasetReferenceDate.creationDate}</span>
+		(<#if datasetReferenceDate.creationDate??>
+			<span>created  ${datasetReferenceDate.creationDate}</span>
 		</#if>
-		
 		<#if datasetReferenceDate.revisionDate??>
-		<span>revised ${datasetReferenceDate.revisionDate}</span>
-		</#if>
-
+			<span>revised ${datasetReferenceDate.revisionDate}</span>
+		</#if>)
 	</span>
 	</#if>
 </p>
