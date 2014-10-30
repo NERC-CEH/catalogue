@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.gemini.Citation;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;

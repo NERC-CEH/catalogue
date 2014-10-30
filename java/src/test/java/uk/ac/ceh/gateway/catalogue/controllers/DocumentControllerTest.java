@@ -44,7 +44,7 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
-import uk.ac.ceh.gateway.catalogue.gemini.Citation;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;

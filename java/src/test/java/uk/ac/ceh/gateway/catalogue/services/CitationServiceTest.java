@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import uk.ac.ceh.gateway.catalogue.gemini.Citation;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;

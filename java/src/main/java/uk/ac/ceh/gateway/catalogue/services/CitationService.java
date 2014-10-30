@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.ac.ceh.gateway.catalogue.gemini.Citation;
+import uk.ac.ceh.gateway.catalogue.config.WebConfig;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -51,8 +52,8 @@ public class CitationService {
                         .title(     geminiDocument.getTitle())
                         .year(      pubDate.getYear())
                         .publisher( publisher.get().getOrganisationName())
-                        .bibtex(    getInAlternateFormat(geminiDocument, "bib"))
-                        .ris(       getInAlternateFormat(geminiDocument, "ris"))
+                        .bibtex(    getInAlternateFormat(geminiDocument, WebConfig.BIBTEX_SHORT))
+                        .ris(       getInAlternateFormat(geminiDocument, WebConfig.RESEARCH_INFO_SYSTEMS_SHORT))
                         .build();
             }
         }

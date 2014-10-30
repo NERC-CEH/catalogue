@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.gateway.catalogue.gemini.Citation;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;

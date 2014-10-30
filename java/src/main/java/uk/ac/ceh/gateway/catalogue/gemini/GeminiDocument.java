@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import uk.ac.ceh.gateway.catalogue.model.Citation;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.net.URI;
 import java.time.LocalDate;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
+import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
@@ -23,7 +25,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 @Accessors(chain = true)
 @ConvertUsing({
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
-    @Template(called="datacite/datacite.xml.tpl", whenRequestedAs="application/x-datacite+xml")
+    @Template(called="datacite/datacite.xml.tpl", whenRequestedAs=WebConfig.DATACITE_XML_VALUE)
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument implements MetadataDocument {
