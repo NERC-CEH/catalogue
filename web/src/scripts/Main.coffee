@@ -7,7 +7,6 @@ define [
   'cs!views/ErrorMessageView'
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
-  'cs!enables/CopyToClipboard'
   'bootstrap'
 ], ($, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, ErrorMessageView, LayersRouter, SearchRouter) ->
   
