@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -30,15 +30,14 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/2","http://onto.nerc.ac.uk/CEHMD/2_1","http://onto.nerc.ac.uk/CEHMD/3", "http://onto.nerc.ac.uk/CEHMD/3_1"));
+        List<String> expected = Arrays.asList("0/Climate/", "1/Climate/Climate change/", "0/Modelling/", "1/Modelling/Integrated ecosystem modelling/");
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
-        Collection<String> actualSci0 = index.getSci0();
-        Collection<String> actualSci1 = index.getSci1();
+        List<String> actual = index.getTopic();
         
         //Then
-        assertThat("Actual sci0 should have required items", actualSci0, hasItems("Climate", "Modelling"));
-        assertThat("Actual sci1 should have required items", actualSci1, hasItems("Climate change", "Integrated ecosystem modelling"));
+        assertThat("Actual sci0 should have required items", actual, equalTo(expected));
     }
     
     @Test

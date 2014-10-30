@@ -1,11 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -86,21 +84,13 @@ public class SearchResults {
     }
     
     public List<Facet> getFacets(){        
-        List<Facet> toReturn = response.getFacetFields().stream().map((facetField) -> {
+        return response.getFacetFields().stream().map((facetField) -> {
             return Facet.builder()
                 .fieldName(facetField.getName())
                 .displayName(SearchQuery.FACET_FIELDS.get(facetField.getName()))
                 .results(getFacetResults(facetField))
                 .build();
         }).collect(Collectors.toList());
-        
-        toReturn.add(Facet.builder()
-            .fieldName("sci0")
-            .displayName("Science Area")
-            .results(getFacetResults(response.getFacetPivot().get("sci0,sci1")))
-            .build());
-            
-        return toReturn;
     }
 
     private List<FacetResult> getFacetResults(FacetField facetField) {
@@ -119,24 +109,4 @@ public class SearchResults {
             })
             .collect(Collectors.toList());
     }
-    
-    private List<FacetResult> getFacetResults(List<PivotField> pivotFields) {
-        return pivotFields.stream()
-            .map(pivotField -> {
-                String field = pivotField.getField();
-                String name = pivotField.getValue().toString();
-                FacetFilter filter = new FacetFilter(field, name);
-                boolean active = query.containsFacetFilter(filter);
-
-                return FacetResult.builder()
-                    .name(name)
-                    .count(pivotField.getCount())
-                    .active(active)
-                    .url(((active) ? query.withoutFacetFilter(filter) : query.withFacetFilter(filter)).toUrl())
-                    .subFacetResults((pivotField.getPivot() != null)? getFacetResults(pivotField.getPivot()) : Collections.EMPTY_LIST)
-                    .build();
-            })
-            .collect(Collectors.toList());
-    }
-
 }

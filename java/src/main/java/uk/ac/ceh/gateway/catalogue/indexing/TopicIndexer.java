@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.google.common.collect.Multimap;
+import java.util.List;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 public interface TopicIndexer {
@@ -13,7 +13,7 @@ public interface TopicIndexer {
      * The number prefix represents the depth into the hierarchy.
      * 
      * @param document the GeminiDocument to extract Science Area keywords from
-     * @return Multimap of Solr column name to Topics
+     * @return List of Topics
      */
-    Multimap<String, String> index(MetadataDocument document);
+    List<String> index(MetadataDocument document);
 }
