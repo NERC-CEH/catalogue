@@ -26,6 +26,12 @@ define [
     @map.addLayers [@highlightedLayer, @markerLayer]
 
   ###
+  Position the openlayers map such that the features of the highlighted layer 
+  can be seen
+  ###
+  zoomToHighlighted: -> @map.zoomToExtent @highlightedLayer.getDataExtent()
+
+  ###
   Given an array of locations in the form:
 
     ["-9.227701 49.83726 2.687637 60.850441", "-1.50 51.51 -1.47 51.54"]
@@ -33,7 +39,7 @@ define [
   Draw these on the map. If this method is called with null or an empty array
   then remove all the highlighted features from the map
   ###
-  setHighlightedRecord: (locations = [])->
+  setHighlighted: (locations = [])->
     # Remove all the old markers
     do @highlightedLayer.removeAllFeatures
     do @markerLayer.clearMarkers

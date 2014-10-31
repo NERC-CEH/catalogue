@@ -1,10 +1,9 @@
 define [
   'jquery'
   'underscore'
-  'backbone'
   'cs!views/ExtentHighlightingMapView'
   'openlayers'
-], ($, _, Backbone, ExtentHighlightingMapView, OpenLayers) -> ExtentHighlightingMapView.extend
+], ($, _, ExtentHighlightingMapView, OpenLayers) -> ExtentHighlightingMapView.extend
   restriction:
     strokeColor: '#1c1b1e'
     fillOpacity: 0
@@ -67,4 +66,4 @@ define [
   Set the highlighted records based upon the current search result's locations
   ###
   updateHighlightedRecord: ->
-    @setHighlightedRecord @model.getResults()?.getSelectedResult()?.locations
+    @setHighlighted @model.getResults()?.getSelectedResult()?.locations
