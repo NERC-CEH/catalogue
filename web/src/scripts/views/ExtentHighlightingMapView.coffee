@@ -10,20 +10,38 @@ define [
     fillColor:   '#8fca89'
     fillOpacity: 0.3
 
-  ###
-  Define some openlayer constants
-  ###
-  marker:     new OpenLayers.Icon '/static/img/marker.png', {h:34, w:21}, {x:-10,y:-34}
-  wktFactory: new OpenLayers.Format.WKT
-  epsg4326:   new OpenLayers.Projection "EPSG:4326"
+  minGeoLength: 20 # The minimum size in pixels a feature will be displayed as
+  wktFactory:   new OpenLayers.Format.WKT
+  epsg4326:     new OpenLayers.Projection "EPSG:4326"
 
   initialize: ->
     OpenLayersView.prototype.initialize.call this, arguments #Initialize super
-    # Create the layers to draw the search results on
-    @highlightedLayer = new OpenLayers.Layer.Vector "Selected Layer"
-    @markerLayer      = new OpenLayers.Layer.Markers "Marker Layer"
-    
-    @map.addLayers [@highlightedLayer, @markerLayer]
+
+    # Create a vector layer which will render the selected features extents. If
+    # they are too small to see on screen, points will be symbolized in there 
+    # place
+    @highlighted.pointRadius = @minGeoLength / 2
+    @highlightedLayer = new OpenLayers.Layer.Vector "Selected Layer", 
+      styleMap: new OpenLayers.StyleMap new OpenLayers.Style @highlighted,
+        rules: [ new OpenLayers.Rule filter: @createFilterFunction() ]
+
+    @map.addLayer @highlightedLayer
+
+
+  ###
+  Define an openlayers filter function which will dictate if a geometry should
+  be rendered or not. The function is designed to work over features generated
+  by the "setHighlighted" method
+  ###
+  createFilterFunction:-> new OpenLayers.Filter.Function
+    evaluate: (geo) => geo.isPoint is not @isLengthVisible geo.areaRoot
+
+  ###
+  Decide if it is possible (or at least sensible) to render a feature with the 
+  given length on the map. If the length is too small, favour a fixed size
+  point instead.
+  ###
+  isLengthVisible: (length) -> (length / @map.getResolution()) > @minGeoLength
 
   ###
   Position the openlayers map such that the features of the highlighted layer 
@@ -42,17 +60,20 @@ define [
   setHighlighted: (locations = [])->
     # Remove all the old markers
     do @highlightedLayer.removeAllFeatures
-    do @markerLayer.clearMarkers
 
     # Loop round all the locations and set as a marker and polygon
     _.each locations, (location) =>
       vector = @readBoundingBox location
-      vector.style = @highlighted
+      # Calculate the average length of the height and width of the bbox
+      vector.attributes = 
+        areaRoot: Math.sqrt vector.geometry.getArea()
+        isPoint:  false
 
       centroid = vector.geometry.components[0].getCentroid()
-      lonLat = new OpenLayers.LonLat centroid.x, centroid.y
-      @markerLayer.addMarker new OpenLayers.Marker lonLat, @marker
-      @highlightedLayer.addFeatures vector
+      point = new OpenLayers.Feature.Vector centroid
+      point.attributes = _.defaults isPoint: true, vector.attributes
+      
+      @highlightedLayer.addFeatures [vector, point]
 
   ###
   Convert the given location string into a Openlayers feature which is in the
