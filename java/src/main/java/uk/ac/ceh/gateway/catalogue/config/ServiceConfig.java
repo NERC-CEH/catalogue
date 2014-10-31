@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
 import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -49,6 +50,11 @@ public class ServiceConfig {
     @Autowired LinkDatabase linkDatabase;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
+    
+    @Bean
+    public CitationService citationService() {
+        return new CitationService();
+    }
         
     @Bean
     public DocumentReadingService documentReadingService() throws XPathExpressionException {

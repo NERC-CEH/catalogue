@@ -213,21 +213,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
-    public void canGetOtherCitationDetailsFromDataset() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("otherCitationDetailsDataset.xml"));
-        String expected = "This is other citation details";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getOtherCitationDetails();
-        
-        //Then
-        assertThat("OtherCitationDetails 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
-    @Test
     public void canGetResourceStatus() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
@@ -285,37 +270,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("BrowseGraphicUrl 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
-    @Test
-    public void canGetOtherCitationDetailsFromService() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("otherCitationDetailsService.xml"));
-        String expected = "This is other citation details - service";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getOtherCitationDetails();
-        
-        //Then
-        assertThat("OtherCitationDetails 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
-    @Test
-    public void otherCitationDetailsFromEmptyElementIsNotNull() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("otherCitationDetailsServiceEmpty.xml"));
-        String expected = "";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getOtherCitationDetails();
-        
-        //Then
-        assertThat("OtherCitationDetails should not be null", actual, notNullValue());
-        assertThat("OtherCitationDetails 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
     
     @Test
