@@ -1,32 +1,17 @@
 define [
   'jquery'
   'underscore'
-  'backbone'
-  'cs!views/OpenLayersView'
+  'cs!views/ExtentHighlightingMapView'
   'openlayers'
-], ($, _, Backbone, OpenLayersView, OpenLayers) -> OpenLayersView.extend
-  highlighted:
-    strokeColor: '#8fca89' 
-    fillColor:   '#8fca89'
-    fillOpacity: 0.3
-
+], ($, _, ExtentHighlightingMapView, OpenLayers) -> ExtentHighlightingMapView.extend
   restriction:
     strokeColor: '#1c1b1e'
     fillOpacity: 0
 
-  ###
-  Define some openlayer constants
-  ###
-  marker:     new OpenLayers.Icon '/static/img/marker.png', {h:34, w:21}, {x:-10,y:-34}
-  wktFactory: new OpenLayers.Format.WKT
-  epsg4326:   new OpenLayers.Projection "EPSG:4326"
-
   initialize: ->
-    OpenLayersView.prototype.initialize.call this, arguments #Initialize super
+    ExtentHighlightingMapView.prototype.initialize.call this, arguments #Initialize super
 
     # Create the layers to draw the search results on
-    @highlightedLayer = new OpenLayers.Layer.Vector "Selected Layer"
-    @markerLayer = new OpenLayers.Layer.Markers "Marker Layer"
     @drawingLayer = new OpenLayers.Layer.Vector "Drawing Layer", style: @restriction
 
     @drawingControl = new OpenLayers.Control.DrawFeature @drawingLayer, 
@@ -40,7 +25,7 @@ define [
     _.bindAll this, 'handleDrawnFeature'
     @drawingLayer.events.register "featureadded", @drawingLayer, @handleDrawnFeature
 
-    @map.addLayers [@highlightedLayer, @markerLayer, @drawingLayer]
+    @map.addLayer  @drawingLayer
     @map.addControl @drawingControl
 
     do @updateHighlightedRecord
@@ -78,38 +63,7 @@ define [
     @model.set 'bbox', _.map(viewportArr, (num) -> num.toFixed(3)).join ','
 
   ###
-  Clear any markers or features which represent the old selected record. Then
-  check to see if a record has been selected, if so populate
+  Set the highlighted records based upon the current search result's locations
   ###
   updateHighlightedRecord: ->
-    # Remove all the old markers
-    do @highlightedLayer.removeAllFeatures
-    do @markerLayer.clearMarkers
-
-    # Get the selected result
-    selected = @model.getResults()?.getSelectedResult()
-
-    # If that result is not undefined then render as a marker and polygon
-    if selected
-      _.each selected.locations, (location) =>
-        vector = @readBoundingBox location
-        vector.style = @highlighted
-
-        centroid = vector.geometry.components[0].getCentroid()
-        lonLat = new OpenLayers.LonLat centroid.x, centroid.y
-        @markerLayer.addMarker new OpenLayers.Marker lonLat, @marker
-        @highlightedLayer.addFeatures vector
-
-  ###
-  Convert the given location string into a Openlayers feature which is in the
-  same projection system as that of the map
-  ###
-  readBoundingBox: (location) ->
-    [minx,miny,maxx,maxy] = location.split ' '
-    vector = @wktFactory.read """POLYGON((#{minx} #{miny}, \
-                                          #{minx} #{maxy}, \
-                                          #{maxx} #{maxy}, \
-                                          #{maxx} #{miny}, \
-                                          #{minx} #{miny}))"""
-    vector.geometry.transform @epsg4326, @map.getProjectionObject()
-    return vector
+    @setHighlighted @model.getResults()?.getSelectedResult()?.locations

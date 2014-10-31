@@ -4,9 +4,9 @@
     <#if boundingBoxes?has_content && boundingBoxes??>
       <dt>Study area</dt>
       <dd>
-        <#list boundingBoxes as extent>
-        <figure title="Map showing the spatial extent of this data resource"><img property="dc:spatial" src="${extent.googleStaticMapUrl}" alt="Spatial Extent"></figure>
-        </#list>
+        <figure title="Map showing the spatial extent of this data resource">
+          <div id="studyarea-map" data-location="${locations?join(',')}"></div>
+        </figure>
       </dd>
     </#if>
     <#if temporalExtent?has_content>
