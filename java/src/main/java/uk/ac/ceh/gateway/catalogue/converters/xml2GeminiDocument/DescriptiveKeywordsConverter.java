@@ -77,10 +77,17 @@ public class DescriptiveKeywordsConverter {
         NodeList nodeList = (NodeList) keywordAnchor.evaluate(descriptiveKeywordsNode, XPathConstants.NODESET);
 
         for(int i=0; i<nodeList.getLength(); i++){
-            Node keywordNode = nodeList.item(i);
+            Node node = nodeList.item(i);
+            String value;
+            Node firstChild = node.getFirstChild();
+            if (firstChild != null) {
+                value = firstChild.getNodeValue();
+            } else {
+                value = "";
+            }
             toReturn.add(Keyword.builder()
-                .value(keywordNode.getFirstChild().getNodeValue())
-                .URI(keywordNode.getAttributes().getNamedItem("xlink:href").getNodeValue())
+                .value(value)
+                .URI(node.getAttributes().getNamedItem("xlink:href").getNodeValue())
                 .build()
             );
         }
