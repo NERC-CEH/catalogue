@@ -18,7 +18,7 @@ define [
       view = new MapViewerAppView el: el, model: model
 
       expect(view.mapViewerMapView).toBeDefined()
-      expect(view.mapViewerMapView.model).toBe model
+      expect(view.mapViewerMapView.collection).toBe model.getLayers()
 
     it "creates layersView map view", ->
       view = new MapViewerAppView el: el, model: model

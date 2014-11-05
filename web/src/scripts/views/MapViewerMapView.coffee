@@ -8,10 +8,10 @@ define [
   initialize: ->
     OpenLayersView.prototype.initialize.call this, arguments #Initialize super
     
-    @listenTo @model.getLayers(), "add", @addLayer
-    @listenTo @model.getLayers(), "position", @positionLayer
-    @listenTo @model.getLayers(), "reset", @resetLayers
-    @listenTo @model.getLayers(), "remove", @removeLayer
+    @listenTo @collection, "add", @addLayer
+    @listenTo @collection, "position", @positionLayer
+    @listenTo @collection, "reset", @resetLayers
+    @listenTo @collection, "remove", @removeLayer
 
   ###
   Add the given layer to the map by creating a new OpenLayers WMS layer and 
@@ -19,20 +19,20 @@ define [
   appears above the baselayer and any other layers
   ###
   addLayer: (layer) ->
-    @map.addLayer layer._openlayersWMS = @_createLayer layer
-    @map.setLayerIndex layer._openlayersWMS, @map.getNumLayers() - 1
+    @map.addLayer layer._openlayersTMS = @_createLayer layer
+    @map.setLayerIndex layer._openlayersTMS, @map.getNumLayers() - 1
     
   ###
   Listens to when layers have been repositioned. Notify the OpenLayers Map and set the 
   new index for that layer
   ###
   positionLayer: (layer, collection, newPosition)->
-    @map.setLayerIndex layer._openlayersWMS, newPosition + 1
+    @map.setLayerIndex layer._openlayersTMS, newPosition + 1
 
   ###
   Remove the wms layer associated with the given layer
   ###
-  removeLayer: (layer)-> @map.removeLayer layer._openlayersWMS
+  removeLayer: (layer)-> @map.removeLayer layer._openlayersTMS
 
   ###
   Remove all the old wms layers and replace with the reset collection

@@ -12,11 +12,11 @@ define [
 
   render: ->
     @mapViewerMapView = new MapViewerMapView
-      model: @model
-      el: @$('.openlayers')
+      collection: @model.getLayers()
+      el:         @$('.openlayers')
 
     @layersView = new SortableCollectionView
       collection: @model.getLayers()
-      el: @$('.layers .list-group')
+      el:         @$('.layers .list-group')
       attributes:
         subView: LayerControlsView
