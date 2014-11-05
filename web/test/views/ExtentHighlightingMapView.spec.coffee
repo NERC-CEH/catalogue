@@ -6,13 +6,11 @@ define [
 ], ($, _, Backbone, ExtentHighlightingMapView) ->
   describe "ExtentHighlightingMapView", ->
     el = null
-    model = null
     view = null
       
     beforeEach ->
       el = $('<div></div>').appendTo $('body')
-      model = new Backbone.Model
-      view = new ExtentHighlightingMapView model: model, el: el
+      view = new ExtentHighlightingMapView el: el
 
     afterEach ->
       do el.remove
