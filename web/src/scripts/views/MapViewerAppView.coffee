@@ -2,8 +2,9 @@ define [
   'jquery'
   'backbone'
   'cs!views/MapViewerMapView'
-  'cs!views/LayersControlPanelView'
-], ($, Backbone, MapViewerMapView, LayersControlPanelView) -> Backbone.View.extend
+  'cs!views/SortableCollectionView'
+  'cs!views/LayerControlsView'
+], ($, Backbone, MapViewerMapView, SortableCollectionView, LayerControlsView) -> Backbone.View.extend
   el: '#mapviewer'
 
   initialize: ->
@@ -14,6 +15,8 @@ define [
       model: @model
       el: @$('.openlayers')
 
-    @layersView = new LayersControlPanelView
+    @layersView = new SortableCollectionView
       collection: @model.getLayers()
       el: @$('.layers .list-group')
+      attributes:
+        subView: LayerControlsView
