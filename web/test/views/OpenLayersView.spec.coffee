@@ -28,4 +28,3 @@ define [
 
       expect(view.map.updateSize).toHaveBeenCalled()
       expect(view.map.zoomToExtent).toHaveBeenCalled()
-            
