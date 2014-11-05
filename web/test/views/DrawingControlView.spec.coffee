@@ -8,7 +8,7 @@ define [
     model = null
 
     beforeEach ->
-      el = $('<div></div>').appendTo($('body'))
+      el = $('<div></div>').appendTo $('body')
       model = new SearchApp
 
     afterEach ->
