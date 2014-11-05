@@ -5,7 +5,6 @@ define [
 ], ($, Backbone, template) -> Backbone.View.extend
   events:
     "click button": "toggleDrawing"
-    "click a": "removeBbox"
 
   ###
   This is the drawing control view. If not bounding box is currently set, it 
@@ -23,11 +22,6 @@ define [
     @model.set
       drawing:   not @model.get 'drawing'
       mapsearch: true
-
-  ###
-  Remove the bounding box filter which has been applied to the model
-  ###
-  removeBbox: -> @model.set 'bbox', undefined
 
   ###
   Update the state of the drawing toggle button. Add and remove the active
