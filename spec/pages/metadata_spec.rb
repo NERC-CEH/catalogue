@@ -1,4 +1,4 @@
-BROWSERS.each do |browser|
+describe "Metadata page" do
   bmsPage = '/documents/571a676f-6c32-489b-b7ec-18dcc617a9f1'
   woodlandsPage = '/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae'
   starPage = '/documents/1d859249-e6af-48f4-9fd6-5f8401bc1e4e'
@@ -6,9 +6,8 @@ BROWSERS.each do |browser|
   radionuclideServicePage = '/documents/bb2d7874-7bf4-44de-aa43-348bd684a2fe'
   radionuclideDatasetPage = '/documents/fb495d1b-80a3-416b-8dc7-c85ed22ed1e3'
   notCurrentPage = '/documents/ff55462e-38a4-4f30-b562-f82ff263d9c3'
-  
-  describe "Metadata page in #{browser}", :type => :feature, :driver => browser do
 
+  sized [:xs, :sm, :md, :lg] do
     describe "UI elements of" do
     
       it "BMS page" do
