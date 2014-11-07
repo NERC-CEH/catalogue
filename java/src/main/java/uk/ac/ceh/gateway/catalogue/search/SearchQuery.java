@@ -50,7 +50,6 @@ public class SearchQuery {
         setRecordVisibility(query);
         setFacetFilters(query);
         setFacetFields(query);
-        setTopicFacetPrefix(query);
         setSortOrder(query);
         return query;
     }
@@ -182,22 +181,6 @@ public class SearchQuery {
         facets.stream().forEach((facet) -> {
             query.addFacetField(facet.getFieldName());
         });
-    }
-    
-    private void setTopicFacetPrefix(SolrQuery query) {
-        String prefix = "0/";
-        if ( !facetFilters.isEmpty()) {
-            FacetFilter topic = facetFilters.stream().filter(f -> f.getField().equals("topic")).findFirst().get();
-            String value = topic.getValue();
-            int level, i = value.indexOf("/");
-            if ( i != -1) {
-                level = Integer.parseInt(value.substring(0, i)) + 1;
-                value = value.substring(i);
-                prefix = level + value;
-                log.debug("level: {}, value: {}, prefix: {}", level, value, prefix);
-            }
-        }
-        query.setFacetPrefix("topic", prefix);
     }
     
     private void setSortOrder(SolrQuery query){
