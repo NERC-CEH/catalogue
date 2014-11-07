@@ -1,8 +1,7 @@
 describe "The navbar" do
   describe "toggle button" do
     sized [:xs] do
-      
-      it "should show when the width is 760px" do
+      it "should be shown" do
         visit '/documents'
         expect(page).to have_selector('.navbar-toggle')
       end
@@ -15,14 +14,9 @@ describe "The navbar" do
     end
 
     sized [:md] do
-      it "should be hidden when the width is 900px" do
+      it "should be hidden" do
         visit '/documents'
         expect(page).to_not have_selector('.navbar-toggle')
-      end
-
-      it "should be hidden by default" do
-        visit '/documents'
-        expect(page).to_not have_selector('.navbar-nav')
       end
     end
   end
