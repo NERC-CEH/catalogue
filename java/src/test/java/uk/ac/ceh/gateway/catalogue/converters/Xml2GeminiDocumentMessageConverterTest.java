@@ -9,8 +9,6 @@ import java.util.Set;
 import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 import java.time.LocalDate;
 import java.time.Month;
 import static org.junit.Assert.*;
@@ -30,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty.Address;
+import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
 import uk.ac.ceh.gateway.catalogue.gemini.ThesaurusName;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
@@ -52,19 +51,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("responsibleParty.xml"));
         List<ResponsibleParty> expected = Arrays.asList(
             ResponsibleParty.builder()
-                .organisationName("Centre for Ecology & Hydrology")
-                .role("pointOfContact")
-                .email("enquiries@ceh.ac.uk")
-                .address(Address.builder()
-                    .deliveryPoint("Maclean Building, Benson Lane, Crowmarsh Gifford")
-                    .city("Wallingford")
-                    .administrativeArea("Oxfordshire")
-                    .postalCode("OX10 8BB")
-                    .country("UK")
-                    .build()
-                )
-                .build(),
-            ResponsibleParty.builder()
                 .individualName("Reynolds,B.")
                 .organisationName("Centre for Ecology & Hydrology")
                 .role("author")
@@ -76,8 +62,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
                     .postalCode("LL57 2UW")
                     .country("UK")
                     .build()
-                )
-                .build(),
+                ).build(),
             ResponsibleParty.builder()
                 .individualName("Neal,C.")
                 .organisationName("Centre for Ecology & Hydrology")
@@ -90,8 +75,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
                     .postalCode("OX10 8BB")
                     .country("UK")
                     .build()
-                )
-                .build(),
+                ).build(),
             ResponsibleParty.builder()
                 .individualName("Kirchner,J.")
                 .organisationName("University of California, Berkley")
@@ -111,8 +95,23 @@ public class Xml2GeminiDocumentMessageConverterTest {
                     .postalCode("LL57 2UW")
                     .country("UK")
                     .build()
-                )
-                .build(),
+                ).build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<ResponsibleParty> actual = document.getResponsibleParties();
+        
+        //Then
+        assertThat("ResponsibleParties 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetDistributors() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("responsibleParty.xml"));
+        List<ResponsibleParty> expected = Arrays.asList(
             ResponsibleParty.builder()
                 .organisationName("Centre for Ecology & Hydrology")
                 .role("distributor")
@@ -124,16 +123,55 @@ public class Xml2GeminiDocumentMessageConverterTest {
                     .postalCode("OX10 8BB")
                     .country("UK")
                     .build()
-                )
-                .build()
+                ).build(),
+            ResponsibleParty.builder()
+                .individualName("Peter")
+                .organisationName("ceh")
+                .role("distributor")
+                .address(Address.builder().build()
+                ).build()
         );
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<ResponsibleParty> actual = document.getResponsibleParties();
+        List<ResponsibleParty> actual = document.getDistributorContacts();
         
         //Then
-        assertThat("ResponsibleParties 'actual' should be equal to 'expected'", actual, equalTo(expected));
+        assertThat("Distributor 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetMetadataPointsOfContact() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("responsibleParty.xml"));
+        List<ResponsibleParty> expected = Arrays.asList(
+            ResponsibleParty.builder()
+                .organisationName("Shore Section")
+                .role("pointOfContact")
+                .email("enquiries@ceh.ac.uk")
+                .address(Address.builder().build())
+                .build(),
+            ResponsibleParty.builder()
+                .organisationName("Centre for Ecology & Hydrology")
+                .role("pointOfContact")
+                .email("enquiries@ceh.ac.uk")
+                .address(Address.builder()
+                    .deliveryPoint("Maclean Building, Benson Lane, Crowmarsh Gifford")
+                    .city("Wallingford")
+                    .administrativeArea("Oxfordshire")
+                    .postalCode("OX10 8BB")
+                    .country("UK")
+                    .build()
+                ).build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<ResponsibleParty> actual = document.getMetadataPointsOfContact();
+        
+        //Then
+        assertThat("PointOfContact 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
     
     @Test
@@ -171,21 +209,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("DistributionInfo 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
-    @Test
-    public void canGetOtherCitationDetailsFromDataset() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("otherCitationDetailsDataset.xml"));
-        String expected = "This is other citation details";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getOtherCitationDetails();
-        
-        //Then
-        assertThat("OtherCitationDetails 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
     
     @Test
@@ -246,37 +269,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("BrowseGraphicUrl 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
-    @Test
-    public void canGetOtherCitationDetailsFromService() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("otherCitationDetailsService.xml"));
-        String expected = "This is other citation details - service";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getOtherCitationDetails();
-        
-        //Then
-        assertThat("OtherCitationDetails 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
-    @Test
-    public void otherCitationDetailsFromEmptyElementIsNotNull() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("otherCitationDetailsServiceEmpty.xml"));
-        String expected = "";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getOtherCitationDetails();
-        
-        //Then
-        assertThat("OtherCitationDetails should not be null", actual, notNullValue());
-        assertThat("OtherCitationDetails 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
     
     @Test
@@ -940,9 +932,10 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getSpatialReferenceSystems().get(0).getTitle();
 
         //Then
-        assertThat("Actual title is as expected", document.getSpatialReferenceSystem().getTitle(), equalTo(expected));
+        assertThat("Actual title is as expected", actual, equalTo(expected));
     }
     
     @Test
@@ -954,9 +947,30 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getSpatialReferenceSystems().get(0).getTitle();
 
         //Then
-        assertThat("Actual title is as expected", document.getSpatialReferenceSystem().getTitle(), equalTo(expected));
+        assertThat("Actual title is as expected", actual, equalTo(expected));
+    }
+    
+     @Test
+    public void spatialReferenceReferenceString() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReferenceUnknown.xml"));
+        List<SpatialReferenceSystem> expected = Arrays.asList(
+            SpatialReferenceSystem.builder()
+                .code("123456")
+                .codeSpace("urn:ogc:def:crs:MadeUpCodeSpace")
+                .build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<SpatialReferenceSystem> actual = document.getSpatialReferenceSystems();
+
+        //Then
+        assertThat("Actual reference is equal to expected", actual, equalTo(expected));
     }
     
     @Test
@@ -973,6 +987,33 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("MetadataDate is correct", document.getDatasetReferenceDate(), equalTo(expected));
+    }
+    
+    @Test
+    public void multipleSpatialResprentations() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("multipleSpatialReferences.xml"));
+        List<SpatialReferenceSystem> expected = Arrays.asList(
+            SpatialReferenceSystem.builder()
+                .code("27700")
+                .codeSpace("urn:ogc:def:crs:EPSG")
+                .build(),
+            SpatialReferenceSystem.builder()
+                .code("4188")
+                .codeSpace("urn:ogc:def:crs:EPSG")
+                .build(),
+            SpatialReferenceSystem.builder()
+                .code("29901")
+                .codeSpace("urn:ogc:def:crs:EPSG")
+                .build()
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        assertThat("MetadataDate is correct", document.getSpatialReferenceSystems(), equalTo(expected));
     }
     
     @Test
@@ -1017,7 +1058,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
 
         //Then
-        assertThat("Spatial reference is completely missing", document.getSpatialReferenceSystem(), is(nullValue()));
+        assertThat("Spatial reference is completely missing", document.getSpatialReferenceSystems(), equalTo(Collections.EMPTY_LIST));
     }
     
     @Test

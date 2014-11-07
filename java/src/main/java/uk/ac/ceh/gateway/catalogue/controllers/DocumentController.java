@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -25,11 +25,12 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -48,6 +49,7 @@ public class DocumentController {
     private final DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final DocumentLinkService linkService;
+    private final CitationService citationService;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
@@ -55,13 +57,15 @@ public class DocumentController {
                                 DocumentInfoMapper documentInfoMapper,
                                 DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory,
                                 BundledReaderService<MetadataDocument> documentBundleReader,
-                                DocumentLinkService linkService) {
+                                DocumentLinkService linkService,
+                                CitationService citationService) {
         this.repo = repo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
         this.infoFactory = infoFactory;
         this.documentBundleReader = documentBundleReader;
         this.linkService = linkService;
+        this.citationService = citationService;
     }
     
     @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
@@ -114,9 +118,11 @@ public class DocumentController {
             @PathVariable("revision") String revision,
             HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
         MetadataDocument document = documentBundleReader.readBundle(file, revision);
+        document.attachUri(getCurrentUri(request, file, revision));
         if(document instanceof GeminiDocument) {
             GeminiDocument geminiDocument = (GeminiDocument)document;
             geminiDocument.setDocumentLinks(new HashSet<>(linkService.getLinks(geminiDocument, getLinkUriBuilder(request, file))));
+            geminiDocument.setCitation(citationService.getCitation(geminiDocument));
         }
         log.debug("document requested: {}", document);
         return document;
@@ -133,6 +139,27 @@ public class DocumentController {
         return repo.deleteData(file + ".meta")
                    .deleteData(file + ".raw")
                    .commit(user, reason);
+    }
+    
+    protected URI getCurrentUri(HttpServletRequest request, String file, String revision) throws DataRepositoryException {
+        if(revision.equals(repo.getLatestRevision().getRevisionID())) {
+           return ServletUriComponentsBuilder
+                .fromContextPath(request)
+                .path("/documents/")
+                .path(file)
+                .build()
+                .toUri();
+        }
+        else {
+            return ServletUriComponentsBuilder
+                .fromContextPath(request)
+                .path("/history/")
+                .path(revision)
+                .path("/")
+                .path(file)
+                .build()
+                .toUri();
+        }
     }
     
     private UriComponentsBuilder getLinkUriBuilder(HttpServletRequest request, String file) {

@@ -10,6 +10,7 @@ import java.util.List;
  * @author cjohn
  */
 public interface MetadataDocument {
+    URI getUri();
     String getDescription();
     String getTitle();
     String getId();
@@ -18,4 +19,5 @@ public interface MetadataDocument {
     List<String> getTopics();
     MetadataInfo getMetadata();
     void attachMetadata(MetadataInfo metadata);
+    void attachUri(URI uri);
 }

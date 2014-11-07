@@ -40,9 +40,12 @@ public class SpatialReferenceSystem {
         return toReturn;
     }
     
+    public String getReference() {
+        return String.format("%s::%s", codeSpace, code);
+    }
+    
     public boolean isEmpty(){
-        return nullToEmpty(this.code).isEmpty() && nullToEmpty(this.codeSpace).isEmpty();
+        return code.isEmpty() && this.codeSpace.isEmpty();
     }
     
 }
-

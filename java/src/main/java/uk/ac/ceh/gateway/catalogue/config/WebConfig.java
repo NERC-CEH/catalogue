@@ -28,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
@@ -37,6 +38,13 @@ import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 @EnableCaching
 @ComponentScan(basePackages = "uk.ac.ceh.gateway.catalogue")
 public class WebConfig extends WebMvcConfigurerAdapter {
+    public static final String BIBTEX_SHORT                 = "bib";
+    public static final String BIBTEX_VALUE                 = "application/x-bibtex";
+    public static final String RESEARCH_INFO_SYSTEMS_SHORT  = "ris";
+    public static final String RESEARCH_INFO_SYSTEMS_VALUE  = "application/x-research-info-systems";
+    public static final String DATACITE_XML_SHORT           = "datacite.xml";
+    public static final String DATACITE_XML_VALUE           = "application/x-datacite+xml";
+    
     @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
     
@@ -46,8 +54,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         mappingJackson2HttpMessageConverter.setObjectMapper(mapper);
         
         converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class, configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(UKEOFDocument.class, configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(SearchResults.class, configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(UKEOFDocument.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(SearchResults.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Citation.class,       configureFreeMarker().getConfiguration()));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
@@ -102,7 +111,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             .defaultContentType(MediaType.TEXT_HTML)
             .favorParameter(true)
             .mediaType("html", MediaType.TEXT_HTML)
-            .mediaType("json", MediaType.APPLICATION_JSON);
+            .mediaType("json", MediaType.APPLICATION_JSON)
+            .mediaType(DATACITE_XML_SHORT, MediaType.parseMediaType(DATACITE_XML_VALUE))
+            .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
+            .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE));
     }
     
     @Override

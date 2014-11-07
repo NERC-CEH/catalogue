@@ -8,7 +8,7 @@
 //## Gray and brand colors for use across Bootstrap.
 
 @gray-darker:            lighten(#000, 13.5%); // #222
-@gray-dark:              #353438;   // #333
+@gray-dark:              #333;   // #333
 @gray:                   #828c7f; // #555
 @gray-light:             #9da09e;   // #999
 @gray-lighter:           #a5d4a0; // #eee
@@ -24,7 +24,7 @@
 //## Settings for some of the most global styles.
 
 //** Background color for `<body>`.
-@body-bg:               #f8f8f8;
+@body-bg:               #fff;
 //** Global text color on `<body>`.
 @text-color:            @gray-dark;
 
@@ -38,20 +38,19 @@
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-@font-family-sans-serif:  "Noto Sans","Helvetica Neue", Helvetica, Arial, sans-serif;
-@font-family-serif:       "Noto Serif",Georgia, "Times New Roman", Times, serif;
+@font-family-sans-serif:  "Open Sans","Helvetica Neue", Helvetica, Arial, sans-serif;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
 @font-family-monospace:   "Source Code Pro",Menlo, Monaco, Consolas, "Courier New", monospace;
 @font-family-base:        @font-family-sans-serif;
 
 @font-size-base:          14px;
-@font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
-@font-size-small:         ceil((@font-size-base * 0.85)); // ~12px
+@font-size-large:         ceil((@font-size-base * 1.25));
+@font-size-small:         ceil((@font-size-base * 0.85));
 
-@font-size-h1:            floor((@font-size-base * 2.0)); // ~28px
-@font-size-h2:            floor((@font-size-base * 1.6)); // ~22px
-@font-size-h3:            ceil((@font-size-base * 1.25)); // ~18px
-@font-size-h4:            ceil((@font-size-base * 1.1)); // ~16px
+@font-size-h1:            floor((@font-size-base * 2.2));
+@font-size-h2:            floor((@font-size-base * 1.75));
+@font-size-h3:            ceil((@font-size-base * 1.5)); 
+@font-size-h4:            ceil((@font-size-base * 1.2));
 @font-size-h5:            @font-size-base;
 @font-size-h6:            ceil((@font-size-base * 0.85)); // ~12px
 
@@ -62,9 +61,9 @@
 
 //** By default, this inherits from the `<body>`.
 @headings-font-family:    @font-family-sans-serif;
-@headings-font-weight:    700;
+@headings-font-weight:    300;
 @headings-line-height:    1.1;
-@headings-color:          @brand-success;
+@headings-color:          @gray-dark;
 
 
 //== Iconography

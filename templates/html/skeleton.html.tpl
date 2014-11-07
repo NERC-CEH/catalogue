@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${title} - CEH Catalogue</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-    <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
+    
+	
+	<!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
     <![endif]-->
@@ -27,13 +29,13 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="http://lwisportal-staging.nerc-lancaster.ac.uk/">Home</a></li>
-            <li class="active"><a href="/documents">Search CEH Data</a></li>
+            <li class="active"><a href="/documents">Search Data</a></li>
             <li><a href="http://lwisportal-staging.nerc-lancaster.ac.uk/about">About</a></li>
             <li><a href="#">Contact</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i> admin <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i> Jeanette Winterson <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="#">Profile</a></li>
                 <li><a href="#">Logout</a></li>

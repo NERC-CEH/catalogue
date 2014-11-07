@@ -30,7 +30,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
+import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
@@ -73,7 +73,7 @@ public class OnlineResourceControllerTest {
         assertThat("the online resource url is a", resource.getUrl(), equalTo("a"));
     }
     
-    @Test(expected=NoSuchOnlineResourceException.class)
+    @Test(expected=ResourceNotFoundException.class)
     public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNotPresent() throws IOException, UnknownContentTypeException  {
         //Given
         String file = "file";
@@ -87,7 +87,7 @@ public class OnlineResourceControllerTest {
         fail("Expected to fail with execption");
     }
     
-    @Test(expected=NoSuchOnlineResourceException.class)
+    @Test(expected=ResourceNotFoundException.class)
     public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNegative() throws IOException, UnknownContentTypeException  {
         //Given
         String file = "file";
@@ -101,7 +101,7 @@ public class OnlineResourceControllerTest {
         fail("Expected to fail with execption");
     }
     
-    @Test(expected=NoSuchOnlineResourceException.class)
+    @Test(expected=ResourceNotFoundException.class)
     public void checkThatFailsToGetOnlineResourcesFromUnknownMetadataDocumentType() throws IOException, UnknownContentTypeException {
         //Given
         MetadataDocument document = mock(MetadataDocument.class);
