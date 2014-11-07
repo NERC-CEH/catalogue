@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.ukeof;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import lombok.Data;
@@ -22,12 +23,18 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UKEOFDocument implements MetadataDocument {
+    private URI uri;
     private String description, title, id, type;
     private MetadataInfo metadata;
     
     @Override
     public void attachMetadata(MetadataInfo metadata) {
         setMetadata(metadata);
+    }
+        
+    @Override
+    public void attachUri(URI uri) {
+        setUri(uri);
     }
 
     @Override

@@ -5,22 +5,29 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
@@ -28,6 +35,7 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -36,12 +44,14 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -59,6 +69,8 @@ public class DocumentControllerTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock DocumentLinkService linkService;
+    @Mock CitationService citationService;
+    
     private DocumentController controller;
     
     @Rule
@@ -71,19 +83,17 @@ public class DocumentControllerTest {
                                      new AnnotatedUserHelper(CatalogueUser.class),
                                      new EventBus());
         MockitoAnnotations.initMocks(this);
-        controller = new DocumentController(repo,
-                                            documentReader,
-                                            documentInfoMapper,
-                                            infoFactory,
-                                            documentBundleReader,
-                                            linkService);
+        controller = spy(new DocumentController(repo,
+                                                documentReader,
+                                                documentInfoMapper,
+                                                infoFactory,
+                                                documentBundleReader,
+                                                linkService,
+                                                citationService));
     }
     
     private HttpServletRequest mockRequest() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getScheme()).thenReturn("http");
-        when(request.getServerPort()).thenReturn(80);
-        return request;
+        return new MockHttpServletRequest();
     }
     
     @Test
@@ -156,6 +166,7 @@ public class DocumentControllerTest {
         String revision = "revision";
         
         when(documentBundleReader.readBundle(file, revision)).thenReturn(bundledDocument);
+        doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
         
         //When
         MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, revision, mockRequest());
@@ -176,7 +187,7 @@ public class DocumentControllerTest {
         String revision = "revision";
         
         when(documentBundleReader.readBundle(file, revision)).thenReturn(bundledDocument);
-        
+        doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
         //When
         controller.readMetadata(CatalogueUser.PUBLIC_USER, file, revision, mockRequest());
         
@@ -226,6 +237,75 @@ public class DocumentControllerTest {
         //Then
         verify(documentBundleReader).readBundle(eq(file), any(String.class));
         assertEquals("Expected the mocked gemini document", bundledDocument, readDocument);
+    }
+    
+    @Test
+    public void checkThatURIIsAttachedToDocumentOnReading() throws IOException, UnknownContentTypeException, URISyntaxException {
+        //Given        
+        GeminiDocument bundledDocument = mock(GeminiDocument.class);
+        URI uri = new URI("http://whatever.com");
+        doReturn(uri).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
+        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(bundledDocument);
+        
+        //When
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", "revision", mockRequest());
+        
+        //Then
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        verify(bundledDocument).attachUri(uriCaptor.capture());
+        assertSame("Expected the same uri", uri, uriCaptor.getValue());
+    }
+    
+    @Test
+    public void checkThatCitationIsPopulatedForGeminiDocument() throws IOException, UnknownContentTypeException {
+        //Given
+        GeminiDocument bundledDocument = mock(GeminiDocument.class);
+        Citation citation = Citation.builder().build();
+        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(bundledDocument);
+        when(citationService.getCitation(bundledDocument)).thenReturn(citation);
+        doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
+        
+        //When
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", "revision", mockRequest());
+        
+        //Then
+        verify(bundledDocument).setCitation(citation);
+    }
+    
+    @Test
+    public void checkThatCurrentURIIsNonHistoricForLatestRevision() throws DataRepositoryException {
+        //Given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        String file = "file";
+        String revisionId = "latest";
+        
+        DataRevision revision = mock(DataRevision.class);
+        when(revision.getRevisionID()).thenReturn(revisionId);
+        doReturn(revision).when(repo).getLatestRevision();
+        
+        //When
+        URI docUri = controller.getCurrentUri(request, file, revisionId);
+        
+        //Then
+        assertThat("Expected latest uri", docUri.toString(), equalTo("http://localhost/documents/file"));
+    }
+    
+    @Test
+    public void checkThatCurrentURIIsHistoricForOtherRevision() throws DataRepositoryException {
+         //Given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        String file = "file";
+        String revisionId = "inThePast";
+        
+        DataRevision revision = mock(DataRevision.class);
+        when(revision.getRevisionID()).thenReturn("latest");
+        doReturn(revision).when(repo).getLatestRevision();
+        
+        //When
+        URI docUri = controller.getCurrentUri(request, file, revisionId);
+        
+        //Then
+        assertThat("Expected latest uri", docUri.toString(), equalTo("http://localhost/history/inThePast/file"));
     }
     
     private DataRevision<CatalogueUser> lastCommit(String file) throws DataRepositoryException {

@@ -1,5 +1,6 @@
 define [
   'jquery'
+  'cs!views/StudyAreaView'
   'cs!models/MapViewerApp'
   'cs!views/MapViewerAppView'
   'cs!models/SearchApp'
@@ -7,9 +8,8 @@ define [
   'cs!views/ErrorMessageView'
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
-  'cs!enables/CopyToClipboard'
   'bootstrap'
-], ($, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, ErrorMessageView, LayersRouter, SearchRouter) ->
+], ($, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, ErrorMessageView, LayersRouter, SearchRouter) ->
   
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -17,8 +17,12 @@ define [
   we like globally.
   ###
   initialize: ->
+    do @initStudyAreaMap if $('#studyarea-map').length
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
+      
+  initStudyAreaMap: ->
+    view = new StudyAreaView();
       
   ###
   Initialize the map viewer app, view and router

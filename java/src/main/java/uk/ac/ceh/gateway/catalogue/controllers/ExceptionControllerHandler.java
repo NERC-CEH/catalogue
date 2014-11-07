@@ -14,7 +14,7 @@ import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
-import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
+import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
 
@@ -27,7 +27,7 @@ public class ExceptionControllerHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({
         GitFileNotFoundException.class,
-        NoSuchOnlineResourceException.class
+        ResourceNotFoundException.class
     })
     @ResponseBody
     public ErrorResponse handleNotFoundExceptions(Exception ex) {

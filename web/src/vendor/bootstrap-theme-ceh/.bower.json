@@ -1,6 +1,7 @@
 {
   "name": "bootstrap-theme-ceh",
   "description": "CEH Bootstrap theme",
+  "version": "1.0.1",
   "author": "CEH Application Development Team <oss@ceh.ac.uk>",
   "main": "dist/bootstrap.css",
   "themestrap": {
@@ -18,12 +19,13 @@
     "bootstrap": "3.2.0"
   },
   "homepage": "https://github.com/NERC-CEH/bootstrap-theme-ceh",
-  "_release": "c9d31fa47d",
+  "_release": "1.0.1",
   "_resolution": {
-    "type": "commit",
-    "commit": "c9d31fa47deab4a63f864da5e66e74343e7a2dc7"
+    "type": "version",
+    "tag": "v1.0.1",
+    "commit": "3cacfaae9b0ebdc84431ec0c480fa252788df528"
   },
   "_source": "git://github.com/NERC-CEH/bootstrap-theme-ceh.git",
-  "_target": "c9d31fa47deab4a63f864da5e66e74343e7a2dc7",
+  "_target": "1.0.1",
   "_originalSource": "bootstrap-theme-ceh"
 }

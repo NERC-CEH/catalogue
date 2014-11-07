@@ -20,7 +20,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.NoSuchOnlineResourceException;
+import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
@@ -76,7 +76,7 @@ public class OnlineResourceController {
             return geminiDocument.getOnlineResources();
         }
         else {
-            throw new NoSuchOnlineResourceException("This document is not a gemini document, so does not have online resources");
+            throw new ResourceNotFoundException("This document is not a gemini document, so does not have online resources");
         }
     }
     
@@ -174,13 +174,13 @@ public class OnlineResourceController {
                 }
             }
         }
-        throw new NoSuchOnlineResourceException("The layer: " + layer + " is not present in the given service" );
+        throw new ResourceNotFoundException("The layer: " + layer + " is not present in the given service" );
     }
     
     protected OnlineResource getOnlineResource(String revision, String file, int index) throws IOException, UnknownContentTypeException {
         List<OnlineResource> onlineResources = getOnlineResources(revision, file);
         if(index < 0 || onlineResources.size() <= index) {
-            throw new NoSuchOnlineResourceException("No online resource exists on this document at index " + index);
+            throw new ResourceNotFoundException("No online resource exists on this document at index " + index);
         }
         else {
             return onlineResources.get(index);
