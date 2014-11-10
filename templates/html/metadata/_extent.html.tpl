@@ -5,7 +5,7 @@
       <dt>Study area</dt>
       <dd>
         <figure title="Map showing the spatial extent of this data resource">
-          <div id="studyarea-map" data-location="${locations?join(',')}"></div>
+          <div id="studyarea-map" property="dc:spatial geo:Geometry" content="${locations?join(',')}"></div>
         </figure>
       </dd>
     </#if>

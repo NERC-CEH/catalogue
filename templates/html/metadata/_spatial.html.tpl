@@ -15,10 +15,10 @@
       <#if spatialReferenceSystems?has_content>
         <dt>Spatial Reference System</dt>
         <dd>
-            <#list spatialReferenceSystems as spatialReferenceSystem>
-              ${spatialReferenceSystem.title!(spatialReferenceSystem.reference)}
-              <#if spatialReferenceSystem_has_next><br></#if>  
-            </#list>
+          <#list spatialReferenceSystems as spatialReferenceSystem>
+            ${spatialReferenceSystem.title!(spatialReferenceSystem.reference)}
+            <#if spatialReferenceSystem_has_next><br></#if>  
+          </#list>
         </dd>
       </#if>
     </dl>

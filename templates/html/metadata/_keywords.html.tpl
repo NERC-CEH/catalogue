@@ -4,7 +4,7 @@
   <#if topicCategories?has_content>
   <dt>Topic Categories</dt>
     <#list topicCategories as topic>
-      <dd property="dc:subject">${topic}<#if topic_has_next><br></#if></dd>
+      <dd>${topic}<#if topic_has_next><br></#if></dd>
     </#list>
   </#if>
 
@@ -16,7 +16,7 @@
       <dd>
         <#list descriptiveKeyword.keywords as keyword>
           <#if keyword.uri??>
-            <a href="${keyword.uri}" property="dc:subject" target="_blank">${keyword.value}</a>
+            <a href="${keyword.uri}" property="dcat:keyword" target="_blank">${keyword.value}</a>
           <#else>
             <span property="dc:subject">${keyword.value}</span>
           </#if>
@@ -34,9 +34,9 @@
         <dd class="descriptive-keywords">
           <#list descriptiveKeyword.keywords as keyword>
             <#if keyword.uri??>
-              <a href="${keyword.uri}" property="dc:subject" target="_blank">${keyword.value}</a>
+              <a href="${keyword.uri}" property="dcat:keyword" target="_blank">${keyword.value}</a>
             <#else>
-              <span property="dc:subject">${keyword.value}</span>
+              <span property="dcat:keyword">${keyword.value}</span>
             </#if>
             <#if keyword_has_next><br></#if>
           </#list>

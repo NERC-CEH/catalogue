@@ -2,11 +2,11 @@
   <h3><a id="metadata"></a>Metadata</h3>
   <dl class="dl-horizontal">
     <dt><span class="element" data-content="Unique identifier for this record" data-trigger="hover" data-placement="right">Record identifier</span></dt>
-    <dd property="dct:identifier iso:fileIdentifier" >${id}</dd>
+    <dd property="dc:identifier" >${id}</dd>
     <#if metadataPointsOfContact?has_content>
     <dt>Record created by</dt>
       <#list metadataPointsOfContact as metadataPointOfContact>
-        <dd>
+        <dd property="foaf:Agent">
           <#if metadataPointOfContact.email?has_content>
             <#if metadataPointOfContact.individualName?has_content>
               <a href="mailto:${metadataPointOfContact.email}&subject=RE:${title}">${metadataPointOfContact.individualName}</a><br>
