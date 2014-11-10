@@ -13,7 +13,7 @@
     <div class="panel-body">
       
       <#if downloadOrder.orderUrl?has_content>
-        <p><a href="#" property="dcat:accessURL"><i class="glyphicon glyphicon-save text-info"></i> Order/download</a></p>
+        <p><a href="${downloadOrder.orderUrl}" property="dcat:accessURL"><i class="glyphicon glyphicon-save text-info"></i> Order/download</a></p>
       </#if>
       <#if mapViewable>
         <p><a href="${mapViewerUrl}"><i class="glyphicon glyphicon-map-marker text-info"></i> ${viewOnMap}</a></p>
