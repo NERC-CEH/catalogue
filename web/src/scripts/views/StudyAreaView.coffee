@@ -11,7 +11,7 @@ define [
   ###
   Grab the locations off of the map element
   ###
-  getLocations: -> @$el.attr('data-location').split ','
+  getLocations: -> @$el.attr('content').split ','
 
   ###
   Update the highlighted areas based upon the locations. Then zoom the to 
