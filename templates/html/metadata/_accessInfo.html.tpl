@@ -1,14 +1,14 @@
 <#list useLimitations as useLimitations>
   <#if useLimitations?starts_with("If you reuse this data")>
   <#else>
-  <p>${useLimitations}</p>
+  <p property="dc:rights">${useLimitations}</p>
   </#if>
 </#list>
 
 <#if citation?has_content>
   <div id="section-citation">
     <p>If you reuse this data, you must cite:</p>
-    <p id="citation-text" property="dct:bibliographicCitation" about="_:0">
+    <p id="citation-text" property="dc:bibliographicCitation" about="_:0">
       ${citation.authors?join(',')} ${citation.year}. ${citation.title}. ${citation.publisher} ${citation.doiDisplay}
     </p>
     

@@ -1,3 +1,3 @@
 <#if description?has_content>
-  <p id="document-description" property="dc:description dc:abstract">${description}</p>
+  <p id="document-description" property="dc:abstract">${description}</p>
 </#if>

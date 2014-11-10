@@ -4,7 +4,7 @@
   <h3><a id="authors"></a>Authors</h3>
       
     <#list authors as author> 
-      <div property="dct:contributor" id="author-detail">      
+      <div property="foaf:Agent">
 
         <#if author.email?has_content>
           <#if author.individualName?has_content>

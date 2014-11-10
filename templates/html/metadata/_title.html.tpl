@@ -4,7 +4,7 @@
   <h1 id="document-title" property="dc:title">
   
   <#if (resourceType)?has_content>
-  <small class="resource-type" property="dc:type">${resourceType}</small>
+  <small id="resource-type" property="dc:type">${resourceType}</small>
   </#if><br>
   
   ${title}
