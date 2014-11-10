@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import java.io.IOException;
 import java.util.List;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -16,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
  * @param <D>
  */
 @Data
+@Slf4j
 public class SolrIndexingService<D> implements DocumentIndexingService {
     private final BundledReaderService<D> reader;
     private final DocumentListingService listingService;
@@ -51,11 +53,13 @@ public class SolrIndexingService<D> implements DocumentIndexingService {
             DocumentIndexingException joinedException = new DocumentIndexingException("Failed to index one or more documents");
             for(String document : documents) {
                 try {
+                    log.debug("Indexing: {}, revision: {}", document, revision);
                     solrServer.addBean(
                         indexGenerator.generateIndex(
                             reader.readBundle(document, revision)));
                 }
                 catch(Exception ex) {
+                    log.error("Failed to index: {}", document);
                     joinedException.addSuppressed(new DocumentIndexingException(
                         String.format("Failed to index %s : %s", document, ex.getMessage()), ex));
                 }

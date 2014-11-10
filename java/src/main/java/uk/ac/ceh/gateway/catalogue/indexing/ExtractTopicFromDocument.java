@@ -49,6 +49,7 @@ public class ExtractTopicFromDocument implements TopicIndexer {
         
        return document.getTopics()
            .stream()
+           .filter(t -> topicHierarchy.containsKey(t))
            .flatMap(t -> topicHierarchy.get(t).stream())
            .distinct()
            .collect(Collectors.toList());
