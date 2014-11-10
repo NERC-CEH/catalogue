@@ -37,7 +37,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         List<String> actual = index.getTopic();
         
         //Then
-        assertThat("Actual sci0 should have required items", actual, equalTo(expected));
+        assertThat("Actual topic should have required items", actual, equalTo(expected));
     }
     
     @Test
