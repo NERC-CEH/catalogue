@@ -33,10 +33,10 @@ public class BoundingBoxesConverter {
         for(int i=0; i<nodeList.getLength(); i++){
             Node boundingBoxNode = nodeList.item(i);
             BoundingBox boundingBox = BoundingBox.builder()
-                .westBoundLongitude(westBoundingLongitude.evaluate(boundingBoxNode))
-                .eastBoundLongitude(eastBoundingLongitude.evaluate(boundingBoxNode))
-                .southBoundLatitude(southBoundLatitude.evaluate(boundingBoxNode))
-                .northBoundLatitude(northBoundLatitude.evaluate(boundingBoxNode))
+                .westBoundLongitude(westBoundingLongitude.evaluate(boundingBoxNode).trim())
+                .eastBoundLongitude(eastBoundingLongitude.evaluate(boundingBoxNode).trim())
+                .southBoundLatitude(southBoundLatitude.evaluate(boundingBoxNode).trim())
+                .northBoundLatitude(northBoundLatitude.evaluate(boundingBoxNode).trim())
                 .build();
             toReturn.add(boundingBox);
         }

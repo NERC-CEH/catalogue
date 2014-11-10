@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import java.time.LocalDate;
 import java.time.Month;
 import static org.junit.Assert.*;
@@ -579,6 +578,26 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
+    public void canGetTopic() throws IOException{
+        
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("topics.xml"));
+        List<String> expected = Arrays.asList(
+            "http://onto.nerc.ac.uk/CEHMD/21",
+            "http://onto.nerc.ac.uk/CEHMD/111",
+            "http://onto.nerc.ac.uk/CEHMD/8"
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<String> actual = document.getTopics();        
+        
+        //Then
+        assertThat("Actual Topic keywords equals expected", actual, equalTo(expected));
+    }
+    
+    @Test
     public void canGetUncitedKeywords() throws IOException {
         
         //Given
@@ -939,11 +958,16 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReferenceUnknown.xml"));
-        String expected = "urn:ogc:def:crs:MadeUpCodeSpace::123456";
+        List<SpatialReferenceSystem> expected = Arrays.asList(
+            SpatialReferenceSystem.builder()
+                .code("123456")
+                .codeSpace("urn:ogc:def:crs:MadeUpCodeSpace")
+                .build()
+        );
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getSpatialReferenceSystems().get(0).getReference();
+        List<SpatialReferenceSystem> actual = document.getSpatialReferenceSystems();
 
         //Then
         assertThat("Actual reference is equal to expected", actual, equalTo(expected));

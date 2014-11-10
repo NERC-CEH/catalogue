@@ -16,6 +16,7 @@ public interface MetadataDocument {
     String getId();
     String getType();
     List<String> getLocations();
+    List<String> getTopics();
     MetadataInfo getMetadata();
     void attachMetadata(MetadataInfo metadata);
     void attachUri(URI uri);

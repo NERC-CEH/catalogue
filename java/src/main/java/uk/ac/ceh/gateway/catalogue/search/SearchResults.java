@@ -1,11 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.PivotField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -20,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.D
     @Template(called = "/html/search.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 @AllArgsConstructor
+@Slf4j
 public class SearchResults {
     private final QueryResponse response;
     private final SearchQuery query;
@@ -85,22 +85,21 @@ public class SearchResults {
         return response.getBeans(DocumentSolrIndex.class);
     }
     
-    public List<Facet> getFacets(){        
-        List<Facet> toReturn = response.getFacetFields().stream().map((facetField) -> {
-            return Facet.builder()
-                .fieldName(facetField.getName())
-                .displayName(SearchQuery.FACET_FIELDS.get(facetField.getName()))
-                .results(getFacetResults(facetField))
-                .build();
-        }).collect(Collectors.toList());
+    public List<Facet> getFacets(){
+        List<Facet> facets = query.getFacets();
+       
+        facets.forEach((facet) -> {
+            FacetField facetField = response.getFacetField(facet.getFieldName());
+            if (facetField != null) {
+                if (facet.isHierarchical()) {
+                    facet.getResults().addAll(getHierarchicalFacetResults(facetField, "0/"));
+                } else {
+                    facet.getResults().addAll(getFacetResults(facetField));
+                }
+            }
+        });
         
-        toReturn.add(0, Facet.builder()
-            .fieldName("sci0")
-            .displayName("Topics")
-            .results(getFacetResults(response.getFacetPivot().get("sci0,sci1")))
-            .build());
-        
-        return toReturn;
+        return facets;
     }
 
     private List<FacetResult> getFacetResults(FacetField facetField) {
@@ -120,23 +119,37 @@ public class SearchResults {
             .collect(Collectors.toList());
     }
     
-    private List<FacetResult> getFacetResults(List<PivotField> pivotFields) {
-        return pivotFields.stream()
-            .map(pivotField -> {
-                String field = pivotField.getField();
-                String name = pivotField.getValue().toString();
-                FacetFilter filter = new FacetFilter(field, name);
-                boolean active = query.containsFacetFilter(filter);
-
-                return FacetResult.builder()
-                    .name(name)
-                    .count(pivotField.getCount())
-                    .active(active)
-                    .url(((active) ? query.withoutFacetFilter(filter) : query.withFacetFilter(filter)).toUrl())
-                    .subFacetResults((pivotField.getPivot() != null)? getFacetResults(pivotField.getPivot()) : Collections.EMPTY_LIST)
-                    .build();
-            })
+    private List<FacetResult> getHierarchicalFacetResults(FacetField facetField, String prefix) {
+        return facetField.getValues().stream()
+            .filter(c -> c.getName().startsWith(prefix))
+            .map(c -> getFacetResultFromCount(c))
             .collect(Collectors.toList());
     }
-
+    
+    private FacetResult getFacetResultFromCount(FacetField.Count count) {
+        String name = count.getName();
+        FacetFilter filter = new FacetFilter(count.getFacetField().getName(), name);
+        boolean active = query.containsFacetFilter(filter);
+        return FacetResult.builder()
+            .name(getName(name))
+            .count(count.getCount())
+            .active(active)
+            .url(((active) ? query.withoutFacetFilter(filter) : query.withFacetFilter(filter)).toUrl())
+            .subFacetResults(getHierarchicalFacetResults(count.getFacetField(), getChildName(name)))
+            .build();
+    }
+    
+    private String getChildName(String name) {
+        int i = name.indexOf("/");  
+        Integer child = Integer.parseInt(name.substring(0, i)) + 1;
+        return child + name.substring(i);
+    }
+    
+    private String getName(String name) {
+        int last = name.length() - 1;
+        int i = name.lastIndexOf("/", last - 1) + 1;
+        String toReturn = name.substring(i, last);
+        log.debug("name: {}, length: {}, last: {}, i: {}, return: {}", name, name.length(), last, i, toReturn);
+        return toReturn;
+    }
 }

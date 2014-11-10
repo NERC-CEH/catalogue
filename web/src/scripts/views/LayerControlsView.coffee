@@ -3,6 +3,7 @@ define [
   'tpl!templates/LayerControls.tpl'
   'tpl!templates/LayerInfo.tpl'
   'jquery-ui/slider'
+  'bootstrap'
 ], (Backbone, controlsTemplate, infoTemplate) -> Backbone.View.extend
 
   events:

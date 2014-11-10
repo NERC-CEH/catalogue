@@ -1,12 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.List;
-import java.util.Map;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.ScienceAreaIndexer;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 /**
@@ -15,15 +13,14 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
  * @author cjohn
  */
 public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
-    private final ScienceAreaIndexer scienceAreaIndexer;
+    private final TopicIndexer topicIndexer;
 
-    public MetadataDocumentSolrIndexGenerator(ScienceAreaIndexer scienceAreaIndexer) {
-        this.scienceAreaIndexer = scienceAreaIndexer;
+    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer) {
+        this.topicIndexer = topicIndexer;
     }
 
     @Override
     public DocumentSolrIndex generateIndex(MetadataDocument document) {
-        Map<String, String> sci = scienceAreaIndexer.index(document);
         return new DocumentSolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
@@ -32,8 +29,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                 .setLocations(document.getLocations())
                 .setIsOgl(getIsOgl(document))
                 .setState(getState(document))
-                .setSci0(sci.get("sci0"))
-                .setSci1(sci.get("sci1"));
+                .setTopic(topicIndexer.index(document));
     }
     
     private Boolean getIsOgl(MetadataDocument document){
@@ -70,8 +66,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         private @Field List<String> locations;
         private @Field Boolean isOgl;
         private @Field String state;
-        private @Field String sci0;
-        private @Field String sci1;
+        private @Field List<String> topic;
         
         public String getShortenedDescription(){
             return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);
@@ -87,7 +82,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         
         private String breakAtNextSpace(String toBreak){
             int nextSpace = toBreak.indexOf(" ", MAX_DESCRIPTION_CHARACTER_LENGTH);
-            String toReturn = "";
+            String toReturn;
             if(nextSpace != -1){
                 toReturn = toBreak.substring(0,nextSpace);
             }else{
