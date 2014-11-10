@@ -6,7 +6,7 @@
   <#if otherContacts?has_content>
     <#list otherContacts as otherContact>
       <dt>${otherContact.role}</dt>
-      <dd id="otherContact-detail" property="foaf:Agent">
+      <dd property="foaf:Agent">
 
       <#if otherContact.email?has_content>
         <#if otherContact.individualName?has_content>
