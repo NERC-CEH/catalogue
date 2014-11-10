@@ -11,13 +11,13 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
-import uk.ac.ceh.gateway.catalogue.gemini.CrazyScienceAreaIndexer;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2UKEOFDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.indexing.ExtractTopicFromDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
@@ -124,7 +124,7 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new MetadataDocumentSolrIndexGenerator(new CrazyScienceAreaIndexer()),
+                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument()),
                 solrServer
         );
         

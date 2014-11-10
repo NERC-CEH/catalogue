@@ -11,6 +11,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -40,6 +41,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
  *
  * @author jcoop, cjohn
  */
+@Slf4j
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id, title, description, alternateTitle, topicCategories, resourceType, 
         browseGraphicUrl, coupledResource, resourceStatus, metadataDate, lineage, 
@@ -117,7 +119,9 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             Document document = builder.parse(inputMessage.getBody());
 
             GeminiDocument toReturn = new GeminiDocument();
-            toReturn.setId(id.evaluate(document));
+            String identifier = id.evaluate(document);
+            log.debug("Reading GeminiDocument: {}", identifier);
+            toReturn.setId(identifier);
             toReturn.setTitle(title.evaluate(document));
             toReturn.setDescription(description.evaluate(document));
             toReturn.setAlternateTitles(getListOfStrings(document, alternateTitle));

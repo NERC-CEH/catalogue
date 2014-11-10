@@ -15,6 +15,7 @@ import java.util.zip.ZipFile;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
@@ -37,6 +38,7 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  * @param <U> The type of user which this import will deal with
  */
 @AllArgsConstructor(access=AccessLevel.PROTECTED)
+@Slf4j
 public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     private static final Pattern TC_EXPORT_REGEX = Pattern.compile("BACKUP_TC_[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*\\.zip");
     
@@ -69,6 +71,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
                 .listFiles((File d, String f)-> TC_EXPORT_REGEX.matcher(f).matches());
         Arrays.sort(exportFiles); //Order the terracatalog files lexically, 
         for(File currTCExport: exportFiles) {
+            log.info("Importing from: {}", currTCExport.getName());
             importFile(new ZipFile(currTCExport));
         }
     }
@@ -80,6 +83,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
             List<String> toDelete = getFilesInRepositoryButNotInImport(toImport);
             if(!toDelete.isEmpty()) {
                 deleteFiles(file.getName(), toDelete);
+               log.info("Deleting: {}", file.getName());
             }
             
             //Group the file pairs by owner
@@ -88,6 +92,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
                                                                         .collect(Collectors.groupingBy(TerraCatalogPair::getOwner))
                                                                         .entrySet()) {           
                 commitAuthorsFiles(file.getName(), authorFiles.getKey(), authorFiles.getValue());
+                
             }
         }
     }
@@ -112,7 +117,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
             ongoingCommit = ongoingCommit.submitData(currToCommit.getId() + ".meta", (o)-> documentInfoMapper.writeInfo(currToCommit.getInfo(), o) )
                                          .submitData(currToCommit.getId() + ".raw", (o) -> IOUtils.copy(currToCommit.getXmlInputStream(), o) );
         }
-        
+        log.info("Commiting");
         return ongoingCommit.commit(author, "Commit by terraCatalog importer for " + author.getEmail() + " from " + importFile);
     }
     
