@@ -99,14 +99,14 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             Arrays.asList(
                 new FacetFilter("resourceType","dataset"),
-                new FacetFilter("sci0","Green & yellow")));
+                new FacetFilter("topic","0/Climate/")));
         //When
         SolrQuery solrQuery = query.build();
         
         //Then
         assertThat("Solr query should be the default text", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
         assertThat("Solr query should have resourceType filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=resourceType}dataset"));
-        assertThat("Solr query should have sci0 filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=sci0}Green & yellow"));
+        assertThat("Solr query should have topic filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=topic}0/Climate/"));
     }
     
     @Test

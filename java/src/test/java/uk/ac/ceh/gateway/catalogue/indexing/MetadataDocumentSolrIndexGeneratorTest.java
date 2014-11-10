@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import java.util.Arrays;
+import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -7,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import uk.ac.ceh.gateway.catalogue.gemini.CrazyScienceAreaIndexer;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
@@ -21,7 +22,22 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
-        generator = new MetadataDocumentSolrIndexGenerator(new CrazyScienceAreaIndexer());
+        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument());
+    }
+    
+    @Test
+    public void checkThatTopicIsTransferedToIndex() {
+        //Given
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/2","http://onto.nerc.ac.uk/CEHMD/2_1","http://onto.nerc.ac.uk/CEHMD/3", "http://onto.nerc.ac.uk/CEHMD/3_1"));
+        List<String> expected = Arrays.asList("0/Climate/", "1/Climate/Climate change/", "0/Modelling/", "1/Modelling/Integrated ecosystem modelling/");
+        
+        //When
+        DocumentSolrIndex index = generator.generateIndex(document);
+        List<String> actual = index.getTopic();
+        
+        //Then
+        assertThat("Actual sci0 should have required items", actual, equalTo(expected));
     }
     
     @Test

@@ -1,10 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import javax.validation.constraints.NotNull;
 import lombok.Value;
@@ -26,13 +25,11 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 public class SearchQuery {
     public static final String DEFAULT_SEARCH_TERM = "*";
     private static final String RANDOM_DYNAMIC_FIELD_NAME = "random";
-    public static final Map<String, String> FACET_FIELDS;
-    static
-    {
-        FACET_FIELDS = new HashMap<>();
-        FACET_FIELDS.put("resourceType", "Resource type");
-        FACET_FIELDS.put("isOgl", "OGL license");
-    }
+    private final List<Facet> facets = Arrays.asList(
+        Facet.builder().fieldName("topic").displayName("Topic").hierarchical(true).build(),
+        Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
+        Facet.builder().fieldName("isOgl").displayName("OGL license").hierarchical(false).build()
+    );
     
     private final String endpoint;
     private final CatalogueUser user; 
@@ -181,10 +178,9 @@ public class SearchQuery {
         query.setFacet(true);
         query.setFacetMinCount(1);
         query.setFacetSort("index");
-        FACET_FIELDS.entrySet().stream().forEach((entry) -> {
-            query.addFacetField(entry.getKey());
+        facets.stream().forEach((facet) -> {
+            query.addFacetField(facet.getFieldName());
         });
-        query.addFacetPivotField("sci0,sci1");
     }
     
     private void setSortOrder(SolrQuery query){
