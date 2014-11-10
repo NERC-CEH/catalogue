@@ -8,7 +8,7 @@
 <#assign authors       = _.filter(responsibleParties, isAuthor) >
 <#assign otherContacts = _.reject(responsibleParties, isAuthor) >
 <@skeleton.master title=title>
-  <div id="metadata" class="container" prefix="dc: http://purl.org/dc/terms/ dcat: http://www.w3.org/ns/dcat# foaf: http://xmlns.com/foaf/0.1/ geo: http://www.w3.org/2003/01/geo/wgs84_pos#" property="dcat:CatalogRecord">
+  <div id="metadata" class="container" prefix="dc: http://purl.org/dc/terms/ dcat: http://www.w3.org/ns/dcat# foaf: http://xmlns.com/foaf/0.1/ geo: http://www.w3.org/2003/01/geo/wgs84_pos#" property="dcat:CatalogRecord" content="${uri}">
 
     <#include "metadata/_title.html.tpl">
     <#include "metadata/_notCurrent.html.tpl">
