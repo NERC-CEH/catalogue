@@ -1,9 +1,9 @@
-<#if resourceType == 'dataset'>
-  <#assign documentOrderTitle="Get the data">
-  <#assign viewOnMap="Preview on map">
-<#elseif resourceType == 'service'>
+<#if resourceType == 'service'>
   <#assign documentOrderTitle="View the data">
   <#assign viewOnMap="Open in map viewer">
+<#else>
+  <#assign documentOrderTitle="Get the data">
+  <#assign viewOnMap="Preview on map">
 </#if>
 
 
