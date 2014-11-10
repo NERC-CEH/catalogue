@@ -14,29 +14,24 @@ describe "Metadata page" do
         visit bmsPage
         expect(find('#document-title')).to have_content "UK Butterfly Monitoring Scheme (UKBMS) data"
         expect(find('#document-description')).to have_content "This is a series of datasets available from the UK Butterfly Monitoring Scheme"
-        expect(find('#resource-type')).to have_content('Series')
-        expect(find('#resource-status')).to have_content "onGoing"
-        expect(find('#spatial-reference-system')).to have_content "OSGB 1936 / British National Grid"
+        expect(find('#resource-type')).to have_content('series')
+        expect(find('#section-spatial')).to have_content "OSGB 1936 / British National Grid"
         expect(find('.extentBegin')).to have_content "1976-04-01"
       end
 
       it "Woodlands page" do
         visit woodlandsPage
-        expect(find('#resource-status')).to have_content "completed"
-        expect(find('#topic-categories')).to have_content "biota, environment"
+        expect(find('#keywords')).to have_content "biota"
         expect(first('.descriptive-keywords')).to have_content "NERC_DDC"
-        expect(find('#document-contacts').first('.contact-text')).to have_content "Kirby, K.J. English Nature enquiries@ceh.ac.uk"
-        expect(page).to have_selector('#browse-graphic')
-        expect(page).to have_selector('#document-ordering')
-        expect(find('#document-ordering')).to have_link("Order/Download", href: "http://gateway.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
-        expect(find('#document-ordering')).to have_link("Supporting documentation", href: "http://eidchub.ceh.ac.uk/metadata/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
-        expect(find('#document-ordering')).to have_link("Resource available under an Open Government Licence", href: "http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
-        expect(find('#document-ordering')).not_to have_link("Preview on map")
+        expect(find('#document-authors')).to have_content "Kirby, K.J."
+        expect(find('#document-order')).to have_link("Order/download", href: "http://gateway.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
+        expect(find('#document-order')).to have_link("Supporting documentation", href: "http://eidchub.ceh.ac.uk/metadata/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
+        expect(find('#document-order')).not_to have_link("Preview on map")
       end
 
       it "it should not have a spatial reference heading" do
         visit starPage
-        expect(page).not_to have_selector('#spatial-reference-system')
+        expect(page).not_to have_selector('#section-spatial')
       end
       
       it "should show not current message" do
@@ -54,29 +49,26 @@ describe "Metadata page" do
       
       it "should show a Preview on map link" do
         visit radionuclideServicePage
-        expect(page).to have_selector('#document-ordering')
-        expect(find('#document-ordering')).to have_link("Preview on map")
+        expect(find('#document-order')).to have_link("Preview on map")
       end
     end
 
     describe "Document links on metadata page" do
       it "should have heading 'Associated Services'" do
         visit radionuclideServicePage
-        expect(find('#document-additional-info')).to have_content('Associated Services')
-        expect(page).to have_selector('#document-links')
-        expect(find('#document-links')).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales survey maps")
+        expect(page).to have_content('Associated services')
+        expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales survey maps")
       end
 
       it "should have heading 'Associated Datasets'" do
         visit radionuclideDatasetPage
-        expect(find('#document-additional-info')).to have_content('Associated Datasets')
-        expect(find('#document-links')).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales")
+        expect(page).to have_css('h4',:text=> 'Associated datasets')
+        expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales")
       end
 
       it "should not have heading 'Associated Datasets'" do
         visit bmsPage
-        expect(find('#document-additional-info')).not_to have_content('Associated Datasets')
-        expect(find('#document-additional-info')).not_to have_selector('#document-links')
+        expect(page).to_not have_css('h4',:text=> 'Associated datasets')
       end
     end
   end

@@ -22,7 +22,7 @@ SCREENS = {
 MOBILE_BROWSERS = {
   :xs  => BROWSERS & [:htc_desire, :iphone5s_portrait ],
   :sm  => BROWSERS & [:ipad2_portrait],
-  :md  => BROWSERS & [:nexus7, :nexus7, :ipad2_landscape, :iphone5s_landscape],
+  :md  => BROWSERS & [:nexus5, :nexus7, :ipad2_landscape, :iphone5s_landscape],
   :lg  => BROWSERS & [:ipad_air_portrait, :ipad_air_landscape]
 }
 
