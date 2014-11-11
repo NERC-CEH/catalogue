@@ -6,9 +6,11 @@
     <#if boundingBoxes?has_content && boundingBoxes??>
       <dt>Study area</dt>
       <dd>
-        <figure title="Map showing the spatial extent of this data resource">
-          <div id="studyarea-map" content="${locations?join(',')}"></div>
-        </figure>
+        <div id="studyarea-map">
+          <#list boundingBoxes as extent>
+            <span property="dc:spatial" content="${extent.wkt}" dataType="geo:wktLiteral"/>
+          </#list>
+        </div>
       </dd>
     </#if>
     <#if temporalExtent?has_content>
