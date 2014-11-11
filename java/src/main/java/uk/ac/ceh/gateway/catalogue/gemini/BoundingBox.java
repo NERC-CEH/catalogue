@@ -30,4 +30,16 @@ public class BoundingBox {
                 .append(northBoundLatitude)
                 .toString();
     }
+    
+    public String getWkt() {
+        return new StringBuilder()
+            .append("POLYGON((")
+            .append(westBoundLongitude).append(" ").append(southBoundLatitude).append(", ")
+            .append(westBoundLongitude).append(" ").append(northBoundLatitude).append(", ")
+            .append(eastBoundLongitude).append(" ").append(northBoundLatitude).append(", ")
+            .append(eastBoundLongitude).append(" ").append(southBoundLatitude).append(", ")
+            .append(westBoundLongitude).append(" ").append(southBoundLatitude)
+            .append("))")
+            .toString();
+    }
 }
