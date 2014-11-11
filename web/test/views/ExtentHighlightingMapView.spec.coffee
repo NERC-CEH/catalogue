@@ -54,8 +54,21 @@ define [
       expect(view.highlightedLayer.getDataExtent).toHaveBeenCalled()
       expect(view.map.zoomToExtent).toHaveBeenCalledWith 'extent'
 
-    it "can read location string to openlayers feature", ->
-      vector = view.readBoundingBox '-180 -90 180 90'
+    it "delegates to setHighlighted when using boxes", ->
+      spyOn(view, 'setHighlighted')
+
+      view.setHighlightedBoxes ['-180 -90 180 80']
+
+      expect(view.setHighlighted).toHaveBeenCalledWith [
+        'POLYGON((-180 -90, -180 80, 180 80, 180 -90, -180 -90))'
+      ]
+
+    it "can transform a location string into a wkt representation", ->
+      wkt = view.bbox2WKT '-180 -90 180 90'
+      expect(wkt).toBe 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
+
+    it "can read wkt to openlayers feature", ->
+      vector = view.readWKT 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
 
       expect( vector.geometry.toString()).toBe '''
         POLYGON((-20037508.34 -20037508.34,\
@@ -66,7 +79,8 @@ define [
 
     describe "highlighted layer", ->
       it "contains point and vector when location set", ->
-        view.setHighlighted ['-180 -90 180 80']
+        wkt = 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
+        view.setHighlighted [wkt]
         features = view.highlightedLayer.features
 
         expect(view.highlightedLayer.features.length).toBe 2
@@ -74,7 +88,8 @@ define [
         expect(_.find(features, (f)-> not f.attributes.isPoint)).toBeDefined()
 
       it "has features with areaRootDefined", ->
-        view.setHighlighted ['-180 -90 180 80']
+        wkt = 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
+        view.setHighlighted [wkt]
         features = view.highlightedLayer.features
 
         expect(_.every features, (f) -> f.attributes.areaRoot).toBe true

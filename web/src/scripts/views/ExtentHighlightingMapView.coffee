@@ -54,17 +54,26 @@ define [
 
     ["-9.227701 49.83726 2.687637 60.850441", "-1.50 51.51 -1.47 51.54"]
 
+  Transform these to wkt and then call setHighlighted
+  ###
+  setHighlightedBoxes: (boxes = []) -> @setHighlighted _.map boxes, @bbox2WKT
+
+  ###
+  Given an array of locations in the form:
+
+    ["POLYGON((1 2 ...))", "POLYGON((1 2 ...))"]
+
   Draw these on the map. If this method is called with null or an empty array
   then remove all the highlighted features from the map
   ###
-  setHighlighted: (locations = [])->
+  setHighlighted:(locations = []) ->
     # Remove all the old markers
     do @highlightedLayer.removeAllFeatures
 
     # Loop round all the locations and set as a marker and polygon
     _.each locations, (location) =>
-      vector = @readBoundingBox location
-      # Calculate the average length of the height and width of the bbox
+      vector = @readWKT location
+      # Calculate the average length of the height and width of the area
       vector.attributes = 
         areaRoot: Math.sqrt vector.geometry.getArea()
         isPoint:  false
@@ -75,16 +84,23 @@ define [
       
       @highlightedLayer.addFeatures [vector, point]
 
+
   ###
-  Convert the given location string into a Openlayers feature which is in the
-  same projection system as that of the map
+  Transform the well known text representation into an openlayers geometry in
+  the projection system of the map
   ###
-  readBoundingBox: (location) ->
-    [minx,miny,maxx,maxy] = location.split ' '
-    vector = @wktFactory.read """POLYGON((#{minx} #{miny}, \
-                                          #{minx} #{maxy}, \
-                                          #{maxx} #{maxy}, \
-                                          #{maxx} #{miny}, \
-                                          #{minx} #{miny}))"""
+  readWKT: (wkt) ->
+    vector = @wktFactory.read wkt
     vector.geometry.transform @epsg4326, @map.getProjectionObject()
     return vector
+
+  ###
+  Convert the given location string into a well known text representation.
+  ###
+  bbox2WKT: (location) ->
+    [minx,miny,maxx,maxy] = location.split ' '
+    return """POLYGON((#{minx} #{miny}, \
+                       #{minx} #{maxy}, \
+                       #{maxx} #{maxy}, \
+                       #{maxx} #{miny}, \
+                       #{minx} #{miny}))"""

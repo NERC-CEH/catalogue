@@ -11,8 +11,10 @@ define [
     afterEach ->
       do el.remove
     
-    it "sets the locations defined in data-location", ->
-      el.attr 'content', '1 2 3 4,3 4 5 6'
+    it "sets the locations defined in wktLiterals", ->
+      el.html '''
+        <span content="POLYGON((-1 -9, -1 9, 1 9, 1 -9, -1 -9))" datatype="geo:wktLiteral"></span>
+        <span content="POLYGON((-1 -8, -1 8, 1 8, 1 -8, -1 -8))" datatype="geo:wktLiteral"></span>'''
       view = new StudyAreaView el: el
 
       expect(view.highlightedLayer.features.length).toBe 4
