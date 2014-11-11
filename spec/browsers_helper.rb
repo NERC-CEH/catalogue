@@ -54,14 +54,15 @@ ANDROID_DEVICES.each {|name, serial|
 IOS_DEVICES.each {|name, device|
   ['landscape', 'portrait'].each do |orientation|
     Capybara.register_driver :"#{name}_#{orientation}" do |app|
-      Appium::Capybara::Driver.new(app, :appium_lib => { :server_url => 'http://212.219.37.177:4723/wd/hub' },
-                                        :caps => {
-                                          :platformName     => 'iOS',
-                                          :platformVersion  => '8.1',
-                                          :browserName      => 'safari',
-                                          :autoAcceptAlerts => true,
-                                          :orientation      => orientation,
-                                          :deviceName       => device})
+      Capybara::Selenium::Driver.new(app, :browser => :remote,
+                                          :url => 'http://212.219.37.177:4723/wd/hub',
+                                          :desired_capabilities => {
+                                            :platformName     => 'iOS',
+                                            :platformVersion  => '8.1',
+                                            :browserName      => 'safari',
+                                            :autoAcceptAlerts => true,
+                                            :orientation      => orientation,
+                                            :deviceName       => device})
     end
   end
 }

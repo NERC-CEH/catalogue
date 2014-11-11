@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'capybara/rspec'
 require 'selenium/webdriver'
-require 'appium_capybara'
 require 'headless'
 require 'socket'
 require 'browsers_helper'
