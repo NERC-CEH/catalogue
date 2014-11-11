@@ -1,10 +1,3 @@
-<#list useLimitations as useLimitations>
-  <#if useLimitations?starts_with("If you reuse this data")>
-  <#else>
-  <p property="dc:rights">${useLimitations}</p>
-  </#if>
-</#list>
-
 <#if citation?has_content>
   <div id="section-citation">
     <p>If you reuse this data, you must cite:</p>
