@@ -11,7 +11,9 @@ define [
   ###
   Grab the locations off of the map element
   ###
-  getLocations: -> @$el.attr('content').split ','
+  getLocations: -> 
+    wkts = @$('[dataType="geo:wktLiteral"]')
+    return _.map wkts, (el) -> $(el).attr 'content'
 
   ###
   Update the highlighted areas based upon the locations. Then zoom the to 

@@ -40,7 +40,7 @@ define [
     do @drawingLayer.removeAllFeatures # Remove all the drawn features
     if @model.has 'bbox'               # Draw the bbox if specified
       bbox = @model.get('bbox').replace /,/g, ' '  # TODO: STANDARDISE BBOX OUTPUT
-      @drawingLayer.addFeatures @readBoundingBox bbox
+      @drawingLayer.addFeatures @readWKT @bbox2WKT bbox
 
   ###
   Toggle the drawing control depending on weather or not the model is in 
@@ -66,4 +66,4 @@ define [
   Set the highlighted records based upon the current search result's locations
   ###
   updateHighlightedRecord: ->
-    @setHighlighted @model.getResults()?.getSelectedResult()?.locations
+    @setHighlightedBoxes @model.getResults()?.getSelectedResult()?.locations
