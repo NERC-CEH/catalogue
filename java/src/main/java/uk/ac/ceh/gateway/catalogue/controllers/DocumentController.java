@@ -121,7 +121,7 @@ public class DocumentController {
         document.attachUri(getCurrentUri(request, file, revision));
         if(document instanceof GeminiDocument) {
             GeminiDocument geminiDocument = (GeminiDocument)document;
-            geminiDocument.setDocumentLinks(new HashSet<>(linkService.getLinks(geminiDocument, getLinkUriBuilder(request, file))));
+            geminiDocument.setDocumentLinks(new HashSet<>(linkService.getLinks(geminiDocument, getLinkUriBuilder(request))));
             geminiDocument.setCitation(citationService.getCitation(geminiDocument));
         }
         log.debug("document requested: {}", document);
@@ -162,8 +162,7 @@ public class DocumentController {
         }
     }
     
-    private UriComponentsBuilder getLinkUriBuilder(HttpServletRequest request, String file) {
-        String path = String.format("/documents/{fileIdentifier}", file);
-        return ServletUriComponentsBuilder.fromContextPath(request).path(path);
+    private UriComponentsBuilder getLinkUriBuilder(HttpServletRequest request) {
+        return ServletUriComponentsBuilder.fromContextPath(request).path("/documents/{fileIdentifier}");
     }
 }

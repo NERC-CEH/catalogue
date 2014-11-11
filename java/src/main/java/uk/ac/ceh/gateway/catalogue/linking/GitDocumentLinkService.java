@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -108,11 +109,10 @@ public class GitDocumentLinkService implements DocumentLinkService {
     }
     
     private Set<String> removeDuplicates(List<String> filenames) {
-        Set<String> toReturn = new HashSet<>();
-        filenames.forEach((filename) -> {
-            toReturn.add(stripFileExtension(filename));
-        });
-        return toReturn;
+        return filenames.stream()
+            .map(filename -> stripFileExtension(filename))
+            .distinct()
+            .collect(Collectors.toSet());
     }
     
     private String stripFileExtension(String filename) {
