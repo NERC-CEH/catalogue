@@ -121,7 +121,7 @@ public class DocumentController {
         document.attachUri(getCurrentUri(request, file, revision));
         if(document instanceof GeminiDocument) {
             GeminiDocument geminiDocument = (GeminiDocument)document;
-            geminiDocument.setDocumentLinks(new HashSet<>(linkService.getLinks(geminiDocument, getLinkUriBuilder(request))));
+            geminiDocument.setDocumentLinks(linkService.getLinks(geminiDocument, getLinkUrlFragment(request, revision)));
             geminiDocument.setCitation(citationService.getCitation(geminiDocument));
         }
         log.debug("document requested: {}", document);
@@ -162,7 +162,22 @@ public class DocumentController {
         }
     }
     
-    private UriComponentsBuilder getLinkUriBuilder(HttpServletRequest request) {
-        return ServletUriComponentsBuilder.fromContextPath(request).path("/documents/{fileIdentifier}");
+    private String getLinkUrlFragment(HttpServletRequest request, String revision) throws DataRepositoryException {
+        if(revision.equals(repo.getLatestRevision().getRevisionID())) {
+           return ServletUriComponentsBuilder
+                .fromContextPath(request)
+                .path("/documents/")
+                .build()
+                .toUriString();
+        }
+        else {
+            return ServletUriComponentsBuilder
+                .fromContextPath(request)
+                .path("/history/")
+                .path(revision)
+                .path("/")
+                .build()
+                .toUriString();
+        }
     }
 }

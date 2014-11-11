@@ -162,17 +162,21 @@ public class DocumentControllerTest {
         GeminiDocument bundledDocument = new GeminiDocument();
         bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
         
-        String file = "myFile";
-        String revision = "revision";
+        String file = "myFile";       
+        String latestRevisionId = "latestRev";
         
-        when(documentBundleReader.readBundle(file, revision)).thenReturn(bundledDocument);
+        DataRevision revision = mock(DataRevision.class);
+        when(revision.getRevisionID()).thenReturn(latestRevisionId);
+        doReturn(revision).when(repo).getLatestRevision();
+        
+        when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
         
         //When
-        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, revision, mockRequest());
+        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, latestRevisionId, mockRequest());
         
         //Then
-        verify(documentBundleReader).readBundle(file, revision);
+        verify(documentBundleReader).readBundle(file, latestRevisionId);
         assertEquals("Expected the mocked gemini document", bundledDocument, readDocument);
     }
     
@@ -184,16 +188,20 @@ public class DocumentControllerTest {
         bundledDocument.setResourceType("dataset");
         
         String file = "myFile";
-        String revision = "revision";
+        String latestRevisionId = "latestRev";
         
-        when(documentBundleReader.readBundle(file, revision)).thenReturn(bundledDocument);
+        DataRevision revision = mock(DataRevision.class);
+        when(revision.getRevisionID()).thenReturn(latestRevisionId);
+        doReturn(revision).when(repo).getLatestRevision();
+        
+        when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
         //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, file, revision, mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
         
         //Then
-        verify(documentBundleReader).readBundle(file, revision);
-        verify(linkService).getLinks(any(GeminiDocument.class), any(UriComponentsBuilder.class));
+        verify(documentBundleReader).readBundle(file, latestRevisionId);
+        verify(linkService).getLinks(any(GeminiDocument.class), any(String.class));
     }
     
     @Test
@@ -240,15 +248,21 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkThatURIIsAttachedToDocumentOnReading() throws IOException, UnknownContentTypeException, URISyntaxException {
+    public void checkThatURIsAttachedToDocumentOnReading() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given        
         GeminiDocument bundledDocument = mock(GeminiDocument.class);
         URI uri = new URI("http://whatever.com");
         doReturn(uri).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(bundledDocument);
         
+        String latestRevisionId = "latestRev";
+        
+        DataRevision revision = mock(DataRevision.class);
+        when(revision.getRevisionID()).thenReturn(latestRevisionId);
+        doReturn(revision).when(repo).getLatestRevision();
+        
         //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", "revision", mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId, mockRequest());
         
         //Then
         ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
@@ -265,8 +279,14 @@ public class DocumentControllerTest {
         when(citationService.getCitation(bundledDocument)).thenReturn(citation);
         doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
         
+        String latestRevisionId = "latestRev";
+        
+        DataRevision revision = mock(DataRevision.class);
+        when(revision.getRevisionID()).thenReturn(latestRevisionId);
+        doReturn(revision).when(repo).getLatestRevision();
+        
         //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", "revision", mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId, mockRequest());
         
         //Then
         verify(bundledDocument).setCitation(citation);

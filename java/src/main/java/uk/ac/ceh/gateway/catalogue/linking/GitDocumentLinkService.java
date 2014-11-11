@@ -84,28 +84,28 @@ public class GitDocumentLinkService implements DocumentLinkService {
     }
 
     @Override
-    public Set<Link> getLinks(GeminiDocument document, UriComponentsBuilder builder) {
+    public Set<Link> getLinks(GeminiDocument document, String urlFragment) {
         if (document.getResourceType() != null) {
             switch (document.getResourceType().toLowerCase()) {
                 case "dataset":
-                    return createLinks(linkDatabase.findServicesForDataset(document.getId()), builder);
+                    return createLinks(linkDatabase.findServicesForDataset(document.getId()), urlFragment);
 
                 case "service":
-                    return createLinks(linkDatabase.findDatasetsForService(document.getId()), builder);
+                    return createLinks(linkDatabase.findDatasetsForService(document.getId()), urlFragment);
             }
         }
         return Collections.EMPTY_SET;
     }
     
-    private Set<Link> createLinks(List<Metadata> metadata, UriComponentsBuilder builder) {
-        final Set<Link> toReturn = new HashSet<>();
-        metadata.forEach((meta) -> {
-            toReturn.add(Link.builder()
-                .title(meta.getTitle())
-                .href(builder.buildAndExpand(meta.getFileIdentifier()).toUriString())
-                .build());
-        });
-        return toReturn;
+    private Set<Link> createLinks(List<Metadata> metadata, String urlFragment) {
+        return metadata.stream()
+            .map(meta -> {
+                return Link.builder()
+                    .title(meta.getTitle())
+                    .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(meta.getFileIdentifier()).build().toUriString())
+                    .build();
+            })
+            .collect(Collectors.toSet());
     }
     
     private Set<String> removeDuplicates(List<String> filenames) {
