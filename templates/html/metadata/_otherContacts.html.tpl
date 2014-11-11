@@ -6,7 +6,7 @@
   <#if otherContacts?has_content>
     <#list otherContacts as otherContact>
       <dt>${otherContact.role}</dt>
-      <dd property="foaf:Agent">
+      <dd>
 
       <#if otherContact.email?has_content>
         <#if otherContact.individualName?has_content>
@@ -42,7 +42,7 @@
   <#if distributorContacts?has_content>
     <#list distributorContacts as distributorContact>
       <dt>${distributorContact.role}</dt>
-      <dd id="distributorContact-detail" property="dcat:Distribution">
+      <dd id="distributorContact-detail">
         <#if distributorContact.email?has_content>
           <#if distributorContact.individualName?has_content>
             <a href="mailto:${distributorContact.email}&subject=RE:${title}">${distributorContact.individualName}</a><br>
