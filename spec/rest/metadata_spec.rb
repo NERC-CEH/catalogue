@@ -68,8 +68,8 @@ describe "Metadata page generated HTML" do
       expect(ordering.length).to be 1
     end
 
-    it "should have dc:rights property on license" do
-      rights = @res.css('#section-licence [property="dc:rights"]')
+    it "should have dc:rights property" do
+      rights = @res.css('[property="dc:rights"]')
       expect(rights.length).to be 1
     end
 
@@ -77,30 +77,20 @@ describe "Metadata page generated HTML" do
       expect(@res.css('#temporal-extent')[0]['property']).to include('dc:temporal')
     end
 
-    it "should have dc:start on extentBegin" do
-      expect(@res.css('.extentBegin')[0]['property']).to include('dc:start')
-    end
-
-    it "should have dc:end on extentEnd" do
-      expect(@res.css('.extentEnd')[0]['property']).to include('dc:end')
-    end
-
     it "should have dc:spatial property on studyarea-map" do
-      expect(@res.css('#studyarea-map')[0]['property']).to include('dc:spatial')
+      extents = @res.css('#studyarea-map [property="dc:spatial"]')
+      expect(extents[0]['content']).to include 'POLYGON(('
+      expect(extents[0]['datatype']).to eq 'geo:wktLiteral'
     end
 
-    it "should have geo:Geometry property on studyarea-map" do
-      expect(@res.css('#studyarea-map')[0]['property']).to include('geo:Geometry')
-    end
-
-    it "should have single foaf:agent in section-metatada" do
-      agents = @res.css('[property="foaf:Agent"]')
+    it "should have single foaf:agent in section-metadata" do
+      agents = @res.css('[rel="foaf:Agent"]')
       expect(agents.length).to be 1
-      expect(@res.css('#section-metadata [property="foaf:Agent"]')).to eq agents
+      expect(@res.css('#section-metadata [rel="foaf:Agent"]')).to eq agents
     end
 
-    it "should have dcat:Distribution on distributorContact" do
-      expect(@res.css('#distributorContact-detail')[0]['property']).to include('dcat:Distribution')
+    it "should have dcat:Distribution" do
+      expect(@res.css('[property="dcat:Distribution"]').length).to be 1
     end
 
     it "should have dcat:keyword in keywords" do
