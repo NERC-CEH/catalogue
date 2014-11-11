@@ -9,13 +9,22 @@ describe "Metadata page generated HTML" do
     it "should define prefixes on the metadata element" do
       prefix = @res.css('#metadata')[0]['prefix']
       expect(prefix).to include('dc: http://purl.org/dc/terms/')
-      expect(prefix).to include('dcat: http://www.w3.org/ns/dcat#')
-      expect(prefix).to include('foaf: http://xmlns.com/foaf/0.1/')
-      expect(prefix).to include('geo: http://www.w3.org/2003/01/geo/wgs84_pos#')
+      expect(prefix).to include('geo: http://www.opengis.net/ont/geosparql#')
+      expect(prefix).to include('v: http://www.w3.org/2006/vcard/ns#')
     end
 
     it "should have dc:title property on title element" do
-      expect(@res.css('#document-title')[0]['property']).to include('dc:title')
+      title = @res.css('#document-title')[0]
+      
+      expect(title['property']).to eq 'dc:title'
+      expect(title['content']).to eq 'Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland)'
+    end
+
+    it "should have two dcat:themes" do
+      themes = @res.css('[property="dcat:theme"]')
+      expect(themes.length).to be 2
+      expect(themes[0]['content']).to eq 'environment'
+      expect(themes[1]['content']).to eq 'imageryBaseMapsEarthCover'
     end
 
     it "should have dc:type property on resource-type element" do
@@ -54,10 +63,6 @@ describe "Metadata page generated HTML" do
       end
     end
 
-    it "should have dc:subject property on keywords element" do
-      expect(@res.css('#keywords span')[0]['property']).to include('dc:subject')
-    end
-
     it "should have dcat:accessURL property on link" do
       ordering = @res.css('a[property="dcat:accessURL"]')
       expect(ordering.length).to be 1
@@ -88,14 +93,10 @@ describe "Metadata page generated HTML" do
       expect(@res.css('#studyarea-map')[0]['property']).to include('geo:Geometry')
     end
 
-    it "should have foaf:agent in document-authors" do
-      agents = @res.css('#document-authors [property="foaf:Agent"]')
-      expect(agents.length).to be > 1
-    end
-
-    it "should have foaf:agent in document-otherContacts" do
-      agents = @res.css('#document-otherContacts [property="foaf:Agent"]')
-      expect(agents.length).to be > 1
+    it "should have single foaf:agent in section-metatada" do
+      agents = @res.css('[property="foaf:Agent"]')
+      expect(agents.length).to be 1
+      expect(@res.css('#section-metadata [property="foaf:Agent"]')).to eq agents
     end
 
     it "should have dcat:Distribution on distributorContact" do
