@@ -1,22 +1,6 @@
-GIT
-  remote: git://github.com/chrisjohnson1988/appium_capybara.git
-  revision: cc2b49449a603ae5c935b1ac9e58b124f60066cd
-  specs:
-    appium_capybara (1.1.0)
-      appium_lib (~> 4, >= 4.1.0)
-      capybara (~> 2.4, >= 2.4.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
-    appium_lib (4.1.0)
-      awesome_print (~> 1.2, >= 1.2.0)
-      json (~> 1.8, >= 1.8.1)
-      nokogiri (~> 1.6.1)
-      selenium-webdriver (~> 2.41, >= 2.41.0)
-      toml (~> 0.0, >= 0.0.4)
-    awesome_print (1.2.0)
-    blankslate (2.1.2.4)
     builder (3.2.2)
     capybara (2.4.4)
       mime-types (>= 1.16)
@@ -36,8 +20,6 @@ GEM
     netrc (0.8.0)
     nokogiri (1.6.4.1)
       mini_portile (~> 0.6.0)
-    parslet (1.5.0)
-      blankslate (~> 2.0)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -61,13 +43,11 @@ GEM
       rspec (>= 2, < 4)
       rspec-core (!= 2.12.0)
     rubyzip (1.1.6)
-    selenium-webdriver (2.44.0)
+    selenium-webdriver (2.43.0)
       childprocess (~> 0.5)
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
-    toml (0.1.2)
-      parslet (~> 1.5.0)
     websocket (1.2.1)
     xpath (2.0.0)
       nokogiri (~> 1.3)
@@ -76,7 +56,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  appium_capybara!
   capybara
   headless
   json
@@ -84,4 +63,4 @@ DEPENDENCIES
   rest-client
   rspec
   rspec_junit_formatter
-  selenium-webdriver
+  selenium-webdriver (~> 2.43.0)

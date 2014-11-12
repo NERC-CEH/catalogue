@@ -21,15 +21,9 @@ SCREENS = {
   lg: { width: 1200, height: 768 }
 }
 
-IOS_DEVICES = {
-  :ipad2    => 'iPad 2',
-  :ipad_air => 'iPad Air',
-  :iphone5s => 'iPhone 5s'
-}
-
 MOBILE_BROWSERS = {
-  :xs  => BROWSERS & [:"HTC_Desire X", :iphone5s_portrait ],
-  :sm  => BROWSERS & [:ipad2_portrait],
+  :xs  => BROWSERS & [:"HTC Desire X", :iphone5s_portrait ],
+  :sm  => BROWSERS & [:ipad2],
   :md  => BROWSERS & [:"Nexus 5", :"Nexus 7", :ipad2_landscape, :iphone5s_landscape],
   :lg  => BROWSERS & [:ipad_air_portrait, :ipad_air_landscape]
 }
@@ -51,20 +45,17 @@ selendroid['value']['supportedDevices'].each {|device|
   end
 }
 
-IOS_DEVICES.each {|name, device|
-  ['landscape', 'portrait'].each do |orientation|
-    Capybara.register_driver :"#{name}_#{orientation}" do |app|
-      Appium::Capybara::Driver.new(app, :appium_lib => { :server_url => 'http://212.219.37.177:4723/wd/hub' },
-                                        :caps => {
-                                          :platformName     => 'iOS',
-                                          :platformVersion  => '8.1',
-                                          :browserName      => 'safari',
-                                          :autoAcceptAlerts => true,
-                                          :orientation      => orientation,
-                                          :deviceName       => device})
-    end
-  end
-}
+Capybara.register_driver :ipad2_portrait do |app|
+  Capybara::Selenium::Driver.new(app, :browser => :remote,
+                                      :url => 'http://212.219.37.177:4723/wd/hub',
+                                      :desired_capabilities => {
+                                        :platformName     => 'iOS',
+                                        :platformVersion  => '8.1',
+                                        :browserName      => 'safari',
+                                        :autoAcceptAlerts => true,
+                                        :newCommandTimeout => 600,
+                                        :deviceName       => 'iPad 2'})
+end
 
 Capybara.register_driver :chrome do |app|
   Capybara::Selenium::Driver.new(app, :browser => :chrome)
