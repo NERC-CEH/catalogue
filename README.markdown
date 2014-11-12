@@ -80,9 +80,9 @@ The vagrant box can be functionally tested using capybara and selenium. The test
 
         bundle exec rspec
 
-* You can specify particular browsers to test in (as long as they have been set up in the browsers_helper.rb) by:
+* You can specify a particular browser to test in (as long as they have been set up in the browsers_helper.rb) by:
 
-        BROWSERS=chrome,internet_explorer bundle exec rspec
+        bundle exec rspec --tag driver:chrome
 
 * Sit back and watch your chrome instance run through your test suite
 

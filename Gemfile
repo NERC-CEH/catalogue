@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+gem 'rake'
+gem 'parallel'
 gem 'rspec'
 gem 'json'
 gem 'capybara'

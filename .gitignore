@@ -12,7 +12,7 @@ catalogue_config
 catalogue_tomcat
 
 # Ignore Test output
-junit.xml
+*junit.xml
 rspec_screenshots
 npm-debug.log
 

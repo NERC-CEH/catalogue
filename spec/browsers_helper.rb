@@ -1,9 +1,5 @@
 require 'open-uri'
 
-# Parse the environment var browsers. If it is not there just test chrome
-browsers = ENV['BROWSERS'] || 'chrome'
-BROWSERS = browsers.split(',').map {|s| s.to_sym}
-
 # These are some common screen widths according to an answer on [stackoverflow]
 #  (http://ux.stackexchange.com/questions/28124/what-is-the-current-pixel-width-standard-for-a-websites-content-area) 
 #
@@ -22,13 +18,13 @@ SCREENS = {
 }
 
 MOBILE_BROWSERS = {
-  :xs  => BROWSERS & [:"HTC Desire X", :iphone5s_portrait ],
-  :sm  => BROWSERS & [:ipad2],
-  :md  => BROWSERS & [:"Nexus 5", :"Nexus 7", :ipad2_landscape, :iphone5s_landscape],
-  :lg  => BROWSERS & [:ipad_air_portrait, :ipad_air_landscape]
+  :xs  => [:"HTC Desire X", :iphone5s_portrait ],
+  :sm  => [:ipad2],
+  :md  => [:"Nexus 5", :"Nexus 7", :ipad2_landscape, :iphone5s_landscape],
+  :lg  => [:ipad_air_portrait, :ipad_air_landscape]
 }
 
-DESKTOP_BROWSERS = BROWSERS & [:chrome, :firefox, :ie_server]
+DESKTOP_BROWSERS = [:chrome, :firefox, :ie_server]
 
 # Read the devices which are currently registered on selendroid and register
 # each as a driver in the application
@@ -45,7 +41,7 @@ selendroid['value']['supportedDevices'].each {|device|
   end
 }
 
-Capybara.register_driver :ipad2_portrait do |app|
+Capybara.register_driver :ipad2 do |app|
   Capybara::Selenium::Driver.new(app, :browser => :remote,
                                       :url => 'http://212.219.37.177:4723/wd/hub',
                                       :desired_capabilities => {
