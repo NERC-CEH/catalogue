@@ -22,6 +22,6 @@ end
 
 TEST_GROUPS.each { |task, tag|
   RSpec::Core::RakeTask.new(task) do |t|
-    t.rspec_opts = "--format documentation --format RspecJunitFormatter --tag #{tag} --out #{task}_junit.xml"
+    t.rspec_opts = "--format RspecJunitFormatter --tag #{tag} --out #{task}_junit.xml"
   end
 }
