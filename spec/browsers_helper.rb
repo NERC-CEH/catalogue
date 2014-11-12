@@ -1,3 +1,5 @@
+require 'open-uri'
+
 # Parse the environment var browsers. If it is not there just test chrome
 browsers = ENV['BROWSERS'] || 'chrome'
 BROWSERS = browsers.split(',').map {|s| s.to_sym}
@@ -19,12 +21,6 @@ SCREENS = {
   lg: { width: 1200, height: 768 }
 }
 
-ANDROID_SERIALS = {
-  :nexus7     => '073266a1', 
-  :nexus5     => '02fbd6f32108304f', 
-  :htc_desire => 'SH2CZLY05396' 
-}
-
 IOS_DEVICES = {
   :ipad2    => 'iPad 2',
   :ipad_air => 'iPad Air',
@@ -32,40 +28,41 @@ IOS_DEVICES = {
 }
 
 MOBILE_BROWSERS = {
-  :xs  => BROWSERS & [:htc_desire, :iphone5s_portrait ],
+  :xs  => BROWSERS & [:"HTC_Desire X", :iphone5s_portrait ],
   :sm  => BROWSERS & [:ipad2_portrait],
-  :md  => BROWSERS & [:nexus5, :nexus7, :ipad2_landscape, :iphone5s_landscape],
+  :md  => BROWSERS & [:"Nexus 5", :"Nexus 7", :ipad2_landscape, :iphone5s_landscape],
   :lg  => BROWSERS & [:ipad_air_portrait, :ipad_air_landscape]
 }
 
 DESKTOP_BROWSERS = BROWSERS & [:chrome, :firefox, :ie_server]
-ANDROID_DEVICES  = ANDROID_SERIALS.select { |key| BROWSERS.include? key }
-IOS_NAMES        = BROWSERS & IOS_DEVICES.keys.map { 
-  |key| ["#{key}_landscape".to_sym, "#{key}_portrait".to_sym] 
-}.flatten
 
-ANDROID_DEVICES.each {|name, serial|
-  Capybara.register_driver name do |app|
+# Read the devices which are currently registered on selendroid and register
+# each as a driver in the application
+selendroid = JSON.parse(open('http://lapc011.nerc-lancaster.ac.uk:4444/wd/hub/status').read)
+
+selendroid['value']['supportedDevices'].each {|device|
+  Capybara.register_driver device['model'].to_sym do |app|
     Capybara::Selenium::Driver.new(app, :browser => :remote,
                                         :url => 'http://lapc011.nerc-lancaster.ac.uk:4444/wd/hub',
                                         :desired_capabilities => {
                                           :browserName       => 'android',
                                           :javascriptEnabled => true,
-                                          :serial            => serial})
+                                          :serial            => device['serial']})
   end
 }
 
-IOS_NAMES.each {|name|
-  parts = name.to_s.split '_'
-  Capybara.register_driver name do |app|
-    Appium::Capybara::Driver.new(app, :appium_lib => { :server_url => 'http://212.219.37.177:4723/wd/hub' },
-                                      :caps => {
-                                        :platformName     => 'iOS',
-                                        :platformVersion  => '8.1',
-                                        :browserName      => 'safari',
-                                        :autoAcceptAlerts => true,
-                                        :orientation      => parts[1],
-                                        :deviceName       => IOS_DEVICES[parts[0].to_sym] })
+IOS_DEVICES.each {|name, device|
+  ['landscape', 'portrait'].each do |orientation|
+    Capybara.register_driver :"#{name}_#{orientation}" do |app|
+      Appium::Capybara::Driver.new(app, :appium_lib => { :server_url => 'http://212.219.37.177:4723/wd/hub' },
+                                        :caps => {
+                                          :platformName     => 'iOS',
+                                          :platformVersion  => '8.1',
+                                          :browserName      => 'safari',
+                                          :autoAcceptAlerts => true,
+                                          :orientation      => orientation,
+                                          :deviceName       => device})
+    end
   end
 }
 
