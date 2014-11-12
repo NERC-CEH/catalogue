@@ -142,24 +142,11 @@ public class DocumentController {
     }
     
     protected URI getCurrentUri(HttpServletRequest request, String file, String revision) throws DataRepositoryException {
-        if(revision.equals(repo.getLatestRevision().getRevisionID())) {
-           return ServletUriComponentsBuilder
-                .fromContextPath(request)
-                .path("/documents/")
-                .path(file)
-                .build()
-                .toUri();
-        }
-        else {
-            return ServletUriComponentsBuilder
-                .fromContextPath(request)
-                .path("/history/")
-                .path(revision)
-                .path("/")
-                .path(file)
-                .build()
-                .toUri();
-        }
+        return ServletUriComponentsBuilder
+             .fromHttpUrl(getLinkUrlFragment(request, revision))
+             .path(file)
+             .build()
+             .toUri();
     }
     
     private String getLinkUrlFragment(HttpServletRequest request, String revision) throws DataRepositoryException {
