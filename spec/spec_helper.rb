@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'rspec/retry'
 require 'capybara/rspec'
 require 'selenium/webdriver'
 require 'socket'
@@ -12,3 +13,9 @@ hostname = Socket.gethostbyname(Socket.gethostname).first
 Capybara.app_host = "https://#{hostname}:8080"
 Capybara.run_server = false
 Capybara.default_selector = :css
+
+RSpec.configure do |config|
+  config.verbose_retry = true # show retry status in spec process
+  config.default_retry_count = 3
+  config.default_sleep_interval = 10
+end
