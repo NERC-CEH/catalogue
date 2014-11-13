@@ -18,10 +18,10 @@ SCREENS = {
 }
 
 MOBILE_BROWSERS = {
-  :xs  => [:"HTC Desire X", :iphone5s_portrait ],
+  :xs  => [:"HTC Desire X"],
   :sm  => [:ipad2],
-  :md  => [:"Nexus 5", :"Nexus 7", :ipad2_landscape, :iphone5s_landscape],
-  :lg  => [:ipad_air_portrait, :ipad_air_landscape]
+  :md  => [:"Nexus 5", :"Nexus 7"],
+  :lg  => []
 }
 
 DESKTOP_BROWSERS = [:chrome, :firefox, :ie_server]
@@ -45,12 +45,12 @@ Capybara.register_driver :ipad2 do |app|
   Capybara::Selenium::Driver.new(app, :browser => :remote,
                                       :url => 'http://212.219.37.177:4723/wd/hub',
                                       :desired_capabilities => {
-                                        :platformName     => 'iOS',
-                                        :platformVersion  => '8.1',
-                                        :browserName      => 'safari',
-                                        :autoAcceptAlerts => true,
-                                        :newCommandTimeout => 600,
-                                        :deviceName       => 'iPad 2'})
+                                        :platformName       => 'iOS',
+                                        :platformVersion    => '8.1',
+                                        :browserName        => 'safari',
+                                        :autoAcceptAlerts   => true,
+                                        :newCommandTimeout  => 6000,
+                                        :deviceName         => 'iPad 2'})
 end
 
 Capybara.register_driver :chrome do |app|
