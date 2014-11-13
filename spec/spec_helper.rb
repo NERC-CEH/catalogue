@@ -15,7 +15,6 @@ Capybara.run_server = false
 Capybara.default_selector = :css
 
 RSpec.configure do |config|
-  config.verbose_retry = true # show retry status in spec process
-  config.default_retry_count = 3
-  config.default_sleep_interval = 10
+  config.default_retry_count = 5
+  config.default_sleep_interval = 1
 end

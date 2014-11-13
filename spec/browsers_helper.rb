@@ -19,8 +19,8 @@ SCREENS = {
 
 MOBILE_BROWSERS = {
   :xs  => [:"HTC Desire X"],
-  :sm  => [:ipad2],
-  :md  => [:"Nexus 5", :"Nexus 7"],
+  :sm  => [:"Nexus 5", :ipad2],
+  :md  => [:"Nexus 7"],
   :lg  => []
 }
 
