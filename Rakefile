@@ -1,5 +1,5 @@
-require 'rspec/core/rake_task'
 require 'parallel'
+require 'headless'
 
 TEST_GROUPS = {
   :selenium_chrome  => 'driver:chrome',
@@ -15,13 +15,22 @@ TEST_GROUPS = {
 task :default do
   groups = TEST_GROUPS.keys
 
-  Parallel.each(groups, :in_processes => groups.length) { |task|
+  # Start up in headless mode if the HEADLESS environment variable is defined
+  if ENV['HEADLESS'] == 'true'
+    headless = Headless.new
+    headless.start
+    at_exit do
+      headless.destroy
+    end
+  end
+
+  Parallel.each(groups, :in_threads => groups.length) { |task|
     Rake::Task[task].execute
   }
 end
 
-TEST_GROUPS.each { |task, tag|
-  RSpec::Core::RakeTask.new(task) do |t|
-    t.rspec_opts = "--format RspecJunitFormatter --tag #{tag} --out #{task}_junit.xml"
+TEST_GROUPS.each { |key, tag|
+  task key do
+    system "rspec --format progress --format RspecJunitFormatter --tag #{tag} --out #{task}_junit.xml"
   end
 }
