@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'rake'
 gem 'parallel'
+gem 'rspec-retry'
 gem 'rspec'
 gem 'json'
 gem 'capybara'
