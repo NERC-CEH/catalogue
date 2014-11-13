@@ -32,6 +32,6 @@ end
 # Loop around each of the rspec tags and create a new task
 TEST_GROUPS.each { |key, tag|
   task key do
-    system "rspec --format progress --format RspecJunitFormatter --tag #{tag} --out #{task}_junit.xml"
+    system "rspec --format progress --format RspecJunitFormatter --tag #{tag} --out #{key}_junit.xml"
   end
 }
