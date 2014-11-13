@@ -2,14 +2,14 @@ require 'parallel'
 require 'headless'
 
 TEST_GROUPS = {
-  :selenium_chrome  => 'driver:chrome',
-  :selenium_firefox => 'driver:firefox',
-  :selenium_ie      => 'driver:ie_server',
-  :selenium_htc     => 'driver:"HTC Desire X"',
-  :selenium_nexus5  => 'driver:"Nexus 5"',
-  :selenium_nexus7  => 'driver:"Nexus 7"',
-  :selenium_ipad2   => 'driver:ipad2',
-  :rest             => 'restful'
+  :chrome_spec  => 'driver:chrome',
+  :firefox_spec => 'driver:firefox',
+  :ie_spec      => 'driver:ie_server',
+  :htc_spec     => 'driver:"HTC Desire X"',
+  :nexus5_spec  => 'driver:"Nexus 5"',
+  :nexus7_spec  => 'driver:"Nexus 7"',
+  :ipad2_spec   => 'driver:ipad2',
+  :rest_spec    => 'restful'
 }
 
 task :default do
@@ -29,6 +29,7 @@ task :default do
   }
 end
 
+# Loop around each of the rspec tags and create a new task
 TEST_GROUPS.each { |key, tag|
   task key do
     system "rspec --format progress --format RspecJunitFormatter --tag #{tag} --out #{task}_junit.xml"
