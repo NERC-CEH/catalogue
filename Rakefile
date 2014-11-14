@@ -12,22 +12,23 @@ TEST_GROUPS = {
   :rest_spec    => 'restful'
 }
 
-task :default do
-  groups = TEST_GROUPS.keys
+task :default => [:headless, :parallel_spec]
 
-  # Start up in headless mode if the HEADLESS environment variable is defined
-  if ENV['HEADLESS'] == 'true'
-    headless = Headless.new
-    headless.start
-    at_exit do
-      headless.destroy
-    end
+task :headless do
+  headless = Headless.new
+  headless.start
+  at_exit do
+    headless.destroy
   end
+end
+
+task :parallel_spec do
+  groups = TEST_GROUPS.keys
 
   Parallel.each(groups, :in_threads => groups.length) { |task|
     Rake::Task[task].execute
   }
-end
+end  
 
 # Loop around each of the rspec tags and create a new task
 TEST_GROUPS.each { |key, tag|
