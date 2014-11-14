@@ -14,7 +14,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -73,10 +72,10 @@ public class GitDocumentLinkServiceTest {
         dataset.setId(fileIdentifier);
         dataset.setResourceType("dataset");
         GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8080").path("documents/{fileIdentifier}");
+        String urlFragement = "http://localhost:8080/documents/";
         
         //When
-        service.getLinks(dataset, builder);
+        service.getLinks(dataset, urlFragement);
         
         //Then
         verify(linkDatabase).findServicesForDataset(fileIdentifier);
@@ -90,10 +89,10 @@ public class GitDocumentLinkServiceTest {
         service.setId(fileIdentifier);
         service.setResourceType("service");
         GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:8080").path("documents/{fileIdentifier}");
+        String urlFragement = "http://localhost:8080/documents/";
         
         //When
-        linkService.getLinks(service, builder);
+        linkService.getLinks(service, urlFragement);
         
         //Then
         verify(linkDatabase).findDatasetsForService(fileIdentifier);

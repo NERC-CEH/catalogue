@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
 import java.util.Set;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Link;
 
@@ -32,9 +31,9 @@ public interface DocumentLinkService {
      * For a Dataset return links to Services.
      * 
      * @param document to find links for
-     * @param builder to use to create link url from (expects to have context/documents/{fileIdentifier} in path)
+     * @param urlFragment to use to create link url from (expects to have context/documents/ or context/history/ in path)
      * @return a set of Links
      */
-    Set<Link> getLinks(GeminiDocument document, UriComponentsBuilder builder);
+    Set<Link> getLinks(GeminiDocument document, String urlFragment);
 
 }

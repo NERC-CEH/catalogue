@@ -121,7 +121,7 @@ public class DocumentController {
         document.attachUri(getCurrentUri(request, file, revision));
         if(document instanceof GeminiDocument) {
             GeminiDocument geminiDocument = (GeminiDocument)document;
-            geminiDocument.setDocumentLinks(new HashSet<>(linkService.getLinks(geminiDocument, getLinkUriBuilder(request, file))));
+            geminiDocument.setDocumentLinks(linkService.getLinks(geminiDocument, getLinkUrlFragment(request, revision)));
             geminiDocument.setCitation(citationService.getCitation(geminiDocument));
         }
         log.debug("document requested: {}", document);
@@ -142,13 +142,20 @@ public class DocumentController {
     }
     
     protected URI getCurrentUri(HttpServletRequest request, String file, String revision) throws DataRepositoryException {
+        return ServletUriComponentsBuilder
+             .fromHttpUrl(getLinkUrlFragment(request, revision))
+             .path(file)
+             .build()
+             .toUri();
+    }
+    
+    private String getLinkUrlFragment(HttpServletRequest request, String revision) throws DataRepositoryException {
         if(revision.equals(repo.getLatestRevision().getRevisionID())) {
            return ServletUriComponentsBuilder
                 .fromContextPath(request)
                 .path("/documents/")
-                .path(file)
                 .build()
-                .toUri();
+                .toUriString();
         }
         else {
             return ServletUriComponentsBuilder
@@ -156,14 +163,8 @@ public class DocumentController {
                 .path("/history/")
                 .path(revision)
                 .path("/")
-                .path(file)
                 .build()
-                .toUri();
+                .toUriString();
         }
-    }
-    
-    private UriComponentsBuilder getLinkUriBuilder(HttpServletRequest request, String file) {
-        String path = String.format("/documents/{fileIdentifier}", file);
-        return ServletUriComponentsBuilder.fromContextPath(request).path(path);
     }
 }
