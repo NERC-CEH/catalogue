@@ -5,7 +5,7 @@
   <dt>Topic Categories</dt>
   <dd>
     <#list topicCategories as topic>
-      <span property="dcat:theme" content="${topic}">${topic}</span><#if topic_has_next><br></#if>
+      <span property="dcat:theme" content="${topic?html}">${topic?html}</span><#if topic_has_next><br></#if>
     </#list>
   </dd>
   </#if>
@@ -18,9 +18,9 @@
       <dd>
         <#list descriptiveKeyword.keywords as keyword>
           <#if keyword.uri??>
-            <a href="${keyword.uri}" property="dcat:keyword" target="_blank">${keyword.value}</a>
+            <a href="${keyword.uri?html}" property="dcat:keyword" target="_blank">${keyword.value?html}</a>
           <#else>
-            <span property="dcat:keyword">${keyword.value}</span>
+            <span property="dcat:keyword">${keyword.value?html}</span>
           </#if>
           <#if keyword_has_next><br></#if>
         </#list>
@@ -31,14 +31,14 @@
     <#list descriptiveKeywords?sort_by("type") as descriptiveKeyword>
       <#if descriptiveKeyword.thesaurusName.title != 'GEMET - INSPIRE themes, version 1.0'>
         <dt>
-          <#if (descriptiveKeyword.type)?? && descriptiveKeyword.type?has_content>${descriptiveKeyword.type?cap_first}<#else>Other</#if> keywords
+          <#if (descriptiveKeyword.type)?? && descriptiveKeyword.type?has_content>${descriptiveKeyword.type?cap_first?html}<#else>Other</#if> keywords
         </dt>
         <dd class="descriptive-keywords">
           <#list descriptiveKeyword.keywords as keyword>
             <#if keyword.uri??>
-              <a href="${keyword.uri}" property="dcat:keyword" target="_blank">${keyword.value}</a>
+              <a href="${keyword.uri?html}" property="dcat:keyword" target="_blank">${keyword.value?html}</a>
             <#else>
-              <span property="dcat:keyword">${keyword.value}</span>
+              <span property="dcat:keyword">${keyword.value?html}</span>
             </#if>
             <#if keyword_has_next><br></#if>
           </#list>

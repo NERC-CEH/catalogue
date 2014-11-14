@@ -6,7 +6,7 @@
         <dt>Spatial representation type</dt>
         <dd>
           <#list spatialRepresentationTypes as spatialRepresentationType>
-            ${spatialRepresentationType}
+            ${spatialRepresentationType?html}
             <#if spatialRepresentationType_has_next><br></#if>
           </#list>
         </dd>
@@ -16,7 +16,7 @@
         <dt>Spatial Reference System</dt>
         <dd>
           <#list spatialReferenceSystems as spatialReferenceSystem>
-            ${spatialReferenceSystem.title!(spatialReferenceSystem.reference)}
+            ${spatialReferenceSystem.title!(spatialReferenceSystem.reference)?html}
             <#if spatialReferenceSystem_has_next><br></#if>  
           </#list>
         </dd>

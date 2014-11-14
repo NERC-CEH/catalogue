@@ -2,7 +2,7 @@
   <h3>Related records</h3>
 
   <#if parentIdentifier?has_content>
-    <p>This resource is part of the series: ${parentIdentifier}</p>
+    <p>This resource is part of the series: ${parentIdentifier?html}</p>
   </#if>
 
   <#if documentLinks?size gt 0 && documentLinks??>
@@ -12,9 +12,9 @@
     <#assign documentLinksTitle="Associated datasets:">
     </#if>
 
-    <h4>${documentLinksTitle}</h4>
+    <h4>${documentLinksTitle?html}</h4>
     <#list documentLinks as link>
-      <p><a href="${link.href}">${link.title}</a></p>
+      <p><a href="${link.href?html}">${link.title?html}</a></p>
     </#list>
   </#if>
 </#if>

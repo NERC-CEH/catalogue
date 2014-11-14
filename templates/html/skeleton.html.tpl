@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${title} - CEH Catalogue</title>
+    <title>${title?html} - CEH Catalogue</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     
 	
