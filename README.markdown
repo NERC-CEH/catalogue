@@ -76,16 +76,20 @@ The vagrant box can be functionally tested using capybara and selenium. The test
 
         bundle install
 
-* Then you can execute your tests
+* Then you can execute your tests in parallel
 
-        bundle exec rspec
+        bundle exec rake # calls :headless and :parallel_spec
 
-* You can specify a particular browser to test in (as long as they have been set up in the browsers_helper.rb) by:
+* You can specify a particular test group to test by calling the specific rspec task:
 
-        bundle exec rspec --tag driver:chrome
+        bundle exec rake --tasks # List the available rake tasks. Not all can be run from workstations
+        bundle exec rake chrome_spec
 
 * Sit back and watch your chrome instance run through your test suite
 
 ### Running the tests headlessly
 
-If you want to execute the tests within xvfb, then set the environment variable **HEADLESS** to true. Chrome will be started up inside xvfb. Obviously your box will need to have xvfb installed.
+If you want to execute the tests within xvfb, then use the **headless** rake task. Chrome and firefox will be started up inside xvfb. Obviously your box will need to have 
+xvfb installed. The default rake task will start in headless mode.
+
+        bundle exec rake headless chrome_spec

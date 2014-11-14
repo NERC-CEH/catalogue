@@ -14,6 +14,7 @@ TEST_GROUPS = {
 
 task :default => [:headless, :parallel_spec]
 
+desc 'Set up Xfvb so that we can test in browsers headlessly'
 task :headless do
   headless = Headless.new
   headless.start
@@ -22,6 +23,7 @@ task :headless do
   end
 end
 
+desc 'Run each of the rspec groups in parallel'
 task :parallel_spec do
   groups = TEST_GROUPS.keys
 
@@ -32,6 +34,7 @@ end
 
 # Loop around each of the rspec tags and create a new task
 TEST_GROUPS.each { |key, tag|
+  desc "RSpec with specs tagged with #{tag}"
   task key do
     system "rspec --format progress --format RspecJunitFormatter --tag #{tag} --out #{key}_junit.xml"
   end

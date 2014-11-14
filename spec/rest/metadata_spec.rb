@@ -1,4 +1,4 @@
-describe "Metadata page generated HTML", :retry =>0, :restful => true do
+describe "Metadata page generated HTML", :retry => 1, :restful => true do
   describe "RDFa properties" do
     before(:each) do
       @res = Nokogiri::HTML(
