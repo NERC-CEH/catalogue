@@ -1,3 +1,6 @@
+<#setting url_escaping_charset='ISO-8859-1'>
+<#setting date_format = 'yyyy-MM-dd'>
+
 <#macro master title><#compress><!DOCTYPE html>
 <html>
   <head>

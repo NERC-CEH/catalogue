@@ -1,4 +1,3 @@
-<#setting date_format = 'yyyy-MM-dd'>
 <p id="section-dates2">
   <#if datasetReferenceDate.publicationDate??>
     

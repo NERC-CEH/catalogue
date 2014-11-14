@@ -36,7 +36,7 @@
 
           <#if metadataPointOfContact.email?has_content>
             <p>
-              <a href="mailto:${metadataPointOfContact.email?html}" property="v:email">${metadataPointOfContact.email?html}</a>
+              <a href="mailto:${metadataPointOfContact.email?url}" property="v:email">${metadataPointOfContact.email?html}</a>
             </p>
           </#if>
         </dd>
