@@ -1,5 +1,5 @@
 <div id="section-metadata">
-  <h3><a id="metadata"></a>Metadata</h3>
+  <h3>Metadata</h3>
   <dl class="dl-horizontal">
     <dt><span class="element" data-content="Unique identifier for this record" data-trigger="hover" data-placement="right">Record identifier</span></dt>
     <dd property="dc:identifier" >${id}</dd>
