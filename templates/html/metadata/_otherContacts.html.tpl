@@ -10,12 +10,12 @@
 
       <#if otherContact.email?has_content>
         <#if otherContact.individualName?has_content>
-          <a href="mailto:${otherContact.email}&subject=RE:${title}">${otherContact.individualName}</a><br>
+          <a href="mailto:${otherContact.email}&amp;subject=RE:${title}">${otherContact.individualName}</a><br>
             <#if otherContact.organisationName?has_content>
               <span>${otherContact.organisationName}</span><br>
             </#if>
           <#else>
-            <a href="mailto:${otherContact.email}&subject=RE:${title}">${otherContact.organisationName}</a><br>
+            <a href="mailto:${otherContact.email}&amp;subject=RE:${title}">${otherContact.organisationName}</a><br>
           </#if>
         <#else>
           <#if otherContact.individualName?has_content>
@@ -45,12 +45,12 @@
       <dd id="distributorContact-detail">
         <#if distributorContact.email?has_content>
           <#if distributorContact.individualName?has_content>
-            <a href="mailto:${distributorContact.email}&subject=RE:${title}">${distributorContact.individualName}</a><br>
+            <a href="mailto:${distributorContact.email}&amp;subject=RE:${title}">${distributorContact.individualName}</a><br>
             <#if distributorContact.organisationName?has_content>
               <span>${distributorContact.organisationName}</span><br>
             </#if>
           <#else>
-            <a href="mailto:${distributorContact.email}&subject=RE:${title}">${distributorContact.organisationName}</a><br>
+            <a href="mailto:${distributorContact.email}&amp;subject=RE:${title}">${distributorContact.organisationName}</a><br>
           </#if>
         <#else>
           <#if distributorContact.individualName?has_content>
