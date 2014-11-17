@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'yaml'
 require 'rspec/retry'
 require 'capybara/rspec'
 require 'selenium/webdriver'
@@ -13,6 +14,8 @@ hostname = Socket.gethostbyname(Socket.gethostname).first
 Capybara.app_host = "https://#{hostname}:8080"
 Capybara.run_server = false
 Capybara.default_selector = :css
+
+METADATA_IDS = YAML::load_file('documents.yaml')
 
 RSpec.configure do |config|
   config.default_retry_count = 10

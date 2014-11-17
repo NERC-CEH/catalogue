@@ -1,3 +1,4 @@
+require 'yaml'
 require 'parallel'
 require 'headless'
 
@@ -12,7 +13,7 @@ TEST_GROUPS = {
   :rest_spec    => 'restful'
 }
 
-task :default => [:headless, :parallel_spec]
+task :default => [:grab_ids, :headless, :parallel_spec]
 
 desc 'Set up Xfvb so that we can test in browsers headlessly'
 task :headless do
@@ -21,6 +22,14 @@ task :headless do
   at_exit do
     headless.destroy
   end
+end
+
+desc 'Grab metadata ids from the vagrant box'
+task :grab_ids do
+  datastore = '/var/ceh-catalogue/datastore/'
+  metadata = `vagrant ssh -c "ls #{datastore}*.raw"`
+  names = metadata.split.map {|name| name[datastore.length..-5]}
+  File.open('documents.yaml', 'w') {|f| f.write names.to_yaml }
 end
 
 desc 'Run each of the rspec groups in parallel'
