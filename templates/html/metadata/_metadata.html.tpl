@@ -6,9 +6,9 @@
     <#if metadataPointsOfContact?has_content>
     <dt>Record created by</dt>
       <#list metadataPointsOfContact as metadataPointOfContact>
-        <dd rel="foaf:Agent">
+        <dd rel="dc:publisher">
           <#if metadataPointOfContact.individualName?has_content>
-            <span property="v:n">${metadataPointOfContact.individualName?html}</span><br>
+            <span property="v:fn">${metadataPointOfContact.individualName?html}</span><br>
           </#if>
           <#if metadataPointOfContact.organisationName?has_content>
             <span property="v:Organization">${metadataPointOfContact.organisationName?html}</span><br>
