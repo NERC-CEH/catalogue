@@ -6,11 +6,11 @@ import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
 public class Keyword {
-    private final String value, URI;
+    private final String value, uri;
     
     @Builder
     private Keyword(String value, String URI) {
         this.value = nullToEmpty(value);
-        this.URI = nullToEmpty(URI);
+        this.uri = nullToEmpty(URI);
     }
 }

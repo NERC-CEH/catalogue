@@ -100,8 +100,8 @@ public class GeminiDocument implements MetadataDocument {
         return descriptiveKeywords
             .stream()
             .flatMap(dk -> dk.getKeywords().stream())
-            .filter(k -> k.getURI().startsWith(TOPIC_PROJECT_URL))
-            .map(Keyword::getURI)
+            .filter(k -> k.getUri().startsWith(TOPIC_PROJECT_URL))
+            .map(Keyword::getUri)
             .collect(Collectors.toList());
     }
     

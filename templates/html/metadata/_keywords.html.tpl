@@ -17,7 +17,7 @@
       <dt>INSPIRE Theme</dt>
       <dd>
         <#list descriptiveKeyword.keywords as keyword>
-          <#if keyword.uri??>
+          <#if keyword.uri?has_content>
             <a href="${keyword.uri?html}" property="dcat:keyword" target="_blank">${keyword.value?html}</a>
           <#else>
             <span property="dcat:keyword">${keyword.value?html}</span>
@@ -35,7 +35,7 @@
         </dt>
         <dd class="descriptive-keywords">
           <#list descriptiveKeyword.keywords as keyword>
-            <#if keyword.uri??>
+            <#if keyword.uri?has_content>
               <a href="${keyword.uri?html}" property="dcat:keyword" target="_blank">${keyword.value?html}</a>
             <#else>
               <span property="dcat:keyword">${keyword.value?html}</span>
