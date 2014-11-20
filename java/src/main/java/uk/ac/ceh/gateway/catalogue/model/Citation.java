@@ -25,7 +25,7 @@ public class Citation {
     private final URI bibtex, ris;
     
     public String getUrl() {
-        return "http://dx.doi.org/" + doi;
+        return "http://doi.org/" + doi;
     }
     
     public String getDoiDisplay() {
