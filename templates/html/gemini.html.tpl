@@ -18,8 +18,8 @@
     
     <div class="row">
       <div class="col-sm-4 col-xs-12 pull-right">
-        <#include "metadata/_children.html.tpl">
         <#include "metadata/_distribution.html.tpl">
+        <#include "metadata/_children.html.tpl">
       </div>
       <div class="col-sm-8 col-xs-12">
         <#include "metadata/_extent.html.tpl">
