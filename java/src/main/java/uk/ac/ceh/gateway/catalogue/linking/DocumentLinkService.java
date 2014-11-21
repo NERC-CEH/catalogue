@@ -35,5 +35,23 @@ public interface DocumentLinkService {
      * @return a set of Links
      */
     Set<Link> getLinks(GeminiDocument document, String urlFragment);
+    
+    /**
+     * Get link to parent of this Gemini Document.
+     * 
+     * @param document to find parent of
+     * @param urlFragment to use to create link url from (expects to have context/documents/ or context/history/ in path)
+     * @return a Link to the parent Metadata
+     */
+    Link getParent(GeminiDocument document, String urlFragment);
+    
+    /**
+     * Get links to children of this Gemini Document.
+     * 
+     * @param document to find children of
+     * @param urlFragment to use to create link url from (expects to have context/documents/ or context/history/ in path)
+     * @return a set of Links to the child Metadata
+     */
+    Set<Link> getChildren(GeminiDocument document, String urlFragment);
 
 }

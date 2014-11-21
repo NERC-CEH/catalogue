@@ -8,19 +8,21 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 
 @Value
 public class Metadata {
-    private final String fileIdentifier, title, resourceIdentifier;
+    private final String fileIdentifier, title, resourceIdentifier, parentIdentifier;
     
     public Metadata(GeminiDocument document) {
         this.fileIdentifier = nullToEmpty(document.getId());
         this.title = nullToEmpty(document.getTitle());
         this.resourceIdentifier = extractInternalIdentifier(document);
+        this.parentIdentifier = nullToEmpty(document.getParentIdentifier());
     }
     
     @Builder
-    private Metadata(String fileIdentifier, String title, String resourceIdentifier) {
+    private Metadata(String fileIdentifier, String title, String resourceIdentifier, String parentIdentifier) {
         this.fileIdentifier = nullToEmpty(fileIdentifier);
         this.title = nullToEmpty(title);
         this.resourceIdentifier = nullToEmpty(resourceIdentifier);
+        this.parentIdentifier = nullToEmpty(parentIdentifier);
     }
     
     private String extractInternalIdentifier(GeminiDocument document) {

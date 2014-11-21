@@ -47,7 +47,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         browseGraphicUrl, coupledResource, resourceStatus, metadataDate, lineage, 
         metadataStandardName, metadataStandardVersion, supplementalInfo, 
         spatialRepresentationType, datasetLanguage, useLimitations, 
-        accessConstraints, otherConstraints, securityConstraints;
+        accessConstraints, otherConstraints, securityConstraints, parentIdentifier;
     private final XPath xpath;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
@@ -103,6 +103,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.accessConstraints = xpath.compile(XPaths.ACCESS_CONSTRAINT);
         this.otherConstraints = xpath.compile(XPaths.OTHER_CONSTRAINT);
         this.securityConstraints = xpath.compile(XPaths.SECURITY_CONSTRAINT);
+        this.parentIdentifier = xpath.compile(XPaths.PARENT_IDENTIFIER);
     }
     
     @Override
@@ -158,6 +159,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setAccessConstraints(getListOfStrings(document, accessConstraints));
             toReturn.setOtherConstraints(getListOfStrings(document, otherConstraints));
             toReturn.setSecurityConstraints(getListOfStrings(document, securityConstraints));
+            toReturn.setParentIdentifier(parentIdentifier.evaluate(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

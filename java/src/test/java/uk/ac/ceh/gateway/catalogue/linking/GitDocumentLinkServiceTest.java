@@ -99,6 +99,38 @@ public class GitDocumentLinkServiceTest {
     }
     
     @Test
+    public void canGetParent() {
+        //Given
+        String fileIdentifier = "absd-asd";
+        GeminiDocument document = new GeminiDocument();
+        document.setId(fileIdentifier);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        String urlFragement = "http://localhost:8080/documents/";
+        
+        //When
+        linkService.getParent(document, urlFragement);
+        
+        //Then
+        verify(linkDatabase).findParent(fileIdentifier);
+    }
+    
+    @Test
+    public void canGetChildren() {
+        //Given
+        String fileIdentifier = "absd-asd";
+        GeminiDocument document = new GeminiDocument();
+        document.setId(fileIdentifier);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        String urlFragement = "http://localhost:8080/documents/";
+        
+        //When
+        linkService.getChildren(document, urlFragement);
+        
+        //Then
+        verify(linkDatabase).findChildren(fileIdentifier);
+    }
+    
+    @Test
     public void emptyValueDelegatesToDatabase() {
         //Given
         GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);

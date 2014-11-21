@@ -2,7 +2,7 @@
   <h3>Related records</h3>
 
   <#if parentIdentifier?has_content>
-    <p>This resource is part of the series: ${parentIdentifier?html}</p>
+    <p>This resource is part of the series: <a href="${parent.href?html}">${parent.title?html}</a></p>
   </#if>
 
   <#if documentLinks?size gt 0 && documentLinks??>

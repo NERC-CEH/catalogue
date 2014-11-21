@@ -5,7 +5,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.HashSet;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -120,8 +118,11 @@ public class DocumentController {
         MetadataDocument document = documentBundleReader.readBundle(file, revision);
         document.attachUri(getCurrentUri(request, file, revision));
         if(document instanceof GeminiDocument) {
+            String urlFragment = getLinkUrlFragment(request, revision);
             GeminiDocument geminiDocument = (GeminiDocument)document;
-            geminiDocument.setDocumentLinks(linkService.getLinks(geminiDocument, getLinkUrlFragment(request, revision)));
+            geminiDocument.setDocumentLinks(linkService.getLinks(geminiDocument, urlFragment));
+            geminiDocument.setParent(linkService.getParent(geminiDocument, urlFragment));
+            geminiDocument.setChildren(linkService.getChildren(geminiDocument, urlFragment));
             geminiDocument.setCitation(citationService.getCitation(geminiDocument));
         }
         log.debug("document requested: {}", document);
