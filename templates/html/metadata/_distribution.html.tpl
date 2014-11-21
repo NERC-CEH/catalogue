@@ -28,7 +28,8 @@
         </#if>
 
         <#list useLimitations as useLimitations>
-          <#if !useLimitations?starts_with("If you reuse this data")>
+          <#-- starts_with shortened to catch 'reuse' and 're-use' in the wild -->
+          <#if !useLimitations?starts_with("If you re")>
             <p property="dc:rights">${useLimitations?html}</p>
           </#if>
         </#list>
