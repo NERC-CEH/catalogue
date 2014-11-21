@@ -24,4 +24,5 @@ public class XPaths {
     public static final String RESPONSIBLE_PARTY = "/*/gmd:identificationInfo/*/gmd:pointOfContact/*";
     public static final String DISTRIBUTOR = "/*/gmd:distributionInfo/*/gmd:distributor/*/gmd:distributorContact/*";
     public static final String METADATA_POINT_OF_CONTACT = "/*/gmd:contact/*";
+    public static final String PARENT_IDENTIFIER = "/*/gmd:parentIdentifier/*";
 }

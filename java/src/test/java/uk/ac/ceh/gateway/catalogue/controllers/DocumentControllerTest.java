@@ -202,6 +202,8 @@ public class DocumentControllerTest {
         //Then
         verify(documentBundleReader).readBundle(file, latestRevisionId);
         verify(linkService).getLinks(any(GeminiDocument.class), any(String.class));
+        verify(linkService).getParent(any(GeminiDocument.class), any(String.class));
+        verify(linkService).getChildren(any(GeminiDocument.class), any(String.class));
     }
     
     @Test

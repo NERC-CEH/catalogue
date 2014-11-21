@@ -65,4 +65,20 @@ public interface LinkDatabase {
      * @return set of metadata
      */
     List<Metadata> findServicesForDataset(String fileIdentifier);
+    
+    /**
+     * Get parent's metadata.
+     * 
+     * @param fileIdentifier of child
+     * @return parent's metadata
+     */
+    Metadata findParent(String fileIdentifier);
+    
+    /**
+     * Get children's metadata.
+     * 
+     * @param fileIdentifier of parent
+     * @return set of children's metadata
+     */
+    List<Metadata> findChildren(String fileIdentifier);
 }
