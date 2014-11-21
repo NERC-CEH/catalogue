@@ -1,99 +1,119 @@
+DCAT = RDF::Vocabulary.new("http://www.w3.org/ns/dcat#")
+GEO = RDF::Vocabulary.new("http://www.opengis.net/ont/geosparql#")
+
 describe "Metadata RDFa properties", :retry => 1, :retry_wait => 0, :restful => true do
-  before(:each) do
-    @res = Nokogiri::HTML(
-      $site['/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3'].get
-    )
+  let(:graph) {
+    RDF::Graph.load("#{APP_HOST}/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3", :format => :rdfa)
+  }
+
+  let(:subject) { RDF::URI.new("#{APP_HOST}/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3") }
+
+
+  it "should have dc:title" do
+    title = graph.first_literal([subject, RDF::DC.title, nil])
+    expect(title.value).to eq 'Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland)'
   end
 
-  it "should define prefixes on the metadata element" do
-    prefix = @res.css('#metadata')[0]['prefix']
-    expect(prefix).to include('dc: http://purl.org/dc/terms/')
-    expect(prefix).to include('geo: http://www.opengis.net/ont/geosparql#')
-    expect(prefix).to include('v: http://www.w3.org/2006/vcard/ns#')
+  it "should have dc:type" do
+    type = graph.first_literal([subject, RDF::DC.type, nil])
+    expect(type.value).to eq 'dataset'
   end
 
-  it "should have dc:title property on title element" do
-    title = @res.css('#document-title')[0]
-    
-    expect(title['property']).to eq 'dc:title'
-    expect(title['content']).to eq 'Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland)'
+  it "should have dc:abstract" do
+    abstract = graph.first_literal([subject, RDF::DC.abstract, nil])
+    expect(abstract.value).to include 'parcel-based thematic'
   end
 
-  it "should have two dcat:themes" do
-    themes = @res.css('[property="dcat:theme"]')
-    expect(themes.length).to be 2
-    expect(themes[0]['content']).to eq 'environment'
-    expect(themes[1]['content']).to eq 'imageryBaseMapsEarthCover'
+  it "should have one dc:distribution" do
+    distributions = graph.query [subject, DCAT.Distribution, nil]
+    expect(distributions.count).to be 1
   end
 
-  it "should have dc:type property on resource-type element" do
-    expect(@res.css('#resource-type')[0]['property']).to include('dc:type')
+  describe "Distribution" do
+    let(:distribution) {graph.first_object([subject, DCAT.Distribution, nil])}
+
+    it "should have accessURL" do
+      url = graph.first_object [distribution, DCAT.accessURL, nil]
+      expect(url.value).to eq 'http://gateway.ceh.ac.uk/download?fileIdentifier=1e7d5e08-9e24-471b-ae37-49b477f695e3'
+    end
+
+    it "should have format" do
+      format = graph.first_literal [distribution, RDF::DC.format, nil]
+      expect(format.value).to eq 'geo-referenced TIFF image'
+    end
+
+    it "should have rights" do
+      rights = graph.first_literal [distribution, RDF::DC.rights, nil]
+      expect(rights.value).to include 'Refer to:'
+    end
+  end
+
+  it "should have dc:bibliographicCitation" do
+    bibliographicCitation = graph.first_literal [subject, RDF::DC.bibliographicCitation, nil]
+
+    expect(bibliographicCitation.value).to include 'Morton'
+  end
+
+  it "should have dc:spatial" do
+    spatial = graph.first_literal([subject, RDF::DC.spatial, nil])
+
+    expect(spatial.value).to eq 'POLYGON((-8.21 53.68, -8.21 55.77, -5.26 55.77, -5.26 53.68, -8.21 53.68))'
+    expect(spatial.datatype).to eq GEO.wktLiteral
+  end
+
+  it "should have dc:temporal" do
+    temporal = graph.first_literal [subject, RDF::DC.temporal, nil]
+    expect(temporal.value).to eq '2005-09-02/2008-07-18'
+    expect(temporal.datatype).to eq RDF::DC.PeriodOfTime
+  end
+
+  it "should have two themes" do
+    themes = graph.query [subject, DCAT.theme, nil]
+    expect(themes.count).to be 2
+    expect(themes.has_object? RDF::Literal.new('environment')).to be true
+    expect(themes.has_object? RDF::Literal.new('imageryBaseMapsEarthCover')).to be true
   end
 
   it "should have dc:identifier property" do
-    identifier = @res.css('[property="dc:identifier"]')
-    expect(identifier.length).to be 1
-    expect(identifier[0].to_str).to eq('1e7d5e08-9e24-471b-ae37-49b477f695e3')
+    id = graph.first_literal [subject, RDF::DC.identifier, nil]
+    expect(id.value).to eq '1e7d5e08-9e24-471b-ae37-49b477f695e3'
   end
 
-  it "should have dc:bibliographicCitation property on citation element" do
-    expect(@res.css('#citation-text')[0]['property']).to include('dc:bibliographicCitation')
-  end
+  describe "dc:publisher" do
+    let(:publisher) {graph.first([subject, RDF::DC.publisher, nil]).object}
 
-  it "should have dc:creator property on elements with author class" do
-    @res.css('#document-contacts > .contact-text').each do |contact|
-      expect(contact.attribute('property').to_str).to include('dc:creator')
+    it "has vcard organization-name" do
+      name = graph.first_literal([publisher, RDF::VCARD['organization-name'], nil ])
+      expect(name.value).to include 'Centre for Ecology & Hydrology'
     end
-  end
 
-  it "should have dc:publisher property on elements with distributor or resource provider class" do
-    @res.css('div.document-contacts > div.distributor, div.document-contacts > div.resource-provider').each do |contact|
-      expect(contact.attribute('property').to_str).to include('dc:publisher')
+    describe "v:adr" do
+      let(:address) {graph.first([publisher, RDF::VCARD.adr, nil]).object}
+    
+      it "has street-address" do
+        address = graph.first_literal([address, RDF::VCARD['street-address'], nil ])
+        expect(address.value).to include 'Bailrigg'
+      end
+
+      it "has locality" do
+        locality = graph.first_literal([address, RDF::VCARD.locality, nil ])
+        expect(locality.value).to eq 'Lancaster'
+      end
+
+      it "has region" do
+        region = graph.first_literal([address, RDF::VCARD.region, nil ])
+        expect(region.value).to eq 'Lancashire'
+      end
+
+      it "has postal-code" do
+        postCode = graph.first_literal([address, RDF::VCARD['postal-code'], nil ])
+        expect(postCode.value).to eq 'LA1 4AP'
+      end
+
+      it "has country-name" do
+        country = graph.first_literal([address, RDF::VCARD['country-name'], nil ])
+        expect(country.value).to eq 'United Kingdom'
+      end
     end
-  end
-
-  it "should have dc:abstract property on document-description element" do
-    expect(@res.css('#document-description')[0]['property']).to include('dc:abstract')
-  end
-
-  it "should have dc:spatial property on all extent elements" do
-    @res.css('#extent > img').each do |extent|
-      expect(extent.attribute('property').to_str).to include('dc:spatial')
-    end
-  end
-
-  it "should have dcat:accessURL property on link" do
-    ordering = @res.css('a[property="dcat:accessURL"]')
-    expect(ordering.length).to be 1
-  end
-
-  it "should have dc:rights property" do
-    rights = @res.css('[property="dc:rights"]')
-    expect(rights.length).to be 1
-  end
-
-  it "should have dc:temporal property on temporal extent element" do
-    expect(@res.css('#temporal-extent')[0]['property']).to include('dc:temporal')
-  end
-
-  it "should have dc:spatial property on studyarea-map" do
-    extents = @res.css('#studyarea-map [property="dc:spatial"]')
-    expect(extents[0]['content']).to include 'POLYGON(('
-    expect(extents[0]['datatype']).to eq 'geo:wktLiteral'
-  end
-
-  it "should have single foaf:agent in section-metadata" do
-    agents = @res.css('[rel="foaf:Agent"]')
-    expect(agents.length).to be 1
-    expect(@res.css('#section-metadata [rel="foaf:Agent"]')).to eq agents
-  end
-
-  it "should have dcat:Distribution" do
-    expect(@res.css('[property="dcat:Distribution"]').length).to be 1
-  end
-
-  it "should have dcat:keyword in keywords" do
-    keywords = @res.css('#keywords [property="dcat:keyword"]')
-    expect(keywords.length).to be > 1
   end
 end
