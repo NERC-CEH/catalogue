@@ -54,21 +54,21 @@ describe "Metadata page" do
     end
 
     describe "Document links on metadata page" do
-      it "should have heading 'Associated Services'" do
+      it "should have heading 'Services associated with this dataset:'" do
         visit radionuclideServicePage
-        expect(page).to have_content('Associated services')
+        expect(page).to have_css('h4', :text=> 'Services associated with this dataset:')
         expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales survey maps")
       end
 
-      it "should have heading 'Associated Datasets'" do
+      it "should have heading 'Datasets associated with this service:'" do
         visit radionuclideDatasetPage
-        expect(page).to have_css('h4',:text=> 'Associated datasets')
+        expect(page).to have_css('h4',:text=> 'Datasets associated with this service:')
         expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales")
       end
 
-      it "should not have heading 'Associated Datasets'" do
+      it "should not have heading 'Datasets associated with this service:'" do
         visit bmsPage
-        expect(page).to_not have_css('h4',:text=> 'Associated datasets')
+        expect(page).to_not have_css('h4',:text=> 'Datasets associated with this service:')
       end
     end
   end
