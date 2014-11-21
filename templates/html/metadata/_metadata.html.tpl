@@ -11,7 +11,7 @@
             <span property="v:fn">${metadataPointOfContact.individualName?html}</span><br>
           </#if>
           <#if metadataPointOfContact.organisationName?has_content>
-            <span property="v:Organization">${metadataPointOfContact.organisationName?html}</span><br>
+            <span property="v:organization-name">${metadataPointOfContact.organisationName?html}</span><br>
           </#if>
 
           <#if metadataPointOfContact.address?has_content>
