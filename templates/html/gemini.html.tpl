@@ -26,7 +26,6 @@
         <#include "metadata/_onlineResources.html.tpl">
         <#include "metadata/_quality.html.tpl">
 
-        <#include "metadata/_related.html.tpl">
         <#include "metadata/_authors.html.tpl">
         <#include "metadata/_otherContacts.html.tpl">
         <#include "metadata/_keywords.html.tpl">
