@@ -32,7 +32,7 @@ public class GeminiDocument implements MetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private URI uri;
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
-        metadataStandardName, metadataStandardVersion, supplementalInfo, resourceType;
+        metadataStandardName, metadataStandardVersion, supplementalInfo, resourceType, parentIdentifier;
     private List<String> alternateTitles, topicCategories, coupledResources, spatialRepresentationTypes, datasetLanguages,
         useLimitations, accessConstraints, otherConstraints, securityConstraints;
     private List<DistributionInfo> distributionFormats;
@@ -47,7 +47,8 @@ public class GeminiDocument implements MetadataDocument {
     private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> temporalExtent;
     private List<OnlineResource> onlineResources;
-    private Set<Link> documentLinks;
+    private Link parent;
+    private Set<Link> documentLinks, children;
     private Set<ResourceIdentifier> resourceIdentifiers;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private Citation citation;
@@ -100,8 +101,8 @@ public class GeminiDocument implements MetadataDocument {
         return descriptiveKeywords
             .stream()
             .flatMap(dk -> dk.getKeywords().stream())
-            .filter(k -> k.getURI().startsWith(TOPIC_PROJECT_URL))
-            .map(Keyword::getURI)
+            .filter(k -> k.getUri().startsWith(TOPIC_PROJECT_URL))
+            .map(Keyword::getUri)
             .collect(Collectors.toList());
     }
     

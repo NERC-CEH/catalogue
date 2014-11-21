@@ -247,6 +247,49 @@ public class ITRdbmsLinkDatabase {
     }
     
     @Test
+    public void findParent() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Metadata expected = Metadata.builder()
+            .title("Parent Series")
+            .fileIdentifier("fc77c9b3-570d-4314-82ba-bc914538a748")
+            .build();
+        
+        //When
+        Metadata actual = linkDatabase.findParent("abff8409-0995-48d2-9303-468e1a9fe3df");       
+        
+        //Then
+        assertThat("Parent not found in expected", actual, equalTo(expected)); 
+    }
+    
+    @Test
+    public void findChildren() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Collection<Metadata> expected = Arrays.asList(
+            Metadata.builder()
+            .title("Child Dataset 0")
+            .fileIdentifier("abff8409-0995-48d2-9303-468e1a9fe3df")
+            .parentIdentifier("fc77c9b3-570d-4314-82ba-bc914538a748")
+            .build(),
+            Metadata.builder()
+            .title("Child Dataset 1")
+            .fileIdentifier("dbff8409-0995-48d2-9303-468e1a9fe3dd")
+            .parentIdentifier("fc77c9b3-570d-4314-82ba-bc914538a748")
+            .build()
+        );
+        
+        //When
+        Collection<Metadata> actual = linkDatabase.findChildren("fc77c9b3-570d-4314-82ba-bc914538a748");       
+        
+        //Then
+        assertThat("There should be two metadata in the collection", actual.size(), equalTo(2));
+        actual.stream().forEach((metadata) -> {
+            assertThat("Metadata not found in expected", metadata, isIn(expected));
+        });
+    }
+    
+    @Test
     public void zeroResultsDoesNotCauseCrash() {
         //Given
         DataSource dataSource = createPopulatedTestDataSource();

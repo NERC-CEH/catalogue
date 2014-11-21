@@ -194,6 +194,21 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
+    public void canGetParentIdentifier() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("parentIdentifier.xml"));
+        String expected = "fc77c9b3-570d-4314-82ba-bc914538a748";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getParentIdentifier();
+        
+        //Then
+        assertThat("ParentIdentifier 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
     public void canGetDistributionInfo() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);

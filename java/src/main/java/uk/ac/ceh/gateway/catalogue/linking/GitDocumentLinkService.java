@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
 import com.google.common.base.Splitter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -97,12 +98,26 @@ public class GitDocumentLinkService implements DocumentLinkService {
         return Collections.EMPTY_SET;
     }
     
+    @Override
+    public Link getParent(GeminiDocument document, String urlFragment) {
+        return createLinks(Arrays.asList(linkDatabase.findParent(document.getId())), urlFragment)
+            .stream()
+            .findFirst()
+            .orElse(null);
+    }
+
+    @Override
+    public Set<Link> getChildren(GeminiDocument document, String urlFragment) {
+        return createLinks(linkDatabase.findChildren(document.getId()), urlFragment);
+    }
+    
     private Set<Link> createLinks(List<Metadata> metadata, String urlFragment) {
         return metadata.stream()
-            .map(meta -> {
+            .filter(m -> m != null)
+            .map(m -> {
                 return Link.builder()
-                    .title(meta.getTitle())
-                    .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(meta.getFileIdentifier()).build().toUriString())
+                    .title(m.getTitle())
+                    .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(m.getFileIdentifier()).build().toUriString())
                     .build();
             })
             .collect(Collectors.toSet());
