@@ -78,11 +78,14 @@ The vagrant box can be functionally tested using capybara and selenium. The test
 
 * Then you can execute your tests in parallel
 
-        bundle exec rake # calls :grab_ids :headless and :parallel_spec
+        bundle exec rake
+  This calls :grab_ids :headless and :parallel_spec
 
 * You can specify a particular test group to test by calling the specific rspec task:
 
-        bundle exec rake --tasks # List the available rake tasks. Not all can be run from workstations
+        bundle exec rake --tasks
+  Lists the available rake tasks. Not all can be run from workstations
+        
         bundle exec rake chrome_spec
 
 * Sit back and watch your chrome instance run through your test suite
