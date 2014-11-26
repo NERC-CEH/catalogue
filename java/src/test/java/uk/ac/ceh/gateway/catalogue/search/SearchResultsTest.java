@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +28,7 @@ public class SearchResultsTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             SearchQueryTest.DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS);
@@ -145,6 +145,7 @@ public class SearchResultsTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             SearchQueryTest.DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS);
@@ -176,6 +177,7 @@ public class SearchResultsTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             SearchQueryTest.DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             2,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS);
@@ -198,6 +200,7 @@ public class SearchResultsTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             SearchQueryTest.DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             1,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS);
@@ -220,6 +223,7 @@ public class SearchResultsTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             SearchQueryTest.DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS);
@@ -243,6 +247,7 @@ public class SearchResultsTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             SearchQueryTest.DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS);
@@ -267,6 +272,7 @@ public class SearchResultsTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             SearchQueryTest.DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS);
@@ -288,6 +294,7 @@ public class SearchResultsTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             "10,23,23,40",
+            SpatialOperation.ISWITHIN,
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS);

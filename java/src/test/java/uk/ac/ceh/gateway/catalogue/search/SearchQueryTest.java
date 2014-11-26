@@ -30,6 +30,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS);
@@ -55,6 +56,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             2,
             40,
             DEFAULT_FILTERS);
@@ -76,6 +78,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             term,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS);
@@ -95,6 +98,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             Arrays.asList(
@@ -118,7 +122,8 @@ public class SearchQueryTest {
             ENDPOINT,
             user,
             SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,                
+            DEFAULT_BBOX,  
+            SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS);
@@ -140,6 +145,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             bbox,
+            SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS);
@@ -161,6 +167,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             bbox,
+            SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS);
@@ -169,7 +176,29 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Expected to fild a solr bbox filter", solrQuery.getFilterQueries(), hasItemInArray("locations:\"isWithin(1.11 2.22 3.33 4.44)\""));
+        assertThat("Expected to fild a solr bbox filter", solrQuery.getFilterQueries(), hasItemInArray("locations:\"IsWithin(1.11 2.22 3.33 4.44)\""));
+    }
+    
+     @Test
+    public void canSetIntersectBBox() {
+        //Given
+        String bbox = "1.11,2.22,3.33,4.44";
+        
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            bbox,
+            SpatialOperation.INTERSECTS,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS);
+        
+        //When
+        SolrQuery solrQuery = query.build();
+        
+        //Then
+        assertThat("Expected to fild a solr bbox filter", solrQuery.getFilterQueries(), hasItemInArray("locations:\"Intersects(1.11 2.22 3.33 4.44)\""));
     }
     
     @Test
@@ -180,6 +209,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             18,
             DEFAULT_ROWS,
             DEFAULT_FILTERS);
@@ -201,6 +231,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             18,
             DEFAULT_ROWS,
             Arrays.asList(filter));
@@ -221,6 +252,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             18,
             DEFAULT_ROWS,
             DEFAULT_FILTERS);
@@ -241,6 +273,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             18,
             DEFAULT_ROWS,
             Arrays.asList(filter));
@@ -261,6 +294,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             filters);
@@ -282,6 +316,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             "My Search Term",
             "1,2,3,4",
+            SpatialOperation.ISWITHIN,
             24,
             30,
             Arrays.asList(new FacetFilter("a","b")));
@@ -292,6 +327,7 @@ public class SearchQueryTest {
         //Then
         assertThat("Term should be searched for", url, containsString("term=My Search Term"));
         assertThat("BBOX should be searched for", url, containsString("bbox=1,2,3,4"));
+        assertThat("OP should be present", url, containsString("op=IsWithin"));
         assertThat("page should be specified", url, containsString("page=24"));
         assertThat("rows should be present", url, containsString("rows=30"));
         assertThat("facet should be filtered", url, containsString("facet=a|b"));
@@ -306,6 +342,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS);
@@ -327,6 +364,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS);
@@ -346,6 +384,7 @@ public class SearchQueryTest {
             CatalogueUser.PUBLIC_USER,
             SearchQuery.DEFAULT_SEARCH_TERM,
             DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS);
