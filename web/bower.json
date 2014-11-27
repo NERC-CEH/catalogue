@@ -15,6 +15,7 @@
     "requirejs-text": "2.0.12",
     "requirejs-tpl": "7438735aa84b76af0fb266d8373b5fbaab2a1a03",
     "require-cs": "0.5.0",
-    "openlayers": "release-2.13.1"
+    "openlayers": "release-2.13.1",
+    "ol-loadingPanel": "http://svn.osgeo.org/openlayers/addins/loadingPanel/trunk/lib/OpenLayers/Control/LoadingPanel.js"
   }
 }

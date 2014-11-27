@@ -11,6 +11,7 @@ define [
       displayProjection: new OpenLayers.Projection("EPSG:3857")
       theme: null
 
+    @map.addControl new OpenLayers.Control.LoadingPanel
 
     backdrop = new OpenLayers.Layer.OSM "OSM", [
       "//a.tile.openstreetmap.org/${z}/${x}/${y}.png",
