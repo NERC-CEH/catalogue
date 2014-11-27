@@ -10,8 +10,6 @@
  * happening while tiles are loading. This control displays a div across the 
  * map when this is going on.
  *
- * Source: http://trac.osgeo.org/openlayers/wiki/Addins/LoadingPanel
- *
  * Inherits from:
  *  - <OpenLayers.Control>
  */
