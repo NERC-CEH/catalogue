@@ -83,7 +83,7 @@ module.exports = (grunt) ->
             'src/vendor/openlayers/lib/OpenLayers/Strategy/Fixed.js'
             'src/vendor/openlayers/lib/OpenLayers/TileManager.js'
             'src/vendor/openlayers/lib/OpenLayers/Format/WKT.js'
-            'src/scripts/lib/LoadingPanel.js'
+            'src/vendor/ol-loadingPanel/index.js'
           ]
 
     watch:
