@@ -13,6 +13,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.web.util.UriComponentsBuilder;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.BBOX_QUERY_PARAM;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.FACET_QUERY_PARAM;
+import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.OP_QUERY_PARAM;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.PAGE_DEFAULT;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.PAGE_QUERY_PARAM;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_DEFAULT;
@@ -35,6 +36,7 @@ public class SearchQuery {
     private final CatalogueUser user; 
     private final @NotNull String term;
     private final String bbox;
+    private final SpatialOperation spatialOperation;
     private final @Wither int page;
     private final int rows;
     private final @NotNull List<FacetFilter> facetFilters;
@@ -51,6 +53,7 @@ public class SearchQuery {
         setFacetFilters(query);
         setFacetFields(query);
         setSortOrder(query);
+        log.debug("search query: {}", query);
         return query;
     }
     
@@ -66,7 +69,7 @@ public class SearchQuery {
      */
     public SearchQuery withBbox(String newBbox) {
         if ( (bbox == null && newBbox != null) || (bbox !=null && !bbox.equals(newBbox)) ) {
-            return new SearchQuery(endpoint, user, term, newBbox, PAGE_DEFAULT, rows, facetFilters);
+            return new SearchQuery(endpoint, user, term, newBbox, spatialOperation, PAGE_DEFAULT, rows, facetFilters);
         }
         else {
             return this;
@@ -87,7 +90,7 @@ public class SearchQuery {
         if (!containsFacetFilter(filter)) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.add(filter);
-            return new SearchQuery(endpoint, user, term, bbox, PAGE_DEFAULT, rows, newFacetFilters);
+            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters);
         }
         else {
             return this;
@@ -106,7 +109,7 @@ public class SearchQuery {
         if(containsFacetFilter(filter) ) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.remove(filter);
-            return new SearchQuery(endpoint, user, term, bbox, PAGE_DEFAULT, rows, newFacetFilters);
+            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters);
         }
         else {
             return this;
@@ -142,6 +145,7 @@ public class SearchQuery {
         
         if(bbox != null) {
             builder.queryParam(BBOX_QUERY_PARAM, bbox);
+            builder.queryParam(OP_QUERY_PARAM, spatialOperation.getOperation());
         }
         
         if(!facetFilters.isEmpty()) {
@@ -154,9 +158,7 @@ public class SearchQuery {
     private void setSpatialFilter(SolrQuery query) {
         if(bbox != null) {
             validateBBox(bbox);
-            String solrBBox = bbox.replace(',', ' ');
-            query.addFilterQuery(
-                    "locations:\"isWithin(" + solrBBox + ")\"");
+            query.addFilterQuery(String.format("locations:\"%s(%s)\"", spatialOperation.getOperation(), bbox.replace(',', ' ')));
         }
     }
     private void setRecordVisibility(SolrQuery query) {

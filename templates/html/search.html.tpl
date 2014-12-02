@@ -14,6 +14,7 @@
       <div class="header map-heading">
         <h3>Map Search</h3>
         <div class="drawing-control pull-right"><#include "search/_drawing.html.tpl"></div>
+        <div class="spatialOp-control"><#include "search/_spatialOp.html.tpl"></div>
       </div>
       <div class="map-filter openlayers"></div>
     </div>

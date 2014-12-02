@@ -8,6 +8,7 @@ define [
     drawing:   false
     mapsearch: false
     bbox:      undefined
+    op:        undefined
     facet:     []
     term:      undefined
     page:      1
@@ -15,7 +16,7 @@ define [
   ###
   Define the set of fields which contribute to searching
   ###
-  searchFields: ['term', 'page', 'facet', 'bbox']
+  searchFields: ['term', 'page', 'facet', 'bbox', 'op']
 
   initialize:->
     do @createSearchPage          #Create initial search page
