@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import static com.google.common.base.Strings.nullToEmpty;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import lombok.Value;
 import lombok.experimental.Builder;
 
 @Value
+@JsonIgnoreProperties({"reference"})
 public class SpatialReferenceSystem {
    
     private static final String CODESPACE_EPSG = "urn:ogc:def:crs:EPSG";
@@ -43,9 +45,4 @@ public class SpatialReferenceSystem {
     public String getReference() {
         return String.format("%s::%s", codeSpace, code);
     }
-    
-    public boolean isEmpty(){
-        return code.isEmpty() && this.codeSpace.isEmpty();
-    }
-    
 }

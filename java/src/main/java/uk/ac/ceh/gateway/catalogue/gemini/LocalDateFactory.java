@@ -13,7 +13,7 @@ public class LocalDateFactory {
     private static final Pattern ALL_NUMBERS_DATE = Pattern.compile("(\\d{8})");
     
     public static LocalDate parse(String date) {
-        if (date.isEmpty()) {
+        if (date == null || date.isEmpty()) {
             return null;
         } else {
             Matcher iso = ISO_LOCAL_DATE.matcher(date);

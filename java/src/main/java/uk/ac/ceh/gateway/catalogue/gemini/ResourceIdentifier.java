@@ -1,11 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import static com.google.common.base.Strings.nullToEmpty;
 import static java.lang.String.format;
 import lombok.Value;
 import lombok.experimental.Builder;
 
 @Value
+@JsonIgnoreProperties({"coupleResource", "internal"})
 public class ResourceIdentifier {
     private final static String CEH_CODE_SPACE = "CEH:EIDC:";
     private final String code, codeSpace, version;

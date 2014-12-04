@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import static com.google.common.base.Strings.nullToEmpty;
 import lombok.Value;
 import lombok.experimental.Builder;
@@ -15,7 +16,7 @@ public class ResponsibleParty {
         this.organisationName = nullToEmpty(organisationName);
         this.role = toTitlecase(nullToEmpty(role));
         this.email = nullToEmpty(email);
-        this.address = address;    
+        this.address = (address == null || address.isEmpty()) ? null : address;    
     }
     
     private String toTitlecase(String camelCase) {
@@ -48,6 +49,7 @@ public class ResponsibleParty {
     }
     
     @Value
+    @JsonIgnoreProperties({"empty"})
     public static class Address {
         private final String deliveryPoint, city, administrativeArea, postalCode, country;
         
@@ -58,6 +60,10 @@ public class ResponsibleParty {
             this.administrativeArea = nullToEmpty(administrativeArea);
             this.postalCode = nullToEmpty(postalCode);
             this.country = nullToEmpty(country);
+        }
+        
+        public boolean isEmpty() {
+            return deliveryPoint.isEmpty() && city.isEmpty() && administrativeArea.isEmpty() && postalCode.isEmpty() && country.isEmpty();
         }
     }
 }
