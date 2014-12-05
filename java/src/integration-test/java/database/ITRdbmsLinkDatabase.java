@@ -290,6 +290,39 @@ public class ITRdbmsLinkDatabase {
     }
     
     @Test
+    public void findRevisionOf() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Metadata expected = Metadata.builder()
+            .title("Deprecated Dataset")
+            .fileIdentifier("97afcb16-9438-4d9f-abab-dd8619d730f5")
+            .build();
+        
+        //When
+        Metadata actual = linkDatabase.findRevisionOf("154ebeeb-a15a-4f63-a3cc-f2daa12ea833");       
+        
+        //Then
+        assertThat("Deprecated not found in expected", actual, equalTo(expected)); 
+    }
+    
+    @Test
+    public void findRevisied() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Metadata expected = Metadata.builder()
+            .title("Revised Dataset")
+            .fileIdentifier("154ebeeb-a15a-4f63-a3cc-f2daa12ea833")
+            .revisionOfIdentifier("97afcb16-9438-4d9f-abab-dd8619d730f5")
+            .build();
+        
+        //When
+        Metadata actual = linkDatabase.findRevised("97afcb16-9438-4d9f-abab-dd8619d730f5");       
+        
+        //Then
+        assertThat("Revised not found in expected", actual, equalTo(expected)); 
+    }
+    
+    @Test
     public void zeroResultsDoesNotCauseCrash() {
         //Given
         DataSource dataSource = createPopulatedTestDataSource();

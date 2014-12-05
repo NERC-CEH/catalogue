@@ -81,4 +81,14 @@ public interface LinkDatabase {
      * @return set of children's metadata
      */
     List<Metadata> findChildren(String fileIdentifier);
+    
+    /**
+     * Get revised's metadata.
+     * 
+     * @param fileIdentifier of deprecated metadata
+     * @return revised's metadata
+     */
+    Metadata findRevised(String fileIdentifier);
+    
+    Metadata findRevisionOf(String fileIdentifier);
 }

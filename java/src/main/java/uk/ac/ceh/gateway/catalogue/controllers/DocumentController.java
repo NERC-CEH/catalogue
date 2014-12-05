@@ -123,6 +123,8 @@ public class DocumentController {
             geminiDocument.setDocumentLinks(linkService.getLinks(geminiDocument, urlFragment));
             geminiDocument.setParent(linkService.getParent(geminiDocument, urlFragment));
             geminiDocument.setChildren(linkService.getChildren(geminiDocument, urlFragment));
+            geminiDocument.setRevised(linkService.getRevised(geminiDocument, urlFragment));
+            geminiDocument.setRevisionOf(linkService.getRevisionOf(geminiDocument, urlFragment));
             geminiDocument.setCitation(citationService.getCitation(geminiDocument));
         }
         log.debug("document requested: {}", document);

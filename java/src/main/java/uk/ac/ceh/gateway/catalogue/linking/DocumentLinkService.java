@@ -53,5 +53,14 @@ public interface DocumentLinkService {
      * @return a set of Links to the child Metadata
      */
     Set<Link> getChildren(GeminiDocument document, String urlFragment);
-
+    
+    /**
+     * 
+     * @param document to find revision
+     * @param urlFragment to use to create link url from (expects to have context/documents/ or context/history/ in path)
+     * @return a Link to the revised Metadata
+     */
+    Link getRevised(GeminiDocument document, String urlFragment);
+    
+    Link getRevisionOf(GeminiDocument document, String urlFragment);
 }
