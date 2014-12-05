@@ -13,7 +13,7 @@
   <#if descriptiveKeywords?has_content>
     <!--INSPIRE Theme(s)-->
     <#list descriptiveKeywords as descriptiveKeyword>
-    <#if descriptiveKeyword.thesaurusName.title == 'GEMET - INSPIRE themes, version 1.0'>
+    <#if descriptiveKeyword.thesaurusName?? && descriptiveKeyword.thesaurusName.title == 'GEMET - INSPIRE themes, version 1.0'>
       <dt>INSPIRE Theme</dt>
       <dd>
         <#list descriptiveKeyword.keywords as keyword>
@@ -29,7 +29,7 @@
     </#list>
     
     <#list descriptiveKeywords?sort_by("type") as descriptiveKeyword>
-      <#if descriptiveKeyword.thesaurusName.title != 'GEMET - INSPIRE themes, version 1.0'>
+      <#if descriptiveKeyword.thesaurusName?? && descriptiveKeyword.thesaurusName.title != 'GEMET - INSPIRE themes, version 1.0'>
         <dt>
           <#if (descriptiveKeyword.type)?? && descriptiveKeyword.type?has_content>${descriptiveKeyword.type?cap_first?html}<#else>Other</#if> keywords
         </dt>

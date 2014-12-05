@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import static com.google.common.base.Strings.nullToEmpty;
 import java.util.regex.Pattern;
 import lombok.Value;
@@ -13,7 +12,6 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.OTHER;
  * @author cjohn
  */
 @Value
-@JsonIgnoreProperties({"type"})
 public class OnlineResource {
     private static final Pattern GET_CAPABILITIES_URL_PATTERN = Pattern.compile("[\\?\\&]request=getcapabilities");
     private static final Pattern WMS_SERVICE_URL_PATTERN = Pattern.compile("[\\?\\&]service=wms");
