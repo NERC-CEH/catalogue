@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.net.URI;
 import java.util.List;
 import lombok.Value;
@@ -18,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
     @Template(called="citation/bib.tpl", whenRequestedAs=WebConfig.BIBTEX_VALUE),
     @Template(called="citation/ris.tpl", whenRequestedAs=WebConfig.RESEARCH_INFO_SYSTEMS_VALUE)
 })
+@JsonIgnoreProperties({"doiDisplay"})
 public class Citation {
     private final List<String> authors;
     private final String doi, coupled, title, publisher;

@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -14,7 +13,7 @@ public class ResponsiblePartyTest {
         String expected = "Author";
         
         //When
-        String actual = author.getRole();
+        String actual = author.getRoleDisplayName();
         
         //Then
         assertThat("actual role should equal expected", actual, equalTo(expected));
@@ -27,7 +26,7 @@ public class ResponsiblePartyTest {
         String expected = "Resource Provider";
         
         //When
-        String actual = author.getRole();
+        String actual = author.getRoleDisplayName();
         
         //Then
         assertThat("actual role should equal expected", actual, equalTo(expected));

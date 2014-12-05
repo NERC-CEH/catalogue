@@ -20,6 +20,6 @@ public class DescriptiveKeywords {
             this.keywords = keywords;
         }
         this.type = nullToEmpty(type);
-        this.thesaurusName = thesaurusName;
+        this.thesaurusName = (thesaurusName == null || thesaurusName.isEmpty())? null : thesaurusName;
     }
 }

@@ -2,7 +2,7 @@
 <#import "../underscore.tpl" as _>
 
 <#function isAuthor responsibleParty>
-  <#return responsibleParty["role"] == "Author">
+  <#return responsibleParty["role"] == "author">
 </#function>
 
 <#assign authors       = _.filter(responsibleParties, isAuthor) >

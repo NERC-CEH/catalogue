@@ -1,10 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import static com.google.common.base.Strings.nullToEmpty;
 import lombok.Value;
 import lombok.experimental.Builder;
 
 @Value
+@JsonIgnoreProperties({"roleDisplayName"})
 public class ResponsibleParty {
     private final String individualName, organisationName, role, email;
     private final Address address;
@@ -13,9 +15,13 @@ public class ResponsibleParty {
     private ResponsibleParty(String individualName, String organisationName, String role, String email, Address address) {
         this.individualName = nullToEmpty(individualName);
         this.organisationName = nullToEmpty(organisationName);
-        this.role = toTitlecase(nullToEmpty(role));
+        this.role = nullToEmpty(role);
         this.email = nullToEmpty(email);
-        this.address = address;    
+        this.address = (address == null || address.isEmpty()) ? null : address;    
+    }
+    
+    public String getRoleDisplayName() {
+        return toTitlecase(role);
     }
     
     private String toTitlecase(String camelCase) {
@@ -48,6 +54,7 @@ public class ResponsibleParty {
     }
     
     @Value
+    @JsonIgnoreProperties({"empty"})
     public static class Address {
         private final String deliveryPoint, city, administrativeArea, postalCode, country;
         
@@ -58,6 +65,10 @@ public class ResponsibleParty {
             this.administrativeArea = nullToEmpty(administrativeArea);
             this.postalCode = nullToEmpty(postalCode);
             this.country = nullToEmpty(country);
+        }
+        
+        public boolean isEmpty() {
+            return deliveryPoint.isEmpty() && city.isEmpty() && administrativeArea.isEmpty() && postalCode.isEmpty() && country.isEmpty();
         }
     }
 }

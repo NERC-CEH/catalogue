@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.math.BigDecimal;
 import lombok.Value;
 import lombok.experimental.Builder;
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Value
 @Slf4j
+@JsonIgnoreProperties({"solrGeometry", "wkt"})
 public class BoundingBox {
     private final BigDecimal westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude;
     
