@@ -34,9 +34,6 @@
           </#if>
         </#list>
       </div>
-    </div>
-    
-    <div class="panel-body">
       <#include "_citation.html.tpl">
     </div>
   </div>
