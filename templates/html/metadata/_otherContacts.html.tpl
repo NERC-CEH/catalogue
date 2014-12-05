@@ -5,7 +5,7 @@
 
   <#if otherContacts?has_content>
     <#list otherContacts as otherContact>
-      <dt>${otherContact.role?html}</dt>
+      <dt>${otherContact.roleDisplayName?html}</dt>
       <dd>
 
       <#if otherContact.email?has_content>
@@ -41,7 +41,7 @@
     
   <#if distributorContacts?has_content>
     <#list distributorContacts as distributorContact>
-      <dt>${distributorContact.role?html}</dt>
+      <dt>${distributorContact.roleDisplayName?html}</dt>
       <dd>
         <#if distributorContact.email?has_content>
           <#if distributorContact.individualName?has_content>

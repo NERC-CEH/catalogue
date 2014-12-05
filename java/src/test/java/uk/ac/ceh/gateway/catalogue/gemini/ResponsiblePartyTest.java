@@ -13,7 +13,7 @@ public class ResponsiblePartyTest {
         String expected = "Author";
         
         //When
-        String actual = author.getRole();
+        String actual = author.getRoleDisplayName();
         
         //Then
         assertThat("actual role should equal expected", actual, equalTo(expected));
@@ -26,7 +26,7 @@ public class ResponsiblePartyTest {
         String expected = "Resource Provider";
         
         //When
-        String actual = author.getRole();
+        String actual = author.getRoleDisplayName();
         
         //Then
         assertThat("actual role should equal expected", actual, equalTo(expected));

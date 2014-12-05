@@ -72,14 +72,14 @@ public class CitationService {
         return geminiDocument
                 .getResponsibleParties()
                 .stream()
-                .filter((p) -> "Publisher".equals(p.getRole()))
+                .filter((p) -> "publisher".equals(p.getRole()))
                 .findFirst();
     }
     
     protected List<String> getAuthors(GeminiDocument geminiDocument) {
         return geminiDocument.getResponsibleParties()
                              .stream()
-                             .filter((p) -> p.getRole().equals("Author"))
+                             .filter((p) -> p.getRole().equals("author"))
                              .map(ResponsibleParty::getIndividualName)
                              .collect(Collectors.toList());
     }

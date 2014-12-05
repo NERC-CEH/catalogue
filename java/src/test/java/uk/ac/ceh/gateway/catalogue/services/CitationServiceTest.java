@@ -166,7 +166,7 @@ public class CitationServiceTest {
         return ResponsibleParty
                 .builder()
                 .individualName("Lord Business")
-                .role("Author")
+                .role("author")
                 .build();
     }
     
@@ -174,7 +174,7 @@ public class CitationServiceTest {
         return ResponsibleParty
                 .builder()
                 .organisationName("Octan Corporation")
-                .role("Publisher")
+                .role("publisher")
                 .build();
     }
 }
