@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,8 +32,8 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="datacite/datacite.xml.tpl", whenRequestedAs=WebConfig.DATACITE_XML_VALUE)
 })
-@JsonIgnoreProperties(ignoreUnknown = true, value = {"parentIdentifier", "resourceType", "downloadOrder", "metadata", "locations",
-"mapViewerUrl", "mapViewable", "topics"})
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"parentIdentifier", "parent", "documentLinks", "children", 
+    "resourceType", "downloadOrder", "metadata", "locations", "mapViewerUrl", "mapViewable", "topics"})
 public class GeminiDocument implements MetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private URI uri;
@@ -65,6 +66,13 @@ public class GeminiDocument implements MetadataDocument {
     @Override
     public String getType() {
         return getResourceType();
+    }
+    
+    public Set<Link> getAssociatedResources() {
+        Set<Link> toReturn = new HashSet<>(children);
+        toReturn.addAll(documentLinks);
+        toReturn.add(parent);
+        return toReturn;
     }
     
     @Override

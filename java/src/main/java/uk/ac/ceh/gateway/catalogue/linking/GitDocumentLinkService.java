@@ -89,10 +89,10 @@ public class GitDocumentLinkService implements DocumentLinkService {
         if (document.getResourceType() != null) {
             switch (document.getResourceType().toLowerCase()) {
                 case "dataset":
-                    return createLinks(linkDatabase.findServicesForDataset(document.getId()), urlFragment);
+                    return createLinks(linkDatabase.findServicesForDataset(document.getId()), urlFragment, "service");
 
                 case "service":
-                    return createLinks(linkDatabase.findDatasetsForService(document.getId()), urlFragment);
+                    return createLinks(linkDatabase.findDatasetsForService(document.getId()), urlFragment, "dataset");
             }
         }
         return Collections.EMPTY_SET;
@@ -100,7 +100,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
     
     @Override
     public Link getParent(GeminiDocument document, String urlFragment) {
-        return createLinks(Arrays.asList(linkDatabase.findParent(document.getId())), urlFragment)
+        return createLinks(Arrays.asList(linkDatabase.findParent(document.getId())), urlFragment, "series")
             .stream()
             .findFirst()
             .orElse(null);
@@ -108,16 +108,17 @@ public class GitDocumentLinkService implements DocumentLinkService {
 
     @Override
     public Set<Link> getChildren(GeminiDocument document, String urlFragment) {
-        return createLinks(linkDatabase.findChildren(document.getId()), urlFragment);
+        return createLinks(linkDatabase.findChildren(document.getId()), urlFragment, "isComposedOf");
     }
     
-    private Set<Link> createLinks(List<Metadata> metadata, String urlFragment) {
+    private Set<Link> createLinks(List<Metadata> metadata, String urlFragment, String associationType) {
         return metadata.stream()
             .filter(m -> m != null)
             .map(m -> {
                 return Link.builder()
                     .title(m.getTitle())
                     .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(m.getFileIdentifier()).build().toUriString())
+                    .associationType(associationType)
                     .build();
             })
             .collect(Collectors.toSet());
