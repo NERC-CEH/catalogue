@@ -296,6 +296,7 @@ public class ITRdbmsLinkDatabase {
         Metadata expected = Metadata.builder()
             .title("Deprecated Dataset")
             .fileIdentifier("97afcb16-9438-4d9f-abab-dd8619d730f5")
+            .resourceIdentifier("CEH:EIDC:#8374052631039")
             .build();
         
         //When
@@ -306,13 +307,14 @@ public class ITRdbmsLinkDatabase {
     }
     
     @Test
-    public void findRevisied() {
+    public void findRevised() {
         //Given
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
         Metadata expected = Metadata.builder()
             .title("Revised Dataset")
             .fileIdentifier("154ebeeb-a15a-4f63-a3cc-f2daa12ea833")
-            .revisionOfIdentifier("97afcb16-9438-4d9f-abab-dd8619d730f5")
+            .resourceIdentifier("CEH:EIDC:#2847752631295")
+            .revisionOfIdentifier("CEH:EIDC:#8374052631039")
             .build();
         
         //When

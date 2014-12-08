@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco">
+	<gmd:identificationInfo>
+		<gmd:MD_DataIdentification>
+			<gmd:aggregationInfo>
+				<gmd:MD_AggregateInformataion>
+					<gmd:aggregateDataSetIdentifier>
+						<gmd:RS_Identifier>
+							<gmd:code>
+								<gco:CharacterString>1252065579651</gco:CharacterString>
+							</gmd:code>
+							<gmd:codeSpace>
+								<gco:CharacterString>CEH:EIDC:</gco:CharacterString>
+							</gmd:codeSpace>
+						</gmd:RS_Identifier>
+					</gmd:aggregateDataSetIdentifier>
+					<gmd:associationType>
+						<gmd:DS_AssociationTypeCode codeListValue="revisionOf"/>
+					</gmd:associationType>
+				</gmd:MD_AggregateInformataion>
+			</gmd:aggregationInfo>
+		</gmd:MD_DataIdentification>
+	</gmd:identificationInfo>
+</gmd:MD_Metadata>
