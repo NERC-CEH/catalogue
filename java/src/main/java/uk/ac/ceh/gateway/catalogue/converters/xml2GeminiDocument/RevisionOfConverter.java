@@ -27,7 +27,7 @@ public class RevisionOfConverter {
             Node node = nodeList.item(0);
             return String.format("%s#%s", codeSpace.evaluate(node), code.evaluate(node));
         } else {
-            return "";
+            return null;
         }
     }
 }
