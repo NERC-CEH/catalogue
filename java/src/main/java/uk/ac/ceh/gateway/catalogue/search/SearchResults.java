@@ -81,6 +81,28 @@ public class SearchResults {
         }
     }
     
+    public String getIntersectingBBox() {
+        if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.INTERSECTS) {
+            return query.withSpatialOperation(SpatialOperation.INTERSECTS).toUrl();
+        }
+        else {
+            return null;
+        }
+    }
+    
+    public String getOverlappingBBox() {
+        if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.ISWITHIN) {
+            return query.withSpatialOperation(SpatialOperation.ISWITHIN).toUrl();
+        }
+        else {
+            return null;
+        }
+    }
+    
+    public String getUrl() {
+        return query.toUrl();
+    }
+    
     public List<DocumentSolrIndex> getResults() {
         return response.getBeans(DocumentSolrIndex.class);
     }

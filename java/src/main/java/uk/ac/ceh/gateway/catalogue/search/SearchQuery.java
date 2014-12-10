@@ -36,7 +36,7 @@ public class SearchQuery {
     private final CatalogueUser user; 
     private final @NotNull String term;
     private final String bbox;
-    private final SpatialOperation spatialOperation;
+    private final @Wither SpatialOperation spatialOperation;
     private final @Wither int page;
     private final int rows;
     private final @NotNull List<FacetFilter> facetFilters;

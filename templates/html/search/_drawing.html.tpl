@@ -7,6 +7,21 @@
   javascript template /web/src/scripts/templates/DrawingControl.tpl
 -->
 <#if withoutBBox?has_content>
+  <div class="dropdown" style="display:inline-block;">
+    <button class="btn btn-default btn-xs dropdown-toggle" id="spatial-op" type="button" data-toggle="dropdown" aria-expanded="true">
+      <#if overlappingBBox??>
+        Intersecting
+      <#else>
+        Entirely Within
+      </#if>
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu input-xs" role="menu" aria-labelledby="spatial-op">
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="${overlappingBBox!url}">Entirely Within</a></li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="${intersectingBBox!url}">Intersecting</a></li>
+    </ul>
+  </div>
+
   <a href="${withoutBBox}" class="btn btn-primary btn-xs">
     Spatial Filter 
     <span class="glyphicon glyphicon-remove"></span>
