@@ -90,7 +90,7 @@ public class SearchResults {
         }
     }
     
-    public String getOverlappingBbox() {
+    public String getWithinBbox() {
         if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.ISWITHIN) {
             return query.withSpatialOperation(SpatialOperation.ISWITHIN).toUrl();
         }

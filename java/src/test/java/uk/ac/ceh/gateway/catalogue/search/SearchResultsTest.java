@@ -326,7 +326,7 @@ public class SearchResultsTest {
         //When
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
-        String url = results.getOverlappingBbox();
+        String url = results.getWithinBbox();
         
         //Then
         assertNotNull("Expected to a url", url);
@@ -350,7 +350,7 @@ public class SearchResultsTest {
         //When
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
-        String url = results.getOverlappingBbox();
+        String url = results.getWithinBbox();
         
         //Then
         assertNull("Expected not to get a url", url);

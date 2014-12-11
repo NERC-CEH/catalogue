@@ -4,8 +4,8 @@ define [
   'tpl!templates/DrawingControl.tpl'
 ], ($, Backbone, template) -> Backbone.View.extend
   events:
-    "click button .glyphicon-pencil": "toggleDrawing"
-    "click button":                   "open"
+    "click #drawing-toggle":       "toggleDrawing"
+    "click #spatial-op-dropdown":  "open"
 
   ###
   This is the drawing control view. If not bounding box is currently set, it 
@@ -37,11 +37,8 @@ define [
     toggle = if @model.get 'drawing' then 'addClass' else 'removeClass'
     @$('button')[toggle] 'active'
 
-  render: -> 
-    self = @model.getResults().get 'url'
-    overlappingUrl = @model.getResults().get('overlappingBBox')
-    @$el.html template
-      removeBbox: @model.getResults().get 'withoutBBox'
-      spatialOp:  if overlappingUrl then 'Intersecting' else 'Entirely Within'
-      iswithin:   overlappingUrl or self
-      intersects: @model.getResults().get('intersectingBBox') or self
+  render: ->  @$el.html template
+    url:              @model.getResults().get 'url'
+    withoutBbox:      @model.getResults().get 'withoutBbox'
+    withinBbox:       @model.getResults().get 'withinBbox'
+    intersectingBbox: @model.getResults().get 'intersectingBbox'
