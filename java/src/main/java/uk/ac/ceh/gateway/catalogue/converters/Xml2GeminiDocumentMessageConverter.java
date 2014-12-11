@@ -30,6 +30,7 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderCo
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.OnlineResourceConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.RevisionOfConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialResolutionConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
@@ -63,6 +64,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final DistributionInfoConverter distributionInfoConverter;
     private final ConformanceResultConverter conformanceResultConverter;
     private final SpatialResolutionConverter spatialResolutionConverter;
+    private final RevisionOfConverter revisionOfConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -104,6 +106,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.otherConstraints = xpath.compile(XPaths.OTHER_CONSTRAINT);
         this.securityConstraints = xpath.compile(XPaths.SECURITY_CONSTRAINT);
         this.parentIdentifier = xpath.compile(XPaths.PARENT_IDENTIFIER);
+        this.revisionOfConverter = new RevisionOfConverter(xpath);
     }
     
     @Override
@@ -160,6 +163,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setOtherConstraints(getListOfStrings(document, otherConstraints));
             toReturn.setSecurityConstraints(getListOfStrings(document, securityConstraints));
             toReturn.setParentIdentifier(parentIdentifier.evaluate(document));
+            toReturn.setRevisionOfIdentifier(revisionOfConverter.convert(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

@@ -209,6 +209,21 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
+    public void canGetRevisionOfIdentifier() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("revisionOf.xml"));
+        String expected = "CEH:EIDC:#1252065579651";
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        String actual = document.getRevisionOfIdentifier();
+        
+        //Then
+        assertThat("RevisionOfIdentifier 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
     public void canGetDistributionInfo() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);

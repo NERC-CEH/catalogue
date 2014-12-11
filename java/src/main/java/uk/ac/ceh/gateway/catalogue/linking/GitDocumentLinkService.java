@@ -111,6 +111,22 @@ public class GitDocumentLinkService implements DocumentLinkService {
         return createLinks(linkDatabase.findChildren(document.getId()), urlFragment, "isComposedOf");
     }
     
+    @Override
+    public Link getRevised(GeminiDocument document, String urlFragment) {
+        return createLinks(Arrays.asList(linkDatabase.findRevised(document.getId())), urlFragment, "revised")
+            .stream()
+            .findFirst()
+            .orElse(null);
+    }
+    
+    @Override
+    public Link getRevisionOf(GeminiDocument document, String urlFragment) {
+        return createLinks(Arrays.asList(linkDatabase.findRevisionOf(document.getId())), urlFragment, "revisionOf")
+            .stream()
+            .findFirst()
+            .orElse(null);
+    }
+    
     private Set<Link> createLinks(List<Metadata> metadata, String urlFragment, String associationType) {
         return metadata.stream()
             .filter(m -> m != null)
