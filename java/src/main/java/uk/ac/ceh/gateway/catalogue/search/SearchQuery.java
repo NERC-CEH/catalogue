@@ -36,7 +36,7 @@ public class SearchQuery {
     private final CatalogueUser user; 
     private final @NotNull String term;
     private final String bbox;
-    private final @Wither SpatialOperation spatialOperation;
+    private final SpatialOperation spatialOperation;
     private final @Wither int page;
     private final int rows;
     private final @NotNull List<FacetFilter> facetFilters;
@@ -70,6 +70,22 @@ public class SearchQuery {
     public SearchQuery withBbox(String newBbox) {
         if ( (bbox == null && newBbox != null) || (bbox !=null && !bbox.equals(newBbox)) ) {
             return new SearchQuery(endpoint, user, term, newBbox, spatialOperation, PAGE_DEFAULT, rows, facetFilters);
+        }
+        else {
+            return this;
+        }
+    }
+    
+    /**
+     * Generate a search query with a new spatial operation. Changing a spatial
+     * operation fundamentally changes the search query which means that we should
+     * jump back to page 1.
+     * @param newSpatialOperation the new spatial operation
+     * @return a new query if spatial operation differs to the one set.
+     */
+    public SearchQuery withSpatialOperation(SpatialOperation newSpatialOperation) {
+        if ( !spatialOperation.equals(newSpatialOperation) ) {
+            return new SearchQuery(endpoint, user, term, bbox, newSpatialOperation, PAGE_DEFAULT, rows, facetFilters);
         }
         else {
             return this;

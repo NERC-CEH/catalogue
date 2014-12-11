@@ -72,7 +72,7 @@ public class SearchResults {
      * filter
      * @return url to a search without the bbox component
      */
-    public String getWithoutBBox() {
+    public String getWithoutBbox() {
         if(query.getBbox() != null) {
             return query.withBbox(null).toUrl();
         }
@@ -81,7 +81,7 @@ public class SearchResults {
         }
     }
     
-    public String getIntersectingBBox() {
+    public String getIntersectingBbox() {
         if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.INTERSECTS) {
             return query.withSpatialOperation(SpatialOperation.INTERSECTS).toUrl();
         }
@@ -90,7 +90,7 @@ public class SearchResults {
         }
     }
     
-    public String getOverlappingBBox() {
+    public String getOverlappingBbox() {
         if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.ISWITHIN) {
             return query.withSpatialOperation(SpatialOperation.ISWITHIN).toUrl();
         }

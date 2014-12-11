@@ -280,7 +280,7 @@ public class SearchResultsTest {
         //When
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
-        String url = results.getWithoutBBox();
+        String url = results.getWithoutBbox();
         
         //Then
         assertNull("Expected to not get a url for without bbox", url);
@@ -302,7 +302,7 @@ public class SearchResultsTest {
         //When
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
-        String url = results.getWithoutBBox();
+        String url = results.getWithoutBbox();
         
         //Then
         assertNotNull("Expected to not get a page url", url);
@@ -326,7 +326,7 @@ public class SearchResultsTest {
         //When
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
-        String url = results.getOverlappingBBox();
+        String url = results.getOverlappingBbox();
         
         //Then
         assertNotNull("Expected to a url", url);
@@ -350,7 +350,7 @@ public class SearchResultsTest {
         //When
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
-        String url = results.getOverlappingBBox();
+        String url = results.getOverlappingBbox();
         
         //Then
         assertNull("Expected not to get a url", url);
@@ -373,7 +373,7 @@ public class SearchResultsTest {
         //When
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
-        String url = results.getIntersectingBBox();
+        String url = results.getIntersectingBbox();
         
         //Then
         assertNotNull("Expected to a url", url);
@@ -397,9 +397,30 @@ public class SearchResultsTest {
         //When
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
-        String url = results.getIntersectingBBox();
+        String url = results.getIntersectingBbox();
         
         //Then
         assertNull("Expected not to get a url", url);
+    }
+    
+    @Test
+    public void checkThatSwitchingSpatialOperationJumpsToPageOne() {
+        //Given
+        int page = 400;
+        SearchQuery query = new SearchQuery(
+            SearchQueryTest.ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            "10,23,23,40",
+            SpatialOperation.INTERSECTS,
+            page,
+            20,
+            SearchQueryTest.DEFAULT_FILTERS);
+        
+        //When
+        SearchQuery newQuery = query.withSpatialOperation(SpatialOperation.ISWITHIN);
+        
+        //Then
+        assertThat("Isn't on page 400", newQuery.getPage(), not(equalTo(page)));
     }
 }
