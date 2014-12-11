@@ -32,13 +32,14 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="datacite/datacite.xml.tpl", whenRequestedAs=WebConfig.DATACITE_XML_VALUE)
 })
-@JsonIgnoreProperties(ignoreUnknown = true, value = {"parentIdentifier", "parent", "documentLinks", "children", 
-    "resourceType", "downloadOrder", "locations", "mapViewerUrl", "mapViewable",  "metadata", "topics", "coupledResources"})
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"parentIdentifier", "parent", "documentLinks", "children", "revised",
+    "revisionOf", "revisionOfIdentifier", "resourceType", "downloadOrder", "locations", "mapViewerUrl", "mapViewable",
+    "metadata", "topics", "coupledResources"})
 public class GeminiDocument implements MetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private URI uri;
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
-        metadataStandardName, metadataStandardVersion, supplementalInfo, resourceType, parentIdentifier;
+        metadataStandardName, metadataStandardVersion, supplementalInfo, resourceType, parentIdentifier, revisionOfIdentifier;
     private List<String> alternateTitles, topicCategories, coupledResources, spatialRepresentationTypes, datasetLanguages,
         useLimitations, accessConstraints, otherConstraints, securityConstraints;
     private List<DistributionInfo> distributionFormats;
@@ -53,7 +54,7 @@ public class GeminiDocument implements MetadataDocument {
     private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> temporalExtent;
     private List<OnlineResource> onlineResources;
-    private Link parent;
+    private Link parent, revised, revisionOf;
     private Set<Link> documentLinks, children;
     private Set<ResourceIdentifier> resourceIdentifiers;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
@@ -78,6 +79,9 @@ public class GeminiDocument implements MetadataDocument {
         }
         if (parent != null) {
             toReturn.add(parent);
+        }
+        if (revisionOf != null) {
+            toReturn.add(revisionOf);
         }
         return toReturn;
     }

@@ -25,11 +25,13 @@ public class RdbmsLinkDatabase implements LinkDatabase {
     private static final String IS_EMPTY = "select count(*) from metadata";
     private static final String TRUNCATE_METADATA = "truncate table metadata";
     private static final String TRUNCATE_COUPLED_RESOURCES = "truncate table coupledResources";
-    private static final String DATASETS_FOR_SERVICE = "select d.fileIdentifier, d.title, d.resourceIdentifier, d.parentIdentifier from metadata d inner join coupledResources c on d.resourceIdentifier = c.resourceIdentifier inner join metadata s on c.fileIdentifier = s.fileIdentifier where s.fileIdentifier = ?";
-    private static final String SERVICES_FOR_DATASET = "select s.fileIdentifier, s.title, s.resourceIdentifier, s.parentIdentifier from metadata s inner join coupledResources c on s.fileIdentifier = c.fileIdentifier inner join metadata d on c.resourceIdentifier = d.resourceIdentifier where d.fileIdentifier = ?";
-    private static final String PARENT = "select p.fileIdentifier, p.title, p.resourceIdentifier, p.parentIdentifier from metadata p inner join metadata c on c.parentIdentifier = p.fileIdentifier where c.fileIdentifier = ?";
-    private static final String CHILDREN = "select fileIdentifier, title, resourceIdentifier, parentIdentifier from metadata where parentIdentifier = ?";
-    private static final String INSERT_METADATA = "insert into metadata (fileIdentifier, title, resourceIdentifier, parentIdentifier) values (?, ?, ?, ?)";
+    private static final String DATASETS_FOR_SERVICE = "select d.fileIdentifier, d.title, d.resourceIdentifier, d.parentIdentifier, d.revisionOfIdentifier from metadata d inner join coupledResources c on d.resourceIdentifier = c.resourceIdentifier inner join metadata s on c.fileIdentifier = s.fileIdentifier where s.fileIdentifier = ?";
+    private static final String SERVICES_FOR_DATASET = "select s.fileIdentifier, s.title, s.resourceIdentifier, s.parentIdentifier, s.revisionOfIdentifier from metadata s inner join coupledResources c on s.fileIdentifier = c.fileIdentifier inner join metadata d on c.resourceIdentifier = d.resourceIdentifier where d.fileIdentifier = ?";
+    private static final String PARENT = "select p.fileIdentifier, p.title, p.resourceIdentifier, p.parentIdentifier, p.revisionOfIdentifier from metadata p inner join metadata c on c.parentIdentifier = p.fileIdentifier where c.fileIdentifier = ?";
+    private static final String CHILDREN = "select fileIdentifier, title, resourceIdentifier, parentIdentifier, revisionOfIdentifier from metadata where parentIdentifier = ?";
+    private static final String REVISION_OF = "select d.fileIdentifier, d.title, d.resourceIdentifier, d.parentIdentifier, d.revisionOfIdentifier from metadata d inner join metadata r on r.revisionOfIdentifier = d.resourceIdentifier where r.fileIdentifier = ?";
+    private static final String REVISED = "select r.fileIdentifier, r.title, r.resourceIdentifier, r.parentIdentifier, r.revisionOfIdentifier from metadata d inner join metadata r on r.revisionOfIdentifier = d.resourceIdentifier where d.fileIdentifier = ?";
+    private static final String INSERT_METADATA = "insert into metadata (fileIdentifier, title, resourceIdentifier, parentIdentifier, revisionOfIdentifier) values (?, ?, ?, ?, ?)";
     private static final String DELETE_METADATA = "delete from metadata where fileIdentifier = ?";
     private static final String INSERT_COUPLED_RESOURCES = "insert into coupledResources (fileIdentifier, resourceIdentifier) values (?, ?)";
     private static final String DELETE_COUPLED_RESOURCES = "delete from coupledResources where fileIdentifier = ? and resourceIdentifier = ?";
@@ -100,11 +102,27 @@ public class RdbmsLinkDatabase implements LinkDatabase {
     public List<Metadata> findChildren(String fileIdentifier) {
         return query(CHILDREN, fileIdentifier);
     }
+
+    @Override
+    public Metadata findRevised(String fileIdentifier) {
+        return query(REVISED, fileIdentifier)
+            .stream()
+            .findFirst()
+            .orElse(null);
+    }
+
+    @Override
+    public Metadata findRevisionOf(String fileIdentifier) {
+        return query(REVISION_OF, fileIdentifier)
+            .stream()
+            .findFirst()
+            .orElse(null);
+    }
     
     private List<Metadata> query(String query, String fileIdentifier) {
         return jdbcTemplate.query(query, rowMapper, fileIdentifier);
     }
-      
+
     private class MetadataRowMapper implements RowMapper<Metadata> {
         @Override
         public Metadata mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -113,6 +131,7 @@ public class RdbmsLinkDatabase implements LinkDatabase {
                 .title(rs.getString("title"))
                 .resourceIdentifier(rs.getString("resourceIdentifier"))
                 .parentIdentifier(rs.getString("parentIdentifier"))
+                .revisionOfIdentifier(rs.getString("revisionOfIdentifier"))
                 .build();
         }
     }
@@ -128,6 +147,7 @@ public class RdbmsLinkDatabase implements LinkDatabase {
                 ps.setString(2, meta.getTitle());
                 ps.setString(3, meta.getResourceIdentifier());
                 ps.setString(4, meta.getParentIdentifier());
+                ps.setString(5, meta.getRevisionOfIdentifier());
             }
 
             @Override
