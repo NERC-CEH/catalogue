@@ -32,11 +32,23 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="http://lwisportal-staging.nerc-lancaster.ac.uk/">Home</a></li>
-            <li class="active"><a href="/documents">Search Data</a></li>
+            <li><a href="/documents">Search Data</a></li>
             <li><a href="http://lwisportal-staging.nerc-lancaster.ac.uk/about">About</a></li>
             <li><a href="#">Contact</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
+              <#-- only show dropdown to catalogue administrators -->
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></a>
+              <ul class="dropdown-menu">
+                <#if id??>
+                    <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
+                    <li role="presentation" class="divider"></li>
+                </#if>
+                <li><a class="edit-control" href="#edit/new">New metadata</a></li>
+              </ul>
+            </li>
+            <#-- end of dropdown -->
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i> Jeanette Winterson <span class="caret"></span></a>
               <ul class="dropdown-menu">

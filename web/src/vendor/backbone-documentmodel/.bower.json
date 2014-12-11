@@ -1,0 +1,15 @@
+{
+  "name": "backbone-documentmodel",
+  "homepage": "https://github.com/icereval/backbone-documentmodel",
+  "version": "0.6.0",
+  "_release": "0.6.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.6.0",
+    "commit": "e5724b7b5217867a7894b6bab7e5b9580ab98d91"
+  },
+  "_source": "git://github.com/icereval/backbone-documentmodel.git",
+  "_target": "~0.6.0",
+  "_originalSource": "backbone-documentmodel",
+  "_direct": true
+}

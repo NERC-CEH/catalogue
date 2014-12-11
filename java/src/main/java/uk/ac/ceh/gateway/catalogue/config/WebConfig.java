@@ -74,8 +74,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public FreeMarkerConfigurer configureFreeMarker() {
         try {
             FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();
-
-            //freemarkerConfig.setTemplateLoaderPath(templates);
             freemarkerConfig.setPreTemplateLoaders(new FileTemplateLoader(templates));
             return freemarkerConfig;
         }
