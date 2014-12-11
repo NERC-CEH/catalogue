@@ -6,9 +6,8 @@ define [
   'cs!views/SpatialSearchView'
   'cs!views/SearchPageView'
   'cs!views/DrawingControlView'
-  'cs!views/SpatialOpControlView'
   'cs!views/FacetsPanelView'
-], ($, Backbone, deparam, SearchFormView, SpatialSearchView, SearchPageView, DrawingControlView, SpatialOpControlView, FacetsPanelView) -> Backbone.View.extend
+], ($, Backbone, deparam, SearchFormView, SpatialSearchView, SearchPageView, DrawingControlView, FacetsPanelView) -> Backbone.View.extend
   el: '#search'
 
   events:
@@ -82,10 +81,6 @@ define [
     @drawingControlView = new DrawingControlView
       model: @model
       el:    @$('.drawing-control')
-
-    @spatialOpControlView = new SpatialOpControlView
-      model: @model
-      el:    @$('.spatialOp-control')
 
     @facetsPanelView = new FacetsPanelView
       model: @model

@@ -4,7 +4,8 @@ define [
   'tpl!templates/DrawingControl.tpl'
 ], ($, Backbone, template) -> Backbone.View.extend
   events:
-    "click button": "toggleDrawing"
+    "click #drawing-toggle":       "toggleDrawing"
+    "click #spatial-op-dropdown":  "open"
 
   ###
   This is the drawing control view. If not bounding box is currently set, it 
@@ -14,6 +15,11 @@ define [
     do @render
     @listenTo @model, 'results-change', @render
     @listenTo @model, 'change:drawing', @updateDrawingToggle
+
+  ###
+  Ensure that the panel is open
+  ###
+  open:-> @model.set mapsearch:true
 
   ###
   Toggle the drawing mode of the model and ensure app is in map search mode
@@ -31,5 +37,8 @@ define [
     toggle = if @model.get 'drawing' then 'addClass' else 'removeClass'
     @$('button')[toggle] 'active'
 
-  render: -> @$el.html template
-    removeBbox: @model.getResults().get('withoutBBox')
+  render: ->  @$el.html template
+    url:              @model.getResults().get 'url'
+    withoutBbox:      @model.getResults().get 'withoutBbox'
+    withinBbox:       @model.getResults().get 'withinBbox'
+    intersectingBbox: @model.getResults().get 'intersectingBbox'

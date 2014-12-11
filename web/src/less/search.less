@@ -4,7 +4,6 @@
   @results-columns:       @grid-columns - @filters-columns;
   @filter-heading-height: 40px;
   @filter-heading-gap:    3px;
-  @spatial-op-height:     32px;
 
   .make-row();
   .container-fixed();
@@ -48,9 +47,6 @@
       .map-heading {
         position: absolute;
         bottom: 0;
-        .spatialOp-control {
-          display: none;
-        }
       }
       .facet-filter {
         position:   absolute;
@@ -80,18 +76,7 @@
       .facet-filter { display: none; }
       .map-heading  {
         margin-top: @filter-heading-gap;
-        height: @filter-heading-height + @spatial-op-height;
-        .spatialOp-control {
-          .small;
-          clear: both;
-          margin-top: 5px;
-          .btn-group {
-            margin: 0 3px;
-          }
-          #spatialOp {
-            width: 100px;
-          }
-        }
+        height: @filter-heading-height;
       }
 
       .result.selected { 
@@ -101,7 +86,7 @@
 
       .map-filter {
         position: absolute;
-        top:      @filter-heading-height * 2 + @filter-heading-gap + @spatial-op-height;
+        top:      @filter-heading-height * 2 + @filter-heading-gap;
         bottom:   0;
         left:     0;
         right:    0;
