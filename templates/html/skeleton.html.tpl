@@ -18,35 +18,7 @@
   </head>
   <body>
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a href="#" class="navbar-brand"><img src="/static/img/cehlogo-reverse.png" alt="CEH Logo"/></a>
-        </div>
-
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a href="http://lwisportal-staging.nerc-lancaster.ac.uk/">Home</a></li>
-            <li class="active"><a href="/documents">Search Data</a></li>
-            <li><a href="http://lwisportal-staging.nerc-lancaster.ac.uk/about">About</a></li>
-            <li><a href="#">Contact</a></li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i> Jeanette Winterson <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Profile</a></li>
-                <li><a href="#">Logout</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <#-- Content provided by the LWIS-PROXY -->
     </div>
     <#nested>
     <div id="message-panel"></div>
