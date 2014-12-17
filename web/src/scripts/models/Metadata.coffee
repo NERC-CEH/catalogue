@@ -1,6 +1,4 @@
 define [
-  'underscore'
   'backbone'
-  'documentmodel'
-], (_, Backbone) -> Backbone.DocumentModel.extend
+], (Backbone) -> Backbone.Model.extend
   urlRoot: '/documents'

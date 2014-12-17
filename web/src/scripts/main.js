@@ -30,13 +30,8 @@ require.config({
     'jquery-deparam' :   '../vendor/jquery-deparam/jquery-deparam',
     'underscore':        '../vendor/underscore-amd/underscore',
     'backbone':          '../vendor/backbone-amd/backbone',
-    'documentmodel':     '../vendor/backbone-documentmodel/backbone-documentmodel',
     'openlayers':        '../vendor/OpenLayers-custom',
-    'proj4js' :          '../vendor/proj4js/lib/proj4js-combined',
-    'jquery-ui':         '../vendor/jquery-ui/ui',
-    'jquery-scrollsnap': '../vendor/jquery-scrollsnap/src/jquery.scrollsnap',
-    'jquery-scrollstop': '../vendor/jquery-scrollstop/jquery.scrollstop',
-    'zeroclipboard':     '../vendor/zeroclipboard/dist/ZeroClipboard'
+    'jquery-ui':         '../vendor/jquery-ui/ui'
   },
   waitSeconds:1000
 });

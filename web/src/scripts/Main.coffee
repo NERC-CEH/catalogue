@@ -1,18 +1,19 @@
 define [
   'jquery'
+  'backbone'
   'cs!views/StudyAreaView'
   'cs!models/MapViewerApp'
   'cs!views/MapViewerAppView'
   'cs!models/SearchApp'
   'cs!views/SearchAppView'
-  'cs!views/ErrorMessageView'
+  'cs!views/MessageView'
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
   'cs!models/EditorApp'
   'cs!routers/EditorRouter'
   'cs!views/EditorAppView'
   'bootstrap'
-], ($, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, ErrorMessageView, LayersRouter, SearchRouter, EditorApp, EditorRouter, EditorAppView) ->
+], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter, EditorApp, EditorRouter, EditorAppView) ->
   
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -36,8 +37,11 @@ define [
     view   = new MapViewerAppView model: app
     router = new LayersRouter model: app
 
-    @createErrorMessageViewFor app
-    do Backbone.history.start
+    @createMessageViewFor app
+    try
+      do Backbone.history.start
+    catch ex
+      console.log "history already started"
 
   ###
   Initialize the search application
@@ -47,27 +51,27 @@ define [
     view   = new SearchAppView model: app
     router = new SearchRouter model: app, location: window.location
     
-    @createErrorMessageViewFor app
-    do Backbone.history.start if not Backbone.history.started
-    console.log "Backbone.history.started: #{Backbone.history.started}"
+    @createMessageViewFor app
+    try
+      do Backbone.history.start
+    catch ex
+      console.log "history already started"
 
   ###
   Initialize the editor application
   ###
   initEditor: ->
-    app = new EditorApp
-      type: 'edit'
+    app = new EditorApp()
     view = new EditorAppView model: app
     router = new EditorRouter model: app
 
-    @createErrorMessageViewFor app
-    console.log "Backbone.history.started: #{Backbone.history.started}"
+    @createMessageViewFor app
     try
       do Backbone.history.start
     catch ex
-      console.log "history started"
+      console.log "history already started"
 
   ###
-  Create a error message view. Which listens to the supplied app model for errors
+  Create a message view. Which listens to the supplied app model for messages (errors, info)
   ###
-  createErrorMessageViewFor: (app) -> new ErrorMessageView model: app
+  createMessageViewFor: (app) -> new MessageView model: app

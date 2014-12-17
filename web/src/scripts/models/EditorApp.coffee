@@ -1,7 +1,24 @@
 define [
-  'underscore'
   'backbone'
-], (_, Backbone) -> Backbone.Model.extend
+  'cs!models/Metadata'
+], (Backbone, Metadata) -> Backbone.Model.extend
 
-  initialize:->
-    console.log 'Editor App'
+  initialize: ->
+    @set 'metadata', new Metadata()
+
+    @listenTo @get 'metadata', 'error', ->
+      console.log 'heard error'
+
+  loadDocument: (identifier) ->
+    metadata = @get('metadata')
+    metadata.set 'id', identifier
+    metadata.fetch
+      success: (model) =>
+        console.log "Success loading: #{model.id}"
+        @trigger 'loaded'
+      error: (model) =>
+        console.log "Error loading: #{model.id}"
+        @trigger 'error', "Unable to load metadata for: #{model.id}"
+
+  newDocument: ->
+    @trigger 'loaded'
