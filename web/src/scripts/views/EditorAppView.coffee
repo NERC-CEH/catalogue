@@ -2,13 +2,15 @@ define [
   'underscore'
   'jquery'
   'backbone'
-  'cs!views/editor/TitleView'
-  'cs!views/editor/AbstractView'
+  'cs!models/editor/Textarea'
+  'cs!views/editor/TextareaView'
   'cs!views/editor/PublicationDatesView'
   'cs!views/editor/RevisionDatesView'
-  'cs!views/editor/LineageView'
   'tpl!templates/EditorApp.tpl'
-], (_, $, Backbone, TitleView, AbstractView, PublicationDatesView, RevisionDatesView, LineageView, template) -> Backbone.View.extend
+  'text!help/Title.html'
+  'text!help/Abstract.html'
+  'text!help/Lineage.html'
+], (_, $, Backbone, Textarea, TextareaView, PublicationDatesView, RevisionDatesView, template, titleHelp, abstractHelp, lineageHelp) -> Backbone.View.extend
 
   events:
     'click #editorSave': 'save'
@@ -21,42 +23,64 @@ define [
       @setElement '#search'
 
     @listenTo @model, 'loaded', @render
-    @listenTo @model.get('metadata'), 'save:error', (message) ->
+    @listenTo @model, 'save:error', (message) ->
       @model.trigger 'error', message
-    @listenTo @model.get('metadata'), 'save:success', (message) ->
+    @listenTo @model, 'save:success', (message) ->
       @model.trigger 'info', message
+    @listenTo @model, 'all', (evt) ->
+      console.log "event '#{evt}' fired"
+    @listenTo @model, 'change:metadata', (model, value, options) ->
+      console.dir model
+      console.dir value
+      console.dir options
+      console.log "metadata changed: #{JSON.stringify model.toJSON()}"
 
   info: ->
     @model.trigger 'info', 'This is an info message'
 
   save: ->
-    metadata = @model.get 'metadata'
+    metadata = @model.getMetadata()
     metadata.save {},
-      success: (model) ->
-        model.trigger 'save:success', "Successfully saved metadata"
-      error: (model, response) ->
-        model.trigger 'save:error', "Error saving metadata: #{response.status} (#{response.statusText})"
+      success: =>
+        @model.trigger 'save:success', "Save successful"
+      error: (model, response) =>
+       @model.trigger 'save:error', "Error saving metadata: #{response.status} (#{response.statusText})"
 
   render: ->
     @$el.html template
-    metadata = @model.get 'metadata'
+    metadata = @model.getMetadata()
 
-    title = new TitleView
+    title = new TextareaView
       el: @$('#editorTitle')
-      model: metadata
+      model: new Textarea
+        id: 'title'
+        name: 'Title'
+        rows: 2
+        required: 'required'
+        value: metadata.get 'title'
+        help: titleHelp
 
-    abstract = new AbstractView
+    abstract = new TextareaView
       el: @$('#editorAbstract')
-      model: metadata
+      model: new Textarea
+        id: 'description'
+        name: 'Description'
+        required: 'required'
+        value: metadata.get 'description'
+        help: abstractHelp
 
-    publicationDates = new PublicationDatesView
-      el: @$('#editorPublicationDates')
-      model: metadata
+#    publicationDates = new PublicationDatesView
+#      el: @$('#editorPublicationDates')
+#      model: metadata
+#
+#    revisionDates = new RevisionDatesView
+#      el: @$('#editorRevisionDates')
+#      model: metadata
 
-    revisionDates = new RevisionDatesView
-      el: @$('#editorRevisionDates')
-      model: metadata
-
-    lineage = new LineageView
+    lineage = new TextareaView
       el: @$('#editorLineage')
-      model: metadata
+      model: new Textarea
+        id: 'lineage'
+        name: 'Lineage'
+        value: metadata.get 'lineage'
+        help: lineageHelp

@@ -16,8 +16,10 @@
   <div id="editorPublicationDates" class="form-group"></div>
   <div id="editorRevisionDates" class="form-group"></div>
   <div id="editorLineage" class="form-group"></div>
-  <div class="editor-controls">
-    <button id="editorSave" class="btn btn-default">Save <i class="glyphicon glyphicon-save"></i></button>
-    <button id="editorInfo" class="btn btn-default">Info <i class="glyphicon glyphicon-qrcode"></i></button>
+  <div class="navbar navbar-default navbar-fixed-bottom">
+    <div class="container">
+      <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="glyphicon glyphicon-save"></i></button>
+      <button id="editorInfo" class="btn btn-default navbar-btn">Info <i class="glyphicon glyphicon-qrcode"></i></button>
+    </div>
   </div>
 </form>

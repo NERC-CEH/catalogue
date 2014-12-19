@@ -15,4 +15,4 @@ define [
 
   newRecord: ->
     console.log 'new record'
-    @model.newDocument()
+    do @model.newDocument

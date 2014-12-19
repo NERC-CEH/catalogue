@@ -14,14 +14,20 @@ define [
   render: ->
     drd = @model.get 'datasetReferenceDate'
     @$el.html template
-      value: drd.revisionDate
+      value: drd?.revisionDate
 
     $('#inputRevisionDates').datepicker
       dateFormat: "yy-mm-dd"
     return @
 
   updateModel: (event) ->
-    drd = @model.get 'datasetReferenceDate'
     target = event.currentTarget
-    drd.revisionDate = target.value
-    console.log "new revision date: #{drd.revisionDate}"
+    drd = @model.get 'datasetReferenceDate'
+
+    if not drd?
+      @model.set 'datasetReferenceDate',
+        revisionDate: target.value
+    else
+      drd.revisionDate = target.value
+
+    console.log "new revision date: #{drd?.revisionDate}"

@@ -14,7 +14,7 @@ define [
   render: ->
     drd = @model.get 'datasetReferenceDate'
     @$el.html template
-      value: drd.publicationDate
+      value: drd?.publicationDate
 
     $('#inputPublicationDates').datepicker
       dateFormat: "yy-mm-dd"
