@@ -1,19 +1,20 @@
 define [
+  'jquery'
   'backbone'
   'tpl!templates/editor/Textarea.tpl'
-], (Backbone, template) -> Backbone.View.extend
+], ($, Backbone, template) -> Backbone.View.extend
 
   events:
     'change': 'updateModel'
 
   initialize: ->
+    @parent = @model.get 'parent'
     do @render
 
   render: ->  @$el.html template _.clone @model.attributes
 
   updateModel: (event) ->
-    target = event.currentTarget
-    metadata = @model.getMetadata()
-    metadata.set 'title', target.value
-    @model.set 'metadata', metadata
-    console.log "new title: #{metadata.get 'title'}"
+    text = $("#input#{@model.id}", event.currentTarget).val()
+    metadata = @parent.getMetadata()
+    metadata.set @model.id, text
+    @parent.set 'metadata', metadata

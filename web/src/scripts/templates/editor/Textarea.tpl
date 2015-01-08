@@ -1,3 +1,3 @@
 <label for="input<%= id %>" class="control-label <%= required %>"><%= name %> <a data-toggle="collapse" title="Click for help" href="#help<%= id %>" data-parent="#editor"><i class="glyphicon glyphicon-question-sign"></i></a></label>
-<div id="help<%= id %>" class="help-block hidden-print collapse"><%= help %></div>
 <textarea rows="<%= rows %>" class="form-control" placeholder="title" id="input<%= id %>"><%= value %></textarea>
+<div id="help<%= id %>" class="help-block hidden-print collapse"><%= help %></div>

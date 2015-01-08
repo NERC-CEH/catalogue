@@ -15,6 +15,8 @@ define [
   events:
     'click #editorSave': 'save'
     'click #editorInfo': 'info'
+    'click #editorBack': 'back'
+    'click #editorNext': 'next'
 
   initialize: ->
     if $('#metadata').length
@@ -22,17 +24,14 @@ define [
     else
       @setElement '#search'
 
+    @currentStep = 1
+
     @listenTo @model, 'loaded', @render
     @listenTo @model, 'save:error', (message) ->
       @model.trigger 'error', message
     @listenTo @model, 'save:success', (message) ->
       @model.trigger 'info', message
-    @listenTo @model, 'all', (evt) ->
-      console.log "event '#{evt}' fired"
-    @listenTo @model, 'change:metadata', (model, value, options) ->
-      console.dir model
-      console.dir value
-      console.dir options
+    @listenTo @model, 'change:metadata', (model) ->
       console.log "metadata changed: #{JSON.stringify model.toJSON()}"
 
   info: ->
@@ -45,6 +44,38 @@ define [
         @model.trigger 'save:success', "Save successful"
       error: (model, response) =>
        @model.trigger 'save:error', "Error saving metadata: #{response.status} (#{response.statusText})"
+
+  back: ->
+    @navigate -1
+
+  next: ->
+    @navigate 1
+
+  navigate: (direction) ->
+    $nav = $('#editorNav li')
+    maxStep = $nav.length
+    @currentStep += direction
+    @currentStep = 1 if @currentStep < 1
+    @currentStep = maxStep if @currentStep > maxStep
+
+    $back = $('#editorBack')
+    if @currentStep == 1
+      $back.prop 'disabled', true
+    else
+      $back.prop 'disabled', false
+
+    $next = $('#editorNext')
+    if @currentStep == maxStep
+      $next.prop 'disabled', true
+    else
+      $next.prop 'disabled', false
+
+    $nav.filter('.active').toggleClass 'active'
+    $($nav[@currentStep - 1]).toggleClass 'active'
+
+    $step = $('#editor .step')
+    $step.filter('.visible').toggleClass 'visible'
+    $($step[@currentStep - 1]).toggleClass 'visible'
 
   render: ->
     @$el.html template
@@ -59,6 +90,7 @@ define [
         required: 'required'
         value: metadata.get 'title'
         help: titleHelp
+        parent: @model
 
     abstract = new TextareaView
       el: @$('#editorAbstract')
@@ -68,6 +100,7 @@ define [
         required: 'required'
         value: metadata.get 'description'
         help: abstractHelp
+        parent: @model
 
 #    publicationDates = new PublicationDatesView
 #      el: @$('#editorPublicationDates')
@@ -79,8 +112,10 @@ define [
 
     lineage = new TextareaView
       el: @$('#editorLineage')
+      parent: @model
       model: new Textarea
         id: 'lineage'
         name: 'Lineage'
         value: metadata.get 'lineage'
         help: lineageHelp
+        parent: @model

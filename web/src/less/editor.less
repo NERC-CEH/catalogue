@@ -1,17 +1,32 @@
-#editor {
-  margin-top:2em;
-  padding: 20px;
+#editorNav {
+  position: fixed;
+  width: inherit;
 
+  li {
+    color: #828c7f;
+    &.active {
+      font-weight: bold;
+    }
+  }
+}
+
+#editor {
+  margin-top: 40px;
+  padding-bottom: 70px;
   label.required::before {
     content: "*";
-    color:#F00;
+    color: #b40000;
     font-size:150%;
   }
 
   .editor-controls {
     text-align: center;
   }
-}
-body {
-  padding-bottom: 70px;
+
+  .step {
+    display: none;
+    &.visible {
+      display: block;
+    }
+  }
 }
