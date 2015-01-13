@@ -8,4 +8,4 @@ define [
   required: ''
   rows: 17
   value: ''
-  help: 'No help available'
+  help: ''

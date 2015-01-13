@@ -112,10 +112,25 @@ define [
 
     lineage = new TextareaView
       el: @$('#editorLineage')
-      parent: @model
       model: new Textarea
         id: 'lineage'
         name: 'Lineage'
         value: metadata.get 'lineage'
         help: lineageHelp
+        parent: @model
+
+    additionalInformation = new TextareaView
+      el: @$('#editorAdditionalInformation')
+      model: new Textarea
+        id: 'additionalInformation'
+        name: 'Additional Information'
+        value: metadata.get 'additionalInformation'
+        parent: @model
+
+    accessConstraints = new TextareaView
+      el: @$('#editorAccessConstraints')
+      model: new Textarea
+        id: 'accessConstraints'
+        name: 'Access Constraints'
+        value: metadata.get 'accessConstraints'
         parent: @model

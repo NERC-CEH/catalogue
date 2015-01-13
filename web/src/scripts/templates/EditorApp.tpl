@@ -13,36 +13,51 @@
 <div id="editor" role="form">
   <div class="step visible">
     <div id="editorTitle" class="form-group"></div>
+    <mark>Alternative title(s)</mark>
     <div id="editorAbstract" class="form-group"></div>
+    <p><mark>Publication date(s)</mark></p>
+    <p><mark>Revision date(s)</mark></p>
     <div id="editorPublicationDates" class="form-group"></div>
     <div id="editorRevisionDates" class="form-group"></div>
   </div>
   <div class="step">
-    <p>step 2</p>
+    <p><mark>Spatial extent</mark></p>
   </div>
   <div class="step">
-    <p>step 3</p>
+    <p><mark>Format(s) of the data</mark></p>
+    <p><mark>Spatial representation type</mark></p>
+    <p><mark>Spatial Reference system(s)</mark></p>
+    <p><mark>Spatial resolution</mark></p>
   </div>
   <div class="step">
-    <p>step 4</p>
+    <p><mark>INSPIRE Theme(s)</mark></p>
+    <p><mark>Topic category</mark></p>
+    <p><mark>CEH section</mark></p>
+    <p><mark>CEH science area</mark></p>
+    <p><mark>Keyword(s)</mark></p>
   </div>
   <div class="step">
-    <p>step 5</p>
+    <p><mark>Contacts</mark></p>
   </div>
   <div class="step">
+    <p><mark>What is the status of the data resource?</mark></p>
+    <p><mark>How often is this resource going to be updated?</mark></p>
     <div id="editorLineage" class="form-group"></div>
   </div>
   <div class="step">
-    <p>step 7</p>
+    <p><mark>Online resource(s)</mark></p>
+    <div id="editorAdditionalInformation" class="form-group"></div>
   </div>
   <div class="step">
-    <p>step 8</p>
+    <p><mark>Use constraints</mark></p>
+    <div id="editorAccessConstraints" class="form-group"></div>
   </div>
   <div class="step">
-    <p>step 9</p>
+    <p><mark>Data identifier(s)</mark></p>
+    <p><mark>Associated records</mark></p>
   </div>
   <div class="step">
-    <p>step 10</p>
+    <p><mark>Person responsible for maintaining this metadata record:</mark></p>
   </div>
   <div class="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
