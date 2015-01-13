@@ -77,6 +77,22 @@ public class SearchQuery {
     }
     
     /**
+     * Generate a search query with a new spatial operation. Changing a spatial
+     * operation fundamentally changes the search query which means that we should
+     * jump back to page 1.
+     * @param newSpatialOperation the new spatial operation
+     * @return a new query if spatial operation differs to the one set.
+     */
+    public SearchQuery withSpatialOperation(SpatialOperation newSpatialOperation) {
+        if ( !spatialOperation.equals(newSpatialOperation) ) {
+            return new SearchQuery(endpoint, user, term, bbox, newSpatialOperation, PAGE_DEFAULT, rows, facetFilters);
+        }
+        else {
+            return this;
+        }
+    }
+    
+    /**
      * Create a clone of this search query but apply the additional facet filter
      * 
      * The logic of this method has been designed to match that of lomboks 

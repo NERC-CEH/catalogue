@@ -72,13 +72,35 @@ public class SearchResults {
      * filter
      * @return url to a search without the bbox component
      */
-    public String getWithoutBBox() {
+    public String getWithoutBbox() {
         if(query.getBbox() != null) {
             return query.withBbox(null).toUrl();
         }
         else {
             return null;   
         }
+    }
+    
+    public String getIntersectingBbox() {
+        if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.INTERSECTS) {
+            return query.withSpatialOperation(SpatialOperation.INTERSECTS).toUrl();
+        }
+        else {
+            return null;
+        }
+    }
+    
+    public String getWithinBbox() {
+        if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.ISWITHIN) {
+            return query.withSpatialOperation(SpatialOperation.ISWITHIN).toUrl();
+        }
+        else {
+            return null;
+        }
+    }
+    
+    public String getUrl() {
+        return query.toUrl();
     }
     
     public List<DocumentSolrIndex> getResults() {

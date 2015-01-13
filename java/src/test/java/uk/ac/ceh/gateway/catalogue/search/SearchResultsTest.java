@@ -280,7 +280,7 @@ public class SearchResultsTest {
         //When
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
-        String url = results.getWithoutBBox();
+        String url = results.getWithoutBbox();
         
         //Then
         assertNull("Expected to not get a url for without bbox", url);
@@ -302,10 +302,125 @@ public class SearchResultsTest {
         //When
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
-        String url = results.getWithoutBBox();
+        String url = results.getWithoutBbox();
         
         //Then
         assertNotNull("Expected to not get a page url", url);
         assertThat("Didn't expect bbox to be applied", url, not(containsString("bbox")));
+    }
+    
+    @Test
+    public void checkThatIsWithinUrlIsPresentWhenUsingIntersectsOperation() {
+        //Given
+        SearchQuery query = new SearchQuery(
+            SearchQueryTest.ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            "10,23,23,40",
+            SpatialOperation.INTERSECTS,
+            2,
+            20,
+            SearchQueryTest.DEFAULT_FILTERS);
+        
+        
+        //When
+        QueryResponse response = mock(QueryResponse.class);
+        SearchResults results = new SearchResults(response, query);
+        String url = results.getWithinBbox();
+        
+        //Then
+        assertNotNull("Expected to a url", url);
+        assertThat("Expected url to contain other filter", url, containsString(SpatialOperation.ISWITHIN.getOperation()));
+    }
+    
+    @Test
+    public void checkThatIsWithinUrlIsntPresentWhenUsingIsWithinOperation() {
+        //Given
+        SearchQuery query = new SearchQuery(
+            SearchQueryTest.ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            "10,23,23,40",
+            SpatialOperation.ISWITHIN,
+            2,
+            20,
+            SearchQueryTest.DEFAULT_FILTERS);
+        
+        
+        //When
+        QueryResponse response = mock(QueryResponse.class);
+        SearchResults results = new SearchResults(response, query);
+        String url = results.getWithinBbox();
+        
+        //Then
+        assertNull("Expected not to get a url", url);
+    }
+    
+    @Test
+    public void checkThatIntersectingUrlIsPresentWhenUsingIsWithinOperation() {
+        //Given
+        SearchQuery query = new SearchQuery(
+            SearchQueryTest.ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            "10,23,23,40",
+            SpatialOperation.ISWITHIN,
+            2,
+            20,
+            SearchQueryTest.DEFAULT_FILTERS);
+        
+        
+        //When
+        QueryResponse response = mock(QueryResponse.class);
+        SearchResults results = new SearchResults(response, query);
+        String url = results.getIntersectingBbox();
+        
+        //Then
+        assertNotNull("Expected to a url", url);
+        assertThat("Expected url to contain other filter", url, containsString(SpatialOperation.INTERSECTS.getOperation()));
+    }
+    
+    @Test
+    public void checkThatIntersectingUrlIsntPresentWhenUsingIntersectingOperation() {
+        //Given
+        SearchQuery query = new SearchQuery(
+            SearchQueryTest.ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            "10,23,23,40",
+            SpatialOperation.INTERSECTS,
+            2,
+            20,
+            SearchQueryTest.DEFAULT_FILTERS);
+        
+        
+        //When
+        QueryResponse response = mock(QueryResponse.class);
+        SearchResults results = new SearchResults(response, query);
+        String url = results.getIntersectingBbox();
+        
+        //Then
+        assertNull("Expected not to get a url", url);
+    }
+    
+    @Test
+    public void checkThatSwitchingSpatialOperationJumpsToPageOne() {
+        //Given
+        int page = 400;
+        SearchQuery query = new SearchQuery(
+            SearchQueryTest.ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            "10,23,23,40",
+            SpatialOperation.INTERSECTS,
+            page,
+            20,
+            SearchQueryTest.DEFAULT_FILTERS);
+        
+        //When
+        SearchQuery newQuery = query.withSpatialOperation(SpatialOperation.ISWITHIN);
+        
+        //Then
+        assertThat("Isn't on page 400", newQuery.getPage(), not(equalTo(page)));
     }
 }
