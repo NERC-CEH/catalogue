@@ -25,22 +25,15 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
 
     @Override
     public DocumentSolrIndex generateIndex(MetadataDocument document) {
-        
         return new DocumentSolrIndex()
                 .setTitle(Optional.ofNullable(document.getTitle()).orElse(""))
                 .setDescription(Optional.ofNullable(document.getDescription()).orElse(""))
                 .setIdentifier(Optional.ofNullable(document.getId()).orElse(""))
                 .setResourceType(Optional.ofNullable(document.getType()).orElse(""))
-                .setLocations(getLocations(document))
+                .setLocations(document.getLocations())
                 .setOgl(getOgl(document))
                 .setState(getState(document))
                 .setTopic(topicIndexer.index(document));
-    }
-    
-    private List<String> getLocations(MetadataDocument document) {
-        return Optional.ofNullable(document)
-            .map(MetadataDocument::getLocations)
-            .orElse(Collections.EMPTY_LIST);
     }
     
     private boolean getOgl(MetadataDocument document) {

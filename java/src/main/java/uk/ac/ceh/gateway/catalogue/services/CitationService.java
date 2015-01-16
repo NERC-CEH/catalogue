@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.config.WebConfig;
@@ -33,11 +32,9 @@ public class CitationService {
         
         Optional<GeminiDocument> doc = Optional.ofNullable(geminiDocument);
         
-        Set<ResourceIdentifier> resourceIdentifiers = doc
+        Optional<ResourceIdentifier> citationResource = doc
             .map(GeminiDocument::getResourceIdentifiers)
-            .orElse(Collections.EMPTY_SET);
-        
-        Optional<ResourceIdentifier> citationResource = resourceIdentifiers
+            .orElse(Collections.emptySet())
             .stream()
             .filter((r)->r.getCodeSpace().equals(DOI_CODE_SPACE))
             .filter((r)->r.getCode().startsWith(NERC_DOI_PREFIX))

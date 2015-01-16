@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -88,10 +90,11 @@ public class GeminiDocument implements MetadataDocument {
     
     @Override
     public List<String> getLocations() {
-        return boundingBoxes
-                .stream()
-                .map(BoundingBox::getSolrGeometry)
-                .collect(Collectors.toList());
+        return Optional.ofNullable(boundingBoxes)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(BoundingBox::getSolrGeometry)
+            .collect(Collectors.toList());
     }
     
     /**
@@ -112,9 +115,10 @@ public class GeminiDocument implements MetadataDocument {
      * @return true if a wms exists in the online resources
      */
     public boolean isMapViewable() {
-        return onlineResources
-                .stream()
-                .anyMatch((o)-> WMS_GET_CAPABILITIES == o.getType());
+        return Optional.ofNullable(onlineResources)
+            .orElse(Collections.emptyList())
+            .stream()
+            .anyMatch((o)-> WMS_GET_CAPABILITIES == o.getType());
     }
 
     @Override
@@ -124,7 +128,8 @@ public class GeminiDocument implements MetadataDocument {
     
     @Override
     public List<String> getTopics() {
-        return descriptiveKeywords
+        return Optional.ofNullable(descriptiveKeywords)
+            .orElse(Collections.emptyList())
             .stream()
             .flatMap(dk -> dk.getKeywords().stream())
             .filter(k -> k.getUri().startsWith(TOPIC_PROJECT_URL))

@@ -1,8 +1,9 @@
 define [
   'underscore'
   'backbone'
+  'node-uuid'
   'cs!models/Metadata'
-], (_, Backbone, Metadata) -> Backbone.Model.extend
+], (_, Backbone, uuid, Metadata) -> Backbone.Model.extend
 
   loadDocument: (identifier) ->
     metadata = new Metadata
@@ -18,7 +19,8 @@ define [
         @trigger 'error', "Unable to load metadata for: #{model.id}"
 
   newDocument: ->
-    @set 'metadata', new Metadata()
+    @set 'metadata', new Metadata
+      id: uuid.v4()
     @trigger 'loaded'
 
   getMetadata: ->
