@@ -108,7 +108,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         DocumentSolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertEquals("Expected isOgl to be true", true, index.getIsOgl());
+        assertEquals("Expected isOgl to be true", true, index.isOgl());
     }
     
     @Test
@@ -125,7 +125,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         DocumentSolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertEquals("Expected isOgl to be false", false, index.getIsOgl());
+        assertEquals("Expected isOgl to be false", false, index.isOgl());
     }
     
     @Test

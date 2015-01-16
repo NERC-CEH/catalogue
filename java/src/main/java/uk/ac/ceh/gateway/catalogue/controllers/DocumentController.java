@@ -5,10 +5,14 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +27,8 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -66,33 +72,49 @@ public class DocumentController {
         this.citationService = citationService;
     }
     
-    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
+//    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST)
-    @ResponseBody
-    public void uploadDocument(
+    public ResponseEntity uploadDocument(
             @ActiveUser CatalogueUser user,
             @RequestParam(value = "message", defaultValue = "new document") String commitMessage,
             HttpServletRequest request,
-            @RequestHeader("Content-Type") String contentType) throws DataRepositoryException, IOException, UnknownContentTypeException {
-        
+            @RequestHeader("Content-Type") String contentType) throws IOException, UnknownContentTypeException  {
+
         MediaType contentMediaType = MediaType.parseMediaType(contentType);
         Path tmpFile = Files.createTempFile("upload", null); //Create a temp file to upload the input stream to
+        String id;
+        GeminiDocument data;
         try {
             Files.copy(request.getInputStream(), tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
             
             //the documentReader will close the underlying inputstream
-            GeminiDocument data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType, GeminiDocument.class); 
+            data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType, GeminiDocument.class); 
             MetadataInfo metadataDocument = infoFactory.createInfo(data, contentMediaType); //get the metadata info
             
-            repo.submitData(data.getId() + ".meta", (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
-                .submitData(data.getId() + ".raw", (o) -> Files.copy(tmpFile, o) )
+            id = Optional.ofNullable(data.getId()).orElse(UUID.randomUUID().toString());
+            repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
+                .submitData(String.format("%s.raw", id), (o) -> Files.copy(tmpFile, o) )
                 .commit(user, commitMessage);
-            
         }
         finally {
             Files.delete(tmpFile); //file no longer needed
         }
+        return ResponseEntity
+            .created(getCurrentUri(request, id, repo.getLatestRevision().getRevisionID()))
+            .build();
+    }
+    
+    //@PreAuthorize("@permission.toAccess(#file, 'WRITE')")
+    @RequestMapping(value = "documents/{file}",
+            method = RequestMethod.PUT)
+    @ResponseBody
+    public void updateDocument( @ActiveUser CatalogueUser user,
+                                    @PathVariable("file") String file,
+                                    @RequestParam(value = "message", defaultValue = "edit document") String commitMessage,
+                                    @RequestHeader("Content-Type") String contentType,
+                                    HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException {
+        uploadDocument(user, commitMessage, request, contentType);
     }
     
     @RequestMapping(value = "documents/{file}",

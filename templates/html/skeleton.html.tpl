@@ -19,19 +19,19 @@
   <body>
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <#-- Content provided by the LWIS-PROXY -->
-          <ul class="nav navbar-nav navbar-right">
-              <#-- only show dropdown to catalogue administrators -->
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></a>
-              <ul class="dropdown-menu">
-                <#if id??>
-                    <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
-                    <li role="presentation" class="divider"></li>
-                </#if>
-                <li><a class="edit-control" href="#edit/new">New metadata</a></li>
-              </ul>
-            </li>
-            <#-- end of dropdown -->
+      <ul class="nav navbar-nav navbar-right">
+        <#-- only show dropdown to catalogue administrators -->
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></a>
+          <ul class="dropdown-menu">
+            <#if id??>
+              <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
+              <li role="presentation" class="divider"></li>
+            </#if>
+            <li><a class="edit-control" href="#edit/new">New metadata</a></li>
+          </ul>
+        </li>
+        <#-- end of dropdown -->
     </div>
     <#nested>
     <div id="message-panel"></div>

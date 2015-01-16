@@ -1,11 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
+import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 /**
  * The following class is responsible for taking a gemini document and creating 
@@ -21,33 +25,34 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
 
     @Override
     public DocumentSolrIndex generateIndex(MetadataDocument document) {
+        
         return new DocumentSolrIndex()
-                .setDescription(document.getDescription())
-                .setTitle(document.getTitle())
-                .setIdentifier(document.getId())
-                .setResourceType(document.getType())
-                .setLocations(document.getLocations())
-                .setIsOgl(getIsOgl(document))
+                .setTitle(Optional.ofNullable(document.getTitle()).orElse(""))
+                .setDescription(Optional.ofNullable(document.getDescription()).orElse(""))
+                .setIdentifier(Optional.ofNullable(document.getId()).orElse(""))
+                .setResourceType(Optional.ofNullable(document.getType()).orElse(""))
+                .setLocations(getLocations(document))
+                .setOgl(getOgl(document))
                 .setState(getState(document))
                 .setTopic(topicIndexer.index(document));
     }
     
-    private Boolean getIsOgl(MetadataDocument document){
-        if(document instanceof GeminiDocument) {
-            GeminiDocument geminiDocument = (GeminiDocument)document;
-            if(geminiDocument.getDownloadOrder() != null){
-                return geminiDocument.getDownloadOrder().isOgl();
-            }
-        }
-        return null;
+    private List<String> getLocations(MetadataDocument document) {
+        return Optional.ofNullable(document)
+            .map(MetadataDocument::getLocations)
+            .orElse(Collections.EMPTY_LIST);
+    }
+    
+    private boolean getOgl(MetadataDocument document) {
+        return Optional.ofNullable(((GeminiDocument)document).getDownloadOrder())
+            .map(DownloadOrder::isOgl)
+            .orElse(false);
     }
 
     private String getState(MetadataDocument document) {
-        if (document.getMetadata() != null) {
-            return document.getMetadata().getState();
-        } else {
-            return null;
-        }
+        return Optional.ofNullable(document.getMetadata())
+            .map(MetadataInfo::getState)
+            .orElse("draft");
     }
     
     /**
@@ -64,7 +69,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         private @Field String description;
         private @Field String resourceType;
         private @Field List<String> locations;
-        private @Field Boolean isOgl;
+        private @Field boolean isOgl;
         private @Field String state;
         private @Field List<String> topic;
         

@@ -46,6 +46,8 @@ import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
@@ -97,7 +99,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void uploadingDocumentStoresInputStreamIntoGit() throws IOException, UnknownContentTypeException {
+    public void uploadingDocumentStoresInputStreamIntoGit() throws IOException, UnknownContentTypeException, DataRepositoryException, DocumentIndexingException {
         //Given
         byte[] contentToUpload = "geminidocument".getBytes();
         byte[] metaInfoBytes = "metadataInfo".getBytes();
@@ -105,9 +107,13 @@ public class DocumentControllerTest {
         
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getInputStream()).thenReturn(new DelegatedServletInputStream(new ByteArrayInputStream(contentToUpload)));
+        when(request.getContextPath()).thenReturn("/documents");
+        when(request.getScheme()).thenReturn("https");
+        when(request.getServerName()).thenReturn("example.com");
+        when(request.getServerPort()).thenReturn(443);
         
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getId()).thenReturn("id");
+        GeminiDocument document = new GeminiDocument();
+        document.setId("id");
         when(documentReader.read(any(InputStream.class), eq(MediaType.APPLICATION_JSON), eq(GeminiDocument.class))).thenReturn(document);
         
         MetadataInfo metadataDocument = mock(MetadataInfo.class);

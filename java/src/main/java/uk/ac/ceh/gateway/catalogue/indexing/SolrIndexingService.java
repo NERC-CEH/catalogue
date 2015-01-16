@@ -51,7 +51,7 @@ public class SolrIndexingService<D> implements DocumentIndexingService {
     public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
         try {
             DocumentIndexingException joinedException = new DocumentIndexingException("Failed to index one or more documents");
-            for(String document : documents) {
+            documents.stream().forEach((document) -> {
                 try {
                     log.debug("Indexing: {}, revision: {}", document, revision);
                     solrServer.addBean(
@@ -62,8 +62,9 @@ public class SolrIndexingService<D> implements DocumentIndexingService {
                     log.error("Failed to index: {}", document);
                     joinedException.addSuppressed(new DocumentIndexingException(
                         String.format("Failed to index %s : %s", document, ex.getMessage()), ex));
+                    log.error("Suppressed indexing errors", (Object[]) joinedException.getSuppressed());
                 }
-            }
+            });
             solrServer.commit();
             
             //If an exception was supressed, then throw

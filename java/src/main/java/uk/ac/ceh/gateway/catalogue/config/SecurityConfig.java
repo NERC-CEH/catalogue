@@ -4,6 +4,7 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -55,6 +56,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .anonymous()
                 .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
             .and()
+            .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/**").fullyAuthenticated()
+                .antMatchers(HttpMethod.PUT, "/**").fullyAuthenticated()
+                .antMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
+            .and()
+            .requiresChannel()
+                .antMatchers(HttpMethod.POST, "/**").requiresSecure()
+                .antMatchers(HttpMethod.PUT, "/**").requiresSecure()
+                .antMatchers(HttpMethod.DELETE, "/**").requiresSecure()
+            .and()
+            .csrf()
+                .disable()
             .exceptionHandling()
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint());
     }

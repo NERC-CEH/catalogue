@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
@@ -47,7 +49,11 @@ public class ExtractTopicFromDocument implements TopicIndexer {
     @Override
     public List<String> index(MetadataDocument document) {
         
-       return document.getTopics()
+        List<String> topics = Optional.ofNullable(document)
+            .map(MetadataDocument::getTopics)
+            .orElse(Collections.EMPTY_LIST);
+        
+       return topics
            .stream()
            .filter(t -> topicHierarchy.containsKey(t))
            .flatMap(t -> topicHierarchy.get(t).stream())
