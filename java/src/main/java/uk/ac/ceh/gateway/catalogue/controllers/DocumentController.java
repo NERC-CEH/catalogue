@@ -5,7 +5,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,8 +27,8 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -38,6 +38,7 @@ import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -52,6 +53,7 @@ public class DocumentController {
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
+    private final DocumentWritingService<MetadataDocument> documentWriter;
     private final DocumentLinkService linkService;
     private final CitationService citationService;
     
@@ -61,6 +63,7 @@ public class DocumentController {
                                 DocumentInfoMapper documentInfoMapper,
                                 DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory,
                                 BundledReaderService<MetadataDocument> documentBundleReader,
+                                DocumentWritingService<MetadataDocument> documentWritingService,
                                 DocumentLinkService linkService,
                                 CitationService citationService) {
         this.repo = repo;
@@ -68,6 +71,7 @@ public class DocumentController {
         this.documentInfoMapper = documentInfoMapper;
         this.infoFactory = infoFactory;
         this.documentBundleReader = documentBundleReader;
+        this.documentWriter = documentWritingService;
         this.linkService = linkService;
         this.citationService = citationService;
     }
@@ -80,7 +84,7 @@ public class DocumentController {
             @RequestParam(value = "message", defaultValue = "new document") String commitMessage,
             HttpServletRequest request,
             @RequestHeader("Content-Type") String contentType) throws IOException, UnknownContentTypeException  {
-
+        
         MediaType contentMediaType = MediaType.parseMediaType(contentType);
         Path tmpFile = Files.createTempFile("upload", null); //Create a temp file to upload the input stream to
         String id;
@@ -93,6 +97,7 @@ public class DocumentController {
             MetadataInfo metadataDocument = infoFactory.createInfo(data, contentMediaType); //get the metadata info
             
             id = Optional.ofNullable(data.getId()).orElse(UUID.randomUUID().toString());
+            
             repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
                 .submitData(String.format("%s.raw", id), (o) -> Files.copy(tmpFile, o) )
                 .commit(user, commitMessage);
@@ -105,16 +110,46 @@ public class DocumentController {
             .build();
     }
     
+//    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
+    @RequestMapping (value = "documents",
+                     method = RequestMethod.POST,
+                     consumes = "application/gemini+json")
+    public ResponseEntity<MetadataDocument> uploadDocument(
+            @ActiveUser CatalogueUser user,
+            @RequestBody GeminiDocument geminiDocument,
+            @RequestParam(value = "message", defaultValue = "new Gemini document") String commitMessage,
+            HttpServletRequest request) throws IOException, UnknownContentTypeException  {
+
+        MetadataInfo metadataDocument = infoFactory.createInfo(geminiDocument, MediaType.parseMediaType("application/gemini+json"));
+        Optional<String> identifier = Optional.ofNullable(geminiDocument.getId());
+        String id;
+        if (identifier.isPresent()) {
+            id = identifier.get();
+        } else {
+            id = UUID.randomUUID().toString();
+            log.debug("Updating document: adding id: {}", id);
+            geminiDocument.setId(id);
+        }
+
+        repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
+            .submitData(String.format("%s.raw", id), (o) -> documentWriter.write(geminiDocument, o))
+            .commit(user, commitMessage);
+        
+        return ResponseEntity
+            .created(getCurrentUri(request, id, repo.getLatestRevision().getRevisionID()))
+            .body(readMetadata(user, id, request));
+    }
+    
     //@PreAuthorize("@permission.toAccess(#file, 'WRITE')")
     @RequestMapping(value = "documents/{file}",
             method = RequestMethod.PUT)
     @ResponseBody
     public void updateDocument( @ActiveUser CatalogueUser user,
-                                    @PathVariable("file") String file,
-                                    @RequestParam(value = "message", defaultValue = "edit document") String commitMessage,
-                                    @RequestHeader("Content-Type") String contentType,
-                                    HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException {
-        uploadDocument(user, commitMessage, request, contentType);
+                                @PathVariable("file") String file,
+                                @RequestParam(value = "message", defaultValue = "edit document") String commitMessage,
+                                @RequestHeader("Content-Type") String contentType,
+                                HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException {
+        uploadDocument(user, commitMessage,  request, contentType);
     }
     
     @RequestMapping(value = "documents/{file}",
@@ -143,11 +178,15 @@ public class DocumentController {
             String urlFragment = getLinkUrlFragment(request, revision);
             GeminiDocument geminiDocument = (GeminiDocument)document;
             geminiDocument.setDocumentLinks(linkService.getLinks(geminiDocument, urlFragment));
-            geminiDocument.setParent(linkService.getParent(geminiDocument, urlFragment));
+            linkService.getParent(geminiDocument, urlFragment)
+                .ifPresent(p -> geminiDocument.setParent(p));
             geminiDocument.setChildren(linkService.getChildren(geminiDocument, urlFragment));
-            geminiDocument.setRevised(linkService.getRevised(geminiDocument, urlFragment));
-            geminiDocument.setRevisionOf(linkService.getRevisionOf(geminiDocument, urlFragment));
-            geminiDocument.setCitation(citationService.getCitation(geminiDocument));
+            linkService.getRevised(geminiDocument, urlFragment)
+                .ifPresent(r -> geminiDocument.setRevised(r));
+            linkService.getRevisionOf(geminiDocument, urlFragment)
+                .ifPresent(r -> geminiDocument.setRevisionOf(r));
+            citationService.getCitation(geminiDocument)
+                .ifPresent(c -> geminiDocument.setCitation(c));
         }
         log.debug("document requested: {}", document);
         return document;

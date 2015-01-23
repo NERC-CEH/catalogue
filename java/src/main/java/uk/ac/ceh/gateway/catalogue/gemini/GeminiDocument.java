@@ -41,7 +41,7 @@ public class GeminiDocument implements MetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private URI uri;
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
-        metadataStandardName, metadataStandardVersion, supplementalInfo, resourceType, parentIdentifier, revisionOfIdentifier;
+        metadataStandardName, metadataStandardVersion, supplementalInfo, type, parentIdentifier, revisionOfIdentifier;
     private List<String> alternateTitles, topicCategories, coupledResources, spatialRepresentationTypes, datasetLanguages,
         useLimitations, accessConstraints, otherConstraints, securityConstraints;
     private List<DistributionInfo> distributionFormats;
@@ -66,9 +66,12 @@ public class GeminiDocument implements MetadataDocument {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate metadataDate;
     
-    @Override
-    public String getType() {
-        return getResourceType();
+    public String getResourceType() {
+        return type;
+    }
+    
+    public void setResourceType(String resourceType) {
+        this.type = resourceType;
     }
     
     public Set<Link> getAssociatedResources() {
@@ -135,6 +138,16 @@ public class GeminiDocument implements MetadataDocument {
             .filter(k -> k.getUri().startsWith(TOPIC_PROJECT_URL))
             .map(Keyword::getUri)
             .collect(Collectors.toList());
+    }
+    
+    public List<String> getCoupledResources() {
+        return Optional.ofNullable(coupledResources)
+            .orElse(Collections.emptyList());
+    }
+    
+    public List<ResponsibleParty> getResponsibleParties() {
+        return Optional.ofNullable(responsibleParties)
+            .orElse(Collections.emptyList());
     }
     
     @Override

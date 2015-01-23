@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface LinkDatabase {
@@ -72,7 +73,7 @@ public interface LinkDatabase {
      * @param fileIdentifier of child
      * @return parent's metadata
      */
-    Metadata findParent(String fileIdentifier);
+    Optional<Metadata> findParent(String fileIdentifier);
     
     /**
      * Get children's metadata.
@@ -88,7 +89,7 @@ public interface LinkDatabase {
      * @param fileIdentifier of deprecated metadata
      * @return revised's metadata
      */
-    Metadata findRevised(String fileIdentifier);
+    Optional<Metadata> findRevised(String fileIdentifier);
     
-    Metadata findRevisionOf(String fileIdentifier);
+    Optional<Metadata> findRevisionOf(String fileIdentifier);
 }

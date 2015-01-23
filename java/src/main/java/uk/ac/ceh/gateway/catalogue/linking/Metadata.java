@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
 import static com.google.common.base.Strings.nullToEmpty;
+import java.util.Collections;
+import java.util.Optional;
 import lombok.Value;
 import lombok.experimental.Builder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -20,7 +22,7 @@ public class Metadata {
     
     @Builder
     private Metadata(String fileIdentifier, String title, String resourceIdentifier, String parentIdentifier, String revisionOfIdentifier) {
-        this.fileIdentifier = nullToEmpty(fileIdentifier);
+        this.fileIdentifier = extractFileIdentifier(fileIdentifier);
         this.title = nullToEmpty(title);
         this.resourceIdentifier = nullToEmpty(resourceIdentifier);
         this.parentIdentifier = nullToEmpty(parentIdentifier);
@@ -28,13 +30,20 @@ public class Metadata {
     }
     
     private String extractInternalIdentifier(GeminiDocument document) {
-        if (document.getResourceIdentifiers() != null) {
-            for (ResourceIdentifier identifier : document.getResourceIdentifiers()) {
-                if (identifier.isInternal()) {
-                    return identifier.getCoupleResource();
-                } 
-            }
-        }
-        return "";
+        return Optional.of(document)
+            .map(GeminiDocument::getResourceIdentifiers)
+            .orElse(Collections.emptySet())
+            .stream()
+            .filter(ResourceIdentifier::isInternal)
+            .findFirst()
+            .map(ResourceIdentifier::getCoupleResource)
+            .orElse("");
+    }
+    
+    private String extractFileIdentifier(String fileIdentifier) {
+        return Optional.ofNullable(fileIdentifier)
+            .orElseThrow(() -> { 
+            return new IllegalStateException("Cannot link Metadata document with missing fileIdentifier");
+        });
     }
 }

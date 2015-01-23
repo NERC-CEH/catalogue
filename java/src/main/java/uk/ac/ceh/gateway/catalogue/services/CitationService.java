@@ -28,7 +28,7 @@ public class CitationService {
      * @param geminiDocument The geminidocument to cite
      * @return Either a valid citation object or null
      */
-    public Citation getCitation(GeminiDocument geminiDocument) {
+    public Optional<Citation> getCitation(GeminiDocument geminiDocument) {
         
         Optional<GeminiDocument> doc = Optional.ofNullable(geminiDocument);
         
@@ -51,7 +51,8 @@ public class CitationService {
             Optional<ResponsibleParty> publisher = getPublisher(geminiDocument);
             
             if (pubDate.isPresent() && publisher.isPresent()) {
-                return Citation
+                return Optional.of(
+                    Citation
                         .builder()
                         .authors(   getAuthors(geminiDocument))
                         .doi(       doi.getCode())
@@ -60,10 +61,11 @@ public class CitationService {
                         .publisher( publisher.get().getOrganisationName())
                         .bibtex(    getInAlternateFormat(geminiDocument, WebConfig.BIBTEX_SHORT))
                         .ris(       getInAlternateFormat(geminiDocument, WebConfig.RESEARCH_INFO_SYSTEMS_SHORT))
-                        .build();
+                        .build()
+                );
             }
         }
-        return null;        
+        return Optional.empty();        
     }
     
     protected URI getInAlternateFormat(GeminiDocument geminiDocument, String alternateFormat) {

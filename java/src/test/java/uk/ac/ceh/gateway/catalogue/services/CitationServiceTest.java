@@ -57,7 +57,7 @@ public class CitationServiceTest {
         CitationService service = new CitationService();
         
         //When
-        Citation citation = service.getCitation(document);
+        Citation citation = service.getCitation(document).get();
         
         //Then
         assertNotNull("Expected to get a citation", citation);
@@ -84,7 +84,7 @@ public class CitationServiceTest {
         CitationService service = new CitationService();
         
         //When
-        Citation citation = service.getCitation(document);
+        Citation citation = service.getCitation(document).get();
         
         //Then
         assertNull("Expected to not get a citation", citation);
@@ -104,7 +104,7 @@ public class CitationServiceTest {
         CitationService service = new CitationService();
         
         //When
-        Citation citation = service.getCitation(document);
+        Citation citation = service.getCitation(document).get();
         
         //Then
         assertNull("Expected to not get a citation", citation);
@@ -128,7 +128,7 @@ public class CitationServiceTest {
         CitationService service = new CitationService();
         
         //When
-        Citation citation = service.getCitation(document);
+        Citation citation = service.getCitation(document).get();
         
         //Then
         assertNull("Expected to not get a citation", citation);
@@ -141,7 +141,7 @@ public class CitationServiceTest {
         CitationService service = new CitationService();
         
         //When
-        Citation citation = service.getCitation(document);
+        Citation citation = service.getCitation(document).get();
         
         //Then
         assertNull("Expected to not get a citation", citation);

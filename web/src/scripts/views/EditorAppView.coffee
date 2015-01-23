@@ -127,10 +127,11 @@ define [
         value: metadata.get 'additionalInformation'
         parent: @model
 
-    accessConstraints = new TextareaView
-      el: @$('#editorAccessConstraints')
-      model: new Textarea
-        id: 'accessConstraints'
-        name: 'Access Constraints'
-        value: metadata.get 'accessConstraints'
-        parent: @model
+# should be a list of string
+#    accessConstraints = new TextareaView
+#      el: @$('#editorAccessConstraints')
+#      model: new Textarea
+#        id: 'accessConstraints'
+#        name: 'Access Constraints'
+#        value: metadata.get 'accessConstraints'
+#        parent: @model

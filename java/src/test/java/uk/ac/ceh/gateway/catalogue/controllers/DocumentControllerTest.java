@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertArrayEquals;
@@ -57,6 +58,7 @@ import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -72,6 +74,7 @@ public class DocumentControllerTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock DocumentLinkService linkService;
     @Mock CitationService citationService;
+    @Mock DocumentWritingService<MetadataDocument> documentWritingService;
     
     private DocumentController controller;
     
@@ -90,6 +93,7 @@ public class DocumentControllerTest {
                                                 documentInfoMapper,
                                                 infoFactory,
                                                 documentBundleReader,
+                                                documentWritingService,
                                                 linkService,
                                                 citationService));
     }
@@ -177,6 +181,10 @@ public class DocumentControllerTest {
         
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
+        when(linkService.getParent(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevised(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevisionOf(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(citationService.getCitation(any(GeminiDocument.class))).thenReturn(Optional.empty());
         
         //When
         MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, latestRevisionId, mockRequest());
@@ -202,6 +210,10 @@ public class DocumentControllerTest {
         
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
+        when(linkService.getParent(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevised(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevisionOf(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(citationService.getCitation(any(GeminiDocument.class))).thenReturn(Optional.empty());
         //When
         controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
         
@@ -225,6 +237,10 @@ public class DocumentControllerTest {
         DataRevision revision = mock(DataRevision.class);
         when(revision.getRevisionID()).thenReturn(latestRevisionId);
         doReturn(revision).when(repo).getLatestRevision();
+        when(linkService.getParent(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevised(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevisionOf(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(citationService.getCitation(any(GeminiDocument.class))).thenReturn(Optional.empty());
         
         //When
         controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
@@ -246,6 +262,10 @@ public class DocumentControllerTest {
         DataRevision revision = mock(DataRevision.class);
         when(revision.getRevisionID()).thenReturn(latestRevisionId);
         doReturn(revision).when(repo).getLatestRevision();
+        when(linkService.getParent(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevised(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevisionOf(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(citationService.getCitation(any(GeminiDocument.class))).thenReturn(Optional.empty());
         
         //When
         MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
@@ -268,6 +288,10 @@ public class DocumentControllerTest {
         DataRevision revision = mock(DataRevision.class);
         when(revision.getRevisionID()).thenReturn(latestRevisionId);
         doReturn(revision).when(repo).getLatestRevision();
+        when(linkService.getParent(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevised(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevisionOf(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(citationService.getCitation(any(GeminiDocument.class))).thenReturn(Optional.empty());
         
         //When
         controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId, mockRequest());
@@ -282,7 +306,7 @@ public class DocumentControllerTest {
     public void checkThatCitationIsPopulatedForGeminiDocument() throws IOException, UnknownContentTypeException {
         //Given
         GeminiDocument bundledDocument = mock(GeminiDocument.class);
-        Citation citation = Citation.builder().build();
+        Optional<Citation> citation = Optional.of(Citation.builder().build());
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(bundledDocument);
         when(citationService.getCitation(bundledDocument)).thenReturn(citation);
         doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
@@ -292,12 +316,15 @@ public class DocumentControllerTest {
         DataRevision revision = mock(DataRevision.class);
         when(revision.getRevisionID()).thenReturn(latestRevisionId);
         doReturn(revision).when(repo).getLatestRevision();
+        when(linkService.getParent(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevised(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
+        when(linkService.getRevisionOf(any(GeminiDocument.class), any(String.class))).thenReturn(Optional.empty());
         
         //When
         controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId, mockRequest());
         
         //Then
-        verify(bundledDocument).setCitation(citation);
+        verify(bundledDocument).setCitation(citation.get());
     }
     
     @Test

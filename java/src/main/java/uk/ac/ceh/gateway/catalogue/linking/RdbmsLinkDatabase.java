@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +30,8 @@ public class RdbmsLinkDatabase implements LinkDatabase {
     private static final String SERVICES_FOR_DATASET = "select s.fileIdentifier, s.title, s.resourceIdentifier, s.parentIdentifier, s.revisionOfIdentifier from metadata s inner join coupledResources c on s.fileIdentifier = c.fileIdentifier inner join metadata d on c.resourceIdentifier = d.resourceIdentifier where d.fileIdentifier = ?";
     private static final String PARENT = "select p.fileIdentifier, p.title, p.resourceIdentifier, p.parentIdentifier, p.revisionOfIdentifier from metadata p inner join metadata c on c.parentIdentifier = p.fileIdentifier where c.fileIdentifier = ?";
     private static final String CHILDREN = "select fileIdentifier, title, resourceIdentifier, parentIdentifier, revisionOfIdentifier from metadata where parentIdentifier = ?";
-    private static final String REVISION_OF = "select d.fileIdentifier, d.title, d.resourceIdentifier, d.parentIdentifier, d.revisionOfIdentifier from metadata d inner join metadata r on r.revisionOfIdentifier = d.resourceIdentifier where r.fileIdentifier = ?";
-    private static final String REVISED = "select r.fileIdentifier, r.title, r.resourceIdentifier, r.parentIdentifier, r.revisionOfIdentifier from metadata d inner join metadata r on r.revisionOfIdentifier = d.resourceIdentifier where d.fileIdentifier = ?";
+    private static final String REVISION_OF = "select d.fileIdentifier, d.title, d.resourceIdentifier, d.parentIdentifier, d.revisionOfIdentifier from metadata d inner join metadata r on r.revisionOfIdentifier = d.resourceIdentifier where d.resourceIdentifier != '' and r.fileIdentifier = ?";
+    private static final String REVISED = "select r.fileIdentifier, r.title, r.resourceIdentifier, r.parentIdentifier, r.revisionOfIdentifier from metadata d inner join metadata r on r.revisionOfIdentifier = d.resourceIdentifier where d.fileIdentifier = ?  and d.resourceIdentifier != ''";
     private static final String INSERT_METADATA = "insert into metadata (fileIdentifier, title, resourceIdentifier, parentIdentifier, revisionOfIdentifier) values (?, ?, ?, ?, ?)";
     private static final String DELETE_METADATA = "delete from metadata where fileIdentifier = ?";
     private static final String INSERT_COUPLED_RESOURCES = "insert into coupledResources (fileIdentifier, resourceIdentifier) values (?, ?)";
@@ -91,11 +92,8 @@ public class RdbmsLinkDatabase implements LinkDatabase {
     }
 
     @Override
-    public Metadata findParent(String fileIdentifier) {
-        return query(PARENT, fileIdentifier)
-            .stream()
-            .findFirst()
-            .orElse(null);
+    public Optional<Metadata> findParent(String fileIdentifier) {
+        return queryForMetadata(PARENT, fileIdentifier);
     }
 
     @Override
@@ -104,23 +102,21 @@ public class RdbmsLinkDatabase implements LinkDatabase {
     }
 
     @Override
-    public Metadata findRevised(String fileIdentifier) {
-        return query(REVISED, fileIdentifier)
-            .stream()
-            .findFirst()
-            .orElse(null);
+    public Optional<Metadata> findRevised(String fileIdentifier) {
+        return queryForMetadata(REVISED, fileIdentifier);
     }
 
     @Override
-    public Metadata findRevisionOf(String fileIdentifier) {
-        return query(REVISION_OF, fileIdentifier)
-            .stream()
-            .findFirst()
-            .orElse(null);
+    public Optional<Metadata> findRevisionOf(String fileIdentifier) {
+        return queryForMetadata(REVISION_OF, fileIdentifier);
     }
     
     private List<Metadata> query(String query, String fileIdentifier) {
         return jdbcTemplate.query(query, rowMapper, fileIdentifier);
+    }
+    
+    private Optional<Metadata> queryForMetadata(String query, String fileIdentifier) {
+        return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper, fileIdentifier));
     }
 
     private class MetadataRowMapper implements RowMapper<Metadata> {

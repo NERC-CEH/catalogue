@@ -19,8 +19,7 @@ define [
         @trigger 'error', "Unable to load metadata for: #{model.id}"
 
   newDocument: ->
-    @set 'metadata', new Metadata
-      id: uuid.v4()
+    @set 'metadata', new Metadata()
     @trigger 'loaded'
 
   getMetadata: ->

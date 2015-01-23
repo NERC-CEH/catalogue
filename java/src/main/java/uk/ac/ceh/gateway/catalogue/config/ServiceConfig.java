@@ -35,7 +35,9 @@ import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
@@ -63,6 +65,11 @@ public class ServiceConfig {
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter())
                 .addMessageConverter(new Xml2UKEOFDocumentMessageConverter())
                 .addMessageConverter(new MappingJackson2HttpMessageConverter(jacksonMapper));
+    }
+    
+    @Bean
+    public DocumentWritingService<MetadataDocument> documentWritingService() {
+        return new JsonDocumentWritingService(jacksonMapper);
     }
     
     @Bean

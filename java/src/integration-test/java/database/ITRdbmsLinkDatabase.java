@@ -256,7 +256,7 @@ public class ITRdbmsLinkDatabase {
             .build();
         
         //When
-        Metadata actual = linkDatabase.findParent("abff8409-0995-48d2-9303-468e1a9fe3df");       
+        Metadata actual = linkDatabase.findParent("abff8409-0995-48d2-9303-468e1a9fe3df").get();       
         
         //Then
         assertThat("Parent not found in expected", actual, equalTo(expected)); 
@@ -300,7 +300,7 @@ public class ITRdbmsLinkDatabase {
             .build();
         
         //When
-        Metadata actual = linkDatabase.findRevisionOf("154ebeeb-a15a-4f63-a3cc-f2daa12ea833");       
+        Metadata actual = linkDatabase.findRevisionOf("154ebeeb-a15a-4f63-a3cc-f2daa12ea833").get();       
         
         //Then
         assertThat("Deprecated not found in expected", actual, equalTo(expected)); 
@@ -318,7 +318,7 @@ public class ITRdbmsLinkDatabase {
             .build();
         
         //When
-        Metadata actual = linkDatabase.findRevised("97afcb16-9438-4d9f-abab-dd8619d730f5");       
+        Metadata actual = linkDatabase.findRevised("97afcb16-9438-4d9f-abab-dd8619d730f5").get();       
         
         //Then
         assertThat("Revised not found in expected", actual, equalTo(expected)); 

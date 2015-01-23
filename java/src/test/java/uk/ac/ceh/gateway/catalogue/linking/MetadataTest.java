@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
