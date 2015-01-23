@@ -1,7 +1,7 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#macro master title><#compress><!DOCTYPE html>
+<#macro master title searching=false><#compress><!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -18,7 +18,26 @@
   </head>
   <body>
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-      <#-- Content provided by the LWIS-PROXY -->
+      <div class="container-fluid">
+        <div id="sso-brand" class="navbar-header"> 
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <h3 class="navbar-text" href="#">Not Proxied</h3>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="//lwis.ceh.ac.uk">Home</a></li>
+            <li <#if searching>class="active"</#if>><a href="/documents">Search Data</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li id="sso-user"><a>Joe Bloggs</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
     <#nested>
     <div id="message-panel"></div>
