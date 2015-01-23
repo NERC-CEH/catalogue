@@ -35,11 +35,13 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></a>
+              <button class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown">
+                <span class="glyphicon glyphicon-edit"></span> Manage Metadata <span class="caret"></span>
+              </button>
               <ul class="dropdown-menu">
                 <#if id??>
-                <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
-                <li role="presentation" class="divider"></li>
+                  <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
+                  <li role="presentation" class="divider"></li>
                 </#if>
                 <li><a class="edit-control" href="#edit/new">New metadata</a></li>
               </ul>
