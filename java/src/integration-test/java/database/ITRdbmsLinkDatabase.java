@@ -137,14 +137,14 @@ public class ITRdbmsLinkDatabase {
     }
     
     @Test
-    public void tryToDeleteWithEmptyString() {
+    public void tryToDeleteUnknownFileIdentifier() {
         //Given
         DataSource dataSource = createPopulatedTestDataSource();
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         verifyDatabaseHasRows(jdbcTemplate);
         Integer before = jdbcTemplate.queryForObject("select count(*) from metadata", Integer.class);
-        Metadata toDelete = Metadata.builder().build();
+        Metadata toDelete = Metadata.builder().fileIdentifier("b172c629-a224-4d15-84bd-d654da4048a6").build();
         
         //When
         linkDatabase.deleteMetadata(toDelete);

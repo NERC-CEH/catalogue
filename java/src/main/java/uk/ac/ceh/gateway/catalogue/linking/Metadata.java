@@ -43,7 +43,7 @@ public class Metadata {
     private String extractFileIdentifier(String fileIdentifier) {
         return Optional.ofNullable(fileIdentifier)
             .orElseThrow(() -> { 
-            return new IllegalStateException("Cannot link Metadata document with missing fileIdentifier");
+            return new IllegalStateException("Cannot create Metadata with missing fileIdentifier");
         });
     }
 }
