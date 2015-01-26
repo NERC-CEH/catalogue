@@ -1,9 +1,8 @@
 define [
   'underscore'
   'backbone'
-  'node-uuid'
   'cs!models/Metadata'
-], (_, Backbone, uuid, Metadata) -> Backbone.Model.extend
+], (_, Backbone, Metadata) -> Backbone.Model.extend
 
   loadDocument: (identifier) ->
     metadata = new Metadata

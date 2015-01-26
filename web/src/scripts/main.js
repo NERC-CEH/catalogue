@@ -31,8 +31,7 @@ require.config({
     'underscore':        '../vendor/underscore-amd/underscore',
     'backbone':          '../vendor/backbone-amd/backbone',
     'openlayers':        '../vendor/OpenLayers-custom',
-    'jquery-ui':         '../vendor/jquery-ui/ui',
-    'node-uuid':         '../vendor/node-uuid/uuid'
+    'jquery-ui':         '../vendor/jquery-ui/ui'
   },
   waitSeconds:1000
 });
