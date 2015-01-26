@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
 import static org.hamcrest.Matchers.equalTo;
@@ -260,6 +261,19 @@ public class ITRdbmsLinkDatabase {
         
         //Then
         assertThat("Parent not found in expected", actual, equalTo(expected)); 
+    }
+    
+    @Test
+    public void findParentDoesNotExist() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Optional<Metadata> expected = Optional.empty();
+        
+        //When
+        Optional<Metadata> actual = linkDatabase.findParent("343699ad-4411-4aa5-b1ab-6bf1898b882f");       
+        
+        //Then
+        assertThat("Parent found in expected", actual, equalTo(expected)); 
     }
     
     @Test

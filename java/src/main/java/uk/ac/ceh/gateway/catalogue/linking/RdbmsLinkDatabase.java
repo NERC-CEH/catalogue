@@ -116,7 +116,7 @@ public class RdbmsLinkDatabase implements LinkDatabase {
     }
     
     private Optional<Metadata> queryForMetadata(String query, String fileIdentifier) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper, fileIdentifier));
+        return query(query, fileIdentifier).stream().findFirst();
     }
 
     private class MetadataRowMapper implements RowMapper<Metadata> {
