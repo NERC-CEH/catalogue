@@ -17,14 +17,19 @@ import org.springframework.context.annotation.Configuration;
 public class CachingConfig implements CachingConfigurer {
     @Bean(destroyMethod="shutdown")
     public net.sf.ehcache.CacheManager ehCacheManager() {
-        CacheConfiguration cacheConfiguration = new CacheConfiguration();
-        cacheConfiguration.setName("capabilities");
-        cacheConfiguration.setTimeToLiveSeconds(500);
-        cacheConfiguration.setMemoryStoreEvictionPolicy("LRU");
-        cacheConfiguration.setMaxEntriesLocalHeap(1000);
+        CacheConfiguration capabilitiesCache = new CacheConfiguration();
+        capabilitiesCache.setName("capabilities");
+        capabilitiesCache.setTimeToLiveSeconds(500);
+        capabilitiesCache.setMemoryStoreEvictionPolicy("LRU");
+        capabilitiesCache.setMaxEntriesLocalHeap(1000);
+        
+        CacheConfiguration wafCache = new CacheConfiguration();
+        wafCache.setName("metadata-listings");
+        wafCache.setMaxEntriesLocalHeap(10);
 
         net.sf.ehcache.config.Configuration config = new net.sf.ehcache.config.Configuration();
-        config.addCache(cacheConfiguration);
+        config.addCache(capabilitiesCache);
+        config.addCache(wafCache);
 
         return net.sf.ehcache.CacheManager.newInstance(config);
     }
