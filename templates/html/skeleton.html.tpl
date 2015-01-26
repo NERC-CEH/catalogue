@@ -1,7 +1,7 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#macro master title><#compress><!DOCTYPE html>
+<#macro master title searching=false><#compress><!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -10,15 +10,15 @@
     <title>${title?html} - CEH Catalogue</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     
-	
-	<!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
+  
+  <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
     <![endif]-->
   </head>
   <body>
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation"> 
-      <div class="container"> 
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
         <div id="sso-brand" class="navbar-header"> 
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
@@ -26,27 +26,30 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Not Proxied</a>
-        </div> 
-        <div class="navbar-collapse collapse"> 
-          <ul class="nav navbar-nav">  
-            <li><a href="/documents">Search Data</a></li>  
-          </ul> 
-          <ul class="nav navbar-nav navbar-right"> 
+          <h3 class="navbar-text" href="#">Not Proxied</h3>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="//lwis.ceh.ac.uk">Home</a></li>
+            <li <#if searching>class="active"</#if>><a href="/documents">Search Data</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></a>
+              <button class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown">
+                <span class="glyphicon glyphicon-edit"></span> Manage Metadata <span class="caret"></span>
+              </button>
               <ul class="dropdown-menu">
                 <#if id??>
-                <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
-                <li role="presentation" class="divider"></li>
+                  <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
+                  <li role="presentation" class="divider"></li>
                 </#if>
                 <li><a class="edit-control" href="#edit/new">New metadata</a></li>
               </ul>
             </li>
-            <li id="sso-user"><a>Joe Bloggs</a></li> 
-          </ul> 
-        </div> 
-      </div> 
+            <li id="sso-user"><a>Joe Bloggs</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
     <#nested>
     <div id="message-panel"></div>
