@@ -45,7 +45,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
     private String getState(MetadataDocument document) {
         return Optional.ofNullable(document.getMetadata())
             .map(MetadataInfo::getState)
-            .orElse("draft");
+            .get();
     }
     
     /**
