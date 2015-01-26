@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.Data;
@@ -9,7 +8,6 @@ import org.apache.solr.client.solrj.beans.Field;
 import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 /**
  * The following class is responsible for taking a gemini document and creating 
@@ -24,28 +22,25 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
     }
 
     @Override
-    public DocumentSolrIndex generateIndex(MetadataDocument document) {
-        return new DocumentSolrIndex()
-                .setTitle(Optional.ofNullable(document.getTitle()).orElse(""))
-                .setDescription(Optional.ofNullable(document.getDescription()).orElse(""))
-                .setIdentifier(Optional.ofNullable(document.getId()).orElse(""))
-                .setResourceType(Optional.ofNullable(document.getType()).orElse(""))
-                .setLocations(document.getLocations())
-                .setOgl(getOgl(document))
-                .setState(getState(document))
-                .setTopic(topicIndexer.index(document));
+    public DocumentSolrIndex generateIndex(MetadataDocument document) {        
+        DocumentSolrIndex index = new DocumentSolrIndex();
+        Optional.ofNullable(document.getTitle()).ifPresent(index::setTitle);
+        Optional.ofNullable(document.getDescription()).ifPresent(index::setDescription);
+        Optional.ofNullable(document.getId()).ifPresent(index::setIdentifier);
+        Optional.ofNullable(document.getType()).ifPresent(index::setResourceType);
+        index.setLocations(document.getLocations());
+        getDownloadOrder(document).ifPresent(d -> index.setOgl(d.isOgl()));
+        Optional.ofNullable(document.getMetadata()).ifPresent(m -> index.setState(m.getState()));
+        index.setTopic(topicIndexer.index(document));
+        return index;
     }
     
-    private boolean getOgl(MetadataDocument document) {
-        return Optional.ofNullable(((GeminiDocument)document).getDownloadOrder())
-            .map(DownloadOrder::isOgl)
-            .orElse(false);
-    }
-
-    private String getState(MetadataDocument document) {
-        return Optional.ofNullable(document.getMetadata())
-            .map(MetadataInfo::getState)
-            .get();
+    private Optional<DownloadOrder> getDownloadOrder(MetadataDocument document) {
+        if (document instanceof GeminiDocument) {
+            return Optional.ofNullable(((GeminiDocument) document).getDownloadOrder());
+        } else {
+            return Optional.empty();
+        }
     }
     
     /**

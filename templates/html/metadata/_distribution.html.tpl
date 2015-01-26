@@ -7,7 +7,7 @@
 </#if>
 
 
-<#if (downloadOrder.orderUrl)??||mapViewable >
+<#if (downloadOrder.orderUrl)?? || mapViewable >
   <div class="panel panel-default hidden-print" id="document-order">
     <div class="panel-heading"><p class="panel-title">${documentOrderTitle?html}</p></div>
     <div class="panel-body">

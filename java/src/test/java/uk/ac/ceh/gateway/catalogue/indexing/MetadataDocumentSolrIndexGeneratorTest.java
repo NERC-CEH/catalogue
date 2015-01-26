@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -31,6 +32,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/2","http://onto.nerc.ac.uk/CEHMD/2_1","http://onto.nerc.ac.uk/CEHMD/3", "http://onto.nerc.ac.uk/CEHMD/3_1"));
         List<String> expected = Arrays.asList("0/Climate/", "1/Climate/Climate change/", "0/Modelling/", "1/Modelling/Integrated ecosystem modelling/");
+        when(document.getDownloadOrder()).thenReturn(DownloadOrder.builder().build());
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
@@ -43,8 +45,8 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     @Test
     public void checkThatTitleIsTransferedToIndex() {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getTitle()).thenReturn("my gemini document");
+        GeminiDocument document = new GeminiDocument();
+        document.setTitle("my gemini document");
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
@@ -57,8 +59,8 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     public void checkThatTitleIdTransferedToIndex() {
         //Given
         String id = "some crazy long, hard to rememember, number";
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getId()).thenReturn(id);
+        GeminiDocument document = new GeminiDocument();
+        document.setId(id);
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
@@ -71,8 +73,8 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     public void checkThatDescriptionIsTransferedToIndex() {
         //Given
         String description = "Once upon a time, there was a metadata record...";
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getDescription()).thenReturn(description);
+        GeminiDocument document = new GeminiDocument();
+        document.setDescription(description);
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
@@ -84,8 +86,8 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     @Test
     public void checkThatResourceTypeIsTransferedToIndex() {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getType()).thenReturn("dataset");
+        GeminiDocument document = new GeminiDocument();
+        document.setType("dataset");
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
@@ -118,8 +120,8 @@ public class MetadataDocumentSolrIndexGeneratorTest {
                 .builder()
                 .licenseUrl("http://I.am.a.non.ogl.license")
                 .build();
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getDownloadOrder()).thenReturn(downloadOrder);
+        GeminiDocument document = new GeminiDocument();
+        document.setDownloadOrder(downloadOrder);
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
