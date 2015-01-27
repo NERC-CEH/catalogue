@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
  * @author cjohn
  */
 @Controller
-@Slf4j
 @RequestMapping("documents/gemini/waf")
 public class GeminiWafController {
     private final DataRepository<CatalogueUser> repo;
@@ -40,10 +39,11 @@ public class GeminiWafController {
                     method=RequestMethod.GET)
     public ModelAndView getWaf() throws DataRepositoryException, IOException {
         String revision = repo.getLatestRevision().getRevisionID();
-        Map<String, Object> data = new HashMap<>();
-        data.put("docs", listing.getPublicDocuments(revision, GeminiDocument.class));
-        data.put("revision", revision);
-        return new ModelAndView("/html/geminiwaf.html.tpl", data);
+        return new ModelAndView("/html/waf.html.tpl", "files", listing
+                .getPublicDocuments(revision, GeminiDocument.class)
+                .stream()
+                .map((d)-> d + ".xml")
+                .collect(Collectors.toList()));
     }
     
     @RequestMapping("{id}.xml")
