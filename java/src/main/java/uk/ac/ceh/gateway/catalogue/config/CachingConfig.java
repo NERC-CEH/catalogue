@@ -23,13 +23,13 @@ public class CachingConfig implements CachingConfigurer {
         capabilitiesCache.setMemoryStoreEvictionPolicy("LRU");
         capabilitiesCache.setMaxEntriesLocalHeap(1000);
         
-        CacheConfiguration wafCache = new CacheConfiguration();
-        wafCache.setName("metadata-listings");
-        wafCache.setMaxEntriesLocalHeap(10);
+        CacheConfiguration listingsCache = new CacheConfiguration();
+        listingsCache.setName("metadata-listings");
+        listingsCache.setMaxEntriesLocalHeap(10);
 
         net.sf.ehcache.config.Configuration config = new net.sf.ehcache.config.Configuration();
         config.addCache(capabilitiesCache);
-        config.addCache(wafCache);
+        config.addCache(listingsCache);
 
         return net.sf.ehcache.CacheManager.newInstance(config);
     }

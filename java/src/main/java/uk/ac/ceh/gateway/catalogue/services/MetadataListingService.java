@@ -27,13 +27,14 @@ public class MetadataListingService {
     private final PermissionService permissions;
     
     /**
-     * Returns a list of metadata ids of documents which are publicly accessable
+     * Returns a list of metadata ids of documents which are publicly accessible
      * of the given metadata type.
      * @param revision the data revision to list files from
      * @param type of document which should be listed
      * @return A list of metadata ids which are present in the git repository
      * @throws DataRepositoryException
      */
+    @Cacheable("metadata-listings")
     public List<String> getPublicDocuments(String revision, Class<? extends MetadataDocument> type) throws DataRepositoryException, IOException {
         return getDocuments(revision, type, CatalogueUser.PUBLIC_USER);
     }
