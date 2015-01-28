@@ -120,7 +120,12 @@ public class DocumentController {
             @RequestParam(value = "message", defaultValue = "new Gemini document") String commitMessage,
             HttpServletRequest request) throws IOException, UnknownContentTypeException  {
 
-        MetadataInfo metadataDocument = infoFactory.createInfo(geminiDocument, MediaType.parseMediaType("application/gemini+json"));
+        MetadataInfo metadataInfo = Optional.of(geminiDocument)
+            .map(GeminiDocument::getMetadata)
+            .orElse(infoFactory.createInfo(geminiDocument, MediaType.parseMediaType("application/gemini+json")));
+        
+        log.debug("metadataInfo is: {}", metadataInfo);
+        
         Optional<String> identifier = Optional.ofNullable(geminiDocument.getId());
         String id;
         if (identifier.isPresent()) {
@@ -131,10 +136,10 @@ public class DocumentController {
             geminiDocument.setId(id);
         }
 
-        repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
+        repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o) )
             .submitData(String.format("%s.raw", id), (o) -> documentWriter.write(geminiDocument, o))
             .commit(user, commitMessage);
-        
+                
         return ResponseEntity
             .created(getCurrentUri(request, id, repo.getLatestRevision().getRevisionID()))
             .body(readMetadata(user, id, request));
@@ -152,6 +157,7 @@ public class DocumentController {
         uploadDocument(user, commitMessage,  request, contentType);
     }
     
+    @PreAuthorize("@permission.toAccess(#user, #file, 'DOCUMENT_READ')")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.GET)   
     @ResponseBody

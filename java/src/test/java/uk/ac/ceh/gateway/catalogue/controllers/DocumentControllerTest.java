@@ -170,7 +170,7 @@ public class DocumentControllerTest {
     public void checkThatReadingDelegatesToBundledReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException {
         //Given
         GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
+        bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
         
         String file = "myFile";       
         String latestRevisionId = "latestRev";
@@ -198,7 +198,7 @@ public class DocumentControllerTest {
     public void checkThatLinksAreAddedToDataset() throws IOException, DataRepositoryException, UnknownContentTypeException {
         //Given
         GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
+        bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
         bundledDocument.setResourceType("dataset");
         
         String file = "myFile";
@@ -231,7 +231,7 @@ public class DocumentControllerTest {
         String file = "myFile";
         
         GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
+        bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         
         DataRevision revision = mock(DataRevision.class);
@@ -256,7 +256,7 @@ public class DocumentControllerTest {
         String file = "myFile";
         
         GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo("", "public", "GEMINI_DOCUMENT"));
+        bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         
         DataRevision revision = mock(DataRevision.class);
