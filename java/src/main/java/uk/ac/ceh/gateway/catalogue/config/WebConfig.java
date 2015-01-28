@@ -47,6 +47,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String GEMINI_XML_VALUE             = "application/x-gemini+xml";
     public static final String RESEARCH_INFO_SYSTEMS_SHORT  = "ris";
     public static final String RESEARCH_INFO_SYSTEMS_VALUE  = "application/x-research-info-systems";
+    public static final String DATACITE_XML_VALUE           = "application/x-datacite+xml";
     
     @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
