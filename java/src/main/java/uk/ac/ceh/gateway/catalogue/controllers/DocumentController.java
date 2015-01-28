@@ -27,7 +27,6 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -157,7 +156,7 @@ public class DocumentController {
         uploadDocument(user, commitMessage,  request, contentType);
     }
     
-    @PreAuthorize("@permission.toAccess(#user, #file, 'DOCUMENT_READ')")
+    @PreAuthorize("@permission.toAccess(#user, #file, 'READ')")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.GET)   
     @ResponseBody
@@ -169,7 +168,7 @@ public class DocumentController {
         return readMetadata(user, file, latestRev.getRevisionID(), request);
     }
     
-    @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'DOCUMENT_READ')")
+    @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'READ')")
     @RequestMapping(value = "history/{revision}/{file}",
                     method = RequestMethod.GET)
     @ResponseBody
@@ -198,7 +197,7 @@ public class DocumentController {
         return document;
     }
 
-    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
+    @PreAuthorize("@permission.toAccess(#file, 'DELETE')")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.DELETE)
     @ResponseBody

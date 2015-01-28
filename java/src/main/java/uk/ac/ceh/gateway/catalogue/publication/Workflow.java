@@ -27,13 +27,7 @@ public class Workflow {
         State fromState = currentState(info);
         
         if (fromState.canTransition(roles, transition)) {
-            toReturn = new MetadataInfo()
-                .setRawType(info.getRawType())
-                .setState(transition.getToState().getId())
-                .setDocumentType(info.getDocumentType())
-                .setCanView(info.getCanView())
-                .setCanEdit(info.getCanEdit())
-                .setCanDelete(info.getCanDelete());
+            toReturn.setState(transition.getToState().getId());
         }
         return toReturn;
     }
