@@ -125,8 +125,8 @@ public class SearchResultsTest {
                         .build()))
                 .build(),
             Facet.builder()
-                .fieldName("isOgl")
-                .displayName("OGL license")
+                .fieldName("licence")
+                .displayName("Licence")
                 .build()
         );
                 

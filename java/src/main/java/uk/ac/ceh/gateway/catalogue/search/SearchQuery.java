@@ -29,7 +29,7 @@ public class SearchQuery {
     private final List<Facet> facets = Arrays.asList(
         Facet.builder().fieldName("topic").displayName("Topic").hierarchical(true).build(),
         Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
-        Facet.builder().fieldName("isOgl").displayName("OGL license").hierarchical(false).build()
+        Facet.builder().fieldName("licence").displayName("Licence").hierarchical(false).build()
     );
     
     private final String endpoint;
