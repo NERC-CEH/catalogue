@@ -35,7 +35,9 @@ import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
+import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 /**
@@ -50,6 +52,7 @@ public class ServiceConfig {
     @Autowired LinkDatabase linkDatabase;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
+    @Autowired PermissionService permissions;
     
     @Bean
     public CitationService citationService() {
@@ -73,6 +76,11 @@ public class ServiceConfig {
     @Bean
     public GetCapabilitiesObtainerService getCapabilitiesObtainerService() {
         return new GetCapabilitiesObtainerService(restTemplate);
+    }
+    
+    @Bean
+    public MetadataListingService getWafListingService() throws XPathExpressionException {
+        return new MetadataListingService(dataRepository, documentListingService(),bundledReaderService(),permissions);
     }
     
     @Bean

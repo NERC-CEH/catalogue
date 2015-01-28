@@ -26,7 +26,7 @@ public class PermissionService {
         
     }
     
-    private boolean userCanAccess(CatalogueUser user, MetadataInfo metadataInfo) {
+    public boolean userCanAccess(CatalogueUser user, MetadataInfo metadataInfo) {
         return user.isPublic() && metadataInfo.getState().equalsIgnoreCase("public");
     }
 
