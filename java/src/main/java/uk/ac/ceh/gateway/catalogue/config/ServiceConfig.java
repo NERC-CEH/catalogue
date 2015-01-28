@@ -2,11 +2,14 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import java.io.IOException;
+import java.util.Properties;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -25,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -64,6 +68,12 @@ public class ServiceConfig {
         return new MessageConverterReadingService()
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter())
                 .addMessageConverter(new Xml2UKEOFDocumentMessageConverter());
+    }
+    
+    @Bean
+    public CodeLookupService codeNameLookupService() throws IOException {
+        Properties properties = PropertiesLoaderUtils.loadAllProperties("codelist.properties");
+        return new CodeLookupService(properties);
     }
     
     @Bean
@@ -127,12 +137,12 @@ public class ServiceConfig {
     } 
     
     @Bean
-    public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException {
+    public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException {
         SolrIndexingService toReturn = new SolrIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument()),
+                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeNameLookupService()),
                 solrServer
         );
         

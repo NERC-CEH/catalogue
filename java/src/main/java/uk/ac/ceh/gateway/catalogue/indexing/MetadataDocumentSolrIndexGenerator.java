@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
 /**
  * The following class is responsible for taking a gemini document and creating 
@@ -14,9 +15,11 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
  */
 public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
     private final TopicIndexer topicIndexer;
+    private final CodeLookupService codeLookupService;
 
-    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer) {
+    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService) {
         this.topicIndexer = topicIndexer;
+        this.codeLookupService = codeLookupService;
     }
 
     @Override
@@ -25,7 +28,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
                 .setIdentifier(document.getId())
-                .setResourceType(document.getType())
+                .setResourceType(codeLookupService.lookup("metadata.scopeCode", document.getType()))
                 .setLocations(document.getLocations())
                 .setIsOgl(getIsOgl(document))
                 .setState(getState(document))
