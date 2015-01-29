@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -48,6 +49,7 @@ public class MetadataInfo {
     }
        
     public void addPermission(Permission permission, String identity) {
+        Objects.requireNonNull(permission);
         Objects.requireNonNull(Strings.emptyToNull(identity));
         if (permissions == null) {
             permissions = ArrayListMultimap.create();
@@ -55,7 +57,17 @@ public class MetadataInfo {
         permissions.put(permission, identity.toLowerCase());
     }
     
+    public void addPermissions(Permission permission, List<String> identities) {
+        Objects.requireNonNull(permission);
+        Objects.requireNonNull(identities);
+        if (permissions == null) {
+            permissions = ArrayListMultimap.create();
+        }
+        permissions.putAll(permission, identities);
+    }
+    
     public void removePermission(Permission permission, String identity) {
+        Objects.requireNonNull(permission);
         Objects.requireNonNull(Strings.emptyToNull(identity));
         Optional.ofNullable(permissions)
             .ifPresent(p -> {
@@ -64,6 +76,7 @@ public class MetadataInfo {
     }
     
     public List<String> getIdentities(Permission permission) {
+        Objects.requireNonNull(permission);
         if (permissions != null) {
             return permissions.get(permission)
                 .stream()
@@ -71,6 +84,14 @@ public class MetadataInfo {
                 .collect(Collectors.toList());
         } else {
             return Collections.EMPTY_LIST;
+        }
+    }
+    
+    public Set<Permission> getPermissions() {
+        if (permissions != null) {
+            return permissions.keySet();
+        } else {
+            return Collections.EMPTY_SET;
         }
     }
 }

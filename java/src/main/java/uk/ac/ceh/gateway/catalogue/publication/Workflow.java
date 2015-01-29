@@ -23,12 +23,22 @@ public class Workflow {
     }
     
     public MetadataInfo transitionDocumentState(MetadataInfo info, Set<PublishingRole> roles, Transition transition) {
-        MetadataInfo toReturn = info;
         State fromState = currentState(info);
         
         if (fromState.canTransition(roles, transition)) {
-            toReturn.setState(transition.getToState().getId());
+            MetadataInfo toReturn = new MetadataInfo()
+                .setState(transition.getToState().getId())
+                .setRawType(info.getRawType())
+                .setDocumentType(info.getDocumentType());
+            
+            info.getPermissions()
+                .stream()
+                .forEach(p -> {
+                    toReturn.addPermissions(p, info.getIdentities(p));
+                });
+            return toReturn;
+        } else {
+            return info;
         }
-        return toReturn;
     }
 }

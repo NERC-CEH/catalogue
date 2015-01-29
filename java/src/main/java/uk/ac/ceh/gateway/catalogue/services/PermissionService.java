@@ -3,11 +3,15 @@ package uk.ac.ceh.gateway.catalogue.services;
 import java.io.IOException;
 import static java.lang.String.format;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -16,13 +20,14 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
 
 @Service("permission")
+@Slf4j
 public class PermissionService {
-    private final DataRepository<?> repo;
+    private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final GroupStore<CatalogueUser> groupStore;
 
     @Autowired
-    public PermissionService(DataRepository<?> repo, DocumentInfoMapper documentInfoMapper, GroupStore<CatalogueUser> groupStore) {
+    public PermissionService(DataRepository<CatalogueUser> repo, DocumentInfoMapper documentInfoMapper, GroupStore<CatalogueUser> groupStore) {
         this.repo = repo;
         this.documentInfoMapper = documentInfoMapper;
         this.groupStore = groupStore;
@@ -33,17 +38,28 @@ public class PermissionService {
     }
     
     public boolean toAccess(CatalogueUser user, String file, String revision, String permission) throws IOException {
+        Objects.requireNonNull(user);
+        Objects.requireNonNull(file);
+        Objects.requireNonNull(revision);
         boolean toReturn = false;
-        Permission requested = Permission.valueOf(permission.toUpperCase());
-        Optional<MetadataInfo> document = Optional.ofNullable(
-            documentInfoMapper.readInfo(repo.getData(revision, format("%s.meta", file)).getInputStream()));
+        Permission requested = Permission.valueOf(Objects.requireNonNull(permission).toUpperCase());
+        
+        DataDocument data;
+        try {
+            data = repo.getData(revision, format("%s.meta", file));
+        } catch (DataRepositoryException ex) {
+            return false;
+        }
+        Optional<MetadataInfo> document = Optional.ofNullable(documentInfoMapper.readInfo(data.getInputStream()));
         
         if (document.isPresent()) {
             MetadataInfo metadataInfo = document.get();
             toReturn = 
                 isPubliclyViewable(metadataInfo, requested)
                 || 
-                userCanAccess(user, metadataInfo, requested);
+                userCanAccess(user, metadataInfo, requested)
+                ||
+                authorCanAccess(user, revision);
         }
         return toReturn;
     }
@@ -62,9 +78,14 @@ public class PermissionService {
         return permittedIdentities.contains(user.getUsername()) || permittedGroup.isPresent();
     }
     
-//    private DataRevision<CatalogueUser> lastCommit(String file) throws DataRepositoryException {
-//        List<DataRevision<CatalogueUser>> revisions =  repo.getRevisions(file);
-//        return revisions.get(revisions.size()-1);
-//    }
+    private boolean authorCanAccess(CatalogueUser user, String revision) throws DataRepositoryException {
+        List<DataRevision<CatalogueUser>> revisions = repo.getRevisions(revision);
+        if ( !revisions.isEmpty()) {
+            DataRevision<CatalogueUser> get = revisions.get(revisions.size() - 1);
+            return user.equals(get.getAuthor());
+        } else {
+            return false;
+        }
+    }
 
 }
