@@ -47,7 +47,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String GEMINI_XML_VALUE             = "application/x-gemini+xml";
     public static final String RESEARCH_INFO_SYSTEMS_SHORT  = "ris";
     public static final String RESEARCH_INFO_SYSTEMS_VALUE  = "application/x-research-info-systems";
-    public static final String DATACITE_XML_SHORT           = "datacite.xml";
     public static final String DATACITE_XML_VALUE           = "application/x-datacite+xml";
     
     @Value("${template.location}") File templates;
@@ -120,7 +119,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             .favorParameter(true)
             .mediaType("html", MediaType.TEXT_HTML)
             .mediaType("json", MediaType.APPLICATION_JSON)
-            .mediaType(DATACITE_XML_SHORT, MediaType.parseMediaType(DATACITE_XML_VALUE))
             .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE));
     }

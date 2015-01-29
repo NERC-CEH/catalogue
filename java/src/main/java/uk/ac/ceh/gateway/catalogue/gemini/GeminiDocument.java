@@ -29,8 +29,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 @Data
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
-    @Template(called="datacite/datacite.xml.tpl", whenRequestedAs=WebConfig.DATACITE_XML_VALUE)
+    @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"parentIdentifier", "parent", "documentLinks", "children", "revised",
     "revisionOf", "revisionOfIdentifier", "resourceType", "downloadOrder", "locations", "mapViewerUrl", "mapViewable",

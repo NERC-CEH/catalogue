@@ -38,3 +38,11 @@ passes. The opposite of filter.
   </#list>
   <#return result>
 </#function>
+
+<#--
+Not strictly an underscore inspired function. This function will return true
+if the supplied obj has a property named author.
+-->
+<#function isAuthor obj>
+  <#return obj["role"] == "author">
+</#function>
