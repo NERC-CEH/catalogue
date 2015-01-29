@@ -18,7 +18,7 @@
 </#list>
 <ul class="pager">
   <#if prevPage?has_content>
-    <li class="previous"><a href="${prevPage}">&larr; Older</a></li>
+    <li class="previous"><a href="${prevPage}">&larr; Previous</a></li>
   </#if>
   <li>Page ${page}</li>          
   <#if nextPage?has_content>

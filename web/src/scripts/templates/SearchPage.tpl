@@ -17,7 +17,7 @@
 <% }); %>
 <ul class="pager">
   <% if(prevPage) { %>
-    <li class="previous"><a href="<%=prevPage%>">&larr; Older</a></li>
+    <li class="previous"><a href="<%=prevPage%>">&larr; Previous</a></li>
   <% } %>
   <li>Page <%=page%></li>          
   <% if(nextPage) { %>
