@@ -7,22 +7,27 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
 /**
  *
  * @author cjohn
  */
 public class MetadataDocumentSolrIndexGeneratorTest {
+    @Mock CodeLookupService codeLookupService;
     private MetadataDocumentSolrIndexGenerator generator;
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
-        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument());
+        MockitoAnnotations.initMocks(this);
+        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService);
     }
     
     @Test
@@ -86,12 +91,13 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getType()).thenReturn("dataset");
+        when(codeLookupService.lookup("metadata.scopeCode", "dataset")).thenReturn("Dataset");
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertEquals("Expected to get my resourceType", "dataset", index.getResourceType());
+        assertEquals("Expected to get my resourceType", "Dataset", index.getResourceType());
     }
     
     @Test
@@ -103,12 +109,13 @@ public class MetadataDocumentSolrIndexGeneratorTest {
                 .build();
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getDownloadOrder()).thenReturn(downloadOrder);
+        when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertEquals("Expected isOgl to be true", true, index.getIsOgl());
+        assertEquals("Expected isOgl to be true", "IS OGL", index.getLicence());
     }
     
     @Test
@@ -120,12 +127,13 @@ public class MetadataDocumentSolrIndexGeneratorTest {
                 .build();
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getDownloadOrder()).thenReturn(downloadOrder);
+        when(codeLookupService.lookup("licence.isOgl", false)).thenReturn("ISNT OGL");
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertEquals("Expected isOgl to be false", false, index.getIsOgl());
+        assertEquals("Expected isOgl to be false", "ISNT OGL", index.getLicence());
     }
     
     @Test

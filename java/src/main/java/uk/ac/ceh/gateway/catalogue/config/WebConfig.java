@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.cache.FileTemplateLoader;
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -30,6 +32,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 @Configuration
@@ -49,6 +52,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     
     @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
+    @Autowired CodeLookupService codesLookup;
     
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -75,9 +79,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean
     public FreeMarkerConfigurer configureFreeMarker() {
         try {
+            Map<String, Object> shared = new HashMap<>();
+            shared.put("codes", codesLookup);
+            
             FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();
-
-            //freemarkerConfig.setTemplateLoaderPath(templates);
+            freemarkerConfig.setFreemarkerVariables(shared);
             freemarkerConfig.setPreTemplateLoaders(new FileTemplateLoader(templates));
             return freemarkerConfig;
         }
