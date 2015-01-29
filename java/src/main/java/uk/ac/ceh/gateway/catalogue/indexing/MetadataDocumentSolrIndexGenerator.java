@@ -1,10 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
@@ -24,23 +33,33 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
 
     @Override
     public DocumentSolrIndex generateIndex(MetadataDocument document) {
-        return new DocumentSolrIndex()
+        DocumentSolrIndex toReturn = new DocumentSolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
                 .setIdentifier(document.getId())
                 .setResourceType(codeLookupService.lookup("metadata.scopeCode", document.getType()))
                 .setLocations(document.getLocations())
-                .setLicence(getLicence(document))
                 .setState(getState(document))
                 .setTopic(topicIndexer.index(document));
+        
+        if(document instanceof GeminiDocument) {
+            GeminiDocument gemini = (GeminiDocument)document;
+
+            toReturn.setAltTitle(gemini.getAlternateTitles())
+                    .setLineage(gemini.getLineage())
+                    .setLicence(getLicence(gemini))
+                    .setOrganisation(grab(gemini.getResponsibleParties(), ResponsibleParty::getOrganisationName))
+                    .setIndividual(grab(gemini.getResponsibleParties(), ResponsibleParty::getIndividualName))
+                    .setOnlineResourceName(grab(gemini.getOnlineResources(), OnlineResource::getName))
+                    .setOnlineResourceDescription(grab(gemini.getOnlineResources(), OnlineResource::getDescription))
+                    .setResourceIdentifier(grab(gemini.getResourceIdentifiers(), ResourceIdentifier::getCode));
+        }
+        return toReturn;
     }
     
-    private String getLicence(MetadataDocument document){
-        if(document instanceof GeminiDocument) {
-            GeminiDocument geminiDocument = (GeminiDocument)document;
-            if(geminiDocument.getDownloadOrder() != null){
-                return codeLookupService.lookup("licence.isOgl", geminiDocument.getDownloadOrder().isOgl());
-            }
+    private String getLicence(GeminiDocument document){
+        if(document.getDownloadOrder() != null){
+            return codeLookupService.lookup("licence.isOgl", document.getDownloadOrder().isOgl());
         }
         return null;
     }
@@ -51,6 +70,19 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         } else {
             return null;
         }
+    }
+    
+    // The following will iterate over a given collection (which could be null)
+    // And grab a property off of each element in the collection.
+    // If the supplied collection is null, this method will return an empty
+    // list
+    private <U, T> List<U> grab(Collection<T> list, Function<? super T, ? extends U> mapper ) {
+        return Optional.ofNullable(list)
+                        .orElse(Collections.emptyList())
+                        .stream()
+                        .map(mapper)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
     }
     
     /**
@@ -64,7 +96,14 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 265;
         private @Field String identifier;
         private @Field String title;
+        private @Field List<String> altTitle;
         private @Field String description;
+        private @Field String lineage;
+        private @Field List<String> organisation;
+        private @Field List<String> individual;
+        private @Field List<String> onlineResourceName;
+        private @Field List<String> onlineResourceDescription;
+        private @Field List<String> resourceIdentifier;
         private @Field String resourceType;
         private @Field List<String> locations;
         private @Field String licence;

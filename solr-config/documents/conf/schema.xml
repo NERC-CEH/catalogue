@@ -4,7 +4,14 @@
     <fields>
       <field name="identifier" type="keyword" indexed="true" stored="true" required="true" multiValued="false" /> 
       <field name="title" type="text_general" indexed="true" stored="true" required="true" multiValued="false"/>
-      <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>   
+      <field name="altTitle" type="text_general" indexed="true" stored="true" multiValued="true"/>
+      <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>
+      <field name="lineage" type="text_general" indexed="true" stored="true" multiValued="false"/>
+      <field name="organisation" type="text_general" indexed="true" stored="true" multiValued="true"/>
+      <field name="individual" type="text_general" indexed="true" stored="true" multiValued="true"/>
+      <field name="onlineResourceName" type="text_general" indexed="true" stored="true" multiValued="true"/>
+      <field name="onlineResourceDescription" type="text_general" indexed="true" stored="true" multiValued="true"/>
+      <field name="resourceIdentifier" type="keyword" indexed="true" stored="true" multiValued="true"/>
       <field name="resourceType" type="keyword" indexed="true" stored="true" multiValued="false"/>
       <field name="licence" type="keyword" indexed="true" stored="true" multiValued="false"/>
       <field name="state" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>

@@ -59,7 +59,7 @@ public class SolrIndexingService<D> implements DocumentIndexingService {
                             reader.readBundle(document, revision)));
                 }
                 catch(Exception ex) {
-                    log.error("Failed to index: {}", document);
+                    log.error("Failed to index: {}", document, ex);
                     joinedException.addSuppressed(new DocumentIndexingException(
                         String.format("Failed to index %s : %s", document, ex.getMessage()), ex));
                 }
