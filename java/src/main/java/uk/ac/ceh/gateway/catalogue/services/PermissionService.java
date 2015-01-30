@@ -47,6 +47,7 @@ public class PermissionService {
         DataDocument data;
         try {
             data = repo.getData(revision, format("%s.meta", file));
+            log.debug("revision from dataDocument: {}", data.getRevision());
         } catch (DataRepositoryException ex) {
             return false;
         }
@@ -59,33 +60,46 @@ public class PermissionService {
                 || 
                 userCanAccess(user, metadataInfo, requested)
                 ||
-                authorCanAccess(user, revision);
+                authorCanAccess(user, file);
         }
         return toReturn;
     }
     
     private boolean isPubliclyViewable(MetadataInfo metadataInfo, Permission requested) {
+        log.debug("isPubliclyViewable");
         return metadataInfo.getState().equalsIgnoreCase("public") && VIEW.equals(requested);
     }
     
     private boolean userCanAccess(CatalogueUser user, MetadataInfo metadataInfo, Permission requested) {
+        log.debug("userCanAccess");
         List<String> permittedIdentities = metadataInfo.getIdentities(requested);
-        Optional<String> permittedGroup = groupStore.getGroups(user)
-            .stream()
-            .map(Group::getName)
-            .filter(name -> permittedIdentities.contains(name.toLowerCase()))
-            .findFirst();
-        return permittedIdentities.contains(user.getUsername()) || permittedGroup.isPresent();
-    }
-    
-    private boolean authorCanAccess(CatalogueUser user, String revision) throws DataRepositoryException {
-        List<DataRevision<CatalogueUser>> revisions = repo.getRevisions(revision);
-        if ( !revisions.isEmpty()) {
-            DataRevision<CatalogueUser> get = revisions.get(revisions.size() - 1);
-            return user.equals(get.getAuthor());
+        log.debug("user requesting access: {}", user);
+        if ( !user.isPublic()) {
+            Optional<String> permittedGroup = groupStore.getGroups(user)
+                .stream()
+                .map(Group::getName)
+                .filter(name -> permittedIdentities.contains(name.toLowerCase()))
+                .findFirst();
+            return permittedIdentities.contains(user.getUsername()) || permittedGroup.isPresent();
         } else {
             return false;
         }
     }
-
+    
+    private boolean authorCanAccess(CatalogueUser user, String file) throws DataRepositoryException {
+        log.debug("authorCanAccess");
+        
+        Optional<CatalogueUser> author = repo.getRevisions(format("%s.meta", file))
+            .stream()
+            .findFirst()
+            .map(DataRevision<CatalogueUser>::getAuthor);
+        
+        if (author.isPresent()) {
+            log.debug("author found, about to check permission");
+            return user.equals(author.get());
+        } else {
+            log.debug("author absent");
+            return false;
+        }
+    }
 }

@@ -24,7 +24,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
  * The following spring JavaConfig defines the beans required the spring security
  */
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired UserStore<CatalogueUser> userstore;

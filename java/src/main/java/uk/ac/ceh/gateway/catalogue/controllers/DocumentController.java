@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +48,9 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 @Controller
 @Slf4j
 public class DocumentController {
+    public static final String EDITOR_ROLE = "ROLE_CIG_EDITOR";
+    public static final String PUBLISHER_ROLE = "ROLE_CIG_PUBLISHER";
+    public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
     private final DataRepository<CatalogueUser> repo;
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
@@ -75,7 +79,7 @@ public class DocumentController {
         this.citationService = citationService;
     }
     
-//    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
+    @Secured(EDITOR_ROLE)
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST)
     public ResponseEntity uploadDocument(
@@ -109,7 +113,7 @@ public class DocumentController {
             .build();
     }
     
-//    @PreAuthorize("@permission.toAccess(#file, 'WRITE')")
+    @Secured(EDITOR_ROLE)
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = "application/gemini+json")
@@ -144,7 +148,7 @@ public class DocumentController {
             .body(readMetadata(user, id, request));
     }
     
-    //@PreAuthorize("@permission.toAccess(#file, 'WRITE')")
+    @PreAuthorize("@permission.toAccess(#user, #file, 'EDIT')")
     @RequestMapping(value = "documents/{file}",
             method = RequestMethod.PUT)
     @ResponseBody
@@ -156,7 +160,7 @@ public class DocumentController {
         uploadDocument(user, commitMessage,  request, contentType);
     }
     
-    @PreAuthorize("@permission.toAccess(#user, #file, 'READ')")
+    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.GET)   
     @ResponseBody
@@ -168,7 +172,7 @@ public class DocumentController {
         return readMetadata(user, file, latestRev.getRevisionID(), request);
     }
     
-    @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'READ')")
+    @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
     @RequestMapping(value = "history/{revision}/{file}",
                     method = RequestMethod.GET)
     @ResponseBody
@@ -197,7 +201,7 @@ public class DocumentController {
         return document;
     }
 
-    @PreAuthorize("@permission.toAccess(#file, 'DELETE')")
+    @Secured(EDITOR_ROLE)
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.DELETE)
     @ResponseBody

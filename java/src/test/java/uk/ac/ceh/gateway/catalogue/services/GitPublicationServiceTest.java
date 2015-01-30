@@ -25,6 +25,7 @@ import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
+import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
@@ -72,12 +73,12 @@ public class GitPublicationServiceTest {
 
             @Override
             public String getName() {
-                return "ROLE_EDITOR";
+                return DocumentController.EDITOR_ROLE;
             }
 
             @Override
             public String getDescription() {
-                return "ROLE_EDITOR";
+                return DocumentController.EDITOR_ROLE;
             }
         }));
         
@@ -97,12 +98,12 @@ public class GitPublicationServiceTest {
 
             @Override
             public String getName() {
-                return "ROLE_EDITOR";
+                return DocumentController.EDITOR_ROLE;
             }
 
             @Override
             public String getDescription() {
-                return "ROLE_EDITOR";
+                return DocumentController.EDITOR_ROLE;
             }
         }));
         
@@ -122,12 +123,12 @@ public class GitPublicationServiceTest {
 
             @Override
             public String getName() {
-                return "ROLE_PUBLISHER";
+                return DocumentController.PUBLISHER_ROLE;
             }
 
             @Override
             public String getDescription() {
-                return "ROLE_PUBLISHER";
+                return DocumentController.PUBLISHER_ROLE;
             }
         }));
         

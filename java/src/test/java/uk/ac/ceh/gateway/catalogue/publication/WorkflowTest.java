@@ -7,6 +7,7 @@ import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import static org.hamcrest.CoreMatchers.*;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
+import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 
 public class WorkflowTest {
     private final PublishingRole editor, publisher;
@@ -15,8 +16,8 @@ public class WorkflowTest {
     public WorkflowTest() {
         //Given
         workflow = new PublicationConfig().workflow();
-        editor = new PublishingRole("ROLE_EDITOR");
-        publisher = new PublishingRole("ROLE_PUBLISHER");
+        editor = new PublishingRole(DocumentController.EDITOR_ROLE);
+        publisher = new PublishingRole(DocumentController.PUBLISHER_ROLE);
     }
     
     @Test

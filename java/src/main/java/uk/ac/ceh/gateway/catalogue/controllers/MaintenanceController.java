@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,8 +19,8 @@ import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
  */
 @Controller
 @RequestMapping("maintenance")
+@Secured(DocumentController.MAINTENANCE_ROLE)
 public class MaintenanceController {
-    
     private final DocumentIndexingService solrIndex;
     private final DocumentLinkService linkingService;
     
