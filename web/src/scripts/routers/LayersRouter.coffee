@@ -13,4 +13,6 @@ define [
   Grab the list of ids from the route and set these on the app model.
   This will trigger the app to fetch the relevant representations
   ###
-  loadLayers: (route) -> @model.set 'metadataIds', route.split('!')
+  loadLayers: (route) ->
+    @model.set 'metadataIds', route.split('!')
+    console.log "Layers Router #{route}"

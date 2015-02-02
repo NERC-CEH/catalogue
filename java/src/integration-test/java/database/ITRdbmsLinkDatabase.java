@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
 import static org.hamcrest.Matchers.equalTo;
@@ -137,14 +138,14 @@ public class ITRdbmsLinkDatabase {
     }
     
     @Test
-    public void tryToDeleteWithEmptyString() {
+    public void tryToDeleteUnknownFileIdentifier() {
         //Given
         DataSource dataSource = createPopulatedTestDataSource();
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         verifyDatabaseHasRows(jdbcTemplate);
         Integer before = jdbcTemplate.queryForObject("select count(*) from metadata", Integer.class);
-        Metadata toDelete = Metadata.builder().build();
+        Metadata toDelete = Metadata.builder().fileIdentifier("b172c629-a224-4d15-84bd-d654da4048a6").build();
         
         //When
         linkDatabase.deleteMetadata(toDelete);
@@ -256,10 +257,23 @@ public class ITRdbmsLinkDatabase {
             .build();
         
         //When
-        Metadata actual = linkDatabase.findParent("abff8409-0995-48d2-9303-468e1a9fe3df");       
+        Metadata actual = linkDatabase.findParent("abff8409-0995-48d2-9303-468e1a9fe3df").get();       
         
         //Then
         assertThat("Parent not found in expected", actual, equalTo(expected)); 
+    }
+    
+    @Test
+    public void findParentDoesNotExist() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Optional<Metadata> expected = Optional.empty();
+        
+        //When
+        Optional<Metadata> actual = linkDatabase.findParent("343699ad-4411-4aa5-b1ab-6bf1898b882f");       
+        
+        //Then
+        assertThat("Parent found in expected", actual, equalTo(expected)); 
     }
     
     @Test
@@ -300,7 +314,7 @@ public class ITRdbmsLinkDatabase {
             .build();
         
         //When
-        Metadata actual = linkDatabase.findRevisionOf("154ebeeb-a15a-4f63-a3cc-f2daa12ea833");       
+        Metadata actual = linkDatabase.findRevisionOf("154ebeeb-a15a-4f63-a3cc-f2daa12ea833").get();       
         
         //Then
         assertThat("Deprecated not found in expected", actual, equalTo(expected)); 
@@ -318,7 +332,7 @@ public class ITRdbmsLinkDatabase {
             .build();
         
         //When
-        Metadata actual = linkDatabase.findRevised("97afcb16-9438-4d9f-abab-dd8619d730f5");       
+        Metadata actual = linkDatabase.findRevised("97afcb16-9438-4d9f-abab-dd8619d730f5").get();       
         
         //Then
         assertThat("Revised not found in expected", actual, equalTo(expected)); 

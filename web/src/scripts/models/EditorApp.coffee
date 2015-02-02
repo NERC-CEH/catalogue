@@ -1,0 +1,25 @@
+define [
+  'underscore'
+  'backbone'
+  'cs!models/Metadata'
+], (_, Backbone, Metadata) -> Backbone.Model.extend
+
+  loadDocument: (identifier) ->
+    metadata = new Metadata
+      id: identifier
+
+    metadata.fetch
+      success: (model) =>
+        console.log "Success loading: #{model.id}"
+        @set 'metadata', model
+        @trigger 'loaded'
+      error: (model) =>
+        console.log "Error loading: #{model.id}"
+        @trigger 'error', "Unable to load metadata for: #{model.id}"
+
+  newDocument: ->
+    @set 'metadata', new Metadata()
+    @trigger 'loaded'
+
+  getMetadata: ->
+    _.clone(@get 'metadata')

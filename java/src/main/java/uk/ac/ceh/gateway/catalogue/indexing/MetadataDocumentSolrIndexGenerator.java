@@ -40,7 +40,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                 .setResourceType(codeLookupService.lookup("metadata.scopeCode", document.getType()))
                 .setLocations(document.getLocations())
                 .setState(getState(document))
-                .setTopic(topicIndexer.index(document));
+                .setTopic(topicIndexer.index(document));   
         
         if(document instanceof GeminiDocument) {
             GeminiDocument gemini = (GeminiDocument)document;

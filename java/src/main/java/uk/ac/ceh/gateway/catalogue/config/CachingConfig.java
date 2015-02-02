@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import net.sf.ehcache.config.CacheConfiguration;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachingConfigurer;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * @author cjohn
  */
 @Configuration
-public class CachingConfig implements CachingConfigurer {
+public class CachingConfig extends CachingConfigurerSupport {
     @Bean(destroyMethod="shutdown")
     public net.sf.ehcache.CacheManager ehCacheManager() {
         CacheConfiguration capabilitiesCache = new CacheConfiguration();

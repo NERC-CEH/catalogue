@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.linking;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -52,8 +53,30 @@ public class GitDocumentLinkServiceTest {
     @Test
     public void canLinkDocuments() throws Exception {
         //Given
-        when(repo.getLatestRevision()).thenReturn(mock(DataRevision.class));
-        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(mock(GeminiDocument.class));
+        when(repo.getLatestRevision()).thenReturn(new DataRevision<CatalogueUser>() {
+
+            @Override
+            public String getRevisionID() {
+                return "latest";
+            }
+
+            @Override
+            public String getMessage() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public String getShortMessage() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public CatalogueUser getAuthor() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        });
+        when(documentBundleReader.readBundle("1bb", "latest")).thenReturn(new GeminiDocument().setId("1bb"));
+        when(documentBundleReader.readBundle("234", "latest")).thenReturn(new GeminiDocument().setId("234"));
         GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
         
         //When
@@ -91,6 +114,8 @@ public class GitDocumentLinkServiceTest {
         GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
         
+        
+        
         //When
         linkService.getLinks(service, urlFragement);
         
@@ -106,12 +131,64 @@ public class GitDocumentLinkServiceTest {
         document.setId(fileIdentifier);
         GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
+        when(linkDatabase.findParent("absd-asd")).thenReturn(Optional.of(Metadata.builder().fileIdentifier("123-456-789").build()));
         
         //When
         linkService.getParent(document, urlFragement);
         
         //Then
         verify(linkDatabase).findParent(fileIdentifier);
+    }
+    
+    @Test
+    public void cannotGetParent() {
+        //Given
+        String fileIdentifier = "absd-asd";
+        GeminiDocument document = new GeminiDocument();
+        document.setId(fileIdentifier);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        String urlFragement = "http://localhost:8080/documents/";
+        when(linkDatabase.findParent("absd-asd")).thenReturn(Optional.empty());
+        
+        //When
+        linkService.getParent(document, urlFragement);
+        
+        //Then
+        verify(linkDatabase).findParent(fileIdentifier);
+    }
+    
+    @Test
+    public void canGetRevisionOf() {
+        //Given
+        String fileIdentifier = "absd-asd";
+        GeminiDocument document = new GeminiDocument();
+        document.setId(fileIdentifier);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        String urlFragement = "http://localhost:8080/documents/";
+        when(linkDatabase.findRevisionOf("absd-asd")).thenReturn(Optional.empty());
+        
+        //When
+        linkService.getRevisionOf(document, urlFragement);
+        
+        //Then
+        verify(linkDatabase).findRevisionOf(fileIdentifier);
+    }
+    
+    @Test
+    public void canGetRevisied() {
+        //Given
+        String fileIdentifier = "absd-asd";
+        GeminiDocument document = new GeminiDocument();
+        document.setId(fileIdentifier);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        String urlFragement = "http://localhost:8080/documents/";
+        when(linkDatabase.findRevised("absd-asd")).thenReturn(Optional.empty());
+        
+        //When
+        linkService.getRevised(document, urlFragement);
+        
+        //Then
+        verify(linkDatabase).findRevised(fileIdentifier);
     }
     
     @Test

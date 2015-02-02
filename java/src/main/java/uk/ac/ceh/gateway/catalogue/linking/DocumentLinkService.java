@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
+import java.util.Optional;
 import java.util.Set;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Link;
@@ -43,7 +44,7 @@ public interface DocumentLinkService {
      * @param urlFragment to use to create link url from (expects to have context/documents/ or context/history/ in path)
      * @return a Link to the parent Metadata
      */
-    Link getParent(GeminiDocument document, String urlFragment);
+    Optional<Link> getParent(GeminiDocument document, String urlFragment);
     
     /**
      * Get links to children of this Gemini Document.
@@ -60,7 +61,7 @@ public interface DocumentLinkService {
      * @param urlFragment to use to create link url from (expects to have context/documents/ or context/history/ in path)
      * @return a Link to the revised Metadata
      */
-    Link getRevised(GeminiDocument document, String urlFragment);
+    Optional<Link> getRevised(GeminiDocument document, String urlFragment);
     
-    Link getRevisionOf(GeminiDocument document, String urlFragment);
+    Optional<Link> getRevisionOf(GeminiDocument document, String urlFragment);
 }

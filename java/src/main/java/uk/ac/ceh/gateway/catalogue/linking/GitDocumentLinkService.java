@@ -1,10 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
 import com.google.common.base.Splitter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -62,17 +63,20 @@ public class GitDocumentLinkService implements DocumentLinkService {
                 MetadataDocument document = documentBundleReader.readBundle(fileIdentifier, latestRev.getRevisionID());
                 if(document instanceof GeminiDocument) {
                     GeminiDocument geminiDocument = (GeminiDocument)document;
-                    metadata.add(new Metadata(geminiDocument));
-                    geminiDocument.getCoupledResources().forEach((coupleResource) -> {
-                        coupledResources.add(
-                            CoupledResource.builder()
-                                .fileIdentifier(document.getId())
-                                .resourceIdentifier(coupleResource)
-                                .build());
-                    });
+                    if (Optional.ofNullable(geminiDocument.getId()).isPresent()) {
+                        metadata.add(new Metadata(geminiDocument));
+                        geminiDocument.getCoupledResources().forEach((coupleResource) -> {
+                            coupledResources.add(
+                                CoupledResource.builder()
+                                    .fileIdentifier(document.getId())
+                                    .resourceIdentifier(coupleResource)
+                                    .build());
+                        });
+                    }
                 }
             } catch (Exception ex) {
                 linkingException.addSuppressed(ex);
+                log.error("Suppressed linking errors", (Object[]) linkingException.getSuppressed());
             }
         });
         
@@ -86,24 +90,33 @@ public class GitDocumentLinkService implements DocumentLinkService {
 
     @Override
     public Set<Link> getLinks(GeminiDocument document, String urlFragment) {
-        if (document.getResourceType() != null) {
-            switch (document.getResourceType().toLowerCase()) {
-                case "dataset":
-                    return createLinks(linkDatabase.findServicesForDataset(document.getId()), urlFragment, "service");
-
-                case "service":
-                    return createLinks(linkDatabase.findDatasetsForService(document.getId()), urlFragment, "dataset");
-            }
-        }
-        return Collections.EMPTY_SET;
+        return Optional.ofNullable(document)
+            .map(GeminiDocument::getResourceType)
+            .map(r -> {
+                List<Metadata> metadata;
+                String associationType;
+                switch (r.toLowerCase()) {
+                    case "dataset":
+                        metadata = linkDatabase.findServicesForDataset(document.getId());
+                        associationType = "service";
+                        break;
+                    case "service":
+                        metadata = linkDatabase.findDatasetsForService(document.getId());
+                        associationType = "dataset";
+                        break;
+                    default:
+                        metadata = Collections.emptyList();
+                        associationType = "";
+                }
+                return createLinks(metadata, urlFragment, associationType);
+            })
+            .orElse(Collections.emptySet());
     }
     
     @Override
-    public Link getParent(GeminiDocument document, String urlFragment) {
-        return createLinks(Arrays.asList(linkDatabase.findParent(document.getId())), urlFragment, "series")
-            .stream()
-            .findFirst()
-            .orElse(null);
+    public Optional<Link> getParent(GeminiDocument document, String urlFragment) {
+        return linkDatabase.findParent(document.getId())
+            .map(m -> createLink(m, urlFragment, "series"));
     }
 
     @Override
@@ -112,32 +125,30 @@ public class GitDocumentLinkService implements DocumentLinkService {
     }
     
     @Override
-    public Link getRevised(GeminiDocument document, String urlFragment) {
-        return createLinks(Arrays.asList(linkDatabase.findRevised(document.getId())), urlFragment, "revised")
-            .stream()
-            .findFirst()
-            .orElse(null);
+    public Optional<Link> getRevised(GeminiDocument document, String urlFragment) {
+        return linkDatabase.findRevised(document.getId())
+            .map(m -> createLink(m, urlFragment, "revised"));
     }
     
     @Override
-    public Link getRevisionOf(GeminiDocument document, String urlFragment) {
-        return createLinks(Arrays.asList(linkDatabase.findRevisionOf(document.getId())), urlFragment, "revisionOf")
-            .stream()
-            .findFirst()
-            .orElse(null);
+    public Optional<Link> getRevisionOf(GeminiDocument document, String urlFragment) {
+        return linkDatabase.findRevisionOf(document.getId())
+            .map(m -> createLink(m, urlFragment, "revisionOf"));
     }
     
     private Set<Link> createLinks(List<Metadata> metadata, String urlFragment, String associationType) {
         return metadata.stream()
-            .filter(m -> m != null)
-            .map(m -> {
-                return Link.builder()
-                    .title(m.getTitle())
-                    .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(m.getFileIdentifier()).build().toUriString())
-                    .associationType(associationType)
-                    .build();
-            })
+            .filter(Objects::nonNull)
+            .map(m -> createLink(m, urlFragment, associationType) )
             .collect(Collectors.toSet());
+    }
+    
+    private Link createLink(Metadata metadata, String urlFragment, String associationType) {
+        return Link.builder()
+            .title(metadata.getTitle())
+            .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(metadata.getFileIdentifier()).build().toUriString())
+            .associationType(associationType)
+            .build();
     }
     
     private Set<String> removeDuplicates(List<String> filenames) {

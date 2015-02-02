@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,37 +28,44 @@ public class CitationService {
      * @param geminiDocument The geminidocument to cite
      * @return Either a valid citation object or null
      */
-    public Citation getCitation(GeminiDocument geminiDocument) {
-        Optional<ResourceIdentifier> citationResource = geminiDocument
-                .getResourceIdentifiers()
-                .stream()
-                .filter((r)->r.getCodeSpace().equals(DOI_CODE_SPACE))
-                .filter((r)->r.getCode().startsWith(NERC_DOI_PREFIX))
-                .findFirst();
+    public Optional<Citation> getCitation(GeminiDocument geminiDocument) {
+        
+        Optional<GeminiDocument> doc = Optional.ofNullable(geminiDocument);
+        
+        Optional<ResourceIdentifier> citationResource = doc
+            .map(GeminiDocument::getResourceIdentifiers)
+            .orElse(Collections.emptySet())
+            .stream()
+            .filter((r)->r.getCodeSpace().equals(DOI_CODE_SPACE))
+            .filter((r)->r.getCode().startsWith(NERC_DOI_PREFIX))
+            .findFirst();
         
         //If is present and rest of document is valid
         if(citationResource.isPresent()) {
             ResourceIdentifier doi = citationResource.get();
             
-            DatasetReferenceDate referenceDate = geminiDocument.getDatasetReferenceDate();
-            LocalDate pubDate = (referenceDate != null) ? referenceDate.getPublicationDate() : null;
+            Optional<LocalDate> pubDate = doc
+                .map(GeminiDocument::getDatasetReferenceDate)
+                .map(DatasetReferenceDate::getPublicationDate);
             
             Optional<ResponsibleParty> publisher = getPublisher(geminiDocument);
             
-            if (pubDate!= null && publisher.isPresent()) {
-                return Citation
+            if (pubDate.isPresent() && publisher.isPresent()) {
+                return Optional.of(
+                    Citation
                         .builder()
                         .authors(   getAuthors(geminiDocument))
                         .doi(       doi.getCode())
                         .title(     geminiDocument.getTitle())
-                        .year(      pubDate.getYear())
+                        .year(      pubDate.get().getYear())
                         .publisher( publisher.get().getOrganisationName())
                         .bibtex(    getInAlternateFormat(geminiDocument, WebConfig.BIBTEX_SHORT))
                         .ris(       getInAlternateFormat(geminiDocument, WebConfig.RESEARCH_INFO_SYSTEMS_SHORT))
-                        .build();
+                        .build()
+                );
             }
         }
-        return null;        
+        return Optional.empty();        
     }
     
     protected URI getInAlternateFormat(GeminiDocument geminiDocument, String alternateFormat) {

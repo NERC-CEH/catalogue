@@ -45,8 +45,7 @@ public class ExtractTopicFromDocument implements TopicIndexer {
     }
 
     @Override
-    public List<String> index(MetadataDocument document) {
-        
+    public List<String> index(MetadataDocument document) {        
        return document.getTopics()
            .stream()
            .filter(t -> topicHierarchy.containsKey(t))

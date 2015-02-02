@@ -12,6 +12,6 @@ public class TransitionResource {
         this.title = transition.getTitle();
         this.helpText = transition.getHelpText();
         this.confirmationQuestion = transition.getConfirmationQuestion();
-        this.href = builder.path(transition.getId()).build().toUriString();
+        this.href = builder.buildAndExpand(transition.getId()).toUriString();
     }
 }

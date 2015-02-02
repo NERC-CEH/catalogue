@@ -1,0 +1,32 @@
+#editorNav {
+  position: fixed;
+  width: inherit;
+
+  li {
+    color: #828c7f;
+    &.active {
+      font-weight: bold;
+    }
+  }
+}
+
+#editor {
+  margin-top: 40px;
+  padding-bottom: 70px;
+  label.required::before {
+    content: "*";
+    color: #b40000;
+    font-size:150%;
+  }
+
+  .editor-controls {
+    text-align: center;
+  }
+
+  .step {
+    display: none;
+    &.visible {
+      display: block;
+    }
+  }
+}

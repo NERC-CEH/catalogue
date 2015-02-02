@@ -6,10 +6,10 @@ import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Optional;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -57,7 +57,7 @@ public class CitationServiceTest {
         CitationService service = new CitationService();
         
         //When
-        Citation citation = service.getCitation(document);
+        Citation citation = service.getCitation(document).get();
         
         //Then
         assertNotNull("Expected to get a citation", citation);
@@ -84,10 +84,10 @@ public class CitationServiceTest {
         CitationService service = new CitationService();
         
         //When
-        Citation citation = service.getCitation(document);
+        Optional<Citation> citation = service.getCitation(document);
         
         //Then
-        assertNull("Expected to not get a citation", citation);
+        assertThat("Citation expected to be absent", citation.isPresent(), equalTo(false));
     }
     
     @Test
@@ -104,10 +104,10 @@ public class CitationServiceTest {
         CitationService service = new CitationService();
         
         //When
-        Citation citation = service.getCitation(document);
+        Optional<Citation> citation = service.getCitation(document);
         
         //Then
-        assertNull("Expected to not get a citation", citation);
+        assertThat("Citation expected to be absent", citation.isPresent(), equalTo(false));
     }
     
     @Test
@@ -128,10 +128,10 @@ public class CitationServiceTest {
         CitationService service = new CitationService();
         
         //When
-        Citation citation = service.getCitation(document);
+        Optional<Citation> citation = service.getCitation(document);
         
         //Then
-        assertNull("Expected to not get a citation", citation);
+        assertThat("Citation expected to be absent", citation.isPresent(), equalTo(false));
     }
     
     @Test
@@ -141,10 +141,10 @@ public class CitationServiceTest {
         CitationService service = new CitationService();
         
         //When
-        Citation citation = service.getCitation(document);
+        Optional<Citation> citation = service.getCitation(document);
         
         //Then
-        assertNull("Expected to not get a citation", citation);
+        assertThat("Citation expected to be absent", citation.isPresent(), equalTo(false));
     }
     
     private ResourceIdentifier nercdoi() {

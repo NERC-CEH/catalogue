@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -31,14 +33,12 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 @ConvertUsing({
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
-@JsonIgnoreProperties(ignoreUnknown = true, value = {"parentIdentifier", "parent", "documentLinks", "children", "revised",
-    "revisionOf", "revisionOfIdentifier", "resourceType", "downloadOrder", "locations", "mapViewerUrl", "mapViewable",
-    "metadata", "topics", "coupledResources"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument implements MetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private URI uri;
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
-        metadataStandardName, metadataStandardVersion, supplementalInfo, resourceType, parentIdentifier, revisionOfIdentifier;
+        metadataStandardName, metadataStandardVersion, supplementalInfo, type, parentIdentifier, revisionOfIdentifier;
     private List<String> alternateTitles, topicCategories, coupledResources, spatialRepresentationTypes, datasetLanguages,
         useLimitations, accessConstraints, otherConstraints, securityConstraints;
     private List<DistributionInfo> distributionFormats;
@@ -63,9 +63,12 @@ public class GeminiDocument implements MetadataDocument {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate metadataDate;
     
-    @Override
-    public String getType() {
-        return getResourceType();
+    public String getResourceType() {
+        return type;
+    }
+    
+    public void setResourceType(String resourceType) {
+        this.type = resourceType;
     }
     
     public Set<Link> getAssociatedResources() {
@@ -87,10 +90,11 @@ public class GeminiDocument implements MetadataDocument {
     
     @Override
     public List<String> getLocations() {
-        return boundingBoxes
-                .stream()
-                .map(BoundingBox::getSolrGeometry)
-                .collect(Collectors.toList());
+        return Optional.ofNullable(boundingBoxes)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(BoundingBox::getSolrGeometry)
+            .collect(Collectors.toList());
     }
     
     /**
@@ -111,9 +115,10 @@ public class GeminiDocument implements MetadataDocument {
      * @return true if a wms exists in the online resources
      */
     public boolean isMapViewable() {
-        return onlineResources
-                .stream()
-                .anyMatch((o)-> WMS_GET_CAPABILITIES == o.getType());
+        return Optional.ofNullable(onlineResources)
+            .orElse(Collections.emptyList())
+            .stream()
+            .anyMatch((o)-> WMS_GET_CAPABILITIES == o.getType());
     }
 
     @Override
@@ -123,12 +128,23 @@ public class GeminiDocument implements MetadataDocument {
     
     @Override
     public List<String> getTopics() {
-        return descriptiveKeywords
+        return Optional.ofNullable(descriptiveKeywords)
+            .orElse(Collections.emptyList())
             .stream()
             .flatMap(dk -> dk.getKeywords().stream())
             .filter(k -> k.getUri().startsWith(TOPIC_PROJECT_URL))
             .map(Keyword::getUri)
             .collect(Collectors.toList());
+    }
+    
+    public List<String> getCoupledResources() {
+        return Optional.ofNullable(coupledResources)
+            .orElse(Collections.emptyList());
+    }
+    
+    public List<ResponsibleParty> getResponsibleParties() {
+        return Optional.ofNullable(responsibleParties)
+            .orElse(Collections.emptyList());
     }
     
     @Override

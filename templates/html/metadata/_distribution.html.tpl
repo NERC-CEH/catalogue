@@ -1,4 +1,4 @@
-<#if resourceType == 'service'>
+<#if resourceType?? && resourceType == 'service'>
   <#assign documentOrderTitle="View the data">
   <#assign viewOnMap="Open in map viewer">
 <#else>
@@ -7,7 +7,7 @@
 </#if>
 
 
-<#if downloadOrder.orderUrl?has_content||mapViewable >
+<#if (downloadOrder.orderUrl)?? || mapViewable >
   <div class="panel panel-default hidden-print" id="document-order">
     <div class="panel-heading"><p class="panel-title">${documentOrderTitle?html}</p></div>
     <div class="panel-body">

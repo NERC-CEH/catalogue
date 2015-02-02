@@ -24,7 +24,10 @@ public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocument
 
     @Override
     public MetadataInfo getDocumentInfo(GeminiDocument document, TerraCatalogExt ext) {
-        return new MetadataInfo("application/xml", translate(ext.getProtection()), "GEMINI_DOCUMENT");
+        return new MetadataInfo()
+            .setRawType("application/xml")
+            .setState(translate(ext.getProtection()))
+            .setDocumentType("GEMINI_DOCUMENT");
     }
     
     private String translate(String terraCatalogStatus) {

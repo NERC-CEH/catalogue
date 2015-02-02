@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,7 @@ public class CitationController {
         this.documents = documents;
     }
     
+    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @RequestMapping(value  = "documents/{file}/citation",
                     method = RequestMethod.GET)
     @ResponseBody
@@ -41,6 +43,7 @@ public class CitationController {
         return getCitation(documents.readMetadata(user, file, request));
     }
     
+    @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
     @RequestMapping(value  = "history/{revision}/{file}/citation",
                     method = RequestMethod.GET)
     @ResponseBody

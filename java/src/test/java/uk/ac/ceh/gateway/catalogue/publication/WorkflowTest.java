@@ -7,6 +7,7 @@ import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import static org.hamcrest.CoreMatchers.*;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
+import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 
 public class WorkflowTest {
     private final PublishingRole editor, publisher;
@@ -15,14 +16,14 @@ public class WorkflowTest {
     public WorkflowTest() {
         //Given
         workflow = new PublicationConfig().workflow();
-        editor = new PublishingRole("ROLE_EDITOR");
-        publisher = new PublishingRole("ROLE_PUBLISHER");
+        editor = new PublishingRole(DocumentController.EDITOR_ROLE);
+        publisher = new PublishingRole(DocumentController.PUBLISHER_ROLE);
     }
     
     @Test
     public void getCurrentStateOfDocumentInDraft() {
         //Given
-        MetadataInfo info = new MetadataInfo("", "draft", "any metadata document");
+        MetadataInfo info = new MetadataInfo().setState("draft");
         
         //When
         final State currentState = workflow.currentState(info);
@@ -34,7 +35,7 @@ public class WorkflowTest {
     @Test
     public void editorTransitionDraftToPending() {
         //Given
-        MetadataInfo original = new MetadataInfo("", "draft", "any metadata document");
+        MetadataInfo original = new MetadataInfo().setState("draft");
         
         final State currentState = workflow.currentState(original);
         final Transition toPending = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "pending");
@@ -50,7 +51,7 @@ public class WorkflowTest {
     @Test
     public void editorCannotTransitionPendingToPublic() {
         //Given
-        MetadataInfo info = new MetadataInfo("", "pending", "any metadata document");
+        MetadataInfo info = new MetadataInfo().setState("pending");
         
         final State currentState = workflow.currentState(info);
         final Transition toPublic = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "public");
@@ -65,7 +66,7 @@ public class WorkflowTest {
     @Test
     public void publisherCanTransitionPendingToPublic() {
         //Given
-        MetadataInfo info = new MetadataInfo("", "pending", "any metadata document");
+        MetadataInfo info = new MetadataInfo().setState("pending");
         
         final State currentState = workflow.currentState(info);
         final Transition toPublic = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(publisher)), "public");
@@ -80,7 +81,7 @@ public class WorkflowTest {
     @Test
     public void editorCanNotTransitionFromPublicToDraft() {
         //Given
-        MetadataInfo info = new MetadataInfo("", "public", "any metadata document");
+        MetadataInfo info = new MetadataInfo().setState("public");
         
         final State currentState = workflow.currentState(info);
         final Transition toDraft = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "draft");

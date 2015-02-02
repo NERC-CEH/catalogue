@@ -2,12 +2,8 @@ package uk.ac.ceh.gateway.catalogue.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import org.junit.Test;
-import static org.mockito.Mockito.mock;
 import org.springframework.http.MediaType;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 /**
  *

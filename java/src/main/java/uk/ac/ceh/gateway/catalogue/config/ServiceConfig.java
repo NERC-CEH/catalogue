@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
@@ -38,8 +39,10 @@ import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
+import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
@@ -67,7 +70,13 @@ public class ServiceConfig {
     public DocumentReadingService documentReadingService() throws XPathExpressionException {
         return new MessageConverterReadingService()
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter())
-                .addMessageConverter(new Xml2UKEOFDocumentMessageConverter());
+                .addMessageConverter(new Xml2UKEOFDocumentMessageConverter())
+                .addMessageConverter(new MappingJackson2HttpMessageConverter(jacksonMapper));
+    }
+    
+    @Bean
+    public DocumentWritingService<MetadataDocument> documentWritingService() {
+        return new JsonDocumentWritingService(jacksonMapper);
     }
     
     @Bean
