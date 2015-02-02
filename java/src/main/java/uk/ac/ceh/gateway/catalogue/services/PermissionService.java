@@ -14,6 +14,7 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
+import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
@@ -63,6 +64,19 @@ public class PermissionService {
                 authorCanAccess(user, file);
         }
         return toReturn;
+    }
+    
+    public boolean userCanEdit(CatalogueUser user) {
+        if (user.isPublic()) {
+            return false;
+        } else {
+            return groupStore.getGroups(user)
+                .stream()
+                .map(Group::getName)
+                .filter(name -> name.equalsIgnoreCase(DocumentController.EDITOR_ROLE))
+                .findFirst()
+                .isPresent();
+        }
     }
     
     private boolean isPubliclyViewable(MetadataInfo metadataInfo, Permission requested) {

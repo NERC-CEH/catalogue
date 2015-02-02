@@ -6,9 +6,9 @@
   javascript template /web/src/scripts/templates/SearchPage.tpl
 -->
 <div class="search-results-heading">
-  <span id="num-records">${numFound}</span> records found
+  <span id="num-records">${doc.numFound}</span> records found
 </div>
-<#list results as result>
+<#list doc.results as result>
   <div class="result" data-location="${result.locations?join(',')}" id="${result.identifier}">
     <h2>
       <a href="/${docroot}/${result.identifier}" class="title">${result.title}</a>
@@ -17,11 +17,11 @@
   </div>
 </#list>
 <ul class="pager">
-  <#if prevPage?has_content>
-    <li class="previous"><a href="${prevPage}">&larr; Previous</a></li>
+  <#if doc.prevPage?has_content>
+    <li class="previous"><a href="${doc.prevPage}">&larr; Previous</a></li>
   </#if>
-  <li>Page ${page}</li>          
-  <#if nextPage?has_content>
-    <li class="next"><a href="${nextPage}">Next &rarr;</a></li>
+  <li>Page ${doc.page}</li>          
+  <#if doc.nextPage?has_content>
+    <li class="next"><a href="${doc.nextPage}">Next &rarr;</a></li>
   </#if>
 </ul>

@@ -23,7 +23,7 @@
   </ul>
 </#macro> 
 
-<#list facets as facet>
+<#list doc.facets as facet>
   <h3>${facet.displayName}</h3>
   <@facetResults facet.results/>
 </#list>

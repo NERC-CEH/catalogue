@@ -34,6 +34,7 @@
             <li <#if searching>class="active"</#if>><a href="/documents">Search Data</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
+            <#if canEdit>
             <li class="dropdown">
               <button class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown">
                 <span class="glyphicon glyphicon-edit"></span> Manage Metadata <span class="caret"></span>
@@ -46,6 +47,7 @@
                 <li><a class="edit-control" href="#edit/new">New metadata</a></li>
               </ul>
             </li>
+            </#if>
             <li id="sso-user"><a>Joe Bloggs</a></li>
           </ul>
         </div>

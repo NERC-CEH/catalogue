@@ -15,6 +15,7 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.crowd.model.CrowdGroup;
+import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
@@ -142,6 +143,47 @@ public class PermissionServiceTest {
         
         //Then
         assertThat("Author should be able to access draft record that they are author of", actual, equalTo(true));
+    }
+    
+    @Test
+    public void editorCanEdit() {
+        //Given
+        CatalogueUser editor = new CatalogueUser().setUsername("editor");
+        Group editorRole = new CrowdGroup(DocumentController.EDITOR_ROLE);
+        given(groupStore.getGroups(editor)).willReturn(Arrays.asList(editorRole));
+        
+        //When
+        boolean actual = permissionService.userCanEdit(editor);
+        
+        //Then
+        assertThat("Editor should be able to edit", actual, equalTo(true));
+    }
+    
+    @Test
+    public void userWithoutEditorRoleCannotEdit() {
+        //Given
+        CatalogueUser user = new CatalogueUser().setUsername("bob");
+        Group group0 = new CrowdGroup("CEH");
+        Group group1 = new CrowdGroup("Another");
+        given(groupStore.getGroups(user)).willReturn(Arrays.asList(group0, group1));
+        
+        //When
+        boolean actual = permissionService.userCanEdit(user);
+        
+        //Then
+        assertThat("Editor should be able to edit", actual, equalTo(false));
+    }
+    
+    @Test
+    public void publicCannotEdit() {
+        //Given
+        given(groupStore.getGroups(CatalogueUser.PUBLIC_USER)).willReturn(Collections.EMPTY_LIST);
+        
+        //When
+        boolean actual = permissionService.userCanEdit(CatalogueUser.PUBLIC_USER);
+        
+        //Then
+        assertThat("Public should not be able to edit", actual, equalTo(false));
     }
     
     private DataRevision<CatalogueUser> createDataRevision(String username) {
