@@ -29,7 +29,7 @@ public class SearchQuery {
     private final List<Facet> facets = Arrays.asList(
         Facet.builder().fieldName("topic").displayName("Topic").hierarchical(true).build(),
         Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
-        Facet.builder().fieldName("isOgl").displayName("OGL license").hierarchical(false).build()
+        Facet.builder().fieldName("licence").displayName("Licence").hierarchical(false).build()
     );
     
     private final String endpoint;
@@ -45,7 +45,9 @@ public class SearchQuery {
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setParam("defType", "edismax")
-                .setParam("qf", "title^5 description")
+                .setParam("qf", "title^10 altTitle^9 description^8 lineage^5 " +
+                                "organisation^2 individual^2 onlineResourceName " +
+                                "onlineResourceDescription resourceIdentifier identifier")
                 .setStart((page-1)*rows)
                 .setRows(rows);
         setSpatialFilter(query);

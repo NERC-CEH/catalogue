@@ -69,6 +69,9 @@ public class PermissionService {
         log.debug("isPubliclyViewable");
         return metadataInfo.getState().equalsIgnoreCase("public") && VIEW.equals(requested);
     }
+    public boolean userCanAccess(CatalogueUser user, MetadataInfo metadataInfo) {
+        return user.isPublic() && metadataInfo.getState().equalsIgnoreCase("public");
+    }
     
     private boolean userCanAccess(CatalogueUser user, MetadataInfo metadataInfo, Permission requested) {
         log.debug("userCanAccess");

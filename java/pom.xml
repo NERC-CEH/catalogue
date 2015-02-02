@@ -18,9 +18,9 @@
         <lombok.version>1.12.6</lombok.version>
         <jackson.version>2.4.4</jackson.version>
         <spring.version>4.1.4.RELEASE</spring.version>
-        <spring-security.version>3.2.4.RELEASE</spring-security.version>
+        <spring-security.version>3.2.5.RELEASE</spring-security.version>
         <tomcat-servlet-api.version>8.0.5</tomcat-servlet-api.version>
-        <logback.version>1.1.1</logback.version>
+        <logback.version>1.1.2</logback.version>
         <guava.version>17.0</guava.version>
         <solr.version>4.8.0</solr.version>
         <freemarker.version>2.3.21</freemarker.version>
@@ -109,6 +109,17 @@
         
         <!-- Spring dependencies -->
         <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+          <version>${spring.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>commons-logging</groupId>
+              <artifactId>commons-logging</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
@@ -194,6 +205,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <version>1.7.10</version>
         </dependency>
         
         <dependency>

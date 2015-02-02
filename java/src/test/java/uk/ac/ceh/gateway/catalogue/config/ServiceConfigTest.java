@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
 import static org.junit.Assert.assertEquals;
@@ -107,7 +108,7 @@ public class ServiceConfigTest {
     }
     
     @Test
-    public void checkThatIndexingServiceIsRequestedToBeIndexedAfterCreation() throws XPathExpressionException {
+    public void checkThatIndexingServiceIsRequestedToBeIndexedAfterCreation() throws XPathExpressionException, IOException {
         //Given
         doNothing().when(services).performReindexIfNothingIsIndexed(any(SolrIndexingService.class));
         
@@ -189,7 +190,7 @@ public class ServiceConfigTest {
     }
     
     @Test
-    public void checkThatDocumentIndexingServiceIsComposedCorrectly() throws XPathExpressionException {
+    public void checkThatDocumentIndexingServiceIsComposedCorrectly() throws XPathExpressionException, IOException {
         //Given
         MetadataInfoBundledReaderService reader = mock(MetadataInfoBundledReaderService.class);
         ExtensionDocumentListingService listingService = mock(ExtensionDocumentListingService.class);

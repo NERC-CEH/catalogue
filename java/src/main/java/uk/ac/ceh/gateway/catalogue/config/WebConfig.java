@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.cache.FileTemplateLoader;
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -30,6 +32,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 @Configuration
@@ -40,15 +43,17 @@ import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String BIBTEX_SHORT                 = "bib";
     public static final String BIBTEX_VALUE                 = "application/x-bibtex";
+    public static final String GEMINI_XML_SHORT             = "gemini";
+    public static final String GEMINI_XML_VALUE             = "application/x-gemini+xml";
     public static final String RESEARCH_INFO_SYSTEMS_SHORT  = "ris";
     public static final String RESEARCH_INFO_SYSTEMS_VALUE  = "application/x-research-info-systems";
-    public static final String DATACITE_XML_SHORT           = "datacite.xml";
     public static final String DATACITE_XML_VALUE           = "application/x-datacite+xml";
     public static final String GEMINI_SHORT                 = "gemini";
     public static final String GEMINI_JSON_VALUE            = "application/gemini+json";
     
     @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
+    @Autowired CodeLookupService codesLookup;
     
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -75,7 +80,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean
     public FreeMarkerConfigurer configureFreeMarker() {
         try {
+            Map<String, Object> shared = new HashMap<>();
+            shared.put("codes", codesLookup);
+            
             FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();
+            freemarkerConfig.setFreemarkerVariables(shared);
             freemarkerConfig.setPreTemplateLoaders(new FileTemplateLoader(templates));
             return freemarkerConfig;
         }
@@ -113,7 +122,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             .mediaType("html", MediaType.TEXT_HTML)
             .mediaType("json", MediaType.APPLICATION_JSON)
             .mediaType(GEMINI_SHORT, MediaType.parseMediaType(GEMINI_JSON_VALUE))
-            .mediaType(DATACITE_XML_SHORT, MediaType.parseMediaType(DATACITE_XML_VALUE))
             .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE));
     }

@@ -2,11 +2,14 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import java.io.IOException;
+import java.util.Properties;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -26,6 +29,7 @@ import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -37,8 +41,10 @@ import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
+import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 /**
@@ -53,6 +59,7 @@ public class ServiceConfig {
     @Autowired LinkDatabase linkDatabase;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
+    @Autowired PermissionService permissions;
     
     @Bean
     public CitationService citationService() {
@@ -73,6 +80,12 @@ public class ServiceConfig {
     }
     
     @Bean
+    public CodeLookupService codeNameLookupService() throws IOException {
+        Properties properties = PropertiesLoaderUtils.loadAllProperties("codelist.properties");
+        return new CodeLookupService(properties);
+    }
+    
+    @Bean
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
                 .register("GEMINI_DOCUMENT", GeminiDocument.class)
@@ -82,6 +95,11 @@ public class ServiceConfig {
     @Bean
     public GetCapabilitiesObtainerService getCapabilitiesObtainerService() {
         return new GetCapabilitiesObtainerService(restTemplate);
+    }
+    
+    @Bean
+    public MetadataListingService getWafListingService() throws XPathExpressionException {
+        return new MetadataListingService(dataRepository, documentListingService(),bundledReaderService(),permissions);
     }
     
     @Bean
@@ -128,12 +146,12 @@ public class ServiceConfig {
     } 
     
     @Bean
-    public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException {
+    public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException {
         SolrIndexingService toReturn = new SolrIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument()),
+                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeNameLookupService()),
                 solrServer
         );
         

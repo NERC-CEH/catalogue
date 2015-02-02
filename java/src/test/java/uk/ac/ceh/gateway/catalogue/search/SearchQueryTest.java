@@ -40,7 +40,7 @@ public class SearchQueryTest {
         //Then
         assertThat("Solr query should be the 'default text'", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
         assertThat("Solr query state filter query should be 'public'", solrQuery.getFilterQueries(), hasItemInArray("{!term f=state}public"));
-        assertThat("Solr query isOgl facet fields should be present", solrQuery.getFacetFields(), hasItemInArray("isOgl"));
+        assertThat("Solr query licence facet fields should be present", solrQuery.getFacetFields(), hasItemInArray("licence"));
         assertThat("Solr query resourceType facet fields should be present", solrQuery.getFacetFields(), hasItemInArray("resourceType"));
         assertThat("Solr query start should be 0 for first page", solrQuery.getStart(), equalTo(0));
         assertThat("Solr query rows should be default", solrQuery.getRows(), equalTo(DEFAULT_ROWS));
