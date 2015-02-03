@@ -57,7 +57,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
-import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
