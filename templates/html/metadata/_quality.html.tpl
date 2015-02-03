@@ -1,9 +1,9 @@
-<#if lineage??>
+<#if doc.lineage??>
   <div id="section-quality">
-  <h3><a id="quality"></a>Quality</h3>
+  <h3 id="quality">Quality</h3>
   <dl class=" dl-horizontal">
     <dt>Lineage</dt>
-    <dd>${lineage?html}</dd>
+    <dd>${doc.lineage?html}</dd>
   </dl>
   </div>
 </#if>

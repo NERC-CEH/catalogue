@@ -1,17 +1,17 @@
-<#if datasetReferenceDate??>
+<#if doc.datasetReferenceDate??>
   <p id="section-dates2">
-    <#if datasetReferenceDate.publicationDate??>
+    <#if doc.datasetReferenceDate.publicationDate??>
 
-      Publication date: ${datasetReferenceDate.publicationDate?html}
+      Publication date: ${doc.datasetReferenceDate.publicationDate?html}
     </#if>
 
-    <#if datasetReferenceDate.creationDate?? || datasetReferenceDate.revisionDate??>
+    <#if doc.datasetReferenceDate.creationDate?? || doc.datasetReferenceDate.revisionDate??>
     <span class="additionalDates">
-      (<#if datasetReferenceDate.creationDate??>
-        <span>created  ${datasetReferenceDate.creationDate?html}</span>
+      (<#if doc.datasetReferenceDate.creationDate??>
+        <span>created  ${doc.datasetReferenceDate.creationDate?html}</span>
       </#if>
-      <#if datasetReferenceDate.revisionDate??>
-        <span>revised ${datasetReferenceDate.revisionDate?html}</span>
+      <#if doc.datasetReferenceDate.revisionDate??>
+        <span>revised ${doc.datasetReferenceDate.revisionDate?html}</span>
       </#if>)
     </span>
     </#if>

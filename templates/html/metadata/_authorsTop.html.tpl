@@ -1,8 +1,8 @@
-<#if citation?has_content>
+<#if doc.citation?has_content>
   <div id="section-authorsTop">
     <p><small>
-      ${citation.authors?join(',')?html} (${citation.year?c}) <br>
-      <a href="${citation.url?html}">${citation.doiDisplay?html}</a>
+      ${doc.citation.authors?join(',')?html} (${doc.citation.year?c}) <br>
+      <a href="${doc.citation.url?html}">${doc.citation.doiDisplay?html}</a>
     </small></p>  
   </div>
 </#if>

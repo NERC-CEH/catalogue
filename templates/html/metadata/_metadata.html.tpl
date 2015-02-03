@@ -1,12 +1,12 @@
-<#if metadataPointsOfContact?? || metadataDate??>
+<#if doc.metadataPointsOfContact?? || doc.metadataDate??>
   <div id="section-metadata">
     <h3>Metadata</h3>
     <dl class="dl-horizontal">
       <dt><span class="element" data-content="Unique identifier for this record" data-trigger="hover" data-placement="right">Record identifier</span></dt>
-      <dd property="dc:identifier" >${id?html}</dd>
-      <#if metadataPointsOfContact?has_content>
+      <dd property="dc:identifier" >${doc.id?html}</dd>
+      <#if doc.metadataPointsOfContact?has_content>
       <dt>Record created by</dt>
-        <#list metadataPointsOfContact as metadataPointOfContact>
+        <#list doc.metadataPointsOfContact as metadataPointOfContact>
           <dd rel="dc:publisher">
             <#if metadataPointOfContact.individualName?has_content>
               <span property="v:fn">${metadataPointOfContact.individualName?html}</span><br>
@@ -45,21 +45,21 @@
       </#if>  
 
       <dt>Record last updated</dt>
-      <dd>${metadataDate?html}</dd>
+      <dd>${doc.metadataDate?html}</dd>
 
-      <#if metadataStandardName?has_content>
+      <#if doc.metadataStandardName?has_content>
       <dt>Metadata standard</dt>
       <dd>
-        ${metadataStandardName?html}
+        ${doc.metadataStandardName?html}
 
-        <#if metadataStandardVersion?has_content>
-        version ${metadataStandardVersion?html}
+        <#if doc.metadataStandardVersion?has_content>
+        version ${doc.metadataStandardVersion?html}
         </#if>
       </dd>
       </#if>
 
       <dt> </dt>
-      <dd><a href="?format=GeminiWhatever">View complete GEMINI 2 metadata record (xml)</a></dd>
+      <dd><a href="?format=gemini">View complete GEMINI 2 metadata record (xml)</a></dd>
     </dl>
   </div>
 </#if>

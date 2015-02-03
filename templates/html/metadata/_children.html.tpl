@@ -1,13 +1,13 @@
-<#if parentIdentifier?has_content || (children?size gt 0 && children??) || (documentLinks?size gt 0 && documentLinks??)>
+<#if doc.parentIdentifier?has_content || (doc.children?size gt 0 && doc.children??) || (doc.documentLinks?size gt 0 && doc.documentLinks??)>
   <div class="panel panel-default" id="document-children">
     <div class="panel-body">
-      <#if parentIdentifier?has_content>
-        <h4>This ${resourceType?html} is part of the series:</h4>
-        <p><a href="${parent.href?html}">${parent.title?html}</a></p>
+      <#if doc.parentIdentifier?has_content>
+        <h4>This ${doc.resourceType?html} is part of the series:</h4>
+        <p><a href="${doc.parent.href?html}">${doc.parent.title?html}</a></p>
       </#if>
-      <#if children?size gt 0 && children??>
+      <#if doc.children?size gt 0 && doc.children??>
         <h4>This data series comprises the following datasets:</h4>
-        <#list children as child>
+        <#list doc.children as child>
           <p><a href="${child.href?html}">${child.title?html}</a></p>
         </#list>
       </#if>

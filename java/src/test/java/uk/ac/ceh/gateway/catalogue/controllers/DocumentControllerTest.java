@@ -38,7 +38,6 @@ import org.mockito.stubbing.Answer;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.StreamUtils;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -48,7 +47,6 @@ import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
@@ -59,6 +57,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -75,6 +74,7 @@ public class DocumentControllerTest {
     @Mock DocumentLinkService linkService;
     @Mock CitationService citationService;
     @Mock DocumentWritingService<MetadataDocument> documentWritingService;
+    @Mock PermissionService permissionService;
     
     private DocumentController controller;
     
@@ -95,7 +95,8 @@ public class DocumentControllerTest {
                                                 documentBundleReader,
                                                 documentWritingService,
                                                 linkService,
-                                                citationService));
+                                                citationService,
+                                                permissionService));
     }
     
     private HttpServletRequest mockRequest() {

@@ -1,10 +1,10 @@
 <#import "skeleton.html.tpl" as skeleton>
 <#import "../underscore.tpl" as _>
 
-<#assign authors       = _.filter(responsibleParties, _.isAuthor) >
-<#assign otherContacts = _.reject(responsibleParties, _.isAuthor) >
-<@skeleton.master title=title>
-  <div id="metadata" class="container" prefix="dc: http://purl.org/dc/terms/ v: http://www.w3.org/2006/vcard/ns# geo: http://www.opengis.net/ont/geosparql# dcat: http://www.w3.org/ns/dcat#" property="dcat:CatalogRecord" content="${uri}" about="${uri}">
+<#assign authors       = _.filter(doc.responsibleParties, _.isAuthor) >
+<#assign otherContacts = _.reject(doc.responsibleParties, _.isAuthor) >
+<@skeleton.master title=doc.title>
+  <div id="metadata" class="container" prefix="dc: http://purl.org/dc/terms/ v: http://www.w3.org/2006/vcard/ns# geo: http://www.opengis.net/ont/geosparql# dcat: http://www.w3.org/ns/dcat#" property="dcat:CatalogRecord" content="${doc.uri}" about="${doc.uri}">
 
     <#include "metadata/_title.html.tpl">
     <#include "metadata/_notCurrent.html.tpl">

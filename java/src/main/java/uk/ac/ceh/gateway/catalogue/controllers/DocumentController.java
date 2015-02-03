@@ -5,6 +5,8 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -39,6 +42,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -59,6 +63,7 @@ public class DocumentController {
     private final DocumentWritingService<MetadataDocument> documentWriter;
     private final DocumentLinkService linkService;
     private final CitationService citationService;
+    private final PermissionService permissionService;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
@@ -68,7 +73,8 @@ public class DocumentController {
                                 BundledReaderService<MetadataDocument> documentBundleReader,
                                 DocumentWritingService<MetadataDocument> documentWritingService,
                                 DocumentLinkService linkService,
-                                CitationService citationService) {
+                                CitationService citationService,
+                                PermissionService permissionService) {
         this.repo = repo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
@@ -77,6 +83,7 @@ public class DocumentController {
         this.documentWriter = documentWritingService;
         this.linkService = linkService;
         this.citationService = citationService;
+        this.permissionService = permissionService;
     }
     
     @Secured(EDITOR_ROLE)
@@ -168,8 +175,22 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        
         return readMetadata(user, file, latestRev.getRevisionID(), request);
+    }
+    
+    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
+    @RequestMapping(value = "documents/{file}",
+                    method = RequestMethod.GET,
+                    produces= MediaType.TEXT_HTML_VALUE)   
+    @ResponseBody
+    public ModelAndView htmlMetadata(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
+        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
+        Map<String, Object> data = new HashMap<>();
+            data.put("doc", readMetadata(user, file, latestRev.getRevisionID(), request));
+            data.put("canEdit", permissionService.userCanEdit(user));
+        return new ModelAndView("html/gemini.html.tpl", data);
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
