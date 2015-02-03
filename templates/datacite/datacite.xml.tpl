@@ -1,7 +1,6 @@
 <#import "../underscore.tpl" as _>
 <#assign authors = _.filter(doc.responsibleParties, _.isAuthor) >
-
-<?xml version="1.0" encoding="UTF-8"?>
+<#compress><?xml version="1.0" encoding="UTF-8"?>
 <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-3" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd">
   <identifier identifierType="DOI">10.5285/${doc.id}</identifier>
   <#if authors?has_content>
@@ -17,11 +16,7 @@
     <title>${doc.title?html}</title>
   </titles>
   <publisher>NERC Environmental Information Data Centre</publisher>
-  <publicationYear>
-    <#if doc.datasetReferenceDate.publicationDate??>
-      ${doc.datasetReferenceDate.publicationDate.year?c}
-    </#if>
-  </publicationYear>
+  <publicationYear><#if doc.datasetReferenceDate.publicationDate??>${doc.datasetReferenceDate.publicationDate.year?c}</#if></publicationYear>
   <#if doc.descriptiveKeywords?has_content>
     <subjects>
       <#list doc.descriptiveKeywords as descriptiveKeyword>
@@ -75,3 +70,4 @@
   </geoLocations>
   </#if>
 </resource>
+</#compress>
