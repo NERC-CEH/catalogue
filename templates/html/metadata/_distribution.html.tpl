@@ -27,10 +27,10 @@
           <#include "_formats.html.tpl">
         </#if>
 
-        <#list useLimitations as useLimitations>
+        <#list useLimitations as useLimitation>
           <#-- starts_with shortened to catch 'reuse' and 're-use' in the wild -->
-          <#if !useLimitations?starts_with("If you re")>
-            <p property="dc:rights">${useLimitations?html}</p>
+          <#if !useLimitation?starts_with("If you re")>
+            <p property="dc:rights">${useLimitation?html}</p>
           </#if>
         </#list>
       </div>

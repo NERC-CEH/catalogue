@@ -59,7 +59,7 @@
       </#if>
 
       <dt> </dt>
-      <dd><a href="?format=GeminiWhatever">View complete GEMINI 2 metadata record (xml)</a></dd>
+      <dd><a href="?format=gemini">View complete GEMINI 2 metadata record (xml)</a></dd>
     </dl>
   </div>
 </#if>

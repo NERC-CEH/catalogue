@@ -36,7 +36,7 @@ public class SearchController {
     public static final int PAGE_DEFAULT = Integer.parseInt(PAGE_DEFAULT_STRING);
     public static final int ROWS_DEFAULT = Integer.parseInt(ROWS_DEFAULT_STRING);
     
-    private final SolrServer solrServer;  
+    private final SolrServer solrServer;
       
     @Autowired
     public SearchController(SolrServer solrServer){

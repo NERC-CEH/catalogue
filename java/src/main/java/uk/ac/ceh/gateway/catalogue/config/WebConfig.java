@@ -33,6 +33,7 @@ import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 @Configuration
@@ -54,6 +55,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
     @Autowired CodeLookupService codesLookup;
+    @Autowired PermissionService permissionService;
     
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -82,6 +84,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         try {
             Map<String, Object> shared = new HashMap<>();
             shared.put("codes", codesLookup);
+            shared.put("permission", permissionService);
             
             FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();
             freemarkerConfig.setFreemarkerVariables(shared);

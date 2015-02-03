@@ -168,7 +168,6 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        
         return readMetadata(user, file, latestRev.getRevisionID(), request);
     }
     
