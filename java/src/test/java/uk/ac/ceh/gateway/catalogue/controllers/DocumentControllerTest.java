@@ -74,7 +74,6 @@ public class DocumentControllerTest {
     @Mock DocumentLinkService linkService;
     @Mock CitationService citationService;
     @Mock DocumentWritingService<MetadataDocument> documentWritingService;
-    @Mock PermissionService permissionService;
     
     private DocumentController controller;
     
@@ -95,8 +94,7 @@ public class DocumentControllerTest {
                                                 documentBundleReader,
                                                 documentWritingService,
                                                 linkService,
-                                                citationService,
-                                                permissionService));
+                                                citationService));
     }
     
     private HttpServletRequest mockRequest() {

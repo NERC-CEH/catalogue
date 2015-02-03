@@ -1,8 +1,8 @@
-<#if doc.onlineResources?has_content>
+<#if onlineResources?has_content>
 
   <div id="section-onlineResources">
     <h3>Online Resources</h3>
-      <#list doc.onlineResources as link>
+      <#list onlineResources as link>
         <p>
             <#if link.name?has_content>
                 <#assign onlineResourceName=link.name?html>

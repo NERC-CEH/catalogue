@@ -9,6 +9,9 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Matchers.any;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -152,8 +155,14 @@ public class PermissionServiceTest {
         Group editorRole = new CrowdGroup(DocumentController.EDITOR_ROLE);
         given(groupStore.getGroups(editor)).willReturn(Arrays.asList(editorRole));
         
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(editor);
+        SecurityContextHolder.setContext(securityContext);
+        
         //When
-        boolean actual = permissionService.userCanEdit(editor);
+        boolean actual = permissionService.userCanEdit();
         
         //Then
         assertThat("Editor should be able to edit", actual, equalTo(true));
@@ -167,8 +176,14 @@ public class PermissionServiceTest {
         Group group1 = new CrowdGroup("Another");
         given(groupStore.getGroups(user)).willReturn(Arrays.asList(group0, group1));
         
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(user);
+        SecurityContextHolder.setContext(securityContext);
+        
         //When
-        boolean actual = permissionService.userCanEdit(user);
+        boolean actual = permissionService.userCanEdit();
         
         //Then
         assertThat("Editor should be able to edit", actual, equalTo(false));
@@ -178,9 +193,14 @@ public class PermissionServiceTest {
     public void publicCannotEdit() {
         //Given
         given(groupStore.getGroups(CatalogueUser.PUBLIC_USER)).willReturn(Collections.EMPTY_LIST);
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(CatalogueUser.PUBLIC_USER);
+        SecurityContextHolder.setContext(securityContext);
         
         //When
-        boolean actual = permissionService.userCanEdit(CatalogueUser.PUBLIC_USER);
+        boolean actual = permissionService.userCanEdit();
         
         //Then
         assertThat("Public should not be able to edit", actual, equalTo(false));

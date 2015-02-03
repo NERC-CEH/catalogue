@@ -1,8 +1,8 @@
-<#if doc.resourceIdentifiers?has_content>
+<#if resourceIdentifiers?has_content>
   <h3>Dataset identifiers</h3>
   
   <p>
-    <#list doc.resourceIdentifiers as uri>
+    <#list resourceIdentifiers as uri>
       <#if uri.codeSpace="doi:">
         <a href="http://doi.org/${uri.code?html}">${uri.coupleResource?html}</a>
       <#else>

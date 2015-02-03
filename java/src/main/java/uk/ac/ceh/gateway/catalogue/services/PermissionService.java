@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -66,7 +67,9 @@ public class PermissionService {
         return toReturn;
     }
     
-    public boolean userCanEdit(CatalogueUser user) {
+    public boolean userCanEdit() {
+        CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.debug("principal: {}", user);
         if (user.isPublic()) {
             return false;
         } else {

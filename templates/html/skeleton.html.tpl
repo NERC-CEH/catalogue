@@ -34,14 +34,14 @@
             <li <#if searching>class="active"</#if>><a href="/documents">Search Data</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <#if canEdit?? && canEdit>
+            <#if permission?? && permission.userCanEdit()>
             <li class="dropdown">
               <button class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown">
                 <span class="glyphicon glyphicon-edit"></span> Manage Metadata <span class="caret"></span>
               </button>
               <ul class="dropdown-menu">
-                <#if doc.id??>
-                  <li><a class="edit-control" href="#edit/${doc.id?html}">Edit metadata</a></li>
+                <#if id??>
+                  <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
                   <li role="presentation" class="divider"></li>
                 </#if>
                 <li><a class="edit-control" href="#edit/new">New metadata</a></li>

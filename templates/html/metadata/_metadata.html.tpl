@@ -1,12 +1,12 @@
-<#if doc.metadataPointsOfContact?? || doc.metadataDate??>
+<#if metadataPointsOfContact?? || metadataDate??>
   <div id="section-metadata">
     <h3>Metadata</h3>
     <dl class="dl-horizontal">
       <dt><span class="element" data-content="Unique identifier for this record" data-trigger="hover" data-placement="right">Record identifier</span></dt>
-      <dd property="dc:identifier" >${doc.id?html}</dd>
-      <#if doc.metadataPointsOfContact?has_content>
+      <dd property="dc:identifier" >${id?html}</dd>
+      <#if metadataPointsOfContact?has_content>
       <dt>Record created by</dt>
-        <#list doc.metadataPointsOfContact as metadataPointOfContact>
+        <#list metadataPointsOfContact as metadataPointOfContact>
           <dd rel="dc:publisher">
             <#if metadataPointOfContact.individualName?has_content>
               <span property="v:fn">${metadataPointOfContact.individualName?html}</span><br>
@@ -45,15 +45,15 @@
       </#if>  
 
       <dt>Record last updated</dt>
-      <dd>${doc.metadataDate?html}</dd>
+      <dd>${metadataDate?html}</dd>
 
-      <#if doc.metadataStandardName?has_content>
+      <#if metadataStandardName?has_content>
       <dt>Metadata standard</dt>
       <dd>
-        ${doc.metadataStandardName?html}
+        ${metadataStandardName?html}
 
-        <#if doc.metadataStandardVersion?has_content>
-        version ${doc.metadataStandardVersion?html}
+        <#if metadataStandardVersion?has_content>
+        version ${metadataStandardVersion?html}
         </#if>
       </dd>
       </#if>

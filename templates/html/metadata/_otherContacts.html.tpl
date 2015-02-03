@@ -1,4 +1,4 @@
-<#if otherContacts?has_content || doc.distributorContacts??>
+<#if otherContacts?has_content || distributorContacts??>
   <div id="document-otherContacts">
   <h3><a id="otherContacts"></a>Other contacts</h3>
   <dl class="dl-horizontal">
@@ -10,12 +10,12 @@
 
       <#if otherContact.email?has_content>
         <#if otherContact.individualName?has_content>
-          <a href="mailto:${otherContact.email?url}&amp;subject=RE: ${doc.title?url}">${otherContact.individualName?html}</a><br>
+          <a href="mailto:${otherContact.email?url}&amp;subject=RE: ${title?url}">${otherContact.individualName?html}</a><br>
             <#if otherContact.organisationName?has_content>
               <span>${otherContact.organisationName?html}</span><br>
             </#if>
           <#else>
-            <a href="mailto:${otherContact.email?url}&amp;subject=RE: ${doc.title?url}">${otherContact.organisationName?html}</a><br>
+            <a href="mailto:${otherContact.email?url}&amp;subject=RE: ${title?url}">${otherContact.organisationName?html}</a><br>
           </#if>
         <#else>
           <#if otherContact.individualName?has_content>
@@ -39,18 +39,18 @@
     </#list>
   </#if>
     
-  <#if doc.distributorContacts?has_content>
-    <#list doc.distributorContacts as distributorContact>
+  <#if distributorContacts?has_content>
+    <#list distributorContacts as distributorContact>
       <dt>${distributorContact.roleDisplayName?html}</dt>
       <dd>
         <#if distributorContact.email?has_content>
           <#if distributorContact.individualName?has_content>
-            <a href="mailto:${distributorContact.email?url}&amp;subject=RE: ${doc.title?url}">${distributorContact.individualName?html}</a><br>
+            <a href="mailto:${distributorContact.email?url}&amp;subject=RE: ${title?url}">${distributorContact.individualName?html}</a><br>
             <#if distributorContact.organisationName?has_content>
               <span>${distributorContact.organisationName?html}</span><br>
             </#if>
           <#else>
-            <a href="mailto:${distributorContact.email?url}&amp;subject=RE: ${doc.title?url}">${distributorContact.organisationName?html}</a><br>
+            <a href="mailto:${distributorContact.email?url}&amp;subject=RE: ${title?url}">${distributorContact.organisationName?html}</a><br>
           </#if>
         <#else>
           <#if distributorContact.individualName?has_content>

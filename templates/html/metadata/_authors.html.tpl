@@ -8,12 +8,12 @@
 
         <#if author.email?has_content>
           <#if author.individualName?has_content>
-            <a href="mailto:${author.email?url}&amp;subject=RE: ${doc.title?url}">${author.individualName?html}</a><br>
+            <a href="mailto:${author.email?url}&amp;subject=RE: ${title?url}">${author.individualName?html}</a><br>
             <#if author.organisationName?has_content>
               <span>${author.organisationName?html}</span><br>
             </#if>
           <#else>
-            <a href="mailto:${author.email?url}&amp;subject=RE: ${doc.title?url}">${author.organisationName?html}</a><br>
+            <a href="mailto:${author.email?url}&amp;subject=RE: ${title?url}">${author.organisationName?html}</a><br>
           </#if>
         <#else>
           <#if author.individualName?has_content>

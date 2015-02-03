@@ -9,7 +9,7 @@
 <#if withoutBbox?has_content>
   <div class="btn-group">
     <button id="spatial-op-dropdown" class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
-      <#if doc.withinBbox?has_content>
+      <#if withinBbox?has_content>
         Overlapping
       <#else>
         Entirely Within
@@ -17,12 +17,12 @@
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu">
-      <li role="presentation"><a role="menuitem" tabindex="-1" href="${doc.withinBbox!url}">Entirely Within</a></li>
-      <li role="presentation"><a role="menuitem" tabindex="-1" href="${doc.intersectingBbox!url}">Overlapping</a></li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="${withinBbox!url}">Entirely Within</a></li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="${intersectingBbox!url}">Overlapping</a></li>
     </ul>
   </div>
 
-  <a href="${doc.withoutBbox}" class="btn btn-primary btn-xs">
+  <a href="${withoutBbox}" class="btn btn-primary btn-xs">
     Spatial Filter 
     <span class="glyphicon glyphicon-remove"></span>
   </a>
