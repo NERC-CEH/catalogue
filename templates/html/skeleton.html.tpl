@@ -40,8 +40,8 @@
                 <span class="glyphicon glyphicon-edit"></span> Manage Metadata <span class="caret"></span>
               </button>
               <ul class="dropdown-menu">
-                <#if id??>
-                  <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
+                <#if doc.id??>
+                  <li><a class="edit-control" href="#edit/${doc.id?html}">Edit metadata</a></li>
                   <li role="presentation" class="divider"></li>
                 </#if>
                 <li><a class="edit-control" href="#edit/new">New metadata</a></li>
