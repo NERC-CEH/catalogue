@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        Test
+    </title>
+    <link rel="stylesheet" href="./common.css" />
+    <style>
+    #header {
+        width: 960px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    #container {
+        width: 960px;
+        margin: 10% auto;
+        text-align: center;
+    }
+    #container:after {
+        content:"";
+        display: block;
+        clear: both;
+    }
+    .demos {
+        display: inline-block;
+        margin:5px 20px;
+        height: 200px;
+        width: 300px;
+        background-color: #1F201C;
+        color: #fff;
+        text-align: center;
+        font-size: 1.5em;
+        line-height: 7.618em;
+        transition: background-color 0.12s linear;
+    }
+    .demos:hover {
+        background-color: #E6E7E2;
+        color: #151612;
+        box-shadow: 1px 1px 7px 1px #999;
+    }
+    .left {
+        float: left;
+    }
+    </style>
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-33892300-1']);
+    _gaq.push(['_setDomainName', 'muditameta.com']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+</head>
+
+<body>
+    <a href="https://github.com/zeusdeux/isInViewport">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+    <div id="header">
+        <h1>isInViewport.js</h1>
+    </div>
+    <div id="container">
+        <a href="./basic.html" class="demos">
+            Basic demo
+        </a>
+        <a href="./advanced.html" class="demos">
+            Advanced demo
+        </a>
+        <a href="./advanced-viewport.html" class="demos">
+            Custom viewport demo
+        </a>
+    </div>
+</body>
+
+</html>

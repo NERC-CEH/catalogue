@@ -1,59 +1,61 @@
-<#macro master title>
-<!DOCTYPE html>
+<#setting url_escaping_charset='ISO-8859-1'>
+<#setting date_format = 'yyyy-MM-dd'>
+
+<#macro master title searching=false><#compress><!DOCTYPE html>
 <html>
   <head>
-     <meta charset="utf-8">
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>${title} - CEH Catalogue</title>
+    <title>${title?html} - CEH Catalogue</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-    <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>    
+    
+  
+  <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
     <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
     <![endif]-->
   </head>
   <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-         <div class="navbar navbar-default navbar-static-top">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div id="sso-brand" class="navbar-header"> 
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <h3 class="navbar-text" href="#">Not Proxied</h3>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="//lwis.ceh.ac.uk">Home</a></li>
+            <li <#if searching>class="active"</#if>><a href="/documents">Search Data</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <#if permission?? && permission.userCanEdit()>
+            <li class="dropdown">
+              <button class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown">
+                <span class="glyphicon glyphicon-edit"></span> Manage Metadata <span class="caret"></span>
               </button>
-              <a href="#" class="navbar-brand"><img src="/static/img/header_logo.png" alt="CEH Logo" class="img-responsive"/></a>
-            </div>
-
-          <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">             
-              <li><a href="#">Help</a></li>              
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#">BLAH</a></li>
-                  <li><a href="#">BLAH</a></li>
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Username<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="#">CHANGE PASSWORD</a></li>
-                  <li><a href="#">LOGOUT</a></li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-          </div>
+              <ul class="dropdown-menu">
+                <#if id??>
+                  <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
+                  <li><a class="edit-control" href="/documents/${id?html}/datacite.xml">Datacite xml</a></li>
+                  <li role="presentation" class="divider"></li>
+                </#if>
+                <li><a class="edit-control" href="#edit/new">New metadata</a></li>
+              </ul>
+            </li>
+            </#if>
+            <li id="sso-user"><a>Joe Bloggs</a></li>
+          </ul>
         </div>
       </div>
-    <#nested>
     </div>
-
-    <script language="javascript" type="text/javascript" src="/static/vendor/jquery/jquery.min.js"></script>
-    <script language="javascript" type="text/javascript" src="/static/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-  
+    <#nested>
+    <div id="message-panel"></div>
+    <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
   </body>
-</html>
-</#macro>
+</html></#compress></#macro>

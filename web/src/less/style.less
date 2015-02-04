@@ -1,61 +1,13 @@
 // Import our own style sheets
-
-@import "bootstrap";
+@import "../vendor/bootstrap-theme-ceh/less/theme";
+@import "message-panel";
 @import "search";
+@import "mapviewer";
+@import "metadata";
+@import "editor";
 
-@color:#fff;
-@bg:#999999;
+@icon-font-path: "../vendor/bootstrap/fonts/";
+@nav-bar-height: 51px;
 
-
-// Define the ceh navbar
-.navbar-static-top {margin-bottom: 19px;}
-
-.navbar {
-  background-color: @color;
-  border-bottom:  #38CCD7 3px solid;
-  min-height: 60px;
-
-  li {
-    a {
-      &:hover { color: @bg; }
-      &:visited, &:link {
-        text-shadow: none;
-        color: @bg;
-        border-left: 1px solid #B7ECF0;
-        font-weight: bold;        
-      }
-    }
-
-    &:first-child a { border-left-style: none; }
-
-    ul a:visited, li ul a:link {
-      border-left-style:none;       
-    }
-
-    ul a:hover {
-      background-color: @bg;
-      color: @color;
-    }
-  }
-}
-
-.navbar-right { padding-top:40px; }
-
-.navbar-inverse .navbar-toggle { border-color: #000}
-
-.label-dataset { background-color: #5bc0de; }
-.label-service { background-color: #ff00ff; }
-.label-series { background-color: #4B0082; }
-.label-application, .label-nonGeographicDataset, .label-feature, .label-model  { background-color: #cccccc; }
-
-
-@media (max-width: @grid-float-breakpoint) {
-  .navbar-brand {
-    width:50%
-  }
-
-  .navbar-right {
-    padding-top: 0px;
-  }
-
-}
+html { overflow-y: scroll; }
+body { margin-top: @nav-bar-height; }

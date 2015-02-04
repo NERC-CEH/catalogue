@@ -4,7 +4,7 @@
 
     <groupId>uk.ac.ceh.gateway</groupId>
     <artifactId>Catalogue</artifactId>
-    <version>0.6</version>
+    <version>0.7</version>
     <packaging>war</packaging>
 
     <name>CEH Information Gateway Catalogue</name>
@@ -14,18 +14,16 @@
         <skip.integration.tests>true</skip.integration.tests>
         <build.profile.id>dev</build.profile.id>
         <hibernate-validator.version>5.1.1.Final</hibernate-validator.version>
-        <ceh.components.version>1.0.26-SNAPSHOT</ceh.components.version>
+        <ceh.components.version>1.0.31</ceh.components.version>
         <lombok.version>1.12.6</lombok.version>
-        <jackson.version>2.3.3</jackson.version>
-        <spring.version>4.0.4.RELEASE</spring.version>
-        <spring-security.version>3.2.3.RELEASE</spring-security.version>
+        <jackson.version>2.4.4</jackson.version>
+        <spring.version>4.1.4.RELEASE</spring.version>
+        <spring-security.version>3.2.5.RELEASE</spring-security.version>
         <tomcat-servlet-api.version>8.0.5</tomcat-servlet-api.version>
-        <logback.version>1.1.1</logback.version>
+        <logback.version>1.1.2</logback.version>
         <guava.version>17.0</guava.version>
         <solr.version>4.8.0</solr.version>
-        <freemarker.version>2.3.20</freemarker.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <joda-time.version>2.3</joda-time.version>
+        <freemarker.version>2.3.21</freemarker.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -57,11 +55,6 @@
             <artifactId>tomcat-servlet-api</artifactId>
             <version>${tomcat-servlet-api.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${joda-time.version}</version>
         </dependency>
         
         <!-- CEH Java Commons -->
@@ -116,6 +109,17 @@
         
         <!-- Spring dependencies -->
         <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+          <version>${spring.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>commons-logging</groupId>
+              <artifactId>commons-logging</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
@@ -151,6 +155,13 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
             <version>${spring-security.version}</version>
+        </dependency>
+        
+        <!-- EH Caching -->
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>2.9.0</version>
         </dependency>
         
         <!-- Database Connection Pooling -->
@@ -194,6 +205,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <version>1.7.10</version>
         </dependency>
         
         <dependency>

@@ -23,21 +23,21 @@ public class State {
     
     public Set<Transition> avaliableTransitions(Set<PublishingRole> roles) {
         final Set<Transition> toReturn = new HashSet<>();
-        roles.stream().filter((role) -> (transitions.containsKey(role))).forEach((role) -> {
-            toReturn.addAll(transitions.get(role));
-        });
+        roles
+            .stream()
+            .filter(role -> (transitions.containsKey(role)))
+            .forEach((role) -> {
+                toReturn.addAll(transitions.get(role));
+            });
         return ImmutableSet.copyOf(toReturn);
     }
     
     public Transition getTransition(Set<PublishingRole> roles, String transitionId) {
-        Transition toReturn = Transition.UNKNOWN_TRANSITION;
-               
-        for (Transition transition: avaliableTransitions(roles)) {
-            if (transition.getId().equalsIgnoreCase(transitionId)) {
-                return transition;
-            }
-        }
-        return toReturn;
+        return avaliableTransitions(roles)
+            .stream()
+            .filter(t -> t.getId().equalsIgnoreCase(transitionId))
+            .findFirst()
+            .orElse(Transition.UNKNOWN_TRANSITION);
     }
     
     public boolean canTransition(Set<PublishingRole> roles, Transition transition) {

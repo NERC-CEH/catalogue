@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WMS_Capabilities xmlns="http://www.opengis.net/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns:esri_wms="http://www.esri.com/wms" version="1.3.0" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 http://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.esri.com/wms   http://lasigprod.nerc-lancaster.ac.uk/arcgis/services/LandCoverMap/LCM2007_GB_25m/MapServer/WmsServer?version=1.3.0%26service=WMS%26request=GetSchemaExtension">
+    <Capability>
+        <Layer>
+            <Layer>
+                <Name>Layer 1</Name>
+                <Title>Title 1</Title>
+                <Style>
+                    <Name>default</Name>
+                    <LegendURL>
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://default/wms/legend.png" xlink:type="simple"/>
+                    </LegendURL>
+                </Style>
+            </Layer>            
+            <Layer>
+                <Name>Layer 2</Name>
+                <Title>Title 2</Title>
+                <Style>
+                    <Name>non-default</Name>
+                    <LegendURL>
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://default/wms/custom-style-legend.png" xlink:type="simple"/>
+                    </LegendURL>
+                </Style>
+                <Style>
+                    <Name>default</Name>
+                    <LegendURL>
+                        <Format>image/png</Format>
+                        <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://default/wms/default.png" xlink:type="simple"/>
+                    </LegendURL>
+                </Style>
+            </Layer>            
+            <Layer>
+                <Name>Layer 3</Name>
+                <Title>Title 3</Title>
+            </Layer>
+        </Layer>
+    </Capability>
+</WMS_Capabilities>

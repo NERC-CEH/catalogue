@@ -1,0 +1,36 @@
+#metadata {
+  @light-gray-border: #DFDFDF;
+
+  #document-description { margin-bottom:1em; }
+
+  h3 {
+    margin-top:     2.5em;
+    border-bottom:  1px solid @light-gray-border;
+    padding-bottom: 6px;
+  }
+
+  #section-authorsTop{
+    border:       1px solid @light-gray-border;
+    border-width: 1px 0;
+    margin:       .75em 0;
+    padding-top:  0.6em;
+  }
+
+  #studyarea-map { height: 300px; width: 300px; }
+
+  // If the current metadata document is a historic archive, a warning is 
+  // displayed to the user at the top of the metadata page with 
+  // id = 'not-current'
+  #not-current {
+    .alert;
+    .alert-danger;
+    a {
+      .alert-link;
+    }
+  }
+  
+  // Prevent definition lists from wrapping the term
+  .dl-horizontal dt {
+    white-space: normal;
+  }
+}

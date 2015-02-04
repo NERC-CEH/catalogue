@@ -2,8 +2,20 @@
   "name": "ceh-catalogue",
   "version": "0.0.0",
   "dependencies": {
-    "bootstrap": "3.2.0",
+    "bootstrap-theme-ceh": "1.0.1",
     "respond": "1.3.0",
-    "jquery": "1.10.2"
+    "isInViewport": "2.1.0",
+    "jquery": "1.10.2",
+    "jquery-ui": "1.11.0",
+    "jquery-deparam": "0.2.0",
+    "coffee-script": "1.7.1",
+    "requirejs": "2.1.14",
+    "backbone-amd": "1.1.0",
+    "underscore-amd": "1.5.2",
+    "requirejs-text": "2.0.12",
+    "requirejs-tpl": "7438735aa84b76af0fb266d8373b5fbaab2a1a03",
+    "require-cs": "0.5.0",
+    "openlayers": "release-2.13.1",
+    "ol-loadingPanel": "http://svn.osgeo.org/openlayers/addins/loadingPanel/trunk/lib/OpenLayers/Control/LoadingPanel.js"
   }
 }

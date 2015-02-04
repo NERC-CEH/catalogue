@@ -1,107 +1,34 @@
 <#import "skeleton.html.tpl" as skeleton>
-<@skeleton.master title="Search">
+<#assign docroot="documents">
 
-<div class="row">
+<@skeleton.master title="Search" searching=true>
+  <div class="search facets-mode" id="search">
 
-  <!--http://jsfiddle.net/22cyX/-->
-  <div class="col-md-3 well">
-    <div class="search-container">
-      <div class="search-box">
-        <form id="search-form" action="/documents" method="get">
-          <@addFacetFiltersToForm header.facetFilters/>
-          <div class="input-group">
-            <#if header.term="*">
-              <#assign term="">
-            <#else>
-              <#assign term=header.term>
-            </#if>
-            <input type="text" class="form-control" placeholder="Search the Catalogue" id="term" name="term" value="${term}">
-            <div class="input-group-btn">
-              <button type="submit" id="Search" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
-            </div>
-          </div>
-        </form>
+
+    <div class="filters-panel">
+      <div class="header facet-heading">
+        <h3>Filters</h3>
       </div>
-
-      <ul class="nav nav-pills nav-stacked">
-        <#list facets as facet>
-          <li class="facet-heading">
-            <!-- <a href="#"> -->
-              ${facet.displayName}
-            </a>
-          </li>
-
-          <#list facet.results as result>
-            <#if isActiveFacetFilter(header.facetFilters facet.fieldName result.name)>
-              <li class="facet-filter-active"}>
-                <a href="/documents?term=${term}${removeFacetFilter(header.facetFilters, facet.fieldName + '|' + result.name)}">
-                  <span class="facet-result-name">${result.name}</span>
-                  <span class="glyphicon glyphicon-remove-circle pull-right"></span>
-                </a>
-              </li>
-            <#else>
-              <li class="facet-filter-inactive">
-                <a href="/documents?term=${term}&facet=${facet.fieldName}|${result.name}${getFacetFiltersAsQueryParams(header.facetFilters)}">
-                  <span class="facet-result-name">${result.name} (${result.count})</span>
-                </a>
-              </li>
-            </#if>
-          </#list>
-        </#list>   
-      </ul> 
-    </div>
-  </div>
-
-  <div class="col-md-9 results-container">
-    <div class="row">
-      <div class="col-md-12">
-        ${header.numFound} records found
+      <div class="facet-filter"><#include "search/_facets.html.tpl"></div>
+      
+      <div class="header map-heading">
+        <h3>Map Search</h3>
+        <div class="drawing-control pull-right"><#include "search/_drawing.html.tpl"></div>
       </div>
+      <div class="map-filter openlayers"></div>
     </div>
-  
-    <#list results as result>
-      <div class="result row">
-        <div class="col-md-2">
-          <span class="label label-${result.resourceType}">${result.resourceType}</span>
-        </div>
-        <div class="col-md-10">
-          <a href="/documents/${result.identifier}" class="search-result-title">${result.title}</a>
-            ${result.description}
+
+    <div class="results"><#include "search/_page.html.tpl"></div>
+    <form class="search-form" action="/${docroot}" method="get">
+      <div class="input-group">
+        <input placeholder="Search the catalogue" name="term" type="text" class="form-control">
+        <div class="input-group-btn">
+          <button tabindex="-1" class="btn btn-success" type="button">
+            <span class="glyphicon glyphicon-search"></span>
+          </button>
         </div>
       </div>
-    </#list>
+    </form>
+    
   </div>
-
-</div>
-
 </@skeleton.master>
-
-<#function isActiveFacetFilter facetFilters facetFieldName facetValue>
-  <#return facetFilters?seq_contains(facetFieldName + "|" + facetValue)>
-</#function>
-
-<#function getFacetFiltersAsQueryParams facetFilters firstQueryStringCharacter='&'>
-  <#if facetFilters?? && (facetFilters?size > 0)>
-    <#return firstQueryStringCharacter + 'facet=' + facetFilters?join('&facet=')>
-  <#else>
-    <#return ''>
-  </#if>
-</#function>
-
-<#function removeFacetFilter facetFilters toRemove>
-  <#assign toReturn = []>
-  <#list facetFilters as facetFilter>
-    <#if facetFilter != toRemove>
-      <#assign toReturn = toReturn + [facetFilter]>
-    </#if>
-  </#list>
-  <#return getFacetFiltersAsQueryParams(toReturn)>
-</#function>
-
-<#macro addFacetFiltersToForm facetFilters>
-  <#if facetFilters?? && (facetFilters?size > 0)>
-    <#list facetFilters as facetFilter>
-      <input type='hidden' name='facet' value='${facetFilter}'>
-    </#list>
-  </#if>
-</#macro>

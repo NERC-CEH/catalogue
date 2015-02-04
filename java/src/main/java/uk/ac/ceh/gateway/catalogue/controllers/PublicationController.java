@@ -1,15 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -25,18 +27,18 @@ public class PublicationController {
         this.publicationService = publicationService;
     }
     
-    //@PreAuthorize("@permission.toAccess(#file, 'READ')")
+    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @RequestMapping(value = "documents/{file}/publication", 
                     method =  RequestMethod.GET)
     @ResponseBody
     public HttpEntity<StateResource> currentPublication(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file, 
-            UriComponentsBuilder uriBuilder) {
-        return new ResponseEntity<>(publicationService.current(user, file, uriBuilder), HttpStatus.OK); 
+            HttpServletRequest request) {
+        return ResponseEntity.ok(publicationService.current(user, file, getTransitionUriBuilder(request))); 
     }
     
-    //@PreAuthorize("@permission.toAccess(#file, 'WRITE')")
+    @Secured({DocumentController.EDITOR_ROLE, DocumentController.PUBLISHER_ROLE})
     @RequestMapping(value = "documents/{file}/publication/{toState}", 
                     method =  RequestMethod.PUT)
     @ResponseBody
@@ -44,8 +46,17 @@ public class PublicationController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @PathVariable("toState") String toState, 
-            UriComponentsBuilder uriBuilder) {
-       return new ResponseEntity<>(publicationService.transition(user, file, toState, uriBuilder), HttpStatus.OK);
+            HttpServletRequest request) {
+       return ResponseEntity.ok(publicationService.transition(user, file, toState, getTransitionUriBuilder(request, file)));
+    }
+    
+    private UriComponentsBuilder getTransitionUriBuilder(HttpServletRequest request) {
+        return ServletUriComponentsBuilder.fromRequest(request).path("/{transitionId}");
+    }
+    
+    private UriComponentsBuilder getTransitionUriBuilder(HttpServletRequest request, String file) {
+        String path = String.format("/documents/%s/publication/{transitionId}", file);
+        return ServletUriComponentsBuilder.fromContextPath(request).path(path);
     }
 
 }

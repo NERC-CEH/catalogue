@@ -11,7 +11,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.gateway.catalogue.gemini.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationException;
@@ -38,7 +38,11 @@ public class GitPublicationService implements PublicationService {
 
     @Override
     public StateResource current(CatalogueUser user, String fileIdentifier, UriComponentsBuilder builder) {
-        final State currentState = workflow.currentState(getMetadataInfo(fileIdentifier));
+        return current(user, getMetadataInfo(fileIdentifier), builder);
+    }
+    
+    private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, UriComponentsBuilder builder) {
+        final State currentState = workflow.currentState(metadataInfo);
         final List<Group> userGroups = groupStore.getGroups(user);
         return new StateResource(currentState, getPublishingRoles(userGroups), builder);
     }
@@ -51,9 +55,9 @@ public class GitPublicationService implements PublicationService {
         final Transition transition = currentState.getTransition(publishingRoles, transitionId);
         final MetadataInfo returned = workflow.transitionDocumentState(original, publishingRoles, transition);
         if ( !returned.equals(original)) {
-            saveMetadataInfo(fileIdentifier, returned, user, transition.getToState());
+            saveMetadataInfo(fileIdentifier, returned, user);
         }
-        return current(user, fileIdentifier, builder);
+        return current(user, returned, builder);
     }
     
     private MetadataInfo getMetadataInfo(String fileIdentifier) {
@@ -77,13 +81,15 @@ public class GitPublicationService implements PublicationService {
         return publishingRoles;
     }
     
-    private void saveMetadataInfo(String fileIdentifier, MetadataInfo info, CatalogueUser user, State state) {
+    private void saveMetadataInfo(String fileIdentifier, MetadataInfo info, CatalogueUser user) {
         try {
-            repo.submitData(String.format("%s.meta", fileIdentifier), (o)-> documentInfoMapper
-                                                                                .writeInfo(info, o))
-                                                                                .commit(user, "publication state changed");
+            String commitMsg = String.format("Publication state of %s changed to %s", fileIdentifier, info.getState());
+            repo.submitData(String.format("%s.meta", fileIdentifier), 
+                (o)-> documentInfoMapper
+                    .writeInfo(info, o))
+                    .commit(user, commitMsg);
         } catch (DataRepositoryException ex) {
-            throw new PublicationException(String.format("Unable to change publication state to: %s for %s", state.getTitle(), fileIdentifier), ex);
+            throw new PublicationException(String.format("Unable to change publication state to: %s for %s", info.getState(), fileIdentifier), ex);
         }
     }
 }

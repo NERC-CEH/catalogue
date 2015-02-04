@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.xpath.XPath;
@@ -9,11 +10,10 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.ResponsibleParty.Address;
+import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty.Address;
 
 public class ResponsiblePartyConverter {
-    private static final String RESPONSIBLE_PARTY = "//gmd:CI_ResponsibleParty";
     private static final String INDIVIDUAL_NAME = "gmd:individualName/gco:CharacterString";
     private static final String ORGANISATION_NAME = "gmd:organisationName/gco:CharacterString";
     private static final String EMAIL = "gmd:contactInfo/*/gmd:address/*/gmd:electronicMailAddress/gco:CharacterString";
@@ -26,8 +26,8 @@ public class ResponsiblePartyConverter {
     private final XPathExpression responsibleParties, individualName, organisationName, email, role,
         deliveryPoint, city, administrativeArea, postalCode, country;
 
-    public ResponsiblePartyConverter(XPath xpath) throws XPathExpressionException {
-        this.responsibleParties = xpath.compile(RESPONSIBLE_PARTY);
+    public ResponsiblePartyConverter(XPath xpath, String ResponsiblePartyXpath) throws XPathExpressionException {
+        this.responsibleParties = xpath.compile(checkNotNull(ResponsiblePartyXpath));
         this.individualName = xpath.compile(INDIVIDUAL_NAME);
         this.organisationName = xpath.compile(ORGANISATION_NAME);
         this.email = xpath.compile(EMAIL);
@@ -43,13 +43,13 @@ public class ResponsiblePartyConverter {
         List<ResponsibleParty> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) responsibleParties.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
-            Node responsiblePartyNode = nodeList.item(i);
+            Node node = nodeList.item(i);
             ResponsibleParty responsibleParty = ResponsibleParty.builder()
-                .individualName(individualName.evaluate(responsiblePartyNode))
-                .organisationName(organisationName.evaluate(responsiblePartyNode))
-                .email(email.evaluate(responsiblePartyNode))
-                .role(role.evaluate(responsiblePartyNode))
-                .address(convertAddress(responsiblePartyNode))
+                .individualName(individualName.evaluate(node))
+                .organisationName(organisationName.evaluate(node))
+                .email(email.evaluate(node))
+                .role(role.evaluate(node))
+                .address(convertAddress(node))
                 .build();
             toReturn.add(responsibleParty);
         }

@@ -4,16 +4,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.isIn;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -139,14 +138,14 @@ public class ITRdbmsLinkDatabase {
     }
     
     @Test
-    public void tryToDeleteWithEmptyString() {
+    public void tryToDeleteUnknownFileIdentifier() {
         //Given
         DataSource dataSource = createPopulatedTestDataSource();
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         verifyDatabaseHasRows(jdbcTemplate);
         Integer before = jdbcTemplate.queryForObject("select count(*) from metadata", Integer.class);
-        Metadata toDelete = Metadata.builder().build();
+        Metadata toDelete = Metadata.builder().fileIdentifier("b172c629-a224-4d15-84bd-d654da4048a6").build();
         
         //When
         linkDatabase.deleteMetadata(toDelete);
@@ -189,6 +188,32 @@ public class ITRdbmsLinkDatabase {
     }
     
     @Test
+    public void checkMetadataRowCountOnEmptySource() {
+        //Given
+        DataSource dataSource = createEmptyTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        
+        //When
+        boolean isEmpty = linkDatabase.isEmpty();
+        
+        //Then
+        assertTrue("Exepected the database to be empty", isEmpty);
+    }
+    
+    @Test
+    public void checkMetadataRowCountOnPopulatedDatasource() {
+        //Given
+        DataSource dataSource = createPopulatedTestDataSource();
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(dataSource);
+        
+        //When
+        boolean isEmpty = linkDatabase.isEmpty();
+        
+        //Then
+        assertFalse("Exepected the database to be populated", isEmpty);
+    }
+    
+    @Test
     public void findDatasetsForService() {
         //Given
         RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
@@ -220,6 +245,97 @@ public class ITRdbmsLinkDatabase {
             assertThat("Metadata not found in expected", metadata, isIn(expected));
         });
         
+    }
+    
+    @Test
+    public void findParent() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Metadata expected = Metadata.builder()
+            .title("Parent Series")
+            .fileIdentifier("fc77c9b3-570d-4314-82ba-bc914538a748")
+            .build();
+        
+        //When
+        Metadata actual = linkDatabase.findParent("abff8409-0995-48d2-9303-468e1a9fe3df").get();       
+        
+        //Then
+        assertThat("Parent not found in expected", actual, equalTo(expected)); 
+    }
+    
+    @Test
+    public void findParentDoesNotExist() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Optional<Metadata> expected = Optional.empty();
+        
+        //When
+        Optional<Metadata> actual = linkDatabase.findParent("343699ad-4411-4aa5-b1ab-6bf1898b882f");       
+        
+        //Then
+        assertThat("Parent found in expected", actual, equalTo(expected)); 
+    }
+    
+    @Test
+    public void findChildren() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Collection<Metadata> expected = Arrays.asList(
+            Metadata.builder()
+            .title("Child Dataset 0")
+            .fileIdentifier("abff8409-0995-48d2-9303-468e1a9fe3df")
+            .parentIdentifier("fc77c9b3-570d-4314-82ba-bc914538a748")
+            .build(),
+            Metadata.builder()
+            .title("Child Dataset 1")
+            .fileIdentifier("dbff8409-0995-48d2-9303-468e1a9fe3dd")
+            .parentIdentifier("fc77c9b3-570d-4314-82ba-bc914538a748")
+            .build()
+        );
+        
+        //When
+        Collection<Metadata> actual = linkDatabase.findChildren("fc77c9b3-570d-4314-82ba-bc914538a748");       
+        
+        //Then
+        assertThat("There should be two metadata in the collection", actual.size(), equalTo(2));
+        actual.stream().forEach((metadata) -> {
+            assertThat("Metadata not found in expected", metadata, isIn(expected));
+        });
+    }
+    
+    @Test
+    public void findRevisionOf() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Metadata expected = Metadata.builder()
+            .title("Deprecated Dataset")
+            .fileIdentifier("97afcb16-9438-4d9f-abab-dd8619d730f5")
+            .resourceIdentifier("CEH:EIDC:#8374052631039")
+            .build();
+        
+        //When
+        Metadata actual = linkDatabase.findRevisionOf("154ebeeb-a15a-4f63-a3cc-f2daa12ea833").get();       
+        
+        //Then
+        assertThat("Deprecated not found in expected", actual, equalTo(expected)); 
+    }
+    
+    @Test
+    public void findRevised() {
+        //Given
+        RdbmsLinkDatabase linkDatabase = new RdbmsLinkDatabase(createPopulatedTestDataSource());
+        Metadata expected = Metadata.builder()
+            .title("Revised Dataset")
+            .fileIdentifier("154ebeeb-a15a-4f63-a3cc-f2daa12ea833")
+            .resourceIdentifier("CEH:EIDC:#2847752631295")
+            .revisionOfIdentifier("CEH:EIDC:#8374052631039")
+            .build();
+        
+        //When
+        Metadata actual = linkDatabase.findRevised("97afcb16-9438-4d9f-abab-dd8619d730f5").get();       
+        
+        //Then
+        assertThat("Revised not found in expected", actual, equalTo(expected)); 
     }
     
     @Test

@@ -9,7 +9,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.TimePeriod;
+import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 
 public class TemporalExtentConverter {
     private static final String TEMPORAL_EXTENTS = "/*/gmd:identificationInfo/*/gmd:extent/*/gmd:temporalElement/*/gmd:extent/gml:TimePeriod";

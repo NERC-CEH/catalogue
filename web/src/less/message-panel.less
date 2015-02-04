@@ -1,0 +1,19 @@
+#message-panel {
+  .panel();
+
+  position:  fixed;
+  display:   none;
+  top:       @nav-bar-height;
+  right:     0;
+  padding:   4px;
+  font-size: 80%;
+
+  .alert { padding: 7px; margin-bottom: 0; }
+
+  //Ideally I would like the glyphicon to be in a button.
+  //However I can't get the styling to look quite right.
+  span.glyphicon {
+    cursor: pointer;
+    &:hover { color: black; }
+  }
+}

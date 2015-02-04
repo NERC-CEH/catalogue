@@ -1,54 +1,129 @@
-.search-box{
-  padding-bottom: 10px;
-}
+#search {
+  @search-form-height:    52px;
+  @filters-columns:       4;
+  @results-columns:       @grid-columns - @filters-columns;
+  @filter-heading-height: 40px;
+  @filter-heading-gap:    3px;
 
-.result {
-  padding: 1em;
-  border-top: 1px solid #AAA;
-  font-size: 90%;
+  .make-row();
+  .container-fixed();
+  padding: 0;          // Remove the padding when in small screen mode
 
-  a {
-    display: block;
-    font-weight: 700;
-    font-size: 120%;
+  //Hide the filters panel in small screen mode
+  .filters-panel { 
+    height: 0;         // WARNING: We would usually just set display:none to
+    overflow: hidden;  // hide the panel. This causes OpenLayers to fail to load
   }
 
-  .label {
-    display: block;
-    width: 90px;
-    padding: 5px;
-    font-size: 90%;
-    margin: 0 -15px;
-    border-radius: 5px;
-    line-height: 1.4;
+  @media (min-width: @screen-md-min) {
+    .filters-panel {
+      .make-md-column(@filters-columns);
+      height:   auto;  // Re allow height
+      position: fixed;
+      padding:  0;
+      top:      @nav-bar-height;
+      bottom:   0;
+      left:     0;
+      background-color: @panel-bg;
+    }
+
+    .header {
+      height:           @filter-heading-height;
+      width:            100%;
+      background-color: @panel-default-heading-bg;
+      padding:          10px 15px;
+
+      h3 {
+        display:   inline;
+        margin:    0px;
+        font-size: 15px;
+        color:     black;
+        cursor:    pointer;
+        &:hover {text-decoration: underline;}
+      }
+    }
+
+    &.facets-mode {
+      .map-heading {
+        position: absolute;
+        bottom: 0;
+      }
+      .facet-filter {
+        position:   absolute;
+        top:        @filter-heading-height;
+        bottom:     @filter-heading-height;
+        left:       0;
+        right:      0;
+        overflow-y: auto;
+
+        // Style the facet panel
+        padding-left: 1em;
+        ul {
+          padding-left: 0;
+          margin-left:  20px;
+
+          li { 
+            list-style:     none; 
+            padding-bottom: 3px;
+            a {color:black;}
+          }
+        }
+      }
+    }
+
+    &.map-mode {
+      @selected-color: #8fca89;
+      .facet-filter { display: none; }
+      .map-heading  {
+        margin-top: @filter-heading-gap;
+        height: @filter-heading-height;
+      }
+
+      .result.selected { 
+        border-left:      8px solid @selected-color;  
+        background-color: lighten(@selected-color, 25%);
+      }
+
+      .map-filter {
+        position: absolute;
+        top:      @filter-heading-height * 2 + @filter-heading-gap;
+        bottom:   0;
+        left:     0;
+        right:    0;
+        div.olControlZoom {
+          left: 2px;
+          top:  5px;
+        }
+      }
+    }
   }
-}
-
-.nav > li > a {
-  color: #999;
-}
-
-.facet-heading {
-  font-weight: 700;
-  padding-top: 10px;
-  color: #999;
-}
-
-@facet-filter-left-padding: 20px;
-
-.facet-filter-inactive {
-  padding-left: facet-filter-left-padding;
-}
-
-.facet-filter-active {
-  background-color: #C3FDB8;
-  border-radius: 5px;
-  hover{
-    background-color: #00f;
+  
+  // Keep the search box onscreen at all times
+  form.search-form {
+    .make-md-column-offset(@filters-columns);
+    position:         fixed;
+    top:              @nav-bar-height;
+    left:             0;
+    right:            0;
+    padding:          8px;
+    height:           @search-form-height;
+    background-color: @body-bg;
   }
 
-}
+  .results {
+    margin-top: @search-form-height;
+    .make-md-column(@results-columns);
+    .make-md-column-offset(@filters-columns);
 
-.results-container{
-  padding-left: 30px;
+    .result { 
+      display: inline-block; //Disable margin-collapsing
+      width:   100%;         //But keep the width of the results at 100%
+    }
+    @media (min-width: @screen-md-min) {
+      .result {
+        border-left:  8px solid @body-bg;
+        padding-left: 1em;
+      }
+    }
+  }
 }

@@ -1,40 +1,37 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Splitter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.elements.Link;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 
-@Service
+@Data
 @Slf4j
 public class GitDocumentLinkService implements DocumentLinkService {
     private final DataRepository<CatalogueUser> repo;
-    private final BundledReaderService<GeminiDocument> documentBundleReader;
+    private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final LinkDatabase linkDatabase;
 
-    @Autowired
-    public GitDocumentLinkService(DataRepository<CatalogueUser> repo, 
-                                  BundledReaderService<GeminiDocument> documentBundleReader,
-                                  LinkDatabase linkingRepository) {
-        
-        this.repo = checkNotNull(repo);
-        this.documentBundleReader = checkNotNull(documentBundleReader);
-        this.linkDatabase = checkNotNull(linkingRepository);
-    }    
-
+    @Override
+    public boolean isEmpty() {
+        return linkDatabase.isEmpty();
+    }
+    
     @Override
     public void rebuildLinks() throws DocumentLinkingException {
         try {
@@ -63,17 +60,23 @@ public class GitDocumentLinkService implements DocumentLinkService {
         fileIdentifiers.forEach((fileIdentifier) -> {
             log.debug("linking with fileIdentifier: {}", fileIdentifier);
             try {
-                GeminiDocument document = documentBundleReader.readBundle(fileIdentifier, latestRev.getRevisionID());
-                metadata.add(new Metadata(document));
-                document.getCoupleResources().forEach((coupleResource) -> {
-                    coupledResources.add(
-                        CoupledResource.builder()
-                            .fileIdentifier(document.getId())
-                            .resourceIdentifier(coupleResource)
-                            .build());
-                });
+                MetadataDocument document = documentBundleReader.readBundle(fileIdentifier, latestRev.getRevisionID());
+                if(document instanceof GeminiDocument) {
+                    GeminiDocument geminiDocument = (GeminiDocument)document;
+                    if (Optional.ofNullable(geminiDocument.getId()).isPresent()) {
+                        metadata.add(new Metadata(geminiDocument));
+                        geminiDocument.getCoupledResources().forEach((coupleResource) -> {
+                            coupledResources.add(
+                                CoupledResource.builder()
+                                    .fileIdentifier(document.getId())
+                                    .resourceIdentifier(coupleResource)
+                                    .build());
+                        });
+                    }
+                }
             } catch (Exception ex) {
                 linkingException.addSuppressed(ex);
+                log.error("Suppressed linking errors", (Object[]) linkingException.getSuppressed());
             }
         });
         
@@ -86,36 +89,73 @@ public class GitDocumentLinkService implements DocumentLinkService {
     }
 
     @Override
-    public Set<Link> getLinks(GeminiDocument document, UriComponentsBuilder builder) {
-        if (document.getResourceType() != null) {
-            switch (document.getResourceType().getValue().toLowerCase()) {
-                case "dataset":
-                    return createLinks(linkDatabase.findServicesForDataset(document.getId()), builder);
-
-                case "service":
-                    return createLinks(linkDatabase.findDatasetsForService(document.getId()), builder);
-            }
-        }
-        return Collections.EMPTY_SET;
+    public Set<Link> getLinks(GeminiDocument document, String urlFragment) {
+        return Optional.ofNullable(document)
+            .map(GeminiDocument::getResourceType)
+            .map(r -> {
+                List<Metadata> metadata;
+                String associationType;
+                switch (r.toLowerCase()) {
+                    case "dataset":
+                        metadata = linkDatabase.findServicesForDataset(document.getId());
+                        associationType = "service";
+                        break;
+                    case "service":
+                        metadata = linkDatabase.findDatasetsForService(document.getId());
+                        associationType = "dataset";
+                        break;
+                    default:
+                        metadata = Collections.emptyList();
+                        associationType = "";
+                }
+                return createLinks(metadata, urlFragment, associationType);
+            })
+            .orElse(Collections.emptySet());
     }
     
-    private Set<Link> createLinks(List<Metadata> metadata, UriComponentsBuilder builder) {
-        final Set<Link> toReturn = new HashSet<>();
-        metadata.forEach((meta) -> {
-            toReturn.add(Link.builder()
-                .title(meta.getTitle())
-                .href(builder.buildAndExpand(meta.getFileIdentifier()).toUriString())
-                .build());
-        });
-        return toReturn;
+    @Override
+    public Optional<Link> getParent(GeminiDocument document, String urlFragment) {
+        return linkDatabase.findParent(document.getId())
+            .map(m -> createLink(m, urlFragment, "series"));
+    }
+
+    @Override
+    public Set<Link> getChildren(GeminiDocument document, String urlFragment) {
+        return createLinks(linkDatabase.findChildren(document.getId()), urlFragment, "isComposedOf");
+    }
+    
+    @Override
+    public Optional<Link> getRevised(GeminiDocument document, String urlFragment) {
+        return linkDatabase.findRevised(document.getId())
+            .map(m -> createLink(m, urlFragment, "revised"));
+    }
+    
+    @Override
+    public Optional<Link> getRevisionOf(GeminiDocument document, String urlFragment) {
+        return linkDatabase.findRevisionOf(document.getId())
+            .map(m -> createLink(m, urlFragment, "revisionOf"));
+    }
+    
+    private Set<Link> createLinks(List<Metadata> metadata, String urlFragment, String associationType) {
+        return metadata.stream()
+            .filter(Objects::nonNull)
+            .map(m -> createLink(m, urlFragment, associationType) )
+            .collect(Collectors.toSet());
+    }
+    
+    private Link createLink(Metadata metadata, String urlFragment, String associationType) {
+        return Link.builder()
+            .title(metadata.getTitle())
+            .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(metadata.getFileIdentifier()).build().toUriString())
+            .associationType(associationType)
+            .build();
     }
     
     private Set<String> removeDuplicates(List<String> filenames) {
-        Set<String> toReturn = new HashSet<>();
-        filenames.forEach((filename) -> {
-            toReturn.add(stripFileExtension(filename));
-        });
-        return toReturn;
+        return filenames.stream()
+            .map(filename -> stripFileExtension(filename))
+            .distinct()
+            .collect(Collectors.toSet());
     }
     
     private String stripFileExtension(String filename) {

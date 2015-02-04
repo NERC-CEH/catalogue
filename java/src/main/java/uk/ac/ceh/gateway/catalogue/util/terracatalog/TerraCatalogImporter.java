@@ -15,6 +15,7 @@ import java.util.zip.ZipFile;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
@@ -36,15 +37,15 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  * @author cjohn
  * @param <U> The type of user which this import will deal with
  */
-@Data
 @AllArgsConstructor(access=AccessLevel.PROTECTED)
+@Slf4j
 public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     private static final Pattern TC_EXPORT_REGEX = Pattern.compile("BACKUP_TC_[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*-[0-9]*\\.zip");
     
     private final DataRepository<U> repo;
     private final DocumentListingService documentList;
     private final TerraCatalogUserFactory<U> userFactory;
-    private final DocumentReadingService<GeminiDocument> documentReader;
+    private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<M> documentInfoMapper;
     private final TerraCatalogDocumentInfoFactory<M> metadataDocument;
     private final TerraCatalogExtReader tcExtReader;
@@ -53,7 +54,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     public TerraCatalogImporter(DataRepository<U> repo,
                                 DocumentListingService documentList,
                                 TerraCatalogUserFactory<U> userFactory,
-                                DocumentReadingService<GeminiDocument> documentReader,
+                                DocumentReadingService documentReader,
                                 DocumentInfoMapper<M> documentInfoMapper,
                                 TerraCatalogDocumentInfoFactory<M> metadataDocument,
                                 U importUser) {
@@ -70,6 +71,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
                 .listFiles((File d, String f)-> TC_EXPORT_REGEX.matcher(f).matches());
         Arrays.sort(exportFiles); //Order the terracatalog files lexically, 
         for(File currTCExport: exportFiles) {
+            log.info("Importing from: {}", currTCExport.getName());
             importFile(new ZipFile(currTCExport));
         }
     }
@@ -81,6 +83,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
             List<String> toDelete = getFilesInRepositoryButNotInImport(toImport);
             if(!toDelete.isEmpty()) {
                 deleteFiles(file.getName(), toDelete);
+               log.info("Deleting: {}", file.getName());
             }
             
             //Group the file pairs by owner
@@ -89,6 +92,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
                                                                         .collect(Collectors.groupingBy(TerraCatalogPair::getOwner))
                                                                         .entrySet()) {           
                 commitAuthorsFiles(file.getName(), authorFiles.getKey(), authorFiles.getValue());
+                
             }
         }
     }
@@ -113,7 +117,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
             ongoingCommit = ongoingCommit.submitData(currToCommit.getId() + ".meta", (o)-> documentInfoMapper.writeInfo(currToCommit.getInfo(), o) )
                                          .submitData(currToCommit.getId() + ".raw", (o) -> IOUtils.copy(currToCommit.getXmlInputStream(), o) );
         }
-        
+        log.info("Commiting");
         return ongoingCommit.commit(author, "Commit by terraCatalog importer for " + author.getEmail() + " from " + importFile);
     }
     
@@ -178,7 +182,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
             this.name = name;
             
             //Harvest all the data from the parts using the injected dependencies
-            this.document = documentReader.read(getXmlInputStream(), MediaType.APPLICATION_XML);
+            this.document = documentReader.read(getXmlInputStream(), MediaType.APPLICATION_XML, GeminiDocument.class);
             this.tcExt = tcExtReader.readTerraCatalogExt(getInputStream("tcext"));
             this.info = metadataDocument.getDocumentInfo(document, tcExt);
             this.owner = userFactory.getAuthor(tcExt);

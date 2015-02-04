@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;

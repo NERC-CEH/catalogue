@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
@@ -21,17 +22,36 @@ import org.springframework.stereotype.Repository;
 public class RdbmsLinkDatabase implements LinkDatabase {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Metadata> rowMapper;
-
+    
+    private static final String IS_EMPTY = "select count(*) from metadata";
+    private static final String TRUNCATE_METADATA = "truncate table metadata";
+    private static final String TRUNCATE_COUPLED_RESOURCES = "truncate table coupledResources";
+    private static final String DATASETS_FOR_SERVICE = "select d.fileIdentifier, d.title, d.resourceIdentifier, d.parentIdentifier, d.revisionOfIdentifier from metadata d inner join coupledResources c on d.resourceIdentifier = c.resourceIdentifier inner join metadata s on c.fileIdentifier = s.fileIdentifier where s.fileIdentifier = ?";
+    private static final String SERVICES_FOR_DATASET = "select s.fileIdentifier, s.title, s.resourceIdentifier, s.parentIdentifier, s.revisionOfIdentifier from metadata s inner join coupledResources c on s.fileIdentifier = c.fileIdentifier inner join metadata d on c.resourceIdentifier = d.resourceIdentifier where d.fileIdentifier = ?";
+    private static final String PARENT = "select p.fileIdentifier, p.title, p.resourceIdentifier, p.parentIdentifier, p.revisionOfIdentifier from metadata p inner join metadata c on c.parentIdentifier = p.fileIdentifier where c.fileIdentifier = ?";
+    private static final String CHILDREN = "select fileIdentifier, title, resourceIdentifier, parentIdentifier, revisionOfIdentifier from metadata where parentIdentifier = ?";
+    private static final String REVISION_OF = "select d.fileIdentifier, d.title, d.resourceIdentifier, d.parentIdentifier, d.revisionOfIdentifier from metadata d inner join metadata r on r.revisionOfIdentifier = d.resourceIdentifier where d.resourceIdentifier != '' and r.fileIdentifier = ?";
+    private static final String REVISED = "select r.fileIdentifier, r.title, r.resourceIdentifier, r.parentIdentifier, r.revisionOfIdentifier from metadata d inner join metadata r on r.revisionOfIdentifier = d.resourceIdentifier where d.fileIdentifier = ?  and d.resourceIdentifier != ''";
+    private static final String INSERT_METADATA = "insert into metadata (fileIdentifier, title, resourceIdentifier, parentIdentifier, revisionOfIdentifier) values (?, ?, ?, ?, ?)";
+    private static final String DELETE_METADATA = "delete from metadata where fileIdentifier = ?";
+    private static final String INSERT_COUPLED_RESOURCES = "insert into coupledResources (fileIdentifier, resourceIdentifier) values (?, ?)";
+    private static final String DELETE_COUPLED_RESOURCES = "delete from coupledResources where fileIdentifier = ? and resourceIdentifier = ?";
+    
     @Autowired
     public RdbmsLinkDatabase(DataSource dataSource) {
         jdbcTemplate = new JdbcTemplate(dataSource);
         rowMapper = new MetadataRowMapper();
     }
+    
+    @Override
+    public boolean isEmpty() {
+        return 0 == jdbcTemplate.queryForObject(IS_EMPTY, Integer.class);
+    }
 
     @Override
     public void empty() {
-        jdbcTemplate.execute("truncate table metadata");
-        jdbcTemplate.execute("truncate table coupledResources");
+        jdbcTemplate.execute(TRUNCATE_METADATA);
+        jdbcTemplate.execute(TRUNCATE_COUPLED_RESOURCES);
     }
 
     @Override
@@ -63,37 +83,57 @@ public class RdbmsLinkDatabase implements LinkDatabase {
 
     @Override
     public List<Metadata> findDatasetsForService(String fileIdentifier) {
-        String sql = "select d.fileIdentifier, d.title, d.resourceIdentifier from metadata d inner join coupledResources c on d.resourceIdentifier = c.resourceIdentifier inner join metadata s on c.fileIdentifier = s.fileIdentifier where s.fileIdentifier = ?";
-        return query(sql, fileIdentifier);
+        return query(DATASETS_FOR_SERVICE, fileIdentifier);
     }
 
     @Override
     public List<Metadata> findServicesForDataset(String fileIdentifier) {
-        String sql = "select s.fileIdentifier, s.title, s.resourceIdentifier from metadata s inner join coupledResources c on s.fileIdentifier = c.fileIdentifier inner join metadata d on c.resourceIdentifier = d.resourceIdentifier where d.fileIdentifier = ?";
-        return query(sql, fileIdentifier);
+        return query(SERVICES_FOR_DATASET, fileIdentifier);
+    }
+
+    @Override
+    public Optional<Metadata> findParent(String fileIdentifier) {
+        return queryForMetadata(PARENT, fileIdentifier);
+    }
+
+    @Override
+    public List<Metadata> findChildren(String fileIdentifier) {
+        return query(CHILDREN, fileIdentifier);
+    }
+
+    @Override
+    public Optional<Metadata> findRevised(String fileIdentifier) {
+        return queryForMetadata(REVISED, fileIdentifier);
+    }
+
+    @Override
+    public Optional<Metadata> findRevisionOf(String fileIdentifier) {
+        return queryForMetadata(REVISION_OF, fileIdentifier);
     }
     
     private List<Metadata> query(String query, String fileIdentifier) {
         return jdbcTemplate.query(query, rowMapper, fileIdentifier);
     }
-      
+    
+    private Optional<Metadata> queryForMetadata(String query, String fileIdentifier) {
+        return query(query, fileIdentifier).stream().findFirst();
+    }
+
     private class MetadataRowMapper implements RowMapper<Metadata> {
         @Override
         public Metadata mapRow(ResultSet rs, int rowNum) throws SQLException {
-            String fileIdentifier = rs.getString("fileIdentifier");
-            String tile = rs.getString("title");
-            String resourceIdentifier = rs.getString("resourceIdentifier");
             return Metadata.builder()
-                .fileIdentifier(fileIdentifier)
-                .title(tile)
-                .resourceIdentifier(resourceIdentifier)
+                .fileIdentifier(rs.getString("fileIdentifier"))
+                .title(rs.getString("title"))
+                .resourceIdentifier(rs.getString("resourceIdentifier"))
+                .parentIdentifier(rs.getString("parentIdentifier"))
+                .revisionOfIdentifier(rs.getString("revisionOfIdentifier"))
                 .build();
         }
     }
     
     private void insertMetadata(List<Metadata> metadata) {
-        String sql = "insert into metadata (fileIdentifier, title, resourceIdentifier) values (?, ?, ?)";
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+        jdbcTemplate.batchUpdate(INSERT_METADATA, new BatchPreparedStatementSetter() {
 
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -102,6 +142,8 @@ public class RdbmsLinkDatabase implements LinkDatabase {
                 ps.setString(1, meta.getFileIdentifier());
                 ps.setString(2, meta.getTitle());
                 ps.setString(3, meta.getResourceIdentifier());
+                ps.setString(4, meta.getParentIdentifier());
+                ps.setString(5, meta.getRevisionOfIdentifier());
             }
 
             @Override
@@ -112,8 +154,7 @@ public class RdbmsLinkDatabase implements LinkDatabase {
     }
     
     private void deleteMetadata(List<Metadata> metadata) {
-        String sql = "delete from metadata where fileIdentifier = ?";
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+        jdbcTemplate.batchUpdate(DELETE_METADATA, new BatchPreparedStatementSetter() {
 
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -129,8 +170,7 @@ public class RdbmsLinkDatabase implements LinkDatabase {
     }
     
     private void insertCoupledResources(List<CoupledResource> coupledResources) {
-        String sql = "insert into coupledResources (fileIdentifier, resourceIdentifier) values (?, ?)";
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+        jdbcTemplate.batchUpdate(INSERT_COUPLED_RESOURCES, new BatchPreparedStatementSetter() {
 
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -147,8 +187,7 @@ public class RdbmsLinkDatabase implements LinkDatabase {
     }
     
     private void delCoupledResources(List<CoupledResource> coupledResource) {
-        String sql = "delete from coupledResources where fileIdentifier = ? and resourceIdentifier = ?";
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+        jdbcTemplate.batchUpdate(DELETE_COUPLED_RESOURCES, new BatchPreparedStatementSetter() {
 
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
