@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,7 +41,7 @@ public class PublicationController {
     
     @Secured({DocumentController.EDITOR_ROLE, DocumentController.PUBLISHER_ROLE})
     @RequestMapping(value = "documents/{file}/publication/{toState}", 
-                    method =  RequestMethod.PUT)
+                    method =  RequestMethod.POST)
     @ResponseBody
     public HttpEntity<StateResource> transitionPublication(
             @ActiveUser CatalogueUser user,

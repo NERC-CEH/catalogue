@@ -41,8 +41,9 @@
               </button>
               <ul class="dropdown-menu">
                 <#if id??>
-                  <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
-                  <li><a class="edit-control" href="/documents/${id?html}/datacite.xml">Datacite xml</a></li>
+                  <li><a class="edit-control" href="#edit/${id?html}">Edit&hellip;</a></li>
+                  <li><a href="/documents/${id?html}/publication">Publish&hellip;</a></li>
+                  <li><a href="/documents/${id?html}/datacite.xml">Datacite xml</a></li>
                   <li role="presentation" class="divider"></li>
                 </#if>
                 <li><a class="edit-control" href="#edit/new">New metadata</a></li>
