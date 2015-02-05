@@ -23,12 +23,13 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
  */
 public class MetadataDocumentSolrIndexGeneratorTest {
     @Mock CodeLookupService codeLookupService;
+    @Mock ViewIndexer viewIndexer;
     private MetadataDocumentSolrIndexGenerator generator;
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService);
+        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService, viewIndexer);
     }
     
     @Test

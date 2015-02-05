@@ -16,7 +16,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
 /**
@@ -27,10 +26,12 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
     private final TopicIndexer topicIndexer;
     private final CodeLookupService codeLookupService;
+    private final ViewIndexer viewIndexer;
 
-    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService) {
+    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService, ViewIndexer viewIndexer) {
         this.topicIndexer = topicIndexer;
         this.codeLookupService = codeLookupService;
+        this.viewIndexer = viewIndexer;
     }
 
     @Override
@@ -42,8 +43,8 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                 .setResourceType(codeLookupService.lookup("metadata.scopeCode", document.getType()))
                 .setLocations(document.getLocations())
                 .setState(getState(document))
-                .setTopic(topicIndexer.index(document));
-        Optional.ofNullable(document.getMetadata()).ifPresent(m -> toReturn.setView(m.getIdentities(Permission.VIEW)));
+                .setTopic(topicIndexer.index(document))
+                .setView(viewIndexer.index(document));
         
         if(document instanceof GeminiDocument) {
             GeminiDocument gemini = (GeminiDocument)document;

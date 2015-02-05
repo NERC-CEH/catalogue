@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.ExtractTopicFromDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.ViewIndexer;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
 import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
@@ -151,7 +152,7 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeNameLookupService()),
+                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeNameLookupService(), new ViewIndexer(dataRepository)),
                 solrServer
         );
         
