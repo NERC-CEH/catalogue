@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -114,10 +115,9 @@ public class SearchQueryTest {
     }
     
     @Test
-    public void loggedInUserCanOnlySearchForPublicRecords() {
+    public void loggedInUserCanSearchForPublicRecordsAndViewableOnes() {
         //Given
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("testloggedin");
+        CatalogueUser user = new CatalogueUser().setUsername("testloggedin");
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             user,
@@ -132,7 +132,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat("FilterQuery should be 'state:public' for logged in user", solrQuery.getFilterQueries(), hasItemInArray("{!term f=state}public"));
+        assertThat("FilterQuery should be 'state:public' for logged in user", solrQuery.getFilterQueries(), hasItemInArray("({!term f=state}public) OR ({!term f=view}testloggedin)"));
     }
     
     @Test(expected=IllegalArgumentException.class)

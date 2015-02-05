@@ -183,8 +183,9 @@ public class SearchQuery {
         if (user.isPublic()) {
             query.addFilterQuery("{!term f=state}public");
         } else {
-            // TODO block access to records for everyone until fixed permissions 
-            query.addFilterQuery("{!term f=state}public");
+            String username = user.getUsername().toLowerCase();
+            
+            query.addFilterQuery(String.format("({!term f=state}public) OR ({!term f=view}%s)", username));
         }
     }
     
