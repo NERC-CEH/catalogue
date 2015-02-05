@@ -43,7 +43,7 @@ public class PublicationConfig {
         Transition pendingToPublic = Transition.builder()
             .toState(publik)
             .id("re4vkb")
-            .title("Publish Document")
+            .title("Publish document")
             .helpText("Only publish document after Quality Check 2, 2.4a and 4.ii have been completed.")
             .confirmationQuestion("Make this document public?")
             .build();

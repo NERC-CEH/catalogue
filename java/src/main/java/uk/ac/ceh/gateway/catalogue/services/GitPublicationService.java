@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,7 @@ import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationException;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.PublishingRole;
@@ -27,28 +29,33 @@ public class GitPublicationService implements PublicationService {
     private final Workflow workflow;
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
+    private final BundledReaderService<MetadataDocument> documentBundleReader;
 
     @Autowired
-    public GitPublicationService(GroupStore<CatalogueUser> groupStore, Workflow workflow, DataRepository<CatalogueUser> repo, DocumentInfoMapper<MetadataInfo> documentInfoMapper) {
+    public GitPublicationService(GroupStore<CatalogueUser> groupStore, Workflow workflow, DataRepository<CatalogueUser> repo, DocumentInfoMapper<MetadataInfo> documentInfoMapper, BundledReaderService<MetadataDocument> documentBundleReader) {
         this.groupStore = groupStore;
         this.workflow = workflow;
         this.repo = repo;
         this.documentInfoMapper = documentInfoMapper;
+        this.documentBundleReader = documentBundleReader;
     }
 
     @Override
     public StateResource current(CatalogueUser user, String fileIdentifier, UriComponentsBuilder builder) {
-        return current(user, getMetadataInfo(fileIdentifier), builder);
+        MetadataDocument metadata = getMetadataDocument(fileIdentifier);
+        MetadataInfo info = getMetadataInfo(fileIdentifier);
+        return current(user, info, builder, metadata.getTitle(), metadata.getUri().toString());
     }
     
-    private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, UriComponentsBuilder builder) {
+    private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, UriComponentsBuilder builder, String metadataTitle, String metadataUrl) {
         final State currentState = workflow.currentState(metadataInfo);
         final List<Group> userGroups = groupStore.getGroups(user);
-        return new StateResource(currentState, getPublishingRoles(userGroups), builder);
+        return new StateResource(currentState, getPublishingRoles(userGroups), builder, metadataTitle, metadataUrl);
     }
 
     @Override
     public StateResource transition(CatalogueUser user, String fileIdentifier, String transitionId, UriComponentsBuilder builder) {
+        final MetadataDocument metadata = getMetadataDocument(fileIdentifier);
         final MetadataInfo original = getMetadataInfo(fileIdentifier);
         final Set<PublishingRole> publishingRoles = getPublishingRoles(groupStore.getGroups(user));
         final State currentState = workflow.currentState(original);
@@ -57,17 +64,30 @@ public class GitPublicationService implements PublicationService {
         if ( !returned.equals(original)) {
             saveMetadataInfo(fileIdentifier, returned, user);
         }
-        return current(user, returned, builder);
+        return current(user, returned, builder, metadata.getTitle(), metadata.getUri().toString());
+    }
+    
+    private MetadataDocument getMetadataDocument(String fileIdentifier) {
+        MetadataDocument toReturn;
+        try {
+            toReturn = documentBundleReader.readBundle(fileIdentifier, repo.getLatestRevision().getRevisionID());
+            if (toReturn.getUri() == null) {
+                toReturn.attachUri(URI.create(String.format("/documents/%s", fileIdentifier)));
+            }
+        } catch (IOException | UnknownContentTypeException ex) {
+            throw new DocumentDoesNotExistException(String.format("Document: %s does not exist", fileIdentifier), ex);
+        }
+        return toReturn;
     }
     
     private MetadataInfo getMetadataInfo(String fileIdentifier) {
-        MetadataInfo metadataInfo;
+        MetadataInfo toReturn;
         try {
-            metadataInfo = documentInfoMapper.readInfo(repo.getData(String.format("%s.meta", fileIdentifier)).getInputStream());
+            toReturn = documentInfoMapper.readInfo(repo.getData(String.format("%s.meta", fileIdentifier)).getInputStream());
         } catch (IOException | NullPointerException ex) {
             throw new DocumentDoesNotExistException(String.format("Document: %s does not exist", fileIdentifier), ex);
         }
-        return metadataInfo;
+        return toReturn;
     }
     
     private Set<PublishingRole> getPublishingRoles(List<Group> groups) {

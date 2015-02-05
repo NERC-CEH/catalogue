@@ -31,6 +31,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverte
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
@@ -66,6 +67,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         converters.add(new Object2TemplatedMessageConverter(UKEOFDocument.class,  configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(SearchResults.class,  configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(Citation.class,       configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(StateResource.class,  configureFreeMarker().getConfiguration()));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
