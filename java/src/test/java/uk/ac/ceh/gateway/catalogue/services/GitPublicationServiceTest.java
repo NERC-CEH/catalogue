@@ -87,6 +87,7 @@ public class GitPublicationServiceTest {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.EDITOR_ROLE)));
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(draft);
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(draft.getMetadata());
         
         //When
         publicationService.transition(editor, FILENAME, PENDING_ID, uriBuilder);
@@ -100,6 +101,7 @@ public class GitPublicationServiceTest {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.EDITOR_ROLE)));
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(publik);
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(publik.getMetadata());
         
         //When
         publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
@@ -113,6 +115,7 @@ public class GitPublicationServiceTest {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.PUBLISHER_ROLE)));
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(publik);
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(publik.getMetadata());
         
         //When
         publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
@@ -126,6 +129,7 @@ public class GitPublicationServiceTest {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Collections.EMPTY_LIST);
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(publik);
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(publik.getMetadata());
         
         //When
         publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
@@ -138,6 +142,7 @@ public class GitPublicationServiceTest {
     public void successfullyGetCurrentState() throws Exception {
         //Given
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(draft);
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(draft.getMetadata());
         
         //When
         StateResource current = publicationService.current(editor, FILENAME, uriBuilder);
@@ -150,6 +155,7 @@ public class GitPublicationServiceTest {
     public void tryToGetFileThatDoesNotExist() throws Exception {
         //Given 
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenThrow(new DataRepositoryException("test"));
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenThrow(new NullPointerException());
         
         //When
         publicationService.current(editor, "this file name does not exist", uriBuilder);

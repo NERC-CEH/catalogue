@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,8 +43,8 @@ public class GitPublicationService implements PublicationService {
     @Override
     public StateResource current(CatalogueUser user, String fileIdentifier, UriComponentsBuilder builder) {
         MetadataDocument metadata = getMetadataDocument(fileIdentifier);
-        MetadataInfo info = metadata.getMetadata();
-        return current(user, metadata.getMetadata(), builder, metadata.getTitle(), metadata.getUri().toString());
+        MetadataInfo info = getMetadataInfo(fileIdentifier);
+        return current(user, info, builder, metadata.getTitle(), metadata.getUri().toString());
     }
     
     private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, UriComponentsBuilder builder, String metadataTitle, String metadataUrl) {
@@ -57,7 +56,7 @@ public class GitPublicationService implements PublicationService {
     @Override
     public StateResource transition(CatalogueUser user, String fileIdentifier, String transitionId, UriComponentsBuilder builder) {
         final MetadataDocument metadata = getMetadataDocument(fileIdentifier);
-        final MetadataInfo original = metadata.getMetadata();
+        final MetadataInfo original = getMetadataInfo(fileIdentifier);
         final Set<PublishingRole> publishingRoles = getPublishingRoles(groupStore.getGroups(user));
         final State currentState = workflow.currentState(original);
         final Transition transition = currentState.getTransition(publishingRoles, transitionId);
@@ -76,6 +75,16 @@ public class GitPublicationService implements PublicationService {
                 toReturn.attachUri(URI.create(String.format("/documents/%s", fileIdentifier)));
             }
         } catch (IOException | UnknownContentTypeException ex) {
+            throw new DocumentDoesNotExistException(String.format("Document: %s does not exist", fileIdentifier), ex);
+        }
+        return toReturn;
+    }
+    
+    private MetadataInfo getMetadataInfo(String fileIdentifier) {
+        MetadataInfo toReturn;
+        try {
+            toReturn = documentInfoMapper.readInfo(repo.getData(String.format("%s.meta", fileIdentifier)).getInputStream());
+        } catch (IOException | NullPointerException ex) {
             throw new DocumentDoesNotExistException(String.format("Document: %s does not exist", fileIdentifier), ex);
         }
         return toReturn;
