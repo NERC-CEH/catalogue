@@ -14,7 +14,7 @@ import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.gateway.catalogue.config.ApplicationConfig;
 import uk.ac.ceh.gateway.catalogue.config.CrowdUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
- import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
@@ -36,7 +36,7 @@ public class RunCatalogImporter {
     }
     
     @Test
-//    @Ignore("This is not really a test, it is a way of creating a Git repository from terraCatalog export Zips")
+    @Ignore("This is not really a test, it is a way of creating a Git repository from terraCatalog export Zips")
     // N.B. change data.repository.location in developer.properties to a temp location before running.
     public void toImport() throws Exception {
         DocumentReadingService documentReader = new MessageConverterReadingService()
