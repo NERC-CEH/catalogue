@@ -194,6 +194,7 @@ public class SearchQuery {
         String username = user.getUsername().toLowerCase();
         StringBuilder toReturn = new StringBuilder("({!term f=state}public) OR ({!term f=view}")
             .append(username);
+        
         groupStore.getGroups(user)
             .stream()
             .map(Group::getName)
@@ -204,8 +205,7 @@ public class SearchQuery {
                     .append(g);
             });
         
-        toReturn.append(")");
-        return toReturn.toString();
+        return toReturn.append(")").toString();
     }
     
     private void setFacetFilters(SolrQuery query){
