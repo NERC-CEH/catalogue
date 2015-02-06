@@ -12,6 +12,15 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 
+/**
+ * Extracts document author and users and groups with view permissions for indexing
+ * 
+ * This will extract the author of the document and any users or groups with view
+ * permission on the document. There is no owner of a document users and groups
+ * can have VIEW, EDIT or DELETE privilege on a document.
+ * 
+ * @author rjsc
+ */
 public class ViewIndexer {
     private final DataRepository<CatalogueUser> repo;
 
