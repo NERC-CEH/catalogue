@@ -11,6 +11,8 @@ import lombok.experimental.Wither;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.ac.ceh.components.userstore.Group;
+import uk.ac.ceh.components.userstore.GroupStore;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.BBOX_QUERY_PARAM;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.FACET_QUERY_PARAM;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.OP_QUERY_PARAM;
@@ -40,6 +42,7 @@ public class SearchQuery {
     private final @Wither int page;
     private final int rows;
     private final @NotNull List<FacetFilter> facetFilters;
+    private final GroupStore<CatalogueUser> groupStore;
       
     public SolrQuery build(){
         SolrQuery query = new SolrQuery()
@@ -71,7 +74,7 @@ public class SearchQuery {
      */
     public SearchQuery withBbox(String newBbox) {
         if ( (bbox == null && newBbox != null) || (bbox !=null && !bbox.equals(newBbox)) ) {
-            return new SearchQuery(endpoint, user, term, newBbox, spatialOperation, PAGE_DEFAULT, rows, facetFilters);
+            return new SearchQuery(endpoint, user, term, newBbox, spatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore);
         }
         else {
             return this;
@@ -87,7 +90,7 @@ public class SearchQuery {
      */
     public SearchQuery withSpatialOperation(SpatialOperation newSpatialOperation) {
         if ( !spatialOperation.equals(newSpatialOperation) ) {
-            return new SearchQuery(endpoint, user, term, bbox, newSpatialOperation, PAGE_DEFAULT, rows, facetFilters);
+            return new SearchQuery(endpoint, user, term, bbox, newSpatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore);
         }
         else {
             return this;
@@ -108,7 +111,7 @@ public class SearchQuery {
         if (!containsFacetFilter(filter)) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.add(filter);
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters);
+            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore);
         }
         else {
             return this;
@@ -127,7 +130,7 @@ public class SearchQuery {
         if(containsFacetFilter(filter) ) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.remove(filter);
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters);
+            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore);
         }
         else {
             return this;
@@ -183,10 +186,26 @@ public class SearchQuery {
         if (user.isPublic()) {
             query.addFilterQuery("{!term f=state}public");
         } else {
-            String username = user.getUsername().toLowerCase();
-            
-            query.addFilterQuery(String.format("({!term f=state}public) OR ({!term f=view}%s)", username));
+            query.addFilterQuery(userVisibility());
         }
+    }
+    
+    private String userVisibility() {
+        String username = user.getUsername().toLowerCase();
+        StringBuilder toReturn = new StringBuilder("({!term f=state}public) OR ({!term f=view}")
+            .append(username);
+        groupStore.getGroups(user)
+            .stream()
+            .map(Group::getName)
+            .map(String::toLowerCase)
+            .forEach(g -> {
+                toReturn
+                    .append(" OR ")
+                    .append(g);
+            });
+        
+        toReturn.append(")");
+        return toReturn.toString();
     }
     
     private void setFacetFilters(SolrQuery query){
