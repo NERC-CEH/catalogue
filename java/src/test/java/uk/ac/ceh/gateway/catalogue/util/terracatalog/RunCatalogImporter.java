@@ -32,11 +32,11 @@ public class RunCatalogImporter {
     
     @BeforeClass
     public static void before() {
-        System.setProperty("config.file", "E:\\repos\\cig\\vagrant\\catalogue_config\\development.properties");
+        System.setProperty("config.file", "E:/repos/cig/vagrant/catalogue_config/development.properties");
     }
     
     @Test
-    @Ignore("This is not really a test, it is a way of creating a Git repository from terraCatalog export Zips")
+//    @Ignore("This is not really a test, it is a way of creating a Git repository from terraCatalog export Zips")
     // N.B. change data.repository.location in developer.properties to a temp location before running.
     public void toImport() throws Exception {
         DocumentReadingService documentReader = new MessageConverterReadingService()
@@ -59,6 +59,6 @@ public class RunCatalogImporter {
             documentInfoMapper,
             infoFactory,
             importUser);
-        importer.importDirectory(new File("S:\\Environmental Informatics\\EIDC\\Hub Operations\\Catalogue Backups"));
+        importer.importDirectory(new File("C:/users/rjsc/desktop/backup"));
     }
 }
