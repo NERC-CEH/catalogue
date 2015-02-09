@@ -118,6 +118,13 @@
     .result { 
       display: inline-block; //Disable margin-collapsing
       width:   100%;         //But keep the width of the results at 100%
+
+      &.state-draft {
+        color: lighten(@gray-light, 30%);
+        h2 a {
+          color: lighten(@brand-success, 40%);
+        }
+      }
     }
     @media (min-width: @screen-md-min) {
       .result {
