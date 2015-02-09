@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import com.google.common.base.Strings;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -25,10 +26,12 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
     private final TopicIndexer topicIndexer;
     private final CodeLookupService codeLookupService;
+    private final ViewIndexer viewIndexer;
 
-    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService) {
+    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService, ViewIndexer viewIndexer) {
         this.topicIndexer = topicIndexer;
         this.codeLookupService = codeLookupService;
+        this.viewIndexer = viewIndexer;
     }
 
     @Override
@@ -40,7 +43,8 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                 .setResourceType(codeLookupService.lookup("metadata.scopeCode", document.getType()))
                 .setLocations(document.getLocations())
                 .setState(getState(document))
-                .setTopic(topicIndexer.index(document));   
+                .setTopic(topicIndexer.index(document))
+                .setView(viewIndexer.index(document));
         
         if(document instanceof GeminiDocument) {
             GeminiDocument gemini = (GeminiDocument)document;
@@ -76,12 +80,14 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
     // And grab a property off of each element in the collection.
     // If the supplied collection is null, this method will return an empty
     // list
-    private <U, T> List<U> grab(Collection<T> list, Function<? super T, ? extends U> mapper ) {
+    private <T> List<String> grab(Collection<T> list, Function<? super T, String> mapper ) {
         return Optional.ofNullable(list)
                         .orElse(Collections.emptyList())
                         .stream()
                         .map(mapper)
+                        .map(Strings::emptyToNull)
                         .filter(Objects::nonNull)
+                        .distinct()
                         .collect(Collectors.toList());
     }
     
@@ -109,6 +115,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         private @Field String licence;
         private @Field String state;
         private @Field List<String> topic;
+        private @Field List<String> view;
         
         public String getShortenedDescription(){
             return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);
