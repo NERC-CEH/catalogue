@@ -47,7 +47,7 @@ public class RunCatalogImporter {
         userFactory.put("ceh", "@ceh.ac.uk");
         StateTranslatingMetadataInfoFactory infoFactory = new StateTranslatingMetadataInfoFactory();
         infoFactory.put("private", "draft");
-        infoFactory.put("public", "public");
+        infoFactory.put("public", "published");
         CatalogueUser importUser = new CatalogueUser();
         importUser.setUsername("Import");
         importUser.setEmail("import@example.com");

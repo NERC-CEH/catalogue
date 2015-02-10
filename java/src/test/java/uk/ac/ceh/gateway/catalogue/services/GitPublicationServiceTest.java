@@ -46,7 +46,7 @@ public class GitPublicationServiceTest {
     private static final String FILENAME = "e5090602-6ff9-4936-8217-857ea6de5774";
     private static final String PENDING_ID = "ykhm7b";
     private static final String DRAFT_ID = "qtak5r";
-    private MetadataDocument draft, publik;
+    private MetadataDocument draft, published;
     private GitPublicationService publicationService;
     
     @Rule
@@ -72,10 +72,10 @@ public class GitPublicationServiceTest {
             .setUri(URI.create("http://localhost"))
             .setMetadata(new MetadataInfo().setState("draft"));
         
-        this.publik = new GeminiDocument()
-            .setTitle("public")
+        this.published = new GeminiDocument()
+            .setTitle("published")
             .setUri(URI.create("http://localhost"))
-            .setMetadata(new MetadataInfo().setState("public"));
+            .setMetadata(new MetadataInfo().setState("published"));
         
         MockitoAnnotations.initMocks(this);
         
@@ -100,8 +100,8 @@ public class GitPublicationServiceTest {
     public void editorCannotTransitionFromPublic() throws Exception {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.EDITOR_ROLE)));
-        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(publik);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(publik.getMetadata());
+        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(published);
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(published.getMetadata());
         
         //When
         publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
@@ -114,8 +114,8 @@ public class GitPublicationServiceTest {
     public void publisherCanTransitionFromPublic() throws Exception {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.PUBLISHER_ROLE)));
-        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(publik);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(publik.getMetadata());
+        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(published);
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(published.getMetadata());
         
         //When
         publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
@@ -128,8 +128,8 @@ public class GitPublicationServiceTest {
     public void unknownCannotTransitionFromPublic() throws Exception {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Collections.EMPTY_LIST);
-        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(publik);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(publik.getMetadata());
+        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(published);
+        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(published.getMetadata());
         
         //When
         publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);

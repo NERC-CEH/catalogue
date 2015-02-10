@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -21,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
  * 
  * @author rjsc
  */
+@Slf4j
 public class ViewIndexer {
     private final DataRepository<CatalogueUser> repo;
 
@@ -41,7 +43,9 @@ public class ViewIndexer {
             .map(m -> { return m.getIdentities(Permission.VIEW); });
         
         if (possible.isPresent() && !possible.get().isEmpty()) {
-            return possible.get();
+            List<String> views = possible.get();
+            log.debug("indexing identities: {}", views);
+            return views;
         } else {
             return new ArrayList<>();
         }
