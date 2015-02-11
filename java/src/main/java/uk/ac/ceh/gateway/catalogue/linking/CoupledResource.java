@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.linking;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 
 @Value
 public class CoupledResource {

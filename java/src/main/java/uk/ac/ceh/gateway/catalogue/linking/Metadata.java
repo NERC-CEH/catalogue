@@ -4,7 +4,7 @@ import static com.google.common.base.Strings.nullToEmpty;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 

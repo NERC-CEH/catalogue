@@ -3,7 +3,7 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 import static com.google.common.base.Strings.nullToEmpty;
 import java.util.regex.Pattern;
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.OTHER;
 
