@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
 /**
@@ -26,12 +27,10 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
     private final TopicIndexer topicIndexer;
     private final CodeLookupService codeLookupService;
-    private final ViewIndexer viewIndexer;
 
-    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService, ViewIndexer viewIndexer) {
+    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService) {
         this.topicIndexer = topicIndexer;
         this.codeLookupService = codeLookupService;
-        this.viewIndexer = viewIndexer;
     }
 
     @Override
@@ -44,7 +43,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                 .setLocations(document.getLocations())
                 .setState(getState(document))
                 .setTopic(topicIndexer.index(document))
-                .setView(viewIndexer.index(document));
+                .setView(getViews(document));
         
         if(document instanceof GeminiDocument) {
             GeminiDocument gemini = (GeminiDocument)document;
@@ -74,6 +73,14 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         } else {
             return null;
         }
+    }
+    
+    public List<String> getViews(MetadataDocument document) {
+        Objects.requireNonNull(document);
+        return Optional.ofNullable(document)
+            .map(MetadataDocument::getMetadata)
+            .map(m -> m.getIdentities(Permission.VIEW))
+            .orElse(Collections.emptyList());       
     }
     
     // The following will iterate over a given collection (which could be null)

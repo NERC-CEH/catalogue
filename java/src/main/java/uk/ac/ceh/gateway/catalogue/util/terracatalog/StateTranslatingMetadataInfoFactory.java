@@ -35,6 +35,11 @@ public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocument
             toReturn.addPermission(Permission.VIEW, "public");
         }
         
+        String author = ext.getOwner().toLowerCase();
+        toReturn.addPermission(Permission.VIEW, author);
+        toReturn.addPermission(Permission.EDIT, author);
+        toReturn.addPermission(Permission.DELETE, author);
+        
         return toReturn;
     }
     

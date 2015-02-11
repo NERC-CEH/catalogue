@@ -19,7 +19,6 @@ import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
-import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
 
 @Service("permission")
 @Slf4j
@@ -46,23 +45,13 @@ public class PermissionService {
         boolean toReturn = false;
         Permission requested = Permission.valueOf(Objects.requireNonNull(permission).toUpperCase());
         
-        DataDocument data;
-        try {
-            data = repo.getData(revision, format("%s.meta", file));
-            log.debug("revision from dataDocument: {}", data.getRevision());
-        } catch (DataRepositoryException ex) {
-            return false;
-        }
-        Optional<MetadataInfo> document = Optional.ofNullable(documentInfoMapper.readInfo(data.getInputStream()));
-        
+        Optional<MetadataInfo> document = getMetadataInfo(file, revision);
         if (document.isPresent()) {
             MetadataInfo metadataInfo = document.get();
             toReturn = 
-                isPubliclyViewable(metadataInfo, requested)
+                metadataInfo.isPubliclyViewable(requested)
                 || 
-                userCanAccess(user, metadataInfo, requested)
-                ||
-                authorCanAccess(user, file);
+                metadataInfo.canAccess(requested, user, groupStore.getGroups(user));
         }
         return toReturn;
     }
@@ -82,44 +71,16 @@ public class PermissionService {
         }
     }
     
-    private boolean isPubliclyViewable(MetadataInfo metadataInfo, Permission requested) {
-        log.debug("isPubliclyViewable");
-        return metadataInfo.getState().equalsIgnoreCase("public") && VIEW.equals(requested);
-    }
-    public boolean userCanAccess(CatalogueUser user, MetadataInfo metadataInfo) {
-        return user.isPublic() && metadataInfo.getState().equalsIgnoreCase("public");
-    }
-    
-    private boolean userCanAccess(CatalogueUser user, MetadataInfo metadataInfo, Permission requested) {
-        log.debug("userCanAccess");
-        List<String> permittedIdentities = metadataInfo.getIdentities(requested);
-        log.debug("user requesting access: {}", user);
-        if ( !user.isPublic()) {
-            Optional<String> permittedGroup = groupStore.getGroups(user)
-                .stream()
-                .map(Group::getName)
-                .filter(name -> permittedIdentities.contains(name.toLowerCase()))
-                .findFirst();
-            return permittedIdentities.contains(user.getUsername()) || permittedGroup.isPresent();
-        } else {
-            return false;
+    private Optional<MetadataInfo> getMetadataInfo(String file, String revision) {
+        DataDocument data;
+        Optional<MetadataInfo> toReturn;
+        try {
+            data = repo.getData(revision, format("%s.meta", file));
+            log.debug("revision from dataDocument: {}", data.getRevision());
+            toReturn = Optional.ofNullable(documentInfoMapper.readInfo(data.getInputStream()));
+        } catch (IOException ex) {
+            toReturn = Optional.empty();
         }
-    }
-    
-    private boolean authorCanAccess(CatalogueUser user, String file) throws DataRepositoryException {
-        log.debug("authorCanAccess");
-        
-        Optional<CatalogueUser> author = repo.getRevisions(format("%s.meta", file))
-            .stream()
-            .findFirst()
-            .map(DataRevision<CatalogueUser>::getAuthor);
-        
-        if (author.isPresent()) {
-            log.debug("author found, about to check permission");
-            return user.equals(author.get());
-        } else {
-            log.debug("author absent");
-            return false;
-        }
+        return toReturn;
     }
 }

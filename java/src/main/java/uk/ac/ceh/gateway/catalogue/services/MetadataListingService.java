@@ -10,6 +10,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 
 /**
  * The following is a cacheable metadata file lister. It will scan the data 
@@ -24,7 +25,6 @@ public class MetadataListingService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentListingService listingService;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
-    private final PermissionService permissions;
     
     /**
      * Returns a list of metadata ids of documents which are publicly accessible
@@ -36,7 +36,7 @@ public class MetadataListingService {
      */
     @Cacheable("metadata-listings")
     public List<String> getPublicDocuments(String revision, Class<? extends MetadataDocument> type) throws DataRepositoryException, IOException {
-        return getDocuments(revision, type, CatalogueUser.PUBLIC_USER);
+        return getDocuments(revision, type);
     }
     
     /**
@@ -45,21 +45,20 @@ public class MetadataListingService {
      * metadata-listings cache.
      * @param revision of the data repository to read from
      * @param type of the document to list
-     * @param user who can access the documents
      * @return a list of metadata ids
      * @throws DataRepositoryException
      * @throws IOException 
      */
     @Cacheable("metadata-listings")
-    public List<String> getDocuments(String revision, Class<? extends MetadataDocument> type, CatalogueUser user) throws DataRepositoryException, IOException {
+    public List<String> getDocuments(String revision, Class<? extends MetadataDocument> type) throws DataRepositoryException, IOException {
         List<String> toReturn = new ArrayList<>();
         List<String> documents = listingService.filterFilenames(repo.getFiles(revision));
         
-        log.debug("Building metadata listing for " + user + " @ " + revision + " of type " + type);
+        log.debug("Building metadata listing @ {} of type: {}", revision, type);
         for(String file : documents) {
             try {
                 MetadataDocument doc = documentBundleReader.readBundle(file, revision);
-                if(type.isAssignableFrom(doc.getClass()) && permissions.userCanAccess(user, doc.getMetadata())) {
+                if(type.isAssignableFrom(doc.getClass()) && doc.getMetadata().isPubliclyViewable(Permission.VIEW)) {
                     toReturn.add(doc.getId());
                 }
             }
