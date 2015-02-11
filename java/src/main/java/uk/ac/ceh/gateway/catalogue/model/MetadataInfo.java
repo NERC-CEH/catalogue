@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,6 +31,7 @@ public class MetadataInfo {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private final Multimap<Permission, String> permissions;
+    private static final String PUBLIC_GROUP = "public";
     
     public MetadataInfo() {
         permissions = HashMultimap.create();
@@ -64,13 +64,14 @@ public class MetadataInfo {
     public void addPermission(Permission permission, String identity) {
         Objects.requireNonNull(permission);
         Objects.requireNonNull(Strings.emptyToNull(identity));
-        permissions.put(permission, identity.toLowerCase());
-    }
-    
-    public void addPermissions(Permission permission, List<String> identities) {
-        Objects.requireNonNull(permission);
-        Objects.requireNonNull(identities);
-        permissions.putAll(permission, identities);
+        if (PUBLIC_GROUP.equalsIgnoreCase(identity)) {
+            if(Permission.VIEW.equals(permission)) {
+                // Only allow VIEW permission to be set for the PUBLIC_GROUP
+                permissions.put(permission, identity.toLowerCase());
+            }
+        } else {
+            permissions.put(permission, identity.toLowerCase());
+        }
     }
     
     public void removePermission(Permission permission, String identity) {
@@ -95,8 +96,12 @@ public class MetadataInfo {
             && 
             state.equalsIgnoreCase("published");
     }
-    
+       
     public boolean canAccess(Permission requested, CatalogueUser user, List<Group> groups) {
+        Objects.requireNonNull(requested);
+        Objects.requireNonNull(user);
+        Objects.requireNonNull(groups);
+        
         if (user.isPublic()) {
             return false;
         }
