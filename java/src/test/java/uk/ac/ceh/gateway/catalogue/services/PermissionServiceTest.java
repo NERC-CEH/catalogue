@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Matchers.any;
@@ -28,6 +29,13 @@ public class PermissionServiceTest {
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper = mock(DocumentInfoMapper.class);
     private final GroupStore<CatalogueUser> groupStore = mock(GroupStore.class);
     private final PermissionService permissionService = new PermissionService(repo, documentInfoMapper, groupStore);
+    private MetadataInfo publik;
+    
+    @Before
+    public void setup() {
+        publik = new MetadataInfo().setState("published");
+        publik.addPermission(Permission.VIEW, "public");
+    }
     
     @Test
     public void annonymousCanNotAccessUnknownRecord() throws IOException {
@@ -45,7 +53,7 @@ public class PermissionServiceTest {
     public void annonymousCanAccessPublicRecord() throws IOException {
         //Given
         given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo().setState("public"));
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(publik);
         
         //When
         boolean actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "VIEW");
@@ -58,7 +66,7 @@ public class PermissionServiceTest {
     public void namedUserCanAccessPublicRecord() throws IOException {
         //Given
         given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo().setState("public"));
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(publik);
         CatalogueUser namedUser = new CatalogueUser().setUsername("named");
         
         //When
@@ -129,23 +137,6 @@ public class PermissionServiceTest {
         
         //Then
         assertThat("Named user should not be able to write draft record", actual, equalTo(false));
-    }
-    
-    @Test
-    public void authorCanAccessDraftRecord() throws IOException {
-        //Given
-        CatalogueUser author = new CatalogueUser().setUsername("author");
-        given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        MetadataInfo metadataInfo = new MetadataInfo().setState("draft");
-        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
-        DataRevision<CatalogueUser> dataRevision = createDataRevision("author");
-        given(repo.getRevisions(any(String.class))).willReturn(Arrays.asList(dataRevision));
-        
-        //When
-        boolean actual = permissionService.toAccess(author, "test", "a63fe7", "VIEW");
-        
-        //Then
-        assertThat("Author should be able to access draft record that they are author of", actual, equalTo(true));
     }
     
     @Test

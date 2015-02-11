@@ -184,7 +184,8 @@ public class SearchQuery {
     }
     private void setRecordVisibility(SolrQuery query) {
         if (user.isPublic()) {
-            query.addFilterQuery("{!term f=state}public");
+            query.addFilterQuery("{!term f=state}published");
+            query.addFilterQuery("{!term f=view}public");
         } else {
             query.addFilterQuery(userVisibility());
         }
@@ -192,7 +193,7 @@ public class SearchQuery {
     
     private String userVisibility() {
         String username = user.getUsername().toLowerCase();
-        StringBuilder toReturn = new StringBuilder("({!term f=state}public) OR ({!term f=view}")
+        StringBuilder toReturn = new StringBuilder("view:public OR ")
             .append(username);
         
         groupStore.getGroups(user)
@@ -205,7 +206,7 @@ public class SearchQuery {
                     .append(g);
             });
         
-        return toReturn.append(")").toString();
+        return toReturn.toString();
     }
     
     private void setFacetFilters(SolrQuery query){

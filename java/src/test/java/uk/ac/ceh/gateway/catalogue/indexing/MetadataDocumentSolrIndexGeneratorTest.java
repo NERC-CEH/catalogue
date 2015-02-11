@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -23,13 +22,12 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
  */
 public class MetadataDocumentSolrIndexGeneratorTest {
     @Mock CodeLookupService codeLookupService;
-    @Mock ViewIndexer viewIndexer;
     private MetadataDocumentSolrIndexGenerator generator;
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService, viewIndexer);
+        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService);
     }
     
     @Test

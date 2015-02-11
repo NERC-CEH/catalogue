@@ -18,6 +18,9 @@ public class StateTranslatingMetadataInfoFactoryTest {
         TerraCatalogExt ext = new TerraCatalogExt("testOwner", "testGroup", "private", "protection");
         MetadataInfo expected = new MetadataInfo().setRawType("application/xml").setState("draft").setDocumentType("GEMINI_DOCUMENT");
         expected.addPermission(Permission.VIEW, "testGroup");
+        expected.addPermission(Permission.VIEW, "testOwner");
+        expected.addPermission(Permission.EDIT, "testOwner");
+        expected.addPermission(Permission.DELETE, "testOwner");
         
         //When
         MetadataInfo actual = factory.getDocumentInfo(document, ext);
@@ -34,6 +37,9 @@ public class StateTranslatingMetadataInfoFactoryTest {
         TerraCatalogExt ext = new TerraCatalogExt("testOwner", "testGroup", "internal", "protection");
         MetadataInfo expected = new MetadataInfo().setRawType("application/xml").setState("draft").setDocumentType("GEMINI_DOCUMENT");
         expected.addPermission(Permission.VIEW, "testGroup");
+        expected.addPermission(Permission.VIEW, "testOwner");
+        expected.addPermission(Permission.EDIT, "testOwner");
+        expected.addPermission(Permission.DELETE, "testOwner");
         
         //When
         MetadataInfo actual = factory.getDocumentInfo(document, ext);

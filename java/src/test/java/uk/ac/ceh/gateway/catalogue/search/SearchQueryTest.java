@@ -54,11 +54,11 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("({!term f=state}public) OR ({!term f=view}helen)")); 
+        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:public OR helen")); 
     }
     
     @Test
-    public void loggedInUserWithGroupsHasUsernameAsViewFilter() {
+    public void loggedInUserWithGroupsHasUsernameAndGroupsAsViewFilter() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("helen");
         given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("CEH"), createGroup("EIDC")));
@@ -79,7 +79,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("({!term f=state}public) OR ({!term f=view}helen OR ceh OR eidc)")); 
+        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:public OR helen OR ceh OR eidc")); 
     }
     
     private Group createGroup(String name) {
@@ -116,7 +116,8 @@ public class SearchQueryTest {
         
         //Then
         assertThat("Solr query should be the 'default text'", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
-        assertThat("Solr query state filter query should be 'public'", solrQuery.getFilterQueries(), hasItemInArray("{!term f=state}public"));
+        assertThat("Solr query state filter query should be 'public'", solrQuery.getFilterQueries(), hasItemInArray("{!term f=view}public"));
+        assertThat("Solr query state filter query should be 'published'", solrQuery.getFilterQueries(), hasItemInArray("{!term f=state}published"));
         assertThat("Solr query licence facet fields should be present", solrQuery.getFacetFields(), hasItemInArray("licence"));
         assertThat("Solr query resourceType facet fields should be present", solrQuery.getFacetFields(), hasItemInArray("resourceType"));
         assertThat("Solr query start should be 0 for first page", solrQuery.getStart(), equalTo(0));
@@ -194,29 +195,6 @@ public class SearchQueryTest {
         assertThat("Solr query should be the default text", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
         assertThat("Solr query should have resourceType filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=resourceType}dataset"));
         assertThat("Solr query should have topic filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=topic}0/Climate/"));
-    }
-    
-    @Test
-    public void loggedInUserCanSearchForPublicRecordsAndViewableOnes() {
-        //Given
-        CatalogueUser user = new CatalogueUser().setUsername("testloggedin");
-        SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            user,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,  
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore
-        );
-
-        //When
-        SolrQuery solrQuery = query.build();
-
-        //Then
-        assertThat("FilterQuery should be 'state:public' for logged in user", solrQuery.getFilterQueries(), hasItemInArray("({!term f=state}public) OR ({!term f=view}testloggedin)"));
     }
     
     @Test(expected=IllegalArgumentException.class)
