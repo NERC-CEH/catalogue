@@ -4,7 +4,7 @@
   <div id="metadata" class="container">
     <h1>${title}</h1>
     <h2>Permissions</h2>
-    <table class="table">
+    <table class="table table-striped">
       <thead>
         <tr>
           <th>Username/Group</th>
@@ -13,23 +13,19 @@
           <th>Can Delete</th>
         </tr>
       </thead>
-      <tfoot>
-        <tr>
-          <td><input type="text" placeholder="Add username or group"></td>
-          <td><input type="checkbox"></td>
-          <td><input type="checkbox"></td>
-          <td><input type="checkbox"></td>
-        </tr>  
-      </tfoot>
       <tbody>
         <#list permissions?sort_by("identity") as permission>
           <tr>
             <td>${permission.identity}</td>
-            <td><input type="checkbox" <#if permission.canView>checked</#if>></td>
-            <td><input type="checkbox" <#if permission.canEdit>checked</#if>></td>
-            <td><input type="checkbox" <#if permission.canDelete>checked</#if>></td>
+            <td><input type="checkbox" disabled <#if permission.canView>checked</#if>></td>
+            <td><input type="checkbox" disabled <#if permission.canEdit>checked</#if>></td>
+            <td><input type="checkbox" disabled <#if permission.canDelete>checked</#if>></td>
           </tr>
         </#list>
       </tbody>
     </table>
+    <div class="pull-right">
+      <a class="btn btn-default" href="${metadataHref}">Return to metadata</a>
+      <a class="btn btn-primary" href="#permission/${id}">Edit</a>
+    </div>
 </#escape></@skeleton.master>
