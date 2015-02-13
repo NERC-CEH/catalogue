@@ -1,5 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import lombok.Value;
 import lombok.Builder;
+import lombok.NonNull;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -17,18 +21,34 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions.
     @Template(called="html/permission.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @Value
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class PermissionResource {
     private final String id, title, metadataHref;
     private final Set<IdentityPermissions> permissions;
     
-    public PermissionResource(MetadataDocument document) {
-        Objects.requireNonNull(document);
+    public PermissionResource(@NonNull MetadataDocument document) {
         MetadataInfo info = Objects.requireNonNull(document.getMetadata());
-        
         id = document.getId();
         title = document.getTitle();
         metadataHref = document.getUri().toString();
         permissions = createPermissions(info);
+    }
+    
+    @JsonCreator
+    private PermissionResource(
+        @JsonProperty("id") String id, 
+        @JsonProperty("title") String title,
+        @JsonProperty("metadataHref") String metadataHref,
+        @JsonProperty("permissions") Set<IdentityPermissions> permissions
+    ){
+        this.id = id;
+        this.title = title;
+        this.metadataHref = metadataHref;
+        this.permissions = permissions;
+    }
+    
+    public MetadataInfo updatePermissions(@NonNull MetadataInfo original) {
+        return original.replaceAllPermissions(permissions);
     }
 
     private Set<IdentityPermissions> createPermissions(MetadataInfo info) {
@@ -76,7 +96,13 @@ public class PermissionResource {
         private final boolean canView, canEdit, canDelete;
 
         @Builder
-        public IdentityPermissions(String identity, boolean canView, boolean canEdit, boolean canDelete) {
+        @JsonCreator
+        private IdentityPermissions(
+            @JsonProperty("identity") String identity,
+            @JsonProperty("canView") boolean canView,
+            @JsonProperty("canEdit") boolean canEdit,
+            @JsonProperty("canDelete") boolean canDelete
+        ) {
             this.identity = Objects.requireNonNull(Strings.emptyToNull(identity));
             this.canView = canView;
             this.canEdit = canEdit;

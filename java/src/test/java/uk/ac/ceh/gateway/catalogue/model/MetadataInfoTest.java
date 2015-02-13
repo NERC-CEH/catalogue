@@ -1,17 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import static org.hamcrest.CoreMatchers.hasItem;
+import java.util.Set;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.userstore.Group;
+import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 
 /**
  *
@@ -105,6 +108,55 @@ public class MetadataInfoTest {
         
         //Then
         assertThat("Public should be able to view", actual, equalTo(true));
+    }
+    
+    @Test
+    public void replacePermissions() {
+        //Given
+        MetadataInfo original = new MetadataInfo();
+        original.addPermission(Permission.VIEW, "test1");
+        Set<IdentityPermissions> permissions = new HashSet<>();
+        permissions.add(IdentityPermissions.builder().identity("another").canView(true).build());
+        
+        //When
+        MetadataInfo updated = original.replaceAllPermissions(permissions);
+        
+        //Then
+        assertThat("test1 should not be able to view", updated.getIdentities(Permission.VIEW), not(hasItem("test1")));
+        assertThat("another should not be able to view", updated.getIdentities(Permission.VIEW), hasItem("another"));
+    }
+    
+    @Test
+    public void failToremoveAllPermissions() {
+        //Given
+        MetadataInfo original = new MetadataInfo();
+        original.addPermission(Permission.VIEW, "test1");
+        Set<IdentityPermissions> permissions = new HashSet<>();
+        //An identity with no permissions
+        permissions.add(IdentityPermissions.builder().identity("another").build());
+        
+        //When
+        MetadataInfo updated = original.replaceAllPermissions(permissions);
+        
+        //Then
+        assertThat("test1 should still be able to view", updated.getIdentities(Permission.VIEW), hasItem("test1"));
+    }
+    
+    @Test
+    public void failToremoveIfOnlyPublicLeft() {
+        //Given
+        MetadataInfo original = new MetadataInfo();
+        original.addPermission(Permission.VIEW, "test1");
+        Set<IdentityPermissions> permissions = new HashSet<>();
+        //Only public identift
+        permissions.add(IdentityPermissions.builder().identity("public").canView(true).build());
+        
+        //When
+        MetadataInfo updated = original.replaceAllPermissions(permissions);
+        
+        //Then
+        assertThat("test1 should still be able to view", updated.getIdentities(Permission.VIEW), hasItem("test1"));
+        assertThat("public should not be able to view", updated.getIdentities(Permission.VIEW), not(hasItem("public")));
     }
     
     private List<Group> createGroups(String... groupnames) {
