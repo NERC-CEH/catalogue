@@ -4,7 +4,7 @@ import static com.google.common.base.Strings.nullToEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 
 @Value
 public class FacetResult {

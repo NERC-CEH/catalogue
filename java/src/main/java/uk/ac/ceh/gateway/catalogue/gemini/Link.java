@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 import static com.google.common.base.Strings.nullToEmpty;
 
 @Value

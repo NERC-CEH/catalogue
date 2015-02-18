@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.publication;
 
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 
 @Value
 @Builder

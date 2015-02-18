@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 import java.time.LocalDate;
 import static com.google.common.base.Strings.nullToEmpty;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateDeserializer;

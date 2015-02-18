@@ -6,9 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -17,6 +20,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.userstore.Group;
+import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 
 /**
  * The following class represents the state at which a document is in
@@ -60,7 +64,7 @@ public class MetadataInfo {
     public String getDocumentType() {
         return Optional.ofNullable(documentType).orElse("");
     }
-       
+    
     public void addPermission(Permission permission, String identity) {
         Objects.requireNonNull(permission);
         Objects.requireNonNull(Strings.emptyToNull(identity));
@@ -74,10 +78,39 @@ public class MetadataInfo {
         }
     }
     
-    public void removePermission(Permission permission, String identity) {
-        Objects.requireNonNull(permission);
-        Objects.requireNonNull(Strings.emptyToNull(identity));
-        permissions.remove(permission, identity);
+    public MetadataInfo replaceAllPermissions(Set<IdentityPermissions> updated) {
+        Objects.requireNonNull(updated);
+        MetadataInfo toReturn = new MetadataInfo(this);
+        toReturn.permissions.clear();
+        
+        for (IdentityPermissions ip : updated) {
+            if (ip.isCanView()) {
+                toReturn.addPermission(Permission.VIEW, ip.getIdentity());
+
+                if (ip.isCanEdit()) {
+                    toReturn.addPermission(Permission.EDIT, ip.getIdentity());
+
+                    if (ip.isCanDelete()) {
+                        toReturn.addPermission(Permission.DELETE, ip.getIdentity());
+                    }
+                }
+            }
+        }
+        preventAllPermissionsBeingRemovedOrOnlyPublic(toReturn);
+        return toReturn;
+    }
+    
+    private void preventAllPermissionsBeingRemovedOrOnlyPublic(MetadataInfo updated) {
+        if (updated.permissions.isEmpty()) {
+            updated.permissions.putAll(this.permissions);
+        } else {
+            Collection<String> view = updated.permissions.get(Permission.VIEW);
+            Optional<String> possible = view.stream().filter(v -> PUBLIC_GROUP.equalsIgnoreCase(v)).findFirst();
+            if (view.size() == 1 && possible.isPresent()) {
+                updated.permissions.clear();
+                updated.permissions.putAll(this.permissions);
+            }
+        }
     }
     
     public List<String> getIdentities(Permission permission) {
@@ -92,7 +125,7 @@ public class MetadataInfo {
         return 
             Permission.VIEW.equals(requested)
             &&
-            permissions.containsEntry(Permission.VIEW, "public")
+            permissions.containsEntry(Permission.VIEW, PUBLIC_GROUP)
             && 
             state.equalsIgnoreCase("published");
     }

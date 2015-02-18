@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 
 @Value
 public class SpatialResolution {

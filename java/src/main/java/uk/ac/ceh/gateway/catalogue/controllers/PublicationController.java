@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
@@ -36,7 +37,7 @@ public class PublicationController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file, 
             HttpServletRequest request) {
-        return ResponseEntity.ok(publicationService.current(user, file, getTransitionUriBuilder(request))); 
+        return ResponseEntity.ok(publicationService.current(user, file, getTransitionUriBuilder(request), getMetadataUri(file))); 
     }
     
     @Secured({DocumentController.EDITOR_ROLE, DocumentController.PUBLISHER_ROLE})
@@ -48,7 +49,7 @@ public class PublicationController {
             @PathVariable("file") String file,
             @PathVariable("toState") String toState, 
             HttpServletRequest request) {
-       return ResponseEntity.ok(publicationService.transition(user, file, toState, getTransitionUriBuilder(request, file)));
+       return ResponseEntity.ok(publicationService.transition(user, file, toState, getTransitionUriBuilder(request, file), getMetadataUri(file)));
     }
     
     private UriComponentsBuilder getTransitionUriBuilder(HttpServletRequest request) {
@@ -58,6 +59,13 @@ public class PublicationController {
     private UriComponentsBuilder getTransitionUriBuilder(HttpServletRequest request, String file) {
         String path = String.format("/documents/%s/publication/{transitionId}", file);
         return ServletUriComponentsBuilder.fromContextPath(request).path(path);
+    }
+    
+    private URI getMetadataUri(String file) {
+        return MvcUriComponentsBuilder
+            .fromMethodName(DocumentController.class, "readMetadata", null, file, null)
+            .buildAndExpand(file)
+            .toUri();
     }
 
 }

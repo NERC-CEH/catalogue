@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
@@ -8,15 +7,11 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.publication.PublicationException;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.PublishingRole;
 import uk.ac.ceh.gateway.catalogue.publication.State;
@@ -27,67 +22,40 @@ import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 public class GitPublicationService implements PublicationService {
     private final GroupStore<CatalogueUser> groupStore;
     private final Workflow workflow;
-    private final DataRepository<CatalogueUser> repo;
-    private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
-    private final BundledReaderService<MetadataDocument> documentBundleReader;
+    private final MetadataInfoEditingService metadataInfoEditingService;
 
     @Autowired
-    public GitPublicationService(GroupStore<CatalogueUser> groupStore, Workflow workflow, DataRepository<CatalogueUser> repo, DocumentInfoMapper<MetadataInfo> documentInfoMapper, BundledReaderService<MetadataDocument> documentBundleReader) {
+    public GitPublicationService(GroupStore<CatalogueUser> groupStore, Workflow workflow, MetadataInfoEditingService metadataInfoEditingService) {
         this.groupStore = groupStore;
         this.workflow = workflow;
-        this.repo = repo;
-        this.documentInfoMapper = documentInfoMapper;
-        this.documentBundleReader = documentBundleReader;
+        this.metadataInfoEditingService = metadataInfoEditingService;
     }
 
     @Override
-    public StateResource current(CatalogueUser user, String fileIdentifier, UriComponentsBuilder builder) {
-        MetadataDocument metadata = getMetadataDocument(fileIdentifier);
-        MetadataInfo info = getMetadataInfo(fileIdentifier);
-        return current(user, info, builder, metadata.getTitle(), metadata.getUri().toString());
+    public StateResource current(CatalogueUser user, String fileIdentifier, UriComponentsBuilder builder, URI metadataUrl) {
+        MetadataDocument doc = metadataInfoEditingService.getMetadataDocument(fileIdentifier, metadataUrl);
+        return current(user, doc.getMetadata(), builder, doc.getTitle(), doc.getUri());
     }
     
-    private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, UriComponentsBuilder builder, String metadataTitle, String metadataUrl) {
+    private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, UriComponentsBuilder builder, String metadataTitle, URI metadataUrl) {
         final State currentState = workflow.currentState(metadataInfo);
         final List<Group> userGroups = groupStore.getGroups(user);
-        return new StateResource(currentState, getPublishingRoles(userGroups), builder, metadataTitle, metadataUrl);
+        return new StateResource(currentState, getPublishingRoles(userGroups), builder, metadataTitle, metadataUrl.toString());
     }
 
     @Override
-    public StateResource transition(CatalogueUser user, String fileIdentifier, String transitionId, UriComponentsBuilder builder) {
-        final MetadataDocument metadata = getMetadataDocument(fileIdentifier);
-        final MetadataInfo original = getMetadataInfo(fileIdentifier);
+    public StateResource transition(CatalogueUser user, String fileIdentifier, String transitionId, UriComponentsBuilder builder, URI metadataUrl) {
+        final MetadataDocument doc = metadataInfoEditingService.getMetadataDocument(fileIdentifier, metadataUrl);
+        final MetadataInfo original = doc.getMetadata();
         final Set<PublishingRole> publishingRoles = getPublishingRoles(groupStore.getGroups(user));
         final State currentState = workflow.currentState(original);
         final Transition transition = currentState.getTransition(publishingRoles, transitionId);
         final MetadataInfo returned = workflow.transitionDocumentState(original, publishingRoles, transition);
         if ( !returned.equals(original)) {
-            saveMetadataInfo(fileIdentifier, returned, user);
+            String commitMsg = String.format("Publication state of %s changed to %s", fileIdentifier, returned.getState());
+            metadataInfoEditingService.saveMetadataInfo(fileIdentifier, returned, user, commitMsg);
         }
-        return current(user, returned, builder, metadata.getTitle(), metadata.getUri().toString());
-    }
-    
-    private MetadataDocument getMetadataDocument(String fileIdentifier) {
-        MetadataDocument toReturn;
-        try {
-            toReturn = documentBundleReader.readBundle(fileIdentifier, repo.getLatestRevision().getRevisionID());
-            if (toReturn.getUri() == null) {
-                toReturn.attachUri(URI.create(String.format("/documents/%s", fileIdentifier)));
-            }
-        } catch (IOException | UnknownContentTypeException ex) {
-            throw new DocumentDoesNotExistException(String.format("Document: %s does not exist", fileIdentifier), ex);
-        }
-        return toReturn;
-    }
-    
-    private MetadataInfo getMetadataInfo(String fileIdentifier) {
-        MetadataInfo toReturn;
-        try {
-            toReturn = documentInfoMapper.readInfo(repo.getData(String.format("%s.meta", fileIdentifier)).getInputStream());
-        } catch (IOException | NullPointerException ex) {
-            throw new DocumentDoesNotExistException(String.format("Document: %s does not exist", fileIdentifier), ex);
-        }
-        return toReturn;
+        return current(user, returned, builder, doc.getTitle(), doc.getUri());
     }
     
     private Set<PublishingRole> getPublishingRoles(List<Group> groups) {
@@ -99,17 +67,5 @@ public class GitPublicationService implements PublicationService {
             }
         });
         return publishingRoles;
-    }
-    
-    private void saveMetadataInfo(String fileIdentifier, MetadataInfo info, CatalogueUser user) {
-        try {
-            String commitMsg = String.format("Publication state of %s changed to %s", fileIdentifier, info.getState());
-            repo.submitData(String.format("%s.meta", fileIdentifier), 
-                (o)-> documentInfoMapper
-                    .writeInfo(info, o))
-                    .commit(user, commitMsg);
-        } catch (DataRepositoryException ex) {
-            throw new PublicationException(String.format("Unable to change publication state to: %s for %s", info.getState(), fileIdentifier), ex);
-        }
     }
 }
