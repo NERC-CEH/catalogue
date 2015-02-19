@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateDeserializer;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateSerializer;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -31,7 +32,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 @Accessors(chain = true)
 @ConvertUsing({
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
-    @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=MediaType.APPLICATION_XML_VALUE)
+    @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=GEMINI_XML_VALUE)
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument implements MetadataDocument {
