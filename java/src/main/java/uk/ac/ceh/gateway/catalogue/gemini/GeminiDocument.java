@@ -30,7 +30,8 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 @Data
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=MediaType.APPLICATION_XML_VALUE)
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument implements MetadataDocument {
