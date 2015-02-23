@@ -47,4 +47,6 @@ define [
   Update the term box based upon the content in the model
   ###
   updateDisplayedTerm: -> 
-    $("[name='term']").val @model.get 'term'
+    term = @model.get 'term'
+    displayed = $("[name='term']").val()
+    $("[name='term']").val term if term isnt displayed
