@@ -48,7 +48,7 @@ public class SearchQuery {
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setParam("defType", "edismax")
-                .setParam("qf", "title^15 altTitle^9 description^8 lineage^5 " +
+                .setParam("qf", "title^50 description^25 altTitle^10 lineage^5 " +
                                 "organisation^2 individual^2 onlineResourceName " +
                                 "onlineResourceDescription resourceIdentifier identifier")
                 .setStart((page-1)*rows)
