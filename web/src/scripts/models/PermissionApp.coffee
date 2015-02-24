@@ -11,9 +11,10 @@ define [
     permission.fetch
       success: (model) =>
         console.log "Success loading permission for: #{model.id}"
-        console.log "Permission: #{JSON.stringify model.toJSON()}"
+        do model.loadCollection
         @set 'permission', model
         @trigger 'loaded'
+
       error: (model) =>
         console.log "Error loading permission for: #{model.id}"
         @trigger 'error', "Unable to load permission for: #{model.id}"
