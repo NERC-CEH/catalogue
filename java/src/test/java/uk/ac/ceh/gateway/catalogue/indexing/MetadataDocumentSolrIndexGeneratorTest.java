@@ -34,8 +34,8 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     public void checkThatTopicIsTransferedToIndex() {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/2","http://onto.nerc.ac.uk/CEHMD/2_1","http://onto.nerc.ac.uk/CEHMD/3", "http://onto.nerc.ac.uk/CEHMD/3_1"));
-        List<String> expected = Arrays.asList("0/Climate/", "1/Climate/Climate change/", "0/Modelling/", "1/Modelling/Integrated ecosystem modelling/");
+        when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/topic/2","http://onto.nerc.ac.uk/CEHMD/topic/3"));
+        List<String> expected = Arrays.asList("0/Biodiversity/", "0/Citizen science/");
         when(document.getDownloadOrder()).thenReturn(DownloadOrder.builder().build());
         
         //When

@@ -129,6 +129,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             .mediaType("html", MediaType.TEXT_HTML)
             .mediaType("json", MediaType.APPLICATION_JSON)
             .mediaType(GEMINI_SHORT, MediaType.parseMediaType(GEMINI_JSON_VALUE))
+            .mediaType(GEMINI_XML_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
             .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE));
     }

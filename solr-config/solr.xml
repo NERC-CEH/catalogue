@@ -2,6 +2,5 @@
 <solr persistent="true">
     <cores defaultCoreName="documents" adminPath="/admin/cores">
         <core name="documents" instanceDir="documents" />
-        <core name="vocab" instanceDir="vocab" />
     </cores>
 </solr>

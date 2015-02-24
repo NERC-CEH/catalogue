@@ -4,7 +4,6 @@
 <@skeleton.master title="Search" searching=true>
   <div class="search facets-mode" id="search">
 
-
     <div class="filters-panel">
       <div class="header facet-heading">
         <h3>Filters</h3>
@@ -12,8 +11,8 @@
       <div class="facet-filter"><#include "search/_facets.html.tpl"></div>
       
       <div class="header map-heading">
-        <h3>Map Search</h3>
         <div class="drawing-control pull-right"><#include "search/_drawing.html.tpl"></div>
+        <h3>Map Search</h3>
       </div>
       <div class="map-filter openlayers"></div>
     </div>
