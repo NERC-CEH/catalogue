@@ -1,10 +1,9 @@
 define [
-  'underscore'
   'backbone'
   'tpl!templates/Permission.tpl'
   'cs!views/IdentityPermissionView'
   'cs!models/IdentityPermission'
-], (_, Backbone, template, IdentityPermissionView, IdentityPermission) -> Backbone.View.extend
+], (Backbone, template, IdentityPermissionView, IdentityPermission) -> Backbone.View.extend
   el: '.permission'
 
   events:
@@ -13,8 +12,9 @@ define [
 
   initialize: ->
     @listenTo @model, 'sync', @reload
-    @listenTo @model, 'all', (name) ->
-      console.log "event: #{name}"
+    @listenTo @model, 'permission:add', @addAll
+    @listenTo @model, 'permission:remove', @addAll
+    @listenTo @model, 'save:success', @leave
 
   save: ->
     console.log "saving permission: #{JSON.stringify @model.toJSON()}"
@@ -25,10 +25,8 @@ define [
         @model.trigger 'save:error', "Error saving permission: #{response.status} (#{response.statusText})"
 
   addOne: (permission) ->
-#    console.log "identity permission view for: #{JSON.stringify permission.toJSON()}"
-    view = new IdentityPermissionView
-      model: permission
-      parent: @model
+    _.extend permission, parent: @model
+    view = new IdentityPermissionView model: permission
     @$('tbody').append view.render().el
 
   addAll: ->
@@ -42,8 +40,23 @@ define [
 
   reload: ->
     do @model.loadCollection
-    do @render
+    do @addAll
 
   add: ->
-    permission = new IdentityPermission identity: "joe"
-    @model.addPermission permission
+    identity = $('#identity').val()
+    if identity
+      permission = new IdentityPermission
+        identity: identity
+        canView: $('#canView').prop('checked')
+        canEdit: $('#canEdit').prop('checked')
+        canDelete: $('#canDelete').prop('checked')
+      @model.addPermission permission
+
+    $('#identity').val ""
+    $('#canView').prop 'checked', false
+    $('#canEdit').prop 'checked', false
+    $('#canDelete').prop 'checked', false
+
+  leave: ->
+    console.log 'Bye'
+    window.location.assign @model.get 'metadataHref'

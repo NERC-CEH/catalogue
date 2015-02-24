@@ -7,7 +7,3 @@ define [
     canView: false
     canEdit: false
     canDelete: false
-
-  remove: ->
-    console.log "remove #{JSON.stringify @toJSON()}"
-    @collection.remove @

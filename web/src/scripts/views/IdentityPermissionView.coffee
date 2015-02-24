@@ -9,8 +9,7 @@ define [
     'click [type="checkbox"]': 'update'
 
   removePermission: ->
-    console.dir @
-    do @parent.removePermission @model
+    @model.parent.removePermission @model
 
   update: (event) ->
     permission = $(event.target).data('permission')

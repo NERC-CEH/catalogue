@@ -30,7 +30,7 @@
     <div class="container">
       <div class="navbar-right">
         <a class="btn btn-default navbar-btn" href="${metadataHref}">Return to metadata</a>
-        <a class="btn btn-primary navbar-btn" href="#permission/${id}">Edit <i class="glyphicon glyphicon-edit"></i></a>
+        <a class="btn btn-primary navbar-btn" href="#permission/${id}"><i class="glyphicon glyphicon-edit"></i> Edit</a>
       </div>
     </div>
   </div>
