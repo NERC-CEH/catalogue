@@ -10,7 +10,6 @@ define [
 
     permission.fetch
       success: (model) =>
-        console.log "Success loading permission for: #{model.id}"
         do model.loadCollection
         @set 'permission', model
         @trigger 'loaded'

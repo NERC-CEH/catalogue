@@ -17,7 +17,6 @@ define [
     @listenTo @model, 'save:success', @leave
 
   save: ->
-    console.log "saving permission: #{JSON.stringify @model.toJSON()}"
     @model.save {},
       success: =>
         @model.trigger 'save:success', "Save successful"

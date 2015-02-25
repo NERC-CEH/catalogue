@@ -9,5 +9,4 @@ define [
     @model = options.model
 
   loadPermission: (identifier) ->
-    console.log "loading permission for: #{identifier}"
     @model.loadPermission identifier
