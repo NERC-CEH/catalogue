@@ -12,8 +12,12 @@ define [
   'cs!models/EditorApp'
   'cs!routers/EditorRouter'
   'cs!views/EditorAppView'
+  'cs!models/PermissionApp'
+  'cs!routers/PermissionRouter'
+  'cs!views/PermissionAppView'
   'bootstrap'
-], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter, EditorApp, EditorRouter, EditorAppView) ->
+], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
+    SearchRouter, EditorApp, EditorRouter, EditorAppView, PermissionApp, PermissionRouter, PermissionAppView) ->
   
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -25,6 +29,7 @@ define [
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
     do @initEditor if $('.edit-control').length
+    do @initPermission if $('.permission').length
       
   initStudyAreaMap: ->
     view = new StudyAreaView();
@@ -64,6 +69,20 @@ define [
     app = new EditorApp()
     view = new EditorAppView model: app
     router = new EditorRouter model: app
+
+    @createMessageViewFor app
+    try
+      do Backbone.history.start
+    catch ex
+      console.log "history already started"
+
+  ###
+  Initialize the permission application
+  ###
+  initPermission: ->
+    app = new PermissionApp()
+    view = new PermissionAppView model: app
+    router = new PermissionRouter model: app
 
     @createMessageViewFor app
     try
