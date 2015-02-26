@@ -26,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceMaintenance;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty.Address;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
@@ -191,6 +192,24 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("TemporalExtent 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetResourceMaintenance() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("frequencyOfUpdate.xml"));
+        List<ResourceMaintenance> expected = Arrays.asList(
+            new ResourceMaintenance("notPlanned", null),
+            new ResourceMaintenance("fortnightly", "a note")
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<ResourceMaintenance> actual = document.getResourceMaintenance();
+        
+        //Then
+        assertThat("Expected resourceMaintenance should equal actual", actual, equalTo(expected));
     }
     
     @Test

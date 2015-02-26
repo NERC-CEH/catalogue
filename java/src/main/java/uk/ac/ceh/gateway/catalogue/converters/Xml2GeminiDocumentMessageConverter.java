@@ -29,6 +29,7 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DistributionInf
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.OnlineResourceConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceMaintenanceConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.RevisionOfConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
@@ -65,6 +66,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final ConformanceResultConverter conformanceResultConverter;
     private final SpatialResolutionConverter spatialResolutionConverter;
     private final RevisionOfConverter revisionOfConverter;
+    private final ResourceMaintenanceConverter resourceMaintenaceConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -107,6 +109,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.securityConstraints = xpath.compile(XPaths.SECURITY_CONSTRAINT);
         this.parentIdentifier = xpath.compile(XPaths.PARENT_IDENTIFIER);
         this.revisionOfConverter = new RevisionOfConverter(xpath);
+        this.resourceMaintenaceConverter = new ResourceMaintenanceConverter(xpath);
     }
     
     @Override
@@ -164,6 +167,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setSecurityConstraints(getListOfStrings(document, securityConstraints));
             toReturn.setParentIdentifier(parentIdentifier.evaluate(document));
             toReturn.setRevisionOfIdentifier(revisionOfConverter.convert(document));
+            toReturn.setResourceMaintenance(resourceMaintenaceConverter.convert(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
