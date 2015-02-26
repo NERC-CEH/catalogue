@@ -32,6 +32,7 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentif
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceMaintenanceConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.RevisionOfConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ServiceConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialResolutionConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
@@ -67,6 +68,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final SpatialResolutionConverter spatialResolutionConverter;
     private final RevisionOfConverter revisionOfConverter;
     private final ResourceMaintenanceConverter resourceMaintenaceConverter;
+    private final ServiceConverter serviceConverter;
     
     public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -110,6 +112,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.parentIdentifier = xpath.compile(XPaths.PARENT_IDENTIFIER);
         this.revisionOfConverter = new RevisionOfConverter(xpath);
         this.resourceMaintenaceConverter = new ResourceMaintenanceConverter(xpath);
+        this.serviceConverter = new ServiceConverter(xpath);
     }
     
     @Override
@@ -168,6 +171,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setParentIdentifier(parentIdentifier.evaluate(document));
             toReturn.setRevisionOfIdentifier(revisionOfConverter.convert(document));
             toReturn.setResourceMaintenance(resourceMaintenaceConverter.convert(document));
+            toReturn.setService(serviceConverter.convert(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

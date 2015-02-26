@@ -64,6 +64,7 @@ public class GeminiDocument implements MetadataDocument {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate metadataDate;
     private List<ResourceMaintenance> resourceMaintenance;
+    private Service service;
     
     public String getResourceType() {
         return type;

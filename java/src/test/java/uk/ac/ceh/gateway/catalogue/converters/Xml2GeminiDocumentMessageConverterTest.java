@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
 import org.springframework.http.HttpInputMessage;
@@ -29,6 +30,9 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceMaintenance;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty.Address;
+import uk.ac.ceh.gateway.catalogue.gemini.Service;
+import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
+import uk.ac.ceh.gateway.catalogue.gemini.Service.OperationMetadata;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
 import uk.ac.ceh.gateway.catalogue.gemini.ThesaurusName;
@@ -1176,5 +1180,33 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertTrue("Expected to find the country side survey resource", resources.contains(
             OnlineResource.builder().url("http://www.ceh.ac.uk/LandCoverMap2007.html").build()
         ));
+    }
+    
+    @Test
+    @Ignore("ServiceConverter not finished")
+    public void canGetService() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("service.xml"));
+        Service expected = Service.builder()
+            .type("view")
+            .versions(Arrays.asList("1.3.0"))
+            .couplingType("tight")
+            .coupledResources(Arrays.asList(
+                CoupledResource.builder().operationName("GetMap").identifier("CEH:EIDC:#1271758286281").build(),
+                CoupledResource.builder().operationName("GetMap").identifier("https://gateway.ceh.ac.uk/soapServices/CSWStartup?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetname=full&amp;id=bb2d7874-7bf4-44de-aa43-348bd684a2fe").build()
+            ))
+            .containsOperations(Arrays.asList(
+                OperationMetadata.builder().operationName("GetCapabilities").platform("WebService").url("http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?").build(),
+                OperationMetadata.builder().operationName("GetMap").platform("WebService").url("http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?").build()
+            ))
+            .build();
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        Service actual = document.getService();
+        
+        //Then
+        assertThat("Expected Service should be equal to Actual", actual, equalTo(expected));
     }
 }
