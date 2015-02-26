@@ -193,7 +193,7 @@ public class SearchQuery {
     
     private String userVisibility() {
         String username = user.getUsername().toLowerCase();
-        StringBuilder toReturn = new StringBuilder("view:public OR ")
+        StringBuilder toReturn = new StringBuilder("view:(public OR ")
             .append(username);
         
         groupStore.getGroups(user)
@@ -206,7 +206,7 @@ public class SearchQuery {
                     .append(g);
             });
         
-        return toReturn.toString();
+        return toReturn.append(")").toString();
     }
     
     private void setFacetFilters(SolrQuery query){

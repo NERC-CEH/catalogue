@@ -54,7 +54,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:public OR helen")); 
+        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:(public OR helen)")); 
     }
     
     @Test
@@ -79,7 +79,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:public OR helen OR ceh OR eidc")); 
+        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:(public OR helen OR ceh OR eidc)")); 
     }
     
     private Group createGroup(String name) {
