@@ -29,7 +29,6 @@ public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocument
             .setRawType("application/xml")
             .setState(translate(ext.getProtection()))
             .setDocumentType("GEMINI_DOCUMENT");
-        toReturn.addPermission(Permission.VIEW, ext.getOwnerGroup().toLowerCase());
         
         if (toReturn.getState().equals("published")) {
             toReturn.addPermission(Permission.VIEW, "public");
