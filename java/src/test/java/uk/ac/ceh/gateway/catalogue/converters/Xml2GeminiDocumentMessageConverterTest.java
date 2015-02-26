@@ -698,18 +698,26 @@ public class Xml2GeminiDocumentMessageConverterTest {
             Keyword
                 .builder()
                 .value("Cited Simple 1")
-                .URI(null)
                 .build()
             ,Keyword
                 .builder()
                 .value("Cited Simple 2")
-                .URI(null)
                 .build()
         );
         
         //Then
         assertNotNull("Expected Keywords to not be null", actualKeywords);
         assertThat("Content of Keywords is not as expected", actualKeywords, is(expectedKeywords));
+        
+        ThesaurusName thesaurus = descriptiveKeywords.get(0).getThesaurusName();
+        String expectedTitle = "test thesaurus";
+        assertThat("Expected thesaurus title should equal actual title", thesaurus.getTitle(), equalTo(expectedTitle));
+        
+        LocalDate expectedDate = LocalDate.of(2014, 6, 3);
+        assertThat("Expected thesaurus date should equal actual date", thesaurus.getDate(), equalTo(expectedDate));
+        
+        String expectedDateType = "creation";
+        assertThat("Expected thesaurus dateType should equal actual dateType", thesaurus.getDateType(), equalTo(expectedDateType));
     }
     
     @Test
