@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +16,14 @@ public class Service {
     private final List<OperationMetadata> containsOperations; 
 
     @Builder
-    private Service(String type, String couplingType, List<String> versions, List<CoupledResource> coupledResources, List<OperationMetadata> containsOperations) {
+    @JsonCreator
+    private Service(
+        @JsonProperty("type") String type,
+        @JsonProperty("couplingType") String couplingType,
+        @JsonProperty("versions") List<String> versions,
+        @JsonProperty("coupledResources") List<CoupledResource> coupledResources, 
+        @JsonProperty("containsOperations") List<OperationMetadata> containsOperations
+    ) {
         this.type = Strings.nullToEmpty(type);
         this.couplingType = Strings.nullToEmpty(couplingType);
         this.versions = (versions != null)? versions : Collections.EMPTY_LIST;
@@ -27,7 +36,12 @@ public class Service {
         private final String operationName, identifier, layerName;
 
         @Builder
-        private CoupledResource(String operationName, String identifier, String layerName) {
+        @JsonCreator
+        private CoupledResource(
+            @JsonProperty("operationName") String operationName,
+            @JsonProperty("identifier") String identifier,
+            @JsonProperty("layerName") String layerName
+        ) {
             this.operationName = Strings.nullToEmpty(operationName);
             this.identifier = Strings.nullToEmpty(identifier);
             this.layerName = Strings.nullToEmpty(layerName);
@@ -40,7 +54,12 @@ public class Service {
         private final List<String> platforms, urls;
 
         @Builder
-        private OperationMetadata(String operationName, List<String> platforms, List<String> urls) {
+        @JsonCreator
+        private OperationMetadata(
+            @JsonProperty("operationName") String operationName,
+            @JsonProperty("platforms") List<String> platforms,
+            @JsonProperty("urls") List<String> urls
+        ) {
             this.operationName = Strings.nullToEmpty(operationName);
             this.platforms = (platforms != null)? platforms : Collections.EMPTY_LIST;
             this.urls = (urls != null)? urls : Collections.EMPTY_LIST;;
