@@ -36,13 +36,14 @@ public class Service {
 
     @Value
     public static class OperationMetadata {
-        private final String operationName, platform, url;
+        private final String operationName;
+        private final List<String> platforms, urls;
 
         @Builder
-        private OperationMetadata(String operationName, String platform, String url) {
+        private OperationMetadata(String operationName, List<String> platforms, List<String> urls) {
             this.operationName = Strings.nullToEmpty(operationName);
-            this.platform = Strings.nullToEmpty(platform);
-            this.url = Strings.nullToEmpty(url);
+            this.platforms = (platforms != null)? platforms : Collections.EMPTY_LIST;
+            this.urls = (urls != null)? urls : Collections.EMPTY_LIST;;
         } 
     }
 }

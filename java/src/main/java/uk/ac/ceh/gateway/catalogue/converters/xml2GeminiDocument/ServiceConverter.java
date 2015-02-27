@@ -9,40 +9,90 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceMaintenance;
 import uk.ac.ceh.gateway.catalogue.gemini.Service;
+import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
+import uk.ac.ceh.gateway.catalogue.gemini.Service.OperationMetadata;
 
 public class ServiceConverter {
     private static final String IDENTIFICATION_INFO = "/*/gmd:identificationInfo/srv:SV_ServiceIdentification";
-    private static final String TYPE = "";
-    private static final String VERSION = "";
-    private static final String COUPLED_RESOURCE = "";
-    private static final String IDENTIFIER = "";
-    private static final String LAYER_NAME = "";
-    private static final String OPERATION_NAME = "";
-    private static final String PLATFORM = "";
-    private static final String URL = "";
-//    private final XPathExpression identificationInfo, type, version, coupledResource, identifier, layerName, operationName, platform, url;
+    private static final String TYPE = "srv:serviceType/gco:LocalName";
+    private static final String COUPLING_TYPE = "srv:couplingType/*/@codeListValue";
+    private static final String VERSIONS = "srv:serviceTypeVersion/*";
+    private static final String COUPLED_RESOURCES = "srv:coupledResource/*";
+    private static final String IDENTIFIER = "srv:identifier/*";
+    private static final String LAYER_NAME = "gco:ScopedName/text()";
+    private static final String OPERATION_NAME = "srv:operationName/*";
+    private static final String CONTAINS_OPERATIONS = "srv:containsOperations/*";
+    private static final String PLATFORMS = "srv:DCP/srv:DCPList/@codeListValue";
+    private static final String URLS = "srv:connectPoint/*/gmd:linkage/gmd:URL";
+    private final XPathExpression identificationInfo, type, couplingType, versions, coupledResources, operationName,
+        identifier, layerName, containsOperations, platforms, urls;
 
     public ServiceConverter(XPath xpath) throws XPathExpressionException {
-//        identificationInfo = xpath.compile(IDENTIFICATION_INFO);
-//        type = xpath.compile(TYPE);
-//        version = xpath.compile(VERSION);
-//        coupledResource = xpath.compile(COUPLED_RESOURCE);
-//        identifier = xpath.compile(IDENTIFIER);
-//        layerName = xpath.compile(LAYER_NAME);
-//        operationName = xpath.compile(OPERATION_NAME);
-//        platform =xpath.compile(PLATFORM);
-//        url = xpath.compile(URL);
+        identificationInfo = xpath.compile(IDENTIFICATION_INFO);
+        type = xpath.compile(TYPE);
+        couplingType = xpath.compile(COUPLING_TYPE);
+        versions = xpath.compile(VERSIONS);
+        coupledResources = xpath.compile(COUPLED_RESOURCES);
+        operationName = xpath.compile(OPERATION_NAME);
+        identifier = xpath.compile(IDENTIFIER);
+        layerName = xpath.compile(LAYER_NAME);
+        containsOperations =xpath.compile(CONTAINS_OPERATIONS);
+        platforms =xpath.compile(PLATFORMS);
+        urls = xpath.compile(URLS);
     }
 
     public Service convert(Document document) throws XPathExpressionException {
-//        List<ResourceMaintenance> toReturn = new ArrayList<>();
-//        NodeList nodeList = (NodeList) resourceMaintenance.evaluate(document, XPathConstants.NODESET);
-//        for(int i=0; i<nodeList.getLength(); i++){
-//            Node node = nodeList.item(i);
-//            toReturn.add(new ResourceMaintenance(frequencyOfUpdate.evaluate(node).trim(), note.evaluate(node).trim()));
-//        }
-        return Service.builder().build();
+        Node service = (Node) identificationInfo.evaluate(document, XPathConstants.NODE);
+        
+        if (service == null) {
+            return null;
+        }
+        
+        return Service.builder()
+            .type(type.evaluate(service))
+            .couplingType(couplingType.evaluate(service))
+            .versions(NodeListConverter.getListOfStrings((NodeList) versions.evaluate(service, XPathConstants.NODESET)))
+            .coupledResources(getCoupledResources(service))
+            .containsOperations(getOperationMetadata(service))
+            .build();
+    }
+    
+    private List<CoupledResource> getCoupledResources(Node service) throws XPathExpressionException {
+        List<CoupledResource> toReturn = new ArrayList<>();
+        NodeList nodeList = (NodeList) coupledResources.evaluate(service, XPathConstants.NODESET);
+        for(int i = 0; i < nodeList.getLength(); i++){
+            Node node = nodeList.item(i);
+            CoupledResource resource = CoupledResource.builder()
+                .operationName(operationName.evaluate(node))
+                .identifier(identifier.evaluate(node))
+                .layerName(layerName.evaluate(node))
+                .build();
+            toReturn.add(resource);
+        }
+        return toReturn;
+    }
+    
+    private List<OperationMetadata> getOperationMetadata(Node service) throws XPathExpressionException {
+        List<OperationMetadata> toReturn = new ArrayList<>();
+        NodeList nodeList = (NodeList) containsOperations.evaluate(service, XPathConstants.NODESET);
+        for(int i = 0; i < nodeList.getLength(); i++){
+            Node node = nodeList.item(i);
+            OperationMetadata operationMetadata = OperationMetadata.builder()
+                .operationName(operationName.evaluate(node))
+                .platforms(getPlatforms(node))
+                .urls(getUrls(node))
+                .build();
+            toReturn.add(operationMetadata);
+        }
+        return toReturn;
+    }
+    
+    private List<String> getPlatforms(Node operationMetadata) throws XPathExpressionException {
+        return NodeListConverter.getListOfStrings((NodeList) platforms.evaluate(operationMetadata, XPathConstants.NODESET));
+    }
+
+    private List<String> getUrls(Node operationMetadata) throws XPathExpressionException {
+        return NodeListConverter.getListOfStrings((NodeList) urls.evaluate(operationMetadata, XPathConstants.NODESET));
     }
 }

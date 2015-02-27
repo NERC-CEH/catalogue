@@ -7,13 +7,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.xml.xpath.XPathExpressionException;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import java.time.LocalDate;
 import java.time.Month;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
 import org.springframework.http.HttpInputMessage;
@@ -1183,22 +1183,30 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
-    @Ignore("ServiceConverter not finished")
     public void canGetService() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("service.xml"));
         Service expected = Service.builder()
             .type("view")
-            .versions(Arrays.asList("1.3.0"))
+            .versions(Arrays.asList("1.1.1", "1.3.0"))
             .couplingType("tight")
             .coupledResources(Arrays.asList(
-                CoupledResource.builder().operationName("GetMap").identifier("CEH:EIDC:#1271758286281").build(),
-                CoupledResource.builder().operationName("GetMap").identifier("https://gateway.ceh.ac.uk/soapServices/CSWStartup?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetname=full&amp;id=bb2d7874-7bf4-44de-aa43-348bd684a2fe").build()
+                CoupledResource.builder().operationName("GetMap").identifier("CEH:EIDC:#1271758286281").layerName("layer0").build(),
+                CoupledResource.builder().operationName("GetMap").identifier("https://gateway.ceh.ac.uk/soapServices/CSWStartup?Service=CSW&Request=GetRecordById&Version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetname=full&id=bb2d7874-7bf4-44de-aa43-348bd684a2fe").build()
             ))
             .containsOperations(Arrays.asList(
-                OperationMetadata.builder().operationName("GetCapabilities").platform("WebService").url("http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?").build(),
-                OperationMetadata.builder().operationName("GetMap").platform("WebService").url("http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?").build()
+                OperationMetadata.builder().operationName("GetCapabilities")
+                    .platforms(Arrays.asList("WebService"))
+                    .urls(Arrays.asList("http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?"))
+                    .build(),
+                OperationMetadata.builder().operationName("GetMap")
+                    .platforms(Arrays.asList("WebService", "HTTP RPC"))
+                    .urls(Arrays.asList(
+                        "http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?",
+                        "http://example.com"
+                    ))
+                    .build()
             ))
             .build();
         
@@ -1208,5 +1216,19 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("Expected Service should be equal to Actual", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void cannotGetServiceFromDataset() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        Service actual = document.getService();
+        
+        //Then
+        assertThat("Service should be null", actual, nullValue());
     }
 }
