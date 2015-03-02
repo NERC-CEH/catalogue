@@ -8,9 +8,14 @@
   <span id="num-records"><%=numFound%></span> records found
 </div>
 <% _.each(results, function(result) { %>
-  <div class="result state-<%=result.state%>" id="<%=result.identifier%>">
+  <div class="result>" id="<%=result.identifier%>">
     <h2>
       <a href="/documents/<%=result.identifier%>" class="title"><%=result.title%></a>
+      <% if(result.state == 'draft') { %>
+        <small> - Draft</small>
+      <% } else if(result.state == 'pending') { %>
+        <small> - Pending Publication</small>
+      <% } %>
     </h2>
     <div class="description"><%=result.shortenedDescription%></div>
   </div>
