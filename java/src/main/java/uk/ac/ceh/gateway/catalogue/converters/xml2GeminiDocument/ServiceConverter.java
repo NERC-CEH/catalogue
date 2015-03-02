@@ -23,10 +23,11 @@ public class ServiceConverter {
     private static final String LAYER_NAME = "gco:ScopedName/text()";
     private static final String OPERATION_NAME = "srv:operationName/*";
     private static final String CONTAINS_OPERATIONS = "srv:containsOperations/*";
-    private static final String PLATFORMS = "srv:DCP/srv:DCPList/@codeListValue";
-    private static final String URLS = "srv:connectPoint/*/gmd:linkage/gmd:URL";
+    // Only the first platform and URL are extracted even if there are multiple values
+    private static final String PLATFORM = "srv:DCP[1]/srv:DCPList/@codeListValue";
+    private static final String URL = "srv:connectPoint[1]/*/gmd:linkage/gmd:URL";
     private final XPathExpression identificationInfo, type, couplingType, versions, coupledResources, operationName,
-        identifier, layerName, containsOperations, platforms, urls;
+        identifier, layerName, containsOperations, platform, url;
 
     public ServiceConverter(XPath xpath) throws XPathExpressionException {
         identificationInfo = xpath.compile(IDENTIFICATION_INFO);
@@ -38,8 +39,8 @@ public class ServiceConverter {
         identifier = xpath.compile(IDENTIFIER);
         layerName = xpath.compile(LAYER_NAME);
         containsOperations =xpath.compile(CONTAINS_OPERATIONS);
-        platforms =xpath.compile(PLATFORMS);
-        urls = xpath.compile(URLS);
+        platform =xpath.compile(PLATFORM);
+        url = xpath.compile(URL);
     }
 
     public Service convert(Document document) throws XPathExpressionException {
@@ -80,19 +81,11 @@ public class ServiceConverter {
             Node node = nodeList.item(i);
             OperationMetadata operationMetadata = OperationMetadata.builder()
                 .operationName(operationName.evaluate(node))
-                .platforms(getPlatforms(node))
-                .urls(getUrls(node))
+                .platform(platform.evaluate(node))
+                .url(url.evaluate(node))
                 .build();
             toReturn.add(operationMetadata);
         }
         return toReturn;
-    }
-    
-    private List<String> getPlatforms(Node operationMetadata) throws XPathExpressionException {
-        return NodeListConverter.getListOfStrings((NodeList) platforms.evaluate(operationMetadata, XPathConstants.NODESET));
-    }
-
-    private List<String> getUrls(Node operationMetadata) throws XPathExpressionException {
-        return NodeListConverter.getListOfStrings((NodeList) urls.evaluate(operationMetadata, XPathConstants.NODESET));
     }
 }

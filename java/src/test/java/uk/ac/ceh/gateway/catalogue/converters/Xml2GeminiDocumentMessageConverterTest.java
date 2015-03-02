@@ -1197,15 +1197,12 @@ public class Xml2GeminiDocumentMessageConverterTest {
             ))
             .containsOperations(Arrays.asList(
                 OperationMetadata.builder().operationName("GetCapabilities")
-                    .platforms(Arrays.asList("WebService"))
-                    .urls(Arrays.asList("http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?"))
+                    .platform("WebService")
+                    .url("http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?")
                     .build(),
                 OperationMetadata.builder().operationName("GetMap")
-                    .platforms(Arrays.asList("WebService", "HTTP RPC"))
-                    .urls(Arrays.asList(
-                        "http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?",
-                        "http://example.com"
-                    ))
+                    .platform("WebService")
+                    .url("http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?")
                     .build()
             ))
             .build();

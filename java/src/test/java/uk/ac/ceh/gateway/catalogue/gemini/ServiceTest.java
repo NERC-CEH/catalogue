@@ -25,7 +25,7 @@ public class ServiceTest {
     @Test
     public void readServiceFromString() throws IOException {
         //Given
-        String json = "{\"type\":\"view\",\"couplingType\":\"tight\",\"versions\":[\"1.1.1\",\"1.3.0\"],\"coupledResources\":[{\"operationName\":\"GetMap\",\"identifier\":\"123\"},{\"operationName\":\"GetCapabilities\",\"identifier\":\"1234\"}],\"containsOperations\":[{\"operationName\":\"GetMap\",\"platforms\":[\"WebService\",\"HTTP RPC\"],\"urls\":[\"url2\",\"url3\"]}]}";
+        String json = "{\"type\":\"view\",\"couplingType\":\"tight\",\"versions\":[\"1.1.1\",\"1.3.0\"],\"coupledResources\":[{\"operationName\":\"GetMap\",\"identifier\":\"123\"},{\"operationName\":\"GetCapabilities\",\"identifier\":\"1234\"}],\"containsOperations\":[{\"operationName\":\"GetMap\",\"platform\":\"WebService\",\"url\":\"url2\"}]}";
         Service expected = Service.builder()
             .type("view")
             .couplingType("tight")
@@ -36,8 +36,8 @@ public class ServiceTest {
             ))
             .containsOperations(Arrays.asList(
                 Service.OperationMetadata.builder().operationName("GetMap")
-                    .platforms(Arrays.asList("WebService", "HTTP RPC"))
-                    .urls(Arrays.asList("url2", "url3"))
+                    .platform("WebService")
+                    .url("url2")
                     .build()
             ))
             .build();

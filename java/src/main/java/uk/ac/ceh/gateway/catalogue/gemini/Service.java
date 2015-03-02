@@ -50,19 +50,18 @@ public class Service {
 
     @Value
     public static class OperationMetadata {
-        private final String operationName;
-        private final List<String> platforms, urls;
+        private final String operationName, platform, url;
 
         @Builder
         @JsonCreator
         private OperationMetadata(
             @JsonProperty("operationName") String operationName,
-            @JsonProperty("platforms") List<String> platforms,
-            @JsonProperty("urls") List<String> urls
+            @JsonProperty("platform") String platform,
+            @JsonProperty("url") String url
         ) {
             this.operationName = Strings.nullToEmpty(operationName);
-            this.platforms = (platforms != null)? platforms : Collections.EMPTY_LIST;
-            this.urls = (urls != null)? urls : Collections.EMPTY_LIST;;
+            this.platform = Strings.nullToEmpty(platform);
+            this.url = Strings.nullToEmpty(url);
         } 
     }
 }
