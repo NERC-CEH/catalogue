@@ -7,10 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.xml.xpath.XPathExpressionException;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import java.time.LocalDate;
 import java.time.Month;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +27,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceMaintenance;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty.Address;
+import uk.ac.ceh.gateway.catalogue.gemini.Service;
+import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
+import uk.ac.ceh.gateway.catalogue.gemini.Service.OperationMetadata;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
 import uk.ac.ceh.gateway.catalogue.gemini.ThesaurusName;
@@ -191,6 +196,24 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("TemporalExtent 'actual' should be equal to 'expected'", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void canGetResourceMaintenance() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("frequencyOfUpdate.xml"));
+        List<ResourceMaintenance> expected = Arrays.asList(
+            new ResourceMaintenance("notPlanned", null),
+            new ResourceMaintenance("fortnightly", "a note")
+        );
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        List<ResourceMaintenance> actual = document.getResourceMaintenance();
+        
+        //Then
+        assertThat("Expected resourceMaintenance should equal actual", actual, equalTo(expected));
     }
     
     @Test
@@ -698,18 +721,26 @@ public class Xml2GeminiDocumentMessageConverterTest {
             Keyword
                 .builder()
                 .value("Cited Simple 1")
-                .URI(null)
                 .build()
             ,Keyword
                 .builder()
                 .value("Cited Simple 2")
-                .URI(null)
                 .build()
         );
         
         //Then
         assertNotNull("Expected Keywords to not be null", actualKeywords);
         assertThat("Content of Keywords is not as expected", actualKeywords, is(expectedKeywords));
+        
+        ThesaurusName thesaurus = descriptiveKeywords.get(0).getThesaurusName();
+        String expectedTitle = "test thesaurus";
+        assertThat("Expected thesaurus title should equal actual title", thesaurus.getTitle(), equalTo(expectedTitle));
+        
+        LocalDate expectedDate = LocalDate.of(2014, 6, 3);
+        assertThat("Expected thesaurus date should equal actual date", thesaurus.getDate(), equalTo(expectedDate));
+        
+        String expectedDateType = "creation";
+        assertThat("Expected thesaurus dateType should equal actual dateType", thesaurus.getDateType(), equalTo(expectedDateType));
     }
     
     @Test
@@ -1149,5 +1180,52 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertTrue("Expected to find the country side survey resource", resources.contains(
             OnlineResource.builder().url("http://www.ceh.ac.uk/LandCoverMap2007.html").build()
         ));
+    }
+    
+    @Test
+    public void canGetService() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("service.xml"));
+        Service expected = Service.builder()
+            .type("view")
+            .versions(Arrays.asList("1.1.1", "1.3.0"))
+            .couplingType("tight")
+            .coupledResources(Arrays.asList(
+                CoupledResource.builder().operationName("GetMap").identifier("CEH:EIDC:#1271758286281").layerName("layer0").build(),
+                CoupledResource.builder().operationName("GetMap").identifier("https://gateway.ceh.ac.uk/soapServices/CSWStartup?Service=CSW&Request=GetRecordById&Version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetname=full&id=bb2d7874-7bf4-44de-aa43-348bd684a2fe").build()
+            ))
+            .containsOperations(Arrays.asList(
+                OperationMetadata.builder().operationName("GetCapabilities")
+                    .platform("WebService")
+                    .url("http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?")
+                    .build(),
+                OperationMetadata.builder().operationName("GetMap")
+                    .platform("WebService")
+                    .url("http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?")
+                    .build()
+            ))
+            .build();
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        Service actual = document.getService();
+        
+        //Then
+        assertThat("Expected Service should be equal to Actual", actual, equalTo(expected));
+    }
+    
+    @Test
+    public void cannotGetServiceFromDataset() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        Service actual = document.getService();
+        
+        //Then
+        assertThat("Service should be null", actual, nullValue());
     }
 }

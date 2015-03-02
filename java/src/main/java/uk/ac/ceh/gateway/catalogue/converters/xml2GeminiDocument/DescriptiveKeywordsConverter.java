@@ -20,7 +20,7 @@ public class DescriptiveKeywordsConverter {
     private static final String TYPE = "gmd:type/*/@codeListValue";
     private static final String THESAURUS_TITLE = "gmd:thesaurusName/*/gmd:title/*";
     private static final String THESAURUS_DATE = "gmd:thesaurusName/*/gmd:date/*/gmd:date/gco:Date";
-    private static final String THESAURUS_DATE_TYPE_VALUE = "gmd:date/*/gmd:dateType/*/@codeListValue";
+    private static final String THESAURUS_DATE_TYPE_VALUE = "gmd:thesaurusName/*/gmd:date/*/gmd:dateType/*/@codeListValue";
     private static final String KEYWORD_CHARACTER = "gmd:keyword/gco:CharacterString";
     private static final String KEYWORD_ANCHOR = "gmd:keyword/gmx:Anchor";
     private final XPathExpression descriptiveKeywords, type, thesaurusTitle, thesaurusDate,
