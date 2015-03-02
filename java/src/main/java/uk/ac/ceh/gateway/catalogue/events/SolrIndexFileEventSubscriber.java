@@ -27,7 +27,7 @@ public class SolrIndexFileEventSubscriber {
     
     @Subscribe
     public void indexDocument(DataSubmittedEvent<?> event) throws DocumentIndexingException, DataRepositoryException {
-        List<String> filenames = rawFilenamesOnly(event.getFilenames());
+        List<String> filenames = noDuplicates(event.getFilenames());
         String revisionID = event.getDataRepository().getLatestRevision().getRevisionID();
         log.debug("About to index files: {} for revision: {}", filenames, revisionID);
         service.indexDocuments(filenames, revisionID);
@@ -35,16 +35,16 @@ public class SolrIndexFileEventSubscriber {
     
     @Subscribe
     public void unindexDocument(DataDeletedEvent<?> event) throws DocumentIndexingException {
-        List<String> filenames = rawFilenamesOnly(event.getFilenames());
+        List<String> filenames = noDuplicates(event.getFilenames());
         log.debug("About to unindex files: {}", filenames);
         service.unindexDocuments(filenames);
     }
     
-    private List<String> rawFilenamesOnly(Collection<String> orig) {
+    private List<String> noDuplicates(Collection<String> orig) {
         return orig
             .stream()
-            .filter(f -> f.endsWith(".raw"))
             .map(f -> f.substring(0, f.lastIndexOf(".")))
+            .distinct()
             .collect(Collectors.toList());
     }
 }
