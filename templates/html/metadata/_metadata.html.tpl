@@ -47,9 +47,6 @@
       <dt>Record last updated</dt>
       <dd>${metadataDate?html}</dd>
       
-      <dt>Publication State</dt>
-      <dd>${codes.lookup('publication.state', metadata.state)!''}</dd>
-      
       <#if metadataStandardName?has_content>
       <dt>Metadata standard</dt>
       <dd>
