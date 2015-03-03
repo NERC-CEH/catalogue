@@ -24,6 +24,7 @@ public class LinkIndexEventSubscriber {
       service.linkDocuments(event.getFilenames()
           .stream()
           .map(f -> f.substring(0, f.lastIndexOf(".")))
+          .distinct()
           .collect(Collectors.toSet()));
     }
     
