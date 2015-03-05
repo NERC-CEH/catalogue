@@ -46,7 +46,7 @@
 
       <dt>Record last updated</dt>
       <dd>${metadataDate?html}</dd>
-
+      
       <#if metadataStandardName?has_content>
       <dt>Metadata standard</dt>
       <dd>

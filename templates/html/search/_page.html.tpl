@@ -9,9 +9,12 @@
   <span id="num-records">${numFound}</span> records found
 </div>
 <#list results as result>
-  <div class="result state-${result.state}" data-location="${result.locations?join(',')}" id="${result.identifier}">
+  <div class="result" data-location="${result.locations?join(',')}" id="${result.identifier}">
     <h2>
       <a href="/${docroot}/${result.identifier}" class="title">${result.title}</a>
+      <#if (result.state == 'draft' || result.state == 'pending') >
+        <small> - ${codes.lookup('publication.state', result.state)!''}</small>
+      </#if>
     </h2>
     <div class="description">${result.shortenedDescription}</div>
   </div>

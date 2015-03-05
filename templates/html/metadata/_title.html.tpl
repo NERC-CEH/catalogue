@@ -8,7 +8,9 @@
       ${codes.lookup('metadata.scopeCode', resourceType)!''}
     </small>
   </#if><br>
-  
   ${title?html}
+  <#if (metadata.state == 'draft' || metadata.state == 'pending') >
+    <small> - ${codes.lookup('publication.state', metadata.state)!''}</small>
+  </#if>
   </h1>
 </#if>
