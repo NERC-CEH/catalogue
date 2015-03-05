@@ -55,7 +55,8 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                     .setIndividual(grab(gemini.getResponsibleParties(), ResponsibleParty::getIndividualName))
                     .setOnlineResourceName(grab(gemini.getOnlineResources(), OnlineResource::getName))
                     .setOnlineResourceDescription(grab(gemini.getOnlineResources(), OnlineResource::getDescription))
-                    .setResourceIdentifier(grab(gemini.getResourceIdentifiers(), ResourceIdentifier::getCode));
+                    .setResourceIdentifier(grab(gemini.getResourceIdentifiers(), ResourceIdentifier::getCode))
+                    .setDataCentre(getDataCentre(gemini));
         }
         return toReturn;
     }
@@ -75,12 +76,25 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         }
     }
     
-    public List<String> getViews(MetadataDocument document) {
+    private List<String> getViews(MetadataDocument document) {
         Objects.requireNonNull(document);
         return Optional.ofNullable(document)
             .map(MetadataDocument::getMetadata)
             .map(m -> m.getIdentities(Permission.VIEW))
             .orElse(Collections.emptyList());       
+    }
+    
+    private String getDataCentre(GeminiDocument document) {
+        Optional<ResponsibleParty> dataCentre = document.getResponsibleParties()
+            .stream()
+            .filter(rp -> rp.getRole().equals("custodian") && rp.getOrganisationName().startsWith("EIDC"))
+            .findFirst();
+        
+        if (dataCentre.isPresent()) {
+            return "EIDCHub";
+        } else {
+            return "";
+        }
     }
     
     // The following will iterate over a given collection (which could be null)
@@ -123,6 +137,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         private @Field String state;
         private @Field List<String> topic;
         private @Field List<String> view;
+        private @Field String dataCentre;
         
         public String getShortenedDescription(){
             return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);

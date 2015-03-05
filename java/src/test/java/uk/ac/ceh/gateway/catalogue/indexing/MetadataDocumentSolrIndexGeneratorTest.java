@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
+import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
@@ -135,6 +136,34 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         
         //Then
         assertEquals("Expected isOgl to be false", "ISNT OGL", index.getLicence());
+    }
+    
+    @Test
+    public void checkThatEIDCCustodianIsIndexed(){
+        //Given
+        ResponsibleParty custodian = ResponsibleParty.builder().role("custodian").organisationName("EIDC Hub").build();
+        GeminiDocument document = new GeminiDocument();
+        document.setResponsibleParties(Arrays.asList(custodian));
+        
+        //When
+        DocumentSolrIndex actual = generator.generateIndex(document);
+        
+        //Then
+        assertThat("Expected dataCentre to be EIDCHub", actual.getDataCentre(), equalTo("EIDCHub"));
+    }
+    
+    @Test
+    public void checkThatEIDCCustodianIsNotIndexed(){
+        //Given
+        ResponsibleParty custodian = ResponsibleParty.builder().role("author").organisationName("Test").build();
+        GeminiDocument document = new GeminiDocument();
+        document.setResponsibleParties(Arrays.asList(custodian));
+        
+        //When
+        DocumentSolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertThat("Expected dataCentre to be empty", index.getDataCentre(), equalTo(""));
     }
     
     @Test
