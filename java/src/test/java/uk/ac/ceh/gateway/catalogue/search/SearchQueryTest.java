@@ -405,7 +405,7 @@ public class SearchQueryTest {
         String url = interestingQuery.toUrl();
         
         //Then
-        assertThat("Term should be searched for", url, containsString("term=My Search Term"));
+        assertThat("Term should be searched for", url, containsString("term=My+Search+Term"));
         assertThat("BBOX should be searched for", url, containsString("bbox=1,2,3,4"));
         assertThat("OP should be present", url, containsString("op=IsWithin"));
         assertThat("page should be specified", url, containsString("page=24"));
