@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -161,7 +163,11 @@ public class SearchQuery {
         }
         
         if(!DEFAULT_SEARCH_TERM.equals(term)) {
-            builder.queryParam(TERM_QUERY_PARAM, term);
+            try {
+                builder.queryParam(TERM_QUERY_PARAM, URLEncoder.encode(term, "UTF-8"));
+            } catch (UnsupportedEncodingException ex) {
+                log.error("Could not encode: " + term, ex);
+            }
         }
         
         if(bbox != null) {
@@ -173,6 +179,7 @@ public class SearchQuery {
             facetFilters.forEach((f)-> builder.queryParam(FACET_QUERY_PARAM, f.asURIContent()));
         }
         
+        // cannot just encode UriComponents as other parameters (facets, bbox) already Uri encoded
         return builder.build().toUriString();
     }
     
