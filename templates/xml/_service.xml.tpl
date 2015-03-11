@@ -4,10 +4,10 @@
 </srv:serviceType>
 <#list service.versions as version>
 <srv:serviceTypeVersion>
-	<gco:CharacterString>${version.version?xml}</gco:CharacterString>
+	<gco:CharacterString>${version?xml}</gco:CharacterString>
 </srv:serviceTypeVersion>
 </#list>
-<#include "extent.xml.tpl">
+<#include "_extent.xml.tpl">
 <#list service.coupledResources as coupledResource>	
 <srv:coupledResource>
 	<srv:SV_CoupledResource>

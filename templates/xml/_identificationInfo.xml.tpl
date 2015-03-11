@@ -189,7 +189,7 @@
 	</srv:SV_ServiceIdentification>
 	<#else>
 	<#assign ns = 'gmd'>
-	<#include "extent.xml.tpl">
+	<#include "_extent.xml.tpl">
 	</gmd:MD_DataIdentification>
 	</#if>
 
