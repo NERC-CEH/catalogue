@@ -160,6 +160,26 @@ public class PermissionServiceTest {
     }
     
     @Test
+    public void publisherCanEdit() {
+        //Given
+        CatalogueUser editor = new CatalogueUser().setUsername("publisher");
+        Group editorRole = new CrowdGroup(DocumentController.PUBLISHER_ROLE);
+        given(groupStore.getGroups(editor)).willReturn(Arrays.asList(editorRole));
+        
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(editor);
+        SecurityContextHolder.setContext(securityContext);
+        
+        //When
+        boolean actual = permissionService.userCanEdit();
+        
+        //Then
+        assertThat("Publisher should be able to edit", actual, equalTo(true));
+    }
+    
+    @Test
     public void userWithoutEditorRoleCannotEdit() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("bob");
