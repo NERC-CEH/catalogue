@@ -1,8 +1,17 @@
 <#if distributionFormats?has_content>
-<h4>Data are available in these formats:</h4>
-<ul>
-  <#list distributionFormats as format>
-    <li property="dc:format">${format.name?html}</li>
-  </#list>
-</ul>
+<hr>
+	<#if distributionFormats?size = 1>
+		<p>The data are available as 
+		<#list distributionFormats as format>
+		<span property="dc:format">${format.name?html}</span>
+		</#list>
+		</p>
+	<#else>
+		<p><strong>The data are available in the following formats:</strong></p>
+		<ul>
+		  <#list distributionFormats as format>
+			<li property="dc:format">${format.name?html}</li>
+		  </#list>
+		</ul>
+	</#if>
 </#if>
