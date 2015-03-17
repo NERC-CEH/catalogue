@@ -34,22 +34,8 @@
             <li <#if searching>class="active"</#if>><a href="/documents">Search Data</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <#if permission?? && permission.userCanEdit()>
-            <li class="dropdown">
-              <button class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown">
-                <span class="glyphicon glyphicon-edit"></span> Manage Metadata <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu">
-                <#if id??>
-                  <li><a class="edit-control" href="#edit/${id?html}">Edit&hellip;</a></li>
-                  <li><a href="/documents/${id?html}/publication">Publish&hellip;</a></li>
-                  <li><a href="/documents/${id?html}/permission">Permissions&hellip;</a></li>
-                  <li><a href="/documents/${id?html}/datacite.xml">Datacite xml</a></li>
-                  <li role="presentation" class="divider"></li>
-                </#if>
-                <li><a class="edit-control" href="#edit/new">New metadata</a></li>
-              </ul>
-            </li>
+            <#if searching && permission?? && permission.userCanEdit()>
+                <li><a class="edit-control" href="#edit/new">Create new metadata</a></li>
             </#if>
             <li id="sso-user"><a>Joe Bloggs</a></li>
           </ul>
