@@ -2,7 +2,7 @@
   <div id="section-citation">
     <p><strong>If you reuse this data, you must cite</strong><br>
     <span id="citation-text" property="dc:bibliographicCitation">
-      ${citation.authors?join(',')?html} ${citation.year?html}. ${citation.title?html}. ${citation.publisher?html} ${citation.url?html}
+      ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}
     </span></p>
     
     <div class="btn-group btn-group-xs hidden-xs" title="Import this citation into your reference management software">

@@ -58,8 +58,6 @@
       </dd>
       </#if>
 
-      <dt> </dt>
-      <dd><a href="?format=gemini">View complete GEMINI 2 metadata record (xml)</a></dd>
     </dl>
   </div>
 </#if>
