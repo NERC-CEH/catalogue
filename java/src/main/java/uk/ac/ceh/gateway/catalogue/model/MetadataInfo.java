@@ -34,7 +34,7 @@ public class MetadataInfo {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private final Multimap<Permission, String> permissions;
-    private static final String PUBLIC_GROUP = "public";
+    public static final String PUBLIC_GROUP = "public";
     
     public MetadataInfo() {
         permissions = HashMultimap.create();

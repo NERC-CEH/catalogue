@@ -4,6 +4,7 @@ import java.io.IOException;
 import static java.lang.String.format;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,6 +55,14 @@ public class PermissionService {
     }
     
     public boolean userCanEdit() {
+        return userCan((String name) -> name.equalsIgnoreCase(DocumentController.EDITOR_ROLE) || name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE));
+    }
+    
+    public boolean userCanMakePublic() {
+        return userCan((String name) -> name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE));
+    }
+    
+    private boolean userCan(Predicate<String> filter) {
         CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.debug("principal: {}", user);
         if (user.isPublic()) {
@@ -62,7 +71,7 @@ public class PermissionService {
             return groupStore.getGroups(user)
                 .stream()
                 .map(Group::getName)
-                .filter(name -> name.equalsIgnoreCase(DocumentController.EDITOR_ROLE) || name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE))
+                .filter(filter)
                 .findFirst()
                 .isPresent();
         }
