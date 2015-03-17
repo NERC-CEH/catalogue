@@ -62,7 +62,7 @@ public class PermissionService {
             return groupStore.getGroups(user)
                 .stream()
                 .map(Group::getName)
-                .filter(name -> name.equalsIgnoreCase(DocumentController.EDITOR_ROLE))
+                .filter(name -> name.equalsIgnoreCase(DocumentController.EDITOR_ROLE) || name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE))
                 .findFirst()
                 .isPresent();
         }

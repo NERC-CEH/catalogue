@@ -17,6 +17,7 @@
         <#include "metadata/_distribution.html.tpl">
         <#include "metadata/_children.html.tpl">
         <#include "metadata/_related.html.tpl">
+        <#include "metadata/_actions.html.tpl">
       </div>
       <div class="col-sm-8 col-xs-12">
         <#include "metadata/_extent.html.tpl">
