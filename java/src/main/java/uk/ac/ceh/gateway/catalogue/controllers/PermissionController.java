@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.net.URI;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -18,18 +19,24 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
+import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoEditingService;
+import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
 @Controller
 @RequestMapping(value = "documents/{file}/permission")
 @Slf4j
 public class PermissionController {
     private final MetadataInfoEditingService metadataInfoEditingService;
+    private final PermissionService permissionService;
 
     @Autowired
-    public PermissionController(MetadataInfoEditingService metadataInfoEditingService) {
+    public PermissionController(MetadataInfoEditingService metadataInfoEditingService, PermissionService permissionService) {
         this.metadataInfoEditingService = metadataInfoEditingService;
+        this.permissionService = permissionService;
     }
     
     @Secured({DocumentController.EDITOR_ROLE, DocumentController.PUBLISHER_ROLE})
@@ -53,7 +60,7 @@ public class PermissionController {
         log.debug("Updating permissions to: {} for: {}", permissionResource, file);
         URI metadataUri = getMetadataUri(file);
         MetadataInfo original = metadataInfoEditingService.getMetadataDocument(file, metadataUri).getMetadata();
-        MetadataInfo returned = permissionResource.updatePermissions(original);
+        MetadataInfo returned = removeAddedPublicGroupIfNotPublisher(original, permissionResource);
         if ( !returned.equals(original)) {
             String commitMsg = String.format("Permissions of %s changed.", file);
             metadataInfoEditingService.saveMetadataInfo(file, returned, user, commitMsg);
@@ -67,5 +74,29 @@ public class PermissionController {
             .fromMethodName(DocumentController.class, "readMetadata", null, file, null)
             .buildAndExpand(file)
             .toUri();
+    }
+    
+    private MetadataInfo removeAddedPublicGroupIfNotPublisher(MetadataInfo original, PermissionResource permissionResource) {
+        MetadataInfo toReturn; 
+        
+        if (permissionService.userCanMakePublic() || original.isPubliclyViewable(Permission.VIEW)) {
+            toReturn = permissionResource.updatePermissions(original);
+        } else {
+            Optional<IdentityPermissions> publicGroup = publicGroup(permissionResource);
+            if (publicGroup.isPresent()) {
+                permissionResource.getPermissions().remove(publicGroup.get());
+                toReturn = permissionResource.updatePermissions(original); 
+            } else {
+                toReturn = permissionResource.updatePermissions(original);
+            }
+        }
+        return toReturn;
+    }
+    
+    private Optional<IdentityPermissions> publicGroup(PermissionResource permissionResource) {
+        return permissionResource.getPermissions()
+            .stream()
+            .filter((identity) -> identity.getIdentity().equalsIgnoreCase(PUBLIC_GROUP))
+            .findFirst();
     }
 }
