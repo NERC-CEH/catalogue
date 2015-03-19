@@ -1,8 +1,7 @@
 define [
-  'underscore'
   'backbone'
   'cs!views/PermissionView'
-], (_, Backbone, PermissionView) -> Backbone.View.extend
+], (Backbone, PermissionView) -> Backbone.View.extend
   el: '.permission'
 
   initialize: ->

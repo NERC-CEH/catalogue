@@ -10,11 +10,11 @@
   <li>Step Nine</li>
   <li>Step Ten</li>
 </ol>
-<div id="editor" role="form">
+<div id="editor" class="container" role="form">
   <div class="step visible">
     <div id="editorTitle" class="form-group"></div>
-    <mark>Alternative title(s)</mark>
-    <div id="editorAbstract" class="form-group"></div>
+    <div id="editorAlternativeTitles"></div>
+    <div id="editorDescription" class="form-group"></div>
     <p><mark>Publication date(s)</mark></p>
     <p><mark>Revision date(s)</mark></p>
     <div id="editorPublicationDates" class="form-group"></div>
@@ -59,14 +59,14 @@
   <div class="step">
     <p><mark>Person responsible for maintaining this metadata record:</mark></p>
   </div>
-  <div class="navbar navbar-default navbar-fixed-bottom">
-    <div class="container">
-      <div class="navbar-right">
-        <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
-        <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="glyphicon glyphicon-chevron-right"></i></button>
-        <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="glyphicon glyphicon-save"></i></button>
-        <button id="editorInfo" class="btn btn-default navbar-btn">Info <i class="glyphicon glyphicon-qrcode"></i></button>
-      </div>
+</div>
+<div class="navbar navbar-default navbar-fixed-bottom">
+  <div class="container">
+    <div class="navbar-right">
+      <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
+      <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="glyphicon glyphicon-chevron-right"></i></button>
+      <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="glyphicon glyphicon-save"></i></button>
+      <a href="/" class="navbar-link">Cancel</a>
     </div>
   </div>
 </div>

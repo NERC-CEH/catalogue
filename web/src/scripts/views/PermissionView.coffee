@@ -57,5 +57,4 @@ define [
     $('#canDelete').prop 'checked', false
 
   leave: ->
-    console.log 'Bye'
     window.location.assign @model.get 'metadataHref'
