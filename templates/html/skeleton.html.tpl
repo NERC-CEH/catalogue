@@ -32,6 +32,7 @@
           <ul class="nav navbar-nav">
             <li><a href="//lwis.ceh.ac.uk">Home</a></li>
             <li <#if searching>class="active"</#if>><a href="/documents">Search Data</a></li>
+            <li><a href="//lwis.ceh.ac.uk/catalogue/help">Help</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <#if searching && permission?? && permission.userCanEdit()>
