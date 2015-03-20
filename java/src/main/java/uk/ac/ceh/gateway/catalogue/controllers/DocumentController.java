@@ -158,6 +158,7 @@ public class DocumentController {
             @RequestParam(value = "message", defaultValue = "edit Gemini document") String commitMessage,
             HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException {
         
+        geminiDocument.setId(file);
         repo.submitData(String.format("%s.raw", file), (o) -> documentWriter.write(geminiDocument, o))
             .commit(user, commitMessage);
         
