@@ -5,6 +5,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -125,7 +126,7 @@ public class DocumentController {
             HttpServletRequest request) throws IOException, UnknownContentTypeException  {
        
         String id = UUID.randomUUID().toString();
-        geminiDocument.setId(id);
+        updateIdAndMetadataDate(geminiDocument, id);
 
         MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(geminiDocument, user);
         
@@ -136,6 +137,10 @@ public class DocumentController {
         return ResponseEntity
             .created(getCurrentUri(request, id, repo.getLatestRevision().getRevisionID()))
             .body(readMetadata(user, id, request));
+    }
+    
+    private void updateIdAndMetadataDate(GeminiDocument document, String id) {
+        document.setId(id).setMetadataDate(LocalDateTime.now());
     }
     
     private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user) {
@@ -158,7 +163,7 @@ public class DocumentController {
             @RequestParam(value = "message", defaultValue = "edit Gemini document") String commitMessage,
             HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException {
         
-        geminiDocument.setId(file);
+        updateIdAndMetadataDate(geminiDocument, file);
         repo.submitData(String.format("%s.raw", file), (o) -> documentWriter.write(geminiDocument, o))
             .commit(user, commitMessage);
         
