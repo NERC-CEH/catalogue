@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -25,7 +24,6 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
  * The following class represents the state at which a document is in
  * @author Christopher Johnson
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Accessors(chain = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)

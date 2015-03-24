@@ -1,11 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.net.URI;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -19,8 +20,8 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
-import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateDeserializer;
-import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateSerializer;
+import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
+import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -34,7 +35,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=GEMINI_XML_VALUE)
 })
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class GeminiDocument implements MetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private URI uri;
@@ -47,6 +47,7 @@ public class GeminiDocument implements MetadataDocument {
     private List<ConformanceResult> conformanceResults;
     private List<SpatialResolution> spatialResolutions;
     private DownloadOrder downloadOrder;
+    @JsonIgnore
     private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> metadataPointsOfContact;
@@ -58,18 +59,32 @@ public class GeminiDocument implements MetadataDocument {
     private Set<Link> documentLinks, children;
     private Set<ResourceIdentifier> resourceIdentifiers;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
+    @JsonIgnore
     private Citation citation;
     private DatasetReferenceDate datasetReferenceDate;
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate metadataDate;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime metadataDate;
     private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
     
+    @JsonProperty("citation")
+    public Citation getCitation() {
+        return citation;
+    }
+    
+    @JsonIgnore
+    public GeminiDocument setCitation(Citation citation) {
+        this.citation = citation;
+        return this;
+    }
+    
+    @JsonProperty("resourceType")
     public String getResourceType() {
         return type;
     }
     
+    @JsonIgnore
     public void setResourceType(String resourceType) {
         this.type = resourceType;
     }

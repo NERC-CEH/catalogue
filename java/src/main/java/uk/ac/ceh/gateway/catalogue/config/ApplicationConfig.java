@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.eventbus.EventBus;
@@ -50,7 +51,8 @@ public class ApplicationConfig {
     public ObjectMapper objectMapper() {
         return new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-            .registerModule(new GuavaModule());
+            .registerModule(new GuavaModule())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
     
     @Bean
