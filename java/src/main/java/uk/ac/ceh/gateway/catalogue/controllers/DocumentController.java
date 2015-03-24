@@ -54,6 +54,7 @@ public class DocumentController {
     public static final String EDITOR_ROLE = "ROLE_CIG_EDITOR";
     public static final String PUBLISHER_ROLE = "ROLE_CIG_PUBLISHER";
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
+    private static final String DEFAULT_GROUP = "il-team";
     private final DataRepository<CatalogueUser> repo;
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
@@ -144,11 +145,14 @@ public class DocumentController {
     }
     
     private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user) {
-        MetadataInfo toReturn = infoFactory.createInfo(document, MediaType.parseMediaType("application/gemini+json"));
+        MetadataInfo toReturn = infoFactory.createInfo(document, MediaType.parseMediaType(GEMINI_JSON_VALUE));
         String username = user.getUsername();
         toReturn.addPermission(Permission.VIEW, username);
         toReturn.addPermission(Permission.EDIT, username);
         toReturn.addPermission(Permission.DELETE, username);
+        toReturn.addPermission(Permission.VIEW, DEFAULT_GROUP);
+        toReturn.addPermission(Permission.EDIT, DEFAULT_GROUP);
+        toReturn.addPermission(Permission.DELETE, DEFAULT_GROUP);
         return toReturn;
     }
     
