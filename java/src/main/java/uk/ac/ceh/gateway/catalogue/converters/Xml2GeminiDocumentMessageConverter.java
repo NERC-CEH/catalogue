@@ -142,9 +142,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
             toReturn.setResourceType(resourceType.evaluate(document));
             toReturn.setResourceIdentifiers(resourceIdentifierConverter.convert(document));
-            toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
-            toReturn.setTopicCategories(getListOfStrings(document, topicCategories));
-            toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
             toReturn.setMetadataPointsOfContact(metadataPointOfContactConverter.convert(document));
             toReturn.setDistributorContacts(distributorConverter.convert(document));
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));

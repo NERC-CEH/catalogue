@@ -28,7 +28,7 @@ public class TemporalExtentConverter {
         NodeList nodeList = (NodeList) temporalExtents.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
             Node timePeriodNode = nodeList.item(i);
-            toReturn.add(new TimePeriod(begin.evaluate(timePeriodNode), end.evaluate(timePeriodNode)));
+            toReturn.add(TimePeriod.builder().begin(begin.evaluate(timePeriodNode)).end(end.evaluate(timePeriodNode)).build());
         }
         return toReturn;
     }

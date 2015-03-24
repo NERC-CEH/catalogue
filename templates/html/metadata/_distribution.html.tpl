@@ -6,16 +6,16 @@
   <#assign viewOnMap="Preview on map">
 </#if>
 
-<#if (downloadOrder.orderUrl)?? || mapViewable >
+<#if downloadOrder?? || mapViewable >
   <div class="panel panel-default hidden-print" id="document-order" rel="dcat:Distribution">
     <div class="panel-heading"><p class="panel-title">${documentOrderTitle?html}</p></div>
     <div class="panel-body">
 	
-	  <#if downloadOrder.orderUrl?has_content>
+	  <#if (downloadOrder.orderUrl)?has_content>
 		  <p><a href="${downloadOrder.orderUrl?html}" property="dcat:accessURL"><i class="glyphicon glyphicon-save text-info"></i> Order/download</a></p>
 	  </#if>
 		
-      <#if downloadOrder.supportingDocumentsUrl?has_content>
+      <#if (downloadOrder.supportingDocumentsUrl)?has_content>
         <p><a href="${downloadOrder.supportingDocumentsUrl?html}" title="Supporting information important for the re-use of this dataset"><i class="glyphicon glyphicon-file text-info"></i> Supporting documentation</a></p>
       </#if>
 	  

@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import static com.google.common.base.Strings.nullToEmpty;
 import java.util.regex.Pattern;
 import lombok.Value;
@@ -22,7 +24,12 @@ public class OnlineResource {
     }
     
     @Builder
-    private OnlineResource(String url, String name, String description, String function) {
+    @JsonCreator
+    private OnlineResource(
+        @JsonProperty("url") String url,
+        @JsonProperty("name") String name,
+        @JsonProperty("description") String description,
+        @JsonProperty("function") String function) {
         this.url = nullToEmpty(url);
         this.name = nullToEmpty(name);
         this.description = nullToEmpty(description);
