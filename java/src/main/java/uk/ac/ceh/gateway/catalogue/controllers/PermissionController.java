@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,8 +39,8 @@ public class PermissionController {
         this.permissionService = permissionService;
     }
     
-    @Secured({DocumentController.EDITOR_ROLE, DocumentController.PUBLISHER_ROLE})
-    @RequestMapping(method =  RequestMethod.GET)
+    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
+    @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public HttpEntity<PermissionResource> currentPermission (
             @ActiveUser CatalogueUser user,
@@ -50,7 +50,7 @@ public class PermissionController {
         return ResponseEntity.ok(new PermissionResource(document)); 
     }
     
-    @Secured({DocumentController.EDITOR_ROLE, DocumentController.PUBLISHER_ROLE})
+    @PreAuthorize("@permission.toAccess(#user, #file, 'EDIT')")
     @RequestMapping(method =  RequestMethod.PUT)
     @ResponseBody
     public HttpEntity<PermissionResource> updatePermission (

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
@@ -13,6 +14,7 @@ import static org.mockito.Matchers.any;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -140,11 +142,9 @@ public class PermissionServiceTest {
     }
     
     @Test
-    public void editorCanEdit() {
+    public void editorCanEdit() throws IOException {
         //Given
         CatalogueUser editor = new CatalogueUser().setUsername("editor");
-        Group editorRole = new CrowdGroup(DocumentController.EDITOR_ROLE);
-        given(groupStore.getGroups(editor)).willReturn(Arrays.asList(editorRole));
         
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
@@ -152,44 +152,34 @@ public class PermissionServiceTest {
         when(authentication.getPrincipal()).thenReturn(editor);
         SecurityContextHolder.setContext(securityContext);
         
+        DataRevision revision = mock(DataRevision.class);
+        given(revision.getRevisionID()).willReturn("revision");
+        given(repo.getLatestRevision()).willReturn(revision);
+        DataDocument document = mock(DataDocument.class);
+        given(repo.getData("revision", "test.meta")).willReturn(document);
+        MetadataInfo info = mock(MetadataInfo.class);
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
+        given(info.isPubliclyViewable(Permission.EDIT)).willReturn(Boolean.FALSE);
+        given(info.canAccess(any(Permission.class), any(CatalogueUser.class), any(List.class))).willReturn(Boolean.TRUE);
+        
         //When
-        boolean actual = permissionService.userCanEdit();
+        boolean actual = permissionService.userCanEdit("test");
         
         //Then
         assertThat("Editor should be able to edit", actual, equalTo(true));
     }
     
     @Test
-    public void publisherCanEdit() {
-        //Given
-        CatalogueUser editor = new CatalogueUser().setUsername("publisher");
-        Group editorRole = new CrowdGroup(DocumentController.PUBLISHER_ROLE);
-        given(groupStore.getGroups(editor)).willReturn(Arrays.asList(editorRole));
-        
-        Authentication authentication = mock(Authentication.class);
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(editor);
-        SecurityContextHolder.setContext(securityContext);
-        
-        //When
-        boolean actual = permissionService.userCanEdit();
-        
-        //Then
-        assertThat("Publisher should be able to edit", actual, equalTo(true));
-    }
-    
-    @Test
     public void publisherCanMakePublic() {
         //Given
-        CatalogueUser editor = new CatalogueUser().setUsername("publisher");
+        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
         Group editorRole = new CrowdGroup(DocumentController.PUBLISHER_ROLE);
-        given(groupStore.getGroups(editor)).willReturn(Arrays.asList(editorRole));
+        given(groupStore.getGroups(publisher)).willReturn(Arrays.asList(editorRole));
         
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(editor);
+        when(authentication.getPrincipal()).thenReturn(publisher);
         SecurityContextHolder.setContext(securityContext);
         
         //When
@@ -220,7 +210,7 @@ public class PermissionServiceTest {
     }
     
     @Test
-    public void userWithoutEditorRoleCannotEdit() {
+    public void userWithoutEditorPermissionCannotEdit() throws IOException {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("bob");
         Group group0 = new CrowdGroup("CEH");
@@ -233,15 +223,25 @@ public class PermissionServiceTest {
         when(authentication.getPrincipal()).thenReturn(user);
         SecurityContextHolder.setContext(securityContext);
         
+        DataRevision revision = mock(DataRevision.class);
+        given(revision.getRevisionID()).willReturn("revision");
+        given(repo.getLatestRevision()).willReturn(revision);
+        DataDocument document = mock(DataDocument.class);
+        given(repo.getData("revision", "test.meta")).willReturn(document);
+        MetadataInfo info = mock(MetadataInfo.class);
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
+        given(info.isPubliclyViewable(Permission.EDIT)).willReturn(Boolean.FALSE);
+        given(info.canAccess(Permission.EDIT, user, Arrays.asList(group0, group1))).willReturn(Boolean.FALSE);
+        
         //When
-        boolean actual = permissionService.userCanEdit();
+        boolean actual = permissionService.userCanEdit("test");
         
         //Then
-        assertThat("Editor should be able to edit", actual, equalTo(false));
+        assertThat("Editor should not be able to edit", actual, equalTo(false));
     }
     
     @Test
-    public void publicCannotEdit() {
+    public void publicCannotEdit() throws IOException {
         //Given
         given(groupStore.getGroups(CatalogueUser.PUBLIC_USER)).willReturn(Collections.EMPTY_LIST);
         Authentication authentication = mock(Authentication.class);
@@ -251,35 +251,10 @@ public class PermissionServiceTest {
         SecurityContextHolder.setContext(securityContext);
         
         //When
-        boolean actual = permissionService.userCanEdit();
+        boolean actual = permissionService.userCanEdit("test");
         
         //Then
         assertThat("Public should not be able to edit", actual, equalTo(false));
-    }
-    
-    private DataRevision<CatalogueUser> createDataRevision(String username) {
-        return new DataRevision<CatalogueUser>() {
-
-            @Override
-            public String getRevisionID() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public String getMessage() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public String getShortMessage() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public CatalogueUser getAuthor() {
-                return new CatalogueUser().setUsername(username);
-            }
-        };
     }
 
 }

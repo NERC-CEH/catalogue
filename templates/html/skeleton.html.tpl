@@ -35,7 +35,7 @@
             <li><a href="//lwis.ceh.ac.uk/catalogue/help">Help</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <#if searching && permission?? && permission.userCanEdit()>
+            <#if searching && permission.userCanCreate()>
                 <li><a class="edit-control" href="#edit/new">Create new metadata</a></li>
             </#if>
             <li id="sso-user"><a>Joe Bloggs</a></li>
