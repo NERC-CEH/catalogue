@@ -28,7 +28,10 @@ public class ResourceMaintenanceConverter {
         NodeList nodeList = (NodeList) resourceMaintenance.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
             Node node = nodeList.item(i);
-            toReturn.add(new ResourceMaintenance(frequencyOfUpdate.evaluate(node).trim(), note.evaluate(node).trim()));
+            toReturn.add(ResourceMaintenance.builder()
+                .frequencyOfUpdate(frequencyOfUpdate.evaluate(node).trim())
+                .note(note.evaluate(node).trim())
+                .build());
         }
         return toReturn;
     }

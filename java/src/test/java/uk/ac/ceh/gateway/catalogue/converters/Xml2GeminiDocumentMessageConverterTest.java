@@ -186,9 +186,9 @@ public class Xml2GeminiDocumentMessageConverterTest {
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("timeExtent.xml"));
         List<TimePeriod> expected = Arrays.asList(
-            new TimePeriod("1987-04-21", "1989-12-31"),
-            new TimePeriod("1999-03-30", "2013-10-10"),
-            new TimePeriod("2014-03-12", "")
+            TimePeriod.builder().begin("1987-04-21").end("1989-12-31").build(),
+            TimePeriod.builder().begin("1999-03-30").end("2013-10-10").build(),
+            TimePeriod.builder().begin("2014-03-12").end("").build()
         );
         
         //When
@@ -205,8 +205,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("frequencyOfUpdate.xml"));
         List<ResourceMaintenance> expected = Arrays.asList(
-            new ResourceMaintenance("notPlanned", null),
-            new ResourceMaintenance("fortnightly", "a note")
+            ResourceMaintenance.builder().frequencyOfUpdate("notPlanned").build(),
+            ResourceMaintenance.builder().frequencyOfUpdate("fortnightly").note("a note").build()
         );
         
         //When

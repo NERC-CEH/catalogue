@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -45,6 +47,7 @@ public class GeminiDocument implements MetadataDocument {
     private List<ConformanceResult> conformanceResults;
     private List<SpatialResolution> spatialResolutions;
     private DownloadOrder downloadOrder;
+    @JsonIgnore
     private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> metadataPointsOfContact;
@@ -56,6 +59,7 @@ public class GeminiDocument implements MetadataDocument {
     private Set<Link> documentLinks, children;
     private Set<ResourceIdentifier> resourceIdentifiers;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
+    @JsonIgnore
     private Citation citation;
     private DatasetReferenceDate datasetReferenceDate;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -64,10 +68,23 @@ public class GeminiDocument implements MetadataDocument {
     private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
     
+    @JsonProperty("citation")
+    public Citation getCitation() {
+        return citation;
+    }
+    
+    @JsonIgnore
+    public GeminiDocument setCitation(Citation citation) {
+        this.citation = citation;
+        return this;
+    }
+    
+    @JsonProperty("resourceType")
     public String getResourceType() {
         return type;
     }
     
+    @JsonIgnore
     public void setResourceType(String resourceType) {
         this.type = resourceType;
     }
