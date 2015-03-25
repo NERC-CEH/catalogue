@@ -6,8 +6,8 @@
     <div class="panel-body">
       <#if canEdit>
         <p><a href="#edit/${id?html}">Edit&hellip;</a><p>
-        <p><a href="/documents/${id?html}/permission">Permissions&hellip;</a></p>
       </#if>
+      <p><a href="/documents/${id?html}/permission">Permissions&hellip;</a></p>
       <#if canEdit || canMakePublic>
         <p><a href="/documents/${id?html}/publication">Publish&hellip;</a></p>
       </#if>
