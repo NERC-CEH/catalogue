@@ -5,6 +5,7 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
+import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.REVIEW_GROUP;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
@@ -38,7 +39,9 @@ public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocument
         toReturn.addPermission(Permission.VIEW, author);
         toReturn.addPermission(Permission.EDIT, author);
         toReturn.addPermission(Permission.DELETE, author);
-        
+        toReturn.addPermission(Permission.VIEW, REVIEW_GROUP);
+        toReturn.addPermission(Permission.EDIT, REVIEW_GROUP);
+        toReturn.addPermission(Permission.DELETE, REVIEW_GROUP);
         return toReturn;
     }
     
