@@ -54,12 +54,26 @@ public class PermissionService {
         return toReturn;
     }
     
-    public boolean userCanEdit() {
-        return userCan((String name) -> name.equalsIgnoreCase(DocumentController.EDITOR_ROLE) || name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE));
+    public boolean userCanEdit(String file) throws IOException {
+        Objects.requireNonNull(file);
+        CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (user.isPublic()) {
+            return false;
+        } else {
+            return toAccess(user, file, "EDIT");
+        }
+    }
+    
+    public boolean userCanCreate() {
+        return userCan((String name) -> name.equalsIgnoreCase(DocumentController.EDITOR_ROLE));
     }
     
     public boolean userCanMakePublic() {
         return userCan((String name) -> name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE));
+    }
+    
+    public boolean userCanPublish(String file) throws IOException {
+        return userCanEdit(file) || userCanMakePublic();
     }
     
     private boolean userCan(Predicate<String> filter) {
