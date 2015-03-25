@@ -1,10 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 import java.time.LocalDate;
 import static com.google.common.base.Strings.nullToEmpty;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateDeserializer;
@@ -19,7 +21,11 @@ public class ThesaurusName {
     private final LocalDate date;
     
     @Builder
-    private ThesaurusName(String title, LocalDate date, String dateType) {
+    @JsonCreator
+    private ThesaurusName(
+        @JsonProperty("title") String title, 
+        @JsonProperty("date") LocalDate date, 
+        @JsonProperty("dateType") String dateType) {
         this.title = nullToEmpty(title);
         this.date = date;
         this.dateType = nullToEmpty(dateType);

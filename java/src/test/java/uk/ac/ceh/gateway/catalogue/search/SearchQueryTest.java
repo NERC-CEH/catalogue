@@ -10,9 +10,15 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.BDDMockito.given;
+import org.mockito.Mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import org.mockito.MockitoAnnotations;
+import uk.ac.ceh.components.userstore.Group;
+import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class SearchQueryTest {
@@ -21,6 +27,75 @@ public class SearchQueryTest {
     public static final int DEFAULT_PAGE = 1;
     public static final int DEFAULT_ROWS = 20;
     public static final List<FacetFilter> DEFAULT_FILTERS = Collections.EMPTY_LIST;
+    @Mock private GroupStore<CatalogueUser> groupStore; 
+    
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
+    
+    @Test
+    public void loggedInUserHasUsernameAsViewFilter() {
+        //Given
+        CatalogueUser user = new CatalogueUser().setUsername("helen");
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            user,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS,
+            groupStore
+        );
+        
+        //When
+        SolrQuery solrQuery = query.build();
+        
+        //Then
+        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:(public OR helen)")); 
+    }
+    
+    @Test
+    public void loggedInUserWithGroupsHasUsernameAndGroupsAsViewFilter() {
+        //Given
+        CatalogueUser user = new CatalogueUser().setUsername("helen");
+        given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("CEH"), createGroup("EIDC")));
+        
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            user,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS,
+            groupStore
+        );
+        
+        //When
+        SolrQuery solrQuery = query.build();
+        
+        //Then
+        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:(public OR helen OR ceh OR eidc)")); 
+    }
+    
+    private Group createGroup(String name) {
+        return new Group() {
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public String getDescription() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+    }
     
     @Test
     public void buildQueryWithNoExtraParameters() {
@@ -33,13 +108,16 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         //When
         SolrQuery solrQuery = query.build();
         
         //Then
         assertThat("Solr query should be the 'default text'", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
-        assertThat("Solr query state filter query should be 'public'", solrQuery.getFilterQueries(), hasItemInArray("{!term f=state}public"));
+        assertThat("Solr query state filter query should be 'public'", solrQuery.getFilterQueries(), hasItemInArray("{!term f=view}public"));
+        assertThat("Solr query state filter query should be 'published'", solrQuery.getFilterQueries(), hasItemInArray("{!term f=state}published"));
         assertThat("Solr query licence facet fields should be present", solrQuery.getFacetFields(), hasItemInArray("licence"));
         assertThat("Solr query resourceType facet fields should be present", solrQuery.getFacetFields(), hasItemInArray("resourceType"));
         assertThat("Solr query start should be 0 for first page", solrQuery.getStart(), equalTo(0));
@@ -59,7 +137,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             2,
             40,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         SolrQuery solrQuery = query.build();
@@ -81,7 +161,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         //When
         SolrQuery solrQuery = query.build();
         
@@ -103,7 +185,9 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             Arrays.asList(
                 new FacetFilter("resourceType","dataset"),
-                new FacetFilter("topic","0/Climate/")));
+                new FacetFilter("topic","0/Climate/")),
+            groupStore
+        );
         //When
         SolrQuery solrQuery = query.build();
         
@@ -111,28 +195,6 @@ public class SearchQueryTest {
         assertThat("Solr query should be the default text", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
         assertThat("Solr query should have resourceType filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=resourceType}dataset"));
         assertThat("Solr query should have topic filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=topic}0/Climate/"));
-    }
-    
-    @Test
-    public void loggedInUserCanOnlySearchForPublicRecords() {
-        //Given
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("testloggedin");
-        SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            user,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,  
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS);
-
-        //When
-        SolrQuery solrQuery = query.build();
-
-        //Then
-        assertThat("FilterQuery should be 'state:public' for logged in user", solrQuery.getFilterQueries(), hasItemInArray("{!term f=state}public"));
     }
     
     @Test(expected=IllegalArgumentException.class)
@@ -148,7 +210,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         SolrQuery solrQuery = query.build();
@@ -170,7 +234,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         SolrQuery solrQuery = query.build();
@@ -192,7 +258,9 @@ public class SearchQueryTest {
             SpatialOperation.INTERSECTS,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         SolrQuery solrQuery = query.build();
@@ -212,7 +280,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             18,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         SearchQuery queryWithFacet = query.withFacetFilter(new FacetFilter("what", "ever"));
@@ -234,7 +304,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             18,
             DEFAULT_ROWS,
-            Arrays.asList(filter));
+            Arrays.asList(filter),
+            groupStore
+        );
         
         //When
         SearchQuery queryWithFacet = query.withoutFacetFilter(filter);
@@ -255,7 +327,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             18,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         SearchQuery newQuery = query.withFacetFilter(filter);
@@ -276,7 +350,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             18,
             DEFAULT_ROWS,
-            Arrays.asList(filter));
+            Arrays.asList(filter),
+            groupStore
+        );
         
         //When
         SearchQuery newQuery = query.withoutFacetFilter(filter);
@@ -297,7 +373,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            filters);
+            filters,
+            groupStore
+        );
         
         FacetFilter filter = new FacetFilter("hey", "lo");
         
@@ -319,13 +397,15 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             24,
             30,
-            Arrays.asList(new FacetFilter("a","b")));
+            Arrays.asList(new FacetFilter("a","b")),
+            groupStore
+        );
         
         //When
         String url = interestingQuery.toUrl();
         
         //Then
-        assertThat("Term should be searched for", url, containsString("term=My Search Term"));
+        assertThat("Term should be searched for", url, containsString("term=My+Search+Term"));
         assertThat("BBOX should be searched for", url, containsString("bbox=1,2,3,4"));
         assertThat("OP should be present", url, containsString("op=IsWithin"));
         assertThat("page should be specified", url, containsString("page=24"));
@@ -345,7 +425,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         String url = boringQuery.toUrl();
@@ -367,7 +449,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         SearchQuery newQuery = query.withBbox(newBbox);
@@ -387,7 +471,9 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS);
+            DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         SearchQuery newQuery = query.withBbox(DEFAULT_BBOX);

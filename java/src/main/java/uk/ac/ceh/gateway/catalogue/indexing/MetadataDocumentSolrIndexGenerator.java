@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import com.google.common.base.Strings;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
 /**
@@ -40,7 +42,8 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                 .setResourceType(codeLookupService.lookup("metadata.scopeCode", document.getType()))
                 .setLocations(document.getLocations())
                 .setState(getState(document))
-                .setTopic(topicIndexer.index(document));   
+                .setTopic(topicIndexer.index(document))
+                .setView(getViews(document));
         
         if(document instanceof GeminiDocument) {
             GeminiDocument gemini = (GeminiDocument)document;
@@ -52,7 +55,8 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                     .setIndividual(grab(gemini.getResponsibleParties(), ResponsibleParty::getIndividualName))
                     .setOnlineResourceName(grab(gemini.getOnlineResources(), OnlineResource::getName))
                     .setOnlineResourceDescription(grab(gemini.getOnlineResources(), OnlineResource::getDescription))
-                    .setResourceIdentifier(grab(gemini.getResourceIdentifiers(), ResourceIdentifier::getCode));
+                    .setResourceIdentifier(grab(gemini.getResourceIdentifiers(), ResourceIdentifier::getCode))
+                    .setDataCentre(getDataCentre(gemini));
         }
         return toReturn;
     }
@@ -72,16 +76,39 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         }
     }
     
+    private List<String> getViews(MetadataDocument document) {
+        Objects.requireNonNull(document);
+        return Optional.ofNullable(document)
+            .map(MetadataDocument::getMetadata)
+            .map(m -> m.getIdentities(Permission.VIEW))
+            .orElse(Collections.emptyList());       
+    }
+    
+    private String getDataCentre(GeminiDocument document) {
+        Optional<ResponsibleParty> dataCentre = document.getResponsibleParties()
+            .stream()
+            .filter(rp -> rp.getRole().equals("custodian") && rp.getOrganisationName().startsWith("EIDC"))
+            .findFirst();
+        
+        if (dataCentre.isPresent()) {
+            return "EIDCHub";
+        } else {
+            return "";
+        }
+    }
+    
     // The following will iterate over a given collection (which could be null)
     // And grab a property off of each element in the collection.
     // If the supplied collection is null, this method will return an empty
     // list
-    private <U, T> List<U> grab(Collection<T> list, Function<? super T, ? extends U> mapper ) {
+    private <T> List<String> grab(Collection<T> list, Function<? super T, String> mapper ) {
         return Optional.ofNullable(list)
                         .orElse(Collections.emptyList())
                         .stream()
                         .map(mapper)
+                        .map(Strings::emptyToNull)
                         .filter(Objects::nonNull)
+                        .distinct()
                         .collect(Collectors.toList());
     }
     
@@ -109,6 +136,8 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         private @Field String licence;
         private @Field String state;
         private @Field List<String> topic;
+        private @Field List<String> view;
+        private @Field String dataCentre;
         
         public String getShortenedDescription(){
             return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);

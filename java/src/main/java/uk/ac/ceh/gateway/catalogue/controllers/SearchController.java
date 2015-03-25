@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.util.List;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrRequest;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.search.FacetFilter;
@@ -36,11 +38,13 @@ public class SearchController {
     public static final int PAGE_DEFAULT = Integer.parseInt(PAGE_DEFAULT_STRING);
     public static final int ROWS_DEFAULT = Integer.parseInt(ROWS_DEFAULT_STRING);
     
-    private final SolrServer solrServer;  
+    private final SolrServer solrServer;
+    private final GroupStore<CatalogueUser> groupStore;
       
     @Autowired
-    public SearchController(SolrServer solrServer){
-        this.solrServer = solrServer;
+    public SearchController(SolrServer solrServer, GroupStore<CatalogueUser> groupStore){
+        this.solrServer = Objects.requireNonNull(solrServer);
+        this.groupStore = Objects.requireNonNull(groupStore);
     }
     
     @RequestMapping(value = "documents",
@@ -63,7 +67,8 @@ public class SearchController {
             SpatialOperation.valueOf(op.toUpperCase()),
             page,
             rows,
-            facetFilters
+            facetFilters,
+            groupStore
         );
         log.debug("query: {}", searchQuery);
         return new SearchResults(

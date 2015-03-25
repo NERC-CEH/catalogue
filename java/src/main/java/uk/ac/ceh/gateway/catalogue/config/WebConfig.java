@@ -33,8 +33,11 @@ import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverte
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
 
 @Configuration
@@ -56,6 +59,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
     @Autowired CodeLookupService codesLookup;
+    @Autowired PermissionService permissionService;
     
     @Bean(name = "simpleMappingExceptionResolver")
     public SimpleMappingExceptionResolver createSimpleMappingExceptionResolver() {
@@ -74,6 +78,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         converters.add(new Object2TemplatedMessageConverter(UKEOFDocument.class,  configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(SearchResults.class,  configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(Citation.class,       configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(StateResource.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,  configureFreeMarker().getConfiguration()));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
@@ -92,6 +98,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         try {
             Map<String, Object> shared = new HashMap<>();
             shared.put("codes", codesLookup);
+            shared.put("permission", permissionService);
             
             FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();
             freemarkerConfig.setFreemarkerVariables(shared);
@@ -132,6 +139,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             .mediaType("html", MediaType.TEXT_HTML)
             .mediaType("json", MediaType.APPLICATION_JSON)
             .mediaType(GEMINI_SHORT, MediaType.parseMediaType(GEMINI_JSON_VALUE))
+            .mediaType(GEMINI_XML_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
             .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE));
     }

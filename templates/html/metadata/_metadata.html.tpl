@@ -46,7 +46,7 @@
 
       <dt>Record last updated</dt>
       <dd>${metadataDate?html}</dd>
-
+      
       <#if metadataStandardName?has_content>
       <dt>Metadata standard</dt>
       <dd>
@@ -58,8 +58,6 @@
       </dd>
       </#if>
 
-      <dt> </dt>
-      <dd><a href="?format=GeminiWhatever">View complete GEMINI 2 metadata record (xml)</a></dd>
     </dl>
   </div>
 </#if>

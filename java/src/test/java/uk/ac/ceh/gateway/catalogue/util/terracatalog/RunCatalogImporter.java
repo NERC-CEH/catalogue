@@ -14,7 +14,7 @@ import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.gateway.catalogue.config.ApplicationConfig;
 import uk.ac.ceh.gateway.catalogue.config.CrowdUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
- import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
@@ -32,7 +32,7 @@ public class RunCatalogImporter {
     
     @BeforeClass
     public static void before() {
-        System.setProperty("config.file", "E:\\repos\\cig\\vagrant\\catalogue_config\\development.properties");
+        System.setProperty("config.file", "E:/repos/cig/vagrant/catalogue_config/development.properties");
     }
     
     @Test
@@ -47,7 +47,7 @@ public class RunCatalogImporter {
         userFactory.put("ceh", "@ceh.ac.uk");
         StateTranslatingMetadataInfoFactory infoFactory = new StateTranslatingMetadataInfoFactory();
         infoFactory.put("private", "draft");
-        infoFactory.put("public", "public");
+        infoFactory.put("public", "published");
         CatalogueUser importUser = new CatalogueUser();
         importUser.setUsername("Import");
         importUser.setEmail("import@example.com");
@@ -59,6 +59,6 @@ public class RunCatalogImporter {
             documentInfoMapper,
             infoFactory,
             importUser);
-        importer.importDirectory(new File("S:\\Environmental Informatics\\EIDC\\Hub Operations\\Catalogue Backups"));
+        importer.importDirectory(new File("C:/users/rjsc/desktop/backup"));
     }
 }

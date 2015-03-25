@@ -1,11 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Strings;
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,20 +17,34 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
+import uk.ac.ceh.components.userstore.Group;
+import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 
 /**
  * The following class represents the state at which a document is in
  * @author Christopher Johnson
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Accessors(chain = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class MetadataInfo {
     private String rawType, state, documentType;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private Multimap<Permission, String> permissions;
+    private final Multimap<Permission, String> permissions;
+    public static final String PUBLIC_GROUP = "public";
     
+    public MetadataInfo() {
+        permissions = HashMultimap.create();
+    }
+    
+    public MetadataInfo(MetadataInfo info) {
+        this.rawType = info.rawType;
+        this.state = info.state;
+        this.documentType = info.documentType;
+        this.permissions = HashMultimap.create(info.permissions);
+    }
+      
     @JsonIgnore
     public MediaType getRawMediaType() {
         return MediaType.parseMediaType(rawType);
@@ -47,51 +61,89 @@ public class MetadataInfo {
     public String getDocumentType() {
         return Optional.ofNullable(documentType).orElse("");
     }
-       
+    
     public void addPermission(Permission permission, String identity) {
         Objects.requireNonNull(permission);
         Objects.requireNonNull(Strings.emptyToNull(identity));
-        if (permissions == null) {
-            permissions = ArrayListMultimap.create();
+        if (PUBLIC_GROUP.equalsIgnoreCase(identity)) {
+            if(Permission.VIEW.equals(permission)) {
+                // Only allow VIEW permission to be set for the PUBLIC_GROUP
+                permissions.put(permission, identity.toLowerCase());
+            }
+        } else {
+            permissions.put(permission, identity.toLowerCase());
         }
-        permissions.put(permission, identity.toLowerCase());
     }
     
-    public void addPermissions(Permission permission, List<String> identities) {
-        Objects.requireNonNull(permission);
-        Objects.requireNonNull(identities);
-        if (permissions == null) {
-            permissions = ArrayListMultimap.create();
+    public MetadataInfo replaceAllPermissions(Set<IdentityPermissions> updated) {
+        Objects.requireNonNull(updated);
+        MetadataInfo toReturn = new MetadataInfo(this);
+        toReturn.permissions.clear();
+        
+        for (IdentityPermissions ip : updated) {
+            if (ip.isCanView()) {
+                toReturn.addPermission(Permission.VIEW, ip.getIdentity());
+
+                if (ip.isCanEdit()) {
+                    toReturn.addPermission(Permission.EDIT, ip.getIdentity());
+
+                    if (ip.isCanDelete()) {
+                        toReturn.addPermission(Permission.DELETE, ip.getIdentity());
+                    }
+                }
+            }
         }
-        permissions.putAll(permission, identities);
+        preventAllPermissionsBeingRemovedOrOnlyPublic(toReturn);
+        return toReturn;
     }
     
-    public void removePermission(Permission permission, String identity) {
-        Objects.requireNonNull(permission);
-        Objects.requireNonNull(Strings.emptyToNull(identity));
-        Optional.ofNullable(permissions)
-            .ifPresent(p -> {
-                p.remove(permission, identity);
-            });
+    private void preventAllPermissionsBeingRemovedOrOnlyPublic(MetadataInfo updated) {
+        if (updated.permissions.isEmpty()) {
+            updated.permissions.putAll(this.permissions);
+        } else {
+            Collection<String> view = updated.permissions.get(Permission.VIEW);
+            Optional<String> possible = view.stream().filter(v -> PUBLIC_GROUP.equalsIgnoreCase(v)).findFirst();
+            if (view.size() == 1 && possible.isPresent()) {
+                updated.permissions.clear();
+                updated.permissions.putAll(this.permissions);
+            }
+        }
     }
     
     public List<String> getIdentities(Permission permission) {
         Objects.requireNonNull(permission);
-        if (permissions != null) {
-            return permissions.get(permission)
-                .stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toList());
-        } else {
-            return Collections.EMPTY_LIST;
-        }
+        return permissions.get(permission)
+            .stream()
+            .map(String::toLowerCase)
+            .collect(Collectors.toList());
     }
     
-    public Set<Permission> getPermissions() {
-        if (permissions != null) {
-            return permissions.keySet();
-        } else {
-            return Collections.EMPTY_SET;
+    public boolean isPubliclyViewable(Permission requested) {
+        return 
+            Permission.VIEW.equals(requested)
+            &&
+            permissions.containsEntry(Permission.VIEW, PUBLIC_GROUP)
+            && 
+            state.equalsIgnoreCase("published");
+    }
+       
+    public boolean canAccess(Permission requested, CatalogueUser user, List<Group> groups) {
+        Objects.requireNonNull(requested);
+        Objects.requireNonNull(user);
+        Objects.requireNonNull(groups);
+        
+        if (user.isPublic()) {
+            return false;
         }
+        
+        return 
+            permissions.containsEntry(requested, user.getUsername().toLowerCase())
+            ||
+            groups
+                .stream()
+                .map(Group::getName)
+                .filter(name -> permissions.containsEntry(requested, name.toLowerCase()))
+                .findFirst()
+                .isPresent();
     }
 }

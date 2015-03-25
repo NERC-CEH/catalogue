@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 
 public class StateTranslatingMetadataInfoFactoryTest {
 
@@ -16,6 +17,12 @@ public class StateTranslatingMetadataInfoFactoryTest {
         GeminiDocument document = new GeminiDocument();
         TerraCatalogExt ext = new TerraCatalogExt("testOwner", "testGroup", "private", "protection");
         MetadataInfo expected = new MetadataInfo().setRawType("application/xml").setState("draft").setDocumentType("GEMINI_DOCUMENT");
+        expected.addPermission(Permission.VIEW, "testOwner");
+        expected.addPermission(Permission.EDIT, "testOwner");
+        expected.addPermission(Permission.DELETE, "testOwner");
+        expected.addPermission(Permission.VIEW, "cig-review");
+        expected.addPermission(Permission.EDIT, "cig-review");
+        expected.addPermission(Permission.DELETE, "cig-review");
         
         //When
         MetadataInfo actual = factory.getDocumentInfo(document, ext);
@@ -31,6 +38,12 @@ public class StateTranslatingMetadataInfoFactoryTest {
         GeminiDocument document = new GeminiDocument();
         TerraCatalogExt ext = new TerraCatalogExt("testOwner", "testGroup", "internal", "protection");
         MetadataInfo expected = new MetadataInfo().setRawType("application/xml").setState("draft").setDocumentType("GEMINI_DOCUMENT");
+        expected.addPermission(Permission.VIEW, "testOwner");
+        expected.addPermission(Permission.EDIT, "testOwner");
+        expected.addPermission(Permission.DELETE, "testOwner");
+        expected.addPermission(Permission.VIEW, "cig-review");
+        expected.addPermission(Permission.EDIT, "cig-review");
+        expected.addPermission(Permission.DELETE, "cig-review");
         
         //When
         MetadataInfo actual = factory.getDocumentInfo(document, ext);

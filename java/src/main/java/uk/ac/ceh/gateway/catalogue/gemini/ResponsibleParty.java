@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import static com.google.common.base.Strings.nullToEmpty;
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 
 @Value
 @JsonIgnoreProperties({"roleDisplayName"})
@@ -12,7 +14,13 @@ public class ResponsibleParty {
     private final Address address;
     
     @Builder
-    private ResponsibleParty(String individualName, String organisationName, String role, String email, Address address) {
+    @JsonCreator
+    private ResponsibleParty(
+        @JsonProperty("individualName") String individualName,
+        @JsonProperty("organisationName") String organisationName,
+        @JsonProperty("role") String role,
+        @JsonProperty("email") String email,
+        @JsonProperty("address") Address address) {
         this.individualName = nullToEmpty(individualName);
         this.organisationName = nullToEmpty(organisationName);
         this.role = nullToEmpty(role);
@@ -59,7 +67,13 @@ public class ResponsibleParty {
         private final String deliveryPoint, city, administrativeArea, postalCode, country;
         
         @Builder
-        private Address(String deliveryPoint, String city, String administrativeArea, String postalCode, String country) {
+        @JsonCreator
+        private Address(
+            @JsonProperty("deliveryPoint") String deliveryPoint, 
+            @JsonProperty("city") String city,
+            @JsonProperty("administrativeArea") String administrativeArea,
+            @JsonProperty("postalCode") String postalCode,
+            @JsonProperty("country") String country) {
             this.deliveryPoint = nullToEmpty(deliveryPoint);
             this.city = nullToEmpty(city);
             this.administrativeArea = nullToEmpty(administrativeArea);

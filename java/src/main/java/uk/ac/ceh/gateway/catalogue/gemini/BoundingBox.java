@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Value
@@ -13,7 +15,12 @@ public class BoundingBox {
     private final BigDecimal westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude;
     
     @Builder
-    private BoundingBox(String westBoundLongitude, String eastBoundLongitude, String southBoundLatitude, String northBoundLatitude) {
+    @JsonCreator
+    private BoundingBox(
+        @JsonProperty("westBoundLongitude") String westBoundLongitude,
+        @JsonProperty("eastBoundLongitude") String eastBoundLongitude,
+        @JsonProperty("southBoundLatitude") String southBoundLatitude,
+        @JsonProperty("northBoundLatitude") String northBoundLatitude) {
         log.debug("w: {}, e: {}, s: {}, n: {}", westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude);
         this.westBoundLongitude = new BigDecimal(westBoundLongitude);
         this.eastBoundLongitude = new BigDecimal(eastBoundLongitude);

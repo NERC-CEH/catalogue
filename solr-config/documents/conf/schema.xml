@@ -16,7 +16,9 @@
       <field name="licence" type="keyword" indexed="true" stored="true" multiValued="false"/>
       <field name="state" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="topic" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="view" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="locations" type="spatial" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="dataCentre" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
       <dynamicField name="random*" type="random" indexed="true" stored="false"/>
     </fields>
@@ -34,14 +36,13 @@
                 <tokenizer class="solr.StandardTokenizerFactory"/>
                 <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
                 <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.EdgeNGramFilterFactory" minGramSize="3" maxGramSize="20" side="front"/>
+                <filter class="solr.EdgeNGramFilterFactory" minGramSize="2" maxGramSize="20" side="front"/>
             </analyzer>
             <analyzer type="query">
                 <tokenizer class="solr.StandardTokenizerFactory"/>
                 <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt" enablePositionIncrements="true" />
                 <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.SnowballPorterFilterFactory" language="English"/>
             </analyzer>
         </fieldType>
         <fieldType name="spatial"   

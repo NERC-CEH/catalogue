@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -14,6 +13,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
+import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
@@ -35,8 +35,8 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     public void checkThatTopicIsTransferedToIndex() {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/2","http://onto.nerc.ac.uk/CEHMD/2_1","http://onto.nerc.ac.uk/CEHMD/3", "http://onto.nerc.ac.uk/CEHMD/3_1"));
-        List<String> expected = Arrays.asList("0/Climate/", "1/Climate/Climate change/", "0/Modelling/", "1/Modelling/Integrated ecosystem modelling/");
+        when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/topic/2","http://onto.nerc.ac.uk/CEHMD/topic/3"));
+        List<String> expected = Arrays.asList("0/Biodiversity/", "0/Citizen science/");
         when(document.getDownloadOrder()).thenReturn(DownloadOrder.builder().build());
         
         //When
@@ -136,6 +136,34 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         
         //Then
         assertEquals("Expected isOgl to be false", "ISNT OGL", index.getLicence());
+    }
+    
+    @Test
+    public void checkThatEIDCCustodianIsIndexed(){
+        //Given
+        ResponsibleParty custodian = ResponsibleParty.builder().role("custodian").organisationName("EIDC Hub").build();
+        GeminiDocument document = new GeminiDocument();
+        document.setResponsibleParties(Arrays.asList(custodian));
+        
+        //When
+        DocumentSolrIndex actual = generator.generateIndex(document);
+        
+        //Then
+        assertThat("Expected dataCentre to be EIDCHub", actual.getDataCentre(), equalTo("EIDCHub"));
+    }
+    
+    @Test
+    public void checkThatEIDCCustodianIsNotIndexed(){
+        //Given
+        ResponsibleParty custodian = ResponsibleParty.builder().role("author").organisationName("Test").build();
+        GeminiDocument document = new GeminiDocument();
+        document.setResponsibleParties(Arrays.asList(custodian));
+        
+        //When
+        DocumentSolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertThat("Expected dataCentre to be empty", index.getDataCentre(), equalTo(""));
     }
     
     @Test

@@ -49,39 +49,39 @@ public class WorkflowTest {
     }
     
     @Test
-    public void editorCannotTransitionPendingToPublic() {
+    public void editorCannotTransitionPendingToPublished() {
         //Given
         MetadataInfo info = new MetadataInfo().setState("pending");
         
         final State currentState = workflow.currentState(info);
-        final Transition toPublic = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "public");
+        final Transition toPublished = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "published");
         
         //When
-        info = workflow.transitionDocumentState(info, ImmutableSet.of(editor), toPublic);
+        info = workflow.transitionDocumentState(info, ImmutableSet.of(editor), toPublished);
         
         //Then
         assertThat("state should be pending", info.getState(), equalTo("pending"));
     }
     
     @Test
-    public void publisherCanTransitionPendingToPublic() {
+    public void publisherCanTransitionPendingToPublished() {
         //Given
         MetadataInfo info = new MetadataInfo().setState("pending");
         
         final State currentState = workflow.currentState(info);
-        final Transition toPublic = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(publisher)), "public");
+        final Transition toPublished = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(publisher)), "published");
         
         //When
-        info = workflow.transitionDocumentState(info, ImmutableSet.of(editor, publisher), toPublic);
+        info = workflow.transitionDocumentState(info, ImmutableSet.of(editor, publisher), toPublished);
         
         //Then
-        assertThat("state should be public", info.getState(), equalTo("public"));
+        assertThat("state should be published", info.getState(), equalTo("published"));
     }
     
     @Test
-    public void editorCanNotTransitionFromPublicToDraft() {
+    public void editorCanNotTransitionFromPublishedToDraft() {
         //Given
-        MetadataInfo info = new MetadataInfo().setState("public");
+        MetadataInfo info = new MetadataInfo().setState("published");
         
         final State currentState = workflow.currentState(info);
         final Transition toDraft = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "draft");
@@ -90,7 +90,7 @@ public class WorkflowTest {
         info = workflow.transitionDocumentState(info, ImmutableSet.of(editor), toDraft);
         
         //Then
-        assertThat("Tate should be public", info.getState(), equalTo("public"));   
+        assertThat("state should be published", info.getState(), equalTo("published"));   
     }
     
     private Transition getTransitionTo(Set<Transition> transitions, String state) {

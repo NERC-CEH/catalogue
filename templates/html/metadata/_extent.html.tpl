@@ -1,8 +1,8 @@
 <#if boundingBoxes?? || temporalExtent?? >
   <div id="section-extent">
-  <h3><a id="extent"></a>Where/When<!--Extent--></h3>
+  <h3 id="extent">Where/When</h3>
     <dl class="dl-horizontal">
-      <#if boundingBoxes?has_content && boundingBoxes??>
+      <#if boundingBoxes?has_content>
         <dt>Study area</dt>
         <dd>
           <div id="studyarea-map">

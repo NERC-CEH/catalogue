@@ -1,6 +1,8 @@
 #metadata {
   @light-gray-border: #DFDFDF;
 
+  hr {border-color:@light-gray-border;}
+  
   #document-description { margin-bottom:1em; }
 
   h3 {
@@ -28,4 +30,11 @@
       .alert-link;
     }
   }
-}
+  
+  // Prevent definition lists from wrapping the term
+  .dl-horizontal dt {
+    white-space: normal;
+  }
+
+ }
+  #footer {background-color:#CCC; padding-top:1em;}

@@ -4,7 +4,7 @@ define [
 
   routes:
     'edit/new': 'newRecord'
-    'edit/:identifier' : 'loadRecord'
+    'edit/:identifier': 'loadRecord'
 
   initialize: (options) ->
     @model = options.model

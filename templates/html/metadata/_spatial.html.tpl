@@ -1,7 +1,7 @@
 <#if spatialRepresentationTypes?has_content || spatialReferenceSystems?has_content>
   <div id="section-spatial">
     <h3>Spatial</h3>
-    <dl>
+    <dl class="dl-horizontal">
       <#if spatialRepresentationTypes?has_content>
         <dt>Spatial representation type</dt>
         <dd>

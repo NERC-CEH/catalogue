@@ -5,8 +5,10 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
+import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.REVIEW_GROUP;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 
 @Value
 public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocumentInfoFactory<MetadataInfo>{
@@ -24,10 +26,23 @@ public class StateTranslatingMetadataInfoFactory implements TerraCatalogDocument
 
     @Override
     public MetadataInfo getDocumentInfo(GeminiDocument document, TerraCatalogExt ext) {
-        return new MetadataInfo()
+        MetadataInfo toReturn = new MetadataInfo()
             .setRawType("application/xml")
             .setState(translate(ext.getProtection()))
             .setDocumentType("GEMINI_DOCUMENT");
+        
+        if (toReturn.getState().equals("published")) {
+            toReturn.addPermission(Permission.VIEW, "public");
+        }
+        
+        String author = ext.getOwner().toLowerCase();
+        toReturn.addPermission(Permission.VIEW, author);
+        toReturn.addPermission(Permission.EDIT, author);
+        toReturn.addPermission(Permission.DELETE, author);
+        toReturn.addPermission(Permission.VIEW, REVIEW_GROUP);
+        toReturn.addPermission(Permission.EDIT, REVIEW_GROUP);
+        toReturn.addPermission(Permission.DELETE, REVIEW_GROUP);
+        return toReturn;
     }
     
     private String translate(String terraCatalogStatus) {

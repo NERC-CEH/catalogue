@@ -99,7 +99,7 @@ public class ServiceConfig {
     
     @Bean
     public MetadataListingService getWafListingService() throws XPathExpressionException {
-        return new MetadataListingService(dataRepository, documentListingService(),bundledReaderService(),permissions);
+        return new MetadataListingService(dataRepository, documentListingService(),bundledReaderService());
     }
     
     @Bean

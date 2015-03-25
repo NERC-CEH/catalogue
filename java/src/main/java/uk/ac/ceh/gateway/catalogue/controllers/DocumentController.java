@@ -5,6 +5,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -27,12 +28,14 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
@@ -51,6 +54,7 @@ public class DocumentController {
     public static final String EDITOR_ROLE = "ROLE_CIG_EDITOR";
     public static final String PUBLISHER_ROLE = "ROLE_CIG_PUBLISHER";
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
+    public static final String REVIEW_GROUP = "cig-review";
     private final DataRepository<CatalogueUser> repo;
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
@@ -116,48 +120,68 @@ public class DocumentController {
     @Secured(EDITOR_ROLE)
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
-                     consumes = "application/gemini+json")
+                     consumes = GEMINI_JSON_VALUE)
     public ResponseEntity<MetadataDocument> uploadDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody GeminiDocument geminiDocument,
-            @RequestParam(value = "message", defaultValue = "new Gemini document") String commitMessage,
             HttpServletRequest request) throws IOException, UnknownContentTypeException  {
+       
+        String id = UUID.randomUUID().toString();
+        updateIdAndMetadataDate(geminiDocument, id);
 
-        MetadataInfo metadataInfo = Optional.of(geminiDocument)
-            .map(GeminiDocument::getMetadata)
-            .orElse(infoFactory.createInfo(geminiDocument, MediaType.parseMediaType("application/gemini+json")));
+        MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(geminiDocument, user);
         
-        log.debug("metadataInfo is: {}", metadataInfo);
-        
-        Optional<String> identifier = Optional.ofNullable(geminiDocument.getId());
-        String id;
-        if (identifier.isPresent()) {
-            id = identifier.get();
-        } else {
-            id = UUID.randomUUID().toString();
-            log.debug("Updating document: adding id: {}", id);
-            geminiDocument.setId(id);
-        }
-
         repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o) )
             .submitData(String.format("%s.raw", id), (o) -> documentWriter.write(geminiDocument, o))
-            .commit(user, commitMessage);
+            .commit(user, String.format("new Gemini document: %s", id));
                 
         return ResponseEntity
             .created(getCurrentUri(request, id, repo.getLatestRevision().getRevisionID()))
             .body(readMetadata(user, id, request));
     }
     
+    private void updateIdAndMetadataDate(GeminiDocument document, String id) {
+        document.setId(id).setMetadataDate(LocalDateTime.now());
+    }
+    
+    private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user) {
+        MetadataInfo toReturn = infoFactory.createInfo(document, MediaType.parseMediaType(GEMINI_JSON_VALUE));
+        String username = user.getUsername();
+        toReturn.addPermission(Permission.VIEW, username);
+        toReturn.addPermission(Permission.EDIT, username);
+        toReturn.addPermission(Permission.DELETE, username);
+        toReturn.addPermission(Permission.VIEW, REVIEW_GROUP);
+        toReturn.addPermission(Permission.EDIT, REVIEW_GROUP);
+        toReturn.addPermission(Permission.DELETE, REVIEW_GROUP);
+        return toReturn;
+    }
+    
     @PreAuthorize("@permission.toAccess(#user, #file, 'EDIT')")
     @RequestMapping(value = "documents/{file}",
-            method = RequestMethod.PUT)
-    @ResponseBody
-    public void updateDocument( @ActiveUser CatalogueUser user,
-                                @PathVariable("file") String file,
-                                @RequestParam(value = "message", defaultValue = "edit document") String commitMessage,
-                                @RequestHeader("Content-Type") String contentType,
-                                HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException {
-        uploadDocument(user, commitMessage,  request, contentType);
+                    method = RequestMethod.PUT,
+                    consumes = GEMINI_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateDocument(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody GeminiDocument geminiDocument,
+            HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException {
+        
+        
+        MetadataInfo metadataInfo = updatingRawType(file);
+        updateIdAndMetadataDate(geminiDocument, file);
+        
+        repo.submitData(String.format("%s.meta", file), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
+            .submitData(String.format("%s.raw", file), (o) -> documentWriter.write(geminiDocument, o))
+            .commit(user, String.format("edit Gemini document: %s", file));
+        
+        return ResponseEntity
+            .ok(readMetadata(user, file, request));
+    }
+    
+    private MetadataInfo updatingRawType(String file) throws IOException, DataRepositoryException, UnknownContentTypeException {
+        MetadataInfo metadataInfo = documentBundleReader.readBundle(file, repo.getLatestRevision().getRevisionID()).getMetadata();
+        metadataInfo.setRawType(GEMINI_JSON_VALUE);
+        return metadataInfo;
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -168,7 +192,6 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        
         return readMetadata(user, file, latestRev.getRevisionID(), request);
     }
     
@@ -201,7 +224,7 @@ public class DocumentController {
         return document;
     }
 
-    @Secured(EDITOR_ROLE)
+    @PreAuthorize("@permission.toAccess(#user, #file, 'DELETE')")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.DELETE)
     @ResponseBody

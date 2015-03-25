@@ -1,12 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import static com.google.common.base.Strings.nullToEmpty;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.Builder;
 
 @Value
 @JsonIgnoreProperties({"reference"})
@@ -28,7 +30,10 @@ public class SpatialReferenceSystem {
 
     
     @Builder
-    private SpatialReferenceSystem(String code, String codeSpace){
+    @JsonCreator
+    private SpatialReferenceSystem(
+        @JsonProperty("code") String code,
+        @JsonProperty("codeSpace") String codeSpace){
         this.code = nullToEmpty(code);
         this.codeSpace = nullToEmpty(codeSpace);
     }

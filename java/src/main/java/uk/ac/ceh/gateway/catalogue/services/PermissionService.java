@@ -2,22 +2,21 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.IOException;
 import static java.lang.String.format;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
+import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
-import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
 
 @Service("permission")
 @Slf4j
@@ -44,65 +43,64 @@ public class PermissionService {
         boolean toReturn = false;
         Permission requested = Permission.valueOf(Objects.requireNonNull(permission).toUpperCase());
         
-        DataDocument data;
-        try {
-            data = repo.getData(revision, format("%s.meta", file));
-            log.debug("revision from dataDocument: {}", data.getRevision());
-        } catch (DataRepositoryException ex) {
-            return false;
-        }
-        Optional<MetadataInfo> document = Optional.ofNullable(documentInfoMapper.readInfo(data.getInputStream()));
-        
+        Optional<MetadataInfo> document = getMetadataInfo(file, revision);
         if (document.isPresent()) {
             MetadataInfo metadataInfo = document.get();
             toReturn = 
-                isPubliclyViewable(metadataInfo, requested)
+                metadataInfo.isPubliclyViewable(requested)
                 || 
-                userCanAccess(user, metadataInfo, requested)
-                ||
-                authorCanAccess(user, file);
+                metadataInfo.canAccess(requested, user, groupStore.getGroups(user));
         }
         return toReturn;
     }
     
-    private boolean isPubliclyViewable(MetadataInfo metadataInfo, Permission requested) {
-        log.debug("isPubliclyViewable");
-        return metadataInfo.getState().equalsIgnoreCase("public") && VIEW.equals(requested);
-    }
-    public boolean userCanAccess(CatalogueUser user, MetadataInfo metadataInfo) {
-        return user.isPublic() && metadataInfo.getState().equalsIgnoreCase("public");
+    public boolean userCanEdit(String file) throws IOException {
+        Objects.requireNonNull(file);
+        CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (user.isPublic()) {
+            return false;
+        } else {
+            return toAccess(user, file, "EDIT");
+        }
     }
     
-    private boolean userCanAccess(CatalogueUser user, MetadataInfo metadataInfo, Permission requested) {
-        log.debug("userCanAccess");
-        List<String> permittedIdentities = metadataInfo.getIdentities(requested);
-        log.debug("user requesting access: {}", user);
-        if ( !user.isPublic()) {
-            Optional<String> permittedGroup = groupStore.getGroups(user)
+    public boolean userCanCreate() {
+        return userCan((String name) -> name.equalsIgnoreCase(DocumentController.EDITOR_ROLE));
+    }
+    
+    public boolean userCanMakePublic() {
+        return userCan((String name) -> name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE));
+    }
+    
+    public boolean userCanPublish(String file) throws IOException {
+        return userCanEdit(file) || userCanMakePublic();
+    }
+    
+    private boolean userCan(Predicate<String> filter) {
+        CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.debug("principal: {}", user);
+        if (user.isPublic()) {
+            return false;
+        } else {
+            return groupStore.getGroups(user)
                 .stream()
                 .map(Group::getName)
-                .filter(name -> permittedIdentities.contains(name.toLowerCase()))
-                .findFirst();
-            return permittedIdentities.contains(user.getUsername()) || permittedGroup.isPresent();
-        } else {
-            return false;
+                .filter(filter)
+                .findFirst()
+                .isPresent();
         }
     }
     
-    private boolean authorCanAccess(CatalogueUser user, String file) throws DataRepositoryException {
-        log.debug("authorCanAccess");
-        
-        Optional<CatalogueUser> author = repo.getRevisions(format("%s.meta", file))
-            .stream()
-            .findFirst()
-            .map(DataRevision<CatalogueUser>::getAuthor);
-        
-        if (author.isPresent()) {
-            log.debug("author found, about to check permission");
-            return user.equals(author.get());
-        } else {
-            log.debug("author absent");
-            return false;
+    private Optional<MetadataInfo> getMetadataInfo(String file, String revision) {
+        DataDocument data;
+        Optional<MetadataInfo> toReturn;
+        try {
+            data = repo.getData(revision, format("%s.meta", file));
+            log.debug("revision from dataDocument: {}", data.getRevision());
+            toReturn = Optional.ofNullable(documentInfoMapper.readInfo(data.getInputStream()));
+        } catch (IOException ex) {
+            toReturn = Optional.empty();
         }
+        return toReturn;
     }
 }

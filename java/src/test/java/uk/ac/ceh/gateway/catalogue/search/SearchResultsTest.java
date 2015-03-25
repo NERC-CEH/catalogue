@@ -13,12 +13,15 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import static org.mockito.BDDMockito.given;
+import org.mockito.Mock;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class SearchResultsTest {
+    @Mock private GroupStore<CatalogueUser> groupStore;
     
     @Test
     public void facetResultsArePresent() {
@@ -31,7 +34,9 @@ public class SearchResultsTest {
             SpatialOperation.ISWITHIN,
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         QueryResponse response = mock(QueryResponse.class);
         
@@ -148,7 +153,9 @@ public class SearchResultsTest {
             SpatialOperation.ISWITHIN,
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         QueryResponse response = mock(QueryResponse.class);
         long resultFound = 34553450359345l;
@@ -180,7 +187,9 @@ public class SearchResultsTest {
             SpatialOperation.ISWITHIN,
             2,
             SearchQueryTest.DEFAULT_ROWS,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
@@ -203,7 +212,9 @@ public class SearchResultsTest {
             SpatialOperation.ISWITHIN,
             1,
             SearchQueryTest.DEFAULT_ROWS,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = new SearchResults(response, query);
@@ -226,7 +237,9 @@ public class SearchResultsTest {
             SpatialOperation.ISWITHIN,
             2,
             20,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = spy(new SearchResults(response, query));
@@ -250,7 +263,9 @@ public class SearchResultsTest {
             SpatialOperation.ISWITHIN,
             2,
             20,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         QueryResponse response = mock(QueryResponse.class);
         SearchResults results = spy(new SearchResults(response, query));
@@ -275,7 +290,9 @@ public class SearchResultsTest {
             SpatialOperation.ISWITHIN,
             2,
             20,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         QueryResponse response = mock(QueryResponse.class);
@@ -297,7 +314,9 @@ public class SearchResultsTest {
             SpatialOperation.ISWITHIN,
             2,
             20,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         QueryResponse response = mock(QueryResponse.class);
@@ -320,7 +339,9 @@ public class SearchResultsTest {
             SpatialOperation.INTERSECTS,
             2,
             20,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         
         //When
@@ -344,7 +365,9 @@ public class SearchResultsTest {
             SpatialOperation.ISWITHIN,
             2,
             20,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         
         //When
@@ -367,7 +390,9 @@ public class SearchResultsTest {
             SpatialOperation.ISWITHIN,
             2,
             20,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         
         //When
@@ -391,7 +416,9 @@ public class SearchResultsTest {
             SpatialOperation.INTERSECTS,
             2,
             20,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         
         //When
@@ -415,7 +442,9 @@ public class SearchResultsTest {
             SpatialOperation.INTERSECTS,
             page,
             20,
-            SearchQueryTest.DEFAULT_FILTERS);
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore
+        );
         
         //When
         SearchQuery newQuery = query.withSpatialOperation(SpatialOperation.ISWITHIN);

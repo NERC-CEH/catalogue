@@ -32,21 +32,12 @@
           <ul class="nav navbar-nav">
             <li><a href="//lwis.ceh.ac.uk">Home</a></li>
             <li <#if searching>class="active"</#if>><a href="/documents">Search Data</a></li>
+            <li><a href="//lwis.ceh.ac.uk/catalogue/help">Help</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-              <button class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown">
-                <span class="glyphicon glyphicon-edit"></span> Manage Metadata <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu">
-                <#if id??>
-                  <li><a class="edit-control" href="#edit/${id?html}">Edit metadata</a></li>
-                  <li><a class="edit-control" href="/documents/${id?html}/datacite.xml">Datacite xml</a></li>
-                  <li role="presentation" class="divider"></li>
-                </#if>
-                <li><a class="edit-control" href="#edit/new">New metadata</a></li>
-              </ul>
-            </li>
+            <#if searching && permission.userCanCreate()>
+                <li><a class="edit-control" href="#edit/new">Create new metadata</a></li>
+            </#if>
             <li id="sso-user"><a>Joe Bloggs</a></li>
           </ul>
         </div>

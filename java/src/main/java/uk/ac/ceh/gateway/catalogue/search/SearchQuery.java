@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -11,6 +13,8 @@ import lombok.experimental.Wither;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.ac.ceh.components.userstore.Group;
+import uk.ac.ceh.components.userstore.GroupStore;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.BBOX_QUERY_PARAM;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.FACET_QUERY_PARAM;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.OP_QUERY_PARAM;
@@ -40,14 +44,15 @@ public class SearchQuery {
     private final @Wither int page;
     private final int rows;
     private final @NotNull List<FacetFilter> facetFilters;
+    private final GroupStore<CatalogueUser> groupStore;
       
     public SolrQuery build(){
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setParam("defType", "edismax")
-                .setParam("qf", "title^10 altTitle^9 description^8 lineage^5 " +
-                                "organisation^2 individual^2 onlineResourceName " +
-                                "onlineResourceDescription resourceIdentifier identifier")
+                .setParam("qf", "title^50 description^25 lineage^5 organisation^2 " +
+                                "individual^2 onlineResourceName onlineResourceDescription " +
+                                "altTitle resourceIdentifier identifier")
                 .setStart((page-1)*rows)
                 .setRows(rows);
         setSpatialFilter(query);
@@ -71,7 +76,7 @@ public class SearchQuery {
      */
     public SearchQuery withBbox(String newBbox) {
         if ( (bbox == null && newBbox != null) || (bbox !=null && !bbox.equals(newBbox)) ) {
-            return new SearchQuery(endpoint, user, term, newBbox, spatialOperation, PAGE_DEFAULT, rows, facetFilters);
+            return new SearchQuery(endpoint, user, term, newBbox, spatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore);
         }
         else {
             return this;
@@ -87,7 +92,7 @@ public class SearchQuery {
      */
     public SearchQuery withSpatialOperation(SpatialOperation newSpatialOperation) {
         if ( !spatialOperation.equals(newSpatialOperation) ) {
-            return new SearchQuery(endpoint, user, term, bbox, newSpatialOperation, PAGE_DEFAULT, rows, facetFilters);
+            return new SearchQuery(endpoint, user, term, bbox, newSpatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore);
         }
         else {
             return this;
@@ -108,7 +113,7 @@ public class SearchQuery {
         if (!containsFacetFilter(filter)) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.add(filter);
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters);
+            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore);
         }
         else {
             return this;
@@ -127,7 +132,7 @@ public class SearchQuery {
         if(containsFacetFilter(filter) ) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.remove(filter);
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters);
+            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore);
         }
         else {
             return this;
@@ -158,7 +163,11 @@ public class SearchQuery {
         }
         
         if(!DEFAULT_SEARCH_TERM.equals(term)) {
-            builder.queryParam(TERM_QUERY_PARAM, term);
+            try {
+                builder.queryParam(TERM_QUERY_PARAM, URLEncoder.encode(term, "UTF-8"));
+            } catch (UnsupportedEncodingException ex) {
+                log.error("Could not encode: " + term, ex);
+            }
         }
         
         if(bbox != null) {
@@ -170,6 +179,7 @@ public class SearchQuery {
             facetFilters.forEach((f)-> builder.queryParam(FACET_QUERY_PARAM, f.asURIContent()));
         }
         
+        // cannot just encode UriComponents as other parameters (facets, bbox) already Uri encoded
         return builder.build().toUriString();
     }
     
@@ -181,11 +191,29 @@ public class SearchQuery {
     }
     private void setRecordVisibility(SolrQuery query) {
         if (user.isPublic()) {
-            query.addFilterQuery("{!term f=state}public");
+            query.addFilterQuery("{!term f=state}published");
+            query.addFilterQuery("{!term f=view}public");
         } else {
-            // TODO block access to records for everyone until fixed permissions 
-            query.addFilterQuery("{!term f=state}public");
+            query.addFilterQuery(userVisibility());
         }
+    }
+    
+    private String userVisibility() {
+        String username = user.getUsername().toLowerCase();
+        StringBuilder toReturn = new StringBuilder("view:(public OR ")
+            .append(username);
+        
+        groupStore.getGroups(user)
+            .stream()
+            .map(Group::getName)
+            .map(String::toLowerCase)
+            .forEach(g -> {
+                toReturn
+                    .append(" OR ")
+                    .append(g);
+            });
+        
+        return toReturn.append(")").toString();
     }
     
     private void setFacetFilters(SolrQuery query){

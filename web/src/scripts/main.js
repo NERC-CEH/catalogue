@@ -26,7 +26,7 @@ require.config({
     'tpl' :              '../vendor/requirejs-tpl/tpl',
     'text' :             '../vendor/requirejs-text/text',
     'isInViewport':      '../vendor/isInViewport/lib/isInViewport',
-    'jquery' :           '../vendor/jquery/jquery',
+    'jquery' :           '../vendor/jquery/dist/jquery',
     'jquery-deparam' :   '../vendor/jquery-deparam/jquery-deparam',
     'underscore':        '../vendor/underscore-amd/underscore',
     'backbone':          '../vendor/backbone-amd/backbone',

@@ -1,50 +1,41 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import com.google.common.eventbus.EventBus;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.datastore.DataWriter;
-import uk.ac.ceh.components.datastore.git.GitDataRepository;
-import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 
 public class GitPublicationServiceTest {
     @Mock GroupStore<CatalogueUser> groupStore;
-    @Spy DataRepository<CatalogueUser> repo;
-    @Mock DocumentInfoMapper<MetadataInfo> documentInfoMapper;
+    @Mock MetadataInfoEditingService metadataInfoEditingService;
     UriComponentsBuilder uriBuilder;
     Workflow workflow;
     CatalogueUser editor;
     private static final String FILENAME = "e5090602-6ff9-4936-8217-857ea6de5774";
+    private static final URI metadataUrl = URI.create("/documents/" + FILENAME);
     private static final String PENDING_ID = "ykhm7b";
     private static final String DRAFT_ID = "qtak5r";
-    
-    @Rule
-    public TemporaryFolder folder= new TemporaryFolder();
+    private MetadataDocument draft, published;
+    private GitPublicationService publicationService;
     
     @Before
     public void given() throws IOException {
@@ -53,132 +44,108 @@ public class GitPublicationServiceTest {
         editor = new CatalogueUser();
         editor.setUsername("Ron MacDonald");
         editor.setEmail("ron@example.com");
-        repo = new GitDataRepository(folder.getRoot(),
-                                     new InMemoryUserStore<>(),
-                                     new AnnotatedUserHelper(CatalogueUser.class),
-                                     new EventBus());
         
-        repo.submitData(FILENAME + ".meta", (o)->{})
-            .commit(editor, "Uploading files");
+        this.draft = new GeminiDocument()
+            .setTitle("draft")
+            .setUri(URI.create("http://localhost"))
+            .setMetadata(new MetadataInfo().setState("draft"));
+        
+        this.published = new GeminiDocument()
+            .setTitle("published")
+            .setUri(URI.create("http://localhost"))
+            .setMetadata(new MetadataInfo().setState("published"));
         
         MockitoAnnotations.initMocks(this);
+        
+        this.publicationService = new GitPublicationService(groupStore, workflow, metadataInfoEditingService);
     }
     
     @Test
-    public void successfullyTransitionState() throws DataRepositoryException, IOException {
+    public void successfullyTransitionState() throws Exception {
         //Given
-        GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo().setState("draft"));
-        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(new Group() {
-
-            @Override
-            public String getName() {
-                return DocumentController.EDITOR_ROLE;
-            }
-
-            @Override
-            public String getDescription() {
-                return DocumentController.EDITOR_ROLE;
-            }
-        }));
+        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.EDITOR_ROLE)));
+        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenReturn(draft);
         
         //When
-        publicationService.transition(editor, FILENAME, PENDING_ID, uriBuilder);
+        publicationService.transition(editor, FILENAME, PENDING_ID, uriBuilder, metadataUrl);
         
         //Then
-        verify(repo).submitData(any(String.class), any(DataWriter.class));
+        verify(metadataInfoEditingService).saveMetadataInfo(any(String.class), any(MetadataInfo.class), any(CatalogueUser.class), any(String.class));
     }
     
     @Test
-    public void editorCannotTransitionFromPublic() throws DataRepositoryException, IOException {
+    public void editorCannotTransitionFromPublic() throws Exception {
         //Given
-        GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo().setState("public"));
-        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(new Group() {
-
-            @Override
-            public String getName() {
-                return DocumentController.EDITOR_ROLE;
-            }
-
-            @Override
-            public String getDescription() {
-                return DocumentController.EDITOR_ROLE;
-            }
-        }));
+        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.EDITOR_ROLE)));
+        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenReturn(published);
         
         //When
-        publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
+        publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder, metadataUrl);
         
         //Then
-        verify(repo, never()).submitData(any(String.class), any(DataWriter.class));
+        verify(metadataInfoEditingService, never()).saveMetadataInfo(any(String.class), any(MetadataInfo.class), any(CatalogueUser.class), any(String.class));
     }
     
     @Test
-    public void publisherCanTransitionFromPublic() throws DataRepositoryException, IOException {
+    public void publisherCanTransitionFromPublic() throws Exception {
         //Given
-        GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo().setState("public"));
-        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(new Group() {
-
-            @Override
-            public String getName() {
-                return DocumentController.PUBLISHER_ROLE;
-            }
-
-            @Override
-            public String getDescription() {
-                return DocumentController.PUBLISHER_ROLE;
-            }
-        }));
+        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.PUBLISHER_ROLE)));
+        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenReturn(published);
         
         //When
-        publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
+        publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder, metadataUrl);
         
         //Then
-        verify(repo).submitData(any(String.class), any(DataWriter.class));
+        verify(metadataInfoEditingService).saveMetadataInfo(any(String.class), any(MetadataInfo.class), any(CatalogueUser.class), any(String.class));
     }
     
     @Test
-    public void unknownCannotTransitionFromPublic() throws DataRepositoryException, IOException {
+    public void unknownCannotTransitionFromPublic() throws Exception {
         //Given
-        GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo().setState("public"));
         when(groupStore.getGroups(editor)).thenReturn(Collections.EMPTY_LIST);
+        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenReturn(published);
         
         //When
-        publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
+        publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder, metadataUrl);
         
         //Then
-        verify(repo, never()).submitData(any(String.class), any(DataWriter.class));
+        verify(metadataInfoEditingService, never()).saveMetadataInfo(any(String.class), any(MetadataInfo.class), any(CatalogueUser.class), any(String.class));
     }
     
     @Test
-    public void successfullyGetCurrentState() throws DataRepositoryException, IOException {
+    public void successfullyGetCurrentState() throws Exception {
         //Given
-        GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
-        when(documentInfoMapper.readInfo(any(InputStream.class))).thenReturn(new MetadataInfo().setState("draft"));
-        
+        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenReturn(draft);
         
         //When
-        StateResource current = publicationService.current(editor, FILENAME, uriBuilder);
+        StateResource current = publicationService.current(editor, FILENAME, uriBuilder, metadataUrl);
         
         //Then
-        verify(repo).getData(FILENAME + ".meta");
-        verify(documentInfoMapper).readInfo(any(InputStream.class));
         assertThat("State is should be draft", current.getId(), equalTo("draft"));
     }
     
     @Test(expected = DocumentDoesNotExistException.class)
-    public void tryToGetFileThatDoesNotExist() {
+    public void tryToGetFileThatDoesNotExist() throws Exception {
         //Given 
-        GitPublicationService publicationService = new GitPublicationService(groupStore, workflow, repo, documentInfoMapper);
+        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenThrow(new DocumentDoesNotExistException("test"));
         
         //When
-        publicationService.current(editor, "this file name does not exist", uriBuilder);
+        publicationService.current(editor, "this file name does not exist", uriBuilder, metadataUrl);
         
         //Then
         //The expected Exception should be thrown
     }
-
+    
+    private Group createGroup(String groupname) {
+        return new Group() {
+            @Override
+            public String getName() {
+                return groupname;
+            }
+            @Override
+            public String getDescription() {
+                return groupname;
+            }
+        };
+    }
 }

@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 
 /**
  *
@@ -29,7 +30,6 @@ public class MetadataListingServiceTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DataRepository<CatalogueUser> repo;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentListingService listingService;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<MetadataDocument> documentBundleReader;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) PermissionService permissionsService;
     private MetadataListingService service;
     
     
@@ -38,26 +38,24 @@ public class MetadataListingServiceTest {
         MockitoAnnotations.initMocks(this);
         service = new MetadataListingService(repo,
                                             listingService,
-                                            documentBundleReader,
-                                            permissionsService);
+                                            documentBundleReader);
     }
     
     
     @Test
     public void checkThatReadsDocumentsListFromDataRepositiory() throws IOException, UnknownContentTypeException {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
         String revision = "revision";
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList("uid"));
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getId()).thenReturn("uid");
         MetadataInfo metadata = mock(MetadataInfo.class);
+        when(metadata.isPubliclyViewable(Permission.VIEW)).thenReturn(Boolean.TRUE);
         when(document.getMetadata()).thenReturn(metadata);
         when(documentBundleReader.readBundle("uid", revision)).thenReturn(document);
-        when(permissionsService.userCanAccess(user, metadata)).thenReturn(true);
         
         //When
-        List<String> ids = service.getDocuments(revision, GeminiDocument.class, user);
+        List<String> ids = service.getDocuments(revision, GeminiDocument.class);
         
         //Then
         assertSame("Expected only one id", 1, ids.size());
@@ -67,14 +65,13 @@ public class MetadataListingServiceTest {
     @Test
     public void checkThatSkipsUnreadableDocuments() throws IOException, UnknownContentTypeException {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
         String revision = "revision";
         String id = "mydoc id";
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList(id));
         when(documentBundleReader.readBundle(id, revision)).thenThrow(new UnknownContentTypeException("Unreadable"));
         
         //When
-        List<String> ids = service.getDocuments(revision, GeminiDocument.class, user);
+        List<String> ids = service.getDocuments(revision, GeminiDocument.class);
         
         //Then
         assertTrue("Expected no matching results", ids.isEmpty());
@@ -83,24 +80,21 @@ public class MetadataListingServiceTest {
     @Test
     public void checkThatOnlyReadsDocumentsOfCorrectType() throws IOException, UnknownContentTypeException {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
         String revision = "revision";
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList("uid"));
         
         Class differentMetadataType = mock(MetadataDocument.class).getClass();
         
         //When
-        List<String> ids = service.getDocuments(revision, differentMetadataType, user);
+        List<String> ids = service.getDocuments(revision, differentMetadataType);
         
         //Then
         assertTrue("Expected no matching results", ids.isEmpty());
-        verify(permissionsService, never()).userCanAccess(any(CatalogueUser.class), any(MetadataInfo.class));
     }
     
     @Test
     public void checkThatOnlyReadsUserAccessableDocuments() throws IOException, UnknownContentTypeException {
-        //Given
-        CatalogueUser user = mock(CatalogueUser.class);
+        //Givenss);
         String id = "id";
         String revision = "revision";
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList(id));
@@ -109,10 +103,9 @@ public class MetadataListingServiceTest {
         MetadataInfo metadata = mock(MetadataInfo.class);
         when(document.getMetadata()).thenReturn(metadata);
         when(documentBundleReader.readBundle(id, revision)).thenReturn(document);
-        when(permissionsService.userCanAccess(user, metadata)).thenReturn(false);
         
         //When
-        List<String> ids = service.getDocuments(revision, GeminiDocument.class, user);
+        List<String> ids = service.getDocuments(revision, GeminiDocument.class);
         
         //Then
         assertTrue("Expected no records", ids.isEmpty());
