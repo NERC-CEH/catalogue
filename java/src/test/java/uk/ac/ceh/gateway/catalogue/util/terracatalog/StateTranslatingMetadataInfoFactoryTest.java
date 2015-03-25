@@ -20,6 +20,9 @@ public class StateTranslatingMetadataInfoFactoryTest {
         expected.addPermission(Permission.VIEW, "testOwner");
         expected.addPermission(Permission.EDIT, "testOwner");
         expected.addPermission(Permission.DELETE, "testOwner");
+        expected.addPermission(Permission.VIEW, "cig-review");
+        expected.addPermission(Permission.EDIT, "cig-review");
+        expected.addPermission(Permission.DELETE, "cig-review");
         
         //When
         MetadataInfo actual = factory.getDocumentInfo(document, ext);
@@ -38,6 +41,9 @@ public class StateTranslatingMetadataInfoFactoryTest {
         expected.addPermission(Permission.VIEW, "testOwner");
         expected.addPermission(Permission.EDIT, "testOwner");
         expected.addPermission(Permission.DELETE, "testOwner");
+        expected.addPermission(Permission.VIEW, "cig-review");
+        expected.addPermission(Permission.EDIT, "cig-review");
+        expected.addPermission(Permission.DELETE, "cig-review");
         
         //When
         MetadataInfo actual = factory.getDocumentInfo(document, ext);
