@@ -59,6 +59,8 @@ public class PermissionService {
         CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (user.isPublic()) {
             return false;
+        } else if(userCanMakePublic()) {
+            return true;
         } else {
             return toAccess(user, file, "EDIT");
         }
@@ -70,10 +72,6 @@ public class PermissionService {
     
     public boolean userCanMakePublic() {
         return userCan((String name) -> name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE));
-    }
-    
-    public boolean userCanPublish(String file) throws IOException {
-        return userCanEdit(file) || userCanMakePublic();
     }
     
     private boolean userCan(Predicate<String> filter) {

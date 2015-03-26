@@ -50,7 +50,7 @@ public class PermissionController {
         return ResponseEntity.ok(new PermissionResource(document)); 
     }
     
-    @PreAuthorize("@permission.toAccess(#user, #file, 'EDIT')")
+    @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(method =  RequestMethod.PUT)
     @ResponseBody
     public HttpEntity<PermissionResource> updatePermission (
