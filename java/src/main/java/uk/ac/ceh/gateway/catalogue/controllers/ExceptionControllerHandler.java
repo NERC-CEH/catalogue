@@ -6,10 +6,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
@@ -23,7 +25,7 @@ import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
  * @author cjohn
  */
 @ControllerAdvice
-public class ExceptionControllerHandler {
+public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({
         GitFileNotFoundException.class,
@@ -32,6 +34,13 @@ public class ExceptionControllerHandler {
     @ResponseBody
     public ErrorResponse handleNotFoundExceptions(Exception ex) {
         return new ErrorResponse(ex.getMessage());
+    }
+    
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseBody
+    public ErrorResponse handleAccessDeniedException(Exception ex) {
+        return new ErrorResponse("Access Denied");
     }
     
     @ResponseStatus(HttpStatus.BAD_GATEWAY)

@@ -61,13 +61,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired CodeLookupService codesLookup;
     @Autowired PermissionService permissionService;
     
-    @Bean(name = "simpleMappingExceptionResolver")
-    public SimpleMappingExceptionResolver createSimpleMappingExceptionResolver() {
-        SimpleMappingExceptionResolver resolver = new SimpleMappingExceptionResolver();
-        resolver.setDefaultErrorView("/html/error.html.tpl");
-        resolver.setDefaultStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return resolver;
-    }
+//    @Bean(name = "simpleMappingExceptionResolver")
+//    public SimpleMappingExceptionResolver createSimpleMappingExceptionResolver() {
+//        SimpleMappingExceptionResolver resolver = new SimpleMappingExceptionResolver();
+//        resolver.setDefaultErrorView("/html/error.html.tpl");
+//        resolver.setDefaultStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//        return resolver;
+//    }
     
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
