@@ -152,7 +152,7 @@ public class DocumentController {
         return toReturn;
     }
     
-    @PreAuthorize("@permission.toAccess(#user, #file, 'EDIT')")
+    @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.PUT,
                     consumes = GEMINI_JSON_VALUE)
