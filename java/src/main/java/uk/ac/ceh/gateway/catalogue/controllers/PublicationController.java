@@ -39,7 +39,7 @@ public class PublicationController {
         return ResponseEntity.ok(publicationService.current(user, file, getTransitionUriBuilder(request), getMetadataUri(file))); 
     }
     
-    @PreAuthorize("@permission.userCanPublish(#file)")
+    @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}/publication/{toState}", 
                     method =  RequestMethod.POST)
     @ResponseBody
