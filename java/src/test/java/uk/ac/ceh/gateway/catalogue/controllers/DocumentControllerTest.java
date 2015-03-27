@@ -340,7 +340,7 @@ public class DocumentControllerTest {
         URI docUri = controller.getCurrentUri(request, file, revisionId);
         
         //Then
-        assertThat("Expected latest uri", docUri.toString(), equalTo("http://localhost/documents/file"));
+        assertThat("Expected latest uri", docUri.toString(), equalTo("http://localhost/id/file"));
     }
     
     @Test
