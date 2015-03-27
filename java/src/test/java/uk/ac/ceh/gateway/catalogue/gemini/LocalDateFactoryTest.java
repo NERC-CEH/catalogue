@@ -84,7 +84,7 @@ public class LocalDateFactoryTest {
     @Test
     public void parseIsoDateForDateTime() {
         //Given
-        LocalDateTime expected = LocalDateTime.of(2007, Month.DECEMBER, 1, 0, 0, 0);
+        LocalDateTime expected = LocalDateTime.of(2007, Month.DECEMBER, 1, 0, 0, 1);
         
         //When
         LocalDateTime actual = LocalDateFactory.parseForDateTime("2007-12-01");

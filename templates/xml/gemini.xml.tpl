@@ -58,7 +58,7 @@
 	</#list>
 	</#if>
 	<gmd:dateStamp>
-		<gco:Date>${metadataDate?xml}</gco:Date>
+		<gco:DateTime>${metadataDate?xml}</gco:DateTime>
 	</gmd:dateStamp>
 	<gmd:metadataStandardName>
 		<gco:CharacterString>ISO 19115 (UK GEMINI)</gco:CharacterString>

@@ -42,7 +42,8 @@ public class LocalDateFactory {
             if (isoDateTime.find()) {
                 return LocalDateTime.parse(isoDateTime.group());
             } else {
-                return parse(datetime).atStartOfDay();
+                return parse(datetime).atStartOfDay().plusSeconds(1); 
+                // adding one second to force toString to output full time (hh:mm:ss) for use in Freemarker
             }
         }    
     }
