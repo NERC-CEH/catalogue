@@ -1,5 +1,5 @@
 <#import "skeleton.html.tpl" as skeleton>
-<#assign docroot="documents">
+<#assign docroot="id">
 
 <@skeleton.master title="Search" searching=true>
   <div class="search facets-mode" id="search">
