@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -24,7 +23,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.*;
-import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
@@ -33,6 +31,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverte
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
@@ -61,14 +60,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired CodeLookupService codesLookup;
     @Autowired PermissionService permissionService;
     
-//    @Bean(name = "simpleMappingExceptionResolver")
-//    public SimpleMappingExceptionResolver createSimpleMappingExceptionResolver() {
-//        SimpleMappingExceptionResolver resolver = new SimpleMappingExceptionResolver();
-//        resolver.setDefaultErrorView("/html/error.html.tpl");
-//        resolver.setDefaultStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//        return resolver;
-//    }
-    
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
@@ -80,6 +71,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         converters.add(new Object2TemplatedMessageConverter(Citation.class,       configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(StateResource.class,  configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,  configureFreeMarker().getConfiguration()));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);

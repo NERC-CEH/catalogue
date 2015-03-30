@@ -33,6 +33,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     })
     @ResponseBody
     public ErrorResponse handleNotFoundExceptions(Exception ex) {
+        logger.error("Not Found", ex);
         return new ErrorResponse(ex.getMessage());
     }
     
@@ -40,6 +41,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseBody
     public ErrorResponse handleAccessDeniedException(Exception ex) {
+        logger.error("Access Denied", ex);
         return new ErrorResponse("Access Denied");
     }
     
