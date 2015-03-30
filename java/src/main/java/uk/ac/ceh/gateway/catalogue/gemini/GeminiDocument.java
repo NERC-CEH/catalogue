@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -67,6 +68,13 @@ public class GeminiDocument implements MetadataDocument {
     private LocalDateTime metadataDate;
     private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
+    
+    @JsonIgnore
+    public String getMetadataDateTime() {
+        /* This method always returns the full datetime string (including the seconds). LocalDateTime.toString() will 
+           not return the seconds if it is a date with time 00:00:00 */
+        return metadataDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
     
     @JsonProperty("citation")
     public Citation getCitation() {
