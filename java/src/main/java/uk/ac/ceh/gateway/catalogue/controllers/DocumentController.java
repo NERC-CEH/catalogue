@@ -245,7 +245,7 @@ public class DocumentController {
         if(revision.equals(repo.getLatestRevision().getRevisionID())) {
            return ServletUriComponentsBuilder
                 .fromContextPath(request)
-                .path("/documents/")
+                .path("/id/")
                 .build()
                 .toUriString();
         }
