@@ -1,7 +1,7 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#macro master title searching=false><#compress><!DOCTYPE html>
+<#macro master title="" searching=false><#compress><!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
