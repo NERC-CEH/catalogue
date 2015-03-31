@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.cache.FileTemplateLoader;
+import freemarker.template.TemplateExceptionHandler;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -92,9 +93,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             shared.put("codes", codesLookup);
             shared.put("permission", permissionService);
             
+            freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
+            config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+            config.setSharedVaribles(shared);
+            config.setTemplateLoader(new FileTemplateLoader(templates));
+            
             FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();
-            freemarkerConfig.setFreemarkerVariables(shared);
-            freemarkerConfig.setPreTemplateLoaders(new FileTemplateLoader(templates));
+            freemarkerConfig.setConfiguration(config);
             return freemarkerConfig;
         }
         catch(Exception e) {

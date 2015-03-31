@@ -10,9 +10,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
@@ -26,32 +28,43 @@ import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
  */
 @ControllerAdvice
 public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    
+    @Override
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, 
+        HttpHeaders headers, HttpStatus status, WebRequest request) {
+        
+        String message = (body != null)? body.toString() : status.getReasonPhrase();
+        logger.error(message, ex);
+		return new ResponseEntity<>(new ErrorResponse(message), headers, status);
+	}
+    
+    private ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpStatus status) {
+        return handleExceptionInternal(ex, body, null, status, null);
+    }
+    
     @ExceptionHandler({
         GitFileNotFoundException.class,
         ResourceNotFoundException.class
     })
-    @ResponseBody
-    public ErrorResponse handleNotFoundExceptions(Exception ex) {
-        logger.error("Not Found", ex);
-        return new ErrorResponse(ex.getMessage());
+    public ResponseEntity<Object> handleNotFoundExceptions(Exception ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.NOT_FOUND);
     }
     
-    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
-    @ResponseBody
-    public ErrorResponse handleAccessDeniedException(Exception ex) {
-        logger.error("Access Denied", ex);
-        return new ErrorResponse("Access Denied");
+    public ResponseEntity<Object> handleAccessDeniedException(Exception ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.FORBIDDEN);
     }
     
-    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ExceptionHandler({DocumentIndexingException.class, DocumentLinkingException.class})
+    public ResponseEntity<Object> handleIndexingExceptions(Exception ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
     @ExceptionHandler(ExternalResourceFailureException.class)
-    @ResponseBody
-    public ErrorResponse handleExternalResourceFailureException(ExternalResourceFailureException ex) {
-        return new ErrorResponse(ex.getMessage());
+    public ResponseEntity<Object> handleExternalResourceFailureException(ExternalResourceFailureException ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.BAD_GATEWAY);
     }
-    
+       
     @ExceptionHandler(TransparentProxyException.class)
     @ResponseBody
     public ResponseEntity handleTransparentProxyException(TransparentProxyException ex) {
