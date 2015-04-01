@@ -42,7 +42,7 @@ public class LocalDateFactory {
             if (isoDateTime.find()) {
                 return LocalDateTime.parse(isoDateTime.group());
             } else {
-                return parse(datetime).atStartOfDay();
+                return parse(datetime).atStartOfDay(); 
             }
         }    
     }
