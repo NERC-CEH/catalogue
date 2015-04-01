@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.cache.FileTemplateLoader;
+import freemarker.template.TemplateExceptionHandler;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverte
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
@@ -70,6 +72,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         converters.add(new Object2TemplatedMessageConverter(Citation.class,       configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(StateResource.class,  configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,  configureFreeMarker().getConfiguration()));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
@@ -90,9 +93,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             shared.put("codes", codesLookup);
             shared.put("permission", permissionService);
             
+            freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
+            config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+            config.setSharedVaribles(shared);
+            config.setTemplateLoader(new FileTemplateLoader(templates));
+            
             FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();
-            freemarkerConfig.setFreemarkerVariables(shared);
-            freemarkerConfig.setPreTemplateLoaders(new FileTemplateLoader(templates));
+            freemarkerConfig.setConfiguration(config);
             return freemarkerConfig;
         }
         catch(Exception e) {

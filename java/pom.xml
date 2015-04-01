@@ -23,7 +23,7 @@
         <logback.version>1.1.2</logback.version>
         <guava.version>18.0</guava.version>
         <solr.version>4.8.0</solr.version>
-        <freemarker.version>2.3.21</freemarker.version>
+        <freemarker.version>2.3.22</freemarker.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -146,11 +146,6 @@
         </dependency>
         
         <!-- Spring Security -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>${spring-security.version}</version>
-        </dependency> 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>

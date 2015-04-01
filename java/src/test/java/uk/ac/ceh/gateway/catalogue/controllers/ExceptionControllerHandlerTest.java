@@ -12,6 +12,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
@@ -39,7 +40,7 @@ public class ExceptionControllerHandlerTest {
         when(ex.getMessage()).thenReturn(mess);
         
         //When
-        ErrorResponse res = controller.handleExternalResourceFailureException(ex);
+        ErrorResponse res = (ErrorResponse) controller.handleExternalResourceFailureException(ex).getBody();
         
         //Then
         assertThat("Expected message to be pulled of exception", res.getMessage(), equalTo(mess));
@@ -53,7 +54,21 @@ public class ExceptionControllerHandlerTest {
         when(ex.getMessage()).thenReturn(mess);
         
         //When
-        ErrorResponse res = controller.handleNotFoundExceptions(ex);
+        ErrorResponse res = (ErrorResponse) controller.handleNotFoundExceptions(ex).getBody();
+        
+        //Then
+        assertThat("Expected message to be pulled of exception", res.getMessage(), equalTo(mess));
+    }
+    
+    @Test
+    public void checkThatAccessDeniedExceptionIsWrapped() {
+        //Given
+        String mess = "Forbidden";
+        AccessDeniedException ex = mock(AccessDeniedException.class);
+        when(ex.getMessage()).thenReturn(mess);
+        
+        //When
+        ErrorResponse res = (ErrorResponse) controller.handleAccessDeniedException(ex).getBody();
         
         //Then
         assertThat("Expected message to be pulled of exception", res.getMessage(), equalTo(mess));
