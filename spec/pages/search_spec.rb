@@ -19,7 +19,7 @@ describe "Search page" do
     it 'should update results when going to previous page' do
       visit '/documents?page=2'
       results = first('.result').text
-      click_on 'Older'
+      click_on 'Previous'
       expect(page).not_to have_content results
     end
   end

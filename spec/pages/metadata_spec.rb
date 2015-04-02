@@ -12,9 +12,9 @@ describe "Metadata page" do
     
       it "BMS page" do
         visit bmsPage
-        expect(find('#document-title')).to have_content "UK Butterfly Monitoring Scheme (UKBMS) data"
-        expect(find('#document-description')).to have_content "This is a series of datasets available from the UK Butterfly Monitoring Scheme"
-        expect(find('#resource-type')).to have_content('series')
+        expect(find('#document-title')).to have_content "United Kingdom Butterfly Monitoring Scheme (UKBMS) data"
+        expect(find('#document-description')).to have_content "This is a series of datasets available"
+        expect(find('#resource-type')).to have_content('Series')
         expect(find('#section-spatial')).to have_content "OSGB 1936 / British National Grid"
         expect(find('.extentBegin')).to have_content "1976-04-01"
       end
@@ -54,21 +54,21 @@ describe "Metadata page" do
     end
 
     describe "Document links on metadata page" do
-      it "should have heading 'Services associated with this dataset:'" do
+      it "should have heading 'Services associated with this dataset'" do
         visit radionuclideServicePage
-        expect(page).to have_css('h4', :text=> 'Services associated with this dataset:')
+        expect(page).to have_content('Services associated with this dataset')
         expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales survey maps")
       end
 
-      it "should have heading 'Datasets associated with this service:'" do
+      it "should have heading 'Datasets associated with this service'" do
         visit radionuclideDatasetPage
-        expect(page).to have_css('h4',:text=> 'Datasets associated with this service:')
+        expect(page).to have_content('Datasets associated with this service')
         expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales")
       end
 
-      it "should not have heading 'Datasets associated with this service:'" do
+      it "should not have heading 'Datasets associated with this service'" do
         visit bmsPage
-        expect(page).to_not have_css('h4',:text=> 'Datasets associated with this service:')
+        expect(page).to_not have_content('Datasets associated with this service')
       end
     end
   end

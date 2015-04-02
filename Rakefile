@@ -4,12 +4,11 @@ require 'headless'
 
 TEST_GROUPS = {
   :chrome_spec  => 'driver:chrome',
-  :firefox_spec => 'driver:firefox',
-  :ie_spec      => 'driver:ie_server',
-  :htc_spec     => 'driver:"HTC Desire X"',
-  :nexus5_spec  => 'driver:"Nexus 5"',
-  :nexus7_spec  => 'driver:"Nexus 7"',
-  :ipad2_spec   => 'driver:ipad2',
+  #:firefox_spec => 'driver:firefox',
+  #:ie_spec      => 'driver:ie_server',
+  #:nexus5_spec  => 'driver:"Nexus 5"',
+  #:nexus7_spec  => 'driver:"Nexus 7"',
+  #:ipad2_spec   => 'driver:ipad2',
   :rest_spec    => 'restful'
 }
 

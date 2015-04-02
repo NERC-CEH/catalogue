@@ -18,13 +18,13 @@ SCREENS = {
 }
 
 MOBILE_BROWSERS = {
-  :xs  => [:"HTC Desire X"],
+  :xs  => [],
   :sm  => [:"Nexus 5", :ipad2],
   :md  => [:"Nexus 7"],
   :lg  => []
 }
 
-DESKTOP_BROWSERS = [:chrome, :firefox, :ie_server]
+DESKTOP_BROWSERS = [:chrome, :firefox]
 
 # Read the devices which are currently registered on selendroid and register
 # each as a driver in the application
@@ -59,10 +59,4 @@ end
 
 Capybara.register_driver :firefox do |app|
   Capybara::Selenium::Driver.new(app, :browser => :firefox)
-end
-
-Capybara.register_driver :ie_server do |app|
-  Capybara::Selenium::Driver.new(app, :browser => :remote,
-                                      :url => 'http://192.171.153.182:4444/wd/hub',
-                                      :desired_capabilities => :internet_explorer)
 end
