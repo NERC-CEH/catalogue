@@ -13,8 +13,7 @@ catalogue_tomcat
 
 # Ignore Test output
 documents.yaml
-junit/*.xml
-rspec_screenshots
+test-reports/**
 npm-debug.log
 
 # Ignore webdriver directories (created by rspec/capybara testing)
