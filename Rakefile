@@ -4,7 +4,7 @@ require 'headless'
 
 TEST_GROUPS = {
   :chrome_spec  => 'driver:chrome',
-  #:firefox_spec => 'driver:firefox',
+  :firefox_spec => 'driver:firefox',
   #:ie_spec      => 'driver:ie_server',
   #:nexus5_spec  => 'driver:"Nexus 5"',
   #:nexus7_spec  => 'driver:"Nexus 7"',
