@@ -44,6 +44,6 @@ end
 TEST_GROUPS.each { |key, tag|
   desc "RSpec with specs tagged with #{tag}"
   task key do
-    system "rspec --format progress --format RspecJunitFormatter --tag #{tag} --out #{key}_junit.xml"
+    system "rspec --format progress --format RspecJunitFormatter --tag #{tag} --out junit/#{key}.xml"
   end
 }

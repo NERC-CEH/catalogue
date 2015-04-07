@@ -13,7 +13,7 @@ catalogue_tomcat
 
 # Ignore Test output
 documents.yaml
-*junit.xml
+junit/*.xml
 rspec_screenshots
 npm-debug.log
 
