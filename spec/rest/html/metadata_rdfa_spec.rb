@@ -3,7 +3,7 @@ GEO = RDF::Vocabulary.new("http://www.opengis.net/ont/geosparql#")
 
 describe "Metadata RDFa properties", :retry => 1, :retry_wait => 0, :restful => true do
   let(:graph) {
-    RDF::Graph.load("#{APP_HOST}/id/1e7d5e08-9e24-471b-ae37-49b477f695e3", :format => :rdfa)
+    RDF::Graph.load("#{APP_HOST}/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3", :format => :rdfa, :verify_none => true)
   }
 
   let(:subject) { RDF::URI.new("#{APP_HOST}/id/1e7d5e08-9e24-471b-ae37-49b477f695e3") }
@@ -16,7 +16,7 @@ describe "Metadata RDFa properties", :retry => 1, :retry_wait => 0, :restful => 
 
   it "should have dc:type" do
     type = graph.first_literal([subject, RDF::DC.type, nil])
-    expect(type.value).to eq 'dataset'
+    expect(type.value).to eq 'Dataset'
   end
 
   it "should have dc:abstract" do
@@ -24,7 +24,7 @@ describe "Metadata RDFa properties", :retry => 1, :retry_wait => 0, :restful => 
     expect(abstract.value).to include 'parcel-based thematic'
   end
 
-  it "should have one dc:distribution" do
+  it "should have one dcat:distribution" do
     distributions = graph.query [subject, DCAT.Distribution, nil]
     expect(distributions.count).to be 1
   end
@@ -49,7 +49,7 @@ describe "Metadata RDFa properties", :retry => 1, :retry_wait => 0, :restful => 
   end
 
   it "should have dc:bibliographicCitation" do
-    bibliographicCitation = graph.first_literal [subject, RDF::DC.bibliographicCitation, nil]
+    bibliographicCitation = graph.first_literal([subject, RDF::DC.bibliographicCitation, nil])
 
     expect(bibliographicCitation.value).to include 'Morton'
   end
