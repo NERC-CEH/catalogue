@@ -3,10 +3,10 @@ GEO = RDF::Vocabulary.new("http://www.opengis.net/ont/geosparql#")
 
 describe "Metadata RDFa properties", :retry => 1, :retry_wait => 0, :restful => true do
   let(:graph) {
-    RDF::Graph.load("#{APP_HOST}/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3", :format => :rdfa)
+    RDF::Graph.load("#{APP_HOST}/id/1e7d5e08-9e24-471b-ae37-49b477f695e3", :format => :rdfa)
   }
 
-  let(:subject) { RDF::URI.new("#{APP_HOST}/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3") }
+  let(:subject) { RDF::URI.new("#{APP_HOST}/id/1e7d5e08-9e24-471b-ae37-49b477f695e3") }
 
 
   it "should have dc:title" do
