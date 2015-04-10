@@ -59,7 +59,7 @@ To have the code you are currently developing running in the vagrant box link th
 
 ## Testing
 
-The vagrant box can be functionally tested using capybara and selenium. The tests for this are written in rspec, to run these and drive the chrome browser from a windows box you will need to:
+The vagrant box can be functionally tested using capybara and selenium. The tests for this are written in rspec, and drive browsers hosted on the [selenium grid](http://bamboo.ceh.ac.uk:4444/grid/console). To run from a windows box you will need to:
 
 * Install ruby + [bundler](http://bundler.io/) 
 
@@ -70,8 +70,6 @@ The vagrant box can be functionally tested using capybara and selenium. The test
         pact install patch
         gem install bundler
 
-* Get a copy of the [chromedriver](http://ladist.nerc-lancaster.ac.uk/apps/selenium/chromedriver-2.10_win32.exe). Save it somewhere as *chromedriver* and make sure that it is accessable from your PATH variable
-
 * Install the gem bundle using. Nokogiri will be installed here and may need to build some components. This step may take some time.
 
         bundle install
@@ -79,7 +77,7 @@ The vagrant box can be functionally tested using capybara and selenium. The test
 * Then you can execute your tests in parallel
 
         bundle exec rake
-  This calls :grab_ids :headless and :parallel_spec
+  This calls :grab_ids and :parallel_spec
 
 * You can specify a particular test group to test by calling the specific rspec task:
 
@@ -88,11 +86,4 @@ The vagrant box can be functionally tested using capybara and selenium. The test
         
         bundle exec rake chrome_spec
 
-* Sit back and watch your chrome instance run through your test suite
-
-### Running the tests headlessly
-
-If you want to execute the tests within xvfb, then use the **headless** rake task. Chrome and firefox will be started up inside xvfb. Obviously your box will need to have 
-xvfb installed. The default rake task will start in headless mode.
-
-        bundle exec rake headless chrome_spec
+* Sit back and wait for the results of your test suite

@@ -1,27 +1,17 @@
 require 'yaml'
 require 'parallel'
-require 'headless'
 
 TEST_GROUPS = {
   :chrome_spec  => 'driver:chrome',
   :firefox_spec => 'driver:firefox',
   #:ie_spec      => 'driver:ie_server',
-  #:nexus5_spec  => 'driver:"Nexus 5"',
-  #:nexus7_spec  => 'driver:"Nexus 7"',
+  :nexus5_spec  => 'driver:nexus5',
+  :nexus7_spec  => 'driver:nexus7',
   #:ipad2_spec   => 'driver:ipad2',
   :rest_spec    => 'restful'
 }
 
-task :default => [:grab_ids, :headless, :parallel_spec]
-
-desc 'Set up Xfvb so that we can test in browsers headlessly'
-task :headless do
-  headless = Headless.new
-  headless.start
-  at_exit do
-    headless.destroy
-  end
-end
+task :default => [:grab_ids, :parallel_spec]
 
 desc 'Grab metadata ids from the vagrant box'
 task :grab_ids do

@@ -19,44 +19,39 @@ SCREENS = {
 
 MOBILE_BROWSERS = {
   :xs  => [],
-  :sm  => [:"Nexus 5", :ipad2],
-  :md  => [:"Nexus 7"],
+  :sm  => [ :nexus5, :ipad2 ],
+  :md  => [ :Nexus7 ],
   :lg  => []
 }
 
-DESKTOP_BROWSERS = [:chrome, :firefox]
+DESKTOP_BROWSERS = [ :chrome, :firefox ]
 
-# Read the devices which are currently registered on selendroid and register
-# each as a driver in the application
-selendroid = JSON.parse(open('http://lapc011.nerc-lancaster.ac.uk:4444/wd/hub/status').read)
-
-selendroid['value']['supportedDevices'].each {|device|
-  Capybara.register_driver device['model'].to_sym do |app|
-    Capybara::Selenium::Driver.new(app, :browser => :remote,
-                                        :url => 'http://lapc011.nerc-lancaster.ac.uk:4444/wd/hub',
-                                        :desired_capabilities => {
-                                          :browserName       => 'android',
-                                          :javascriptEnabled => true,
-                                          :serial            => device['serial']})
-  end
+SELENIUM_DRIVERS = {
+  htcdesire: {
+    :platformName => 'Android',
+    :deviceName   => 'HTC Desire',
+    :app          => 'Chrome',
+    :udid         => 'SH2CZLY05396'},
+  nexus5: {
+    :platformName => 'Android',
+    :deviceName   => 'Nexus 5',
+    :app          => 'Chrome',
+    :udid         => '02fbd6f32108304f'},
+  nexus7: {
+    :platformName => 'Android',
+    :deviceName   => 'Nexus 7',
+    :app          => 'Chrome',
+    :udid         => '073266a1'},
+  chrome: {
+    :browserName  => 'chrome'},
+  firefox: {
+    :browserName  => 'firefox'}
 }
 
-Capybara.register_driver :ipad2 do |app|
-  Capybara::Selenium::Driver.new(app, :browser => :remote,
-                                      :url => 'http://212.219.37.177:4723/wd/hub',
-                                      :desired_capabilities => {
-                                        :platformName       => 'iOS',
-                                        :platformVersion    => '8.1',
-                                        :browserName        => 'safari',
-                                        :autoAcceptAlerts   => true,
-                                        :newCommandTimeout  => 6000,
-                                        :deviceName         => 'iPad 2'})
-end
-
-Capybara.register_driver :chrome do |app|
-  Capybara::Selenium::Driver.new(app, :browser => :chrome)
-end
-
-Capybara.register_driver :firefox do |app|
-  Capybara::Selenium::Driver.new(app, :browser => :firefox)
+SELENIUM_DRIVERS.each do | name, capabilities |
+  Capybara.register_driver name do |app|
+    Capybara::Selenium::Driver.new(app, :browser => :remote,
+                                        :url => 'http://bamboo.ceh.ac.uk:4444/wd/hub',
+                                        :desired_capabilities => capabilities)
+  end
 end
