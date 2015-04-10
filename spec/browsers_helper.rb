@@ -24,7 +24,7 @@ MOBILE_BROWSERS = {
   :lg  => []
 }
 
-DESKTOP_BROWSERS = [ :chrome, :firefox ]
+DESKTOP_BROWSERS = [ :chrome, :firefox, :ie ]
 
 SELENIUM_DRIVERS = {
   htcdesire: {
@@ -45,7 +45,10 @@ SELENIUM_DRIVERS = {
   chrome: {
     :browserName  => 'chrome'},
   firefox: {
-    :browserName  => 'firefox'}
+    :browserName  => 'firefox'},
+  ie: {
+    :platform     => 'WINDOWS',
+    :browserName  => 'internet explorer'}
 }
 
 SELENIUM_DRIVERS.each do | name, capabilities |
