@@ -61,6 +61,10 @@ To have the code you are currently developing running in the vagrant box link th
 
 The vagrant box can be functionally tested using capybara and selenium. The tests for this are written in rspec, and drive browsers hosted on the [selenium grid](http://bamboo.ceh.ac.uk:4444/grid/console). To run from a windows box you will need to:
 
+* Making contact with the selenium grid
+  
+  You will need to make sure that your machine can be accessed by the Selenium Grid of browsers. By default windows firewall will block this. Add an **Incoming Rule** to the firewall to open port **8080**.
+  
 * Install ruby + [bundler](http://bundler.io/) 
 
   If you are using babun, you can install all the prerequisite packages using pact. If you have a traditional ruby windows installation already, make sure you take this off the PATH variable or uninstall it altogether.
@@ -68,6 +72,8 @@ The vagrant box can be functionally tested using capybara and selenium. The test
         pact install ruby
         pact install libiconv
         pact install patch
+        pact install gcc4-g++
+        gem install nokogiri -- --use-system-libraries
         gem install bundler
 
 * Install the gem bundle using. Nokogiri will be installed here and may need to build some components. This step may take some time.
