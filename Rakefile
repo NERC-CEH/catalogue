@@ -7,6 +7,7 @@ TEST_GROUPS = {
   :ie_spec      => 'driver:ie',
   :nexus5_spec  => 'driver:nexus5',
   :nexus7_spec  => 'driver:nexus7',
+  :htc_spec     => 'driver:htcdesire',
   #:ipad2_spec   => 'driver:ipad2',
   :rest_spec    => 'restful'
 }

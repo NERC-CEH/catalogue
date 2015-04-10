@@ -18,7 +18,7 @@ SCREENS = {
 }
 
 MOBILE_BROWSERS = {
-  :xs  => [],
+  :xs  => [ :htcdesire ],
   :sm  => [ :nexus5, :ipad2 ],
   :md  => [ :Nexus7 ],
   :lg  => []
