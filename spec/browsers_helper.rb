@@ -43,8 +43,10 @@ SELENIUM_DRIVERS = {
     :app          => 'Chrome',
     :udid         => '073266a1'},
   chrome: {
+    :platform     => 'LINUX',
     :browserName  => 'chrome'},
   firefox: {
+    :platform     => 'LINUX',
     :browserName  => 'firefox'},
   ie: {
     :platform     => 'WINDOWS',
