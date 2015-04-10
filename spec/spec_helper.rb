@@ -25,5 +25,4 @@ METADATA_IDS = YAML::load_file('documents.yaml')
 
 RSpec.configure do |config|
   config.default_retry_count = 10
-  config.default_sleep_interval = 5
 end
