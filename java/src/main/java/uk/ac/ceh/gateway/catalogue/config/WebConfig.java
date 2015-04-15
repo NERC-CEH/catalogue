@@ -50,6 +50,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String BIBTEX_VALUE                 = "application/x-bibtex";
     public static final String GEMINI_XML_SHORT             = "gemini";
     public static final String GEMINI_XML_VALUE             = "application/x-gemini+xml";
+    public static final String RDF_XML_SHORT                = "rdf";
+    public static final String RDF_XML_VALUE                = "application/rdf+xml";
     public static final String RESEARCH_INFO_SYSTEMS_SHORT  = "ris";
     public static final String RESEARCH_INFO_SYSTEMS_VALUE  = "application/x-research-info-systems";
     public static final String DATACITE_XML_VALUE           = "application/x-datacite+xml";
@@ -137,6 +139,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             .mediaType("json", MediaType.APPLICATION_JSON)
             .mediaType(GEMINI_SHORT, MediaType.parseMediaType(GEMINI_JSON_VALUE))
             .mediaType(GEMINI_XML_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
+            .mediaType(RDF_XML_SHORT, MediaType.parseMediaType(RDF_XML_VALUE))
             .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE));
     }
