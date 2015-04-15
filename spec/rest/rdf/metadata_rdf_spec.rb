@@ -1,9 +1,9 @@
 DCAT = RDF::Vocabulary.new("http://www.w3.org/ns/dcat#")
 GEO = RDF::Vocabulary.new("http://www.opengis.net/ont/geosparql#")
 
-describe "Metadata RDFa properties", :retry => 1, :retry_wait => 0, :restful => true do
+describe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => true do
   let(:graph) {
-    RDF::Graph.load("#{APP_HOST}/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3", :format => :rdfa, :verify_none => true)
+    RDF::Graph.load("#{APP_HOST}/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3?format=rdf", :format => :rdfxml, :verify_none => true)
   }
 
   let(:subject) { RDF::URI.new("#{APP_HOST}/id/1e7d5e08-9e24-471b-ae37-49b477f695e3") }

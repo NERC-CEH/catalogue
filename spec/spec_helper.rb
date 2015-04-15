@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'yaml'
-require 'rdf/rdfa'
+require 'rdf/rdfxml'
 require 'rspec/retry'
 require 'capybara/rspec'
 require 'selenium/webdriver'

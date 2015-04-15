@@ -24,7 +24,7 @@ MOBILE_BROWSERS = {
   :lg  => []
 }
 
-DESKTOP_BROWSERS = [ :chrome, :firefox, :ie ]
+DESKTOP_BROWSERS = [ :chrome, :firefox, :ie, :safari ]
 
 SELENIUM_DRIVERS = {
   htcdesire: {
@@ -48,6 +48,11 @@ SELENIUM_DRIVERS = {
   firefox: {
     :platform     => 'LINUX',
     :browserName  => 'firefox'},
+  safari: {
+    :platform     => 'MAC',
+    :acceptSslCerts  => true,
+    :autoAcceptAlerts => true,
+    :browserName  => 'safari'},
   ie: {
     :platform     => 'WINDOWS',
     :browserName  => 'internet explorer'}
