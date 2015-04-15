@@ -7,7 +7,7 @@
         <dd>
           <div id="studyarea-map">
             <#list boundingBoxes as extent>
-              <span property="dc:spatial" content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
+              <span content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
             </#list>
           </div>
         </dd>
@@ -16,7 +16,7 @@
         <dt>Temporal extent</dt>
         <dd>
         <#list temporalExtent as extent>
-          <div id="temporal-extent" property="dc:temporal" datatype="dc:PeriodOfTime" content="${(extent.begin?date)!''}/${(extent.end?date)!''}">
+          <div id="temporal-extent">
             <#if extent.begin?has_content>
               <span class="extentBegin">${extent.begin?date}</span>
             <#else>...
