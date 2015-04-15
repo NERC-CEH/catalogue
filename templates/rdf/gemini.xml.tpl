@@ -12,12 +12,12 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
     
     <#if boundingBoxes?has_content && boundingBoxes??>
       <#list boundingBoxes as extent>
-      <dc:spatial rdf:datatype="geo:wktLiteral">${extent.wkt}</dc:spatial>
+      <dc:spatial rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">${extent.wkt}</dc:spatial>
       </#list>
     </#if>
     <#if temporalExtent?has_content>
       <#list temporalExtent as extent>
-        <dc:temporal rdf:datatype="dc:PeriodOfTime">${(extent.begin?date)!''}/${(extent.end?date)!''}</dc:temporal>
+        <dc:temporal rdf:datatype="http://purl.org/dc/terms/PeriodOfTime">${(extent.begin?date)!''}/${(extent.end?date)!''}</dc:temporal>
       </#list>
     </#if>
     <#if topicCategories?has_content>
