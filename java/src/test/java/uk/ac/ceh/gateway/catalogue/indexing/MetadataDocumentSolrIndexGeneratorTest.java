@@ -36,7 +36,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/topic/2","http://onto.nerc.ac.uk/CEHMD/topic/3"));
-        List<String> expected = Arrays.asList("0/Biodiversity/", "0/Citizen science/");
+        List<String> expected = Arrays.asList("0/Biodiversity/", "0/Phenology/");
         when(document.getDownloadOrder()).thenReturn(DownloadOrder.builder().build());
         
         //When
