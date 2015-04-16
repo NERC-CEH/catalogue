@@ -3,7 +3,7 @@
 
 <#assign authors       = _.filter(responsibleParties, _.isAuthor) >
 <#assign otherContacts = _.reject(responsibleParties, _.isAuthor) >
-<@skeleton.master title=title>
+<@skeleton.master title=title rdf="${uri}?format=rdf">
   <div id="metadata" class="container">
 
     <#include "metadata/_title.html.tpl">
