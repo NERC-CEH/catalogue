@@ -14,22 +14,20 @@
       </#if>
       <#if temporalExtent?has_content>
         <dt>Temporal extent</dt>
-        <dd>
+        <dd id="temporal-extent">
         <#list temporalExtent as extent>
-          <div id="temporal-extent">
-            <#if extent.begin?has_content>
-              <span class="extentBegin">${extent.begin?date}</span>
-            <#else>...
-            </#if>
+          <#if extent.begin?has_content>
+            <span class="extentBegin">${extent.begin?date}</span>
+          <#else>...
+          </#if>
 
-            &nbsp;&nbsp;&nbsp;to&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;to&nbsp;&nbsp;&nbsp;
 
-            <#if extent.end?has_content>
-              <span class="extentEnd">${extent.end?date}</span>
-            <#elseif resourceStatus?has_content && resourceStatus == "onGoing">present
-            <#else>...
-            </#if>
-          </div>
+          <#if extent.end?has_content>
+            <span class="extentEnd">${extent.end?date}</span>
+          <#elseif resourceStatus?has_content && resourceStatus == "onGoing">present
+          <#else>...
+          </#if>
         </#list>
         </dd>
       </#if>
