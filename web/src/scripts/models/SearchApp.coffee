@@ -83,7 +83,7 @@ define [
   ###
   setState: (state, options) ->
     searchDefaults = _.pick @defaults, @searchFields...
-    @set _.defaults state, searchDefaults
+    @set _.defaults(state, searchDefaults), options
 
   ###
   Returns the current results set which this app has fetched or is fetching.
