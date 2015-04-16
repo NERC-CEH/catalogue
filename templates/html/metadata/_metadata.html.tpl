@@ -16,23 +16,21 @@
             </#if>
 
             <#if metadataPointOfContact.address?has_content>
-              <div>
-                <#if metadataPointOfContact.address.deliveryPoint?has_content>
-                  <span>${metadataPointOfContact.address.deliveryPoint?html}</span><br>
-                </#if>
-                <#if metadataPointOfContact.address.city?has_content>
-                  <span>${metadataPointOfContact.address.city?html}</span><br>
-                </#if>
-                <#if metadataPointOfContact.address.administrativeArea?has_content>
-                  <span>${metadataPointOfContact.address.administrativeArea?html}</span><br>
-                </#if>
-                <#if metadataPointOfContact.address.postalCode?has_content>
-                  <span>${metadataPointOfContact.address.postalCode?html}</span><br>
-                </#if>
-                <#if metadataPointOfContact.address.country?has_content>
-                  <span>${metadataPointOfContact.address.country?html}</span>
-                </#if>
-              </div>
+              <#if metadataPointOfContact.address.deliveryPoint?has_content>
+                <span>${metadataPointOfContact.address.deliveryPoint?html}</span><br>
+              </#if>
+              <#if metadataPointOfContact.address.city?has_content>
+                <span>${metadataPointOfContact.address.city?html}</span><br>
+              </#if>
+              <#if metadataPointOfContact.address.administrativeArea?has_content>
+                <span>${metadataPointOfContact.address.administrativeArea?html}</span><br>
+              </#if>
+              <#if metadataPointOfContact.address.postalCode?has_content>
+                <span>${metadataPointOfContact.address.postalCode?html}</span><br>
+              </#if>
+              <#if metadataPointOfContact.address.country?has_content>
+                <span>${metadataPointOfContact.address.country?html}</span>
+              </#if>
             </#if>
 
             <#if metadataPointOfContact.email?has_content>
