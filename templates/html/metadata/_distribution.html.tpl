@@ -7,12 +7,12 @@
 </#if>
 
 <#if downloadOrder?? || mapViewable >
-  <div class="panel panel-default hidden-print" id="document-order" rel="dcat:Distribution">
+  <div class="panel panel-default hidden-print" id="document-order">
     <div class="panel-heading"><p class="panel-title">${documentOrderTitle?html}</p></div>
     <div class="panel-body">
 	
 	  <#if (downloadOrder.orderUrl)?has_content>
-		  <p><a href="${downloadOrder.orderUrl?html}" property="dcat:accessURL"><i class="glyphicon glyphicon-save text-info"></i> Order/download</a></p>
+		  <p><a href="${downloadOrder.orderUrl?html}"><i class="glyphicon glyphicon-save text-info"></i> Order/download</a></p>
 	  </#if>
 		
       <#if (downloadOrder.supportingDocumentsUrl)?has_content>

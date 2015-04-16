@@ -1,7 +1,7 @@
 <#if citation?has_content>
   <div id="section-citation">
     <p><strong>If you reuse this data, you must cite</strong><br>
-    <span id="citation-text" property="dc:bibliographicCitation">
+    <span id="citation-text">
       ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}
     </span></p>
     

@@ -7,29 +7,27 @@
         <dd>
           <div id="studyarea-map">
             <#list boundingBoxes as extent>
-              <span property="dc:spatial" content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
+              <span content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
             </#list>
           </div>
         </dd>
       </#if>
       <#if temporalExtent?has_content>
         <dt>Temporal extent</dt>
-        <dd>
+        <dd id="temporal-extent">
         <#list temporalExtent as extent>
-          <div id="temporal-extent" property="dc:temporal" datatype="dc:PeriodOfTime" content="${(extent.begin?date)!''}/${(extent.end?date)!''}">
-            <#if extent.begin?has_content>
-              <span class="extentBegin">${extent.begin?date}</span>
-            <#else>...
-            </#if>
+          <#if extent.begin?has_content>
+            <span class="extentBegin">${extent.begin?date}</span>
+          <#else>...
+          </#if>
 
-            &nbsp;&nbsp;&nbsp;to&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;to&nbsp;&nbsp;&nbsp;
 
-            <#if extent.end?has_content>
-              <span class="extentEnd">${extent.end?date}</span>
-            <#elseif resourceStatus?has_content && resourceStatus == "onGoing">present
-            <#else>...
-            </#if>
-          </div>
+          <#if extent.end?has_content>
+            <span class="extentEnd">${extent.end?date}</span>
+          <#elseif resourceStatus?has_content && resourceStatus == "onGoing">present
+          <#else>...
+          </#if>
         </#list>
         </dd>
       </#if>

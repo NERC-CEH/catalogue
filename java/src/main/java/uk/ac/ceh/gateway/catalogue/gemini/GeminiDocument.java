@@ -21,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -34,7 +35,8 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 @Accessors(chain = true)
 @ConvertUsing({
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
-    @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=GEMINI_XML_VALUE)
+    @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=GEMINI_XML_VALUE),
+    @Template(called="rdf/gemini.xml.tpl",   whenRequestedAs=RDF_XML_VALUE)
 })
 public class GeminiDocument implements MetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
