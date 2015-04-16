@@ -50,8 +50,6 @@ SELENIUM_DRIVERS = {
     :browserName  => 'firefox'},
   safari: {
     :platform     => 'MAC',
-    :acceptSslCerts  => true,
-    :autoAcceptAlerts => true,
     :browserName  => 'safari'},
   ie: {
     :platform     => 'WINDOWS',
