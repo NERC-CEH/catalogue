@@ -24,7 +24,7 @@
                   <span>${metadataPointOfContact.address.city?html}</span><br>
                 </#if>
                 <#if metadataPointOfContact.address.administrativeArea?has_content>
-                  <span${metadataPointOfContact.address.administrativeArea?html}</span><br>
+                  <span>${metadataPointOfContact.address.administrativeArea?html}</span><br>
                 </#if>
                 <#if metadataPointOfContact.address.postalCode?has_content>
                   <span>${metadataPointOfContact.address.postalCode?html}</span><br>
