@@ -10,7 +10,7 @@
     <title>${title?html} - CEH Catalogue</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <#if rdf?has_content>
-      <link rel="alternate" type="application/rdf+xml" href="${rdf}"/>
+      <link rel="meta" type="application/rdf+xml" href="${rdf}"/>
     </#if>
 
   
