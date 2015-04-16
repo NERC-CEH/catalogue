@@ -28,17 +28,20 @@ DESKTOP_BROWSERS = [ :chrome, :firefox, :ie, :safari ]
 
 SELENIUM_DRIVERS = {
   htcdesire: {
-    :platformName => 'Android',
+    :platform     => 'ANDROID',
+    :platformName => 'ANDROID',
     :deviceName   => 'HTC Desire',
     :app          => 'Chrome',
     :udid         => 'SH2CZLY05396'},
   nexus5: {
-    :platformName => 'Android',
+    :platform     => 'ANDROID',
+    :platformName => 'ANDROID',
     :deviceName   => 'Nexus 5',
     :app          => 'Chrome',
     :udid         => '02fbd6f32108304f'},
   nexus7: {
-    :platformName => 'Android',
+    :platform     => 'ANDROID',
+    :platformName => 'ANDROID',
     :deviceName   => 'Nexus 7',
     :app          => 'Chrome',
     :udid         => '073266a1'},
