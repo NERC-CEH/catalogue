@@ -45,6 +45,15 @@ SELENIUM_DRIVERS = {
     :deviceName   => 'Nexus 7',
     :app          => 'Chrome',
     :udid         => '073266a1'},
+  ipad2: {
+    :platform          => 'MAC',
+    :platformName      => 'iOS',
+    :platformVersion   => '8.3',
+    :browserName       => 'Appium iOS',
+    :autoAcceptAlerts  => true,
+    :newCommandTimeout => 6000,
+    :orientation       => 'landscape',
+    :deviceName        => 'iPad 2'},
   chrome: {
     :platform     => 'LINUX',
     :browserName  => 'chrome'},
