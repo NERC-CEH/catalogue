@@ -41,7 +41,7 @@
           </dd>
         </#list>
       </#if>  
-      <#if metadataDate?has_content>  
+      <#if metadataDateTime?has_content>  
         <dt>Record last updated</dt>
         <dd>${metadataDateTime?html}</dd>
       </#if>

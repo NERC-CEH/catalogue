@@ -75,7 +75,7 @@ public class GeminiDocument implements MetadataDocument {
     public String getMetadataDateTime() {
         /* This method always returns the full datetime string (including the seconds). LocalDateTime.toString() will 
            not return the seconds if it is a date with time 00:00:00 */
-        if (metadata != null) {
+        if (metadataDate != null) {
             return metadataDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         } else {
             return "";

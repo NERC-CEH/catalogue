@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import java.util.Arrays;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
@@ -78,5 +80,18 @@ public class GeminiDocumentTest {
         
         //Then
         assertNull("Expected to get a null url for the map viewer", url);
+    }
+    
+    @Test
+    public void checkThatMetadataDateTimeIsEmptyStringIfNoMetadataDate() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        
+        //When
+        String actual = document.getMetadataDateTime();
+        
+        //Then
+        assertThat("MetadataDateTime should be empty string", actual, equalTo(""));
+        
     }
 }
