@@ -41,9 +41,10 @@
           </dd>
         </#list>
       </#if>  
-
-      <dt>Record last updated</dt>
-      <dd>${metadataDate?html}</dd>
+      <#if metadataDate?has_content>  
+        <dt>Record last updated</dt>
+        <dd>${metadataDateTime?html}</dd>
+      </#if>
       
       <#if metadataStandardName?has_content>
       <dt>Metadata standard</dt>
