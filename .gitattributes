@@ -1,0 +1,5 @@
+* text=auto
+
+# We perform a diff of the build .js file to make sure we have a correctly
+# built version of the code commited
+*.js text eol=lf
