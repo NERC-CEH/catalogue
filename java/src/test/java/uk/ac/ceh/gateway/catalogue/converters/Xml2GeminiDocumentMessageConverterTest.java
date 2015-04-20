@@ -1097,7 +1097,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
-    public void metadataDate() throws IOException {
+    public void metadataDateFromDate() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("metadataDate.xml"));
@@ -1107,7 +1107,21 @@ public class Xml2GeminiDocumentMessageConverterTest {
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //Then
-        assertThat("MetadataDate is correct", document.getMetadataDate(), equalTo(expected));
+        assertThat("MetadataDate is incorrect", document.getMetadataDate(), equalTo(expected));
+    }
+    
+    @Test
+    public void metadataDateFromDateTime() throws IOException {
+        //Given
+        HttpInputMessage message = mock(HttpInputMessage.class);
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("metadataDateTime.xml"));
+        LocalDateTime expected = LocalDateTime.parse("2015-04-16T11:14:38");
+        
+        //When
+        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
+        
+        //Then
+        assertThat("MetadataDate is incorrect", document.getMetadataDate(), equalTo(expected));
     }
     
     @Test
