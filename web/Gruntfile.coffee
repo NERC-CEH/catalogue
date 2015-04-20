@@ -11,7 +11,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-less'
   grunt.loadNpmTasks 'grunt-contrib-cssmin'
   grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-lineending'
 
   #Configure tasks
   grunt.initConfig
@@ -116,19 +115,11 @@ module.exports = (grunt) ->
         src: 'src/css/style.css'
         dest: 'src/css/style.css'
 
-    lineending:
-      build:
-        options:
-          eol: 'lf'
-          overwrite: true
-        files:
-          '': ['src/scripts/main-out.js']
-
   grunt.registerTask 'bower-install', ->
     require('bower').commands.install().on('end', do @async)
 
   grunt.registerTask 'prep', ['clean', 'bower-install', 'combine_harvester:openlayers']
   grunt.registerTask 'test', ['clean:test', 'coffee', 'jasmine']
   grunt.registerTask 'develop', ['less', 'copy:requirejs', 'concurrent:watch']
-  grunt.registerTask 'build', ['clean', 'less', 'cssmin', 'requirejs', 'lineending']
+  grunt.registerTask 'build', ['clean', 'less', 'cssmin', 'requirejs']
   grunt.registerTask 'default', ['prep', 'build', 'test', 'exec:git_status']
