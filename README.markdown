@@ -73,6 +73,10 @@ The vagrant box can be functionally tested using capybara and selenium. The test
         pact install libiconv
         pact install patch
         pact install gcc4-g++
+        pact install libxml2
+        pact install libxml2-devel
+        pact install libxslt
+        pact install libxslt-devel
         gem install nokogiri -- --use-system-libraries
         gem install bundler
 
