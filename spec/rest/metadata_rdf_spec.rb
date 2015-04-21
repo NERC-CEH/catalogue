@@ -34,7 +34,7 @@ describe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => t
 
     it "should have accessURL" do
       url = graph.first_object [distribution, DCAT.accessURL, nil]
-      expect(url.value).to eq 'http://gateway.ceh.ac.uk/download?fileIdentifier=1e7d5e08-9e24-471b-ae37-49b477f695e3'
+      expect(url.value).to include '.ceh.ac.uk/download?fileIdentifier=1e7d5e08-9e24-471b-ae37-49b477f695e3'
     end
 
     it "should have format" do
