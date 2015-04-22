@@ -9,14 +9,6 @@
     </tr>
   </tfoot>
   <tbody>
-    <tr>
-      <td><input class="form-control" value="ASDe"></td>
-      <td><button class="btn btn-default"><i class="glyphicon glyphicon-remove"></i></button></td>
-    </tr>
-    <tr>
-      <td><input class="form-control" value="ALOSDF"></td>
-      <td><button class="btn btn-default"><i class="glyphicon glyphicon-remove"></i></button></td>
-    </tr>
   </tbody>
 </table>
 <p id="help-alternativeTitles" class="help-block hidden-print collapse">

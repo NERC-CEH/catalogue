@@ -1,23 +1,73 @@
 define [
   'backbone'
   'tpl!templates/editor/AlternativeTitles.tpl'
-], (Backbone, template) -> Backbone.View.extend
+  'tpl!templates/editor/AlternativeTitle.tpl'
+], (Backbone, template, itemlTemplate) ->
 
-  events:
-    'change': 'updateModel'
+  Model = Backbone.Model.extend
+    defaults:
+      value: ''
 
-  addOne: (permission) ->
-    _.extend permission, parent: @model
-    view = new IdentityPermissionView model: permission
-    @$('tbody').append view.render().el
+  Collection = Backbone.Collection.extend
+    model: Model
 
-  addAll: ->
-    @$('tbody').html('')
-    @model.get('permissions').each @addOne, @
+  ItemView = Backbone.View.extend
+    tagName: 'tr'
 
-  render: ->
-    @$el.html template
-    return @
+    events:
+      'click button': 'remove'
 
-  updateModel: ->
-    @model.set 'title', @$("#input-title").val()
+    render: ->
+      @$el.html itemlTemplate @model.toJSON()
+      return @
+
+    remove: ->
+      @model.collection.remove()
+
+  view = Backbone.View.extend
+
+    events:
+      'click #alternativeTitleAdd': 'add'
+
+    initialize: ->
+      if not @model
+        throw new Error('model is required')
+
+      @alternativeTitles = new Collection()
+
+      _.each @model.get('alternativeTitles'), (altTitle) ->
+        @alternativeTitles.add new Model
+          value: altTitle
+
+      @alternativeTitles.add new Model
+        value: "this is a test"
+
+      @delegateEvents()
+
+      @listenTo @alternativeTitles, 'change', @updateModel
+      @listenTo @alternativeTitles, 'all', (name) ->
+        console.log "from alternativeTitles: #{name}"
+
+    addOne: (alternativeTitle) ->
+      view = new ItemView model: alternativeTitle
+      @$('tbody').append view.render().el
+
+    addAll: ->
+      @$('tbody').html('')
+      @alternativeTitles.each @addOne, @
+
+    render: ->
+      @$el.html template
+      do @addAll
+      return @
+
+    add: ->
+      alternativeTitle = $('#alternativeTitleAdd').val()
+      if alternativeTitle
+        @alternativeTitles.add new Model
+          value: alternativeTitle
+
+    updateModel: ->
+      @model.set 'alternativeTitles', @alternativeTitles.map (model) -> model.get 'value'
+
+  return view
