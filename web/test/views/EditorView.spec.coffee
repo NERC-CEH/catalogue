@@ -60,3 +60,14 @@ define [
         view.$('#editorSave').trigger 'click'
         expect(view.save).toHaveBeenCalled()
         expect(model.save).toHaveBeenCalled()
+
+    describe 'when Step 4 clicked', ->
+
+      beforeEach ->
+        spyOn(view, 'direct')
+        do view.delegateEvents
+        do view.render
+
+      it 'direct method called', ->
+        view.$('#editorNav li:eq(4)').trigger 'click'
+        expect(view.direct).toHaveBeenCalled()

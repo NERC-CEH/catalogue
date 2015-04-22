@@ -14,6 +14,7 @@ define [
     'click #editorSave': 'save'
     'click #editorBack': 'back'
     'click #editorNext': 'next'
+    'click #editorNav li': 'direct'
 
   initialize: (options) ->
     if not @model
@@ -37,15 +38,24 @@ define [
     window.location.assign @model.get 'uri'
 
   back: ->
-    @navigate -1
+    @navigate @currentStep - 1
 
   next: ->
-    @navigate 1
+    @navigate @currentStep + 1
 
-  navigate: (direction) ->
+  direct: (event) ->
+    node = event.currentTarget
+    step = 0
+    while node != null
+      step++
+      node = node.previousElementSibling
+
+    @navigate step
+
+  navigate: (newStep) ->
     $nav = $('#editorNav li')
     maxStep = $nav.length
-    @currentStep += direction
+    @currentStep = newStep
     @currentStep = 1 if @currentStep < 1
     @currentStep = maxStep if @currentStep > maxStep
 
