@@ -5,9 +5,13 @@
 		<gmd:temporalElement>
 			<gmd:EX_TemporalExtent>
 				<gmd:extent>
-					<gml:TimePeriod gml:id="EIDC79854">
+					<gml:TimePeriod gml:id="EIDC79854${temporal_index}">
 						<gml:beginPosition>${temporal.begin}</gml:beginPosition>
+						<#if temporal.end?has_content>
 						<gml:endPosition>${temporal.end}</gml:endPosition>
+						<#else>
+						<gml:endPosition indeterminatePosition="unknown"/>
+						</#if>
 					</gml:TimePeriod>
 				</gmd:extent>
 			</gmd:EX_TemporalExtent>
