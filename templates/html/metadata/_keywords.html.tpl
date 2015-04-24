@@ -6,7 +6,7 @@
     <dt>Topic Categories</dt>
     <dd>
       <#list topicCategories as topic>
-        <span>${topic?html}</span><#if topic_has_next><br></#if>
+        <span>${codes.lookup('topicCategory', topic)}</span><#if topic_has_next><br></#if>
       </#list>
     </dd>
     </#if>
