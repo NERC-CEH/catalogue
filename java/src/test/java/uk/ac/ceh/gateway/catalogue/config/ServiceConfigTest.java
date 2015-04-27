@@ -172,7 +172,7 @@ public class ServiceConfigTest {
     }
     
     @Test
-    public void checkThatBundledReaderServiceIsComposedCorrectly() throws XPathExpressionException {
+    public void checkThatBundledReaderServiceIsComposedCorrectly() throws XPathExpressionException, IOException {
         //Given
         DocumentReadingService readingService = mock(DocumentReadingService.class);
         DocumentInfoMapper infoMapper = mock(DocumentInfoMapper.class);
@@ -210,7 +210,7 @@ public class ServiceConfigTest {
     }
     
     @Test
-    public void checkThatDocumentLinkingServiceIsComposedCorrectly() throws XPathExpressionException {
+    public void checkThatDocumentLinkingServiceIsComposedCorrectly() throws XPathExpressionException, IOException {
         //Given
         MetadataInfoBundledReaderService reader = mock(MetadataInfoBundledReaderService.class);
         
@@ -227,7 +227,7 @@ public class ServiceConfigTest {
     }
 
     @Test
-    public void checkThatLinkingServiceIsRequestedToBeLinkedAfterCreation() throws XPathExpressionException {
+    public void checkThatLinkingServiceIsRequestedToBeLinkedAfterCreation() throws XPathExpressionException, IOException {
         //Given
         doNothing().when(services).performRelinkIfNothingIsLinked(any(DocumentLinkService.class));
         

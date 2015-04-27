@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.is;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Properties;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -38,6 +39,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
 import uk.ac.ceh.gateway.catalogue.gemini.ThesaurusName;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 /**
  *
  * @author cjohn
@@ -47,7 +49,11 @@ public class Xml2GeminiDocumentMessageConverterTest {
     
     @Before
     public void createGeminiDocumentConverter() throws XPathExpressionException {
-        geminiReader = new Xml2GeminiDocumentMessageConverter();
+        Properties props = new Properties();
+        props.put("topicCategory.uri.environment", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment");
+        props.put("topicCategory.uri.imageryBaseMapsEarthCover", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/imageryBaseMapsEarthCover");
+        CodeLookupService codeLookupService = new CodeLookupService(props);
+        geminiReader = new Xml2GeminiDocumentMessageConverter(codeLookupService);
     }
     
     @Test
@@ -640,14 +646,13 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<String> actual = document.getTopicCategories();
-        List<String> expected = Arrays.asList("environment", "imageryBaseMapsEarthCover");
-        Collections.sort(actual);
-        Collections.sort(expected);
+        List<Keyword> actual = document.getTopicCategories();
+        List<Keyword> expected = Arrays.asList(
+            Keyword.builder().value("environment").URI("http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment").build(),
+            Keyword.builder().value("imageryBaseMapsEarthCover").URI("http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/imageryBaseMapsEarthCover").build());
         
         //Then
-        assertNotNull("Expected TopicCategories to not be null", actual);
-        assertThat("Content of TopicCategories is not as expected", actual, is(expected));
+        assertThat("Content of TopicCategories is not as expected", actual, equalTo(expected));
     }
     
     @Test
