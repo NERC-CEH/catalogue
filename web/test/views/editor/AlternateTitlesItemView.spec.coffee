@@ -1,10 +1,10 @@
 define [
+  'backbone'
   'cs!views/editor/AlternateTitlesItemView'
-  'cs!models/editor/Value'
-], (AlternateTitlesItemView, Value) ->
+], (Backbone, AlternateTitlesItemView) ->
   describe 'AlternateTitlesItemView', ->
     view = null
-    model = new Value()
+    model = new Backbone.Model()
 
     beforeEach ->
       view = new AlternateTitlesItemView
@@ -51,7 +51,7 @@ define [
     describe 'when view is rendered with populated model', ->
 
       beforeEach ->
-        model = new Value
+        model = new Backbone.Model
           value: 'Test Value'
         view = new AlternateTitlesItemView
           model: model

@@ -1,9 +1,8 @@
 define [
   'backbone'
-  'cs!models/editor/Value'
   'tpl!templates/editor/AlternateTitles.tpl'
   'cs!views/editor/AlternateTitlesItemView'
-], (Backbone, Value, template, ItemView) -> Backbone.View.extend
+], (Backbone, template, ItemView) -> Backbone.View.extend
 
   events:
     'click #alternateTitleAdd': 'add'
@@ -13,10 +12,10 @@ define [
     if not @model
       throw new Error('model is required')
 
-    @alternateTitles = new Backbone.Collection [], model: Value
+    @alternateTitles = new Backbone.Collection []
 
     _.each @model.get('alternateTitles'), (altTitle) =>
-      @alternateTitles.add new Value
+      @alternateTitles.add new Backbone.Model
         value: altTitle
 
     @listenTo @alternateTitles, 'add remove change', @updateModel
@@ -41,7 +40,7 @@ define [
   add: ->
     alternateTitle = @$('#alternateTitle').val()
     if alternateTitle
-      @alternateTitles.add new Value
+      @alternateTitles.add new Backbone.Model
         value: alternateTitle
 
     $('#alternateTitle').val ""
