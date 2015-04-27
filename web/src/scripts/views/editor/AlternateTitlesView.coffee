@@ -1,80 +1,51 @@
 define [
   'backbone'
-  'tpl!templates/editor/alternateTitles.tpl'
-  'tpl!templates/editor/alternateTitle.tpl'
-], (Backbone, template, itemlTemplate) ->
-  ENTER_KEY = 13
+  'cs!models/editor/Value'
+  'tpl!templates/editor/AlternateTitles.tpl'
+  'cs!views/editor/AlternateTitlesItemView'
+], (Backbone, Value, template, ItemView) -> Backbone.View.extend
 
-  Model = Backbone.Model.extend
-    defaults:
-      value: ''
+  events:
+    'click #alternateTitleAdd': 'add'
+    'keydown #alternateTitle': 'addEnter'
 
-  Collection = Backbone.Collection.extend
-    model: Model
+  initialize: ->
+    if not @model
+      throw new Error('model is required')
 
-  ItemView = Backbone.View.extend
-    tagName: 'tr'
+    @alternateTitles = new Backbone.Collection [], model: Value
 
-    events:
-      'click button': 'remove'
-      'change input': 'modify'
+    _.each @model.get('alternateTitles'), (altTitle) =>
+      @alternateTitles.add new Value
+        value: altTitle
 
-    render: ->
-      @$el.html itemlTemplate @model.toJSON()
-      return @
+    @listenTo @alternateTitles, 'add remove change', @updateModel
 
-    remove: ->
-      @model.collection.remove @model
+  addOne: (alternateTitle) ->
+    view = new ItemView model: alternateTitle
+    @$('tbody').append view.render().el
 
-    modify: ->
-      @model.set 'value', @$(':input').val()
-      @model.collection.trigger 'modify'
+  addAll: ->
+    @$('tbody').html('')
+    @alternateTitles.each @addOne, @
 
-  View = Backbone.View.extend
+  render: ->
+    @$el.html template
+    do @addAll
+    return @
 
-    events:
-      'click #alternateTitleAdd': 'add'
-      'keydown #alternateTitle': 'addEnter'
+  addEnter: (event) ->
+    if event.keyCode == 13
+      do @add
 
-    initialize: ->
-      if not @model
-        throw new Error('model is required')
+  add: ->
+    alternateTitle = @$('#alternateTitle').val()
+    if alternateTitle
+      @alternateTitles.add new Value
+        value: alternateTitle
 
-      @alternateTitles = new Collection()
+    $('#alternateTitle').val ""
 
-      _.each @model.get('alternateTitles'), (altTitle) =>
-        @alternateTitles.add new Model
-          value: altTitle
-
-      @listenTo @alternateTitles, 'add remove modify', @updateModel
-
-    addOne: (alternateTitle) ->
-      view = new ItemView model: alternateTitle
-      @$('tbody').append view.render().el
-
-    addAll: ->
-      @$('tbody').html('')
-      @alternateTitles.each @addOne, @
-
-    render: ->
-      @$el.html template
-      do @addAll
-      return @
-
-    addEnter: (event) ->
-      if event.keyCode == ENTER_KEY
-        do @add
-
-    add: ->
-      alternateTitle = @$('#alternateTitle').val()
-      if alternateTitle
-        @alternateTitles.add new Model
-          value: alternateTitle
-
-      $('#alternateTitle').val ""
-
-    updateModel: ->
-      @model.set 'alternateTitles', @alternateTitles.map (model) -> model.get 'value'
-      do @addAll
-
-  return View
+  updateModel: ->
+    @model.set 'alternateTitles', @alternateTitles.map (model) -> model.get 'value'
+    do @addAll

@@ -1,8 +1,8 @@
 define [
-  'jquery'
   'cs!models/Metadata'
   'cs!views/editor/AlternateTitlesView'
-], ($, Metadata, AlternateTitlesView) ->
+  'cs!models/editor/Value'
+], (Metadata, AlternateTitlesView, Value) ->
   describe 'AlternateTitlesView', ->
     view = null
     model = new Metadata()
@@ -48,9 +48,13 @@ define [
         spyOn model, 'set'
         do view.render
 
-      it 'should call updateModel method', ->
-        do view.updateModel
-        expect(model.set).toHaveBeenCalledWith 'alternateTitles', ['Countryside Survey', 'CS']
+      it 'adding new title should change model', ->
+        view.alternateTitles.add new Value value: 'alternate'
+        expect(model.set).toHaveBeenCalledWith 'alternateTitles',  ['Countryside Survey', 'CS', 'alternate']
+
+      it 'edited title should change model', ->
+        view.alternateTitles.at(0).set 'value', 'Test Survey'
+        expect(model.set).toHaveBeenCalledWith 'alternateTitles', ['Test Survey', 'CS']
 
     describe 'when view is rendered with populated model', ->
 
