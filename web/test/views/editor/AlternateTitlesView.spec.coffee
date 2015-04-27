@@ -1,8 +1,9 @@
 define [
+  'backbone'
   'cs!models/Metadata'
   'cs!views/editor/AlternateTitlesView'
   'cs!models/editor/Value'
-], (Metadata, AlternateTitlesView, Value) ->
+], (Backbone, Metadata, AlternateTitlesView) ->
   describe 'AlternateTitlesView', ->
     view = null
     model = new Metadata()
@@ -49,7 +50,7 @@ define [
         do view.render
 
       it 'adding new title should change model', ->
-        view.alternateTitles.add new Value value: 'alternate'
+        view.alternateTitles.add new Backbone.Model value: 'alternate'
         expect(model.set).toHaveBeenCalledWith 'alternateTitles',  ['Countryside Survey', 'CS', 'alternate']
 
       it 'edited title should change model', ->

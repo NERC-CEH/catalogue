@@ -4,7 +4,7 @@ define [
 ], (Backbone, AlternateTitlesItemView) ->
   describe 'AlternateTitlesItemView', ->
     view = null
-    model = new Backbone.Model()
+    model = new Backbone.Model value: ''
 
     beforeEach ->
       view = new AlternateTitlesItemView
