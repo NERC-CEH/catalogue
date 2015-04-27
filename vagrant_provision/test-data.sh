@@ -1,5 +1,6 @@
 #!/bin/sh
-DATASTORE_DIR=/var/ceh-catalogue/datastore
+WORKSPACE_DIR=/var/ceh-catalogue
+DATASTORE_DIR=$WORKSPACE_DIR/datastore
 
 apt-get -q -y update
 apt-get -q -y install git
@@ -7,6 +8,7 @@ apt-get -q -y install git
 # Create an empty git repository in the DATASTORE_DIR
 rm -Rf $DATASTORE_DIR
 mkdir -p $DATASTORE_DIR
+chmod -R 777 $WORKSPACE_DIR
 cd $DATASTORE_DIR
 git init
 git config user.name "Vagrant provision"
