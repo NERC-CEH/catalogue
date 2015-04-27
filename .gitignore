@@ -2,3 +2,4 @@ java/nb-configuration.xml
 java/nbactions.xml
 .idea
 web/npm-debug.log
+*.un~

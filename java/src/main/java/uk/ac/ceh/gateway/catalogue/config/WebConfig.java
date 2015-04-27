@@ -50,7 +50,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String BIBTEX_VALUE                 = "application/x-bibtex";
     public static final String GEMINI_XML_SHORT             = "gemini";
     public static final String GEMINI_XML_VALUE             = "application/x-gemini+xml";
-    public static final String RDF_XML_SHORT                = "rdf";
+    public static final String RDF_XML_SHORT                = "rdfxml";
     public static final String RDF_XML_VALUE                = "application/rdf+xml";
     public static final String RESEARCH_INFO_SYSTEMS_SHORT  = "ris";
     public static final String RESEARCH_INFO_SYSTEMS_VALUE  = "application/x-research-info-systems";
