@@ -12,7 +12,6 @@ catalogue_config
 catalogue_tomcat
 
 # Ignore Test output
-documents.yaml
 test-reports/**
 npm-debug.log
 

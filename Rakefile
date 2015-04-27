@@ -13,15 +13,7 @@ TEST_GROUPS = {
   :rest_spec    => 'restful'
 }
 
-task :default => [:grab_ids, :parallel_spec]
-
-desc 'Grab metadata ids from the vagrant box'
-task :grab_ids do
-  datastore = '/var/ceh-catalogue/datastore/'
-  metadata = `vagrant ssh -c "ls #{datastore}*.raw"`
-  names = metadata.split.map {|name| name[datastore.length..-5]}
-  File.open('documents.yaml', 'w') {|f| f.write names.to_yaml }
-end
+task :default => [:parallel_spec]
 
 desc 'Run each of the rspec groups in parallel'
 task :parallel_spec do
