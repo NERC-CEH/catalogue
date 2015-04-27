@@ -1,7 +1,7 @@
 describe "Search page" do
   sized [:xs, :sm, :md, :lg] do
     it 'should update results when term changes' do
-      visit "/documents?rows=2"
+      visit "/documents"
       results = first('.result').text
       within(".search-form") do
         fill_in 'term', :with => 'my search'
