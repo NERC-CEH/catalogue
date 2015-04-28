@@ -12,11 +12,12 @@ define [
     facet:     []
     term:      undefined
     page:      1
+    rows:      undefined
 
   ###
   Define the set of fields which contribute to searching
   ###
-  searchFields: ['term', 'page', 'facet', 'bbox', 'op']
+  searchFields: ['term', 'page', 'rows', 'facet', 'bbox', 'op']
 
   initialize:->
     do @createSearchPage          #Create initial search page
