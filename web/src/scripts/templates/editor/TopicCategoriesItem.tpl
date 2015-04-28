@@ -10,7 +10,7 @@
   <option value="geoscientificInformation">Geoscientific Information</option>
   <option value="health">Health</option>
   <option value="imageryBaseMapsEarth Cover">Imagery / Base Maps / Earth Cover</option>
-  <option value="inland Waters">Inland Waters</option>
+  <option value="inlandWaters">Inland Waters</option>
   <option value="intelligenceMilitary">Intelligence / Military</option>
   <option value="location">Location</option>
   <option value="oceans">Oceans</option>

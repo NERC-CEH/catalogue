@@ -1,75 +1,44 @@
 define [
   'backbone'
+  'cs!models/editor/TopicCategory'
+  'cs!views/editor/TopicCategoriesItemView'
   'tpl!templates/editor/TopicCategories.tpl'
-  'tpl!templates/editor/TopicCategory.tpl'
-], (Backbone, template, itemlTemplate) ->
+], (Backbone, TopicCategory, TopicCategoriesItemView, template) -> Backbone.View.extend
 
-  Model = Backbone.Model.extend
-    defaults:
-      value: ''
+  events:
+    'change #topicCategory': 'add'
 
-  Collection = Backbone.Collection.extend
-    model: Model
+  initialize: ->
+    if not @model
+      throw new Error('model is required')
 
-  ItemView = Backbone.View.extend
-    tagName: 'tr'
+    @topicCategories = new Backbone.Collection @model.get('topicCategories'), TopicCategory
 
-    events:
-      'click button': 'remove'
-      'change select': 'modify'
+    @listenTo @topicCategories, 'add remove change', @updateModel
 
-    render: ->
-      @$el.html itemlTemplate
-      @$('select').val @model.get 'value'
-      return @
+  addOne: (topicCategory) ->
+    view = new TopicCategoriesItemView model: topicCategory
+    @$('tbody').append view.render().el
 
-    remove: ->
-      @model.collection.remove @model
+  addAll: ->
+    @$('tbody').html('')
+    @topicCategories.each @addOne, @
 
-    modify: ->
-      @model.set 'value', @$(':selected').val()
-      @model.collection.trigger 'modify'
+  render: ->
+    @$el.html template
+    do @addAll
+    return @
 
-  View = Backbone.View.extend
+  add: ->
+    value = @$('#topicCategory').val()
 
-    events:
-      'click #topicCategoryAdd': 'add'
+    if value
+      topicCategory = new TopicCategory()
+      topicCategory.set 'value': value # need to force 'set' to update uri
+      @topicCategories.add topicCategory
 
-    initialize: ->
-      if not @model
-        throw new Error('model is required')
+    $('#topicCategory').val ""
 
-      @topicCategories = new Collection()
-
-      _.each @model.get('topicCategories'), (topic) =>
-        @topicCategories.add new Model
-          value: topic
-
-      @listenTo @topicCategories, 'add remove modify', @updateModel
-
-    addOne: (topicCategory) ->
-      view = new ItemView model: topicCategory
-      @$('tbody').append view.render().el
-
-    addAll: ->
-      @$('tbody').html('')
-      @topicCategories.each @addOne, @
-
-    render: ->
-      @$el.html template
-      do @addAll
-      return @
-
-    add: ->
-      topicCategory = @$('#topicCategory').val()
-      if topicCategory
-        @topicCategories.add new Model
-          value: topicCategory
-
-      $('#topicCategory').val ""
-
-    updateModel: ->
-      @model.set 'topicCategories', @topicCategories.map (model) -> model.get 'value'
-      do @addAll
-
-  return View
+  updateModel: ->
+    @model.set 'topicCategories', @topicCategories
+    do @addAll
