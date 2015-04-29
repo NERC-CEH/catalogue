@@ -7,9 +7,9 @@
     <dd>
       <#list topicCategories as topic>
         <#if topic.uri?has_content>
-          <a href="${topic.uri?html}" target="_blank">${codes.lookup('topicCategory', topic.value)!topic.value}</a>
+          <a href="${topic.uri?html}" target="_blank">${codes.lookup('topicCategory', topic.value, 'name')!topic.value}</a>
         <#else>
-          <span>${codes.lookup('topicCategory', topic.value)!topic.value}</span>
+          <span>${codes.lookup('topicCategory', topic.value, 'name')!topic.value}</span>
         </#if>
         <#if topic_has_next><br></#if>
       </#list>
