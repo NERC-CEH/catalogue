@@ -50,8 +50,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
     @Before
     public void createGeminiDocumentConverter() throws XPathExpressionException {
         Properties props = new Properties();
-        props.put("topicCategory.uri.environment", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment");
-        props.put("topicCategory.uri.imageryBaseMapsEarthCover", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/imageryBaseMapsEarthCover");
+        props.put("topicCategory.environment.uri", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment");
+        props.put("topicCategory.imageryBaseMapsEarthCover.uri", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/imageryBaseMapsEarthCover");
         CodeLookupService codeLookupService = new CodeLookupService(props);
         geminiReader = new Xml2GeminiDocumentMessageConverter(codeLookupService);
     }

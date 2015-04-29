@@ -30,7 +30,7 @@ public class TopicCategoriesConverter {
             String value = node.getTextContent();
             Keyword keyword = Keyword.builder()
                 .value(value)
-                .URI(lookupService.lookup("topicCategory.uri", value))
+                .URI(lookupService.lookup("topicCategory", value, "uri"))
                 .build();
             toReturn.add(keyword);
         }
