@@ -12,6 +12,7 @@
 </ol>
 <div id="editor" class="container" role="form">
   <div class="step visible">
+    <div id="editorResourceType" class="form-group"></div>
     <div id="editorTitle" class="form-group"></div>
     <div id="editorAlternativeTitles"></div>
     <div id="editorDescription" class="form-group"></div>
