@@ -13,7 +13,7 @@
 <div id="editor" class="container" role="form">
   <div class="step visible">
     <div id="editorTitle" class="form-group"></div>
-    <div id="editorAlternativeTitles"></div>
+    <div id="editorAlternateTitles"></div>
     <div id="editorDescription" class="form-group"></div>
     <p><mark>Publication date(s)</mark></p>
     <p><mark>Revision date(s)</mark></p>
