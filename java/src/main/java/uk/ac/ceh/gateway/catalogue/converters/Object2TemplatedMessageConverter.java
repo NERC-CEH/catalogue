@@ -2,8 +2,10 @@ package uk.ac.ceh.gateway.catalogue.converters;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpInputMessage;
@@ -12,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 /**
  *
@@ -61,8 +64,11 @@ public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConv
             MediaType requestedMediaType = outputMessage.getHeaders().getContentType();
             for(Template template: t.getClass().getAnnotation(ConvertUsing.class).value()) {
                 if(MediaType.parseMediaType(template.whenRequestedAs()).isCompatibleWith(requestedMediaType)) {
-                    configuration.getTemplate(template.called())
-                                 .process(t, new OutputStreamWriter(outputMessage.getBody()));
+                    freemarker.template.Template freemarkerTemplate = configuration.getTemplate(template.called());
+                    String processedTemplate = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, t);
+                    try (Writer writer = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody(), "UTF-8"))) {
+                        writer.write(processedTemplate);
+                    }
                 }
             }
         } catch(TemplateException te) {
