@@ -144,6 +144,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         }
         
         private String shortenLongString(String toShorten, int desiredLength){
+            toShorten = Strings.nullToEmpty(toShorten);
             if(toShorten.length() > desiredLength){
                 return breakAtNextSpace(toShorten);
             }else{
