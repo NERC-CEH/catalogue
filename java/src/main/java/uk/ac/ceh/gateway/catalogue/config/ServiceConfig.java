@@ -3,17 +3,16 @@ package uk.ac.ceh.gateway.catalogue.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import java.io.IOException;
-import java.util.Properties;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2UKEOFDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -59,7 +58,13 @@ public class ServiceConfig {
     @Autowired LinkDatabase linkDatabase;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
-    @Autowired PermissionService permissions;
+    @Autowired CodeLookupService codeLookupService;
+    @Autowired GroupStore<CatalogueUser> groupStore;
+    
+    @Bean
+    public PermissionService permission() {
+        return new PermissionService(dataRepository, documentInfoMapper(), groupStore);
+    }
     
     @Bean
     public CitationService citationService() {
@@ -69,7 +74,7 @@ public class ServiceConfig {
     @Bean
     public DocumentReadingService documentReadingService() throws XPathExpressionException, IOException {
         return new MessageConverterReadingService()
-                .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeNameLookupService()))
+                .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService))
                 .addMessageConverter(new Xml2UKEOFDocumentMessageConverter())
                 .addMessageConverter(new MappingJackson2HttpMessageConverter(jacksonMapper));
     }
@@ -77,12 +82,6 @@ public class ServiceConfig {
     @Bean
     public DocumentWritingService<MetadataDocument> documentWritingService() {
         return new JsonDocumentWritingService(jacksonMapper);
-    }
-    
-    @Bean
-    public CodeLookupService codeNameLookupService() throws IOException {
-        Properties properties = PropertiesLoaderUtils.loadAllProperties("codelist.properties");
-        return new CodeLookupService(properties);
     }
     
     @Bean
@@ -151,7 +150,7 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeNameLookupService()),
+                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService),
                 solrServer
         );
         
