@@ -8,7 +8,8 @@ define [
   'cs!views/editor/AlternateTitlesView'
   'cs!views/editor/DescriptionView'
   'cs!views/editor/LineageView'
-], (_, $, Backbone, template, MessageView, TitleView, AlternateTitlesView, DescriptionView, LineageView) -> Backbone.View.extend
+  'cs!views/editor/TopicCategoriesView'
+], (_, $, Backbone, template, MessageView, TitleView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView) -> Backbone.View.extend
 
   events:
     'click #editorSave': 'save'
@@ -100,6 +101,14 @@ define [
       el: @$('#editorLineage')
       model: @model
     do lineage.render
+
+    topicCategories = new TopicCategoriesView
+      el: @$('#editorTopicCategories')
+      model: @model
+    do topicCategories.render
+
+
+
 
 #    publicationDates = new PublicationDatesView
 #      el: @$('#editorPublicationDates')

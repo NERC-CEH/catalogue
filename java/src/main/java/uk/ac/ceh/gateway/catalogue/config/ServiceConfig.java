@@ -67,9 +67,9 @@ public class ServiceConfig {
     }
         
     @Bean
-    public DocumentReadingService documentReadingService() throws XPathExpressionException {
+    public DocumentReadingService documentReadingService() throws XPathExpressionException, IOException {
         return new MessageConverterReadingService()
-                .addMessageConverter(new Xml2GeminiDocumentMessageConverter())
+                .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeNameLookupService()))
                 .addMessageConverter(new Xml2UKEOFDocumentMessageConverter())
                 .addMessageConverter(new MappingJackson2HttpMessageConverter(jacksonMapper));
     }
@@ -98,8 +98,8 @@ public class ServiceConfig {
     }
     
     @Bean
-    public MetadataListingService getWafListingService() throws XPathExpressionException {
-        return new MetadataListingService(dataRepository, documentListingService(),bundledReaderService());
+    public MetadataListingService getWafListingService() throws XPathExpressionException, IOException {
+        return new MetadataListingService(dataRepository, documentListingService(), bundledReaderService());
     }
     
     @Bean
@@ -131,7 +131,7 @@ public class ServiceConfig {
     }
     
     @Bean
-    public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException {
+    public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException, IOException {
         return new MetadataInfoBundledReaderService(
                 dataRepository,
                 documentReadingService(),
@@ -160,7 +160,7 @@ public class ServiceConfig {
     }
     
     @Bean
-    public GitDocumentLinkService documentLinkingService() throws XPathExpressionException {
+    public GitDocumentLinkService documentLinkingService() throws XPathExpressionException, IOException {
         GitDocumentLinkService toReturn = new GitDocumentLinkService(
                 dataRepository,
                 bundledReaderService(),

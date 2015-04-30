@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.config.CrowdUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -29,6 +30,7 @@ public class RunCatalogImporter {
     @Autowired ObjectMapper jacksonMapper;
     @Autowired private DataRepository<CatalogueUser> repo;
     @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
+    @Autowired CodeLookupService codeLookupService; 
     
     @BeforeClass
     public static void before() {
@@ -40,7 +42,7 @@ public class RunCatalogImporter {
     // N.B. change data.repository.location in developer.properties to a temp location before running.
     public void toImport() throws Exception {
         DocumentReadingService documentReader = new MessageConverterReadingService()
-                .addMessageConverter(new Xml2GeminiDocumentMessageConverter());
+                .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService));
         DocumentInfoMapper<MetadataInfo> documentInfoMapper = new JacksonDocumentInfoMapper(jacksonMapper, MetadataInfo.class);
         DocumentListingService documentList = new ExtensionDocumentListingService();
         OfflineTerraCatalogUserFactory<CatalogueUser> userFactory = new OfflineTerraCatalogUserFactory<>(phantomUserBuilderFactory);

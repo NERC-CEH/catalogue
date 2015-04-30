@@ -31,7 +31,7 @@
   </div>
   <div class="step">
     <p><mark>INSPIRE Theme(s)</mark></p>
-    <p><mark>Topic category</mark></p>
+    <div id="editorTopicCategories"></div>
     <p><mark>CEH section</mark></p>
     <p><mark>CEH science area</mark></p>
     <p><mark>Keyword(s)</mark></p>

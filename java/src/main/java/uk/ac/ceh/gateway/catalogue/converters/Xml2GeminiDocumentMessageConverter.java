@@ -36,9 +36,11 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ServiceConverte
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialResolutionConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TopicCategoriesConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
 /**
  *
@@ -46,7 +48,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
  */
 @Slf4j
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
-    private final XPathExpression id, title, description, alternateTitle, topicCategories, resourceType, 
+    private final XPathExpression id, title, description, alternateTitle, resourceType, 
         browseGraphicUrl, coupledResource, resourceStatus, metadataDate, lineage, 
         metadataStandardName, metadataStandardVersion, supplementalInfo, 
         spatialRepresentationType, datasetLanguage, useLimitations, 
@@ -69,8 +71,9 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final RevisionOfConverter revisionOfConverter;
     private final ResourceMaintenanceConverter resourceMaintenaceConverter;
     private final ServiceConverter serviceConverter;
+    private final TopicCategoriesConverter topicCategoriesConverter;
     
-    public Xml2GeminiDocumentMessageConverter() throws XPathExpressionException {
+    public Xml2GeminiDocumentMessageConverter(CodeLookupService codeLookupService) throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
         
         xpath = XPathFactory.newInstance().newXPath();
@@ -79,7 +82,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.title = xpath.compile(XPaths.TITLE);
         this.description = xpath.compile(XPaths.DESCRIPTION);
         this.alternateTitle = xpath.compile(XPaths.ALTERNATE_TITLE);
-        this.topicCategories = xpath.compile(XPaths.TOPIC_CATEGORIES);
+        this.topicCategoriesConverter = new TopicCategoriesConverter(xpath, codeLookupService);
         this.resourceType = xpath.compile(XPaths.RESOURCE_TYPE);
         this.resourceIdentifierConverter = new ResourceIdentifierConverter(xpath);
         this.descriptiveKeywordsConverter = new DescriptiveKeywordsConverter(xpath);
@@ -137,7 +140,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setAlternateTitles(getListOfStrings(document, alternateTitle));
             toReturn.setDatasetLanguages(getListOfStrings(document, datasetLanguage));
             toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
-            toReturn.setTopicCategories(getListOfStrings(document, topicCategories));
+            toReturn.setTopicCategories(topicCategoriesConverter.convert(document));
             toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
             toReturn.setResourceType(resourceType.evaluate(document));
