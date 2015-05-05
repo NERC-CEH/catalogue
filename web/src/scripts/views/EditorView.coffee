@@ -6,10 +6,11 @@ define [
   'cs!views/MessageView'
   'cs!views/editor/TitleView'
   'cs!views/editor/ResourceTypeView'
-  'cs!views/editor/AlternativeTitlesView'
+  'cs!views/editor/AlternateTitlesView'
   'cs!views/editor/DescriptionView'
   'cs!views/editor/LineageView'
-], (_, $, Backbone, template, MessageView, TitleView, ResourceTypeView, AlternativeTitlesView, DescriptionView, LineageView) -> Backbone.View.extend
+  'cs!views/editor/TopicCategoriesView'
+], (_, $, Backbone, template, MessageView, TitleView, ResourceTypeView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView) -> Backbone.View.extend
 
   events:
     'click #editorSave': 'save'
@@ -92,10 +93,10 @@ define [
       model: @model
     do resourceType.render
 
-    alternativeTitles = new AlternativeTitlesView
-      el: @$('#editorAlternativeTitles')
+    alternateTitles = new AlternateTitlesView
+      el: @$('#editorAlternateTitles')
       model: @model
-    do alternativeTitles.render
+    do alternateTitles.render
 
     description = new DescriptionView
       el: @$('#editorDescription')
@@ -106,6 +107,14 @@ define [
       el: @$('#editorLineage')
       model: @model
     do lineage.render
+
+    topicCategories = new TopicCategoriesView
+      el: @$('#editorTopicCategories')
+      model: @model
+    do topicCategories.render
+
+
+
 
 #    publicationDates = new PublicationDatesView
 #      el: @$('#editorPublicationDates')

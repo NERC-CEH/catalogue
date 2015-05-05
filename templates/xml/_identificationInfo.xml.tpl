@@ -185,11 +185,13 @@
 			<MD_CharacterSetCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
 		</gmd:characterSet>	
 		</#if>
-		<#if topicCategories?has_content>
+		<#if topicCategories??>
 		<#list topicCategories as topicCategory>
-		<gmd:topicCategory>
-			<gmd:MD_TopicCategoryCode>${topicCategory?xml}</gmd:MD_TopicCategoryCode>
-		</gmd:topicCategory>
+      <#if topicCategory.value?has_content>
+        <gmd:topicCategory>
+          <gmd:MD_TopicCategoryCode>${topicCategory.value?xml}</gmd:MD_TopicCategoryCode>
+        </gmd:topicCategory>
+      </#if>
 		</#list>
 		</#if>
 		

@@ -14,7 +14,7 @@
   <div class="step visible">
     <div id="editorResourceType" class="form-group"></div>
     <div id="editorTitle" class="form-group"></div>
-    <div id="editorAlternativeTitles"></div>
+    <div id="editorAlternateTitles"></div>
     <div id="editorDescription" class="form-group"></div>
     <p><mark>Publication date(s)</mark></p>
     <p><mark>Revision date(s)</mark></p>
@@ -32,7 +32,7 @@
   </div>
   <div class="step">
     <p><mark>INSPIRE Theme(s)</mark></p>
-    <p><mark>Topic category</mark></p>
+    <div id="editorTopicCategories"></div>
     <p><mark>CEH section</mark></p>
     <p><mark>CEH science area</mark></p>
     <p><mark>Keyword(s)</mark></p>

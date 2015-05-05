@@ -31,11 +31,13 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
       <dct:type>${codes.lookup('metadata.scopeCode', resourceType)!''}</dct:type>
    </#if>
    <dct:title>${title}</dct:title>
-   <#list alternateTitles as altTitle>
-      <#if altTitle?has_content>
-      <dct:alternative>${altTitle}</dct:alternative>
-      </#if>
-   </#list>
+   <#if alternateTitles??>
+    <#list alternateTitles as altTitle>
+       <#if altTitle?has_content>
+       <dct:alternative>${altTitle}</dct:alternative>
+       </#if>
+    </#list>
+   </#if>
    <dct:description>${description}</dct:description>
    <#if datasetReferenceDate.creationDate?has_content>
    <dct:created>${datasetReferenceDate.creationDate}</dct:created>
@@ -59,9 +61,13 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
         <dct:temporal rdf:datatype="http://purl.org/dc/terms/PeriodOfTime">${(extent.begin?date)!''}/${(extent.end?date)!''}</dct:temporal>
       </#list>
     </#if>
-    <#if topicCategories?has_content>
+    <#if topicCategories??>
       <#list topicCategories as topic>
-        <dct:subject>${topic}</dct:subject>
+        <#if topic.uri?has_content>
+          <dct:subject rdf:resource="${topic.uri}" />
+        <#elseif topic.value?has_content>
+          <dct:subject>${topic.value}</dct:subject>
+        </#if>
       </#list>
     </#if>
    <#if type=='dataset' || type=='nonGeographicDataset' || type=='service'>

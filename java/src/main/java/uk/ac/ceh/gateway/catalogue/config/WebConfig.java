@@ -98,6 +98,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
             config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
             config.setSharedVaribles(shared);
+            config.setDefaultEncoding("UTF-8");
             config.setTemplateLoader(new FileTemplateLoader(templates));
             
             FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();

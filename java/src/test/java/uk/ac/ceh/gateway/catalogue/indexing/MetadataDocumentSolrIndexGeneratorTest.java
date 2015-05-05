@@ -204,5 +204,18 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         assertThat("Expected description to be shorter than the threshold length of " + maxDescriptionLength, maxDescriptionLength, greaterThan(description.length()));
         assertEquals("Shortened description is the same length as the original description", description.length(), document.getShortenedDescription().length());
     }
+    
+    @Test
+    public void checkNullDescriptionGeneratesEmptyStringForShortenedDescription(){
+        //Given
+        MetadataDocumentSolrIndexGenerator.DocumentSolrIndex document = new MetadataDocumentSolrIndexGenerator.DocumentSolrIndex();
+        document.setDescription(null);
+        
+        //When
+        String expected = document.getShortenedDescription();
+        
+        //Then
+        assertThat("Expected shortenedDescription to be empty string" , expected, equalTo(""));
+    }
 
 }

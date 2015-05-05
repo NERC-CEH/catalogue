@@ -57,4 +57,17 @@ public class CodeLookupServiceTest {
         //Then
         assertEquals("Expected to get the text out", desc, text);
     }
+    
+    @Test
+    public void checkThatCanLookupValueWithSubkey() {
+        //Given
+        String text = "This is so normal";
+        properties.setProperty("something.just.normal", text);
+        
+        //When
+        String desc = service.lookup("something", "just", "normal");
+        
+        //Then
+        assertEquals("Expected to get the text out", desc, text);
+    }
 }
