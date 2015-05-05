@@ -89,7 +89,7 @@ define [
     do title.render
 
     resourceType = new ResourceTypeView
-      el: @$('editorResourceType')
+      el: @$('#editorResourceType')
       model: @model
     do resourceType.render
 

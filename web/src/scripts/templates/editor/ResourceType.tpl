@@ -1,5 +1,6 @@
 <label for="resourceType" class="control-label required">
   Resource Type
+  <a data-toggle="collapse" title="Click for help" href="#help-resourceType" data-parent="#editor"><i class="glyphicon glyphicon-question-sign"></i></a>
 </label>
 <select id="resourceType" class="form-control">
   <option value="" selected>Select Resource Type</option>
@@ -11,7 +12,7 @@
   <option value="collectionHardware">Collection hardware</option>
   <option value="collectionSession">Collection session</option>
   <option value="coverage">Coverage</option>
-  <option value="dataset">Dataset</option>
+  <option value="dataset">Dataset&nbsp;&nbsp;&nbsp;&nbsp;(GEMINI)</option>
   <option value="dimensionGroup">Dimension group</option>
   <option value="document">Document</option>
   <option value="feature">Feature</option>
@@ -25,8 +26,11 @@
   <option value="propertyType">Property type</option>
   <option value="repository">Repository</option>
   <option value="sample">Sample</option>
-  <option value="series">Series</option>
-  <option value="service">Service</option>
+  <option value="series">Series&nbsp;&nbsp;&nbsp;&nbsp;(GEMINI)</option>
+  <option value="service">Service&nbsp;&nbsp;&nbsp;&nbsp;(GEMINI)</option>
   <option value="software">Software</option>
   <option value="tile">Tile</option>
 </select>
+<p id="help-resourceType" class="help-block hidden-print collapse">
+  Resource Type help
+</p>
