@@ -5,11 +5,12 @@ define [
   'tpl!templates/Editor.tpl'
   'cs!views/MessageView'
   'cs!views/editor/TitleView'
+  'cs!views/editor/ResourceTypeView'
   'cs!views/editor/AlternateTitlesView'
   'cs!views/editor/DescriptionView'
   'cs!views/editor/LineageView'
   'cs!views/editor/TopicCategoriesView'
-], (_, $, Backbone, template, MessageView, TitleView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView) -> Backbone.View.extend
+], (_, $, Backbone, template, MessageView, TitleView, ResourceTypeView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView) -> Backbone.View.extend
 
   events:
     'click #editorSave': 'save'
@@ -86,6 +87,11 @@ define [
       el: @$('#editorTitle')
       model: @model
     do title.render
+
+    resourceType = new ResourceTypeView
+      el: @$('#editorResourceType')
+      model: @model
+    do resourceType.render
 
     alternateTitles = new AlternateTitlesView
       el: @$('#editorAlternateTitles')
