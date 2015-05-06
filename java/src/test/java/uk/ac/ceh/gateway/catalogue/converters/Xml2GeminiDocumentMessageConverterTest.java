@@ -341,7 +341,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
             .builder()
             .orderUrl("http://gateway.ceh.ac.uk/download?fileIdentifier=11caad35-4a33-4ad8-852b-6c120fd250e2")
             .supportingDocumentsUrl("http://eidchub.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2")
-            .licenseUrl("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/standard-click-through/plain")
             .build();
         
         //When
@@ -350,7 +349,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("DownloadOrder 'actual' should be equal to 'expected'", actual, equalTo(expected));
-        assertThat("OGL license should be false", actual.isOgl(), equalTo(false));
     }
     
     @Test
@@ -363,7 +361,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
             .builder()
             .orderUrl("http://gateway.ceh.ac.uk/download?fileIdentifier=11caad35-4a33-4ad8-852b-6c120fd250e2")
             .supportingDocumentsUrl("http://eidchub.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2")
-            .licenseUrl("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
             .build();
         
         //When
@@ -372,7 +369,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("DownloadOrder 'actual' should be equal to 'expected'", actual, equalTo(expected));
-        assertThat("OGL license should be false", actual.isOgl(), equalTo(true));
     }
     
     @Test
@@ -543,16 +539,24 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
-    public void canGetUseLimitations() throws IOException {
+    public void canGetUseLimitationsAlsoWithLinks() throws IOException {
        
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
-        List<String> expected = Arrays.asList("use constraint 1", "use constraint 2");
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("useLimitationsAnchor.xml"));
+        List<Keyword> expected = Arrays.asList(
+            Keyword.builder()
+                .URI("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
+                .value("Open Government Licence")
+                .build(),
+            Keyword.builder()
+                .value("Another Use Limitation")
+                .build()
+        );
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<String> actual = document.getUseLimitations();
+        List<Keyword> actual = document.getUseLimitations();
         
         //Then
         assertThat("Actual useLimitations should equal expected", actual, equalTo(expected));
@@ -580,11 +584,26 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
-        List<String> expected = Arrays.asList("limitations on public access 0", "lopa2", "description", "2");
+        List<Keyword> expected = Arrays.asList(
+            Keyword.builder()
+                .value("limitations on public access 0")
+                .build(),
+            Keyword.builder()
+                .value("lopa2")
+                .build(),
+            Keyword.builder()
+                .URI("http://example.com/1")
+                .value("description")
+                .build(),
+            Keyword.builder()
+                .URI("http://example.com/2")
+                .value("2")
+                .build()
+        );
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<String> actual = document.getOtherConstraints();
+        List<Keyword> actual = document.getOtherConstraints();
         
         //Then
         assertThat("Actual otherConstraints should equal expected", actual, equalTo(expected));

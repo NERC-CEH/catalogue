@@ -101,17 +101,17 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
          <#if downloadOrder.orderUrl?has_content>
             <dcat:accessURL rdf:resource="${downloadOrder.orderUrl}"/>
          </#if>
-         <#if downloadOrder.licenseUrl?has_content>
-		    <dct:license rdf:resource="${downloadOrder.licenseUrl}" />
-		    <dct:rights rdf:resource="${downloadOrder.licenseUrl}" />
-		 </#if>
          <#if citation?has_content>
             <dct:rights>If you reuse this data, you must cite ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}</dct:rights>
          </#if>
          <#if useLimitations?has_content>
            <#list useLimitations as useLimitation>
-            <#if !useLimitation?starts_with("If you re")>
-              <dct:rights>${useLimitation}</dct:rights>
+            <#if useLimitation.uri?has_content>
+              <dct:license rdf:resource="${useLimitation.uri}"/>
+              <dct:rights rdf:resource="${useLimitation.uri}"/>
+            <#-- starts_with shortened to catch 'reuse' and 're-use' in the wild -->
+            <#elseif !useLimitation.value?starts_with("If you re")>
+              <dct:rights>${useLimitation.value}</dct:rights>
             </#if>
            </#list>
          </#if>
@@ -129,8 +129,8 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
       </dcat:Distribution>
    <#elseif type=='service'>
    <#if downloadOrder.licenseUrl?has_content>
-      <dct:license rdf:resource="${downloadOrder.licenseUrl}" />
-      <dct:rights rdf:resource="${downloadOrder.licenseUrl}" />
+      <dct:license rdf:resource="${downloadOrder.licenseUrl}"/>
+      <dct:rights rdf:resource="${downloadOrder.licenseUrl}"/>
    </#if>
 
       <#if useLimitations?has_content>

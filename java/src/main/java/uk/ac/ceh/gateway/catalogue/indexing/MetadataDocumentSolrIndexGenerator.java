@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
@@ -25,6 +26,8 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
  * @author cjohn
  */
 public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
+    private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
+    private static final String CEH_OGL_URL = "http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
     private final TopicIndexer topicIndexer;
     private final CodeLookupService codeLookupService;
 
@@ -62,10 +65,20 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
     }
     
     private String getLicence(GeminiDocument document){
-        if(document.getDownloadOrder() != null){
-            return codeLookupService.lookup("licence.isOgl", document.getDownloadOrder().isOgl());
+        boolean ogl = false;
+        List<Keyword> licences = Optional.ofNullable(document.getUseLimitations())
+            .orElse(Collections.emptyList());
+
+        for (Keyword keyword : licences) {
+            if ( !keyword.getUri().isEmpty()) {
+                String uri = keyword.getUri();
+                if (uri.startsWith(CEH_OGL_URL) || uri.startsWith(OGL_URL)) {
+                    ogl = true;
+                    break;
+                }
+            }
         }
-        return null;
+        return codeLookupService.lookup("licence.isOgl", ogl);
     }
 
     private String getState(MetadataDocument document) {

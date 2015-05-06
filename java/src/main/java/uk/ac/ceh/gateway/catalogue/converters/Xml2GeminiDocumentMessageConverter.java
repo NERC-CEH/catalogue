@@ -37,6 +37,7 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenc
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialResolutionConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TopicCategoriesConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.LegalConstraintsWithAnchorConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
@@ -51,8 +52,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final XPathExpression id, title, description, alternateTitle, resourceType, 
         browseGraphicUrl, coupledResource, resourceStatus, metadataDate, lineage, 
         metadataStandardName, metadataStandardVersion, supplementalInfo, 
-        spatialRepresentationType, datasetLanguage, useLimitations, 
-        accessConstraints, otherConstraints, securityConstraints, parentIdentifier;
+        spatialRepresentationType, datasetLanguage, 
+        accessConstraints, securityConstraints, parentIdentifier;
     private final XPath xpath;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
@@ -72,6 +73,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final ResourceMaintenanceConverter resourceMaintenaceConverter;
     private final ServiceConverter serviceConverter;
     private final TopicCategoriesConverter topicCategoriesConverter;
+    private final LegalConstraintsWithAnchorConverter useLimitationsConverter;
+    private final LegalConstraintsWithAnchorConverter otherConstraintsConverter;
     
     public Xml2GeminiDocumentMessageConverter(CodeLookupService codeLookupService) throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
@@ -108,14 +111,14 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.supplementalInfo = xpath.compile(XPaths.SUPPLEMENTAL_INFO);
         this.spatialRepresentationType = xpath.compile(XPaths.SPATIAL_REPRESENTATION_TYPE);
         this.datasetLanguage = xpath.compile(XPaths.DATASET_LANGUAGE);
-        this.useLimitations = xpath.compile(XPaths.USE_LIMITATION);
         this.accessConstraints = xpath.compile(XPaths.ACCESS_CONSTRAINT);
-        this.otherConstraints = xpath.compile(XPaths.OTHER_CONSTRAINT);
         this.securityConstraints = xpath.compile(XPaths.SECURITY_CONSTRAINT);
         this.parentIdentifier = xpath.compile(XPaths.PARENT_IDENTIFIER);
         this.revisionOfConverter = new RevisionOfConverter(xpath);
         this.resourceMaintenaceConverter = new ResourceMaintenanceConverter(xpath);
         this.serviceConverter = new ServiceConverter(xpath);
+        this.useLimitationsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.USE_LIMITATION);
+        this.otherConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.OTHER_CONSTRAINT);
     }
     
     @Override
@@ -164,9 +167,9 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setMetadataStandardVersion(metadataStandardVersion.evaluate(document));
             toReturn.setSupplementalInfo(supplementalInfo.evaluate(document));
             toReturn.setSpatialRepresentationTypes(getListOfStrings(document, spatialRepresentationType));
-            toReturn.setUseLimitations(getListOfStrings(document, useLimitations));
+            toReturn.setUseLimitations(useLimitationsConverter.convert(document));
             toReturn.setAccessConstraints(getListOfStrings(document, accessConstraints));
-            toReturn.setOtherConstraints(getListOfStrings(document, otherConstraints));
+            toReturn.setOtherConstraints(otherConstraintsConverter.convert(document));
             toReturn.setSecurityConstraints(getListOfStrings(document, securityConstraints));
             toReturn.setParentIdentifier(parentIdentifier.evaluate(document));
             toReturn.setRevisionOfIdentifier(revisionOfConverter.convert(document));
