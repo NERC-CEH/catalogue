@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -92,7 +93,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     public void checkThatResourceTypeIsTransferedToIndex() {
         //Given
         GeminiDocument document = new GeminiDocument();
-        document.setType("dataset");
+        document.setResourceType(Keyword.builder().value("dataset").build());
         when(codeLookupService.lookup("metadata.scopeCode", "dataset")).thenReturn("Dataset");
         
         //When

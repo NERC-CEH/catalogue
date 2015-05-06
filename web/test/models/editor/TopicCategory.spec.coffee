@@ -11,7 +11,7 @@ define [
     it 'should set uri when value changed', ->
       topicCategory.trigger 'change:value', topicCategory, 'biota'
 
-      expect(topicCategory.set).toHaveBeenCalledWith 'uri', 'http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/biota'
+      expect(topicCategory.set).toHaveBeenCalledWith 'uri', topicCategory.uris.biota
 
     it 'should set empty string on unknown value', ->
       topicCategory.trigger 'change:value', topicCategory, 'unknown'

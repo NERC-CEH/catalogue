@@ -46,6 +46,7 @@ import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -197,7 +198,7 @@ public class DocumentControllerTest {
         //Given
         GeminiDocument bundledDocument = new GeminiDocument();
         bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
-        bundledDocument.setResourceType("dataset");
+        bundledDocument.setResourceType(Keyword.builder().value("dataset").build());
         
         String file = "myFile";
         String latestRevisionId = "latestRev";

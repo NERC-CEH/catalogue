@@ -15,6 +15,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -92,6 +93,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
     public Set<Link> getLinks(GeminiDocument document, String urlFragment) {
         return Optional.ofNullable(document)
             .map(GeminiDocument::getResourceType)
+            .map(Keyword::getValue)
             .map(r -> {
                 List<Metadata> metadata;
                 String associationType;
