@@ -29,3 +29,4 @@ define [
 
     else
       @model.unset 'resourceType'
+      @model.unset 'type'
