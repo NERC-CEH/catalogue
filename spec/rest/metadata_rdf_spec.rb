@@ -1,7 +1,8 @@
 DCAT = RDF::Vocabulary.new("http://www.w3.org/ns/dcat#")
 GEO = RDF::Vocabulary.new("http://www.opengis.net/ont/geosparql#")
+DCT = RDF::Vocabulary.new("http://purl.org/dc/terms/") 
 
-xdescribe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => true do
+describe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => true do
   let(:graph) {
     RDF::Graph.load("#{APP_HOST}/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3?format=rdfxml", :format => :rdfxml, :verify_none => true)
   }
@@ -10,17 +11,17 @@ xdescribe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => 
 
 
   it "should have dc:title" do
-    title = graph.first_literal([subject, RDF::DC.title, nil])
-    expect(title.value).to eq 'Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland)'
+    title = graph.first([subject, RDF::DC.title, nil])
+    expect(title.object).to eq 'Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland)'
   end
 
-  it "should have dc:type" do
-    type = graph.first_literal([subject, RDF::DC.type, nil])
-    expect(type.value).to eq 'Dataset'
+  it "should have dct:type" do
+    type = graph.first([subject, DCT.type, nil])
+    expect(type.object).to eq RDF::URI.new('http://purl.org/dc/dcmitype/Dataset')
   end
 
   it "should have dc:abstract" do
-    abstract = graph.first_literal([subject, RDF::DC.abstract, nil])
+    abstract = graph.first_literal([subject, DCT.description, nil])
     expect(abstract.value).to include 'parcel-based thematic'
   end
 
@@ -33,17 +34,17 @@ xdescribe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => 
     let(:distribution) {graph.first_object([subject, DCAT.Distribution, nil])}
 
     it "should have accessURL" do
-      url = graph.first_object [distribution, DCAT.accessURL, nil]
-      expect(url.value).to include '.ceh.ac.uk/download?fileIdentifier=1e7d5e08-9e24-471b-ae37-49b477f695e3'
+      url = graph.first [distribution, DCAT.accessURL, nil]
+      expect(url.object).to eq RDF::URI.new('https://catalogue.ceh.ac.uk/download?fileIdentifier=1e7d5e08-9e24-471b-ae37-49b477f695e3')
     end
 
     it "should have format" do
-      format = graph.first_literal [distribution, RDF::DC.format, nil]
+      format = graph.first_object [distribution, DCT.format, nil]
       expect(format.value).to eq 'geo-referenced TIFF image'
     end
 
     it "should have rights" do
-      rights = graph.first_literal [distribution, RDF::DC.rights, nil]
+      rights = graph.first_literal [distribution, DCT.rights, nil]
       expect(rights.value).to include 'Refer to:'
     end
   end
@@ -67,16 +68,16 @@ xdescribe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => 
     expect(temporal.datatype).to eq RDF::DC.PeriodOfTime
   end
 
-  it "should have two themes" do
-    themes = graph.query [subject, DCAT.theme, nil]
-    expect(themes.count).to be 2
-    expect(themes.has_object? RDF::Literal.new('environment')).to be true
-    expect(themes.has_object? RDF::Literal.new('imageryBaseMapsEarthCover')).to be true
+  it "should have two subjects" do
+    subjects = graph.query [subject, DCT.subject, nil]
+    expect(subjects.count).to be 2
+    expect(subjects.has_object? RDF::URI.new('http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment')).to be true
+    expect(subjects.has_object? RDF::URI.new('http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/imageryBaseMapsEarthCover')).to be true
   end
 
   it "should have dc:identifier property" do
-    id = graph.first_literal [subject, RDF::DC.identifier, nil]
-    expect(id.value).to eq '1e7d5e08-9e24-471b-ae37-49b477f695e3'
+    id = graph.first([subject, DCT.identifier, nil])
+    expect(id.object).to eq 'CEH:EIDC:1300193660704'
   end
 
   describe "dc:publisher" do
