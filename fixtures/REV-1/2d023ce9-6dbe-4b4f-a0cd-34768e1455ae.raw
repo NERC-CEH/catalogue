@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<gmd:MD_Metadata xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+<gmd:MD_Metadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.isotc211.org/2005/gmx http://eden.ign.fr/xsd/isotc211/isofull/20090316/gmx/gmx.xsd  http://www.isotc211.org/2005/srv http://eden.ign.fr/xsd/isotc211/isofull/20090316/srv/srv.xsd">
 	<gmd:fileIdentifier>
 		<gco:CharacterString>2d023ce9-6dbe-4b4f-a0cd-34768e1455ae</gco:CharacterString>
 	</gmd:fileIdentifier>
-	<language xmlns="http://www.isotc211.org/2005/gmd">
-		<LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng"/>
-	</language>
-	<characterSet xmlns="http://www.isotc211.org/2005/gmd">
-		<MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
-	</characterSet>
-	<gmd:parentIdentifier>
-		<gco:CharacterString>ddff0f17-c95d-4415-80cb-aa9487edcb06</gco:CharacterString>
-	</gmd:parentIdentifier>
-	<hierarchyLevel xmlns="http://www.isotc211.org/2005/gmd">
-		<MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
-	</hierarchyLevel>
+	<gmd:language>
+		<LanguageCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng"/>
+	</gmd:language>
+	<gmd:characterSet>
+		<MD_CharacterSetCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+	</gmd:characterSet>
+	<gmd:hierarchyLevel>
+		<MD_ScopeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</MD_ScopeCode>
+	</gmd:hierarchyLevel>
 	<gmd:contact>
 		<gmd:CI_ResponsibleParty>
 			<gmd:organisationName>
@@ -55,10 +52,10 @@
 		<gco:DateTime>2015-04-15T14:20:10</gco:DateTime>
 	</gmd:dateStamp>
 	<gmd:metadataStandardName>
-		<gco:CharacterString>NERC profile of ISO19115:2003</gco:CharacterString>
+		<gco:CharacterString>ISO 19115 (UK GEMINI)</gco:CharacterString>
 	</gmd:metadataStandardName>
 	<gmd:metadataStandardVersion>
-		<gco:CharacterString>1.0</gco:CharacterString>
+		<gco:CharacterString>1.0 (2.2)</gco:CharacterString>
 	</gmd:metadataStandardVersion>
 	<gmd:referenceSystemInfo>
 		<gmd:MD_ReferenceSystem>
@@ -70,9 +67,6 @@
 					<gmd:codeSpace>
 						<gco:CharacterString>urn:ogc:def:crs:EPSG</gco:CharacterString>
 					</gmd:codeSpace>
-					<gmd:version>
-						<gco:CharacterString>6.11.2</gco:CharacterString>
-					</gmd:version>
 				</gmd:RS_Identifier>
 			</gmd:referenceSystemIdentifier>
 		</gmd:MD_ReferenceSystem>
@@ -89,9 +83,9 @@
 							<gmd:date>
 								<gco:Date>2013-12-10</gco:Date>
 							</gmd:date>
-							<dateType xmlns="http://www.isotc211.org/2005/gmd">
-								<CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
-							</dateType>
+							<gmd:dateType>
+								<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+							</gmd:dateType>
 						</gmd:CI_Date>
 					</gmd:date>
 					<gmd:identifier>
@@ -105,11 +99,11 @@
 						</gmd:RS_Identifier>
 					</gmd:identifier>
 					<gmd:identifier>
-						<gmd:RS_Identifier>
+						<gmd:MD_Identifier>
 							<gmd:code>
-								<gco:CharacterString>http://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae</gco:CharacterString>
+								<gco:CharacterString>https://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae</gco:CharacterString>
 							</gmd:code>
-						</gmd:RS_Identifier>
+						</gmd:MD_Identifier>
 					</gmd:identifier>
 					<gmd:identifier>
 						<gmd:RS_Identifier>
@@ -124,13 +118,6 @@
 					<gmd:identifier>
 						<gmd:RS_Identifier>
 							<gmd:code>
-								<gco:CharacterString>http://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae</gco:CharacterString>
-							</gmd:code>
-						</gmd:RS_Identifier>
-					</gmd:identifier>
-					<gmd:identifier>
-						<gmd:RS_Identifier>
-							<gmd:code>
 								<gco:CharacterString>10/q5v</gco:CharacterString>
 							</gmd:code>
 							<gmd:codeSpace>
@@ -138,21 +125,14 @@
 							</gmd:codeSpace>
 						</gmd:RS_Identifier>
 					</gmd:identifier>
-					<gmd:identifier>
-						<gmd:RS_Identifier>
-							<gmd:code>
-								<gco:CharacterString>http://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae</gco:CharacterString>
-							</gmd:code>
-						</gmd:RS_Identifier>
-					</gmd:identifier>
 				</gmd:CI_Citation>
 			</gmd:citation>
 			<gmd:abstract>
-				<gco:CharacterString>This dataset consists of the vascular plants,  bryophytes and lichens recorded in plots in 103 woodland sites surveyed across Great Britain in 1971 and again over the growing seasons of 2000, 2002 and 2003 (referred to as '2001 survey'), using exactly the same field methods.  Data were collected under projects managed by The Nature Conservancy (in 1971) and the Centre for Ecology and Hydrology (in 2001).  </gco:CharacterString>
+				<gco:CharacterString>This dataset consists of the vascular plants,  bryophytes and lichens recorded in plots in 103 woodland sites surveyed across Great Britain in 1971 and again over the growing seasons of 2000, 2002 and 2003 (referred to as &apos;2001 survey&apos;), using exactly the same field methods.  Data were collected under projects managed by The Nature Conservancy (in 1971) and the Centre for Ecology and Hydrology (in 2001).  </gco:CharacterString>
 			</gmd:abstract>
-			<status xmlns="http://www.isotc211.org/2005/gmd">
-				<MD_ProgressCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="completed"/>
-			</status>
+			<gmd:status>
+				<MD_ProgressCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="completed"/>
+			</gmd:status>
 			<gmd:pointOfContact>
 				<gmd:CI_ResponsibleParty>
 					<gmd:organisationName>
@@ -162,21 +142,6 @@
 						<gmd:CI_Contact>
 							<gmd:address>
 								<gmd:CI_Address>
-									<gmd:deliveryPoint>
-										<gco:CharacterString>Lancaster Environment Centre,  Library Avenue, Bailrigg</gco:CharacterString>
-									</gmd:deliveryPoint>
-									<gmd:city>
-										<gco:CharacterString>Lancaster</gco:CharacterString>
-									</gmd:city>
-									<gmd:administrativeArea>
-										<gco:CharacterString>Lancashire</gco:CharacterString>
-									</gmd:administrativeArea>
-									<gmd:postalCode>
-										<gco:CharacterString>LA1 4AP</gco:CharacterString>
-									</gmd:postalCode>
-									<gmd:country>
-										<gco:CharacterString>United Kingdom</gco:CharacterString>
-									</gmd:country>
 									<gmd:electronicMailAddress>
 										<gco:CharacterString>enquries@ceh.ac.uk</gco:CharacterString>
 									</gmd:electronicMailAddress>
@@ -420,31 +385,21 @@
 					</gmd:role>
 				</gmd:CI_ResponsibleParty>
 			</gmd:pointOfContact>
-			<resourceMaintenance xmlns="http://www.isotc211.org/2005/gmd">
-				<MD_MaintenanceInformation>
-					<maintenanceAndUpdateFrequency>
-						<MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="notPlanned"/>
-					</maintenanceAndUpdateFrequency>
-				</MD_MaintenanceInformation>
-			</resourceMaintenance>
-			<gmd:graphicOverview>
-				<gmd:MD_BrowseGraphic>
-					<gmd:fileName>
-						<gco:CharacterString>http://eidchub.ceh.ac.uk/administration-folder/tools/catalogue-browse-graphics/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae.png</gco:CharacterString>
-					</gmd:fileName>
-					<gmd:fileDescription>
-						<gco:CharacterString>Thumbnail</gco:CharacterString>
-					</gmd:fileDescription>
-				</gmd:MD_BrowseGraphic>
-			</gmd:graphicOverview>
+			<gmd:resourceMaintenance>
+				<gmd:MD_MaintenanceInformation>
+					<gmd:maintenanceAndUpdateFrequency>
+						<MD_MaintenanceFrequencyCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="notPlanned"/>
+					</gmd:maintenanceAndUpdateFrequency>
+				</gmd:MD_MaintenanceInformation>
+			</gmd:resourceMaintenance>
 			<gmd:descriptiveKeywords>
 				<gmd:MD_Keywords>
 					<gmd:keyword>
 						<gco:CharacterString>Environmental monitoring facilities</gco:CharacterString>
 					</gmd:keyword>
-					<type xmlns="http://www.isotc211.org/2005/gmd">
-						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
-					</type>
+					<gmd:type>
+						<MD_KeywordTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+					</gmd:type>
 					<gmd:thesaurusName>
 						<gmd:CI_Citation>
 							<gmd:title>
@@ -455,9 +410,9 @@
 									<gmd:date>
 										<gco:Date>2008-06-01</gco:Date>
 									</gmd:date>
-									<dateType xmlns="http://www.isotc211.org/2005/gmd">
-										<CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
-									</dateType>
+									<gmd:dateType>
+										<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+									</gmd:dateType>
 								</gmd:CI_Date>
 							</gmd:date>
 						</gmd:CI_Citation>
@@ -482,15 +437,15 @@
 					<gmd:keyword>
 						<gco:CharacterString>Britain</gco:CharacterString>
 					</gmd:keyword>
-					<type xmlns="http://www.isotc211.org/2005/gmd">
-						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place"/>
-					</type>
+					<gmd:type>
+						<MD_KeywordTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place"/>
+					</gmd:type>
 				</gmd:MD_Keywords>
 			</gmd:descriptiveKeywords>
 			<gmd:descriptiveKeywords>
 				<gmd:MD_Keywords>
 					<gmd:keyword>
-						<gmx:Anchor xlink:href="http://onto.nerc.ac.uk/CEHMD/scienceArea/NC">Natural Capital</gmx:Anchor>
+						<gco:CharacterString>Natural Capital</gco:CharacterString>
 					</gmd:keyword>
 					<gmd:thesaurusName>
 						<gmd:CI_Citation>
@@ -502,9 +457,9 @@
 									<gmd:date>
 										<gco:Date>2014-09-19</gco:Date>
 									</gmd:date>
-									<dateType xmlns="http://www.isotc211.org/2005/gmd">
-										<CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
-									</dateType>
+									<gmd:dateType>
+										<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+									</gmd:dateType>
 								</gmd:CI_Date>
 							</gmd:date>
 						</gmd:CI_Citation>
@@ -514,7 +469,7 @@
 			<gmd:descriptiveKeywords>
 				<gmd:MD_Keywords>
 					<gmd:keyword>
-						<gmx:Anchor xlink:href="http://onto.nerc.ac.uk/CEHMD/topic/2">Biodiversity</gmx:Anchor>
+						<gco:CharacterString>Biodiversity</gco:CharacterString>
 					</gmd:keyword>
 					<gmd:thesaurusName>
 						<gmd:CI_Citation>
@@ -526,9 +481,9 @@
 									<gmd:date>
 										<gco:Date>2014-09-19</gco:Date>
 									</gmd:date>
-									<dateType xmlns="http://www.isotc211.org/2005/gmd">
-										<CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
-									</dateType>
+									<gmd:dateType>
+										<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+									</gmd:dateType>
 								</gmd:CI_Date>
 							</gmd:date>
 						</gmd:CI_Citation>
@@ -538,28 +493,22 @@
 			<gmd:resourceConstraints>
 				<gmd:MD_LegalConstraints>
 					<gmd:useLimitation>
-						<gco:CharacterString>If you reuse this dataset you must cite this dataset: Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J., Shaw, M.W. (2013) Woodlands survey flora data 1971-2001 doi: 10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae as reported in Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J. (2005) Measuring Long Term Ecological Change in British woodlands (1971-2001): A re-survey and analysis of change based on the 103 sites in the ITE/NCC 'Bunce 1971' woodland survey. English Nature Research Reports 653. </gco:CharacterString>
+						<gco:CharacterString>If you reuse this dataset you must cite this dataset: Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J., Shaw, M.W. (2013) Woodlands survey flora data 1971-2001 doi: 10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae as reported in Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J. (2005) Measuring Long Term Ecological Change in British woodlands (1971-2001): A re-survey and analysis of change based on the 103 sites in the ITE/NCC &apos;Bunce 1971&apos; woodland survey. English Nature Research Reports 653. </gco:CharacterString>
 					</gmd:useLimitation>
-					<accessConstraints xmlns="http://www.isotc211.org/2005/gmd">
-						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license"/>
-					</accessConstraints>
-					<accessConstraints xmlns="http://www.isotc211.org/2005/gmd">
-						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
-					</accessConstraints>
-					<gmd:otherConstraints>
-						<gco:CharacterString>Licence terms and conditions apply</gco:CharacterString>
-					</gmd:otherConstraints>
-					<gmd:otherConstraints>
-						<gmx:Anchor xlink:href="http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain">Open Government Licence</gmx:Anchor>
-					</gmd:otherConstraints>
+					<gmd:accessConstraints>
+						<MD_RestrictionCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
+					</gmd:accessConstraints>
+					<gmd:accessConstraints>
+						<MD_RestrictionCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license"/>
+					</gmd:accessConstraints>
 				</gmd:MD_LegalConstraints>
 			</gmd:resourceConstraints>
-			<language xmlns="http://www.isotc211.org/2005/gmd">
-				<LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng"/>
-			</language>
-			<characterSet xmlns="http://www.isotc211.org/2005/gmd">
-				<MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
-			</characterSet>
+			<gmd:language>
+				<LanguageCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng"/>
+			</gmd:language>
+			<gmd:characterSet>
+				<MD_CharacterSetCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+			</gmd:characterSet>
 			<gmd:topicCategory>
 				<gmd:MD_TopicCategoryCode>biota</gmd:MD_TopicCategoryCode>
 			</gmd:topicCategory>
@@ -568,73 +517,10 @@
 			</gmd:topicCategory>
 			<gmd:extent>
 				<gmd:EX_Extent>
-					<gmd:geographicElement>
-						<gmd:EX_GeographicDescription>
-							<gmd:geographicIdentifier>
-								<gmd:RS_Identifier>
-									<gmd:code>
-										<gco:CharacterString>ENG</gco:CharacterString>
-									</gmd:code>
-									<gmd:codeSpace>
-										<gco:CharacterString>ISO 3166-1</gco:CharacterString>
-									</gmd:codeSpace>
-									<gmd:version>
-										<gco:CharacterString>2006</gco:CharacterString>
-									</gmd:version>
-								</gmd:RS_Identifier>
-							</gmd:geographicIdentifier>
-						</gmd:EX_GeographicDescription>
-					</gmd:geographicElement>
-				</gmd:EX_Extent>
-			</gmd:extent>
-			<gmd:extent>
-				<gmd:EX_Extent>
-					<gmd:geographicElement>
-						<gmd:EX_GeographicDescription>
-							<gmd:geographicIdentifier>
-								<gmd:RS_Identifier>
-									<gmd:code>
-										<gco:CharacterString>WAL</gco:CharacterString>
-									</gmd:code>
-									<gmd:codeSpace>
-										<gco:CharacterString>ISO 3166-1</gco:CharacterString>
-									</gmd:codeSpace>
-									<gmd:version>
-										<gco:CharacterString>2006</gco:CharacterString>
-									</gmd:version>
-								</gmd:RS_Identifier>
-							</gmd:geographicIdentifier>
-						</gmd:EX_GeographicDescription>
-					</gmd:geographicElement>
-				</gmd:EX_Extent>
-			</gmd:extent>
-			<gmd:extent>
-				<gmd:EX_Extent>
-					<gmd:geographicElement>
-						<gmd:EX_GeographicDescription>
-							<gmd:geographicIdentifier>
-								<gmd:RS_Identifier>
-									<gmd:code>
-										<gco:CharacterString>SCT</gco:CharacterString>
-									</gmd:code>
-									<gmd:codeSpace>
-										<gco:CharacterString>ISO 3166-1</gco:CharacterString>
-									</gmd:codeSpace>
-									<gmd:version>
-										<gco:CharacterString>2006</gco:CharacterString>
-									</gmd:version>
-								</gmd:RS_Identifier>
-							</gmd:geographicIdentifier>
-						</gmd:EX_GeographicDescription>
-					</gmd:geographicElement>
-				</gmd:EX_Extent>
-			</gmd:extent>
-			<gmd:extent>
-				<gmd:EX_Extent>
 					<gmd:temporalElement>
 						<gmd:EX_TemporalExtent>
 							<gmd:extent>
-								<gml:TimePeriod gml:id="w12419aaa">
+								<gml:TimePeriod gml:id="EIDC798540">
 									<gml:beginPosition>1971-05-01</gml:beginPosition>
 									<gml:endPosition>2003-10-31</gml:endPosition>
 								</gml:TimePeriod>
@@ -647,27 +533,24 @@
 				<gmd:EX_Extent>
 					<gmd:geographicElement>
 						<gmd:EX_GeographicBoundingBox>
-							<gmd:extentTypeCode>
-								<gco:Boolean>true</gco:Boolean>
-							</gmd:extentTypeCode>
 							<gmd:westBoundLongitude>
-								<gco:Decimal>-8.648</gco:Decimal>
+								<gco:Decimal>-9</gco:Decimal>
 							</gmd:westBoundLongitude>
 							<gmd:eastBoundLongitude>
-								<gco:Decimal>1.7675</gco:Decimal>
+								<gco:Decimal>2</gco:Decimal>
 							</gmd:eastBoundLongitude>
 							<gmd:southBoundLatitude>
-								<gco:Decimal>49.863</gco:Decimal>
+								<gco:Decimal>50</gco:Decimal>
 							</gmd:southBoundLatitude>
 							<gmd:northBoundLatitude>
-								<gco:Decimal>60.860</gco:Decimal>
+								<gco:Decimal>61</gco:Decimal>
 							</gmd:northBoundLatitude>
 						</gmd:EX_GeographicBoundingBox>
 					</gmd:geographicElement>
 				</gmd:EX_Extent>
 			</gmd:extent>
 			<gmd:supplementalInformation>
-				<gco:CharacterString>Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J. (2005) Measuring Long Term Ecological Change in British woodlands (1971-2001): A re-survey and analysis of change based on the 103 sites in the ITE/NCC 'Bunce 1971' woodland survey. English Nature Research Reports 653. 
+				<gco:CharacterString>Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J. (2005) Measuring Long Term Ecological Change in British woodlands (1971-2001): A re-survey and analysis of change based on the 103 sites in the ITE/NCC &apos;Bunce 1971&apos; woodland survey. English Nature Research Reports 653. 
 </gco:CharacterString>
 			</gmd:supplementalInformation>
 		</gmd:MD_DataIdentification>
@@ -718,7 +601,7 @@
 								</gmd:CI_Contact>
 							</gmd:contactInfo>
 							<gmd:role>
-								<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+								<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="distributor">distributor</gmd:CI_RoleCode>
 							</gmd:role>
 						</gmd:CI_ResponsibleParty>
 					</gmd:distributorContact>
@@ -737,9 +620,9 @@
 							<gmd:description>
 								<gco:CharacterString>Supporting information available to assist in re-use of this dataset and also link to data citation details</gco:CharacterString>
 							</gmd:description>
-							<function xmlns="http://www.isotc211.org/2005/gmd">
-								<CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
-							</function>
+							<gmd:function>
+								<CI_OnLineFunctionCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+							</gmd:function>
 						</gmd:CI_OnlineResource>
 					</gmd:onLine>
 				</gmd:MD_DigitalTransferOptions>
@@ -749,7 +632,7 @@
 					<gmd:onLine>
 						<gmd:CI_OnlineResource>
 							<gmd:linkage>
-								<gmd:URL>http://catalogue.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae</gmd:URL>
+								<gmd:URL>https://catalogue.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae</gmd:URL>
 							</gmd:linkage>
 							<gmd:name>
 								<gco:CharacterString>Online ordering</gco:CharacterString>
@@ -757,38 +640,38 @@
 							<gmd:description>
 								<gco:CharacterString>Order this resource as a csv file.</gco:CharacterString>
 							</gmd:description>
-							<function xmlns="http://www.isotc211.org/2005/gmd">
-								<CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="order"/>
-							</function>
+							<gmd:function>
+								<CI_OnLineFunctionCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="order"/>
+							</gmd:function>
 						</gmd:CI_OnlineResource>
 					</gmd:onLine>
 				</gmd:MD_DigitalTransferOptions>
 			</gmd:transferOptions>
 		</gmd:MD_Distribution>
 	</gmd:distributionInfo>
-	<dataQualityInfo xmlns="http://www.isotc211.org/2005/gmd">
-		<DQ_DataQuality>
-			<scope>
-				<DQ_Scope>
-					<level>
-						<MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
-					</level>
-					<levelDescription>
-						<MD_ScopeDescription>
-							<other>
+	<gmd:dataQualityInfo>
+		<gmd:DQ_DataQuality>
+			<gmd:scope>
+				<gmd:DQ_Scope>
+					<gmd:level>
+						<MD_ScopeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+					</gmd:level>
+					<gmd:levelDescription>
+						<gmd:MD_ScopeDescription>
+							<gmd:other>
 								<gco:CharacterString>dataset</gco:CharacterString>
-							</other>
-						</MD_ScopeDescription>
-					</levelDescription>
-				</DQ_Scope>
-			</scope>
-			<lineage>
-				<LI_Lineage>
-					<statement>
+							</gmd:other>
+						</gmd:MD_ScopeDescription>
+					</gmd:levelDescription>
+				</gmd:DQ_Scope>
+			</gmd:scope>
+			<gmd:lineage>
+				<gmd:LI_Lineage>
+					<gmd:statement>
 						<gco:CharacterString>Data were collected from 103 woodlands by field surveyors employed by The Nature Conservancy, Merlewood Research Station, Cumbria (in 1971) and employed under a project managed by the  Centre for Ecology and Hydrology (in 2000-2003). Extensive training was undertaken by surveyors. Collected data were double punched into spreadsheets as a form of quality control.  Data collected are available as 4 separate datasets: flora data, soil data, tree diameter data and site details. </gco:CharacterString>
-					</statement>
-				</LI_Lineage>
-			</lineage>
-		</DQ_DataQuality>
-	</dataQualityInfo>
+					</gmd:statement>
+				</gmd:LI_Lineage>
+			</gmd:lineage>
+		</gmd:DQ_DataQuality>
+	</gmd:dataQualityInfo>
 </gmd:MD_Metadata>
