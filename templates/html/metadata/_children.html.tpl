@@ -10,7 +10,7 @@
     </div>
   </div>
 </#if>
-<#if parentIdentifier?has_content>
+<#if parent?has_content>
   <div class="panel panel-default" id="document-children">
     <div class="panel-heading">
       <p class="panel-title">This ${resourceType?html} is part of the series</p>
