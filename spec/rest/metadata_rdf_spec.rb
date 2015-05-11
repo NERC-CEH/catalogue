@@ -40,12 +40,16 @@ describe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => t
 
     it "should have format" do
       format = graph.first_object [distribution, DCT.format, nil]
-      expect(format.value).to eq 'geo-referenced TIFF image'
+      imt = graph.first_object [format, DCT.IMT, nil]
+      value = graph.first_literal [imt, RDF.value, nil]
+      expect(value).to eq 'geo-referenced TIFF image'
     end
 
     it "should have rights" do
-      rights = graph.first_literal [distribution, DCT.rights, nil]
-      expect(rights.value).to include 'Refer to:'
+      rights = graph.query [distribution, DCT.rights, nil]
+      expect(rights.count).to be 2
+      #expect(rights.has_object? RDF::Literal.new('If you reuse this data, you must cite Morton, R.D.,Rowland, C.,Wood, C.,Meek, L.,Marston, G.,Smith, G.,Wadsworth, R.,Simpson, I. (2011). Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland). NERC Environmental Information Data Centre. http://doi.org/10.5285/1e7d5e08-9e24-471b-ae37-49b477f695e3')).to be true 
+      #expect(rights.has_object? RDF::Literal.new('Refer to: R.D. Morton, C. Rowland, C. Wood, L. Meek, C. Marston, G. Smith, R. Wadsworth, I. Simpson. July 2011 CS Technical Report No 11/07: Final Report for LCM2007 - the new UK land cover map. NERC/Centre for Ecology &amp; Hydrology (CEH Project Number NEC03259).')).to be true 
     end
   end
 
@@ -58,7 +62,7 @@ describe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => t
   it "should have dc:spatial" do
     spatial = graph.first_literal([subject, RDF::DC.spatial, nil])
 
-    expect(spatial.value).to eq 'POLYGON((-8.21 53.68, -8.21 55.77, -5.26 55.77, -5.26 53.68, -8.21 53.68))'
+    expect(spatial.value).to eq 'POLYGON((-8 54, -8 56, -5 56, -5 54, -8 54))'
     expect(spatial.datatype).to eq GEO.wktLiteral
   end
 
@@ -85,36 +89,12 @@ describe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => t
 
     it "has vcard organization-name" do
       name = graph.first_literal([publisher, RDF::VCARD['organization-name'], nil ])
-      expect(name.value).to include 'Centre for Ecology & Hydrology'
+      expect(name.value).to include 'NERC Environmental Information Data Centre'
     end
-
-    describe "v:adr" do
-      let(:address) {graph.first([publisher, RDF::VCARD.adr, nil]).object}
     
-      it "has street-address" do
-        address = graph.first_literal([address, RDF::VCARD['street-address'], nil ])
-        expect(address.value).to include 'Bailrigg'
-      end
-
-      it "has locality" do
-        locality = graph.first_literal([address, RDF::VCARD.locality, nil ])
-        expect(locality.value).to eq 'Lancaster'
-      end
-
-      it "has region" do
-        region = graph.first_literal([address, RDF::VCARD.region, nil ])
-        expect(region.value).to eq 'Lancashire'
-      end
-
-      it "has postal-code" do
-        postCode = graph.first_literal([address, RDF::VCARD['postal-code'], nil ])
-        expect(postCode.value).to eq 'LA1 4AP'
-      end
-
-      it "has country-name" do
-        country = graph.first_literal([address, RDF::VCARD['country-name'], nil ])
-        expect(country.value).to eq 'United Kingdom'
-      end
+    it "has vcard email" do
+      name = graph.first_literal([publisher, RDF::VCARD['email'], nil ])
+      expect(name.value).to include 'eidc@ceh.ac.uk'
     end
   end
 end

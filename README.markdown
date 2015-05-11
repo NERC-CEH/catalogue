@@ -97,3 +97,10 @@ The vagrant box can be functionally tested using capybara and selenium. The test
         bundle exec rake chrome_spec
 
 * Sit back and wait for the results of your test suite
+
+### Updating test metadata records
+Test metadata records are available in the /fixtures directory. When changes are made to these test documents they need to be loaded into the vagrant datastore.
+    vagrant ssh
+    cd /vagrant/vagrant_provision
+    sudo rm -rf /var/ceh-catalogue/datastore
+    sudo ./test-data.sh
