@@ -1,4 +1,4 @@
-<#if resourceType?? && resourceType == 'service'>
+<#if resourceType?? && resourceType.value == 'service'>
   <#assign documentOrderTitle="View the data">
   <#assign viewOnMap="Open in map viewer">
 <#else>
@@ -24,7 +24,7 @@
       </#if>
 
 	  
-      <#if resourceType != 'service'>
+      <#if resourceType.value != 'service'>
           <#include "_formats.html.tpl">
       </#if>
 

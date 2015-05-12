@@ -1,9 +1,9 @@
 <#if documentLinks?size gt 0 && documentLinks??>
   <div class="panel panel-default" id="document-related">
     <div class="panel-heading"><p class="panel-title">
-	  <#if resourceType == 'dataset'>
+	  <#if resourceType.value == 'dataset'>
 		Services associated with this dataset
-	  <#elseif resourceType == 'service'>
+	  <#elseif resourceType.value == 'service'>
 		Datasets associated with this service
 	  </#if></p>
 	</div>

@@ -7,7 +7,7 @@
 				</gmd:level>
 				<gmd:levelDescription>
 					<gmd:MD_ScopeDescription>
-						<gmd:other><gco:CharacterString>${resourceType?xml}</gco:CharacterString></gmd:other>
+						<gmd:other><gco:CharacterString>${resourceType.value?xml}</gco:CharacterString></gmd:other>
 					</gmd:MD_ScopeDescription>
 				</gmd:levelDescription>
 			</gmd:DQ_Scope>

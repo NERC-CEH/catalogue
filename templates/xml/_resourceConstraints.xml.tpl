@@ -2,7 +2,11 @@
 	<gmd:MD_LegalConstraints>
 	<#if useLimitations?has_content>
 	<#list useLimitations as useLimitation>
-		<gmd:useLimitation><gco:CharacterString>${useLimitation?xml}</gco:CharacterString></gmd:useLimitation>
+    <#if useLimitation.uri?has_content>
+      <gmd:useLimitation><gmx:Anchor xlink:title="${useLimitation.value?xml}" xlink:href="${useLimitation.uri?xml}"/></gmd:useLimitation>
+    <#else>
+      <gmd:useLimitation><gco:CharacterString>${useLimitation.value?xml}</gco:CharacterString></gmd:useLimitation>
+    </#if>
 	</#list>
 	</#if>
 	<#if citation?has_content>
@@ -22,11 +26,12 @@
 	</#if>
 	<#if otherConstraints?has_content>
 	<#list otherConstraints as otherConstraint>
-		<gmd:otherConstraints><gco:CharacterString>${otherConstraint?xml}</gco:CharacterString></gmd:otherConstraints>
+    <#if otherConstraint.uri?has_content>
+      <gmd:otherConstraints><gmx:Anchor xlink:title="${otherConstraint.value?xml}" xlink:href="${otherConstraint.uri?xml}"/></gmd:otherConstraints>
+    <#else>
+      <gmd:otherConstraints><gco:CharacterString>${otherConstraint.value?xml}</gco:CharacterString></gmd:otherConstraints>
+    </#if>
 	</#list>
-		<#--<gmd:otherConstraints>
-			<gmx:Anchor xlink:href="http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-lidar-tellus/plain">This resource is available under the Open Government Licence (OGL)</gmx:Anchor>
-		</gmd:otherConstraints>-->
 	</#if>
 	</gmd:MD_LegalConstraints>
 </gmd:resourceConstraints>

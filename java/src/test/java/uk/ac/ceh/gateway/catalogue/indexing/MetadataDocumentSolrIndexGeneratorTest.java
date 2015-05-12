@@ -106,12 +106,42 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     @Test
     public void checkThatIsOglTrueIsTransferredToIndex(){
         //Given
-        DownloadOrder downloadOrder = DownloadOrder
-                .builder()
-                .licenseUrl("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
-                .build();
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getDownloadOrder()).thenReturn(downloadOrder);
+        when(document.getUseLimitations()).thenReturn(Arrays.asList(
+            Keyword.builder()
+                .URI("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
+                .build(),
+            Keyword.builder()
+                .URI("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
+                .build(),
+            Keyword.builder()
+                .value("More use limitations")
+                .build()
+        ));
+        when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
+        
+        //When
+        DocumentSolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertEquals("Expected isOgl to be true", "IS OGL", index.getLicence());
+    }
+    
+    @Test
+    public void checkThatIsNationalArchivesOglTrueIsTransferredToIndex(){
+        //Given
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(document.getUseLimitations()).thenReturn(Arrays.asList(
+            Keyword.builder()
+                .URI("http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/")
+                .build(),
+            Keyword.builder()
+                .URI("http://eidchub.ceh.ac.uk")
+                .build(),
+            Keyword.builder()
+                .value("More use limitations")
+                .build()
+        ));
         when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
         
         //When
@@ -124,12 +154,15 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     @Test
     public void checkThatIsOglFalseIsTransferredToIndex(){
         //Given
-        DownloadOrder downloadOrder = DownloadOrder
-                .builder()
-                .licenseUrl("http://I.am.a.non.ogl.license")
-                .build();
-        GeminiDocument document = new GeminiDocument();
-        document.setDownloadOrder(downloadOrder);
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(document.getUseLimitations()).thenReturn(Arrays.asList(
+            Keyword.builder()
+                .URI("http://eidchub.ceh.ac.uk/metadata/eb7599f4-35f8-4365-bd4a-4056ee6c6083")
+                .build(),
+            Keyword.builder()
+                .value("More use limitations")
+                .build()
+        ));
         when(codeLookupService.lookup("licence.isOgl", false)).thenReturn("ISNT OGL");
         
         //When
