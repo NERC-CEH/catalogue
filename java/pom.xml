@@ -172,13 +172,6 @@
             <scope>provided</scope>
         </dependency>
         
-        <!-- E-mail -->
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4</version>
-        </dependency>
-        
         <!-- Solr4j -->
         <dependency>
             <groupId>org.apache.solr</groupId>
