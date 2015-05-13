@@ -1,8 +1,8 @@
 define [
   'backbone'
-], (Backbone) ->
+], (Backbone) -> Backbone.Model.extend
 
-  uris = {
+  uris:
     biota: 'http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/biota'
     boundaries: 'http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/boundaries'
     climatologyMeteorologyAtmosphere: 'http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/climatologyMeteorologyAtmosphere'
@@ -22,14 +22,9 @@ define [
     structure: 'http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/structure'
     transportation: 'http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/transportation'
     utilitiesCommunication: 'http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/utilitiesCommunication'
-  }
 
-  Model = Backbone.Model.extend
+  initialize: ->
+    @on 'change:value', @updateUri
 
-    initialize: ->
-      @on 'change:value', @updateUri
-
-    updateUri: (model, value) ->
-      @set 'uri', if uris[value] then uris[value] else ''
-
-  return Model
+  updateUri: (model, value) ->
+    @set 'uri', if @uris[value] then @uris[value] else ''

@@ -21,7 +21,7 @@
 </srv:coupledResource>
 </#list>
 <srv:couplingType>
-	<SV_CouplingType xmlns="http://www.isotc211.org/2005/srv" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#SV_CouplingType" codeListValue="${service.couplingType?xml}"/>
+	<srv:SV_CouplingType codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#SV_CouplingType" codeListValue="${service.couplingType?xml}"/>
 </srv:couplingType>
 <#list service.containsOperations as containsOperation>	
 <srv:containsOperations>
@@ -30,10 +30,10 @@
 			<gco:CharacterString>${containsOperation.operationName?xml}</gco:CharacterString>
 		</srv:operationName>
 		<srv:DCP>
-			<DCPList xmlns="http://www.isotc211.org/2005/srv" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#DCPList" codeListValue="${containsOperation.platform?xml}"/>
+			<srv:DCPList codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#DCPList" codeListValue="${containsOperation.platform?xml}"/>
 		</srv:DCP>
 		<srv:connectPoint>
-			<gmd:CI_OnlineResource xmlns:gmd="http://www.isotc211.org/2005/gmd">
+			<gmd:CI_OnlineResource>
 				<gmd:linkage>
 					<gmd:URL>${containsOperation.url?xml}</gmd:URL>
 				</gmd:linkage>

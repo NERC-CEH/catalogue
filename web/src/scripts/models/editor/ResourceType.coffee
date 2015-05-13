@@ -1,11 +1,14 @@
 define [
   'backbone'
-], (Backbone) ->
-  uris =
+], (Backbone) -> Backbone.Model.extend
+
+  uris:
     dataset: 'http://inspire.ec.europa.eu/metadata-codelist/ResourceType/dataset'
     series: 'http://inspire.ec.europa.eu/metadata-codelist/ResourceType/series'
     service: 'http://inspire.ec.europa.eu/metadata-codelist/ResourceType/services'
 
-  Backbone.Model.extend ->
+  initialize: ->
+    @on 'change:value', @updateUri
 
-
+  updateUri: (model, value) ->
+    @set 'uri', if @uris[value] then @uris[value] else ''

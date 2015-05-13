@@ -39,6 +39,7 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentC
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TopicCategoriesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.LegalConstraintsWithAnchorConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -146,7 +147,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setTopicCategories(topicCategoriesConverter.convert(document));
             toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
-            toReturn.setResourceType(resourceType.evaluate(document));
+            toReturn.setResourceType(Keyword.builder().value(resourceType.evaluate(document)).build());
             toReturn.setResourceIdentifiers(resourceIdentifierConverter.convert(document));
             toReturn.setMetadataPointsOfContact(metadataPointOfContactConverter.convert(document));
             toReturn.setDistributorContacts(distributorConverter.convert(document));

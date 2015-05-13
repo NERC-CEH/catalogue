@@ -42,9 +42,10 @@ public class GeminiDocument implements MetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private URI uri;
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
-        metadataStandardName, metadataStandardVersion, supplementalInfo, type, parentIdentifier, revisionOfIdentifier;
+        metadataStandardName, metadataStandardVersion, supplementalInfo, parentIdentifier, revisionOfIdentifier;
     private List<String> alternateTitles, coupledResources, spatialRepresentationTypes, datasetLanguages,
         accessConstraints, securityConstraints;
+    private Keyword resourceType;        
     private List<Keyword> topicCategories, useLimitations, otherConstraints;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
@@ -94,14 +95,11 @@ public class GeminiDocument implements MetadataDocument {
         return this;
     }
     
-    @JsonProperty("resourceType")
-    public String getResourceType() {
-        return type;
-    }
-    
-    @JsonIgnore
-    public void setResourceType(String resourceType) {
-        this.type = resourceType;
+    @Override
+    public String getType() {
+        return Optional.ofNullable(resourceType)
+            .map(Keyword::getValue)
+            .orElse("");
     }
     
     public Set<Link> getAssociatedResources() {

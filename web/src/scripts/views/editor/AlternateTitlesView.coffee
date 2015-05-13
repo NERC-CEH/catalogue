@@ -46,5 +46,8 @@ define [
     $('#alternateTitle').val ""
 
   updateModel: ->
-    @model.set 'alternateTitles', @alternateTitles.map (model) -> model.get 'value'
+    if @alternateTitles.length > 0
+      @model.set 'alternateTitles', @alternateTitles.map (model) -> model.get 'value'
+    else
+      @model.unset 'alternateTitles'
     do @addAll

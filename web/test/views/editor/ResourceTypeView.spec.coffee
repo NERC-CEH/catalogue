@@ -22,13 +22,14 @@ define [
 
       beforeEach ->
         model = new Metadata
-          resourceType: 'dataset'
+          resourceType:
+            value: 'dataset'
 
         view = new ResourceTypeView
           model: model
         do view.render
 
-      it 'there should be 2 items in the collection', ->
+      it 'there should be dataset selected', ->
         expect(view.$('#resourceType').val()).toEqual 'dataset'
 
     describe 'selecting Resource Type', ->

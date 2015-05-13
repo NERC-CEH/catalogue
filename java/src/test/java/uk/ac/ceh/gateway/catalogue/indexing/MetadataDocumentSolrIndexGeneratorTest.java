@@ -93,7 +93,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     public void checkThatResourceTypeIsTransferedToIndex() {
         //Given
         GeminiDocument document = new GeminiDocument();
-        document.setType("dataset");
+        document.setResourceType(Keyword.builder().value("dataset").build());
         when(codeLookupService.lookup("metadata.scopeCode", "dataset")).thenReturn("Dataset");
         
         //When

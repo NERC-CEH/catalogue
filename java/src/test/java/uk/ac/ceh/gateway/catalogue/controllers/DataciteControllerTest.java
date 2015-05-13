@@ -18,6 +18,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATACITE_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
@@ -46,9 +47,10 @@ public class DataciteControllerTest {
         String revision = "rev";
         String id = "id";
         GeminiDocument document = mock(GeminiDocument.class);
+        Keyword keyword = Keyword.builder().value("nonGeographicDataset").build();
         when(repo.getLatestRevision().getRevisionID()).thenReturn(revision);
         when(documentBundleReader.readBundle(id, revision)).thenReturn(document);
-        when(document.getResourceType()).thenReturn("nonGeographicDataset");
+        when(document.getResourceType()).thenReturn(keyword);
         HttpServletResponse response = mock(HttpServletResponse.class);
         
         //When

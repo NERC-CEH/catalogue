@@ -935,7 +935,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getResourceType();
+        String actual = document.getResourceType().getValue();
         
         //Then
         assertThat("Actual resourceType shoould be equal to expected", actual, equalTo(expected));

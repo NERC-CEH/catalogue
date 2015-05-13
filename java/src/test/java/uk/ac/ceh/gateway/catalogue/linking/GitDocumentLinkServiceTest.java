@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -93,7 +94,7 @@ public class GitDocumentLinkServiceTest {
         String fileIdentifier = "absd-asd";
         GeminiDocument dataset = new GeminiDocument();
         dataset.setId(fileIdentifier);
-        dataset.setResourceType("dataset");
+        dataset.setResourceType(Keyword.builder().value("dataset").build());
         GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
         
@@ -110,7 +111,7 @@ public class GitDocumentLinkServiceTest {
         String fileIdentifier = "absd-asd";
         GeminiDocument service = new GeminiDocument();
         service.setId(fileIdentifier);
-        service.setResourceType("service");
+        service.setResourceType(Keyword.builder().value("service").build());
         GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
         
