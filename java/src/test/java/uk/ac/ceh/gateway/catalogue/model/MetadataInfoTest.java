@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -157,6 +158,45 @@ public class MetadataInfoTest {
         //Then
         assertThat("test1 should still be able to view", updated.getIdentities(Permission.VIEW), hasItem("test1"));
         assertThat("public should not be able to view", updated.getIdentities(Permission.VIEW), not(hasItem("public")));
+    }
+    
+    @Test
+    public void userInReadonlyGroupCanView() {
+        //Given
+        MetadataInfo info = new MetadataInfo();
+        CatalogueUser readonly = new CatalogueUser().setUsername("readonly");
+        
+        //When
+        boolean actual = info.canAccess(Permission.VIEW, readonly, createGroups("ROLE_CIG_READONLY"));
+        
+        //Then
+        assertThat("Readonly user should be able to view", actual, is(true));
+    }
+    
+    @Test
+    public void userInReadonlyGroupCannotEdit() {
+        //Given
+        MetadataInfo info = new MetadataInfo();
+        CatalogueUser readonly = new CatalogueUser().setUsername("readonly");
+        
+        //When
+        boolean actual = info.canAccess(Permission.EDIT, readonly, createGroups("ROLE_CIG_READONLY"));
+        
+        //Then
+        assertThat("Readonly user should not be able to edit", actual, is(false));
+    }
+    
+    @Test
+    public void userInReadonlyGroupCannotDelete() {
+        //Given
+        MetadataInfo info = new MetadataInfo();
+        CatalogueUser readonly = new CatalogueUser().setUsername("readonly");
+        
+        //When
+        boolean actual = info.canAccess(Permission.DELETE, readonly, createGroups("ROLE_CIG_READONLY"));
+        
+        //Then
+        assertThat("Readonly user should not be able to delete", actual, is(false));
     }
     
     private List<Group> createGroups(String... groupnames) {
