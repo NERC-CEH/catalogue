@@ -13,13 +13,13 @@ require 'nokogiri'
 # Get the hostname of the box which this server is testing from
 hostname = Socket.gethostbyname(Socket.gethostname).first
 
-APP_HOST = "https://#{hostname}:8080"
+APP_HOST = "http://#{hostname}:8080"
 
 Capybara.app_host = APP_HOST
 Capybara.run_server = false
 Capybara.default_selector = :css
 
-$site = RestClient::Resource.new(APP_HOST, :verify_ssl => OpenSSL::SSL::VERIFY_NONE)
+$site = RestClient::Resource.new(APP_HOST)
 
 METADATA_IDS = [
   '1d859249-e6af-48f4-9fd6-5f8401bc1e4e',
