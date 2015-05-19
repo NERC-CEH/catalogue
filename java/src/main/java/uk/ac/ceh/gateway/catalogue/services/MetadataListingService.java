@@ -65,11 +65,8 @@ public class MetadataListingService {
     }
     
     private boolean caseInsensitiveContains(List<String> referenceList, String testValue){
-        for(String s : referenceList){
-            if(s.equalsIgnoreCase(testValue)){
-                return true;
-            }
-        }
-        return false;
+        return referenceList
+            .stream()
+            .anyMatch((s) -> s.equalsIgnoreCase(testValue));
     }
 }
