@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,9 @@ public class GeminiWafControllerTest {
     public void checkThatXmlExtensionIsAppendedToGeminiMetadataRecords() throws DataRepositoryException, IOException {
         //Given
         List<String> files = Arrays.asList("test1", "test2");
+        List<String> resourceTypes = new ArrayList<>(Arrays.asList("dataset","series","service"));
         when(repo.getLatestRevision().getRevisionID()).thenReturn("latest");
-        when(listingService.getPublicDocuments("latest", GeminiDocument.class)).thenReturn(files);
+        when(listingService.getPublicDocuments("latest", GeminiDocument.class, resourceTypes)).thenReturn(files);
                 
         //When
         ModelAndView modelAndView = controller.getWaf();

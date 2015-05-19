@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -22,35 +23,29 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 @Data
 @Slf4j
 public class MetadataListingService {
+    
     private final DataRepository<CatalogueUser> repo;
     private final DocumentListingService listingService;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     
     /**
-     * Returns a list of metadata ids of documents which are publicly accessible
-     * of the given metadata type.
-     * @param revision the data revision to list files from
-     * @param type of document which should be listed
-     * @return A list of metadata ids which are present in the git repository
-     * @throws DataRepositoryException
-     */
-    @Cacheable("metadata-listings")
-    public List<String> getPublicDocuments(String revision, Class<? extends MetadataDocument> type) throws DataRepositoryException, IOException {
-        return getDocuments(revision, type);
-    }
-    
-    /**
-     * Gets a list of metadata ids of documents in the data repository which are 
-     * accessible by the given user. This method will be cached to the 
-     * metadata-listings cache.
+     * Returns a list of metadata ids of documents which are:
+     *  - publicly accessible, 
+     *  - of the correct document type (eg GeminiDocument),
+     *  - have a resourceType of dataset, series or service.  
+     * The list will be cached to the  metadata-listings cache.
      * @param revision of the data repository to read from
-     * @param type of the document to list
+     * @param type of the document to list (eg GeminiDocument)
+     * @param resourceTypes resourceTypes describe a bit more about a metadata 
+     *        document than its simple type, eg GeminiMetadata documents can be 
+     *        Datasets, Series, Service, etc.  So this param lists the resourceTypes
+     *        we want document ids for.
      * @return a list of metadata ids
      * @throws DataRepositoryException
      * @throws IOException 
      */
     @Cacheable("metadata-listings")
-    public List<String> getDocuments(String revision, Class<? extends MetadataDocument> type) throws DataRepositoryException, IOException {
+    public List<String> getPublicDocuments(String revision, Class<? extends MetadataDocument> type, List<String> resourceTypes) throws DataRepositoryException, IOException {
         List<String> toReturn = new ArrayList<>();
         List<String> documents = listingService.filterFilenames(repo.getFiles(revision));
         
@@ -58,7 +53,7 @@ public class MetadataListingService {
         for(String file : documents) {
             try {
                 MetadataDocument doc = documentBundleReader.readBundle(file, revision);
-                if(type.isAssignableFrom(doc.getClass()) && doc.getMetadata().isPubliclyViewable(Permission.VIEW)) {
+                if(type.isAssignableFrom(doc.getClass()) && doc.getMetadata().isPubliclyViewable(Permission.VIEW) && caseInsensitiveContains(resourceTypes, doc.getType())) {
                     toReturn.add(doc.getId());
                 }
             }
@@ -67,5 +62,11 @@ public class MetadataListingService {
             }
         }
         return toReturn;
+    }
+    
+    private boolean caseInsensitiveContains(List<String> referenceList, String testValue){
+        return referenceList
+            .stream()
+            .anyMatch((s) -> s.equalsIgnoreCase(testValue));
     }
 }
