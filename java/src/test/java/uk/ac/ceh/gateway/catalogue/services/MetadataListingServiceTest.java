@@ -11,7 +11,6 @@ import org.mockito.Answers;
 import static org.mockito.Matchers.any;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
@@ -49,13 +48,14 @@ public class MetadataListingServiceTest {
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList("uid"));
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getId()).thenReturn("uid");
+        when(document.getType()).thenReturn("Dataset");
         MetadataInfo metadata = mock(MetadataInfo.class);
         when(metadata.isPubliclyViewable(Permission.VIEW)).thenReturn(Boolean.TRUE);
         when(document.getMetadata()).thenReturn(metadata);
         when(documentBundleReader.readBundle("uid", revision)).thenReturn(document);
         
         //When
-        List<String> ids = service.getDocuments(revision, GeminiDocument.class);
+        List<String> ids = service.getPublicDocuments(revision, GeminiDocument.class);
         
         //Then
         assertSame("Expected only one id", 1, ids.size());
@@ -71,7 +71,7 @@ public class MetadataListingServiceTest {
         when(documentBundleReader.readBundle(id, revision)).thenThrow(new UnknownContentTypeException("Unreadable"));
         
         //When
-        List<String> ids = service.getDocuments(revision, GeminiDocument.class);
+        List<String> ids = service.getPublicDocuments(revision, GeminiDocument.class);
         
         //Then
         assertTrue("Expected no matching results", ids.isEmpty());
@@ -86,7 +86,7 @@ public class MetadataListingServiceTest {
         Class differentMetadataType = mock(MetadataDocument.class).getClass();
         
         //When
-        List<String> ids = service.getDocuments(revision, differentMetadataType);
+        List<String> ids = service.getPublicDocuments(revision, differentMetadataType);
         
         //Then
         assertTrue("Expected no matching results", ids.isEmpty());
@@ -105,10 +105,50 @@ public class MetadataListingServiceTest {
         when(documentBundleReader.readBundle(id, revision)).thenReturn(document);
         
         //When
-        List<String> ids = service.getDocuments(revision, GeminiDocument.class);
+        List<String> ids = service.getPublicDocuments(revision, GeminiDocument.class);
         
         //Then
         assertTrue("Expected no records", ids.isEmpty());
         verify(documentBundleReader).readBundle(id, revision);
+    }
+    
+    @Test
+    public void checkThatGetsDatasetSeriesService() throws IOException, UnknownContentTypeException {
+        //Given
+        List<String> ids = Arrays.asList("a","b","c","d");
+        String revision = "revision";
+        MetadataInfo metadata = mock(MetadataInfo.class);  
+        when(metadata.isPubliclyViewable(Permission.VIEW)).thenReturn(true);
+        when(listingService.filterFilenames(any(List.class))).thenReturn(ids);
+        GeminiDocument documentA = mock(GeminiDocument.class);
+        GeminiDocument documentB = mock(GeminiDocument.class);
+        GeminiDocument documentC = mock(GeminiDocument.class);
+        GeminiDocument documentD = mock(GeminiDocument.class);
+        when(documentA.getId()).thenReturn("a");
+        when(documentB.getId()).thenReturn("b");
+        when(documentC.getId()).thenReturn("c");
+        when(documentD.getId()).thenReturn("d");
+        when(documentA.getType()).thenReturn("Dataset");
+        when(documentB.getType()).thenReturn("Series");
+        when(documentC.getType()).thenReturn("Service");
+        when(documentD.getType()).thenReturn("A_N_Other");
+        when(documentA.getMetadata()).thenReturn(metadata);
+        when(documentB.getMetadata()).thenReturn(metadata);
+        when(documentC.getMetadata()).thenReturn(metadata);
+        when(documentD.getMetadata()).thenReturn(metadata);
+        when(documentBundleReader.readBundle("a", revision)).thenReturn(documentA);
+        when(documentBundleReader.readBundle("b", revision)).thenReturn(documentB);
+        when(documentBundleReader.readBundle("c", revision)).thenReturn(documentC);
+        when(documentBundleReader.readBundle("D", revision)).thenReturn(documentC);
+        
+        //When
+        List<String> publicIds = service.getPublicDocuments(revision, GeminiDocument.class);
+        
+        //Then
+        assertTrue("Expected three records", publicIds.size() == 3);
+        verify(documentBundleReader).readBundle("a", revision);
+        verify(documentBundleReader).readBundle("b", revision);
+        verify(documentBundleReader).readBundle("c", revision);
+        verify(documentBundleReader).readBundle("d", revision);
     }
 }
