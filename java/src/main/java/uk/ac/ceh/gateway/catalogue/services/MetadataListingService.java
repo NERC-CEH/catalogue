@@ -24,8 +24,6 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 @Slf4j
 public class MetadataListingService {
     
-    private static final List<String> metadataTypes = new ArrayList<>(Arrays.asList("dataset","series","service"));
-    
     private final DataRepository<CatalogueUser> repo;
     private final DocumentListingService listingService;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
@@ -38,12 +36,16 @@ public class MetadataListingService {
      * The list will be cached to the  metadata-listings cache.
      * @param revision of the data repository to read from
      * @param type of the document to list (eg GeminiDocument)
+     * @param resourceTypes resourceTypes describe a bit more about a metadata 
+     *        document than its simple type, eg GeminiMetadata documents can be 
+     *        Datasets, Series, Service, etc.  So this param lists the resourceTypes
+     *        we want document ids for.
      * @return a list of metadata ids
      * @throws DataRepositoryException
      * @throws IOException 
      */
     @Cacheable("metadata-listings")
-    public List<String> getPublicDocuments(String revision, Class<? extends MetadataDocument> type) throws DataRepositoryException, IOException {
+    public List<String> getPublicDocuments(String revision, Class<? extends MetadataDocument> type, List<String> resourceTypes) throws DataRepositoryException, IOException {
         List<String> toReturn = new ArrayList<>();
         List<String> documents = listingService.filterFilenames(repo.getFiles(revision));
         
@@ -51,7 +53,7 @@ public class MetadataListingService {
         for(String file : documents) {
             try {
                 MetadataDocument doc = documentBundleReader.readBundle(file, revision);
-                if(type.isAssignableFrom(doc.getClass()) && doc.getMetadata().isPubliclyViewable(Permission.VIEW) && metadataTypes.contains(doc.getType().toLowerCase())) {
+                if(type.isAssignableFrom(doc.getClass()) && doc.getMetadata().isPubliclyViewable(Permission.VIEW) && caseInsensitiveContains(resourceTypes, doc.getType())) {
                     toReturn.add(doc.getId());
                 }
             }
@@ -60,5 +62,14 @@ public class MetadataListingService {
             }
         }
         return toReturn;
+    }
+    
+    private boolean caseInsensitiveContains(List<String> referenceList, String testValue){
+        for(String s : referenceList){
+            if(s.equalsIgnoreCase(testValue)){
+                return true;
+            }
+        }
+        return false;
     }
 }
