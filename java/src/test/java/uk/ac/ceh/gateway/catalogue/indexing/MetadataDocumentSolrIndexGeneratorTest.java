@@ -94,7 +94,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         //Given
         GeminiDocument document = new GeminiDocument();
         document.setResourceType(Keyword.builder().value("dataset").build());
-        when(codeLookupService.lookup("metadata.scopeCode", "dataset")).thenReturn("Dataset");
+        when(codeLookupService.lookup("metadata.resourceType", "dataset")).thenReturn("Dataset");
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);

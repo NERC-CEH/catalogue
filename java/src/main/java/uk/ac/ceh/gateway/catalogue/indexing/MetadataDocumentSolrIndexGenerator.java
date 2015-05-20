@@ -42,7 +42,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
                 .setIdentifier(document.getId())
-                .setResourceType(codeLookupService.lookup("metadata.scopeCode", document.getType()))
+                .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
                 .setLocations(document.getLocations())
                 .setState(getState(document))
                 .setTopic(topicIndexer.index(document))
