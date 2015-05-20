@@ -9,18 +9,18 @@ import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.springframework.http.HttpInputMessage;
-import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
+import uk.ac.ceh.gateway.catalogue.ef.EFDocument;
 
 /**
  *
  * @author cjohn
  */
 public class Xml2UKEOFDocumentMessageConverterTest {
-    private Xml2UKEOFDocumentMessageConverter ukeofReader;
+    private UkeofXml2EFDocumentMessageConverter ukeofReader;
     
     @Before
     public void createXml2UKEOFConverter() throws XPathExpressionException {
-        ukeofReader = new Xml2UKEOFDocumentMessageConverter();
+        ukeofReader = new UkeofXml2EFDocumentMessageConverter();
     }
     
     @Test
@@ -30,7 +30,7 @@ public class Xml2UKEOFDocumentMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("ukeofActivity.xml"));
         
         //When
-        UKEOFDocument document = ukeofReader.readInternal(UKEOFDocument.class, message);
+        EFDocument document = ukeofReader.readInternal(EFDocument.class, message);
         
         //Then
         assertThat("Expected document type to be activity", document.getType(), equalTo("activity"));
@@ -43,7 +43,7 @@ public class Xml2UKEOFDocumentMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("ukeofActivity.xml"));
         
         //When
-        UKEOFDocument document = ukeofReader.readInternal(UKEOFDocument.class, message);
+        EFDocument document = ukeofReader.readInternal(EFDocument.class, message);
         
         //Then
         assertThat("Expected to be able to read document title", document.getTitle(), equalTo("UKEOF Title"));
@@ -56,7 +56,7 @@ public class Xml2UKEOFDocumentMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("ukeofActivity.xml"));
         
         //When
-        UKEOFDocument document = ukeofReader.readInternal(UKEOFDocument.class, message);
+        EFDocument document = ukeofReader.readInternal(EFDocument.class, message);
         
         //Then
         assertThat("Expected to be able to read document description", document.getDescription(), equalTo("Ukeof Description"));
@@ -69,7 +69,7 @@ public class Xml2UKEOFDocumentMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("ukeofActivity.xml"));
         
         //When
-        UKEOFDocument document = ukeofReader.readInternal(UKEOFDocument.class, message);
+        EFDocument document = ukeofReader.readInternal(EFDocument.class, message);
         
         //Then
         assertThat("Expected to be able to read document id", document.getId(), equalTo("00a1aab5-3e82-498a-a78f-b41e1955248b"));

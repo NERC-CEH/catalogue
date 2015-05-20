@@ -38,7 +38,7 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
-import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
+import uk.ac.ceh.gateway.catalogue.ef.EFDocument;
 
 @Configuration
 @EnableWebMvc
@@ -68,13 +68,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setObjectMapper(mapper);
         
-        converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class, configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(UKEOFDocument.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(SearchResults.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(Citation.class,       configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(StateResource.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,     configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(EFDocument.class,         configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(SearchResults.class,      configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Citation.class,           configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(StateResource.class,      configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(PermissionResource.class, configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,      configureFreeMarker().getConfiguration()));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);

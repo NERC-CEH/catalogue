@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.Xml2UKEOFDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -44,7 +44,7 @@ import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
-import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
+import uk.ac.ceh.gateway.catalogue.ef.EFDocument;
 
 /**
  * The following spring configuration will populate service beans
@@ -75,7 +75,7 @@ public class ServiceConfig {
     public DocumentReadingService documentReadingService() throws XPathExpressionException, IOException {
         return new MessageConverterReadingService()
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService))
-                .addMessageConverter(new Xml2UKEOFDocumentMessageConverter())
+                .addMessageConverter(new UkeofXml2EFDocumentMessageConverter())
                 .addMessageConverter(new MappingJackson2HttpMessageConverter(jacksonMapper));
     }
     
@@ -88,7 +88,7 @@ public class ServiceConfig {
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
                 .register("GEMINI_DOCUMENT", GeminiDocument.class)
-                .register("UKEOF_DOCUMENT", UKEOFDocument.class);
+                .register("EF_DOCUMENT", EFDocument.class);
     }
     
     @Bean

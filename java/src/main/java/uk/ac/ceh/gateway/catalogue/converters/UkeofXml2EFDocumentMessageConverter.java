@@ -20,17 +20,17 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
+import uk.ac.ceh.gateway.catalogue.ef.EFDocument;
 
 /**
  *
  * @author jcoop, cjohn
  */
-public class Xml2UKEOFDocumentMessageConverter extends AbstractHttpMessageConverter<UKEOFDocument> {
+public class UkeofXml2EFDocumentMessageConverter extends AbstractHttpMessageConverter<EFDocument> {
     private final XPathExpression id, title, description, type;
     private final XPath xpath;
     
-    public Xml2UKEOFDocumentMessageConverter() throws XPathExpressionException {
+    public UkeofXml2EFDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
         
         xpath = XPathFactory.newInstance().newXPath();
@@ -43,18 +43,18 @@ public class Xml2UKEOFDocumentMessageConverter extends AbstractHttpMessageConver
     
     @Override
     protected boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(UKEOFDocument.class);
+        return clazz.isAssignableFrom(EFDocument.class);
     }
 
     @Override
-    protected UKEOFDocument readInternal(Class<? extends UKEOFDocument> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected EFDocument readInternal(Class<? extends EFDocument> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(inputMessage.getBody());
 
-            UKEOFDocument toReturn = new UKEOFDocument();
+            EFDocument toReturn = new EFDocument();
             toReturn.setId(id.evaluate(document));
             toReturn.setTitle(title.evaluate(document));
             toReturn.setDescription(description.evaluate(document));
@@ -71,7 +71,7 @@ public class Xml2UKEOFDocumentMessageConverter extends AbstractHttpMessageConver
     }
 
     @Override
-    protected void writeInternal(UKEOFDocument t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    protected void writeInternal(EFDocument t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
         throw new HttpMessageNotWritableException("I will not be able to write that document for you");
     }
     
