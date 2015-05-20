@@ -9,7 +9,7 @@ TEST_GROUPS = {
   :nexus7_spec  => 'driver:nexus7',
   :htc_spec     => 'driver:htcdesire',
   :safari_spec  => 'driver:safari',
-#  :ipad2_spec   => 'driver:ipad2',
+  :ipad2_spec   => 'driver:ipad2',
   :rest_spec    => 'restful'
 }
 
