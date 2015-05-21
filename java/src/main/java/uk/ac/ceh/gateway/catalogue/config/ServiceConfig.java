@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import com.vividsolutions.jts.io.WKTReader;
 import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
@@ -45,6 +46,7 @@ import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 import uk.ac.ceh.gateway.catalogue.ef.EFDocument;
+import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
 /**
  * The following spring configuration will populate service beans
@@ -142,7 +144,12 @@ public class ServiceConfig {
     @Bean
     public ExtensionDocumentListingService documentListingService() {
         return new ExtensionDocumentListingService();
-    } 
+    }
+    
+    @Bean
+    public SolrGeometryService solrGeometryService() {
+        return new SolrGeometryService(new WKTReader());
+    }
     
     @Bean
     public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException {
@@ -150,7 +157,7 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService),
+                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService, solrGeometryService()),
                 solrServer
         );
         

@@ -20,6 +20,8 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import uk.ac.ceh.gateway.catalogue.converters.ukeofXml2EfDocument.BoundingBoxConverter;
+import uk.ac.ceh.gateway.catalogue.converters.ukeofXml2EfDocument.GeometryConverter;
 import uk.ac.ceh.gateway.catalogue.ef.EFDocument;
 
 /**
@@ -29,16 +31,19 @@ import uk.ac.ceh.gateway.catalogue.ef.EFDocument;
 public class UkeofXml2EFDocumentMessageConverter extends AbstractHttpMessageConverter<EFDocument> {
     private final XPathExpression id, title, description, type;
     private final XPath xpath;
+    private final GeometryConverter geometryConverter;
+    private final BoundingBoxConverter boundingBoxConverter;
     
     public UkeofXml2EFDocumentMessageConverter() throws XPathExpressionException {
         super(MediaType.APPLICATION_XML);
-        
         xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(new HardcodedUKEOFNamespaceResolver());
         this.id = xpath.compile("/*/ukeof:metadata/ukeof:fileIdentifier");
         this.title = xpath.compile("/*/ukeof:name");
         this.description = xpath.compile("/*/ukeof:description");
         this.type = xpath.compile("local-name(/*)");
+        this.geometryConverter = new GeometryConverter(xpath);
+        this.boundingBoxConverter = new BoundingBoxConverter(xpath);
     }
     
     @Override
@@ -59,6 +64,8 @@ public class UkeofXml2EFDocumentMessageConverter extends AbstractHttpMessageConv
             toReturn.setTitle(title.evaluate(document));
             toReturn.setDescription(description.evaluate(document));
             toReturn.setType(type.evaluate(document));
+            toReturn.setGeometry(geometryConverter.convert(document));
+            toReturn.setBoundingBox(boundingBoxConverter.convert(document));
             return toReturn;
         }
         catch(ParserConfigurationException pce) {

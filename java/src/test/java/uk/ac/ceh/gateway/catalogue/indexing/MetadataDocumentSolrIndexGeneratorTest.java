@@ -17,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
 /**
  *
@@ -24,12 +25,13 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
  */
 public class MetadataDocumentSolrIndexGeneratorTest {
     @Mock CodeLookupService codeLookupService;
+    @Mock SolrGeometryService geometryService;
     private MetadataDocumentSolrIndexGenerator generator;
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService);
+        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService, geometryService);
     }
     
     @Test

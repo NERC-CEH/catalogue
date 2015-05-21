@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.ef;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -26,6 +28,8 @@ public class EFDocument implements MetadataDocument {
     private URI uri;
     private String description, title, id, type;
     private MetadataInfo metadata;
+    private BoundingBox boundingBox;
+    private Geometry geometry;
     
     @Override
     public void attachMetadata(MetadataInfo metadata) {
@@ -35,11 +39,6 @@ public class EFDocument implements MetadataDocument {
     @Override
     public void attachUri(URI uri) {
         setUri(uri);
-    }
-
-    @Override
-    public List<String> getLocations() {
-        return Collections.EMPTY_LIST;
     }
 
     @Override

@@ -119,15 +119,6 @@ public class GeminiDocument implements MetadataDocument {
         return toReturn;
     }
     
-    @Override
-    public List<String> getLocations() {
-        return Optional.ofNullable(boundingBoxes)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(BoundingBox::getSolrGeometry)
-            .collect(Collectors.toList());
-    }
-    
     /**
      * Return a link to the map viewer for this Gemini record if it can be
      * rendered in the map viewer

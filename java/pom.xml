@@ -24,6 +24,7 @@
         <guava.version>18.0</guava.version>
         <solr.version>4.8.0</solr.version>
         <freemarker.version>2.3.22</freemarker.version>
+        <jts.version>1.13</jts.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -191,6 +192,13 @@
                     <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        
+        <!-- Spatial -->
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>${jts.version}</version>
         </dependency>
         
         <!-- Logging -->
