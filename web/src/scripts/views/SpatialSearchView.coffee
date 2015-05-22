@@ -40,7 +40,7 @@ define [
     do @drawingLayer.removeAllFeatures # Remove all the drawn features
     if @model.has 'bbox'               # Draw the bbox if specified
       bbox = @model.get('bbox').replace /,/g, ' '  # TODO: STANDARDISE BBOX OUTPUT
-      @drawingLayer.addFeatures @readWKT @bbox2WKT bbox
+      @drawingLayer.addFeatures @readWKT @solr2WKT bbox
 
   ###
   Toggle the drawing control depending on weather or not the model is in 

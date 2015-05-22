@@ -64,8 +64,12 @@ define [
       ]
 
     it "can transform a location string into a wkt representation", ->
-      wkt = view.bbox2WKT '-180 -90 180 90'
+      wkt = view.solr2WKT '-180 -90 180 90'
       expect(wkt).toBe 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
+
+    it "can transform a point string into a wkt representation", ->
+      wkt = view.solr2WKT '10 0'
+      expect(wkt).toBe 'POINT(10 0)'
 
     it "can read wkt to openlayers feature", ->
       vector = view.readWKT 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
@@ -87,6 +91,15 @@ define [
         expect(_.find(features, (f)-> f.attributes.isPoint)).toBeDefined()
         expect(_.find(features, (f)-> not f.attributes.isPoint)).toBeDefined()
 
+      it "contains centroid summary for polygon", ->
+        wkt = 'POLYGON((-180 -45, -180 0, 45 0, 45 -45, -180 -45))'
+        view.setHighlighted [wkt]
+        features = view.highlightedLayer.features
+
+        summary = _.find(features, (f)-> f.attributes.isPoint)
+        expect(summary.geometry.toString()) 
+          .toBe 'POINT(-7514065.6274999995 -2810760.7427047505)'
+
       it "has features with areaRootDefined", ->
         wkt = 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
         view.setHighlighted [wkt]
@@ -96,3 +109,9 @@ define [
 
       it "is added as a layer on the map", ->
         expect(view.map.layers).toContain view.highlightedLayer
+
+      it "can process points", ->
+        view.setHighlighted ['POINT (-90 -45)']
+        features = view.highlightedLayer.features
+
+        expect(view.highlightedLayer.features.length).toBe 2
