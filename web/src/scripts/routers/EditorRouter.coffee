@@ -7,6 +7,8 @@ define [
     'edit/:identifier': 'loadRecord'
 
   initialize: (options) ->
+    if not options.model
+      throw new Error('model is required')
     @model = options.model
 
   loadRecord: (identifier) ->

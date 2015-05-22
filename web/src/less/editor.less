@@ -29,5 +29,22 @@
     &.visible {
       display: block;
     }
+    .component  {
+      border-style: solid;
+      border-width: 2px;
+      border-color: lighten(@gray-light, 15%);
+      border-radius: 5px;
+      padding: 9px;
+      margin-bottom: 9px;
+    }
+    #editorContacts {
+      @spacer: 3px;
+      .row {
+        margin-bottom: @spacer;
+      }
+      label {
+        padding-top: @spacer;
+      }
+    }
   }
 }

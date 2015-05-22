@@ -1,6 +1,6 @@
-<p><b>Alternative Title(s)</b>
+<label>Alternative Title(s)
   <a data-toggle="collapse" title="Click for help" href="#help-alternateTitles" data-parent="#editor"><i class="glyphicon glyphicon-question-sign"></i></a>
-</p>
+</label>
 <table class="table table-striped">
   <tfoot>
     <tr>

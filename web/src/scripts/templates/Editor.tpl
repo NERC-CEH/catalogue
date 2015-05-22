@@ -12,10 +12,10 @@
 </ol>
 <div id="editor" class="container" role="form">
   <div class="step visible">
-    <div id="editorResourceType" class="form-group"></div>
-    <div id="editorTitle" class="form-group"></div>
-    <div id="editorAlternateTitles"></div>
-    <div id="editorDescription" class="form-group"></div>
+    <div id="editorResourceType" class="form-group component"></div>
+    <div id="editorTitle" class="form-group component"></div>
+    <div id="editorAlternateTitles" class="form-group"></div>
+    <div id="editorDescription" class="form-group component"></div>
     <p><mark>Publication date(s)</mark></p>
     <p><mark>Revision date(s)</mark></p>
     <div id="editorPublicationDates" class="form-group"></div>
@@ -32,22 +32,22 @@
   </div>
   <div class="step">
     <p><mark>INSPIRE Theme(s)</mark></p>
-    <div id="editorTopicCategories"></div>
+    <div id="editorTopicCategories" class="form-group"></div>
     <p><mark>CEH section</mark></p>
     <p><mark>CEH science area</mark></p>
     <p><mark>Keyword(s)</mark></p>
   </div>
   <div class="step">
-    <p><mark>Contacts</mark></p>
+    <div id="editorContacts" class="form-group"></div>
   </div>
   <div class="step">
     <p><mark>What is the status of the data resource?</mark></p>
     <p><mark>How often is this resource going to be updated?</mark></p>
-    <div id="editorLineage" class="form-group"></div>
+    <div id="editorLineage" class="form-group component"></div>
   </div>
   <div class="step">
     <p><mark>Online resource(s)</mark></p>
-    <div id="editorAdditionalInformation" class="form-group"></div>
+    <div id="editorAdditionalInformation" class="form-group component"></div>
   </div>
   <div class="step">
     <p><mark>Use constraints</mark></p>

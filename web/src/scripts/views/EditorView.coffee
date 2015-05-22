@@ -10,7 +10,8 @@ define [
   'cs!views/editor/DescriptionView'
   'cs!views/editor/LineageView'
   'cs!views/editor/TopicCategoriesView'
-], (_, $, Backbone, template, MessageView, TitleView, ResourceTypeView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView) -> Backbone.View.extend
+  'cs!views/editor/ContactsView'
+], (_, $, Backbone, template, MessageView, TitleView, ResourceTypeView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView, ContactsView) -> Backbone.View.extend
 
   events:
     'click #editorSave': 'save'
@@ -112,6 +113,11 @@ define [
       el: @$('#editorTopicCategories')
       model: @model
     do topicCategories.render
+
+    contacts = new ContactsView
+      el: @$('#editorContacts')
+      model: @model
+    do contacts.render
 
 
 

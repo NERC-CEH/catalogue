@@ -1,12 +1,12 @@
-<p><b>Topic Categories</b>
+<label class="control-label">Topic Categories
   <a data-toggle="collapse" title="Click for help" href="#help-topicCategories" data-parent="#editor"><i class="glyphicon glyphicon-question-sign"></i></a>
-</p>
+</label>
 <table class="table table-striped">
   <tfoot>
     <tr>
       <td>
         <select id="topicCategory" class="form-control">
-          <option value="" selected>Add Topic Category</option>
+          <option value="" selected>- Add Topic Category -</option>
           <option value="biota">Biota&nbsp;&nbsp;&nbsp;&nbsp;(Flora and/or fauna in natural environment)</option>
           <option value="boundaries">Boundaries&nbsp;&nbsp;&nbsp;&nbsp;(Legal land descriptions)</option>
           <option value="climatologyMeteorologyAtmosphere">Climatology / Meteorology / Atmosphere&nbsp;&nbsp;&nbsp;&nbsp;(Processes and phenomena of the atmosphere)</option>
