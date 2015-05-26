@@ -2,8 +2,8 @@
     <@orNilReason type="gml:description" x=getDescription()! nillable=false>
         <gml:description>${getDescription()}</gml:description>
     </@orNilReason>
-    <#if (getMetadata().fileIdentifier)??>
-        <gml:identifier codeSpace="${ukeofNamespace}">${getMetadata().fileIdentifier}</gml:identifier>
+    <#if (getEfMetadata().fileIdentifier)??>
+        <gml:identifier codeSpace="UK.UKEOF">${getEfMetadata().fileIdentifier}</gml:identifier>
     </#if>
     <#if getName()?has_content>
         <gml:name>${getName()}</gml:name>
@@ -16,8 +16,8 @@
 <#macro inspireId>
     <ef:inspireId>
 		<base:Identifier>
-			<base:localId>${getMetadata().fileIdentifier}</base:localId>
-			<base:namespace>${ukeofNamespace}</base:namespace>
+			<base:localId>${getEfMetadata().fileIdentifier}</base:localId>
+			<base:namespace>UK.UKEOF</base:namespace>
 		</base:Identifier>
 	</ef:inspireId>
 </#macro>

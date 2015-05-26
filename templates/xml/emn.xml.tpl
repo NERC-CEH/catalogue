@@ -1,7 +1,7 @@
-<#import "base.ftl" as base/>
+<#import "efBase.ftl" as base/>
 <#compress>
 <?xml version="1.0" encoding="UTF-8"?>
-<ef:EnvironmentalMonitoringProgramme gml:id="ID_0" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/ef/3.0rc3 http://inspire.ec.europa.eu/draft-schemas/ef/3.0rc3/EnvironmentalMonitoringFacilities.xsd" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3rc3/" xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/1.0rc3" xmlns:ef="http://inspire.ec.europa.eu/schemas/ef/3.0rc3" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
+<ef:EnvironmentalMonitoringNetwork gml:id="ID_0" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/ef/3.0rc3 http://inspire.ec.europa.eu/draft-schemas/ef/3.0rc3/EnvironmentalMonitoringFacilities.xsd" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3rc3/" xmlns:base2="http://inspire.ec.europa.eu/schemas/base2/1.0rc3" xmlns:ef="http://inspire.ec.europa.eu/schemas/ef/3.0rc3" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
     <@base.stdObjProps/>
     <#-- TODO: why do we have multiple bounding box? EF doesn't -->
     <@base.boundedBy boundingBoxes[0]!/>
@@ -54,10 +54,22 @@
             <@base.link "supersededBy" x/>
         </#list>
     </@base.orNilReason>
-    <@base.orNilReason type="ef:triggers" x=triggers! nillable=false>
-        <#list triggers as x>
-            <@base.link "triggers" x/>
+    <#-- Want to add more elements and then cannot have nil reportingDate <ef:reportedTo nilReason="missing"/>-->
+    <@base.orNilReason "ef:hasObservation" observations!>
+        <#list observations as x>
+            <@base.link "hasObservations" x/>
         </#list>
     </@base.orNilReason>
-</ef:EnvironmentalMonitoringProgramme>
+    <@base.orNilReason "ef:involvedIn" involvedIn!>
+        <#list involvedIn as x>
+            <@base.link "involvedIn" x/>
+        </#list>
+    </@base.orNilReason>
+    <ef:organisationLevel nilReason="missing"/>
+    <@base.orNilReason "ef:contains" contains!>
+        <#list contains as x>
+            <@base.link "contains" x/>
+        </#list>
+    </@base.orNilReason>
+</ef:EnvironmentalMonitoringNetwork>
 </#compress>
