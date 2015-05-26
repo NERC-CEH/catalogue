@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
-import uk.ac.ceh.ukeof.model.simple.adapters.AnyXMLHandler;
+import uk.ac.ceh.gateway.catalogue.ef.adapters.AnyXMLHandler;
 
 @Data
 @Accessors(chain = true)

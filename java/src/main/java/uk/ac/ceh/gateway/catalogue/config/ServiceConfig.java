@@ -16,6 +16,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -45,7 +46,6 @@ import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
-import uk.ac.ceh.gateway.catalogue.ef.EFDocument;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
 /**
@@ -90,7 +90,7 @@ public class ServiceConfig {
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
                 .register("GEMINI_DOCUMENT", GeminiDocument.class)
-                .register("EF_DOCUMENT", EFDocument.class);
+                .register("EF_DOCUMENT", BaseMonitoringType.class);
     }
     
     @Bean

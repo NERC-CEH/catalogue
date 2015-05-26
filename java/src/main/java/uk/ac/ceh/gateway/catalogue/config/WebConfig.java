@@ -31,6 +31,11 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.ef.Activity;
+import uk.ac.ceh.gateway.catalogue.ef.Facility;
+import uk.ac.ceh.gateway.catalogue.ef.Network;
+import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
@@ -38,7 +43,6 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
-import uk.ac.ceh.gateway.catalogue.ef.EFDocument;
 
 @Configuration
 @EnableWebMvc
@@ -68,8 +72,15 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setObjectMapper(mapper);
         
+        // EF Message Converters
+        converters.add(new UkeofXml2EFDocumentMessageConverter());        
+        converters.add(new Object2TemplatedMessageConverter(Activity.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Facility.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Network.class,   configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Programme.class, configureFreeMarker().getConfiguration()));
+        
+        // Gemini Message Converters
         converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,     configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(EFDocument.class,         configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(SearchResults.class,      configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(Citation.class,           configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(StateResource.class,      configureFreeMarker().getConfiguration()));
