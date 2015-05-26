@@ -1,4 +1,4 @@
-package uk.ac.ceh.ukeof.model.simple;
+package uk.ac.ceh.gateway.catalogue.ef;
 
 import com.fasterxml.jackson.annotation.*;
 import java.math.BigDecimal;

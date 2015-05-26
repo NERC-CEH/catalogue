@@ -1,4 +1,4 @@
-package uk.ac.ceh.ukeof.model.simple;
+package uk.ac.ceh.gateway.catalogue.ef;
 
 import java.util.*;
 import javax.validation.Valid;

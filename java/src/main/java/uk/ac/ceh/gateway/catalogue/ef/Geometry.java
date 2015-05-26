@@ -1,4 +1,4 @@
-package uk.ac.ceh.ukeof.model.simple;
+package uk.ac.ceh.gateway.catalogue.ef;
 
 import com.google.common.base.Splitter;
 import com.spatial4j.core.context.jts.JtsSpatialContext;

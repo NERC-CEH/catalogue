@@ -1,4 +1,4 @@
-package uk.ac.ceh.ukeof.model.simple.adapters;
+package uk.ac.ceh.gateway.catalogue.ef.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import org.joda.time.LocalDate;
