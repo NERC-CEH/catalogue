@@ -14,6 +14,7 @@ define [
 ], (_, $, Backbone, template, MessageView, TitleView, ResourceTypeView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView, ContactsView) -> Backbone.View.extend
 
   events:
+    'click #editorCancel': 'leave'
     'click #editorSave': 'save'
     'click #editorBack': 'back'
     'click #editorNext': 'next'

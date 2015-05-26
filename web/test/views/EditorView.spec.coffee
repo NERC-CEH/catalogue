@@ -26,6 +26,17 @@ define [
           model: model
         ).toThrow(new Error('parent is required'))
 
+    describe 'when cancel clicked', ->
+
+      beforeEach ->
+        spyOn(view, 'leave')
+        do view.delegateEvents
+        do view.render
+
+      it 'cancel clicked', ->
+        view.$('#editorCancel').trigger 'click'
+        expect(view.leave).toHaveBeenCalled()
+
     describe 'when next clicked', ->
 
       beforeEach ->
