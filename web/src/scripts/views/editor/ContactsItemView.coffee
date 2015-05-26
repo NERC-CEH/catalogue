@@ -36,4 +36,11 @@ define [
 
   modify: (event) ->
     $target = $(event.target)
-    @model.set $target.data('name'), $target.val()
+    name = $target.data('name')
+
+    if _.contains(['deliveryPoint', 'city', 'administrativeArea', 'country', 'postalCode'], name)
+      address = _.clone @model.get 'address'
+      address[name] = $target.val()
+      @model.set 'address', address
+    else
+      @model.set name, $target.val()

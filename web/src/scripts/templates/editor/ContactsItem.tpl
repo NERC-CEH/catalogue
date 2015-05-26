@@ -44,7 +44,7 @@
     <label class="control-label" for="contacts<%= index %>Address">Address</label>
   </div>
   <div class="col-sm-11 col-lg-11">
-    <input class="form-control input-sm" id="contacts<%= index %>Address" value="<%= address.deliveryPoint %>">
+    <input data-name="deliveryPoint" class="form-control input-sm" id="contacts<%= index %>Address" value="<%= address.deliveryPoint %>">
   </div>
 </div>
 <div class="row">
@@ -52,13 +52,13 @@
     <label class="control-label" for="contacts<%= index %>City">City/Town</label>
   </div>
   <div class="col-sm-5 col-lg-5">
-    <input class="form-control input-sm" id="contacts<%= index %>City" value="<%= address.city %>">
+    <input data-name="city" class="form-control input-sm" id="contacts<%= index %>City" value="<%= address.city %>">
   </div>
   <div class="col-sm-1 col-lg-1">
     <label class="control-label" for="contacts<%= index %>County">County</label>
   </div>
   <div class="col-sm-5 col-lg-5">
-    <input class="form-control input-sm" id="contacts<%= index %>County" value="<%= address.administrativeArea %>">
+    <input data-name="administrativeArea" class="form-control input-sm" id="contacts<%= index %>County" value="<%= address.administrativeArea %>">
   </div>
 </div>
 <div class="row">
@@ -66,13 +66,13 @@
     <label class="control-label" for="contacts<%= index %>Country">Country</label>
   </div>
   <div class="col-sm-5 col-lg-5">
-    <input class="form-control input-sm" id="contacts<%= index %>Country" value="<%= address.country %>">
+    <input data-name="country" class="form-control input-sm" id="contacts<%= index %>Country" value="<%= address.country %>">
   </div>
   <div class="col-sm-1 col-lg-1">
     <label class="control-label" for="contacts<%= index %>Postcode">Postcode</label>
   </div>
   <div class="col-sm-4 col-lg-4">
-    <input class="form-control input-sm" id="contacts<%= index %>Postcode" value="<%= address.postalCode %>">
+    <input data-name="postalCode" class="form-control input-sm" id="contacts<%= index %>Postcode" value="<%= address.postalCode %>">
   </div>
   <div class="col-sm-1 col-lg-1">
   <% if (index === 'Add') { %>

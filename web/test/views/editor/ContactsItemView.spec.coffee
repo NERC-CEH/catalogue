@@ -120,3 +120,14 @@ define [
       it 'change role', ->
         view.modify target: $('<input data-name="individualName" value="Bert">')
         expect(model.set).toHaveBeenCalledWith 'individualName', 'Bert'
+
+    describe 'change an address postcode', ->
+
+      beforeEach ->
+        spyOn model, 'set'
+        view = new ContactsItemView model: model
+        do view.render
+
+      it 'change postcode', ->
+        view.modify target: $('<input data-name="postalCode" value="LA1 4AP">')
+        expect(model.set).toHaveBeenCalledWith 'address', postalCode: 'LA1 4AP'
