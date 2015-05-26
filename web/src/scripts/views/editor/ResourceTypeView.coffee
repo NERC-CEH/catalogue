@@ -1,7 +1,8 @@
 define [
   'backbone'
+  'cs!models/editor/ResourceType'
   'tpl!templates/editor/ResourceType.tpl'
-], (Backbone, template) -> Backbone.View.extend
+], (Backbone, ResourceType, template) -> Backbone.View.extend
 
   events:
     'change #resourceType': 'select'
@@ -10,17 +11,22 @@ define [
     if not @model
       throw new Error('model is required')
 
+    @resourceType = new ResourceType @model.get 'resourceType'
+
   render: ->
     @$el.html template
-    resourceType = @model.get 'resourceType'
-    if resourceType
-      @$('#resourceType').val resourceType
+    @$('#resourceType').val @resourceType.get 'value'
     return @
 
   select: ->
-    resourceType = @$('#resourceType').val()
+    value = @$('#resourceType').val()
 
-    if resourceType
+    if value
+      @resourceType.set 'value', value
       @model.set
-        'resourceType': resourceType
-        'type': resourceType
+        'resourceType': @resourceType
+        'type': @resourceType.get 'value'
+
+    else
+      @model.unset 'resourceType'
+      @model.unset 'type'

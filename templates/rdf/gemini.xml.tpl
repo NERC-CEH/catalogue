@@ -12,9 +12,11 @@
 xmlns:geo="http://www.opengis.net/ont/geosparql#">
 <#escape x as x?xml>
    <${rootElement} rdf:about="${uri}">
-   <#list resourceIdentifiers as resourceIdentifier >
-      <dct:identifier>${resourceIdentifier.codeSpace}${resourceIdentifier.code}</dct:identifier>
-   </#list>
+   <#if resourceIdentifiers??>
+    <#list resourceIdentifiers as resourceIdentifier >
+       <dct:identifier>${resourceIdentifier.codeSpace}${resourceIdentifier.code}</dct:identifier>
+    </#list>
+   </#if>
    <#if type=='dataset' || type=='nonGeographicDataset' || type=='service' || type=='series'>
       <dcat:CatalogRecord rdf:resource="${uri}"/>
       <dcat:landingPage rdf:resource="${uri}"/>
@@ -28,7 +30,10 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
    <#elseif type=='series'>
       <dct:type rdf:resource="http://purl.org/dc/dcmitype/Collection" />
    <#else>
-      <dct:type>${codes.lookup('metadata.scopeCode', resourceType)!''}</dct:type>
+      <dct:type>${codes.lookup('metadata.scopeCode', resourceType.value)!''}</dct:type>
+   </#if>
+   <#if resourceType.uri?has_content>
+    <dct:type rdf:resource="${resourceType.uri}"/>
    </#if>
    <dct:title>${title}</dct:title>
    <#if alternateTitles??>
@@ -38,22 +43,26 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
        </#if>
     </#list>
    </#if>
-   <dct:description>${description}</dct:description>
-   <#if datasetReferenceDate.creationDate?has_content>
-   <dct:created>${datasetReferenceDate.creationDate}</dct:created>
+   <#if description??>
+    <dct:description>${description}</dct:description>
    </#if>
-   <#if datasetReferenceDate.publicationDate?has_content>
-   <dct:available>${datasetReferenceDate.publicationDate}</dct:available>
-   </#if>
-   <#if datasetReferenceDate.modifiedDate?has_content>
-   <dct:modified>${datasetReferenceDate.modifiedDate}</dct:modified>
+   <#if datasetReferenceDate??>
+    <#if datasetReferenceDate.creationDate?has_content>
+     <dct:created>${datasetReferenceDate.creationDate}</dct:created>
+    </#if>
+    <#if datasetReferenceDate.publicationDate?has_content>
+    <dct:available>${datasetReferenceDate.publicationDate}</dct:available>
+    </#if>
+    <#if datasetReferenceDate.modifiedDate?has_content>
+    <dct:modified>${datasetReferenceDate.modifiedDate}</dct:modified>
+    </#if>
    </#if>
     <#if citation?has_content>
-    <dct:bibliographicCitation>${citation.authors?join(',')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. ${citation.url}</dct:bibliographicCitation>
+      <dct:bibliographicCitation>${citation.authors?join(',')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. ${citation.url}</dct:bibliographicCitation>
    </#if>
    <#if boundingBoxes?has_content && boundingBoxes??>
       <#list boundingBoxes as extent>
-      <dct:spatial rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">${extent.wkt}</dct:spatial>
+        <dct:spatial rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">${extent.wkt}</dct:spatial>
       </#list>
     </#if>
    <#if temporalExtent?has_content>
@@ -98,20 +107,32 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
    <#if type=='dataset' || type=='nonGeographicDataset'>
       <dcat:Distribution>
         <rdf:Description>
+<<<<<<< HEAD
+          <#if downloadOrder??>
+            <#if downloadOrder.orderUrl?has_content>
+               <dcat:accessURL rdf:resource="${downloadOrder.orderUrl}"/>
+            </#if>
+            <#if downloadOrder.licenseUrl?has_content>
+              <dct:license rdf:resource="${downloadOrder.licenseUrl}" />
+              <dct:rights rdf:resource="${downloadOrder.licenseUrl}" />
+            </#if>
+          </#if>
+=======
          <#if downloadOrder.orderUrl?has_content>
             <dcat:accessURL rdf:resource="${downloadOrder.orderUrl}"/>
          </#if>
-         <#if downloadOrder.licenseUrl?has_content>
-		    <dct:license rdf:resource="${downloadOrder.licenseUrl}" />
-		    <dct:rights rdf:resource="${downloadOrder.licenseUrl}" />
-		 </#if>
+>>>>>>> FETCH_HEAD
          <#if citation?has_content>
             <dct:rights>If you reuse this data, you must cite ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}</dct:rights>
          </#if>
          <#if useLimitations?has_content>
            <#list useLimitations as useLimitation>
-            <#if !useLimitation?starts_with("If you re")>
-              <dct:rights>${useLimitation}</dct:rights>
+            <#if useLimitation.uri?has_content>
+              <dct:license rdf:resource="${useLimitation.uri}"/>
+              <dct:rights rdf:resource="${useLimitation.uri}"/>
+            <#-- starts_with shortened to catch 'reuse' and 're-use' in the wild -->
+            <#elseif !useLimitation.value?starts_with("If you re")>
+              <dct:rights>${useLimitation.value}</dct:rights>
             </#if>
            </#list>
          </#if>
@@ -129,8 +150,8 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
       </dcat:Distribution>
    <#elseif type=='service'>
    <#if downloadOrder.licenseUrl?has_content>
-      <dct:license rdf:resource="${downloadOrder.licenseUrl}" />
-      <dct:rights rdf:resource="${downloadOrder.licenseUrl}" />
+      <dct:license rdf:resource="${downloadOrder.licenseUrl}"/>
+      <dct:rights rdf:resource="${downloadOrder.licenseUrl}"/>
    </#if>
 
       <#if useLimitations?has_content>
@@ -230,32 +251,36 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
       </dct:publisher>
       </#if>
     </#list>
-   <#list datasetLanguages as datasetLanguage>
-      <dct:language>${datasetLanguage}</dct:language>
-    </#list>
-   <#list associatedResources as associatedResource>
-      <#if (type=='dataset' || type = 'nonGeographicDataset') && associatedResource.associationType == 'series'>
-         <#if associatedResource.href?has_content>
-            <dct:isPartOf rdf:resource="${associatedResource.href}"/>
+    <#if datasetLanguages??>
+      <#list datasetLanguages as datasetLanguage>
+        <dct:language>${datasetLanguage}</dct:language>
+      </#list>
+    </#if>
+    <#if associatedResources??>
+      <#list associatedResources as associatedResource>
+         <#if (type=='dataset' || type = 'nonGeographicDataset') && associatedResource.associationType == 'series'>
+            <#if associatedResource.href?has_content>
+               <dct:isPartOf rdf:resource="${associatedResource.href}"/>
+            </#if>
+         <#elseif (type=='dataset' || type = 'nonGeographicDataset') && associatedResource.associationType == 'revisionOf'>
+            <#if associatedResource.href?has_content>
+               <dct:replaces rdf:resource="${associatedResource.href}"/>
+            </#if>
+         <#elseif (type=='dataset' || type = 'nonGeographicDataset') && associatedResource.associationType == 'service'>
+            <#if associatedResource.href?has_content>
+               <dcat:distribution rdf:resource="${associatedResource.href}"/>
+            </#if>
+         <#elseif type=='series' && associatedResource.associationType == 'dataset'>
+            <#if associatedResource.href?has_content>
+               <dct:hasPart rdf:resource="${associatedResource.href}"/>
+            </#if>
+         <#elseif type=='service' && associatedResource.associationType == 'dataset'>
+            <#if associatedResource.href?has_content>
+               <dct:relation rdf:resource="${associatedResource.href}"/>
+            </#if>
          </#if>
-      <#elseif (type=='dataset' || type = 'nonGeographicDataset') && associatedResource.associationType == 'revisionOf'>
-         <#if associatedResource.href?has_content>
-            <dct:replaces rdf:resource="${associatedResource.href}"/>
-         </#if>
-      <#elseif (type=='dataset' || type = 'nonGeographicDataset') && associatedResource.associationType == 'service'>
-         <#if associatedResource.href?has_content>
-            <dcat:distribution rdf:resource="${associatedResource.href}"/>
-         </#if>
-      <#elseif type=='series' && associatedResource.associationType == 'dataset'>
-         <#if associatedResource.href?has_content>
-            <dct:hasPart rdf:resource="${associatedResource.href}"/>
-         </#if>
-      <#elseif type=='service' && associatedResource.associationType == 'dataset'>
-         <#if associatedResource.href?has_content>
-            <dct:relation rdf:resource="${associatedResource.href}"/>
-         </#if>
-      </#if>
-   </#list>
+      </#list>
+   </#if>
    <#if conformanceResults?has_content>
       <#list conformanceResults as conformanceResult>
          <dct:conformsTo>${conformanceResult.title?xml} (${conformanceResult.date?xml} - ${conformanceResult.pass?c})</dct:conformsTo>

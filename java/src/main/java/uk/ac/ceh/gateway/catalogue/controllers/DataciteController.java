@@ -55,7 +55,7 @@ public class DataciteController {
     }
     
     private String getDataciteResourceType(GeminiDocument document) {
-        switch(document.getResourceType()) {
+        switch(document.getResourceType().getValue()) {
             case "nonGeographicDataset": return "Dataset";
             case "dataset":              return "Dataset";
             case "application":          return "Application";

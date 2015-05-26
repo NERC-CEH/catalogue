@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.IOException;
 import static java.lang.String.format;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -47,7 +49,7 @@ public class PermissionService {
             toReturn = 
                 metadataInfo.isPubliclyViewable(requested)
                 || 
-                metadataInfo.canAccess(requested, user, groupStore.getGroups(user));
+                metadataInfo.canAccess(requested, user, getGroupsForUser(user));
         }
         return toReturn;
     }
@@ -70,6 +72,14 @@ public class PermissionService {
     
     public boolean userCanMakePublic() {
         return userCan((String name) -> name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE));
+    }
+    
+    private List<Group> getGroupsForUser(CatalogueUser user) {
+        if (user.isPublic())
+            return Collections.emptyList();
+        else {
+            return groupStore.getGroups(user);
+        }
     }
     
     private boolean userCan(Predicate<String> filter) {

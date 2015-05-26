@@ -40,5 +40,8 @@ define [
     $('#topicCategory').val ""
 
   updateModel: ->
-    @model.set 'topicCategories', @topicCategories
+    if @topicCategories.length > 0
+      @model.set 'topicCategories', @topicCategories
+    else
+      @model.unset 'topicCategories'
     do @addAll

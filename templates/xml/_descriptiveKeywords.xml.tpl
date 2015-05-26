@@ -9,7 +9,7 @@
 		</#list>
 		<#if descriptiveKeyword.type?has_content>
 		<gmd:type>
-			<MD_KeywordTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="${descriptiveKeyword.type?xml}"/>
+			<gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="${descriptiveKeyword.type?xml}"/>
 		</gmd:type>
 		</#if>
 		<#if descriptiveKeyword.thesaurusName?has_content>
@@ -28,7 +28,7 @@
 						</gmd:date>
 						<#if descriptiveKeyword.thesaurusName.dateType?has_content>
 						<gmd:dateType>
-							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="${descriptiveKeyword.thesaurusName.dateType?xml}"/>
+							<gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="${descriptiveKeyword.thesaurusName.dateType?xml}"/>
 						</gmd:dateType>
 						</#if>
 					</gmd:CI_Date>

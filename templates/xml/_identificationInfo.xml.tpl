@@ -78,11 +78,13 @@
 			</gmd:CI_Citation>
 		</gmd:citation>
 		<gmd:abstract>
-			<gco:CharacterString>${description?xml}</gco:CharacterString>
+			<gco:CharacterString>${description!''?xml}</gco:CharacterString>
 		</gmd:abstract>
-		<gmd:status>
-			<MD_ProgressCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="${resourceStatus}"/>
-		</gmd:status>
+    <#if resourceStatus??>
+      <gmd:status>
+        <MD_ProgressCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="${resourceStatus}"/>
+      </gmd:status>
+    </#if>
 		<#if responsibleParties?has_content>
 		<#list responsibleParties as responsibleParty>
 		<gmd:pointOfContact>
@@ -126,28 +128,30 @@
 		</gmd:pointOfContact>
 		</#list>
 		</#if>
-		<#list resourceMaintenance as rm>
-		<gmd:resourceMaintenance>
-			<gmd:MD_MaintenanceInformation>
-				<#if rm.frequencyOfUpdate?has_content>
-				<gmd:maintenanceAndUpdateFrequency>
-					<MD_MaintenanceFrequencyCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="${rm.frequencyOfUpdate?xml}"/>
-				</gmd:maintenanceAndUpdateFrequency>
-				</#if>
-				<#if rm.note?has_content>
-				<gmd:maintenanceNote>
-					<gco:CharacterString>${rm.note?xml}</gco:CharacterString>
-				</gmd:maintenanceNote>
-				</#if>
-			</gmd:MD_MaintenanceInformation>
-		</gmd:resourceMaintenance>
-		</#list>
+    <#if resourceMaintenance??>
+      <#list resourceMaintenance as rm>
+        <gmd:resourceMaintenance>
+          <gmd:MD_MaintenanceInformation>
+            <#if rm.frequencyOfUpdate?has_content>
+            <gmd:maintenanceAndUpdateFrequency>
+              <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="${rm.frequencyOfUpdate?xml}"/>
+            </gmd:maintenanceAndUpdateFrequency>
+            </#if>
+            <#if rm.note?has_content>
+            <gmd:maintenanceNote>
+              <gco:CharacterString>${rm.note?xml}</gco:CharacterString>
+            </gmd:maintenanceNote>
+            </#if>
+          </gmd:MD_MaintenanceInformation>
+        </gmd:resourceMaintenance>
+      </#list>
+    </#if>
 		<#include "_descriptiveKeywords.xml.tpl">
 		<#include "_resourceConstraints.xml.tpl">
 		<#if spatialRepresentationTypes?has_content>
 		<#list spatialRepresentationTypes as spatialRepresentationType>
 		<gmd:spatialRepresentationType>
-			<MD_SpatialRepresentationTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="${spatialRepresentationType?xml}"/>
+			<gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="${spatialRepresentationType?xml}"/>
 		</gmd:spatialRepresentationType>
 		</#list>
 		</#if>

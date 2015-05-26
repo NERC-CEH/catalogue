@@ -76,7 +76,7 @@
 						</#if>
 						<#if onlineResource.function?has_content>
 						<gmd:function>
-							<CI_OnLineFunctionCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="${onlineResource.function?xml}"/>
+							<gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="${onlineResource.function?xml}"/>
 						</gmd:function>
 						</#if>
 					</gmd:CI_OnlineResource>
