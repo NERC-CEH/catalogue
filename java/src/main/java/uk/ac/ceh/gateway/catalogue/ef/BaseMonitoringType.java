@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.ef;
 
 import com.fasterxml.jackson.annotation.*;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -10,11 +12,13 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
 import uk.ac.ceh.gateway.catalogue.ef.adapters.AnyXMLHandler;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 @Data
 @Accessors(chain = true)
 @XmlType(propOrder = {
-    "metadata",
+    "efMetadata",
     "identifiers",
     "name",
     "alternativeNames",
@@ -51,10 +55,11 @@ import uk.ac.ceh.gateway.catalogue.ef.adapters.AnyXMLHandler;
     @JsonSubTypes.Type(value = Facility.class, name = "facility")
 })
 @XmlSeeAlso({Activity.class, Programme.class, Network.class, Facility.class})
-public class BaseMonitoringType {
+public class BaseMonitoringType implements MetadataDocument {
     @NotNull
     @Valid
-    private Metadata metadata;
+    @XmlElement(name = "metadata")
+    private Metadata efMetadata;
     
     @NotNull
     private String name;
@@ -68,6 +73,53 @@ public class BaseMonitoringType {
     
     @XmlElement(name = "identifier")
     private List<Identifier> identifiers  = new ArrayList<>();
+
+    @Override
+    public String getTitle() {
+        return getName();
+    }
+
+    @Override
+    public String getId() {
+        return efMetadata.getFileIdentifier().toString();
+    }
+
+    @Override
+    public String getType() {
+        return getClass().getSimpleName().toLowerCase();
+    }
+
+    @Override
+    public List<String> getTopics() {
+        return Collections.EMPTY_LIST;
+    }
+    
+    @XmlTransient
+    private MetadataInfo metadataInfo;
+    
+    @Override
+    public MetadataInfo getMetadata() {
+        return metadataInfo;
+    }
+
+    @Override
+    public void attachMetadata(MetadataInfo metadataInfo) {
+        this.metadataInfo = metadataInfo;
+    }
+
+    @Override
+    public URI getUri() {
+        try {
+            return new URI(efMetadata.getSelfUrl());
+        } catch (URISyntaxException ex) {
+            return null;
+        }
+    }
+    
+    @Override
+    public void attachUri(URI uri) {
+        efMetadata.setSelfUrl(uri.toString());
+    }
     
     @Data
     public static class Identifier {

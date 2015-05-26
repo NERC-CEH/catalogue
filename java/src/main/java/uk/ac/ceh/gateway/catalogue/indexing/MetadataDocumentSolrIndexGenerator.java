@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.base.Strings;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +13,9 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
-import uk.ac.ceh.gateway.catalogue.ef.EFDocument;
+import uk.ac.ceh.gateway.catalogue.ef.Activity;
+import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
+import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Geometry;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -45,6 +48,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
 
     @Override
     public DocumentSolrIndex generateIndex(MetadataDocument document) {
+        List<String> locations = new ArrayList<>();
         DocumentSolrIndex toReturn = new DocumentSolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
@@ -65,18 +69,21 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                     .setOnlineResourceName(grab(gemini.getOnlineResources(), OnlineResource::getName))
                     .setOnlineResourceDescription(grab(gemini.getOnlineResources(), OnlineResource::getDescription))
                     .setResourceIdentifier(grab(gemini.getResourceIdentifiers(), ResourceIdentifier::getCode))
-                    .setDataCentre(getDataCentre(gemini))
-                    .setLocations(solrGeom(grab(gemini.getBoundingBoxes(), BoundingBox::getWkt)));
+                    .setDataCentre(getDataCentre(gemini));
+            locations.addAll(solrGeom(grab(gemini.getBoundingBoxes(), BoundingBox::getWkt)));
         }
         
-        if(document instanceof EFDocument) {
-            EFDocument ef = (EFDocument)document;
+        if(document instanceof BaseMonitoringType) {
+            BaseMonitoringType ef = (BaseMonitoringType)document;
             
-            String wktBBox = Optional.ofNullable(ef.getBoundingBox()).map(BoundingBox::getWkt).orElse(null);
-            String wktGeom = Optional.ofNullable(ef.getGeometry()).map(Geometry::getWkt).orElse(null);
-            toReturn.setLocations(solrGeom(Arrays.asList(wktBBox, wktGeom)));
+            locations.addAll(solrGeom(grab(ef.getBoundingBoxes(), BaseMonitoringType.BoundingBox::getWkt)));
         }
-        return toReturn;
+        
+        if(document instanceof Facility) {
+            Facility ef = (Facility)document;                    
+            locations.addAll(solrGeom(grab(Arrays.asList(ef.getGeometry()), Geometry::getValue)));
+        }
+        return toReturn.setLocations(locations);
     }
     
     // Takes a list of wkt 

@@ -61,6 +61,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String DATACITE_XML_VALUE           = "application/x-datacite+xml";
     public static final String GEMINI_SHORT                 = "gemini";
     public static final String GEMINI_JSON_VALUE            = "application/gemini+json";
+    public static final String UKEOF_XML_SHORT              = "ukeof";
+    public static final String UKEOF_XML_VALUE              = "application/ukeof+xml";
     
     @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
@@ -151,6 +153,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             .mediaType("json", MediaType.APPLICATION_JSON)
             .mediaType(GEMINI_SHORT, MediaType.parseMediaType(GEMINI_JSON_VALUE))
             .mediaType(GEMINI_XML_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
+            .mediaType(UKEOF_XML_SHORT, MediaType.parseMediaType(UKEOF_XML_VALUE))
             .mediaType(RDF_XML_SHORT, MediaType.parseMediaType(RDF_XML_VALUE))
             .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE));

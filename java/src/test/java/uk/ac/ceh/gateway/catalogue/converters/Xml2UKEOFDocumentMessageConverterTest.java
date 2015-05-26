@@ -75,6 +75,6 @@ public class Xml2UKEOFDocumentMessageConverterTest {
         BaseMonitoringType document = (BaseMonitoringType) ukeofReader.readInternal(BaseMonitoringType.class, message);
         
         //Then
-        assertThat("Expected to be able to read document id", document.getMetadata().getFileIdentifier(), equalTo(UUID.fromString("00a1aab5-3e82-498a-a78f-b41e1955248b")));
+        assertThat("Expected to be able to read document id", document.getEfMetadata().getFileIdentifier(), equalTo(UUID.fromString("00a1aab5-3e82-498a-a78f-b41e1955248b")));
     }
 }
