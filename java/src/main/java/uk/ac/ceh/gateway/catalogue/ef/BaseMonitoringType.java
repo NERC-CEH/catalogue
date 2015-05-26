@@ -123,6 +123,7 @@ public class BaseMonitoringType {
     private String anyXML;
     
     @Data
+    @JsonIgnoreProperties({"wkt"})
     @XmlType(propOrder = {"westBoundLongitude", "eastBoundLongitude", "southBoundLatitude", "northBoundLatitude" })
     public static class BoundingBox {
         @NotNull
@@ -133,31 +134,16 @@ public class BaseMonitoringType {
         @Range(min = -90, max = 90)
         private BigDecimal southBoundLatitude, northBoundLatitude;
         
-        public String asWktPolygon() {
-            if (validCoords()) {
-                return String.format("POLYGON((%.4f %.4f, %.4f %.4f, %.4f %.4f, %.4f %.4f, %.4f %.4f))",
-                    westBoundLongitude, southBoundLatitude,
-                    eastBoundLongitude, southBoundLatitude,
-                    eastBoundLongitude, northBoundLatitude,
-                    westBoundLongitude, northBoundLatitude,
-                    westBoundLongitude, southBoundLatitude
-                );
-            } else {
-                return "";
-            }
-        }
-        
-        private boolean validCoords() {
-            if (westBoundLongitude == null || eastBoundLongitude == null || southBoundLatitude == null || northBoundLatitude == null) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-        
-        @Override
-        public String toString() {
-            return String.format("%.4f %.4f %.4f %.4f", westBoundLongitude, southBoundLatitude, eastBoundLongitude, northBoundLatitude);
+        public String getWkt() {
+            return new StringBuilder()
+                .append("POLYGON((")
+                .append(westBoundLongitude).append(" ").append(southBoundLatitude).append(", ")
+                .append(westBoundLongitude).append(" ").append(northBoundLatitude).append(", ")
+                .append(eastBoundLongitude).append(" ").append(northBoundLatitude).append(", ")
+                .append(eastBoundLongitude).append(" ").append(southBoundLatitude).append(", ")
+                .append(westBoundLongitude).append(" ").append(southBoundLatitude)
+                .append("))")
+                .toString();
         }
     }
         
