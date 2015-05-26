@@ -25,6 +25,7 @@
         <solr.version>4.8.0</solr.version>
         <freemarker.version>2.3.22</freemarker.version>
         <jts.version>1.13</jts.version>
+        <joda-time.version>2.3</joda-time.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -104,6 +105,11 @@
           <groupId>com.fasterxml.jackson.datatype</groupId>
           <artifactId>jackson-datatype-guava</artifactId>
           <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
         </dependency>
         
         <!-- Guava -->
