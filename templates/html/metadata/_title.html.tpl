@@ -4,7 +4,7 @@
   <h1 id="document-title">
   
   <#if (resourceType.value)?has_content>
-    <small id="resource-type">${codes.lookup('metadata.scopeCode', resourceType.value)!''}</small><br>
+    <small id="resource-type">${codes.lookup('metadata.resourceType', resourceType.value)!''}</small><br>
   </#if>
   ${title?html}
   <#if (metadata.state == 'draft' || metadata.state == 'pending') >
