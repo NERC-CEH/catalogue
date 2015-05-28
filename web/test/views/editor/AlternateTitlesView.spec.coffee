@@ -25,19 +25,8 @@ define [
       beforeEach ->
         do view.render
 
-      it 'alternative title field should be empty', ->
-        expect(view.$('#alternateTitle').val()).toEqual ''
-
-    describe 'when adding new alternate title', ->
-
-      beforeEach ->
-        spyOn view, 'add'
-        do view.delegateEvents
-        do view.render
-
-      it 'should call add method', ->
-        view.$('#alternateTitleAdd').trigger 'click'
-        expect(view.add).toHaveBeenCalled()
+      it 'html should be rendered', ->
+        expect(view.$el.html()).not.toBeNull()
 
     describe 'when updating title', ->
 
@@ -67,5 +56,5 @@ define [
         do view.render
 
       it 'input fields should contain model values', ->
-        expect(view.$('tbody input:eq(0)').val()).toEqual 'Countryside Survey'
-        expect(view.$('tbody input:eq(1)').val()).toEqual 'CS'
+        expect(view.$('#alternateTitles input:eq(0)').val()).toEqual 'Countryside Survey'
+        expect(view.$('#alternateTitles input:eq(1)').val()).toEqual 'CS'

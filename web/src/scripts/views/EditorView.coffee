@@ -39,7 +39,8 @@ define [
         @parent.trigger 'error', "Error saving metadata: #{response.status} (#{response.statusText})"
 
   leave: ->
-    window.location.assign @model.get 'uri'
+    location = Backbone.history.location
+    location.assign "#{location.origin}#{location.pathname}"
 
   back: ->
     @navigate @currentStep - 1

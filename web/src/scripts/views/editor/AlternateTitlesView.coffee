@@ -4,10 +4,6 @@ define [
   'cs!views/editor/AlternateTitlesItemView'
 ], (Backbone, template, ItemView) -> Backbone.View.extend
 
-  events:
-    'click #alternateTitleAdd': 'add'
-    'keydown #alternateTitle': 'addEnter'
-
   initialize: ->
     if not @model
       throw new Error('model is required')
@@ -21,29 +17,27 @@ define [
     @listenTo @alternateTitles, 'add remove change', @updateModel
 
   addOne: (alternateTitle) ->
-    view = new ItemView model: alternateTitle
-    @$('tbody').append view.render().el
+    view = new ItemView
+      model: alternateTitle
+      className: 'row'
+    @$('#alternateTitles').append view.render().el
 
   addAll: ->
-    @$('tbody').html('')
+    @$('#alternateTitles').html('')
     @alternateTitles.each @addOne, @
 
   render: ->
     @$el.html template
     do @addAll
+
+    alternateTitle = new ItemView
+      el: @$('#alternateTitlesAddNew')
+      model: new Backbone.Model value: ''
+      add: true
+      alternateTitles: @alternateTitles
+    do alternateTitle.render
+
     return @
-
-  addEnter: (event) ->
-    if event.keyCode == 13
-      do @add
-
-  add: ->
-    alternateTitle = @$('#alternateTitle').val()
-    if alternateTitle
-      @alternateTitles.add new Backbone.Model
-        value: alternateTitle
-
-    $('#alternateTitle').val ""
 
   updateModel: ->
     if @alternateTitles.length > 0

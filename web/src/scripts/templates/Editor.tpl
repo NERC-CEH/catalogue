@@ -1,28 +1,26 @@
-<ol id="editorNav" class="breadcrumb">
-  <li class="active">Step One</li>
-  <li>Step Two</li>
-  <li>Step Three</li>
-  <li>Step Four</li>
-  <li>Step Five</li>
-  <li>Step Six</li>
-  <li>Step Seven</li>
-  <li>Step Eight</li>
-  <li>Step Nine</li>
-  <li>Step Ten</li>
+<ol id="editorNav" class="breadcrumb hidden-xs">
+  <li class="active">One</li>
+  <li>Two</li>
+  <li>Three</li>
+  <li>Four</li>
+  <li>Five</li>
+  <li>Six</li>
+  <li>Seven</li>
+  <li>Eight</li>
+  <li>Nine</li>
+  <li>Ten</li>
 </ol>
-<div id="editor" class="container" role="form">
+<div id="editor" class="container-fluid" role="form">
   <div class="step visible">
-    <div id="editorResourceType" class="form-group component"></div>
-    <div id="editorTitle" class="form-group component"></div>
-    <div id="editorAlternateTitles" class="form-group"></div>
-    <div id="editorDescription" class="form-group component"></div>
-    <p><mark>Publication date(s)</mark></p>
-    <p><mark>Revision date(s)</mark></p>
-    <div id="editorPublicationDates" class="form-group"></div>
-    <div id="editorRevisionDates" class="form-group"></div>
+    <div id="editorResourceType" class="component"></div>
+    <div id="editorTitle" class="component"></div>
+    <div id="editorAlternateTitles" class="component"></div>
+    <div id="editorDescription" class="component"></div>
+    <div id="editorPublicationDates" class="component"><mark>Publication date(s)</mark></div>
+    <div id="editorRevisionDates" class="component"><mark>Revision date(s)</mark></div>
   </div>
   <div class="step">
-    <p><mark>Spatial extent</mark></p>
+    <div id="editorSpatialExtent" class="component"><mark>Spatial extent</mark></div>
   </div>
   <div class="step">
     <p><mark>Format(s) of the data</mark></p>
@@ -32,22 +30,22 @@
   </div>
   <div class="step">
     <p><mark>INSPIRE Theme(s)</mark></p>
-    <div id="editorTopicCategories" class="form-group"></div>
+    <div id="editorTopicCategories" class="component"></div>
     <p><mark>CEH section</mark></p>
     <p><mark>CEH science area</mark></p>
     <p><mark>Keyword(s)</mark></p>
   </div>
   <div class="step">
-    <div id="editorContacts" class="form-group"></div>
+    <div id="editorContacts"></div>
   </div>
   <div class="step">
     <p><mark>What is the status of the data resource?</mark></p>
     <p><mark>How often is this resource going to be updated?</mark></p>
-    <div id="editorLineage" class="form-group component"></div>
+    <div id="editorLineage" class="component"></div>
   </div>
   <div class="step">
     <p><mark>Online resource(s)</mark></p>
-    <div id="editorAdditionalInformation" class="form-group component"></div>
+    <div id="editorAdditionalInformation" class="component"></div>
   </div>
   <div class="step">
     <p><mark>Use constraints</mark></p>
@@ -62,12 +60,12 @@
   </div>
 </div>
 <div class="navbar navbar-default navbar-fixed-bottom">
-  <div class="container">
+  <div class="container-fluid">
     <div class="navbar-right">
       <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
       <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="glyphicon glyphicon-chevron-right"></i></button>
       <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="glyphicon glyphicon-save"></i></button>
-      <button id="editorCancel" class="btn btn-default navbar-btn">Cancel</button>
+      <a id="editorCancel" class="navbar-link">Cancel</a>
     </div>
   </div>
 </div>

@@ -18,10 +18,10 @@ define [
 
   addOne: (topicCategory) ->
     view = new TopicCategoriesItemView model: topicCategory
-    @$('tbody').append view.render().el
+    @$('#topicCategories').append view.render().el
 
   addAll: ->
-    @$('tbody').html('')
+    @$('#topicCategories').html('')
     @topicCategories.each @addOne, @
 
   render: ->
@@ -30,14 +30,15 @@ define [
     return @
 
   add: ->
-    value = @$('#topicCategory').val()
+    $topicCategory = @$('#topicCategory')
+    value = $topicCategory.val()
 
     if value
       topicCategory = new TopicCategory()
       topicCategory.set 'value': value # need to force 'set' to update uri
       @topicCategories.add topicCategory
 
-    $('#topicCategory').val ""
+    $topicCategory.val ""
 
   updateModel: ->
     if @topicCategories.length > 0

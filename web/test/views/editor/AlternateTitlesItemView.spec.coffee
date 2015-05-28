@@ -37,6 +37,18 @@ define [
         view.$(':input').trigger 'change'
         expect(view.modify).toHaveBeenCalled()
 
+    describe 'when adding new alternate title', ->
+
+      beforeEach ->
+        view.add = true
+        spyOn view, 'addNew'
+        do view.delegateEvents
+        do view.render
+
+      it 'should call addNew method', ->
+        view.$('#alternateTitleAdd').trigger 'click'
+        expect(view.addNew).toHaveBeenCalled()
+
     describe 'when removing alternate title', ->
 
       beforeEach ->

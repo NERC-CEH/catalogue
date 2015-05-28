@@ -2,7 +2,8 @@ define [
   'backbone'
   'tpl!templates/editor/TopicCategoriesItem.tpl'
 ], (Backbone, template) -> Backbone.View.extend
-  tagName: 'tr'
+
+  className: 'row'
 
   events:
     'click button': 'remove'
