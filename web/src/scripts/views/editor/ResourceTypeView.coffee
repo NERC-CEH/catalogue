@@ -8,9 +8,6 @@ define [
     'change #resourceType': 'select'
 
   initialize: ->
-    if not @model
-      throw new Error('model is required')
-
     @resourceType = new ResourceType @model.get 'resourceType'
 
   render: ->

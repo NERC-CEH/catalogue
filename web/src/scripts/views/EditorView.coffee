@@ -11,10 +11,10 @@ define [
   'cs!views/editor/LineageView'
   'cs!views/editor/TopicCategoriesView'
   'cs!views/editor/ContactsView'
-], (_, $, Backbone, template, MessageView, TitleView, ResourceTypeView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView, ContactsView) -> Backbone.View.extend
+  'cs!views/editor/ResourceIdentifiersView'
+], (_, $, Backbone, template, MessageView, TitleView, ResourceTypeView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView, ContactsView, ResourceIdentifiersView) -> Backbone.View.extend
 
   events:
-    'click #editorCancel': 'leave'
     'click #editorSave': 'save'
     'click #editorBack': 'back'
     'click #editorNext': 'next'
@@ -120,6 +120,11 @@ define [
       el: @$('#editorContacts')
       model: @model
     do contacts.render
+
+    resourceIdentifiers = new ResourceIdentifiersView
+      el: @$('#editorResourceIdentifiers')
+      model: @model
+    do resourceIdentifiers.render
 
 
 

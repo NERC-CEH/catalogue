@@ -39,5 +39,8 @@
     <div id="footer">
         <#include "metadata/_footer.html.tpl">
     </div>
+    <script>
+        var gemini = {title: "Test title", description: "Test description", alternateTitles: ["alt 0", "alt1", "alt2"]};
+    </script>
   </div>
 </@skeleton.master>

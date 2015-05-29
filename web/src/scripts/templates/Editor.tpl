@@ -52,7 +52,7 @@
     <div id="editorAccessConstraints" class="form-group"></div>
   </div>
   <div class="step">
-    <p><mark>Data identifier(s)</mark></p>
+    <div id="editorResourceIdentifiers" class="component"></div>
     <p><mark>Associated records</mark></p>
   </div>
   <div class="step">
@@ -65,7 +65,7 @@
       <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
       <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="glyphicon glyphicon-chevron-right"></i></button>
       <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="glyphicon glyphicon-save"></i></button>
-      <a id="editorCancel" class="navbar-link">Cancel</a>
+      <a href="" class="navbar-link">Cancel</a>
     </div>
   </div>
 </div>

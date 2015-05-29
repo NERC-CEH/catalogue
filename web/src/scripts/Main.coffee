@@ -76,6 +76,14 @@ define [
     catch ex
       console.log "history already started"
 
+    $('.edit-control').on 'click', ->
+      value = null
+      if gemini?
+        value = "gemini: #{JSON.stringify gemini}"
+      else
+        value = "no gemini"
+      alert value
+
   ###
   Initialize the permission application
   ###

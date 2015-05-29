@@ -6,14 +6,14 @@ define [
   events:
     'change': 'updateModel'
 
-  initialize: ->
-    if not @model
-      throw new Error('model is required')
-
   render: ->
     @$el.html template
       value: @model.get 'title'
     return @
 
   updateModel: ->
-    @model.set 'title', @$("#input-title").val()
+    value = @$("#input-title").val()
+    if value
+      @model.set 'title', value
+    else
+      @model.unset 'title'

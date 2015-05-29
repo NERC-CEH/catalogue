@@ -6,10 +6,6 @@ define [
   events:
     'change': 'updateModel'
 
-  initialize: ->
-    if not @model
-      throw new Error('model is required')
-
   render: ->
     @$el.html template
       value: @model.get 'description'
