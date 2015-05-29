@@ -33,9 +33,9 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a href="//gateway.ceh.ac.uk">Home</a></li>
+            <li><a href="//eip.ceh.ac.uk">Home</a></li>
             <li <#if searching>class="active"</#if>><a href="/documents">Search Data</a></li>
-            <li><a href="//gateway.ceh.ac.uk/catalogue/help">Help</a></li>
+            <li><a href="//eip.ceh.ac.uk/catalogue/help">Help</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <#if searching && permission.userCanCreate()>
