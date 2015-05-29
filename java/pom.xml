@@ -166,10 +166,9 @@
         
         <!-- Database Connection Pooling -->
         <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
-            <version>8.0.9</version>
-            <scope>provided</scope>
+            <groupId>c3p0</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.1.2</version>
         </dependency>
         
         <!-- Solr4j -->
