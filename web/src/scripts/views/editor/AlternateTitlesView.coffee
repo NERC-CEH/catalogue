@@ -1,12 +1,10 @@
 define [
-  'backbone'
+  'cs!models/editor/String'
   'cs!views/editor/ParentView'
   'tpl!templates/editor/AlternateTitles.tpl'
   'cs!views/editor/AlternateTitlesItemView'
-], (Backbone, ParentView, template, AlternateTitlesItemView) -> ParentView.extend
+], (String, ParentView, template, AlternateTitlesItemView) -> ParentView.extend
   template:       template
-  ModelType:      Backbone.Model.extend
-    defaults:
-      value: ''
+  ModelType:      String
   modelAttribute: 'alternateTitles'
   ChildView:      AlternateTitlesItemView

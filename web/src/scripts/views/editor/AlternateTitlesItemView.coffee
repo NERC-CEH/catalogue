@@ -1,10 +1,7 @@
 define [
-  'backbone'
-  'underscore'
+  'cs!models/editor/String'
   'cs!views/editor/ChildView'
   'tpl!templates/editor/AlternateTitlesItem.tpl'
-], (Backbone, _, ChildView, template) -> ChildView.extend
+], (String, ChildView, template) -> ChildView.extend
   template: template
-  ModelType: Backbone.Model.extend
-    defaults:
-      value: ''
+  ModelType: String

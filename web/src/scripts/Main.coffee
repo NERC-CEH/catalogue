@@ -9,15 +9,14 @@ define [
   'cs!views/MessageView'
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
-  'cs!models/EditorApp'
-  'cs!routers/EditorRouter'
-  'cs!views/EditorAppView'
+  'cs!models/Metadata'
+  'cs!views/EditorView'
   'cs!models/PermissionApp'
   'cs!routers/PermissionRouter'
   'cs!views/PermissionAppView'
   'bootstrap'
 ], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
-    SearchRouter, EditorApp, EditorRouter, EditorAppView, PermissionApp, PermissionRouter, PermissionAppView) ->
+    SearchRouter, Metadata, EditorView, PermissionApp, PermissionRouter, PermissionAppView) ->
   
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -66,23 +65,23 @@ define [
   Initialize the editor application
   ###
   initEditor: ->
-    app = new EditorApp()
-    view = new EditorAppView model: app
-    router = new EditorRouter model: app
 
-    @createMessageViewFor app
-    try
-      do Backbone.history.start
-    catch ex
-      console.log "history already started"
+    $('.edit-control').on 'click', (event) ->
+      model = null
+      el = null
 
-    $('.edit-control').on 'click', ->
-      value = null
+      do event.preventDefault
+
       if gemini?
-        value = "gemini: #{JSON.stringify gemini}"
+        model = new Metadata gemini
+        el = '#metadata'
       else
-        value = "no gemini"
-      alert value
+        model = new Metadata()
+        el = '#search'
+
+      view = new EditorView
+        el: el
+        model: model
 
   ###
   Initialize the permission application

@@ -17,8 +17,10 @@ define [
     if options.collection
       @collection = options.collection
 
+    do @render
+
   render: ->
-    @$el.html @template _.extend @model.toJSON(), index: @index
+    @$el.html @template _.extend index: @index, @model.attributes
     return @
 
   add: ->
@@ -41,4 +43,8 @@ define [
   modify: (event) ->
     $target = $(event.target)
     name = $target.data('name')
-    @model.set name, $target.val()
+    value = $target.val()
+    if value
+      @model.set name, value
+    else
+      @model.unset name

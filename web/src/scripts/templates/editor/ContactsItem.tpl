@@ -24,18 +24,18 @@
   </div>
   <div class="col-sm-5 col-lg-5">
     <select data-name="role" class="editor-input" id="contacts<%= index %>Role">
-      <option value="" selected>- Select Role -</option>
-      <option value="author">Author</option>
-      <option value="custodian">Custodian</option>
-      <option value="distributor">Distributor</option>
-      <option value="originator">Originator</option>
-      <option value="owner">Owner</option>
-      <option value="pointOfContact">Point Of Contact</option>
-      <option value="principalInvestigator">Principal Investigator</option>
-      <option value="processor">Processor</option>
-      <option value="publisher">Publisher</option>
-      <option value="resourceProvider">Resource Provider</option>
-      <option value="user">User</option>
+      <option value="" <% if (role === '') { %> selected <% } %> >- Select Role -</option>
+      <option value="author" <% if (role === 'author') { %> selected <% } %> >Author</option>
+      <option value="custodian" <% if (role === 'custodian') { %> selected <% } %> >Custodian</option>
+      <option value="distributor" <% if (role === 'distributor') { %> selected <% } %> >Distributor</option>
+      <option value="originator" <% if (role === 'originator') { %> selected <% } %> >Originator</option>
+      <option value="owner" <% if (role === 'owner') { %> selected <% } %> >Owner</option>
+      <option value="pointOfContact" <% if (role === 'pointOfContact') { %> selected <% } %> >Point Of Contact</option>
+      <option value="principalInvestigator" <% if (role === 'principalInvestigator') { %> selected <% } %> >Principal Investigator</option>
+      <option value="processor" <% if (role === 'processor') { %> selected <% } %> >Processor</option>
+      <option value="publisher" <% if (role === 'publisher') { %> selected <% } %> >Publisher</option>
+      <option value="resourceProvider" <% if (role === 'resourceProvider') { %> selected <% } %> >Resource Provider</option>
+      <option value="user" <% if (role === 'user') { %> selected <% } %> >User</option>
     </select>
   </div>
 </div>
@@ -76,7 +76,7 @@
   </div>
   <div class="col-sm-1 col-lg-1">
   <% if (index === 'Add') { %>
-    <button class="editor-button" id="contactsAdd">Add</button>
+    <button class="editor-button add">Add</button>
   <% } else { %>
     <button class="editor-button remove"><i class="glyphicon glyphicon-remove"></i></button>
   <% } %>

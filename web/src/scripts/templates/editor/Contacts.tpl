@@ -7,7 +7,7 @@
     <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
     <p>The names of individuals should be included in the format <em>Surname, First Initial. Second Initial.</em>  For example <b>Brown, A.B.</b></p>
   </div>
-  <div id="contactsAddNew"></div>
+  <div id="responsiblePartiesAddNew"></div>
 </div>
 <h4>Existing Contacts</h4>
-<div id="contacts"></div>
+<div id="responsibleParties"></div>

@@ -20,23 +20,17 @@ define [
     'click #editorNext': 'next'
     'click #editorNav li': 'direct'
 
-  initialize: (options) ->
-    if not @model
-      throw new Error('model is required')
-    if not (options and options.parent)
-      throw new Error('parent is required')
-    @parent = options.parent
-
+  initialize: ->
     @listenTo @model, 'save:success', @leave
-
     @currentStep = 1
+    do @render
 
   save: ->
     @model.save {},
       success:  =>
         @model.trigger "save:success"
       error: (model, response) =>
-        @parent.trigger 'error', "Error saving metadata: #{response.status} (#{response.statusText})"
+        console.log "Error saving metadata: #{response.status} (#{response.statusText})"
 
   leave: ->
     location = Backbone.history.location
@@ -99,7 +93,6 @@ define [
     alternateTitles = new AlternateTitlesView
       el: @$('#editorAlternateTitles')
       model: @model
-    do alternateTitles.render
 
     description = new DescriptionView
       el: @$('#editorDescription')
@@ -119,12 +112,10 @@ define [
     contacts = new ContactsView
       el: @$('#editorContacts')
       model: @model
-    do contacts.render
 
-    resourceIdentifiers = new ResourceIdentifiersView
+    new ResourceIdentifiersView
       el: @$('#editorResourceIdentifiers')
       model: @model
-    do resourceIdentifiers.render
 
 
 
