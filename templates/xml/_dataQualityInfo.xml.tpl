@@ -3,7 +3,7 @@
 		<gmd:scope>
 			<gmd:DQ_Scope>
 				<gmd:level>
-					<gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="${resourceType}"/>
+					<gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="${resourceType.value?xml}">${resourceType.value?xml}</gmd:MD_ScopeCode>
 				</gmd:level>
 				<gmd:levelDescription>
 					<gmd:MD_ScopeDescription>
