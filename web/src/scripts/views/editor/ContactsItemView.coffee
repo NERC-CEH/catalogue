@@ -9,6 +9,10 @@ define [
   ModelType: Contact
   className: 'component'
 
+  render: ->
+    ChildView.prototype.render.apply @
+    @$('select').val @model.get 'role'
+
   modify: (event) ->
     $target = $(event.target)
     name = $target.data('name')

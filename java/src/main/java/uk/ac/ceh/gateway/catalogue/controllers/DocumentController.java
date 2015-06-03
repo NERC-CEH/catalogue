@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -62,6 +63,7 @@ public class DocumentController {
     private final DocumentWritingService<MetadataDocument> documentWriter;
     private final DocumentLinkService linkService;
     private final CitationService citationService;
+    private final ObjectMapper mapper;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
@@ -71,7 +73,8 @@ public class DocumentController {
                                 BundledReaderService<MetadataDocument> documentBundleReader,
                                 DocumentWritingService<MetadataDocument> documentWritingService,
                                 DocumentLinkService linkService,
-                                CitationService citationService) {
+                                CitationService citationService,
+                                ObjectMapper mapper) {
         this.repo = repo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
@@ -80,6 +83,7 @@ public class DocumentController {
         this.documentWriter = documentWritingService;
         this.linkService = linkService;
         this.citationService = citationService;
+        this.mapper = mapper;
     }
     
     @Secured(EDITOR_ROLE)
@@ -215,6 +219,7 @@ public class DocumentController {
                 .ifPresent(r -> geminiDocument.setRevisionOf(r));
             citationService.getCitation(geminiDocument)
                 .ifPresent(c -> geminiDocument.setCitation(c));
+            geminiDocument.setJsonString(mapper.writeValueAsString(geminiDocument));   
         }
         log.debug("document requested: {}", document);
         return document;

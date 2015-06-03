@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-sm-3 col-lg-3">
-    <label for="resourceType" class="control-label">
+    <label for="resourceType">
       Resource Type
       <a data-toggle="collapse" title="Click for help" href="#help-resourceType" data-parent="#editor"><i class="glyphicon glyphicon-question-sign"></i></a>
     </label>
@@ -9,7 +9,7 @@
     </p>
   </div>
   <div class="col-sm-4 col-lg-4">
-    <select id="resourceType" class="editor-input">
+    <select data-name="value" class="editor-input" id="resourceType">
       <option value="" selected>- Select Resource Type -</option>
       <optgroup label="GEMINI">
         <option value="dataset">Dataset</option>
@@ -22,7 +22,7 @@
         <option value="attribute">Attribute</option>
         <option value="attributeType">Attribute type</option>
         <option value="collection">Collection</option>
-        <option value="collectionHardware">Collection hardware</option>
+        <option value="collectionHardware>Collection hardware</option>
         <option value="collectionSession">Collection session</option>
         <option value="coverage">Coverage</option>
         <option value="dimensionGroup">Dimension group</option>

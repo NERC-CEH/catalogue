@@ -15,26 +15,58 @@ define [
 ], (_, $, Backbone, template, MessageView, TitleView, ResourceTypeView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView, ContactsView, ResourceIdentifiersView) -> Backbone.View.extend
 
   events:
+    'click #editorDelete': 'delete'
+    'click #editorExit': 'exit'
     'click #editorSave': 'save'
     'click #editorBack': 'back'
     'click #editorNext': 'next'
     'click #editorNav li': 'direct'
 
   initialize: ->
-    @listenTo @model, 'save:success', @leave
+    @listenTo @model, 'error', (model, response) ->
+      alert "Problem communicating with server: #{response.status} (#{response.statusText})"
+
     @currentStep = 1
     do @render
+    @components = [
+      new TitleView
+        el: @$('#editorTitle')
+        model: @model,
+      new ResourceTypeView
+        el: @$('#editorResourceType')
+        model: @model,
+      new AlternateTitlesView
+        el: @$('#editorAlternateTitles')
+        model: @model,
+      new DescriptionView
+        el: @$('#editorDescription')
+        model: @model,
+      new LineageView
+        el: @$('#editorLineage')
+        model: @model,
+      new TopicCategoriesView
+        el: @$('#editorTopicCategories')
+        model: @model,
+      new ContactsView
+        el: @$('#editorContacts')
+        model: @model,
+      new ResourceIdentifiersView
+        el: @$('#editorResourceIdentifiers')
+        model: @model
+    ]
+
+  delete: ->
+    do @model.destroy
 
   save: ->
     @model.save {},
-      success:  =>
-        @model.trigger "save:success"
-      error: (model, response) =>
+      error: (model, response) ->
         console.log "Error saving metadata: #{response.status} (#{response.statusText})"
 
-  leave: ->
-    location = Backbone.history.location
-    location.assign "#{location.origin}#{location.pathname}"
+  exit: ->
+    _.invoke @components, 'remove'
+    do @remove
+    do Backbone.history.location.reload
 
   back: ->
     @navigate @currentStep - 1
@@ -79,77 +111,3 @@ define [
 
   render: ->
     @$el.html template
-
-    title = new TitleView
-      el: @$('#editorTitle')
-      model: @model
-    do title.render
-
-    resourceType = new ResourceTypeView
-      el: @$('#editorResourceType')
-      model: @model
-    do resourceType.render
-
-    alternateTitles = new AlternateTitlesView
-      el: @$('#editorAlternateTitles')
-      model: @model
-
-    description = new DescriptionView
-      el: @$('#editorDescription')
-      model: @model
-    do description.render
-
-    lineage = new LineageView
-      el: @$('#editorLineage')
-      model: @model
-    do lineage.render
-
-    topicCategories = new TopicCategoriesView
-      el: @$('#editorTopicCategories')
-      model: @model
-    do topicCategories.render
-
-    contacts = new ContactsView
-      el: @$('#editorContacts')
-      model: @model
-
-    new ResourceIdentifiersView
-      el: @$('#editorResourceIdentifiers')
-      model: @model
-
-
-
-
-#    publicationDates = new PublicationDatesView
-#      el: @$('#editorPublicationDates')
-#      model: metadata
-#
-#    revisionDates = new RevisionDatesView
-#      el: @$('#editorRevisionDates')
-#      model: metadata
-
-#    lineage = new TextareaView
-#      el: @$('#editorLineage')
-#      model: new Textarea
-#        id: 'lineage'
-#        name: 'Lineage'
-#        value: @model.get 'lineage'
-#        help: lineageHelp
-#        parent: @model
-
-#    additionalInformation = new TextareaView
-#      el: @$('#editorAdditionalInformation')
-#      model: new Textarea
-#        id: 'additionalInformation'
-#        name: 'Additional Information'
-#        value: @model.get 'additionalInformation'
-#        parent: @model
-
-# should be a list of string
-#    accessConstraints = new TextareaView
-#      el: @$('#editorAccessConstraints')
-#      model: new Textarea
-#        id: 'accessConstraints'
-#        name: 'Access Constraints'
-#        value: metadata.get 'accessConstraints'
-#        parent: @model

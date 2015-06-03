@@ -3,7 +3,7 @@ define [
   'cs!models/Metadata'
   'cs!views/editor/TitleView'
 ], ($, Metadata, TitleView) ->
-  describe 'TitleView', ->
+  describe 'SingleStringView', ->
     view = null
     model = new Metadata()
     inputField = '#input-title'
@@ -16,10 +16,6 @@ define [
       it 'should exist', ->
         expect(view).toBeDefined()
 
-    describe 'when view is initialized without model', ->
-      it 'should throw exception', ->
-        expect(() -> new TitleView()).toThrow(new Error('model is required'))
-
     describe 'when view is rendered', ->
 
       beforeEach ->
@@ -31,21 +27,10 @@ define [
       describe 'when title is changed', ->
 
         beforeEach ->
-          spyOn(view, 'updateModel')
-          do view.delegateEvents
+          spyOn model, 'set'
 
         it 'model should be updated', ->
           view.$(inputField).val('new value').trigger 'change'
-          expect(view.updateModel).toHaveBeenCalled()
-
-      describe 'when updating model', ->
-
-        beforeEach ->
-          spyOn(model, 'set')
-          view.$(inputField).val 'new value'
-
-        it 'should set value on model', ->
-          do view.updateModel
           expect(model.set).toHaveBeenCalledWith 'title', 'new value'
 
     describe 'when view is rendered with populated model', ->

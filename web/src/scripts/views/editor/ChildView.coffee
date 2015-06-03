@@ -7,16 +7,12 @@ define [
 
   events:
     'click button.add':    'add'
-    'keydown input': 'addEnter'
-    'click button.remove': 'remove'
+    'keydown input':       'addEnter'
+    'click button.remove': 'delete'
     'change':              'modify'
 
-  initialize: (options) ->
+  initialize: ->
     @index = if @model.collection then @model.collection.indexOf @model else 'Add'
-
-    if options.collection
-      @collection = options.collection
-
     do @render
 
   render: ->
@@ -24,21 +20,19 @@ define [
     return @
 
   add: ->
-    if @collection
-      @collection.add @model.clone(), at: 0
-      @model = new @ModelType()
-      do @render
-      @$('input:first').focus()
+    @trigger 'add', @model
+    @model = new @ModelType()
+    do @render
+    @$('input:first').focus()
 
   addEnter: (event) ->
     if event.keyCode == 13
       @modify event
       do @add
 
-  remove: ->
-    if @model.collection
-      @model.collection.remove @model
-      do @remove
+  delete: ->
+    @model.collection.remove @model
+    do @remove
 
   modify: (event) ->
     $target = $(event.target)

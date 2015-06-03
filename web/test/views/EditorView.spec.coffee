@@ -10,32 +10,21 @@ define [
     beforeEach ->
       view = new EditorView
         model: model
-        parent: {}
 
     describe 'when view is constructing', ->
       it 'should exist', ->
         expect(view).toBeDefined()
 
-    describe 'when view is initialized without model', ->
-      it 'should throw exception', ->
-        expect(() -> new EditorView()).toThrow(new Error('model is required'))
-
-    describe 'when view is initialized without parent model', ->
-      it 'should throw exception', ->
-        expect(() -> new EditorView
-          model: model
-        ).toThrow(new Error('parent is required'))
-
-    describe 'when cancel clicked', ->
+    describe 'when exit clicked', ->
 
       beforeEach ->
-        spyOn(view, 'leave')
+        spyOn(view, 'exit')
         do view.delegateEvents
         do view.render
 
-      it 'cancel clicked', ->
-        view.$('#editorCancel').trigger 'click'
-        expect(view.leave).toHaveBeenCalled()
+      it 'exit clicked', ->
+        view.$('#editorExit').trigger 'click'
+        expect(view.exit).toHaveBeenCalled()
 
     describe 'when next clicked', ->
 
@@ -71,6 +60,19 @@ define [
         view.$('#editorSave').trigger 'click'
         expect(view.save).toHaveBeenCalled()
         expect(model.save).toHaveBeenCalled()
+
+    describe 'when delete clicked', ->
+
+      beforeEach ->
+        spyOn(view, 'delete').and.callThrough()
+        spyOn(model, 'destroy')
+        do view.delegateEvents
+        do view.render
+
+      it 'clicking Delete calls method', ->
+        view.$('#editorDelete').trigger 'click'
+        expect(view.delete).toHaveBeenCalled()
+        expect(model.destroy).toHaveBeenCalled()
 
     describe 'when Step 4 clicked', ->
 

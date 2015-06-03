@@ -1,25 +1,11 @@
 define [
-  'backbone'
+  'cs!views/editor/ChildView'
   'tpl!templates/editor/TopicCategoriesItem.tpl'
-], (Backbone, template) -> Backbone.View.extend
-
-  className: 'row'
-
-  events:
-    'click button': 'remove'
-    'change select': 'modify'
-
-  initialize: ->
-    if not @model
-      throw new Error('model is required')
+  'cs!models/editor/TopicCategory'
+], (ChildView, template, TopicCategory) -> ChildView.extend
+  template: template
+  ModelType: TopicCategory
 
   render: ->
-    @$el.html template
+    ChildView.prototype.render.apply @
     @$('select').val @model.get 'value'
-    return @
-
-  remove: ->
-    @model.collection.remove @model
-
-  modify: ->
-    @model.set 'value', @$(':selected').val()

@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -74,6 +75,7 @@ public class DocumentControllerTest {
     @Mock DocumentLinkService linkService;
     @Mock CitationService citationService;
     @Mock DocumentWritingService<MetadataDocument> documentWritingService;
+    @Mock ObjectMapper mapper;
     
     private DocumentController controller;
     
@@ -94,7 +96,8 @@ public class DocumentControllerTest {
                                                 documentBundleReader,
                                                 documentWritingService,
                                                 linkService,
-                                                citationService));
+                                                citationService,
+                                                mapper));
     }
     
     private HttpServletRequest mockRequest() {

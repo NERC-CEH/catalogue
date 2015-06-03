@@ -9,10 +9,10 @@
     </p>
   </div>
   <div class="col-sm-9 col-lg-9">
-    <h4>Add New Dataset Identifier</h4>
+    <h5>Add New Dataset Identifier <button class="btn btn-primary btn-xs pull-right" id="resourceIdentifiersAddNewEidc">Generate EIDC identifier</button></h5>
     <div id="resourceIdentifiersAddNew" class="row">
     </div>
-    <h4>Existing Dataset Identifiers</h4>
+    <h5>Existing Dataset Identifiers</h5>
     <div id="resourceIdentifiers"></div>
   </div>
 </div>

@@ -1,29 +1,17 @@
 define [
-  'backbone'
+  'cs!views/editor/SingleObjectView'
   'cs!models/editor/ResourceType'
   'tpl!templates/editor/ResourceType.tpl'
-], (Backbone, ResourceType, template) -> Backbone.View.extend
-
-  events:
-    'change #resourceType': 'select'
+], (SingleObjectView, ResourceType, template) -> SingleObjectView.extend
+  template: template
+  modelAttribute: 'resourceType'
+  ModelType: ResourceType
 
   initialize: ->
-    @resourceType = new ResourceType @model.get 'resourceType'
+    SingleObjectView.prototype.initialize.apply @
+    @listenTo @model, 'change:resourceType', (model, value) ->
+      @model.set 'type', value.value
 
   render: ->
-    @$el.html template
-    @$('#resourceType').val @resourceType.get 'value'
-    return @
-
-  select: ->
-    value = @$('#resourceType').val()
-
-    if value
-      @resourceType.set 'value', value
-      @model.set
-        'resourceType': @resourceType
-        'type': @resourceType.get 'value'
-
-    else
-      @model.unset 'resourceType'
-      @model.unset 'type'
+    SingleObjectView.prototype.render.apply @
+    @$('select').val @dataEntry.get 'value'

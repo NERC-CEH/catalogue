@@ -1,0 +1,1 @@
+<input data-name="<%= identifier %>" class="editor-input" id="input-<%= identifier %>" value="<%= value %>">

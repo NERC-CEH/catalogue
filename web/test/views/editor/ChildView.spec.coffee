@@ -4,7 +4,7 @@ define [
   'cs!models/editor/Contact'
 ], (Backbone, ContactsItemView, Contact) ->
 
-  describe 'ContactsItemView', ->
+  describe 'ChildView', ->
     view = null
     model = null
 
@@ -15,15 +15,6 @@ define [
     describe 'when view is constructing', ->
       it 'should exist', ->
         expect(view).toBeDefined()
-
-    describe 'when view is initialized without model', ->
-      it 'should throw exception', ->
-        expect(() -> new ContactsItemView()).toThrow(new Error('model is required'))
-
-    describe 'when view is constructed with Contact collection', ->
-      it 'should have contacts property', ->
-        view = new ContactsItemView model: model, contacts: new Backbone.Collection()
-        expect(view.contacts).toBeDefined()
 
     describe 'when view is rendered', ->
 

@@ -1,15 +1,17 @@
 define [
-  'backbone'
-  'tpl!templates/editor/Lineage.tpl'
-], (Backbone, template) -> Backbone.View.extend
+  'cs!views/editor/SingleStringView'
+  'cs!views/editor/TextareaView'
+], (SingleStringView, TextareaView) -> SingleStringView.extend
+  modelAttribute: 'lineage'
+  label: 'Lineage'
+  helpText: """
+            Information about the source data used in the construction of this data resource. Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.
+            """
 
-  events:
-    'change': 'updateModel'
-
-  render: ->
-    @$el.html template
-      value: @model.get 'lineage'
-    return @
-
-  updateModel: ->
-    @model.set 'lineage', @$("#input-lineage").val()
+  initialize: ->
+    do @render
+    new TextareaView
+      el: @$('.dataentry')
+      model: @model
+      modelAttribute: @modelAttribute
+      rows: 15

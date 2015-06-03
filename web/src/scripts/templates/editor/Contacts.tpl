@@ -1,6 +1,6 @@
-<h4>Add New Contact
+<h5>Add New Contact
   <a data-toggle="collapse" title="Click for help" href="#help-contacts" data-parent="#editor"><i class="glyphicon glyphicon-question-sign"></i></a>
-</h4>
+</h5>
 <div class="component">
   <div id="help-contacts" class="editor-help">
     <p>The organisation or person responsible for the authorship, maintenance and curation of the data resource.</p>
@@ -9,5 +9,5 @@
   </div>
   <div id="responsiblePartiesAddNew"></div>
 </div>
-<h4>Existing Contacts</h4>
+<h5>Existing Contacts</h5>
 <div id="responsibleParties"></div>

@@ -8,9 +8,9 @@
     </p>
   </div>
   <div class="col-sm-9 col-lg-9">
-    <h4>Add New Alternative Title</h4>
+    <h5>Add New Alternative Title</h5>
     <div id="alternateTitlesAddNew" class="row"></div>
-    <h4>Existing Alternative Titles</h4>
+    <h5>Existing Alternative Titles</h5>
     <div id="alternateTitles"></div>
   </div>
 </div>
