@@ -107,7 +107,7 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
    <#if type=='dataset' || type=='nonGeographicDataset'>
       <dcat:Distribution>
         <rdf:Description>
-         <#if downloadOrder.orderUrl?has_content>
+		 <#if downloadOrder?? && downloadOrder.orderUrl?has_content>
             <dcat:accessURL rdf:resource="${downloadOrder.orderUrl}"/>
          </#if>
          <#if citation?has_content>
