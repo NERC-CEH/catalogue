@@ -1,6 +1,6 @@
 {
   "name": "isInViewport",
-  "version": "2.1.0",
+  "version": "2.2.4",
   "homepage": "https://github.com/zeusdeux/isInViewport",
   "authors": [
     "Mudit Ameta <zeusdeux@gmail.com>"
@@ -14,6 +14,7 @@
   ],
   "license": "MIT",
   "ignore": [
+    "examples/**",
     "**/.*",
     "node_modules",
     "bower_components",
@@ -24,15 +25,16 @@
     "isInViewport_*.js",
     "*.jquery.json",
     ".travis*",
-    ".git*"
+    ".git*",
+    "/**/*.dmp"
   ],
-  "_release": "2.1.0",
+  "_release": "2.2.4",
   "_resolution": {
     "type": "version",
-    "tag": "2.1.0",
-    "commit": "48349af388fc5008503b6e2c51cbb1c36a71ace5"
+    "tag": "2.2.4",
+    "commit": "7a6533d371c932f7663f1a068b33f96e8c33e43f"
   },
   "_source": "git://github.com/zeusdeux/isInViewport.git",
-  "_target": "2.1.0",
+  "_target": "2.2.4",
   "_originalSource": "isInViewport"
 }

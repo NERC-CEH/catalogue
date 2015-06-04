@@ -1,7 +1,7 @@
 define [
-  'cs!views/editor/SingleStringView'
+  'cs!views/editor/SingleView'
   'cs!views/editor/InputView'
-], (SingleStringView, InputView) -> SingleStringView.extend
+], (SingleView, InputView) -> SingleView.extend
   modelAttribute: 'title'
   label: 'Title'
   helpText: """

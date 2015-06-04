@@ -16,6 +16,7 @@ define [
 
     @listenTo @collection, 'add', @addOne
     @listenTo @collection, 'reset', @addAll
+    @listenTo @collection, 'add remove change', @saveRequired
 
     do @render
     @$attach = @$("##{@modelAttribute}")
@@ -26,7 +27,7 @@ define [
       model: new @ModelType()
 
     @listenTo addView, 'add', (model) ->
-      @collection.add model
+      @collection.add model.clone()
 
   addOne: (model) ->
     view = new @ChildView
@@ -37,5 +38,9 @@ define [
     @$attach.html('')
     @collection.each @addOne, @
 
+  saveRequired: ->
+    @model.trigger 'save:required'
+
   render: ->
     @$el.html @template
+    @

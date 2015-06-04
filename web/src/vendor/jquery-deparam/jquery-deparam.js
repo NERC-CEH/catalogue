@@ -11,7 +11,7 @@
         global.deparam = deparam(jQuery); // assume jQuery is in global namespace
     }
 })(function ($) {
-    return function( params, coerce ) {
+    var deparam = function( params, coerce ) {
         var obj = {},
         coerce_types = { 'true': !0, 'false': !1, 'null': null };
 
@@ -50,10 +50,10 @@
 
                 // Coerce values.
                 if ( coerce ) {
-                    val = val && !isNaN(val)            ? +val              // number
-                    : val === 'undefined'             ? undefined         // undefined
-                    : coerce_types[val] !== undefined ? coerce_types[val] // true, false, null
-                    : val;                                                // string
+                    val = val && !isNaN(val) && ((+val + '') === val) ? +val        // number
+                    : val === 'undefined'                       ? undefined         // undefined
+                    : coerce_types[val] !== undefined           ? coerce_types[val] // true, false, null
+                    : val;                                                          // string
                 }
 
                 if ( keys_last ) {
@@ -102,4 +102,6 @@
 
         return obj;
     };
+    $.fn.deparam = $.deparam = deparam;
+    return deparam;
 });

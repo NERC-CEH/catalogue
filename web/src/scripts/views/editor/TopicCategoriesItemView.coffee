@@ -9,3 +9,4 @@ define [
   render: ->
     ChildView.prototype.render.apply @
     @$('select').val @model.get 'value'
+    @

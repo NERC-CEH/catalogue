@@ -16,8 +16,7 @@
     <div id="editorTitle" class="component"></div>
     <div id="editorAlternateTitles" class="component"></div>
     <div id="editorDescription" class="component"></div>
-    <div id="editorPublicationDates" class="component"><mark>Publication date(s)</mark></div>
-    <div id="editorRevisionDates" class="component"><mark>Revision date(s)</mark></div>
+    <div id="editorDatasetReferenceDate" class="component"></div>
   </div>
   <div class="step">
     <div id="editorSpatialExtent" class="component"><mark>Spatial extent</mark></div>
@@ -67,7 +66,7 @@
     <div class="navbar-right">
       <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
       <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="glyphicon glyphicon-chevron-right"></i></button>
-      <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="glyphicon glyphicon-save"></i></button>
+      <button id="editorSave" class="btn btn-default navbar-btn" disabled>Save <i class="glyphicon glyphicon-save"></i></button>
       <button id="editorExit" class="btn btn-default navbar-btn">Exit <i class="glyphicon glyphicon-off"></i></button>
     </div>
   </div>

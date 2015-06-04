@@ -12,6 +12,7 @@ define [
   render: ->
     ChildView.prototype.render.apply @
     @$('select').val @model.get 'role'
+    @
 
   modify: (event) ->
     $target = $(event.target)

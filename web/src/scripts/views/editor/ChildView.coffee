@@ -17,7 +17,7 @@ define [
 
   render: ->
     @$el.html @template _.extend index: @index, @model.attributes
-    return @
+    @
 
   add: ->
     @trigger 'add', @model
@@ -26,7 +26,7 @@ define [
     @$('input:first').focus()
 
   addEnter: (event) ->
-    if event.keyCode == 13
+    if @index == 'Add' and event.keyCode == 13
       @modify event
       do @add
 
@@ -38,6 +38,7 @@ define [
     $target = $(event.target)
     name = $target.data('name')
     value = $target.val()
+
     if value
       @model.set name, value
     else
