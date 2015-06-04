@@ -17,7 +17,7 @@
 							<gco:Date>${datasetReferenceDate.publicationDate?xml}</gco:Date>
 						</gmd:date>
 						<gmd:dateType>
-							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+						<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</CI_DateTypeCode>
 						</gmd:dateType>
 					</gmd:CI_Date>
 				</gmd:date>
@@ -29,7 +29,7 @@
 							<gco:Date>${datasetReferenceDate.creationDate?xml}</gco:Date>
 						</gmd:date>
 						<gmd:dateType>
-							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation">creation</CI_DateTypeCode>
 						</gmd:dateType>
 					</gmd:CI_Date>
 				</gmd:date>
@@ -41,7 +41,7 @@
 							<gco:Date>${datasetReferenceDate.revisionDate?xml}</gco:Date>
 						</gmd:date>
 						<gmd:dateType>
-							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision"/>
+							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</CI_DateTypeCode>
 						</gmd:dateType>
 					</gmd:CI_Date>
 				</gmd:date>
@@ -82,7 +82,7 @@
 		</gmd:abstract>
     <#if resourceStatus??>
       <gmd:status>
-        <MD_ProgressCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="${resourceStatus}"/>
+	  <MD_ProgressCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="${resourceStatus}">${resourceStatus}</MD_ProgressCode>
       </gmd:status>
     </#if>
 		<#if responsibleParties?has_content>
@@ -134,7 +134,7 @@
           <gmd:MD_MaintenanceInformation>
             <#if rm.frequencyOfUpdate?has_content>
             <gmd:maintenanceAndUpdateFrequency>
-              <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="${rm.frequencyOfUpdate?xml}"/>
+              <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="${rm.frequencyOfUpdate?xml}">${rm.frequencyOfUpdate?xml}</gmd:MD_MaintenanceFrequencyCode>
             </gmd:maintenanceAndUpdateFrequency>
             </#if>
             <#if rm.note?has_content>
@@ -151,7 +151,7 @@
 		<#if spatialRepresentationTypes?has_content>
 		<#list spatialRepresentationTypes as spatialRepresentationType>
 		<gmd:spatialRepresentationType>
-			<gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="${spatialRepresentationType?xml}"/>
+		<gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="${spatialRepresentationType?xml}">${spatialRepresentationType?xml}</gmd:MD_SpatialRepresentationTypeCode>
 		</gmd:spatialRepresentationType>
 		</#list>
 		</#if>
@@ -183,10 +183,10 @@
 		</#if>
 		<#if type != 'service'>
 		<gmd:language>
-			<LanguageCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng"/>
+		<LanguageCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">eng</LanguageCode>
 		</gmd:language>
 		<gmd:characterSet>
-			<MD_CharacterSetCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+		<MD_CharacterSetCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</MD_CharacterSetCode>
 		</gmd:characterSet>	
 		</#if>
 		<#if topicCategories??>
