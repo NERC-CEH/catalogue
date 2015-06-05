@@ -39,7 +39,7 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <#if searching && permission.userCanCreate()>
-                <li><a class="edit-control" href="#">Create new metadata</a></li>
+                <li><a class="edit-control gemini" href="#">Create new metadata</a></li>
             </#if>
             <li id="sso-user"><a>Joe Bloggs</a></li>
           </ul>

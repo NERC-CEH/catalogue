@@ -10,54 +10,7 @@
   <li>Nine</li>
   <li>Ten</li>
 </ol>
-<div id="editor" class="container-fluid" role="form">
-  <div class="step visible">
-    <div id="editorResourceType" class="component"></div>
-    <div id="editorTitle" class="component"></div>
-    <div id="editorAlternateTitles" class="component"></div>
-    <div id="editorDescription" class="component"></div>
-    <div id="editorDatasetReferenceDate" class="component"></div>
-  </div>
-  <div class="step">
-    <div id="editorSpatialExtent" class="component"><mark>Spatial extent</mark></div>
-  </div>
-  <div class="step">
-    <p><mark>Format(s) of the data</mark></p>
-    <p><mark>Spatial representation type</mark></p>
-    <p><mark>Spatial Reference system(s)</mark></p>
-    <p><mark>Spatial resolution</mark></p>
-  </div>
-  <div class="step">
-    <p><mark>INSPIRE Theme(s)</mark></p>
-    <div id="editorTopicCategories" class="component"></div>
-    <p><mark>CEH section</mark></p>
-    <p><mark>CEH science area</mark></p>
-    <p><mark>Keyword(s)</mark></p>
-  </div>
-  <div class="step">
-    <div id="editorContacts"></div>
-  </div>
-  <div class="step">
-    <p><mark>What is the status of the data resource?</mark></p>
-    <p><mark>How often is this resource going to be updated?</mark></p>
-    <div id="editorLineage" class="component"></div>
-  </div>
-  <div class="step">
-    <p><mark>Online resource(s)</mark></p>
-    <div id="editorAdditionalInformation" class="component"></div>
-  </div>
-  <div class="step">
-    <p><mark>Use constraints</mark></p>
-    <div id="editorAccessConstraints" class="form-group"></div>
-  </div>
-  <div class="step">
-    <div id="editorResourceIdentifiers" class="component"></div>
-    <p><mark>Associated records</mark></p>
-  </div>
-  <div class="step">
-    <p><mark>Person responsible for maintaining this metadata record:</mark></p>
-  </div>
-</div>
+<div id="editor" class="container-fluid" role="form"></div>
 <div class="navbar navbar-default navbar-fixed-bottom">
   <div class="container-fluid">
     <div class="navbar-left">

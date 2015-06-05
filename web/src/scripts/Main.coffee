@@ -9,14 +9,14 @@ define [
   'cs!views/MessageView'
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
-  'cs!models/Metadata'
-  'cs!views/EditorView'
+  'cs!models/GeminiMetadata'
+  'cs!views/GeminiEditorView'
   'cs!models/PermissionApp'
   'cs!routers/PermissionRouter'
   'cs!views/PermissionAppView'
   'bootstrap'
 ], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
-    SearchRouter, Metadata, EditorView, PermissionApp, PermissionRouter, PermissionAppView) ->
+    SearchRouter, GeminiMetadata, GeminiEditorView, PermissionApp, PermissionRouter, PermissionAppView) ->
   
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -66,20 +66,20 @@ define [
   ###
   initEditor: ->
 
-    $('.edit-control').on 'click', (event) ->
+    $('.edit-control.gemini').on 'click', (event) ->
       model = null
       el = null
 
       do event.preventDefault
 
       if gemini?
-        model = new Metadata gemini
+        model = new GeminiMetadata gemini
         el = '#metadata'
       else
-        model = new Metadata()
+        model = new GeminiMetadata()
         el = '#search'
 
-      view = new EditorView
+      view = new GeminiEditorView
         el: el
         model: model
 
