@@ -17,8 +17,6 @@ define [
     @listenTo @model, 'error', (model, response) ->
       alert "Problem communicating with server: #{response.status} (#{response.statusText})"
     @listenTo @model, 'change save:required', @toggleSave
-    do @render
-    console.log _.keys @steps
 
   toggleSave: ->
     @$('#editorSave').prop 'disabled', (i, current) -> not current
@@ -49,6 +47,7 @@ define [
 
   back: ->
     @navigate @currentStep - 1
+    console.log @steps[@currentStep].label
 
   next: ->
     @navigate @currentStep + 1
@@ -90,4 +89,7 @@ define [
 
   render: ->
     @$el.html template
+    _.each @steps, (step) ->
+      _.each step.views, (view) ->
+        @$('#editor').append view.el
     @

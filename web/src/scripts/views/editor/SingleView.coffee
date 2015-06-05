@@ -3,6 +3,8 @@ define [
   'tpl!templates/editor/Single.tpl'
 ], (Backbone, template) -> Backbone.View.extend
 
+  className: 'component'
+
   initialize: (options) ->
     @modelAttribute = options.modelAttribute
     @label = options.label

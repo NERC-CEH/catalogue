@@ -1,7 +1,7 @@
 define [
   'backbone'
-  'underscore'
-], (Backbone, _) -> Backbone.View.extend
+  'tpl!templates/editor/Child.tpl'
+], (Backbone, template) -> Backbone.View.extend
 
   className: 'row'
 
@@ -11,12 +11,17 @@ define [
     'click button.remove': 'delete'
     'change':              'modify'
 
-  initialize: ->
+  initialize: (options) ->
     @index = if @model.collection then @model.collection.indexOf @model else 'Add'
     do @render
+    console.log "child View"
+    console.dir options
+    new options.ObjectInputView
+      el: @$('.dataentry')
+      model: @model
 
   render: ->
-    @$el.html @template _.extend index: @index, @model.attributes
+    @$el.html template index: @index
     @
 
   add: ->
