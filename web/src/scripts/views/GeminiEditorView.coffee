@@ -5,14 +5,15 @@ define [
   'cs!views/editor/ParentView'
   'cs!models/editor/String'
   'cs!views/editor/ResourceTypeView'
-  'cs!views/editor/AlternateTitlesItemView'
+  'cs!views/editor/InputView'
   'cs!views/editor/DescriptionView'
   'cs!views/editor/LineageView'
-  'cs!views/editor/TopicCategoriesView'
+  'cs!models/editor/TopicCategory'
+  'cs!views/editor/TopicCategoryView'
   'cs!views/editor/ContactsView'
   'cs!views/editor/ResourceIdentifiersView'
   'cs!views/editor/DatasetReferenceDateView'
-], (EditorView, TitleView, SingleObjectView, ParentView, String, ResourceTypeView, AlternateTitlesItemView, DescriptionView, LineageView, TopicCategoriesView, ContactsView, ResourceIdentifiersView, DatasetReferenceDateView) -> EditorView.extend
+], (EditorView, TitleView, SingleObjectView, ParentView, String, ResourceTypeView, InputView, DescriptionView, LineageView, TopicCategory, TopicCategoryView, ContactsView, ResourceIdentifiersView, DatasetReferenceDateView) -> EditorView.extend
 
 
   initialize: ->
@@ -35,18 +36,18 @@ define [
         new TitleView
           model: @model
 
-        new ParentView
-          model: @model
-          ModelType: String
-          modelAttribute: 'alternateTitles'
-          label: 'Alternative Titles'
-          ObjectInputView: AlternateTitlesItemView
-          helpText: """
-                    <p>Alternative titles allow for entries of multiple titles, translations of titles (e.g. Welsh), and those with acronyms.</p>
-                    <p>The leading letter and proper nouns of the title only should be capitalised.</p>
-                    <p>In the event that the alternative title includes acronyms in the formal title of a data resource, then include
-                    both the acronym (in parentheses) and its definition. Acronyms should not include full-stops between each letter.</p>
-                    """
+#        new ParentView
+#          model: @model
+#          ModelType: String
+#          modelAttribute: 'alternateTitles'
+#          label: 'Alternative Titles'
+#          ObjectInputView: InputView
+#          helpText: """
+#                    <p>Alternative titles allow for entries of multiple titles, translations of titles (e.g. Welsh), and those with acronyms.</p>
+#                    <p>The leading letter and proper nouns of the title only should be capitalised.</p>
+#                    <p>In the event that the alternative title includes acronyms in the formal title of a data resource, then include
+#                    both the acronym (in parentheses) and its definition. Acronyms should not include full-stops between each letter.</p>
+#                    """
 
 #        new DescriptionView
 #          model: @model
@@ -78,8 +79,17 @@ define [
     ,
       label: 'Four'
       views: [
-#        new TopicCategoriesView
-#          model: @model
+        new ParentView
+          model: @model
+          ModelType: TopicCategory
+          modelAttribute: 'topicCategories'
+          label: 'Topic Categories'
+          ObjectInputView: TopicCategoryView
+          helpText: """
+                    <p>The main theme(s) of the data resource as defined by the INSPIRE Directive.</p>
+                    <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
+                    <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
+                    """
       ]
     ,
       label: 'Five'

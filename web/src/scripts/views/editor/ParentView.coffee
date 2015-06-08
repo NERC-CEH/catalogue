@@ -9,8 +9,9 @@ define [
   initialize: (options) ->
     SingleView.prototype.initialize.call @, options
     @ObjectInputView = options.ObjectInputView
-
+    @ModelType = options.ModelType
     data = if @model.has @modelAttribute then @model.get @modelAttribute else []
+
     # detect an array of Strings and create an object that can be turned into a Model
     if _.isArray(data) and _.isString _.first data
       data = data.map (value) ->
@@ -31,6 +32,7 @@ define [
       el: @$('.addNew')
       model: new options.ModelType
       ObjectInputView: @ObjectInputView
+      ModelType: @ModelType
 
     @listenTo addView, 'add', (model) ->
       @collection.add model

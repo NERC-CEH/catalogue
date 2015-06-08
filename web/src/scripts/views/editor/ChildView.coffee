@@ -9,13 +9,11 @@ define [
     'click button.add':    'add'
     'keydown input':       'addEnter'
     'click button.remove': 'delete'
-    'change':              'modify'
 
   initialize: (options) ->
     @index = if @model.collection then @model.collection.indexOf @model else 'Add'
+    @ModelType = options.ModelType
     do @render
-    console.log "child View"
-    console.dir options
     new options.ObjectInputView
       el: @$('.dataentry')
       model: @model
@@ -25,7 +23,7 @@ define [
     @
 
   add: ->
-    @trigger 'add', @model
+    @trigger 'add', @model.clone()
     @model = new @ModelType()
     do @render
     @$('input:first').focus()
@@ -38,13 +36,3 @@ define [
   delete: ->
     @model.collection.remove @model
     do @remove
-
-  modify: (event) ->
-    $target = $(event.target)
-    name = $target.data('name')
-    value = $target.val()
-
-    if value
-      @model.set name, value
-    else
-      @model.unset name

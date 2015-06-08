@@ -19,7 +19,7 @@ define [
     name = $target.data('name')
     value = $target.val()
     @dataEntry.set name, value
-
+    console.log "name: #{name}, value: #{value}"
     if @dataEntry.isEmpty()
       @model.unset @modelAttribute
     else

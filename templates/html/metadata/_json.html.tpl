@@ -1,3 +1,5 @@
-<script>
-  var gemini = ${jsonString};
-</script>
+<#if jsonString?? >
+  <script>
+    var gemini = ${jsonString};
+  </script>
+</#if>
