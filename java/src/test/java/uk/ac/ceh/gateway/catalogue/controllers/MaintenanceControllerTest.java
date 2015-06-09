@@ -9,6 +9,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
+import uk.ac.ceh.gateway.catalogue.services.TerraCatalogImporterService;
 
 /**
  *
@@ -17,13 +18,14 @@ import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 public class MaintenanceControllerTest {
     @Mock DocumentIndexingService indexService;
     @Mock DocumentLinkService linkingService;
+    @Mock TerraCatalogImporterService terraCatalogImporterService;
     
     private MaintenanceController controller;
     
     @Before
     public void createMaintenanceController() {
         MockitoAnnotations.initMocks(this);
-        controller = new MaintenanceController(indexService, linkingService);
+        controller = new MaintenanceController(indexService, linkingService, terraCatalogImporterService);
     }
     
     @Test
