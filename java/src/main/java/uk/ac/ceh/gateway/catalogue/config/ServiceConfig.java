@@ -163,6 +163,7 @@ public class ServiceConfig {
         GitDocumentLinkService toReturn = new GitDocumentLinkService(
                 dataRepository,
                 bundledReaderService(),
+                documentListingService(),
                 linkDatabase
         );
         

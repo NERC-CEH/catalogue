@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -23,7 +24,7 @@ public interface DocumentLinkService {
      * @param fileIdentifiers
      * @throws DocumentLinkingException 
      */
-    void linkDocuments(Set<String> fileIdentifiers) throws DocumentLinkingException;
+    void linkDocuments(List<String> fileIdentifiers) throws DocumentLinkingException;
     
     /**
      * Get the links associated with this Gemini Document.
