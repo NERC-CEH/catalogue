@@ -340,7 +340,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         DownloadOrder expected = DownloadOrder
             .builder()
             .orderUrl("http://gateway.ceh.ac.uk/download?fileIdentifier=11caad35-4a33-4ad8-852b-6c120fd250e2")
-            .supportingDocumentsUrl("http://eidchub.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2")
+            .supportingDocumentsUrl("http://eidc.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2")
             .build();
         
         //When
@@ -360,7 +360,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         DownloadOrder expected = DownloadOrder
             .builder()
             .orderUrl("http://gateway.ceh.ac.uk/download?fileIdentifier=11caad35-4a33-4ad8-852b-6c120fd250e2")
-            .supportingDocumentsUrl("http://eidchub.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2")
+            .supportingDocumentsUrl("http://eidc.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2")
             .build();
         
         //When
