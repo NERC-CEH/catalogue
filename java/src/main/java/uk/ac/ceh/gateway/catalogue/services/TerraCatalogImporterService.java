@@ -5,7 +5,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.util.terracatalog.OfflineTerraCatalogUserFactory;
-import uk.ac.ceh.gateway.catalogue.util.terracatalog.StateTranslatingMetadataInfoFactory;
+import uk.ac.ceh.gateway.catalogue.util.terracatalog.TerraCatalogDocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.util.terracatalog.TerraCatalogImporter;
 
 /**
@@ -19,7 +19,7 @@ public class TerraCatalogImporterService {
     private final OfflineTerraCatalogUserFactory<CatalogueUser> userFactory;
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
-    private final StateTranslatingMetadataInfoFactory infoFactory;
+    private final TerraCatalogDocumentInfoFactory<MetadataInfo> infoFactory;
         
     public TerraCatalogImporter<MetadataInfo, CatalogueUser> getImporter(CatalogueUser user) {
         return new TerraCatalogImporter<>(
