@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class ExtensionDocumentListingService implements DocumentListingService {
     }
     
     @Override
-    public List<String> filterFilenames(List<String> files) {
+    public List<String> filterFilenames(Collection<String> files) {
         //Scan through the files list return any which there exists a .meta and .raw
         //file
         return files.stream()

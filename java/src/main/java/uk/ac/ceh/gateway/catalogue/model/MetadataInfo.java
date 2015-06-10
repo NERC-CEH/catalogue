@@ -34,6 +34,7 @@ public class MetadataInfo {
     private final Multimap<Permission, String> permissions;
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "role_cig_readonly";
+    public static final String PUBLISHER_GROUP = "role_cig_publisher";
     
     public MetadataInfo() {
         permissions = HashMultimap.create();
@@ -147,7 +148,9 @@ public class MetadataInfo {
                     return
                         permissions.containsEntry(requested, name.toLowerCase())
                         ||
-                        (Permission.VIEW.equals(requested) && READONLY_GROUP.equalsIgnoreCase(name));
+                        (Permission.VIEW.equals(requested) && READONLY_GROUP.equalsIgnoreCase(name))
+                        ||
+                        (Permission.VIEW.equals(requested) && PUBLISHER_GROUP.equalsIgnoreCase(name));
                 })
                 .findFirst()
                 .isPresent();

@@ -22,10 +22,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
 public class GitDocumentLinkServiceTest {
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private BundledReaderService<MetadataDocument> documentBundleReader;
+    @Mock private DocumentListingService listingService;
     @Mock private LinkDatabase linkDatabase;
 
     @Before
@@ -39,7 +41,7 @@ public class GitDocumentLinkServiceTest {
         when(repo.getFiles()).thenReturn(Arrays.asList("123-123-123", "222-333-444"));
         when(repo.getLatestRevision()).thenReturn(mock(DataRevision.class));
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(mock(GeminiDocument.class));
-        GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         
         //When
         service.rebuildLinks();
@@ -78,10 +80,10 @@ public class GitDocumentLinkServiceTest {
         });
         when(documentBundleReader.readBundle("1bb", "latest")).thenReturn(new GeminiDocument().setId("1bb"));
         when(documentBundleReader.readBundle("234", "latest")).thenReturn(new GeminiDocument().setId("234"));
-        GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         
         //When
-        service.linkDocuments(new HashSet(Arrays.asList("1bb", "234")));
+        service.linkDocuments(Arrays.asList("1bb", "234"));
         
         //Then
         verify(linkDatabase).addMetadata((Set<Metadata>) anySetOf(Metadata.class));
@@ -95,7 +97,7 @@ public class GitDocumentLinkServiceTest {
         GeminiDocument dataset = new GeminiDocument();
         dataset.setId(fileIdentifier);
         dataset.setResourceType(Keyword.builder().value("dataset").build());
-        GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService service = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
         
         //When
@@ -112,7 +114,7 @@ public class GitDocumentLinkServiceTest {
         GeminiDocument service = new GeminiDocument();
         service.setId(fileIdentifier);
         service.setResourceType(Keyword.builder().value("service").build());
-        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
         
         
@@ -130,7 +132,7 @@ public class GitDocumentLinkServiceTest {
         String fileIdentifier = "absd-asd";
         GeminiDocument document = new GeminiDocument();
         document.setId(fileIdentifier);
-        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
         when(linkDatabase.findParent("absd-asd")).thenReturn(Optional.of(Metadata.builder().fileIdentifier("123-456-789").build()));
         
@@ -147,7 +149,7 @@ public class GitDocumentLinkServiceTest {
         String fileIdentifier = "absd-asd";
         GeminiDocument document = new GeminiDocument();
         document.setId(fileIdentifier);
-        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
         when(linkDatabase.findParent("absd-asd")).thenReturn(Optional.empty());
         
@@ -164,7 +166,7 @@ public class GitDocumentLinkServiceTest {
         String fileIdentifier = "absd-asd";
         GeminiDocument document = new GeminiDocument();
         document.setId(fileIdentifier);
-        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
         when(linkDatabase.findRevisionOf("absd-asd")).thenReturn(Optional.empty());
         
@@ -181,7 +183,7 @@ public class GitDocumentLinkServiceTest {
         String fileIdentifier = "absd-asd";
         GeminiDocument document = new GeminiDocument();
         document.setId(fileIdentifier);
-        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
         when(linkDatabase.findRevised("absd-asd")).thenReturn(Optional.empty());
         
@@ -198,7 +200,7 @@ public class GitDocumentLinkServiceTest {
         String fileIdentifier = "absd-asd";
         GeminiDocument document = new GeminiDocument();
         document.setId(fileIdentifier);
-        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         String urlFragement = "http://localhost:8080/documents/";
         
         //When
@@ -211,7 +213,7 @@ public class GitDocumentLinkServiceTest {
     @Test
     public void emptyValueDelegatesToDatabase() {
         //Given
-        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         when(linkDatabase.isEmpty()).thenReturn(true);
         
         //When
@@ -225,7 +227,7 @@ public class GitDocumentLinkServiceTest {
     @Test
     public void populatedValueDelegatesToDatabase() {
         //Given
-        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, linkDatabase);
+        GitDocumentLinkService linkService = new GitDocumentLinkService(repo, documentBundleReader, listingService, linkDatabase);
         when(linkDatabase.isEmpty()).thenReturn(false);
         
         //When

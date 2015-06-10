@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
@@ -47,6 +48,9 @@ import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+import uk.ac.ceh.gateway.catalogue.services.TerraCatalogImporterService;
+import uk.ac.ceh.gateway.catalogue.util.terracatalog.OfflineTerraCatalogUserFactory;
+import uk.ac.ceh.gateway.catalogue.util.terracatalog.StateTranslatingMetadataInfoFactory;
 
 /**
  * The following spring configuration will populate service beans
@@ -61,6 +65,7 @@ public class ServiceConfig {
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
     @Autowired CodeLookupService codeLookupService;
+    @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
     @Autowired GroupStore<CatalogueUser> groupStore;
     
     @Bean
@@ -170,6 +175,7 @@ public class ServiceConfig {
         GitDocumentLinkService toReturn = new GitDocumentLinkService(
                 dataRepository,
                 bundledReaderService(),
+                documentListingService(),
                 linkDatabase
         );
         
@@ -177,6 +183,24 @@ public class ServiceConfig {
         return toReturn;
     }
     
+    @Bean
+    public TerraCatalogImporterService terraCatalogImporterService() throws XPathExpressionException, IOException {
+        OfflineTerraCatalogUserFactory<CatalogueUser> userFactory = new OfflineTerraCatalogUserFactory<>(phantomUserBuilderFactory);
+        userFactory.put("ceh", "@ceh.ac.uk");
+
+        StateTranslatingMetadataInfoFactory infoFactory = new StateTranslatingMetadataInfoFactory();
+        infoFactory.put("private", "draft");
+        infoFactory.put("public", "published");
+        
+        return new TerraCatalogImporterService(
+                dataRepository,
+                documentListingService(),
+                userFactory,
+                documentReadingService(),
+                documentInfoMapper(),
+                infoFactory
+        );
+    }
     
     //Perform an initial index of solr if their is no content inside
     protected void performReindexIfNothingIsIndexed(SolrIndexingService<?> service) {

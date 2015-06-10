@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
-import com.google.common.base.Splitter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -16,16 +15,18 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
 @Data
 @Slf4j
 public class GitDocumentLinkService implements DocumentLinkService {
     private final DataRepository<CatalogueUser> repo;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
+    private final DocumentListingService listingService;
     private final LinkDatabase linkDatabase;
 
     @Override
@@ -38,14 +39,14 @@ public class GitDocumentLinkService implements DocumentLinkService {
         try {
             linkDatabase.empty();
             String revision = repo.getLatestRevision().getRevisionID();
-            linkDocuments(removeDuplicates(repo.getFiles(revision)));
+            linkDocuments(listingService.filterFilenames(repo.getFiles(revision)));
         } catch (DataRepositoryException ex) {
             throw new DocumentLinkingException("Unable to get file names from Git", ex);
         }
     }
 
     @Override
-    public void linkDocuments(Set<String> fileIdentifiers) throws DocumentLinkingException {
+    public void linkDocuments(List<String> fileIdentifiers) throws DocumentLinkingException {
         DataRevision<CatalogueUser> latestRev;
         Set<Metadata> metadata = new HashSet();
         Set<CoupledResource> coupledResources = new HashSet<>();
@@ -151,17 +152,5 @@ public class GitDocumentLinkService implements DocumentLinkService {
             .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(metadata.getFileIdentifier()).build().toUriString())
             .associationType(associationType)
             .build();
-    }
-    
-    private Set<String> removeDuplicates(List<String> filenames) {
-        return filenames.stream()
-            .map(filename -> stripFileExtension(filename))
-            .distinct()
-            .collect(Collectors.toSet());
-    }
-    
-    private String stripFileExtension(String filename) {
-        Iterable<String> split = Splitter.on(".").trimResults().omitEmptyStrings().split(filename);
-        return split.iterator().next();
     }
 }

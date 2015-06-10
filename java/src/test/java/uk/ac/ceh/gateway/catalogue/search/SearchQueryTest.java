@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.solr.client.solrj.SolrQuery;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.*;
@@ -80,6 +81,31 @@ public class SearchQueryTest {
         
         //Then
         assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:(public OR helen OR ceh OR eidc)")); 
+    }
+    
+    @Test
+    public void publisherDoesNotHaveViewFilter() {
+        //Given
+        CatalogueUser user = new CatalogueUser().setUsername("publisher");
+        given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("ROLE_CIG_PUBLISHER")));
+        
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            user,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS,
+            groupStore
+        );
+        
+        //When
+        SolrQuery solrQuery = query.build();
+        
+        //Then
+        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), not(hasItemInArray("view:(public OR publisher OR role_cig_publisher)")));
     }
     
     private Group createGroup(String name) {

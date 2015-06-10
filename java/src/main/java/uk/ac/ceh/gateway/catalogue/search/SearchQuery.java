@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.Value;
 import lombok.experimental.Wither;
@@ -24,6 +25,7 @@ import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_DEFA
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_QUERY_PARAM;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.TERM_QUERY_PARAM;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 @Value
 @Slf4j
@@ -194,19 +196,29 @@ public class SearchQuery {
             query.addFilterQuery("{!term f=state}published");
             query.addFilterQuery("{!term f=view}public");
         } else {
-            query.addFilterQuery(userVisibility());
+            List<String> groups = groupStore.getGroups(user)
+                .stream()
+                .map(Group::getName)
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+            
+            if ( !userIsPublisher(groups)) {
+                query.addFilterQuery(userVisibility(groups));
+            }
         }
     }
     
-    private String userVisibility() {
+    private boolean userIsPublisher(List<String> groups) {
+        return groups.contains(MetadataInfo.PUBLISHER_GROUP);
+    }
+    
+    private String userVisibility(List<String> groups) {
         String username = user.getUsername().toLowerCase();
         StringBuilder toReturn = new StringBuilder("view:(public OR ")
             .append(username);
         
-        groupStore.getGroups(user)
+        groups
             .stream()
-            .map(Group::getName)
-            .map(String::toLowerCase)
             .forEach(g -> {
                 toReturn
                     .append(" OR ")
