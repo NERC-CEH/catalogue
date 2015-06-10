@@ -5,6 +5,7 @@ define [
   'cs!views/editor/ParentView'
   'cs!models/editor/String'
   'cs!views/editor/ResourceTypeView'
+  'cs!models/editor/ResourceType'
   'cs!views/editor/InputView'
   'cs!views/editor/DescriptionView'
   'cs!views/editor/LineageView'
@@ -13,7 +14,7 @@ define [
   'cs!views/editor/ContactsView'
   'cs!views/editor/ResourceIdentifiersView'
   'cs!views/editor/DatasetReferenceDateView'
-], (EditorView, TitleView, SingleObjectView, ParentView, String, ResourceTypeView, InputView, DescriptionView, LineageView, TopicCategory, TopicCategoryView, ContactsView, ResourceIdentifiersView, DatasetReferenceDateView) -> EditorView.extend
+], (EditorView, TitleView, SingleObjectView, ParentView, String, ResourceTypeView, ResourceType, InputView, DescriptionView, LineageView, TopicCategory, TopicCategoryView, ContactsView, ResourceIdentifiersView, DatasetReferenceDateView) -> EditorView.extend
 
 
   initialize: ->
@@ -26,8 +27,7 @@ define [
       label: 'One'
       views: [
         new SingleObjectView
-          model: @model
-          modelAttribute: 'resourceType'
+          model: new ResourceType @model.get 'resourceType'
           label: 'Resource Type'
           ObjectInputView: ResourceTypeView,
           helpText: """

@@ -6,21 +6,19 @@ define [
     'change': 'modify'
 
   initialize: ->
-    @dataEntry = if @model.has @modelAttribute then new @ModelType @model.get @modelAttribute else new @ModelType()
-    @model.set @modelAttribute, @dataEntry, silent: true
+    @listenTo @model, 'change', @render
     do @render
 
   render: ->
-    @$el.html @template @dataEntry.attributes
+    @$el.html @template @model.attribute
     @
 
   modify: (event) ->
     $target = $(event.target)
     name = $target.data('name')
     value = $target.val()
-    @dataEntry.set name, value
-    console.log "name: #{name}, value: #{value}"
-    if @dataEntry.isEmpty()
-      @model.unset @modelAttribute
+
+    if not value
+      @model.unset name
     else
-      @model.set @modelAttribute, @dataEntry.clone()
+      @model.set name, value

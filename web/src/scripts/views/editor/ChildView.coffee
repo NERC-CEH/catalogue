@@ -1,20 +1,19 @@
 define [
+  'underscore'
   'backbone'
   'tpl!templates/editor/Child.tpl'
-], (Backbone, template) -> Backbone.View.extend
+], (_, Backbone, template) -> Backbone.View.extend
 
   className: 'row'
 
   events:
     'click button.add':    'add'
-    'keydown input':       'addEnter'
     'click button.remove': 'delete'
 
   initialize: (options) ->
     @index = if @model.collection then @model.collection.indexOf @model else 'Add'
-    @ModelType = options.ModelType
     do @render
-    new options.ObjectInputView
+    @inputView = new options.ObjectInputView
       el: @$('.dataentry')
       model: @model
 
@@ -24,14 +23,8 @@ define [
 
   add: ->
     @trigger 'add', @model.clone()
-    @model = new @ModelType()
-    do @render
-    @$('input:first').focus()
-
-  addEnter: (event) ->
-    if @index == 'Add' and event.keyCode == 13
-      @modify event
-      do @add
+    _.each @model.keys(), (key) =>
+      @model.unset key
 
   delete: ->
     @model.collection.remove @model

@@ -4,8 +4,6 @@ define [
   'tpl!templates/editor/ResourceTypeInput.tpl'
 ], (ObjectInputView, ResourceType, template) -> ObjectInputView.extend
 
-  ModelType: ResourceType
-  modelAttribute: 'resourceType'
   template: template
 
   initialize: ->
@@ -15,5 +13,5 @@ define [
 
   render: ->
     ObjectInputView.prototype.render.apply @
-    @$('select').val @dataEntry.get 'value'
+    @$('select').val @model.get 'value'
     @
