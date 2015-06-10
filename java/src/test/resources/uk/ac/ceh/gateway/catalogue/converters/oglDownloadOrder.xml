@@ -5,7 +5,7 @@
 			<gmd:resourceConstraints>
 				<gmd:MD_LegalConstraints>
 					<gmd:otherConstraints>
-						<gmx:Anchor xlink:href="http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain">Licence terms and conditions apply</gmx:Anchor>
+						<gmx:Anchor xlink:href="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain">Licence terms and conditions apply</gmx:Anchor>
 					</gmd:otherConstraints>
 				</gmd:MD_LegalConstraints>
 			</gmd:resourceConstraints>
@@ -32,7 +32,7 @@
 					<gmd:onLine>
 						<gmd:CI_OnlineResource>
 							<gmd:linkage>
-								<gmd:URL>http://eidchub.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2</gmd:URL>
+								<gmd:URL>http://eidc.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2</gmd:URL>
 							</gmd:linkage>
 							<gmd:function>
 								<gmd:CI_OnLineFunctionCode codeListValue="information"/>
