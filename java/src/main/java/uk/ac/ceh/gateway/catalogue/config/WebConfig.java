@@ -23,6 +23,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
@@ -33,6 +34,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
+import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
@@ -68,13 +70,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setObjectMapper(mapper);
         
-        converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class, configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(UKEOFDocument.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(SearchResults.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(Citation.class,       configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(StateResource.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,       configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(UKEOFDocument.class,        configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(SearchResults.class,        configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Citation.class,             configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(StateResource.class,        configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,   configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(MaintenanceResponse.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,        configureFreeMarker().getConfiguration()));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
@@ -128,6 +131,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return HttpClients.custom()
                           .setConnectionManager(connPool)
                           .build();
+    }
+    
+    @Bean
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver resolver=new CommonsMultipartResolver();
+        resolver.setDefaultEncoding("utf-8");
+        return resolver;
     }
     
     @Override
