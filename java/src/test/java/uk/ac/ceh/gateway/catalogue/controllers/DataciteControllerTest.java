@@ -47,10 +47,9 @@ public class DataciteControllerTest {
         String revision = "rev";
         String id = "id";
         GeminiDocument document = mock(GeminiDocument.class);
-        Keyword keyword = Keyword.builder().value("nonGeographicDataset").build();
         when(repo.getLatestRevision().getRevisionID()).thenReturn(revision);
         when(documentBundleReader.readBundle(id, revision)).thenReturn(document);
-        when(document.getResourceType()).thenReturn(keyword);
+        when(document.getType()).thenReturn("nonGeographicDataset");
         HttpServletResponse response = mock(HttpServletResponse.class);
         
         //When

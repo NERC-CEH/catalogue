@@ -46,7 +46,7 @@ public class DataciteController {
             response.setContentType(DATACITE_XML_VALUE);
             Map<String, Object> data = new HashMap<>();
             data.put("doc", document);
-            data.put("resourceType", getDataciteResourceType((GeminiDocument)document));
+            data.put("resourceType", getDataciteResourceType(document));
             return new ModelAndView("/datacite/datacite.xml.tpl", data);
         }
         else {
@@ -54,8 +54,8 @@ public class DataciteController {
         }
     }
     
-    private String getDataciteResourceType(GeminiDocument document) {
-        switch(document.getResourceType().getValue()) {
+    private String getDataciteResourceType(MetadataDocument document) {
+        switch(document.getType()) {
             case "nonGeographicDataset": return "Dataset";
             case "dataset":              return "Dataset";
             case "application":          return "Application";
