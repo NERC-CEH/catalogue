@@ -31,8 +31,8 @@
     <date dateType="Submitted">${.now?date}</date>
   </dates>
   <language>en</language>
-  <#if resourceType.value?has_content>
-    <resourceType resourceTypeGeneral="${resourceType.value}"/>
+  <#if doc.resourceType.value?has_content>
+    <resourceType resourceTypeGeneral="${doc.resourceType.value}"/>
   </#if>
   <#if doc.resourceIdentifiers?has_content>
   <alternateIdentifiers>
