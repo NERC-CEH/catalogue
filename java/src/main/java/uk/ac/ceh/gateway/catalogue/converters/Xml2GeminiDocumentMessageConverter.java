@@ -26,7 +26,6 @@ import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ConformanceResu
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DatasetReferenceDatesConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DistributionInfoConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DownloadOrderConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.OnlineResourceConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceMaintenanceConverter;
@@ -61,7 +60,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final ResponsiblePartyConverter distributorConverter;
     private final ResponsiblePartyConverter metadataPointOfContactConverter;
     private final ResponsiblePartyConverter responsiblePartyConverter;
-    private final DownloadOrderConverter downloadOrderConverter;
     private final BoundingBoxesConverter boundingBoxesConverter;
     private final TemporalExtentConverter temporalExtentConverter;
     private final SpatialReferenceSystemConverter spatialReferenceSystem;
@@ -93,7 +91,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.metadataPointOfContactConverter = new ResponsiblePartyConverter(xpath, XPaths.METADATA_POINT_OF_CONTACT);
         this.distributorConverter = new ResponsiblePartyConverter(xpath, XPaths.DISTRIBUTOR);
         this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath, XPaths.RESPONSIBLE_PARTY);
-        this.downloadOrderConverter = new DownloadOrderConverter(xpath);
         this.boundingBoxesConverter = new BoundingBoxesConverter(xpath);
         this.browseGraphicUrl = xpath.compile(XPaths.BROWSE_GRAPHIC_URL);
         this.temporalExtentConverter = new TemporalExtentConverter(xpath);
@@ -145,7 +142,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setDatasetLanguages(getListOfStrings(document, datasetLanguage));
             toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
             toReturn.setTopicCategories(topicCategoriesConverter.convert(document));
-            toReturn.setDownloadOrder(downloadOrderConverter.convert(document));
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
             toReturn.setResourceType(Keyword.builder().value(resourceType.evaluate(document)).build());
             toReturn.setResourceIdentifiers(resourceIdentifierConverter.convert(document));
