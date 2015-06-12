@@ -83,7 +83,6 @@ public class GeminiDocument implements MetadataDocument {
         }
     }
     
-    @JsonIgnore
     public DownloadOrder getDownloadOrder() {
         return new DownloadOrder(onlineResources);
     }
