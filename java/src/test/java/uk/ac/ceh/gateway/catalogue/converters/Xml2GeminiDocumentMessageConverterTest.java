@@ -339,8 +339,10 @@ public class Xml2GeminiDocumentMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("nonOglDownloadOrder.xml"));
         DownloadOrder expected = DownloadOrder
             .builder()
-            .orderUrl("http://gateway.ceh.ac.uk/download?fileIdentifier=11caad35-4a33-4ad8-852b-6c120fd250e2")
+            .orderUrl("http://catalogue.ceh.ac.uk/download?fileIdentifier=11caad35-4a33-4ad8-852b-6c120fd250e2")
             .supportingDocumentsUrl("http://eidc.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2")
+            .orderMessage("")
+            .isOrderable(true)
             .build();
         
         //When
@@ -359,8 +361,10 @@ public class Xml2GeminiDocumentMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("oglDownloadOrder.xml"));
         DownloadOrder expected = DownloadOrder
             .builder()
-            .orderUrl("http://gateway.ceh.ac.uk/download?fileIdentifier=11caad35-4a33-4ad8-852b-6c120fd250e2")
+            .orderUrl("http://catalogue.ceh.ac.uk/download?fileIdentifier=11caad35-4a33-4ad8-852b-6c120fd250e2")
             .supportingDocumentsUrl("http://eidc.ceh.ac.uk/metadata/11caad35-4a33-4ad8-852b-6c120fd250e2")
+            .orderMessage("")
+            .isOrderable(true)
             .build();
         
         //When
@@ -380,6 +384,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         DownloadOrder expected = DownloadOrder
             .builder()
             .orderUrl("https://catalogue.ceh.ac.uk/download?fileIdentifier=0fecfe0d-7c48-42fb-9f2a-d836c9c88b8e")
+            .orderMessage("")
+            .isOrderable(true)
             .build();
         
         //When
