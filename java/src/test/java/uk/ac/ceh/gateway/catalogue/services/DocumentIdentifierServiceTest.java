@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,5 +40,17 @@ public class DocumentIdentifierServiceTest {
         
         //Then
         assertThat(validId, equalTo(guid));
+    }
+    
+    @Test
+    public void checkThatNullYieldNull() {
+        //Given
+        String id = null;
+        
+        //When
+        String fileId = service.generateFileId(id);
+        
+        //Then
+        assertNull("Expected result to be null", fileId);
     }
 }
