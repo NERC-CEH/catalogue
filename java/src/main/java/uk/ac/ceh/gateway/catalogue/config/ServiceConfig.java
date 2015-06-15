@@ -170,7 +170,7 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService),
+                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService, documentIdentifierService()),
                 solrServer
         );
         
@@ -184,6 +184,7 @@ public class ServiceConfig {
                 dataRepository,
                 bundledReaderService(),
                 documentListingService(),
+                documentIdentifierService(),
                 linkDatabase
         );
         
@@ -203,6 +204,7 @@ public class ServiceConfig {
         return new TerraCatalogImporterService(
                 dataRepository,
                 documentListingService(),
+                documentIdentifierService(),
                 userFactory,
                 documentReadingService(),
                 documentInfoMapper(),

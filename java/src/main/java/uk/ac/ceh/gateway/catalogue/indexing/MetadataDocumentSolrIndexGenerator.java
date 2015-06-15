@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 /**
  * The following class is responsible for taking a gemini document and creating 
@@ -30,10 +31,12 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
     private static final String CEH_OGL_URL = "http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
     private final TopicIndexer topicIndexer;
     private final CodeLookupService codeLookupService;
+    private final DocumentIdentifierService identifierService;
 
-    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService) {
+    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService, DocumentIdentifierService identifierService) {
         this.topicIndexer = topicIndexer;
         this.codeLookupService = codeLookupService;
+        this.identifierService = identifierService;
     }
 
     @Override
@@ -41,7 +44,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         DocumentSolrIndex toReturn = new DocumentSolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
-                .setIdentifier(document.getId())
+                .setIdentifier(identifierService.generateValidIdentifier(document.getId()))
                 .setResourceType(codeLookupService.lookup("metadata.scopeCode", document.getType()))
                 .setLocations(document.getLocations())
                 .setState(getState(document))

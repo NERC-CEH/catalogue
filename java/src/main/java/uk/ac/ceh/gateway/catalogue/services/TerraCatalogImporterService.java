@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.util.terracatalog.TerraCatalogImporter;
 public class TerraCatalogImporterService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentListingService listingService;
+    private final DocumentIdentifierService documentIdentifierService;
     private final OfflineTerraCatalogUserFactory<CatalogueUser> userFactory;
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
@@ -25,6 +26,7 @@ public class TerraCatalogImporterService {
         return new TerraCatalogImporter<>(
                 repo,
                 listingService,
+                documentIdentifierService,
                 userFactory,
                 documentReader,
                 documentInfoMapper,

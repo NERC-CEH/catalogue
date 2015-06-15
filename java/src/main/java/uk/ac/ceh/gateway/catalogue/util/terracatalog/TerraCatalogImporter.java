@@ -26,6 +26,7 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.User;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -44,6 +45,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     
     private final DataRepository<U> repo;
     private final DocumentListingService documentList;
+    private final DocumentIdentifierService documentIdentifierService;
     private final TerraCatalogUserFactory<U> userFactory;
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<M> documentInfoMapper;
@@ -53,12 +55,13 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
     
     public TerraCatalogImporter(DataRepository<U> repo,
                                 DocumentListingService documentList,
+                                DocumentIdentifierService documentIdentifierService,
                                 TerraCatalogUserFactory<U> userFactory,
                                 DocumentReadingService documentReader,
                                 DocumentInfoMapper<M> documentInfoMapper,
                                 TerraCatalogDocumentInfoFactory<M> metadataDocument,
                                 U importUser) {
-        this(repo, documentList, userFactory, documentReader, documentInfoMapper, metadataDocument, new TerraCatalogExtReader(), importUser);
+        this(repo, documentList, documentIdentifierService, userFactory, documentReader, documentInfoMapper, metadataDocument, new TerraCatalogExtReader(), importUser);
     }
     /**
      * 
@@ -110,12 +113,12 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
         
         TerraCatalogPair firstToCommit = toCommit.poll();
         
-        DataOngoingCommit<U> ongoingCommit = repo.submitData(firstToCommit.getId() + ".meta", (o)-> documentInfoMapper.writeInfo(firstToCommit.getInfo(), o) )
-                                                 .submitData(firstToCommit.getId() + ".raw", (o) -> IOUtils.copy(firstToCommit.getXmlInputStream(), o) );
+        DataOngoingCommit<U> ongoingCommit = repo.submitData(firstToCommit.getFileId() + ".meta", (o)-> documentInfoMapper.writeInfo(firstToCommit.getInfo(), o) )
+                                                 .submitData(firstToCommit.getFileId() + ".raw", (o) -> IOUtils.copy(firstToCommit.getXmlInputStream(), o) );
         
         for(TerraCatalogPair currToCommit : toCommit) {
-            ongoingCommit = ongoingCommit.submitData(currToCommit.getId() + ".meta", (o)-> documentInfoMapper.writeInfo(currToCommit.getInfo(), o) )
-                                         .submitData(currToCommit.getId() + ".raw", (o) -> IOUtils.copy(currToCommit.getXmlInputStream(), o) );
+            ongoingCommit = ongoingCommit.submitData(currToCommit.getFileId() + ".meta", (o)-> documentInfoMapper.writeInfo(currToCommit.getInfo(), o) )
+                                         .submitData(currToCommit.getFileId() + ".raw", (o) -> IOUtils.copy(currToCommit.getXmlInputStream(), o) );
         }
         log.info("Commiting");
         return ongoingCommit.commit(author, "Commit by terraCatalog importer for " + author.getEmail() + " from " + importFile);
@@ -149,7 +152,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
         return documentList.filterFilenames(repo.getFiles())
                    .stream()
                    .map((f) -> FilenameUtils.removeExtension(f))
-                   .filter((f)-> files.stream().noneMatch((t)-> t.getId().equals(f)))
+                   .filter((f)-> files.stream().noneMatch((t)-> t.getFileId().equals(f)))
                    .collect(Collectors.toList());
     }
    
@@ -188,8 +191,8 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
             this.owner = userFactory.getAuthor(tcExt);
         }
               
-        public String getId() {
-            return document.getId();
+        public String getFileId() {
+            return documentIdentifierService.generateValidIdentifier(document.getId());
         }
         
         public final InputStream getXmlInputStream() throws IOException {

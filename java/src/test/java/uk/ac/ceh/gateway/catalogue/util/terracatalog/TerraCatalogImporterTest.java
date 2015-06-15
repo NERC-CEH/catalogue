@@ -37,6 +37,7 @@ import uk.ac.ceh.components.userstore.UserStore;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -51,6 +52,7 @@ public class TerraCatalogImporterTest {
     @Mock(answer=RETURNS_DEEP_STUBS) DataRepository<CatalogueUser> repo;
     @Spy CatalogueUser automatedUser;
     @Mock DocumentListingService listingService;
+    @Mock DocumentIdentifierService documentIdentifierService;
     @Mock UserStore<CatalogueUser> userstore;
     @Mock TerraCatalogUserFactory userFactory;
     @Mock DocumentReadingService documentReader;
@@ -70,7 +72,7 @@ public class TerraCatalogImporterTest {
         
         MockitoAnnotations.initMocks(this);
                 
-        importer = new TerraCatalogImporter<>(repo, listingService, userFactory, documentReader, documentInfoMapper, terraCatalogDocumentInfoFactory, tcExtReader, automatedUser);
+        importer = new TerraCatalogImporter<>(repo, listingService, documentIdentifierService, userFactory, documentReader, documentInfoMapper, terraCatalogDocumentInfoFactory, tcExtReader, automatedUser);
     }
     
     @Test
@@ -97,7 +99,7 @@ public class TerraCatalogImporterTest {
     public void checkThatCanIdentifyFilesWhichAreInRepoButNotImport() throws DataRepositoryException {
         //Given
         TerraCatalogImporter.TerraCatalogPair pair = mock(TerraCatalogImporter.TerraCatalogPair.class);
-        when(pair.getId()).thenReturn("486f7764-7943-6f64-6550-6172746e6572");
+        when(pair.getFileId()).thenReturn("486f7764-7943-6f64-6550-6172746e6572");
         
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList( "486f7764-7943-6f64-6550-6172746e6572",
                                                                            "4d6f6d65-6e74-6172-794c-617073654f66"));
@@ -137,8 +139,8 @@ public class TerraCatalogImporterTest {
         
         TerraCatalogPair file1 = mock(TerraCatalogPair.class);
         TerraCatalogPair file2 = mock(TerraCatalogPair.class);
-        when(file1.getId()).thenReturn("48657954-6865-7265-2d4d-722e55554944");
-        when(file2.getId()).thenReturn("49734974-4e65-6172-486f-6d6554696d65");
+        when(file1.getFileId()).thenReturn("48657954-6865-7265-2d4d-722e55554944");
+        when(file2.getFileId()).thenReturn("49734974-4e65-6172-486f-6d6554696d65");
         List<TerraCatalogImporter<MetadataInfo,CatalogueUser>.TerraCatalogPair> files = Arrays.asList(file1, file2);
         
         when(repo.submitData(eq("48657954-6865-7265-2d4d-722e55554944.meta"), any(DataWriter.class))
