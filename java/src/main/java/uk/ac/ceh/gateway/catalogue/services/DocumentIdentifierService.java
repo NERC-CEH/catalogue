@@ -1,9 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import java.util.UUID;
 import lombok.Data;
 
 /**
- * This application hosts metadat documents on paths which take the form:
+ * This application hosts metadata documents on paths which take the form:
  *    http://somehost/id/{metadata-id}
  * 
  * An issue with this is that (in general) metadata identifiers can take any
@@ -25,9 +26,20 @@ public class DocumentIdentifierService {
      * @param identifier from a document (e.g. fileIdentifier in Gemini)
      * @return an identifier compatible in the system
      */
-    public String generateValidIdentifier(String identifier) {
+    public String generateFileId(String identifier) {
+        if(identifier == null) {
+            return null;
+        }
         return identifier
                 .replace('/', replacement)
                 .replace('.', replacement);
+    }
+    
+    /**
+     * Generate a fresh metadata document file identifier
+     * @return a uuid which can be used as a file name
+     */
+    public String generateFileId() {
+        return UUID.randomUUID().toString();
     }
 }

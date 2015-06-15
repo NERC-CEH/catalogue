@@ -149,7 +149,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
     }
     
     private Link createLink(Metadata metadata, String urlFragment, String associationType) {
-        String id = documentIdentifierService.generateValidIdentifier(metadata.getFileIdentifier());
+        String id = documentIdentifierService.generateFileId(metadata.getFileIdentifier());
         return Link.builder()
             .title(metadata.getTitle())
             .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(id).build().toUriString())

@@ -23,7 +23,7 @@ public class DocumentIdentifierServiceTest {
         String threddsId = "CHESSModel/DetailWhole.ncml";
         
         //When
-        String validId = service.generateValidIdentifier(threddsId);
+        String validId = service.generateFileId(threddsId);
         
         //Then
         assertThat(validId, equalTo("CHESSModel-DetailWhole-ncml"));
@@ -35,7 +35,7 @@ public class DocumentIdentifierServiceTest {
         String guid = "44020f7b-ba7a-44f9-952b-08af0e479615";
         
         //When
-        String validId = service.generateValidIdentifier(guid);
+        String validId = service.generateFileId(guid);
         
         //Then
         assertThat(validId, equalTo(guid));

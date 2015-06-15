@@ -65,7 +65,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     public void checkThatTitleIdTransferedToIndex() {
         //Given
         String id = "some crazy long, hard to rememember, number";
-        when(documentIdentifierService.generateValidIdentifier(id)).thenReturn("myid");
+        when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
         GeminiDocument document = new GeminiDocument();
         document.setId(id);
         

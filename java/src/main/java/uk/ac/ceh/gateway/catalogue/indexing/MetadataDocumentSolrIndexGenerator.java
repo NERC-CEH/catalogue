@@ -44,7 +44,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         DocumentSolrIndex toReturn = new DocumentSolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
-                .setIdentifier(identifierService.generateValidIdentifier(document.getId()))
+                .setIdentifier(identifierService.generateFileId(document.getId()))
                 .setResourceType(codeLookupService.lookup("metadata.scopeCode", document.getType()))
                 .setLocations(document.getLocations())
                 .setState(getState(document))

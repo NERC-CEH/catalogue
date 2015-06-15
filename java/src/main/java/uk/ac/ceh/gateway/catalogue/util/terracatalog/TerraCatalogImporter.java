@@ -192,7 +192,7 @@ public class TerraCatalogImporter<M, U extends DataAuthor & User> {
         }
               
         public String getFileId() {
-            return documentIdentifierService.generateValidIdentifier(document.getId());
+            return documentIdentifierService.generateFileId(document.getId());
         }
         
         public final InputStream getXmlInputStream() throws IOException {
