@@ -82,11 +82,7 @@ public class GeminiDocument implements MetadataDocument {
             return "";
         }
     }
-    
-    public DownloadOrder getDownloadOrder() {
-        return new DownloadOrder(onlineResources);
-    }
-    
+        
     @JsonProperty("citation")
     public Citation getCitation() {
         return citation;
