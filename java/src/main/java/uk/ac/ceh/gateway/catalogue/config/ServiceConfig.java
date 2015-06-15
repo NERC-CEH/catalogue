@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.IOException;
+import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
@@ -111,6 +113,13 @@ public class ServiceConfig {
     @Bean
     public TMSToWMSGetMapService tmsToWmsGetMapService() {
         return new TMSToWMSGetMapService();
+    }
+    
+    @Bean
+    public DownloadOrderDetailsService downloadOrderDetailsService() {
+        Pattern eidchub = Pattern.compile("http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*");
+        Pattern orderMan = Pattern.compile("http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*");
+        return new DownloadOrderDetailsService(eidchub, orderMan);
     }
     
     @Bean

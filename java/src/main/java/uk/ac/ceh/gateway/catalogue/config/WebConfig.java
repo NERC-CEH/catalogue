@@ -44,6 +44,7 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
 @Configuration
@@ -71,6 +72,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
     @Autowired CodeLookupService codesLookup;
+    @Autowired DownloadOrderDetailsService downloadOrderDetailsService;
     @Autowired PermissionService permissionService;
     
     @Override
@@ -111,6 +113,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         try {
             Map<String, Object> shared = new HashMap<>();
             shared.put("codes", codesLookup);
+            shared.put("downloadOrderDetails", downloadOrderDetailsService);
             shared.put("permission", permissionService);
             
             freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);

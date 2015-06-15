@@ -51,7 +51,6 @@ public class GeminiDocument implements MetadataDocument {
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<ConformanceResult> conformanceResults;
     private List<SpatialResolution> spatialResolutions;
-    private DownloadOrder downloadOrder;
     @JsonIgnore
     private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;
@@ -83,7 +82,7 @@ public class GeminiDocument implements MetadataDocument {
             return "";
         }
     }
-    
+        
     @JsonProperty("citation")
     public Citation getCitation() {
         return citation;

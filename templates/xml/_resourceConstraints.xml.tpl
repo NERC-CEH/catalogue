@@ -3,7 +3,7 @@
 	<#if useLimitations?has_content>
 	<#list useLimitations as useLimitation>
     <#if useLimitation.uri?has_content>
-      <gmd:useLimitation><gmx:Anchor xlink:title="${useLimitation.value?xml}" xlink:href="${useLimitation.uri?xml}">${useLimitation.value?xml}</gmd:useLimitation>
+      <gmd:useLimitation><gmx:Anchor xlink:title="${useLimitation.value?xml}" xlink:href="${useLimitation.uri?xml}">${useLimitation.value?xml}</gmx:Anchor></gmd:useLimitation>
     <#else>
       <gmd:useLimitation><gco:CharacterString>${useLimitation.value?xml}</gco:CharacterString></gmd:useLimitation>
     </#if>
@@ -27,7 +27,7 @@
 	<#if otherConstraints?has_content>
 	<#list otherConstraints as otherConstraint>
     <#if otherConstraint.uri?has_content>
-      <gmd:otherConstraints><gmx:Anchor xlink:title="${otherConstraint.value?xml}" xlink:href="${otherConstraint.uri?xml}">${otherConstraint.value?xml}</gmd:otherConstraints>
+      <gmd:otherConstraints><gmx:Anchor xlink:title="${otherConstraint.value?xml}" xlink:href="${otherConstraint.uri?xml}">${otherConstraint.value?xml}</gmx:Anchor> </gmd:otherConstraints>
     <#else>
       <gmd:otherConstraints><gco:CharacterString>${otherConstraint.value?xml}</gco:CharacterString></gmd:otherConstraints>
     </#if>
