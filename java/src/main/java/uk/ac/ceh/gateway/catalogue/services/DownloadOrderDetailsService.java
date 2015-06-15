@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
+import lombok.Data;
 import lombok.Value;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
@@ -14,11 +16,13 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
  * link to the order manager, then we will deem this to not be orderable (e.g.
  * Embargoed).
  * 
-* The logic in this class makes use of the fact that OnlineResources have safe
+ * The logic in this class makes use of the fact that OnlineResources have safe
  * variables (That is strings are never null)
  */
+@Data
 public class DownloadOrderDetailsService {
-
+    private final Pattern eidchub, orderManager;
+            
     public DownloadOrder from(List<OnlineResource> onlineResources) {
         return new DownloadOrder(onlineResources);
     }
@@ -36,14 +40,14 @@ public class DownloadOrderDetailsService {
             supportingDocumentsUrl = onlineResources
                     .stream()
                     .filter(r -> r.getFunction().equals("information"))
-                    .filter(r -> r.getUrl().startsWith("http://eidc.ceh.ac.uk/metadata"))
+                    .filter(r -> eidchub.matcher(r.getUrl()).matches())
                     .map(r -> r.getUrl())
                     .findFirst().orElse(null);
 
             Optional<OnlineResource> orderResource = onlineResources
                     .stream()
                     .filter(r -> r.getFunction().equals("order"))
-                    .filter(r -> r.getUrl().contains("://catalogue.ceh.ac.uk/download?fileIdentifier="))
+                    .filter(r -> orderManager.matcher(r.getUrl()).matches())
                     .findFirst();
             isOrderable = orderResource.isPresent();
 

@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -20,7 +21,9 @@ public class DownloadOrderDetailsServiceTest {
     
     @Before
     public void init() {
-        service = new DownloadOrderDetailsService();
+        Pattern eidchub = Pattern.compile("http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*");
+        Pattern orderMan = Pattern.compile("http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*");
+        service = new DownloadOrderDetailsService(eidchub, orderMan);
     }
     
     @Test
