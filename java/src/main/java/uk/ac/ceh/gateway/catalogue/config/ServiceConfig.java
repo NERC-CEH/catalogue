@@ -31,6 +31,7 @@ import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -156,7 +157,12 @@ public class ServiceConfig {
     @Bean
     public ExtensionDocumentListingService documentListingService() {
         return new ExtensionDocumentListingService();
-    } 
+    }
+    
+    @Bean
+    public DocumentIdentifierService documentIdentifierService() {
+        return new DocumentIdentifierService('-');
+    }
     
     @Bean
     public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException {
