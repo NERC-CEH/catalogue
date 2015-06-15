@@ -6,7 +6,6 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.EF_INSPIRE_XML_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UKEOF_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 
@@ -32,7 +31,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
     "relatedTo"
 })
 @ConvertUsing({
-    @Template(called="html/emf.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="html/ef.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/emf.xml.tpl",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
 })
 public class Facility extends BaseMonitoringType {

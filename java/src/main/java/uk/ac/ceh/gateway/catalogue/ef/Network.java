@@ -25,7 +25,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
     "contains"
 })
 @ConvertUsing({
-    @Template(called="html/emn.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="html/ef.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/emn.xml.tpl",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
 })
 public class Network extends BaseMonitoringType {

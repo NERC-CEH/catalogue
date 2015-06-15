@@ -31,7 +31,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
     "triggers"
 })
 @ConvertUsing({
-    @Template(called="html/emp.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="html/ef.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/emp.xml.tpl",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
 })
 public class Programme extends BaseMonitoringType {
