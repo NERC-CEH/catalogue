@@ -12,7 +12,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
@@ -38,7 +37,6 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/topic/2","http://onto.nerc.ac.uk/CEHMD/topic/3"));
         List<String> expected = Arrays.asList("0/Biodiversity/", "0/Phenology/");
-        when(document.getDownloadOrder()).thenReturn(DownloadOrder.builder().build());
         
         //When
         DocumentSolrIndex index = generator.generateIndex(document);
