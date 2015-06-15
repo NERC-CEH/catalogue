@@ -1,19 +1,28 @@
-package uk.ac.ceh.gateway.catalogue.model;
+package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.Arrays;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import org.junit.Before;
 import org.junit.Test;
-import uk.ac.ceh.gateway.catalogue.gemini.DownloadOrder;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService.DownloadOrder;
 
 /**
  *
  * @author cjohn
  */
-public class DownloadOrderTest {
+public class DownloadOrderDetailsServiceTest {
+    
+    private DownloadOrderDetailsService service;
+    
+    @Before
+    public void init() {
+        service = new DownloadOrderDetailsService();
+    }
+    
     @Test
     public void canDownloadOrderWithOrderableResource() {
         //Given
@@ -24,7 +33,7 @@ public class DownloadOrderTest {
         List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
         
         //When
-        DownloadOrder order = new DownloadOrder(onlineResources);
+        DownloadOrder order = service.from(onlineResources);
         
         //Then
         assertThat(order.isOrderable(), is(true));
@@ -44,7 +53,7 @@ public class DownloadOrderTest {
         List<OnlineResource> onlineResources = Arrays.asList(orderable, notOrderable);
         
         //When
-        DownloadOrder order = new DownloadOrder(onlineResources);
+        DownloadOrder order = service.from(onlineResources);
         
         //Then
         assertThat(order.isOrderable(), is(true));
@@ -62,7 +71,7 @@ public class DownloadOrderTest {
         List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
         
         //When
-        DownloadOrder order = new DownloadOrder(onlineResources);
+        DownloadOrder order = service.from(onlineResources);
         
         //Then
         assertThat(order.isOrderable(), is(false));
@@ -79,7 +88,7 @@ public class DownloadOrderTest {
         List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
         
         //When
-        DownloadOrder order = new DownloadOrder(onlineResources);
+        DownloadOrder order = service.from(onlineResources);
         
         //Then
         assertThat(order.getSupportingDocumentsUrl(), equalTo(orderUrl));
