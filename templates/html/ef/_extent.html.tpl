@@ -6,7 +6,7 @@
         <span content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
       </#list>
       <#if geometry??>
-        <span content="${geometry.wkt?html}" datatype="geo:wktLiteral"/>
+        <span content="${geometry.value?html}" datatype="geo:wktLiteral"/>
       </#if>
     </div>
   </#if>
