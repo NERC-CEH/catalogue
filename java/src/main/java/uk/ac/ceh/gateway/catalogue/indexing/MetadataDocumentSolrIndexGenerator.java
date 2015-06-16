@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +13,11 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
+import uk.ac.ceh.gateway.catalogue.ef.Activity;
+import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
+import uk.ac.ceh.gateway.catalogue.ef.Facility;
+import uk.ac.ceh.gateway.catalogue.ef.Geometry;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
@@ -19,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
 /**
  * The following class is responsible for taking a gemini document and creating 
@@ -30,20 +38,22 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
     private static final String CEH_OGL_URL = "http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
     private final TopicIndexer topicIndexer;
     private final CodeLookupService codeLookupService;
+    private final SolrGeometryService geometryService;
 
-    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService) {
+    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService, SolrGeometryService geometryService) {
         this.topicIndexer = topicIndexer;
         this.codeLookupService = codeLookupService;
+        this.geometryService = geometryService;
     }
 
     @Override
     public DocumentSolrIndex generateIndex(MetadataDocument document) {
+        List<String> locations = new ArrayList<>();
         DocumentSolrIndex toReturn = new DocumentSolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
                 .setIdentifier(document.getId())
-                .setResourceType(codeLookupService.lookup("metadata.scopeCode", document.getType()))
-                .setLocations(document.getLocations())
+                .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
                 .setState(getState(document))
                 .setTopic(topicIndexer.index(document))
                 .setView(getViews(document));
@@ -60,8 +70,30 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                     .setOnlineResourceDescription(grab(gemini.getOnlineResources(), OnlineResource::getDescription))
                     .setResourceIdentifier(grab(gemini.getResourceIdentifiers(), ResourceIdentifier::getCode))
                     .setDataCentre(getDataCentre(gemini));
+            locations.addAll(solrGeom(grab(gemini.getBoundingBoxes(), BoundingBox::getWkt)));
         }
-        return toReturn;
+        
+        if(document instanceof BaseMonitoringType) {
+            BaseMonitoringType ef = (BaseMonitoringType)document;
+            
+            locations.addAll(solrGeom(grab(ef.getBoundingBoxes(), BaseMonitoringType.BoundingBox::getWkt)));
+        }
+        
+        if(document instanceof Facility) {
+            Facility ef = (Facility)document;                    
+            locations.addAll(solrGeom(grab(Arrays.asList(ef.getGeometry()), Geometry::getValue)));
+        }
+        return toReturn.setLocations(locations);
+    }
+    
+    // Takes a list of wkt 
+    private List<String> solrGeom(List<String> wktList) {
+        return wktList
+                .stream()
+                .filter(Objects::nonNull)
+                .map( w -> geometryService.toSolrGeometry(w))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
     
     private String getLicence(GeminiDocument document){

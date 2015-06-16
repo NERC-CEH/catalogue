@@ -6,7 +6,7 @@ define [
   'openlayers'
 ], ($, _, Backbone, OpenLayersView, OpenLayers) -> OpenLayersView.extend
   highlighted:
-    strokeColor: '#8fca89' 
+    strokeColor: '#8fca89'
     fillColor:   '#8fca89'
     fillOpacity: 0.3
 
@@ -56,7 +56,7 @@ define [
 
   Transform these to wkt and then call setHighlighted
   ###
-  setHighlightedBoxes: (boxes = []) -> @setHighlighted _.map boxes, @bbox2WKT
+  setHighlightedBoxes: (boxes = []) -> @setHighlighted _.map boxes, @solr2WKT
 
   ###
   Given an array of locations in the form:
@@ -73,17 +73,15 @@ define [
     # Loop round all the locations and set as a marker and polygon
     _.each locations, (location) =>
       vector = @readWKT location
-      # Calculate the average length of the height and width of the area
+      # Calculate the average length of the height and width of the bounds
+      bounds = vector.geometry.getBounds().toGeometry()
       vector.attributes = 
-        areaRoot: Math.sqrt vector.geometry.getArea()
+        areaRoot: Math.sqrt bounds.getArea()
         isPoint:  false
 
-      centroid = vector.geometry.components[0].getCentroid()
-      point = new OpenLayers.Feature.Vector centroid
+      point = new OpenLayers.Feature.Vector bounds.getCentroid()
       point.attributes = _.defaults isPoint: true, vector.attributes
-      
       @highlightedLayer.addFeatures [vector, point]
-
 
   ###
   Transform the well known text representation into an openlayers geometry in
@@ -96,11 +94,13 @@ define [
 
   ###
   Convert the given location string into a well known text representation.
+  Solr geometries can either be Points or Polygons
   ###
-  bbox2WKT: (location) ->
-    [minx,miny,maxx,maxy] = location.split ' '
-    return """POLYGON((#{minx} #{miny}, \
-                       #{minx} #{maxy}, \
-                       #{maxx} #{maxy}, \
-                       #{maxx} #{miny}, \
-                       #{minx} #{miny}))"""
+  solr2WKT: (location) ->
+    c = location.split ' '
+    if c.length is 2 then return "POINT(#{c[0]} #{c[1]})" 
+    else return """POLYGON((#{c[0]} #{c[1]}, \
+                            #{c[0]} #{c[3]}, \
+                            #{c[2]} #{c[3]}, \
+                            #{c[2]} #{c[1]}, \
+                            #{c[0]} #{c[1]}))"""

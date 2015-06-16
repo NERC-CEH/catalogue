@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.zip.ZipFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -75,9 +76,11 @@ public class MaintenanceController {
             return ResponseEntity.ok(loadMaintenancePage().addMessage("All documents successfully indexed"));
         }
         catch(DocumentIndexingException die) {
+            MaintenanceResponse response = loadMaintenancePage().addMessage(die.getMessage());
+            Arrays.stream(die.getSuppressed()).forEach(e -> response.addMessage(e.getMessage()));
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(loadMaintenancePage().addMessage(die.getMessage()));
+                    .body(response);
         }
     }
     
@@ -89,9 +92,11 @@ public class MaintenanceController {
             linkingService.rebuildLinks();
             return ResponseEntity.ok(loadMaintenancePage().addMessage("All documents successfully linked"));
         } catch (DocumentLinkingException ex) {
+            MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
+            Arrays.stream(ex.getSuppressed()).forEach(e -> response.addMessage(e.getMessage()));
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(loadMaintenancePage().addMessage(ex.getMessage()));
+                    .body(response);
         }
     }
     
