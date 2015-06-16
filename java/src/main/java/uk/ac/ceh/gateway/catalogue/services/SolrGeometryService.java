@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -30,6 +31,14 @@ public class SolrGeometryService {
                 return new StringBuilder()
                         .append(coordinate.x).append(" ")
                         .append(coordinate.y).toString();
+            }
+            else if (geom instanceof LineString) {
+                Coordinate[] coordinates = geom.getCoordinates();
+                return new StringBuilder()
+                        .append(coordinates[0].x).append(" ")
+                        .append(coordinates[0].y).append(" ")
+                        .append(coordinates[1].x).append(" ")
+                        .append(coordinates[1].y).toString();
             }
             else {
                 Coordinate[] coordinates = geom.getCoordinates();
