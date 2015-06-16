@@ -4,11 +4,10 @@ as the body text of the link. Optionally supply a target value to specify
 which frame the link should load in.
 -->
 <#macro link l target>
-  <#assign display=l.title!l.value/>
   <#if l.href??>
-    <a href="${l.href}" target="${target}">${display}</a>
+    <a href="${l.href}" target="${target}">${l.displayText}</a>
   <#else>
-    ${display}
+    ${l.displayText}
   </#if>
 </#macro>
 

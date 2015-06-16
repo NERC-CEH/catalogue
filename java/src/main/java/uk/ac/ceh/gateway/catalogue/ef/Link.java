@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.ef;
 
+import java.util.Arrays;
+import java.util.Objects;
 import javax.xml.bind.annotation.*;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -14,14 +16,13 @@ public class Link {
     @XmlValue
     private String value;
     
-    public String getValueOrFallback() {
-        String toReturn = "";
-        if (value != null && !value.isEmpty()) {
-            toReturn = value;
-        } else if (title != null && !title.isEmpty()) {
-            toReturn = title;
-        }
-        return toReturn;
+    public String getDisplayText() {
+        return Arrays.asList(value, title, href)
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(s-> !s.isEmpty())
+                .findFirst()
+                .orElse("No content in link");
     }
     
     @Data

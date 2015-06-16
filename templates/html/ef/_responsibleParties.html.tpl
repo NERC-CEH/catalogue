@@ -30,7 +30,7 @@
             <address><a href="mailto:${rp.email}">${rp.email}</a></address>
           </#if>
 
-          <#if rp.onlineResource?has_content>
+          <#if (rp.onlineResource.href)?has_content>
             <address><a href="${rp.onlineResource.href}" target="_blank">${rp.onlineResource.href}</a></address>
           </#if>
         </dd>
