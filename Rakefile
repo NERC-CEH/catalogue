@@ -4,7 +4,7 @@ require 'parallel'
 TEST_GROUPS = {
   :chrome_spec  => 'driver:chrome',
   :firefox_spec => 'driver:firefox',
-  :ie_spec      => 'driver:ie',
+#  :ie_spec      => 'driver:ie',
   :nexus5_spec  => 'driver:nexus5',
 #  :nexus7_spec  => 'driver:nexus7',
   :htc_spec     => 'driver:htcdesire',
