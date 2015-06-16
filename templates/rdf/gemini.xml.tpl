@@ -107,7 +107,8 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
    <#if type=='dataset' || type=='nonGeographicDataset'>
       <dcat:Distribution>
         <rdf:Description>
-		 <#if downloadOrder?? && downloadOrder.orderUrl?has_content>
+         <#assign downloadOrder=downloadOrderDetails.from(onlineResources)>
+         <#if downloadOrder.orderUrl?has_content>
             <dcat:accessURL rdf:resource="${downloadOrder.orderUrl}"/>
          </#if>
          <#if citation?has_content>
@@ -137,11 +138,6 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
         </rdf:Description>
       </dcat:Distribution>
    <#elseif type=='service'>
-   <#if downloadOrder.licenseUrl?has_content>
-      <dct:license rdf:resource="${downloadOrder.licenseUrl}"/>
-      <dct:rights rdf:resource="${downloadOrder.licenseUrl}"/>
-   </#if>
-
       <#if useLimitations?has_content>
         <#list useLimitations as useLimitation>
          <#if !useLimitation?starts_with("If you re")>
