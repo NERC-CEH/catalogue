@@ -401,16 +401,16 @@
 			<resourceConstraints xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gmd="http://www.isotc211.org/2005/gmd">
 				<MD_LegalConstraints>
 					<useLimitation>
-						<gco:CharacterString>Terms and conditions apply (http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/grant-of-licence-for-web-mapping-services/plain)</gco:CharacterString>
+						<gco:CharacterString>Terms and conditions apply (http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/grant-of-licence-for-web-mapping-services/plain)</gco:CharacterString>
 					</useLimitation>
 					<accessConstraints>
 						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
 					</accessConstraints>
 					<otherConstraints>
-						<gco:CharacterString>Terms and conditions apply (http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/grant-of-licence-for-web-mapping-services/plain)</gco:CharacterString>
+						<gco:CharacterString>Terms and conditions apply (http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/grant-of-licence-for-web-mapping-services/plain)</gco:CharacterString>
 					</otherConstraints>
 					<otherConstraints>
-						<gmx:Anchor xlink:href="http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/grant-of-licence-for-web-mapping-services/plain">Terms and conditions apply</gmx:Anchor>
+						<gmx:Anchor xlink:href="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/grant-of-licence-for-web-mapping-services/plain">Terms and conditions apply</gmx:Anchor>
 					</otherConstraints>
 				</MD_LegalConstraints>
 			</resourceConstraints>

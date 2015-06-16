@@ -509,7 +509,7 @@
 						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
 					</accessConstraints>
 					<otherConstraints xmlns:xlink="http://www.w3.org/1999/xlink">
-						<gmx:Anchor xlink:href="http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ukbms-click-through/plain">Licence terms and conditions apply</gmx:Anchor>
+						<gmx:Anchor xlink:href="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ukbms-click-through/plain">Licence terms and conditions apply</gmx:Anchor>
 					</otherConstraints>
 				</MD_LegalConstraints>
 			</resourceConstraints>
@@ -644,7 +644,7 @@
 					<gmd:onLine>
 						<gmd:CI_OnlineResource>
 							<gmd:linkage>
-								<gmd:URL>http://eidchub.ceh.ac.uk/metadata/ff55462e-38a4-4f30-b562-f82ff263d9c3/zip</gmd:URL>
+								<gmd:URL>http://eidc.ceh.ac.uk/metadata/ff55462e-38a4-4f30-b562-f82ff263d9c3/zip</gmd:URL>
 							</gmd:linkage>
 							<gmd:name>
 								<gco:CharacterString>Documents</gco:CharacterString>
