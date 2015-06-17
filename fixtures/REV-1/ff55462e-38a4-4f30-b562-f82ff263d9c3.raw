@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+	<gmd:fileIdentifier>
+		<gco:CharacterString>ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
+	</gmd:fileIdentifier>
+	<language xmlns="http://www.isotc211.org/2005/gmd">
+		<LanguageCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="eng"/>
+	</language>
+	<characterSet xmlns="http://www.isotc211.org/2005/gmd">
+		<MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+	</characterSet>
+	<gmd:parentIdentifier>
+		<gco:CharacterString>571a676f-6c32-489b-b7ec-18dcc617a9f1</gco:CharacterString>
+	</gmd:parentIdentifier>
+	<hierarchyLevel xmlns="http://www.isotc211.org/2005/gmd">
+		<MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+	</hierarchyLevel>
+	<gmd:contact>
+		<gmd:CI_ResponsibleParty>
+			<gmd:organisationName>
+				<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+			</gmd:organisationName>
+			<gmd:contactInfo>
+				<gmd:CI_Contact>
+					<gmd:address>
+						<gmd:CI_Address>
+							<gmd:electronicMailAddress>
+								<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+							</gmd:electronicMailAddress>
+						</gmd:CI_Address>
+					</gmd:address>
+				</gmd:CI_Contact>
+			</gmd:contactInfo>
+			<gmd:role>
+				<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+			</gmd:role>
+		</gmd:CI_ResponsibleParty>
+	</gmd:contact>
+	<gmd:dateStamp>
+		<gco:DateTime>2015-04-16T11:14:39</gco:DateTime>
+	</gmd:dateStamp>
+	<gmd:metadataStandardName>
+		<gco:CharacterString>NERC profile of ISO19115:2003</gco:CharacterString>
+	</gmd:metadataStandardName>
+	<gmd:metadataStandardVersion>
+		<gco:CharacterString>1.0</gco:CharacterString>
+	</gmd:metadataStandardVersion>
+	<gmd:referenceSystemInfo>
+		<gmd:MD_ReferenceSystem>
+			<gmd:referenceSystemIdentifier>
+				<gmd:RS_Identifier>
+					<gmd:code>
+						<gco:CharacterString>27700</gco:CharacterString>
+					</gmd:code>
+					<gmd:codeSpace>
+						<gco:CharacterString>urn:ogc:def:crs:EPSG</gco:CharacterString>
+					</gmd:codeSpace>
+					<gmd:version>
+						<gco:CharacterString>6.11.2</gco:CharacterString>
+					</gmd:version>
+				</gmd:RS_Identifier>
+			</gmd:referenceSystemIdentifier>
+		</gmd:MD_ReferenceSystem>
+	</gmd:referenceSystemInfo>
+	<gmd:identificationInfo>
+		<gmd:MD_DataIdentification>
+			<gmd:citation>
+				<gmd:CI_Citation>
+					<gmd:title>
+						<gco:CharacterString>United Kingdom Butterfly Monitoring Scheme: collated indices 2011</gco:CharacterString>
+					</gmd:title>
+					<gmd:date>
+						<gmd:CI_Date>
+							<gmd:date>
+								<gco:Date>2012-04-01</gco:Date>
+							</gmd:date>
+							<dateType xmlns="http://www.isotc211.org/2005/gmd">
+								<CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+							</dateType>
+						</gmd:CI_Date>
+					</gmd:date>
+					<gmd:identifier>
+						<gmd:RS_Identifier>
+							<gmd:code>
+								<gco:CharacterString>1329909998347</gco:CharacterString>
+							</gmd:code>
+							<gmd:codeSpace>
+								<gco:CharacterString>CEH:EIDC:</gco:CharacterString>
+							</gmd:codeSpace>
+						</gmd:RS_Identifier>
+					</gmd:identifier>
+					<gmd:identifier>
+						<gmd:RS_Identifier>
+							<gmd:code>
+								<gco:CharacterString>http://catalogue.ceh.ac.uk/id/ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
+							</gmd:code>
+						</gmd:RS_Identifier>
+					</gmd:identifier>
+					<gmd:identifier>
+						<gmd:RS_Identifier>
+							<gmd:code>
+								<gco:CharacterString>10.5285/ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
+							</gmd:code>
+							<gmd:codeSpace>
+								<gco:CharacterString>doi:</gco:CharacterString>
+							</gmd:codeSpace>
+						</gmd:RS_Identifier>
+					</gmd:identifier>
+					<gmd:identifier>
+						<gmd:RS_Identifier>
+							<gmd:code>
+								<gco:CharacterString>http://catalogue.ceh.ac.uk/id/ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
+							</gmd:code>
+						</gmd:RS_Identifier>
+					</gmd:identifier>
+					<gmd:identifier>
+						<gmd:RS_Identifier>
+							<gmd:code>
+								<gco:CharacterString>10/mzz</gco:CharacterString>
+							</gmd:code>
+							<gmd:codeSpace>
+								<gco:CharacterString>doi:</gco:CharacterString>
+							</gmd:codeSpace>
+						</gmd:RS_Identifier>
+					</gmd:identifier>
+					<gmd:identifier>
+						<gmd:RS_Identifier>
+							<gmd:code>
+								<gco:CharacterString>http://catalogue.ceh.ac.uk/id/ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
+							</gmd:code>
+						</gmd:RS_Identifier>
+					</gmd:identifier>
+				</gmd:CI_Citation>
+			</gmd:citation>
+			<gmd:abstract>
+				<gco:CharacterString>Collated indices are a relative measure of butterfly abundance across monitored sites in the UK, calculated from data collected by the UK Butterfly Monitoring Scheme (UKBMS). Collated indices are calculated annually for each individual butterfly species that has been recorded on five or more sites in that year. Based on this criterion collated indices have been calculated for the entire UKBMS time series from 1976 to the current year for the majority of species. For some rarer species the time series starts in a later year due to lack of data. Collated indices are calculated using a statistical model that accounts for missing data. The number of sites for each species ranges from 5 to several hundred and varies from year to year. Since 2008 more than 1,000 sites have been monitored across the UK each year. Collated indices are calculated so that we can determine how butterfly populations are changing over time across the UK. This data can be used, for example, to determine where to target conservation efforts and to measure the condition of the UK countryside. Butterflies are recognised as important indicators of biodiversity and environmental change (e.g. as official UK Biodiversity Indicators), and have been used in numerous research studies to understand the impacts of changes in climate and the extent and condition of habitats. Although the Centre for Ecology &amp; Hydrology (CEH) and Butterfly Conservation (BC) are responsible for the calculation and interpretation of the Collated indices, the collection of the data used in their creation is ultimately reliant on a large volunteer community. The UKBMS is funded by a consortium of organisations led by the Joint Nature Conservation Committee (JNCC).</gco:CharacterString>
+			</gmd:abstract>
+			<status xmlns="http://www.isotc211.org/2005/gmd">
+				<MD_ProgressCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ProgressCode" codeListValue="historicalArchive"/>
+			</status>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:organisationName>
+						<gco:CharacterString>UK Butterfly Monitoring Scheme</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>ukbms@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="resourceProvider">resourceProvider</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:organisationName>
+						<gco:CharacterString>Butterfly Conservation</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>info@butterfly-conservation.org</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Botham, M</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre For Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Roy, D</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Brereton, T</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Butterfly Conservation</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>info@butterfly-conservation.org</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Middlebrook, I</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Butterfly Conservation</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>info@butterfly-conservation.org</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Randle, Z</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Butterfly Conservation</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>info@butterfly-conservation.org</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:organisationName>
+						<gco:CharacterString>EIDC Hub</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>eidc@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="custodian">custodian</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:organisationName>
+						<gco:CharacterString>NERC Environmental Information Data Centre</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>eidc@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="publisher">publisher</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<resourceMaintenance xmlns="http://www.isotc211.org/2005/gmd">
+				<MD_MaintenanceInformation>
+					<maintenanceAndUpdateFrequency>
+						<MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="annually"/>
+					</maintenanceAndUpdateFrequency>
+					<maintenanceNote>
+						<gco:CharacterString>Main updates occur annually at the end of the year following data collection and collation at Butterfly Conservation.</gco:CharacterString>
+					</maintenanceNote>
+				</MD_MaintenanceInformation>
+			</resourceMaintenance>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>Species distribution</gco:CharacterString>
+					</gmd:keyword>
+					<type xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+					</type>
+					<gmd:thesaurusName>
+						<gmd:CI_Citation>
+							<gmd:title>
+								<gco:CharacterString>GEMET - INSPIRE themes, version 1.0</gco:CharacterString>
+							</gmd:title>
+							<gmd:date>
+								<gmd:CI_Date>
+									<gmd:date>
+										<gco:Date>2012-02-22</gco:Date>
+									</gmd:date>
+									<dateType xmlns="http://www.isotc211.org/2005/gmd">
+										<CI_DateTypeCode codeList="CI_DateTypeCode" codeListValue="creation"/>
+									</dateType>
+								</gmd:CI_Date>
+							</gmd:date>
+						</gmd:CI_Citation>
+					</gmd:thesaurusName>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>UK</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>England</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>Scotland</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>Wales</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>Northern Ireland</gco:CharacterString>
+					</gmd:keyword>
+					<type xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place"/>
+					</type>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>annual</gco:CharacterString>
+					</gmd:keyword>
+					<type xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="temporal"/>
+					</type>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>Lepidoptera</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>butterflies</gco:CharacterString>
+					</gmd:keyword>
+					<type xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="discipline"/>
+					</type>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmx="http://www.isotc211.org/2005/gmx">
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gmx:Anchor xlink:href="http://onto.nerc.ac.uk/CEHMD/MOS">Monitoring &amp; Observing Systems</gmx:Anchor>
+					</gmd:keyword>
+					<gmd:thesaurusName>
+						<gmd:CI_Citation>
+							<gmd:title>
+								<gco:CharacterString>CEH Metadata Vocabulary</gco:CharacterString>
+							</gmd:title>
+							<gmd:date>
+								<gmd:CI_Date>
+									<gmd:date>
+										<gco:Date>2014-09-19</gco:Date>
+									</gmd:date>
+									<dateType xmlns="http://www.isotc211.org/2005/gmd">
+										<CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+									</dateType>
+								</gmd:CI_Date>
+							</gmd:date>
+						</gmd:CI_Citation>
+					</gmd:thesaurusName>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmx="http://www.isotc211.org/2005/gmx">
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gmx:Anchor xlink:href="http://onto.nerc.ac.uk/CEHMD/topic/2">Biodiversity</gmx:Anchor>
+					</gmd:keyword>
+					<gmd:thesaurusName>
+						<gmd:CI_Citation>
+							<gmd:title>
+								<gco:CharacterString>CEH Metadata Vocabulary</gco:CharacterString>
+							</gmd:title>
+							<gmd:date>
+								<gmd:CI_Date>
+									<gmd:date>
+										<gco:Date>2014-09-19</gco:Date>
+									</gmd:date>
+									<dateType xmlns="http://www.isotc211.org/2005/gmd">
+										<CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+									</dateType>
+								</gmd:CI_Date>
+							</gmd:date>
+						</gmd:CI_Citation>
+					</gmd:thesaurusName>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<resourceConstraints xmlns="http://www.isotc211.org/2005/gmd">
+				<MD_SecurityConstraints>
+					<classification>
+						<MD_ClassificationCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ClassificationCode" codeListValue="unclassified"/>
+					</classification>
+				</MD_SecurityConstraints>
+			</resourceConstraints>
+			<resourceConstraints xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns="http://www.isotc211.org/2005/gmd">
+				<MD_LegalConstraints>
+					<accessConstraints>
+						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="license"/>
+					</accessConstraints>
+					<accessConstraints xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
+					</accessConstraints>
+					<otherConstraints xmlns:xlink="http://www.w3.org/1999/xlink">
+						<gmx:Anchor xlink:href="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ukbms-click-through/plain">Licence terms and conditions apply</gmx:Anchor>
+					</otherConstraints>
+				</MD_LegalConstraints>
+			</resourceConstraints>
+			<spatialRepresentationType xmlns="http://www.isotc211.org/2005/gmd">
+				<MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="textTable"/>
+			</spatialRepresentationType>
+			<language xmlns="http://www.isotc211.org/2005/gmd">
+				<LanguageCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="eng"/>
+			</language>
+			<characterSet xmlns="http://www.isotc211.org/2005/gmd">
+				<MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+			</characterSet>
+			<gmd:topicCategory>
+				<gmd:MD_TopicCategoryCode>biota</gmd:MD_TopicCategoryCode>
+			</gmd:topicCategory>
+			<gmd:extent>
+				<gmd:EX_Extent>
+					<gmd:geographicElement>
+						<gmd:EX_GeographicDescription>
+							<gmd:geographicIdentifier>
+								<gmd:RS_Identifier>
+									<gmd:code>
+										<gco:CharacterString>GB</gco:CharacterString>
+									</gmd:code>
+									<gmd:codeSpace>
+										<gco:CharacterString>ISO-3166</gco:CharacterString>
+									</gmd:codeSpace>
+								</gmd:RS_Identifier>
+							</gmd:geographicIdentifier>
+						</gmd:EX_GeographicDescription>
+					</gmd:geographicElement>
+				</gmd:EX_Extent>
+			</gmd:extent>
+			<gmd:extent xmlns:gml="http://www.opengis.net/gml/3.2">
+				<gmd:EX_Extent>
+					<gmd:temporalElement>
+						<gmd:EX_TemporalExtent>
+							<gmd:extent>
+								<gml:TimePeriod gml:id="w13473aaa">
+									<gml:beginPosition>1976-04-01</gml:beginPosition>
+									<gml:endPosition>2011-09-01</gml:endPosition>
+								</gml:TimePeriod>
+							</gmd:extent>
+						</gmd:EX_TemporalExtent>
+					</gmd:temporalElement>
+				</gmd:EX_Extent>
+			</gmd:extent>
+			<gmd:extent>
+				<gmd:EX_Extent>
+					<gmd:geographicElement>
+						<gmd:EX_GeographicBoundingBox>
+							<gmd:extentTypeCode>
+								<gco:Boolean>true</gco:Boolean>
+							</gmd:extentTypeCode>
+							<gmd:westBoundLongitude>
+								<gco:Decimal>-9.23</gco:Decimal>
+							</gmd:westBoundLongitude>
+							<gmd:eastBoundLongitude>
+								<gco:Decimal>2.69</gco:Decimal>
+							</gmd:eastBoundLongitude>
+							<gmd:southBoundLatitude>
+								<gco:Decimal>49.84</gco:Decimal>
+							</gmd:southBoundLatitude>
+							<gmd:northBoundLatitude>
+								<gco:Decimal>60.85</gco:Decimal>
+							</gmd:northBoundLatitude>
+						</gmd:EX_GeographicBoundingBox>
+					</gmd:geographicElement>
+				</gmd:EX_Extent>
+			</gmd:extent>
+		</gmd:MD_DataIdentification>
+	</gmd:identificationInfo>
+	<gmd:distributionInfo>
+		<gmd:MD_Distribution>
+			<gmd:distributionFormat>
+				<gmd:MD_Format>
+					<gmd:name>
+						<gco:CharacterString>csv</gco:CharacterString>
+					</gmd:name>
+					<gmd:version>
+						<gco:CharacterString>unknown</gco:CharacterString>
+					</gmd:version>
+				</gmd:MD_Format>
+			</gmd:distributionFormat>
+			<gmd:distributor>
+				<gmd:MD_Distributor>
+					<gmd:distributorContact>
+						<gmd:CI_ResponsibleParty>
+							<gmd:organisationName>
+								<gco:CharacterString>UK Butterfly Monitoring Scheme</gco:CharacterString>
+							</gmd:organisationName>
+							<gmd:contactInfo>
+								<gmd:CI_Contact>
+									<gmd:address>
+										<gmd:CI_Address>
+											<gmd:electronicMailAddress>
+												<gco:CharacterString>ukbms@ceh.ac.uk</gco:CharacterString>
+											</gmd:electronicMailAddress>
+										</gmd:CI_Address>
+									</gmd:address>
+								</gmd:CI_Contact>
+							</gmd:contactInfo>
+							<gmd:role>
+								<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="distributor">distributor</gmd:CI_RoleCode>
+							</gmd:role>
+						</gmd:CI_ResponsibleParty>
+					</gmd:distributorContact>
+				</gmd:MD_Distributor>
+			</gmd:distributor>
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL>http://www.ukbms.org/</gmd:URL>
+							</gmd:linkage>
+							<gmd:name>
+								<gco:CharacterString>UKBMS website</gco:CharacterString>
+							</gmd:name>
+							<gmd:description>
+								<gco:CharacterString>This is a web page which provides data for each butterfly species at each monitored site. It also provides links to reports, UKBMS related publications and to UKBMS statistics in addition to maps of sites.</gco:CharacterString>
+							</gmd:description>
+							<function xmlns="http://www.isotc211.org/2005/gmd">
+								<CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+							</function>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL>http://eidc.ceh.ac.uk/metadata/ff55462e-38a4-4f30-b562-f82ff263d9c3/zip</gmd:URL>
+							</gmd:linkage>
+							<gmd:name>
+								<gco:CharacterString>Documents</gco:CharacterString>
+							</gmd:name>
+							<gmd:description>
+								<gco:CharacterString>Documents available to assist with re-use of this dataset. Link to data citation details.</gco:CharacterString>
+							</gmd:description>
+							<function xmlns="http://www.isotc211.org/2005/gmd">
+								<CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+							</function>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL>http://catalogue.ceh.ac.uk/download?fileIdentifier=ff55462e-38a4-4f30-b562-f82ff263d9c3</gmd:URL>
+							</gmd:linkage>
+							<gmd:name>
+								<gco:CharacterString>Online ordering</gco:CharacterString>
+							</gmd:name>
+							<gmd:description>
+								<gco:CharacterString>This data is available to order online</gco:CharacterString>
+							</gmd:description>
+							<function xmlns="http://www.isotc211.org/2005/gmd">
+								<CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="order"/>
+							</function>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+		</gmd:MD_Distribution>
+	</gmd:distributionInfo>
+	<dataQualityInfo xmlns="http://www.isotc211.org/2005/gmd">
+		<DQ_DataQuality>
+			<scope>
+				<DQ_Scope>
+					<level>
+						<MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+					</level>
+					<levelDescription>
+						<MD_ScopeDescription>
+							<other>
+								<gco:CharacterString>dataset</gco:CharacterString>
+							</other>
+						</MD_ScopeDescription>
+					</levelDescription>
+				</DQ_Scope>
+			</scope>
+			<lineage>
+				<LI_Lineage>
+					<statement>
+						<gco:CharacterString>Collated indices are produced using a series of statistical models on butterfly transect counts recorded by a volunteer network. These indices are a relative measure of each species' abundance across the UK compared to the baseline in 1976. The statistics are presented as log10 values. These values are centred around an arbitrary value of 2 as a mean for the time series in order to help show which years are below or above average (a technique used in other biodiversity indicators).</gco:CharacterString>
+					</statement>
+				</LI_Lineage>
+			</lineage>
+		</DQ_DataQuality>
+	</dataQualityInfo>
+</gmd:MD_Metadata>
