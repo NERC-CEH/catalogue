@@ -14,7 +14,9 @@ TEST_GROUPS = {
   :rest_spec    => 'restful'
 }
 
-CLEAN.include('test-reports')
+TEST_OUTPUT = Rake::FileList.new("test-reports/*.xml", "test-reports/screenshots")
+
+CLEAN.include(TEST_OUTPUT)
 
 task :default => [:clean, :parallel_spec]
 
