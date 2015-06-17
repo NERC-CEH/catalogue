@@ -6,11 +6,6 @@ puppet_ssl/private
 puppet_ssl/public_keys
 puppet_ssl/crl.pem
 
-# Ignore dev files
-catalogue
-catalogue_config
-catalogue_tomcat
-
 # Ignore Test output
 test-reports/**
 npm-debug.log
@@ -19,4 +14,3 @@ npm-debug.log
 webdriver*
 .idea/
 *~
-rspec_screenshots/

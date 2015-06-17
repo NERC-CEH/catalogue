@@ -1,3 +1,4 @@
+require 'rake/clean'
 require 'yaml'
 require 'parallel'
 
@@ -12,6 +13,8 @@ TEST_GROUPS = {
 #  :ipad2_spec   => 'driver:ipad2',
   :rest_spec    => 'restful'
 }
+
+CLEAN.include('test-reports')
 
 task :default => [:parallel_spec]
 
