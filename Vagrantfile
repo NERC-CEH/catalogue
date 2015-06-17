@@ -6,16 +6,12 @@ VAGRANTFILE_API_VERSION = "2"
 
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_workstation'
 
-# Check if the environment disables sharing of directories. If booting up in isolation,
-# we don't need to use shared folders
-DISABLE_SHARING = ENV['VAGRANT_DISABLE_SHARING']
-
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "nercceh/ubuntu14.04"
   config.vm.network :forwarded_port, guest: 80, host: 8080, auto_correct: true
   config.vm.network :forwarded_port, guest: 7000, host: 7000, auto_correct: true
 
-  config.vm.synced_folder "catalogue", "/opt/ceh-catalogue", create: true, disabled: DISABLE_SHARING
+  config.vm.synced_folder "catalogue", "/opt/ceh-catalogue"
 
   config.vm.provider "vmware_workstation" do |v|
     v.vmx["memsize"] = "4096"
