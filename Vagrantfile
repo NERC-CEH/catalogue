@@ -24,6 +24,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "puppet_server", run: "always" do |puppet|
     puppet.puppet_server = "lapuppet.nerc-lancaster.ac.uk"
     puppet.puppet_node = "cig-developer.nerc-lancaster.ac.uk"
-    puppet.options = "--verbose --environment improvement_CEHCIG_603_speed_up_web_testing"
+    puppet.options = "--verbose"
   end
 end
