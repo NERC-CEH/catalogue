@@ -16,7 +16,7 @@ TEST_GROUPS = {
 
 CLEAN.include('test-reports')
 
-task :default => [:parallel_spec]
+task :default => [:clean, :parallel_spec]
 
 desc 'Run each of the rspec groups in parallel'
 task :parallel_spec do
