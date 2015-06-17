@@ -1,0 +1,22 @@
+.vagrant
+
+# Ignore the other puppet key directories
+puppet_ssl/certificate_requests
+puppet_ssl/private
+puppet_ssl/public_keys
+puppet_ssl/crl.pem
+
+# Ignore dev files
+catalogue
+catalogue_config
+catalogue_tomcat
+
+# Ignore Test output
+test-reports/**
+npm-debug.log
+
+# Ignore webdriver directories (created by rspec/capybara testing)
+webdriver*
+.idea/
+*~
+rspec_screenshots/
