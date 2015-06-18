@@ -54,6 +54,7 @@ import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -67,6 +68,7 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 public class DocumentControllerTest {
     
     @Spy DataRepository<CatalogueUser> repo;
+    @Mock DocumentIdentifierService documentIdentifierService;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService documentReader;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
@@ -88,6 +90,7 @@ public class DocumentControllerTest {
                                      new EventBus());
         MockitoAnnotations.initMocks(this);
         controller = spy(new DocumentController(repo,
+                                                documentIdentifierService,
                                                 documentReader,
                                                 documentInfoMapper,
                                                 infoFactory,
@@ -117,6 +120,7 @@ public class DocumentControllerTest {
         
         GeminiDocument document = new GeminiDocument();
         document.setId("id");
+        when(documentIdentifierService.generateFileId("id")).thenReturn("id");
         when(documentReader.read(any(InputStream.class), eq(MediaType.APPLICATION_JSON), eq(GeminiDocument.class))).thenReturn(document);
         
         MetadataInfo metadataDocument = mock(MetadataInfo.class);

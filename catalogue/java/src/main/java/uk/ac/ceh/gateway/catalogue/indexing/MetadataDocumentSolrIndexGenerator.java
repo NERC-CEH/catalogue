@@ -26,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
 /**
@@ -38,11 +39,13 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
     private static final String CEH_OGL_URL = "http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
     private final TopicIndexer topicIndexer;
     private final CodeLookupService codeLookupService;
+    private final DocumentIdentifierService identifierService;
     private final SolrGeometryService geometryService;
-
-    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService, SolrGeometryService geometryService) {
+    
+    public MetadataDocumentSolrIndexGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService, DocumentIdentifierService identifierService, SolrGeometryService geometryService) {
         this.topicIndexer = topicIndexer;
         this.codeLookupService = codeLookupService;
+        this.identifierService = identifierService;
         this.geometryService = geometryService;
     }
 
@@ -52,7 +55,7 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
         DocumentSolrIndex toReturn = new DocumentSolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
-                .setIdentifier(document.getId())
+                .setIdentifier(identifierService.generateFileId(document.getId()))
                 .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
                 .setState(getState(document))
                 .setTopic(topicIndexer.index(document))

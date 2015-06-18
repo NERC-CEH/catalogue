@@ -33,6 +33,7 @@ import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -161,6 +162,11 @@ public class ServiceConfig {
     }
     
     @Bean
+    public DocumentIdentifierService documentIdentifierService() {
+        return new DocumentIdentifierService('-');
+    }
+    
+    @Bean
     public SolrGeometryService solrGeometryService() {
         return new SolrGeometryService(new WKTReader());
     }
@@ -171,7 +177,7 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService, solrGeometryService()),
+                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService, documentIdentifierService(), solrGeometryService()),
                 solrServer
         );
         
@@ -185,6 +191,7 @@ public class ServiceConfig {
                 dataRepository,
                 bundledReaderService(),
                 documentListingService(),
+                documentIdentifierService(),
                 linkDatabase
         );
         
@@ -204,6 +211,7 @@ public class ServiceConfig {
         return new TerraCatalogImporterService(
                 dataRepository,
                 documentListingService(),
+                documentIdentifierService(),
                 userFactory,
                 documentReadingService(),
                 documentInfoMapper(),

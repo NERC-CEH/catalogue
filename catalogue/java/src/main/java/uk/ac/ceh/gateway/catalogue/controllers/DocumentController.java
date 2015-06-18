@@ -38,6 +38,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -55,6 +56,7 @@ public class DocumentController {
     public static final String PUBLISHER_ROLE = "ROLE_CIG_PUBLISHER";
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
     private final DataRepository<CatalogueUser> repo;
+    private final DocumentIdentifierService documentIdentifierService;
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
@@ -65,6 +67,7 @@ public class DocumentController {
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
+                                DocumentIdentifierService documentIdentifierService,
                                 DocumentReadingService documentReader,
                                 DocumentInfoMapper documentInfoMapper,
                                 DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory,
@@ -73,6 +76,7 @@ public class DocumentController {
                                 DocumentLinkService linkService,
                                 CitationService citationService) {
         this.repo = repo;
+        this.documentIdentifierService = documentIdentifierService;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
         this.infoFactory = infoFactory;
@@ -93,7 +97,7 @@ public class DocumentController {
         
         MediaType contentMediaType = MediaType.parseMediaType(contentType);
         Path tmpFile = Files.createTempFile("upload", null); //Create a temp file to upload the input stream to
-        String id;
+        String fileId;
         GeminiDocument data;
         try {
             Files.copy(request.getInputStream(), tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
@@ -102,17 +106,18 @@ public class DocumentController {
             data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType, GeminiDocument.class); 
             MetadataInfo metadataDocument = infoFactory.createInfo(data, contentMediaType); //get the metadata info
             
-            id = Optional.ofNullable(data.getId()).orElse(UUID.randomUUID().toString());
+            fileId = Optional.ofNullable(documentIdentifierService.generateFileId(data.getId()))
+                             .orElse(documentIdentifierService.generateFileId());
             
-            repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
-                .submitData(String.format("%s.raw", id), (o) -> Files.copy(tmpFile, o) )
+            repo.submitData(String.format("%s.meta", fileId), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
+                .submitData(String.format("%s.raw", fileId), (o) -> Files.copy(tmpFile, o) )
                 .commit(user, commitMessage);
         }
         finally {
             Files.delete(tmpFile); //file no longer needed
         }
         return ResponseEntity
-            .created(getCurrentUri(request, id, repo.getLatestRevision().getRevisionID()))
+            .created(getCurrentUri(request, fileId, repo.getLatestRevision().getRevisionID()))
             .build();
     }
     
@@ -125,7 +130,7 @@ public class DocumentController {
             @RequestBody GeminiDocument geminiDocument,
             HttpServletRequest request) throws IOException, UnknownContentTypeException  {
        
-        String id = UUID.randomUUID().toString();
+        String id = documentIdentifierService.generateFileId();
         updateIdAndMetadataDate(geminiDocument, id);
 
         MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(geminiDocument, user);

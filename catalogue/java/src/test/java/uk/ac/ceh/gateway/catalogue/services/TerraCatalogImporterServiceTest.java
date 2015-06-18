@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.util.terracatalog.TerraCatalogImporter;
 public class TerraCatalogImporterServiceTest {
     @Mock DataRepository<CatalogueUser> repo;
     @Mock DocumentListingService listingService;
+    @Mock DocumentIdentifierService documentIdentifierService;
     @Mock OfflineTerraCatalogUserFactory<CatalogueUser> userFactory;
     @Mock DocumentReadingService documentReader;
     @Mock DocumentInfoMapper<MetadataInfo> documentInfoMapper;
@@ -30,7 +31,7 @@ public class TerraCatalogImporterServiceTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-        service = new TerraCatalogImporterService(repo, listingService, userFactory, documentReader, documentInfoMapper, infoFactory);
+        service = new TerraCatalogImporterService(repo, listingService, documentIdentifierService, userFactory, documentReader, documentInfoMapper, infoFactory);
     }
     
     @Test
