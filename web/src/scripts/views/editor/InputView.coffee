@@ -1,27 +1,17 @@
 define [
-  'backbone'
+  'cs!views/editor/ObjectInputView'
   'tpl!templates/editor/Input.tpl'
-], (Backbone, template) -> Backbone.View.extend
-
-  events:
-    'change': 'modify'
+], (ObjectInputView, template) -> ObjectInputView.extend
 
   initialize: (options) ->
+    ObjectInputView.prototype.initialize.call @, options
     @modelAttribute = options.modelAttribute
-    do @render
 
   render: ->
+    console.log JSON.stringify @model.toJSON()
+    console.dir @model
     @$el.html template
-      identifier: @modelAttribute
-      value: @model.get @modelAttribute
+      data:
+        modelAttribute: @modelAttribute
+        value: @model.get 'value'
     @
-
-  modify: (event) ->
-    $target = $(event.target)
-    name = $target.data('name')
-    value = $target.val()
-
-    if value
-      @model.set name, value
-    else
-      @model.unset name

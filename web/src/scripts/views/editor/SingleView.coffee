@@ -6,13 +6,8 @@ define [
   className: 'component'
 
   initialize: (options) ->
-    @modelAttribute = options.modelAttribute
-    @label = options.label
-    @helpText = options.helpText
+    @data = options
 
   render: ->
-    @$el.html template
-      identifier: @modelAttribute
-      label: @label
-      helpText: @helpText
+    @$el.html template  data: @data
     @

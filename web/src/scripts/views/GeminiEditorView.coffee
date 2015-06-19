@@ -7,14 +7,13 @@ define [
   'cs!views/editor/ResourceTypeView'
   'cs!models/editor/ResourceType'
   'cs!views/editor/InputView'
-  'cs!views/editor/DescriptionView'
-  'cs!views/editor/LineageView'
+  'cs!views/editor/TextareaView'
   'cs!models/editor/TopicCategory'
   'cs!views/editor/TopicCategoryView'
   'cs!views/editor/ContactsView'
   'cs!views/editor/ResourceIdentifiersView'
   'cs!views/editor/DatasetReferenceDateView'
-], (EditorView, TitleView, SingleObjectView, ParentView, String, ResourceTypeView, ResourceType, InputView, DescriptionView, LineageView, TopicCategory, TopicCategoryView, ContactsView, ResourceIdentifiersView, DatasetReferenceDateView) -> EditorView.extend
+], (EditorView, TitleView, SingleObjectView, ParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactsView, ResourceIdentifiersView, DatasetReferenceDateView) -> EditorView.extend
 
 
   initialize: ->
@@ -27,30 +26,51 @@ define [
       label: 'One'
       views: [
         new SingleObjectView
-          model: new ResourceType @model.get 'resourceType'
+          model: @model
+          modelAttribute: 'resourceType'
+          ModelType: ResourceType
           label: 'Resource Type'
           ObjectInputView: ResourceTypeView,
           helpText: """
                     Type of resource.
                     """
-        new TitleView
+        new SingleObjectView
           model: @model
+          modelAttribute: 'title'
+          ModelType: String
+          label: 'Title'
+          ObjectInputView: InputView,
+          helpText: """
+                    <p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
+                    <p>Jargon should be avoided so as to provide clarity to a broad audience from various specialisation across the public sector</p>
+                    <p>The leading letter and proper nouns of the title should be capitalised.</p>
+                    <p>If it's necessary to include acronyms in the formal title of a data resource, then include both the acronym (in parentheses) and its phrase or word from which it was formed.</p>
+                    <p>In the event that there are multiple titles, translations of titles (e.g. Welsh), and those with acronyms, these titles should be added as alternative titles</p>
+                    """
 
-#        new ParentView
-#          model: @model
-#          ModelType: String
-#          modelAttribute: 'alternateTitles'
-#          label: 'Alternative Titles'
-#          ObjectInputView: InputView
-#          helpText: """
-#                    <p>Alternative titles allow for entries of multiple titles, translations of titles (e.g. Welsh), and those with acronyms.</p>
-#                    <p>The leading letter and proper nouns of the title only should be capitalised.</p>
-#                    <p>In the event that the alternative title includes acronyms in the formal title of a data resource, then include
-#                    both the acronym (in parentheses) and its definition. Acronyms should not include full-stops between each letter.</p>
-#                    """
+        new ParentView
+          model: @model
+          ModelType: String
+          modelAttribute: 'alternateTitles'
+          label: 'Alternative Titles'
+          ObjectInputView: InputView
+          helpText: """
+                    <p>Alternative titles allow for entries of multiple titles, translations of titles (e.g. Welsh), and those with acronyms.</p>
+                    <p>The leading letter and proper nouns of the title only should be capitalised.</p>
+                    <p>In the event that the alternative title includes acronyms in the formal title of a data resource, then include
+                    both the acronym (in parentheses) and its definition. Acronyms should not include full-stops between each letter.</p>
+                    """
 
-#        new DescriptionView
-#          model: @model
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'description'
+          ModelType: String
+          label: 'Description'
+          ObjectInputView: TextareaView,
+          rows: 17
+          helpText: """
+                    A brief description of the data resource. This should include some explanation as to purpose and how the data resource has been used since creation. It is best to write a concise abstract.
+                    """
 #
 #        new SingleObjectView
 #          model: @model
@@ -100,8 +120,16 @@ define [
     ,
       label: 'Six'
       views: [
-#        new LineageView
-#          model: @model
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'lineage'
+          ModelType: String
+          label: 'Lineage'
+          ObjectInputView: TextareaView,
+          rows: 15
+          helpText: """
+                    Information about the source data used in the construction of this data resource. Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.
+                    """
       ]
     ,
       label: 'Seven'

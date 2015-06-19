@@ -13,7 +13,8 @@ define [
   initialize: (options) ->
     @index = if @model.collection then @model.collection.indexOf @model else 'Add'
     do @render
-    @inputView = new options.ObjectInputView
+    console.log "ChildView: #{JSON.stringify @model.toJSON()}"
+    new options.ObjectInputView
       el: @$('.dataentry')
       model: @model
 

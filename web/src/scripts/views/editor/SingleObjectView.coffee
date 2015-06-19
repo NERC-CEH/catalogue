@@ -1,10 +1,18 @@
 define [
+  'underscore'
   'cs!views/editor/SingleView'
-], (SingleView) -> SingleView.extend
+], (_, SingleView) -> SingleView.extend
 
   initialize: (options) ->
     SingleView.prototype.initialize.call @, options
     do @render
-    new options.ObjectInputView
+
+    inputModel = new @data.ModelType @model.get @data.modelAttribute
+    @listenTo inputModel, 'change', @updateMetadataModel
+
+    new @data.ObjectInputView _.extend {}, @data,
       el: @$('.dataentry')
-      model: @model
+      model: inputModel
+
+  updateMetadataModel: (model) ->
+    @model.set @data.modelAttribute, model

@@ -1,8 +1,7 @@
 define [
   'cs!views/editor/ObjectInputView'
-  'cs!models/editor/ResourceType'
-  'tpl!templates/editor/ResourceTypeInput.tpl'
-], (ObjectInputView, ResourceType, template) -> ObjectInputView.extend
+  'tpl!templates/editor/ResourceType.tpl'
+], (ObjectInputView, template) -> ObjectInputView.extend
 
   template: template
 

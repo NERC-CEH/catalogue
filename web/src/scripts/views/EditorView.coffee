@@ -27,8 +27,6 @@ define [
 
   save: ->
     @model.save {},
-      success: ->
-        do @toggleSave
       error: (model, response) ->
         console.log "Error saving metadata: #{response.status} (#{response.statusText})"
 
@@ -43,7 +41,6 @@ define [
         do reallyExit
     else
       do reallyExit
-
 
   back: ->
     @navigate @currentStep - 1

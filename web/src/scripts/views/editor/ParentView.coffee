@@ -8,17 +8,15 @@ define [
 
   initialize: (options) ->
     SingleView.prototype.initialize.call @, options
-    @ObjectInputView = options.ObjectInputView
-    @ModelType = options.ModelType
-    data = if @model.has @modelAttribute then @model.get @modelAttribute else []
+    modelData = if @model.has @data.modelAttribute then @model.get @data.modelAttribute else []
 
     # detect an array of Strings and create an object that can be turned into a Model
-    if _.isArray(data) and _.isString _.first data
-      data = data.map (value) ->
+    if _.isArray(modelData) and _.isString _.first modelData
+      modelData = modelData.map (value) ->
         value: value
 
-    @collection = new Backbone.Collection [], model: options.ModelType
-    @model.set @modelAttribute, @collection, silent: true
+    @collection = new Backbone.Collection [], model: @data.ModelType
+    @model.set @data.modelAttribute, @collection, silent: true
 
     @listenTo @collection, 'add', @addOne
     @listenTo @collection, 'reset', @addAll
@@ -26,28 +24,22 @@ define [
 
     do @render
     @$attach = @$(".existing")
-    @collection.reset data
+    @collection.reset modelData
 
-    addView = new ChildView
+    addView = new ChildView _.extend {}, @data,
       el: @$('.addNew')
-      model: new options.ModelType
-      ObjectInputView: @ObjectInputView
-      ModelType: @ModelType
+      model: new @data.ModelType
 
     @listenTo addView, 'add', (model) ->
       @collection.add model
 
   render: ->
-    @$el.html template
-      identifier: @modelAttribute
-      label: @label
-      helpText: @helpText
+    @$el.html template data: @data
     @
 
   addOne: (model) ->
-    view = new ChildView
+    view = new ChildView _.extend {}, @data,
       model: model
-      ObjectInputView: @ObjectInputView
     @$attach.prepend view.el
 
   addAll: ->

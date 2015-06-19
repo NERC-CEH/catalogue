@@ -1,1 +1,1 @@
-<textarea data-name="<%= identifier %>" rows="<%= rows %>" class="editor-textarea" id="input-<%= identifier %>"><%= value %></textarea>
+<textarea data-name="value" rows="<%= rows %>" class="editor-textarea" id="input-<%= identifier %>"><%= value %></textarea>

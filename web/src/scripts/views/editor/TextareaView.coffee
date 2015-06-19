@@ -1,7 +1,7 @@
 define [
-  'cs!views/editor/InputView'
+  'cs!views/editor/ObjectInputView'
   'tpl!templates/editor/Textarea.tpl'
-], (InputView, template) -> InputView.extend
+], (ObjectInputView, template) -> ObjectInputView.extend
 
   initialize: (options) ->
     @modelAttribute = options.modelAttribute
@@ -11,6 +11,6 @@ define [
   render: ->
     @$el.html template
       identifier: @modelAttribute
-      value: @model.get @modelAttribute
+      value: @model.get 'value'
       rows: @rows
     @

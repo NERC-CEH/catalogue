@@ -1,1 +1,1 @@
-<input data-name="<%= identifier %>" class="editor-input" id="input-<%= identifier %>" value="<%= value %>">
+<input data-name="value" class="editor-input" id="input-<%= data.modelAttribute %>" value="<%= data.value %>">
