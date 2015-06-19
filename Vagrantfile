@@ -19,11 +19,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provision :shell, :path => "vagrant_provision/copy-ssl.sh"
-  config.vm.provision :shell, :path => "vagrant_provision/test-data.sh"
+  config.vm.provision :shell, :path => "vagrant_provision/test-data.sh", run: "always"
 
   config.vm.provision "puppet_server", run: "always" do |puppet|
     puppet.puppet_server = "lapuppet.nerc-lancaster.ac.uk"
     puppet.puppet_node = "cig-developer.nerc-lancaster.ac.uk"
     puppet.options = "--verbose"
   end
+
+  config.vm.provision :shell, :path => "vagrant_provision/resume.sh", run: "always"
 end
