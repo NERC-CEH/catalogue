@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
 /**
@@ -24,13 +25,14 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
  */
 public class MetadataDocumentSolrIndexGeneratorTest {
     @Mock CodeLookupService codeLookupService;
+    @Mock DocumentIdentifierService documentIdentifierService;
     @Mock SolrGeometryService geometryService;
     private MetadataDocumentSolrIndexGenerator generator;
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService, geometryService);
+        generator = new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService, documentIdentifierService, geometryService);
     }
     
     @Test
@@ -65,6 +67,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     public void checkThatTitleIdTransferedToIndex() {
         //Given
         String id = "some crazy long, hard to rememember, number";
+        when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
         GeminiDocument document = new GeminiDocument();
         document.setId(id);
         
@@ -72,7 +75,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         DocumentSolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertEquals("Expected to get my id", id, index.getIdentifier());
+        assertEquals("Expected to get my id", "myid", index.getIdentifier());
     }
     
     @Test

@@ -1,5 +1,5 @@
 describe "Metadata html generation", :retry => 1, :retry_wait => 0, :restful => true do
-  METADATA_IDS.each {|id|
+  GEMINI_IDS.each {|id|
     it "should generate strictly valid html for #{id}" do
       begin
         doc = $site["/documents/#{id}"].get :Remote_User => 'bamboo', :accept => 'text/html'

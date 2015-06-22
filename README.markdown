@@ -24,25 +24,20 @@ Then in a bash window run
 
     vagrant up
 
-### Having trouble getting it up? - When resuming
-
-This is probally because the shared folders from you host are attached to your vagrant box after startup. This means that certain services are kicked off before the data they require is present.
-
-To get around this, we maintain a bash script of all the services which need restarting.
-
-    ./vagrant-resume.sh
-
-Once you are up and running, try visiting one of the [metadata](https://localhost:8080/documents/ff55462e-38a4-4f30-b562-f82ff263d9c3) documents in your browser. Note that the server is using **https** on port 8080
-
 ### Java development
 
-To have the code you are currently developing running in the vagrant box link the WAR file in the build directory to the Tomcat webapps folder.
+The vagrant box will run and deploy built versions of the java catalogue code from *catalogue/java/target/ROOT.war*. This happens during a vagrant provision. You can build the application with maven at the command line:
 
-    sudo service tomcat7-ceh-catalogue stop
-    sudo rm -rf /home/tomcat7/ceh-catalogue/webapps/ROOT*
-    ln -s /opt/ceh-catalogue/java/target/ROOT.war /home/tomcat7/ceh-catalogue/webapps/
-    ls -lAh /home/tomcat7/ceh-catalogue/webapps/
-    sudo service tomcat7-ceh-catalogue start
+    mvn -f catalogue/java/pom.xml
+    vagrant provision --provision-with puppet_server
+
+Or alternatively, you can get the latest built version from [nexus](http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war)
+
+    # At the root of your repository
+    mkdir -p catalogue/java/target
+    wget 'http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war' -O catalogue/java/target/ROOT.war
+    vagrant provision --provision-with puppet_server
+
 
 ## Testing
 

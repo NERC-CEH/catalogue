@@ -9,7 +9,6 @@ describe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => t
 
   let(:subject) { RDF::URI.new("#{APP_HOST}/id/1e7d5e08-9e24-471b-ae37-49b477f695e3") }
 
-
   it "should have dc:title" do
     title = graph.first([subject, RDF::DC.title, nil])
     expect(title.object).to eq 'Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland)'

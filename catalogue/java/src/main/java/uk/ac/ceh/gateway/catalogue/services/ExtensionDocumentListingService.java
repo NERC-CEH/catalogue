@@ -10,7 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 
 /**
  * Defines a listing service which will filter a list of filenames into a list
- * of document names if their exist filenames with the given extensions
+ * of document names if there exists filenames with the given extensions
  * @author cjohn
  */
 @Data

@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
 @Data
@@ -27,6 +28,7 @@ public class GitDocumentLinkService implements DocumentLinkService {
     private final DataRepository<CatalogueUser> repo;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final DocumentListingService listingService;
+    private final DocumentIdentifierService documentIdentifierService;
     private final LinkDatabase linkDatabase;
 
     @Override
@@ -147,9 +149,10 @@ public class GitDocumentLinkService implements DocumentLinkService {
     }
     
     private Link createLink(Metadata metadata, String urlFragment, String associationType) {
+        String id = documentIdentifierService.generateFileId(metadata.getFileIdentifier());
         return Link.builder()
             .title(metadata.getTitle())
-            .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(metadata.getFileIdentifier()).build().toUriString())
+            .href(UriComponentsBuilder.fromHttpUrl(urlFragment).path(id).build().toUriString())
             .associationType(associationType)
             .build();
     }
