@@ -6,7 +6,7 @@ describe "Gemini XML Generation", :retry => 1, :retry_wait => 0, :restful => tru
   }
 
   let(:id) { 'bb2d7874-7bf4-44de-aa43-348bd684a2fe' }
-  let(:in_xml) {Nokogiri::XML(File.open("fixtures/REV-1/#{id}.raw"))}
+  let(:in_xml) {Nokogiri::XML(File.open("fixtures/datastore/REV-1/#{id}.raw"))}
 
   let(:out_doc) { $site["/documents/#{id}?format=gemini"].get }
   let(:out_xml) { Nokogiri::XML(out_doc) { |c| c.strict } }
