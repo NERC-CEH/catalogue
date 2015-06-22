@@ -2,6 +2,7 @@ require 'rubygems'
 require 'yaml'
 require 'rdf/rdfxml'
 require 'rspec/retry'
+require 'rspec/matchers'
 require 'capybara/rspec'
 require 'selenium/webdriver'
 require 'socket'
@@ -9,6 +10,7 @@ require 'browsers_helper'
 require 'screen_size'
 require 'rest_client'
 require 'nokogiri'
+require 'equivalent-xml'
 
 # Get the hostname of the box which this server is testing from
 hostname = Socket.gethostbyname(Socket.gethostname).first
@@ -21,7 +23,7 @@ Capybara.default_selector = :css
 
 $site = RestClient::Resource.new(APP_HOST)
 
-METADATA_IDS = [
+GEMINI_IDS = [
   '1d859249-e6af-48f4-9fd6-5f8401bc1e4e',
   '1e7d5e08-9e24-471b-ae37-49b477f695e3',
   '2d023ce9-6dbe-4b4f-a0cd-34768e1455ae',

@@ -13,6 +13,8 @@ GEM
     diff-lcs (1.2.5)
     domain_name (0.5.23)
       unf (>= 0.0.5, < 1.0.0)
+    equivalent-xml (0.6.0)
+      nokogiri (>= 1.4.3)
     ffi (1.9.8)
     haml (4.0.6)
       tilt
@@ -91,6 +93,7 @@ PLATFORMS
 
 DEPENDENCIES
   capybara
+  equivalent-xml
   json
   nokogiri
   parallel
