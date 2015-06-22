@@ -26,13 +26,17 @@ Then in a bash window run
 
 ### Java development
 
-To have the code you are currently developing running in the vagrant box link the WAR file in the build directory to the Tomcat webapps folder.
+The vagrant box will run and deploy built versions of the java catalogue code from *catalogue/java/target/ROOT.war*. This happens during a vagrant provision. You can build the application with maven at the command line:
 
-    sudo service tomcat7-ceh-catalogue stop
-    sudo rm -rf /home/tomcat7/ceh-catalogue/webapps/ROOT*
-    ln -s /opt/ceh-catalogue/java/target/ROOT.war /home/tomcat7/ceh-catalogue/webapps/
-    ls -lAh /home/tomcat7/ceh-catalogue/webapps/
-    sudo service tomcat7-ceh-catalogue start
+    mvn -f catalogue/java/pom.xml
+    vagrant provision --provision-with puppet_server
+
+Or alternatively, you can get the latest built version from [nexus](http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war)
+
+    # At the root of your repository
+    wget 'http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war' -o catalogue/java/ROOT.war
+    vagrant provision --provision-with puppet_server
+
 
 ## Testing
 
