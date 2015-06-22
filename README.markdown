@@ -35,8 +35,7 @@ Or alternatively, you can get the latest built version from [nexus](http://nexus
 
     # At the root of your repository
     mkdir -p catalogue/java/target
-    wget 'http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war' -O 
-catalogue/java/target/ROOT.war
+    wget 'http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war' -O catalogue/java/target/ROOT.war
     vagrant provision --provision-with puppet_server
 
 
