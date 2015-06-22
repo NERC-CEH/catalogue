@@ -34,7 +34,9 @@ The vagrant box will run and deploy built versions of the java catalogue code fr
 Or alternatively, you can get the latest built version from [nexus](http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war)
 
     # At the root of your repository
-    wget 'http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war' -o catalogue/java/ROOT.war
+    mkdir -p catalogue/java/target
+    wget 'http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war' -O 
+catalogue/java/target/ROOT.war
     vagrant provision --provision-with puppet_server
 
 
