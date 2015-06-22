@@ -31,7 +31,8 @@ GEMINI_IDS = [
   '6795cf1b-9204-451e-99f1-f9b90658537f',
   'bb2d7874-7bf4-44de-aa43-348bd684a2fe',
   'fb495d1b-80a3-416b-8dc7-c85ed22ed1e3',
-  'ff55462e-38a4-4f30-b562-f82ff263d9c3'
+  'ff55462e-38a4-4f30-b562-f82ff263d9c3',
+  '986d3df3-d9bf-42eb-8e18-850b8d54f37b'
 ]
 
 RSpec.configure do |config|
