@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <gmd:resourceConstraints>
 	<gmd:MD_LegalConstraints>
 	<#if useLimitations?has_content>
@@ -35,3 +36,4 @@
 	</#if>
 	</gmd:MD_LegalConstraints>
 </gmd:resourceConstraints>
+</#escape>

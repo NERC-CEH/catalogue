@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <gmd:distributionInfo>
 	<gmd:MD_Distribution>
 		<#if distributionFormats?has_content>
@@ -87,3 +88,4 @@
 		</#if>
 	</gmd:MD_Distribution>
 </gmd:distributionInfo>
+</#escape>

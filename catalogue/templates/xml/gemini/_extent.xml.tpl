@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <#if temporalExtent?has_content>
 <#list temporalExtent as temporal>
 <${ns}:extent>
@@ -39,3 +40,4 @@
 <#if supplementalInfo?has_content>
 <gmd:supplementalInformation><gco:CharacterString>${supplementalInfo}</gco:CharacterString></gmd:supplementalInformation>
 </#if>
+</#escape>

@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <#if descriptiveKeywords?has_content>
 <#list descriptiveKeywords as descriptiveKeyword>
 <gmd:descriptiveKeywords>
@@ -41,3 +42,4 @@
 </gmd:descriptiveKeywords>
 </#list>
 </#if>
+</#escape>

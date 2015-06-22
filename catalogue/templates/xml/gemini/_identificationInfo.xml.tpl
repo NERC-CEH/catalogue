@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <gmd:identificationInfo>
 	<#if type = 'service'>
 	<srv:SV_ServiceIdentification>
@@ -210,3 +211,4 @@
 	</#if>
 
 </gmd:identificationInfo>
+</#escape>

@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <#if service?has_content>
 <srv:serviceType>
 	<gco:LocalName>${service.type}</gco:LocalName>
@@ -46,3 +47,4 @@
 	<srv:operatesOn xlink:href="${coupledResource.identifier}" uuidref="${coupledResource.identifier}"/>
 </#list>
 </#if>
+</#escape>

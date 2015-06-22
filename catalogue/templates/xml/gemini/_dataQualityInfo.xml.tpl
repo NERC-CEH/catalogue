@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <gmd:dataQualityInfo>
 	<gmd:DQ_DataQuality>
 		<gmd:scope>
@@ -56,3 +57,4 @@
 		</#if>
 	</gmd:DQ_DataQuality>
 </gmd:dataQualityInfo>
+</#escape>
