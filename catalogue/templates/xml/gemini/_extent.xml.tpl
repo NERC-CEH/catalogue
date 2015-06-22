@@ -1,4 +1,13 @@
 <#escape x as x?xml>
+
+<#macro temporalPosition type temporal>
+	<#if temporal[type]?has_content>
+		<gml:${type}Position>${temporal[type]}</gml:${type}Position>
+	<#else>
+		<gml:${type}Position indeterminatePosition="unknown"/>
+	</#if>
+</#macro>
+
 <#if temporalExtent?has_content>
 <#list temporalExtent as temporal>
 <${ns}:extent>
@@ -7,12 +16,8 @@
 			<gmd:EX_TemporalExtent>
 				<gmd:extent>
 					<gml:TimePeriod gml:id="EIDC79854${temporal_index}">
-						<gml:beginPosition>${temporal.begin}</gml:beginPosition>
-						<#if temporal.end?has_content>
-						<gml:endPosition>${temporal.end}</gml:endPosition>
-						<#else>
-						<gml:endPosition indeterminatePosition="unknown"/>
-						</#if>
+						<@temporalPosition 'begin' temporal/>
+						<@temporalPosition 'end' temporal/>
 					</gml:TimePeriod>
 				</gmd:extent>
 			</gmd:EX_TemporalExtent>
