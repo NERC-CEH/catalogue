@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd">
+	<gmd:fileIdentifier>
+		<gco:CharacterString>bb2d7874-7bf4-44de-aa43-348bd684a2fe</gco:CharacterString>
+	</gmd:fileIdentifier>
+	<language xmlns="http://www.isotc211.org/2005/gmd">
+		<LanguageCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="eng"/>
+	</language>
+	<characterSet xmlns="http://www.isotc211.org/2005/gmd">
+		<MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+	</characterSet>
+	<gmd:parentIdentifier>
+		<gco:CharacterString>1d859249-e6af-48f4-9fd6-5f8401bc1e4e</gco:CharacterString>
+	</gmd:parentIdentifier>
+	<hierarchyLevel xmlns="http://www.isotc211.org/2005/gmd">
+		<MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+	</hierarchyLevel>
+	<gmd:contact>
+		<gmd:CI_ResponsibleParty>
+			<gmd:individualName>
+				<gco:CharacterString>Chaplow, J.S.</gco:CharacterString>
+			</gmd:individualName>
+			<gmd:organisationName>
+				<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+			</gmd:organisationName>
+			<gmd:contactInfo>
+				<gmd:CI_Contact>
+					<gmd:address>
+						<gmd:CI_Address>
+							<gmd:electronicMailAddress>
+								<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+							</gmd:electronicMailAddress>
+						</gmd:CI_Address>
+					</gmd:address>
+				</gmd:CI_Contact>
+			</gmd:contactInfo>
+			<gmd:role>
+				<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+			</gmd:role>
+		</gmd:CI_ResponsibleParty>
+	</gmd:contact>
+	<gmd:dateStamp>
+		<gco:DateTime>2015-04-16T11:14:36</gco:DateTime>
+	</gmd:dateStamp>
+	<gmd:metadataStandardName>
+		<gco:CharacterString>NERC profile of ISO19115:2003</gco:CharacterString>
+	</gmd:metadataStandardName>
+	<gmd:metadataStandardVersion>
+		<gco:CharacterString>1.0</gco:CharacterString>
+	</gmd:metadataStandardVersion>
+	<gmd:referenceSystemInfo>
+		<gmd:MD_ReferenceSystem>
+			<gmd:referenceSystemIdentifier>
+				<gmd:RS_Identifier>
+					<gmd:code>
+						<gco:CharacterString>4326</gco:CharacterString>
+					</gmd:code>
+					<gmd:codeSpace>
+						<gco:CharacterString>urn:ogc:def:crs:EPSG</gco:CharacterString>
+					</gmd:codeSpace>
+					<gmd:version>
+						<gco:CharacterString>6.11.2</gco:CharacterString>
+					</gmd:version>
+				</gmd:RS_Identifier>
+			</gmd:referenceSystemIdentifier>
+		</gmd:MD_ReferenceSystem>
+	</gmd:referenceSystemInfo>
+	<gmd:identificationInfo>
+		<gmd:MD_DataIdentification>
+			<gmd:citation>
+				<gmd:CI_Citation>
+					<gmd:title>
+						<gco:CharacterString>Natural radionuclide concentrations in soil, water and sediments in England and Wales</gco:CharacterString>
+					</gmd:title>
+					<gmd:date>
+						<gmd:CI_Date>
+							<gmd:date>
+								<gco:Date>2010-04-20</gco:Date>
+							</gmd:date>
+							<dateType xmlns="http://www.isotc211.org/2005/gmd">
+								<CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+							</dateType>
+						</gmd:CI_Date>
+					</gmd:date>
+					<gmd:identifier>
+						<gmd:RS_Identifier>
+							<gmd:code>
+								<gco:CharacterString>1271758286281</gco:CharacterString>
+							</gmd:code>
+							<gmd:codeSpace>
+								<gco:CharacterString>CEH:EIDC:</gco:CharacterString>
+							</gmd:codeSpace>
+						</gmd:RS_Identifier>
+					</gmd:identifier>
+					<gmd:identifier>
+						<gmd:RS_Identifier>
+							<gmd:code>
+								<gco:CharacterString>http://catalogue.ceh.ac.uk/id/bb2d7874-7bf4-44de-aa43-348bd684a2fe</gco:CharacterString>
+							</gmd:code>
+						</gmd:RS_Identifier>
+					</gmd:identifier>
+				</gmd:CI_Citation>
+			</gmd:citation>
+			<gmd:abstract>
+				<gco:CharacterString>Centre for Ecology &amp; Hydrology. Data comprise estimates of activity concentrations of 40K, 238U and 232Th series radionuclides in environmental media (soil, stream sediments and stream waters) derived from total K, U and Th concentrations mainly from the ongoing geochemical survey of the United Kingdom (G-BASE), conducted by the British Geological Survey. The geochemical survey data are currently incomplete for England and Wales, but almost complete coverage was obtained for K in stream sediments by using the Wolfson Atlas data for southern England. 
+For U and Th in sediments and K, U and Th in soils, more complete coverage was
+achieved by geological extrapolation (using relationships between soils/sediments
+and bedrock/superficial geology). For soils and sediments, datasets are provided
+for both: (i) geometric mean concentrations from measured samples on a 5 x 5 km
+square basis where data are available; and (ii) extrapolated surfaces covering all of England and Wales.
+An Information Gateway view service is available. Search for 'Natural radionuclide concentrations in soil, water and sediments in England and Wales survey maps'.</gco:CharacterString>
+			</gmd:abstract>
+			<status xmlns="http://www.isotc211.org/2005/gmd">
+				<MD_ProgressCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ProgressCode" codeListValue="completed"/>
+			</status>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Beresford, N.A.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:city>
+										<gco:CharacterString>Lancaster</gco:CharacterString>
+									</gmd:city>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Barnett, C.L.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:city>
+										<gco:CharacterString>Lancaster</gco:CharacterString>
+									</gmd:city>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Jones, D.G.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:city>
+										<gco:CharacterString>Lancaster</gco:CharacterString>
+									</gmd:city>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Wood, M.D.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:city>
+										<gco:CharacterString>Lancaster</gco:CharacterString>
+									</gmd:city>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Appleton, J.D.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:city>
+										<gco:CharacterString>Lancaster</gco:CharacterString>
+									</gmd:city>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Breward, N.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:city>
+										<gco:CharacterString>Lancaster</gco:CharacterString>
+									</gmd:city>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>Copplestone, D.</gco:CharacterString>
+					</gmd:individualName>
+					<gmd:organisationName>
+						<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:city>
+										<gco:CharacterString>Lancaster</gco:CharacterString>
+									</gmd:city>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:organisationName>
+						<gco:CharacterString>Shore section</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="resourceProvider">resourceProvider</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:organisationName>
+						<gco:CharacterString>Natural Environment Research Council</gco:CharacterString>
+					</gmd:organisationName>
+					<gmd:contactInfo>
+						<gmd:CI_Contact>
+							<gmd:phone>
+								<gmd:CI_Telephone>
+									<gmd:voice>
+										<gco:CharacterString>01793 411500</gco:CharacterString>
+									</gmd:voice>
+									<gmd:facsimile>
+										<gco:CharacterString>01793 411501</gco:CharacterString>
+									</gmd:facsimile>
+								</gmd:CI_Telephone>
+							</gmd:phone>
+							<gmd:address>
+								<gmd:CI_Address>
+									<gmd:deliveryPoint>
+										<gco:CharacterString>Polaris House, North Star Avenue</gco:CharacterString>
+									</gmd:deliveryPoint>
+									<gmd:city>
+										<gco:CharacterString>Swindon</gco:CharacterString>
+									</gmd:city>
+									<gmd:postalCode>
+										<gco:CharacterString>SN2 1EU</gco:CharacterString>
+									</gmd:postalCode>
+									<gmd:country>
+										<gco:CharacterString>UK</gco:CharacterString>
+									</gmd:country>
+									<gmd:electronicMailAddress>
+										<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+									</gmd:electronicMailAddress>
+								</gmd:CI_Address>
+							</gmd:address>
+						</gmd:CI_Contact>
+					</gmd:contactInfo>
+					<gmd:role>
+						<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="owner">owner</gmd:CI_RoleCode>
+					</gmd:role>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<resourceMaintenance xmlns="http://www.isotc211.org/2005/gmd">
+				<MD_MaintenanceInformation>
+					<maintenanceAndUpdateFrequency>
+						<MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="unknown"/>
+					</maintenanceAndUpdateFrequency>
+				</MD_MaintenanceInformation>
+			</resourceMaintenance>
+			<gmd:graphicOverview>
+				<gmd:MD_BrowseGraphic>
+					<gmd:fileName>
+						<gco:CharacterString>https://gateway.ceh.ac.uk:443/smartEditor/preview/bb2d7874-7bf4-44de-aa43-348bd684a2fe.png</gco:CharacterString>
+					</gmd:fileName>
+					<gmd:fileDescription>
+						<gco:CharacterString>natural radionuclide concentrations</gco:CharacterString>
+					</gmd:fileDescription>
+				</gmd:MD_BrowseGraphic>
+			</gmd:graphicOverview>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>Human health and safety</gco:CharacterString>
+					</gmd:keyword>
+					<type xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+					</type>
+					<gmd:thesaurusName>
+						<gmd:CI_Citation>
+							<gmd:title>
+								<gco:CharacterString>GEMET - INSPIRE themes, version 1.0</gco:CharacterString>
+							</gmd:title>
+							<gmd:date>
+								<gmd:CI_Date>
+									<gmd:date>
+										<gco:Date>2008-06-01</gco:Date>
+									</gmd:date>
+									<dateType xmlns="http://www.isotc211.org/2005/gmd">
+										<CI_DateTypeCode codeList="CI_DateTypeCode" codeListValue="publication"/>
+									</dateType>
+								</gmd:CI_Date>
+							</gmd:date>
+						</gmd:CI_Citation>
+					</gmd:thesaurusName>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>England</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>Wales</gco:CharacterString>
+					</gmd:keyword>
+					<type xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place"/>
+					</type>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>1984</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1985</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1986</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1987</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1988</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1989</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1990</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1991</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1992</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1993</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1994</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1995</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1996</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1997</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1998</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>1999</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>2000</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>2001</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>2002</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>2003</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>2004</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>2005</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>2006</gco:CharacterString>
+					</gmd:keyword>
+					<type xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="temporal"/>
+					</type>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>Soil</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>sediment</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>water</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>uranium</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>thorium</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>potassium-40</gco:CharacterString>
+					</gmd:keyword>
+					<type xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="discipline"/>
+					</type>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>Soil</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>sediment</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>water</gco:CharacterString>
+					</gmd:keyword>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>STAR_NOE</gco:CharacterString>
+					</gmd:keyword>
+					<gmd:keyword>
+						<gco:CharacterString>radioecology</gco:CharacterString>
+					</gmd:keyword>
+					<type xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="discipline"/>
+					</type>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:descriptiveKeywords>
+				<gmd:MD_Keywords>
+					<gmd:keyword>
+						<gco:CharacterString>Pollution and Environmental Risk</gco:CharacterString>
+					</gmd:keyword>
+				</gmd:MD_Keywords>
+			</gmd:descriptiveKeywords>
+			<gmd:resourceConstraints xmlns:gmx="http://www.isotc211.org/2005/gmx">
+				<gmd:MD_LegalConstraints>
+					<gmd:useLimitation>
+						<gco:CharacterString>This resource is made available under the terms of the Open Government Licence [http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain]</gco:CharacterString>
+					</gmd:useLimitation>
+					<gmd:useLimitation>
+						<gco:CharacterString>If you re-use this data you must cite this dataset: to be completed</gco:CharacterString>
+					</gmd:useLimitation>
+					<accessConstraints xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
+					</accessConstraints>
+					<accessConstraints xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="license"/>
+					</accessConstraints>
+					<gmd:otherConstraints>
+						<gco:CharacterString>This resource is made available under the terms of the Open Government Licence [http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain]</gco:CharacterString>
+					</gmd:otherConstraints>
+					<gmd:otherConstraints xmlns:xlink="http://www.w3.org/1999/xlink">
+						<gmx:Anchor xlink:href="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain">This resource is made available under the terms of the Open Government Licence</gmx:Anchor>
+					</gmd:otherConstraints>
+				</gmd:MD_LegalConstraints>
+			</gmd:resourceConstraints>
+			<language xmlns="http://www.isotc211.org/2005/gmd">
+				<LanguageCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="eng"/>
+			</language>
+			<gmd:topicCategory>
+				<gmd:MD_TopicCategoryCode>environment</gmd:MD_TopicCategoryCode>
+			</gmd:topicCategory>
+			<gmd:topicCategory>
+				<gmd:MD_TopicCategoryCode>geoscientificInformation</gmd:MD_TopicCategoryCode>
+			</gmd:topicCategory>
+			<gmd:extent xmlns:gml="http://www.opengis.net/gml/3.2">
+				<gmd:EX_Extent>
+					<gmd:temporalElement>
+						<gmd:EX_TemporalExtent>
+							<gmd:extent>
+								<gml:TimePeriod gml:id="w19482aaa">
+									<gml:beginPosition>1984-09-01</gml:beginPosition>
+									<gml:endPosition>2006-01-01</gml:endPosition>
+								</gml:TimePeriod>
+							</gmd:extent>
+						</gmd:EX_TemporalExtent>
+					</gmd:temporalElement>
+				</gmd:EX_Extent>
+			</gmd:extent>
+			<gmd:extent>
+				<gmd:EX_Extent>
+					<gmd:geographicElement>
+						<gmd:EX_GeographicBoundingBox>
+							<gmd:extentTypeCode>
+								<gco:Boolean>true</gco:Boolean>
+							</gmd:extentTypeCode>
+							<gmd:westBoundLongitude>
+								<gco:Decimal>-7.691</gco:Decimal>
+							</gmd:westBoundLongitude>
+							<gmd:eastBoundLongitude>
+								<gco:Decimal>2.9314</gco:Decimal>
+							</gmd:eastBoundLongitude>
+							<gmd:southBoundLatitude>
+								<gco:Decimal>49.809</gco:Decimal>
+							</gmd:southBoundLatitude>
+							<gmd:northBoundLatitude>
+								<gco:Decimal>55.987</gco:Decimal>
+							</gmd:northBoundLatitude>
+						</gmd:EX_GeographicBoundingBox>
+					</gmd:geographicElement>
+				</gmd:EX_Extent>
+			</gmd:extent>
+		</gmd:MD_DataIdentification>
+	</gmd:identificationInfo>
+	<gmd:distributionInfo>
+		<gmd:MD_Distribution>
+			<gmd:distributionFormat>
+				<gmd:MD_Format>
+					<gmd:name>
+						<gco:CharacterString>Microsoft Excel</gco:CharacterString>
+					</gmd:name>
+					<gmd:version>
+						<gco:CharacterString>2007</gco:CharacterString>
+					</gmd:version>
+				</gmd:MD_Format>
+			</gmd:distributionFormat>
+			<gmd:distributor>
+				<gmd:MD_Distributor>
+					<gmd:distributorContact>
+						<gmd:CI_ResponsibleParty>
+							<gmd:organisationName>
+								<gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString>
+							</gmd:organisationName>
+							<gmd:contactInfo>
+								<gmd:CI_Contact>
+									<gmd:address>
+										<gmd:CI_Address>
+											<gmd:deliveryPoint>
+												<gco:CharacterString>Maclean Building, Benson Lane, Crowmarsh Gifford</gco:CharacterString>
+											</gmd:deliveryPoint>
+											<gmd:city>
+												<gco:CharacterString>Wallingford</gco:CharacterString>
+											</gmd:city>
+											<gmd:administrativeArea>
+												<gco:CharacterString>Oxfordshire </gco:CharacterString>
+											</gmd:administrativeArea>
+											<gmd:postalCode>
+												<gco:CharacterString>OX10 8BB</gco:CharacterString>
+											</gmd:postalCode>
+											<gmd:country>
+												<gco:CharacterString>United Kingdom</gco:CharacterString>
+											</gmd:country>
+											<gmd:electronicMailAddress>
+												<gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString>
+											</gmd:electronicMailAddress>
+										</gmd:CI_Address>
+									</gmd:address>
+								</gmd:CI_Contact>
+							</gmd:contactInfo>
+							<gmd:role>
+								<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="distributor">distributor</gmd:CI_RoleCode>
+							</gmd:role>
+						</gmd:CI_ResponsibleParty>
+					</gmd:distributorContact>
+				</gmd:MD_Distributor>
+			</gmd:distributor>
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL>http://wiki.ceh.ac.uk/x/_ALbBg</gmd:URL>
+							</gmd:linkage>
+							<gmd:name>
+								<gco:CharacterString>Web Site</gco:CharacterString>
+							</gmd:name>
+							<gmd:description>
+								<gco:CharacterString>Further information about national initiatives on radiological environmental protection.</gco:CharacterString>
+							</gmd:description>
+							<function xmlns="http://www.isotc211.org/2005/gmd">
+								<CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+							</function>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL>http://catalogue.ceh.ac.uk/download?fileIdentifier=bb2d7874-7bf4-44de-aa43-348bd684a2fe</gmd:URL>
+							</gmd:linkage>
+							<gmd:name>
+								<gco:CharacterString>Data Download</gco:CharacterString>
+							</gmd:name>
+							<gmd:description>
+								<gco:CharacterString>This resource is available via the CEH Downloads Manager application.</gco:CharacterString>
+							</gmd:description>
+							<function xmlns="http://www.isotc211.org/2005/gmd">
+								<CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="order"/>
+							</function>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL>http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?request=getCapabilities&amp;service=WMS</gmd:URL>
+							</gmd:linkage>
+							<gmd:name>
+								<gco:CharacterString>Map View Service</gco:CharacterString>
+							</gmd:name>
+							<gmd:description>
+								<gco:CharacterString>This resource has a related map view service.</gco:CharacterString>
+							</gmd:description>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL>https://wiki.ceh.ac.uk/download/attachments/115016440/SCHO0906BLBK-e-e.pdf?version=1&amp;modificationDate=1263578602000</gmd:URL>
+							</gmd:linkage>
+							<gmd:name>
+								<gco:CharacterString>Science Report</gco:CharacterString>
+							</gmd:name>
+							<gmd:description>
+								<gco:CharacterString>Beresford, N.A., Appleton, J D., Barnett, C.L., Bescoby, M.W., Breward, N., Jones, D.G., MacKenzie, A.C., Scheib, C.,Thørring, H., Wood, M.D. 2007. Assessment of naturally occurring radionuclides around England and Wales. Science Project SC030283. ISBN: 1844325679. Environment Agency, Bristol.</gco:CharacterString>
+							</gmd:description>
+							<function xmlns="http://www.isotc211.org/2005/gmd">
+								<CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+							</function>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL>http://dx.doi.org/10.1016/j.jenvrad.2008.03.003</gmd:URL>
+							</gmd:linkage>
+							<gmd:name>
+								<gco:CharacterString>Journal paper</gco:CharacterString>
+							</gmd:name>
+							<gmd:description>
+								<gco:CharacterString>Beresford, N.A., Barnett, C.L., Jones, D.G., Wood, M.D., Appleton, J.D., Breward, N., Copplestone D. 2008. Background exposure rates of terrestrial wildlife in England and Wales. J. Environ. Radioact., 99, 1430-1439</gco:CharacterString>
+							</gmd:description>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL>http://dx.doi.org/10.1051/radiopro/20095116</gmd:URL>
+							</gmd:linkage>
+							<gmd:name>
+								<gco:CharacterString>Journal paper</gco:CharacterString>
+							</gmd:name>
+							<gmd:description>
+								<gco:CharacterString>Jones, D.G., Appleton, J.D., Breward, N., Mackenzie, A.C., Scheib, C., Beresford, N. A., Barnett, C.L., Wood, M.D., Copplestone D. Assessment of naturally occurring radionuclides around England and Wales: application of the G-BASE dataset to estimate doses to non-human species. Radioprotection (2009) 44, 629-634. </gco:CharacterString>
+							</gmd:description>
+							<function xmlns="http://www.isotc211.org/2005/gmd">
+								<CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+							</function>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+			<gmd:transferOptions>
+				<gmd:MD_DigitalTransferOptions>
+					<gmd:onLine>
+						<gmd:CI_OnlineResource>
+							<gmd:linkage>
+								<gmd:URL>http://dx.doi.org/10.1088/0952-4746/30/2/S03</gmd:URL>
+							</gmd:linkage>
+							<gmd:name>
+								<gco:CharacterString>Journal paper</gco:CharacterString>
+							</gmd:name>
+							<gmd:description>
+								<gco:CharacterString>Hosseini, A., Beresford N.A., Brown, J.E., Jones, D.G., Phaneuf, M., Thørring H., Yankovich, T. Background dose-rates to reference animals and plants arising from exposure to naturally occurring radionuclides in aquatic environments (2010) Journal of Radiological Protection, 30, 235-264.</gco:CharacterString>
+							</gmd:description>
+							<function xmlns="http://www.isotc211.org/2005/gmd">
+								<CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+							</function>
+						</gmd:CI_OnlineResource>
+					</gmd:onLine>
+				</gmd:MD_DigitalTransferOptions>
+			</gmd:transferOptions>
+		</gmd:MD_Distribution>
+	</gmd:distributionInfo>
+	<dataQualityInfo xmlns="http://www.isotc211.org/2005/gmd">
+		<DQ_DataQuality>
+			<scope>
+				<DQ_Scope>
+					<level>
+						<MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+					</level>
+					<levelDescription>
+						<MD_ScopeDescription>
+							<other>
+								<gco:CharacterString>dataset</gco:CharacterString>
+							</other>
+						</MD_ScopeDescription>
+					</levelDescription>
+				</DQ_Scope>
+			</scope>
+			<lineage>
+				<LI_Lineage>
+					<statement>
+						<gco:CharacterString>Estimates of activity concentrations of 40K, 238U and 232Th series radionuclides in environmental media (soil, stream sediments and stream waters) derived from total K, U and Th concentrations mainly from the ongoing geochemical survey of the United Kingdom (G-BASE), conducted by the British Geological Survey. The geochemical survey data are currently incomplete for England and Wales, but almost complete coverage was obtained for K in stream sediments by using the Wolfson Atlas data for southern England. 
+For U and Th in sediments and K, U and Th in soils, more complete coverage was achieved by geological extrapolation (using relationships between soils/sediments and bedrock/superficial geology). For soils and sediments, datasets are provided for both: (i) geometric mean concentrations from measured samples on a 5 x 5 km square basis where data are available; and (ii) extrapolated surfaces covering all of England and Wales.
+For more information see http://wiki.ceh.ac.uk/x/_ALbBg.</gco:CharacterString>
+					</statement>
+				</LI_Lineage>
+			</lineage>
+		</DQ_DataQuality>
+	</dataQualityInfo>
+</gmd:MD_Metadata>
