@@ -37,5 +37,5 @@
 </#list>
 </#if>
 <#if supplementalInfo?has_content>
-<gmd:supplementalInformation><gco:CharacterString>${supplementalInfo?xml}</gco:CharacterString></gmd:supplementalInformation>
+<gmd:supplementalInformation><gco:CharacterString>${supplementalInfo}</gco:CharacterString></gmd:supplementalInformation>
 </#if>
