@@ -27,10 +27,12 @@
 	<gmd:EX_Extent>
 		<gmd:geographicElement>
 			<gmd:EX_GeographicBoundingBox>
-				<gmd:westBoundLongitude><gco:Decimal>${boundingBox.westBoundLongitude}</gco:Decimal></gmd:westBoundLongitude>
-				<gmd:eastBoundLongitude><gco:Decimal>${boundingBox.eastBoundLongitude}</gco:Decimal></gmd:eastBoundLongitude>
-				<gmd:southBoundLatitude><gco:Decimal>${boundingBox.southBoundLatitude}</gco:Decimal></gmd:southBoundLatitude>
-				<gmd:northBoundLatitude><gco:Decimal>${boundingBox.northBoundLatitude}</gco:Decimal></gmd:northBoundLatitude>
+				<#escape x as x?c>
+					<gmd:westBoundLongitude><gco:Decimal>${boundingBox.westBoundLongitude}</gco:Decimal></gmd:westBoundLongitude>
+					<gmd:eastBoundLongitude><gco:Decimal>${boundingBox.eastBoundLongitude}</gco:Decimal></gmd:eastBoundLongitude>
+					<gmd:southBoundLatitude><gco:Decimal>${boundingBox.southBoundLatitude}</gco:Decimal></gmd:southBoundLatitude>
+					<gmd:northBoundLatitude><gco:Decimal>${boundingBox.northBoundLatitude}</gco:Decimal></gmd:northBoundLatitude>
+				</#escape>
 			</gmd:EX_GeographicBoundingBox>
 		</gmd:geographicElement>
 	</gmd:EX_Extent>
