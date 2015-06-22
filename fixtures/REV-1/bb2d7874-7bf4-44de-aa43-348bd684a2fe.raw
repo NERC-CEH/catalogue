@@ -102,7 +102,7 @@
 				</gmd:CI_Citation>
 			</gmd:citation>
 			<gmd:abstract>
-				<gco:CharacterString>Data comprise estimates of activity concentrations of 40K, 238U and 232Th series radionuclides in environmental media (soil, stream sediments and stream waters) derived from total K, U and Th concentrations mainly from the ongoing geochemical survey of the United Kingdom (G-BASE), conducted by the British Geological Survey. The geochemical survey data are currently incomplete for England and Wales, but almost complete coverage was obtained for K in stream sediments by using the Wolfson Atlas data for southern England. 
+				<gco:CharacterString>Centre for Ecology &amp; Hydrology. Data comprise estimates of activity concentrations of 40K, 238U and 232Th series radionuclides in environmental media (soil, stream sediments and stream waters) derived from total K, U and Th concentrations mainly from the ongoing geochemical survey of the United Kingdom (G-BASE), conducted by the British Geological Survey. The geochemical survey data are currently incomplete for England and Wales, but almost complete coverage was obtained for K in stream sediments by using the Wolfson Atlas data for southern England. 
 For U and Th in sediments and K, U and Th in soils, more complete coverage was
 achieved by geological extrapolation (using relationships between soils/sediments
 and bedrock/superficial geology). For soils and sediments, datasets are provided
