@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter
 import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -98,7 +99,8 @@ public class ServiceConfig {
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
                 .register("GEMINI_DOCUMENT", GeminiDocument.class)
-                .register("EF_DOCUMENT", BaseMonitoringType.class);
+                .register("EF_DOCUMENT", BaseMonitoringType.class)
+                .register("IMP_DOCUMENT", ImpDocument.class);
     }
     
     @Bean

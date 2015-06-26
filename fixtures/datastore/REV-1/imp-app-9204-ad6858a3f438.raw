@@ -1,5 +1,6 @@
 {
-  "type": "application",
+  "id": "imp-app-9204-ad6858a3f438",
+  "type": "modelApplication",
   "title": "Effectiveness of pollution control measures under scenarios of future climate and land cover change at the catchment scale",
   "description": "Within this application, the aim was to explore whether measures selected to improve the chemical status of the Tarland Burn are ‘future proof’, i.e. whether measures implemented to lower stream water suspended sediment, total phosphorus, total dissolved phosphorus and nitrate concentrations today will still improve the water quality in the 2050s, based on integrated climate projections and land use change scenarios.\nTo do this, the daily response of three pollutants (suspended sediment, phosphorus as total phosphorus and total dissolved phosphorus, and nitrate) has been assessed for a baseline (1981-2010) period and compared to model-based projections of the effects of measures (fertiliser application reduction, reduced final effluent concentrations), climate and land cover change, climate and land cover change plus a selection of effective measures. In addition, the models are used to explore potential time lags between the introduction of a measure and catchment response.",
   "date": "16/06/2015",

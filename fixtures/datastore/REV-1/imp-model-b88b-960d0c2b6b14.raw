@@ -1,4 +1,5 @@
 {
+  "id": "imp-model-b88b-960d0c2b6b14",
   "type": "model",
   "title": "INCA-IN",
   "version": "1.0.14",
@@ -8,8 +9,8 @@
   "operatingRequirements": "Runs on any standard computer",
   "applicationType":"Executable",
   "documentation": {
-    "title": "Background info"
-    "href": "http://www.reading.ac.uk/geographyandenvironmentalscience/Research/INCA/ges-INCA.aspx",
+    "title": "Background info",
+    "href": "http://www.reading.ac.uk/geographyandenvironmentalscience/Research/INCA/ges-INCA.aspx"
   },
   "keyReferences": [
     "Wade, A.J., Durand, P., Beaujouan, V., Wessel, W.W., Raat, K.J., Whitehead, P.G., Butterfield, D., Rankinen, K. and Lepisto, A. (2002) A nitrogen model for European catchments: INCA, new model structure and equations, Hydrology and Earth System Sciences, 6, 559-582",
