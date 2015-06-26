@@ -58,7 +58,6 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                 .setIdentifier(identifierService.generateFileId(document.getId()))
                 .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
                 .setState(getState(document))
-                .setTopic(topicIndexer.index(document))
                 .setView(getViews(document));
         
         if(document instanceof GeminiDocument) {
@@ -72,7 +71,8 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                     .setOnlineResourceName(grab(gemini.getOnlineResources(), OnlineResource::getName))
                     .setOnlineResourceDescription(grab(gemini.getOnlineResources(), OnlineResource::getDescription))
                     .setResourceIdentifier(grab(gemini.getResourceIdentifiers(), ResourceIdentifier::getCode))
-                    .setDataCentre(getDataCentre(gemini));
+                    .setDataCentre(getDataCentre(gemini))
+                    .setTopic(topicIndexer.index(gemini));
             locations.addAll(solrGeom(grab(gemini.getBoundingBoxes(), BoundingBox::getWkt)));
         }
         

@@ -88,11 +88,6 @@ public class BaseMonitoringType implements MetadataDocument {
     public String getType() {
         return getClass().getSimpleName().toLowerCase();
     }
-
-    @Override
-    public List<String> getTopics() {
-        return Collections.EMPTY_LIST;
-    }
     
     @XmlTransient
     private MetadataInfo metadataInfo;

@@ -147,7 +147,6 @@ public class GeminiDocument implements MetadataDocument {
         setMetadata(metadata);
     }
     
-    @Override
     public List<String> getTopics() {
         return Optional.ofNullable(descriptiveKeywords)
             .orElse(Collections.emptyList())
