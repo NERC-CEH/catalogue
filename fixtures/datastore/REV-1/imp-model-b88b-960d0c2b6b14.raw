@@ -1,0 +1,36 @@
+{
+  "type": "model",
+  "title": "INCA-IN",
+  "version": "1.0.14",
+  "description": "INCA-N is a processed based dynamic model representation of plant/soil system nitrogen dynamics and instream biogeochemical and hydrological dynamics. It is spatially semi-distributed.",
+  "contact": "NIVA, Norway; University of Reading. Contact: Raoul-Marie Couture (NIVA)",
+  "license": "Available executable for research work; commercial licence for commercial work",
+  "operatingRequirements": "Runs on any standard computer",
+  "applicationType":"Executable",
+  "documentation": {
+    "title": "Background info"
+    "href": "http://www.reading.ac.uk/geographyandenvironmentalscience/Research/INCA/ges-INCA.aspx",
+  },
+  "keyReferences": [
+    "Wade, A.J., Durand, P., Beaujouan, V., Wessel, W.W., Raat, K.J., Whitehead, P.G., Butterfield, D., Rankinen, K. and Lepisto, A. (2002) A nitrogen model for European catchments: INCA, new model structure and equations, Hydrology and Earth System Sciences, 6, 559-582",
+    "Whitehead, P.G., Wilson, E.J. and Butterfield, D. (1998) A semi-distributed Integrated Nitrogen Model for Multiple source assessment in Catchments (INCA): Part I - Model Structure and Process Equations. Science of the Total Environment, 210/211: 547-558."
+  ],
+  "smallestAndLargestApplication": "Sub-catchement",
+  "geographicalRestrictions": "Designed for temperate climates",
+  "temporalResolution" :"Daily",
+  "inputData": [
+    "Timeseries of hydrological and meteorological driving data: Soil moisture deficit (SMD), hydrologically effective rainfall (HER), rainfall, air temperature. SMD and HER can be derived via a simple spreadsheet-based hydrology model, or from models such as MORECS",
+    "For model calibration and validation: observed water chemistry and hydrology timeseries",
+    "Land use",
+    "Fertilizer and manure inputs to different land use types",
+    "Net plant uptake from different land use types",
+    "Effluent inputs to river reaches",
+    "Water abstraction from river reaches",
+    "GIS-derived sub-catchment characteristics, e.g. stream length, sub-catchment area"
+  ],
+  "keyOutputs": "Nitrate concentration",
+  "outputData": "Discharge, ammonium concentration, also loads of both nitrate and ammonium",
+  "calibrationRequired": "Extensive",
+  "modelStructure": "Conceptual process representation",
+  "dataInput": "Mixture of expert based/calibrated and measurement-derived"
+}
