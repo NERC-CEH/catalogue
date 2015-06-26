@@ -33,6 +33,7 @@ import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
@@ -80,7 +81,12 @@ public class ServiceConfig {
     public CitationService citationService() {
         return new CitationService();
     }
-        
+    
+    @Bean
+    public DataRepositoryOptimizingService dataRepositoryOptimizingService() {
+        return new DataRepositoryOptimizingService(dataRepository);
+    }
+    
     @Bean
     public DocumentReadingService documentReadingService() throws XPathExpressionException, IOException {
         return new MessageConverterReadingService()
