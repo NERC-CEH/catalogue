@@ -17,6 +17,8 @@ define [
     @listenTo @model, 'error', (model, response) ->
       alert "Problem communicating with server: #{response.status} (#{response.statusText})"
     @listenTo @model, 'change save:required', @toggleSave
+    _.invoke @sections[0].views, 'show'
+    do @render
 
   toggleSave: ->
     @$('#editorSave').prop 'disabled', (i, current) -> not current
@@ -32,7 +34,7 @@ define [
 
   exit: ->
     reallyExit = =>
-      _.invoke @components, 'remove'
+      _.invoke @sections, 'remove'
       do @remove
       do Backbone.history.location.reload
 
@@ -44,7 +46,6 @@ define [
 
   back: ->
     @navigate @currentStep - 1
-    console.log @steps[@currentStep].label
 
   next: ->
     @navigate @currentStep + 1
@@ -80,13 +81,15 @@ define [
     $nav.filter('.active').toggleClass 'active'
     @$($nav[@currentStep - 1]).toggleClass 'active'
 
-    $step = @$('.step')
-    $step.filter('.visible').toggleClass 'visible'
-    @$($step[@currentStep - 1]).toggleClass 'visible'
+    _.each @sections, (section, index) =>
+      method = 'hide'
+      if (@currentStep - 1) == index
+        method = 'show'
+      _.invoke section.views, method
 
   render: ->
     @$el.html template
-    _.each @steps, (step) ->
-      _.each step.views, (view) ->
+    _.each @sections, (section) ->
+      _.each section.views, (view) ->
         @$('#editor').append view.el
     @

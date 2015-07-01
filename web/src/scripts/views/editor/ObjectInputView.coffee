@@ -1,16 +1,18 @@
 define [
+  'underscore'
   'backbone'
-], (Backbone) -> Backbone.View.extend
+], (_, Backbone) -> Backbone.View.extend
 
   events:
     'change': 'modify'
 
-  initialize: ->
+  initialize: (options) ->
+    @data = options
     @listenTo @model, 'change', @render
     do @render
 
   render: ->
-    @$el.html @template @model.attribute
+    @$el.html @template data:  _.extend {}, @data, @model.attributes
     @
 
   modify: (event) ->

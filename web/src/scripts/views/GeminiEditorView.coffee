@@ -1,6 +1,5 @@
 define [
   'cs!views/EditorView'
-  'cs!views/editor/TitleView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/ParentView'
   'cs!models/editor/String'
@@ -10,19 +9,18 @@ define [
   'cs!views/editor/TextareaView'
   'cs!models/editor/TopicCategory'
   'cs!views/editor/TopicCategoryView'
-  'cs!views/editor/ContactsView'
-  'cs!views/editor/ResourceIdentifiersView'
+  'cs!views/editor/ContactView'
+  'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/DatasetReferenceDateView'
-], (EditorView, TitleView, SingleObjectView, ParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactsView, ResourceIdentifiersView, DatasetReferenceDateView) -> EditorView.extend
+  'cs!models/editor/Contact'
+  'cs!models/editor/ResourceIdentifier'
+  'cs!views/editor/BoundingBoxView'
+], (EditorView, SingleObjectView, ParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, ResourceIdentifier, BoundingBoxView) -> EditorView.extend
 
 
   initialize: ->
-    EditorView.prototype.initialize.apply @
 
-    @steps = [
-      label: 'Zero'
-      views: []
-    ,
+    @sections = [
       label: 'One'
       views: [
         new SingleObjectView
@@ -34,6 +32,7 @@ define [
           helpText: """
                     Type of resource.
                     """
+
         new SingleObjectView
           model: @model
           modelAttribute: 'title'
@@ -71,30 +70,39 @@ define [
           helpText: """
                     A brief description of the data resource. This should include some explanation as to purpose and how the data resource has been used since creation. It is best to write a concise abstract.
                     """
-#
-#        new SingleObjectView
-#          model: @model
-#          modelAttribute: 'datasetReferenceDate'
-#          label: 'Dataset Reference Date'
-#          ObjectInputView: DatasetReferenceDateView,
-#          helpText: """
-#                    <p>Creation date, the date the data resource is created.</p>
-#                    <p>The publication date is the date when the data resource is being made available or released for use - it is <strong>NOT</strong> the date of creation.</p>
-#                    <p>If you include a revision date, it implies that the resource has been changed as a consequence of edits or updates.
-#                    For EIDC Hub records it is usual practice for revised resources to have an entirely new record, therefore <em>revision date</em> is rarely necessary.</p>
-#                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'datasetReferenceDate'
+          label: 'Dataset Reference Date'
+          ObjectInputView: DatasetReferenceDateView,
+          helpText: """
+                    <p>Creation date, the date the data resource is created.</p>
+                    <p>The publication date is the date when the data resource is being made available or released for use - it is <strong>NOT</strong> the date of creation.</p>
+                    <p>If you include a revision date, it implies that the resource has been changed as a consequence of edits or updates.
+                    For EIDC Hub records it is usual practice for revised resources to have an entirely new record, therefore <em>revision date</em> is rarely necessary.</p>
+                    """
       ]
     ,
       label: 'Two'
       views: [
-        'spatialExtent'
+        new ParentView
+          model: @model
+          modelAttribute: 'boundingBoxes'
+          label: 'Spatial Extents'
+          ObjectInputView: BoundingBoxView
+          multiline: true
+          helpText: """
+                    <p>A bounding box representing the limits of the data resource's study area.</p>
+                    <p>If you do not wish to reveal the exact location publicly, it is recommended that you generalise the location.  Such sensitive locations may include endangered species and their habitats.</p>
+                    """
       ]
     ,
       label: 'Three'
       views: [
-        'dataFormat'
-        'spatialRepresentationType'
-        'spatialResolution'
+#        'dataFormat'
+#        'spatialRepresentationType'
+#        'spatialResolution'                                                                A bounding box representing the limits of the data resource's study area.  If you do not wish to reveal the exact location publicly, it is recommended that you generalise the location.  Such sensitive locations may include endangered species and their habitats.
       ]
     ,
       label: 'Four'
@@ -114,8 +122,18 @@ define [
     ,
       label: 'Five'
       views: [
-#        new ContactsView
-#          model: @model
+        new ParentView
+          model: @model
+          ModelType: Contact
+          modelAttribute: 'responsibleParties'
+          label: 'Contacts'
+          ObjectInputView: ContactView
+          multiline: true
+          helpText: """
+                    <p>The organisation or person responsible for the authorship, maintenance and curation of the data resource.</p>
+                    <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
+                    <p>The names of individuals should be included in the format <em>Surname, First Initial. Second Initial.</em>  For example <b>Brown, A.B.</b></p>
+                    """
       ]
     ,
       label: 'Six'
@@ -128,7 +146,8 @@ define [
           ObjectInputView: TextareaView,
           rows: 15
           helpText: """
-                    Information about the source data used in the construction of this data resource. Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.
+                    <p>Information about the source data used in the construction of this data resource.</p>
+                    <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>
                     """
       ]
     ,
@@ -140,6 +159,16 @@ define [
     ,
       label: 'Nine'
       views: [
+        new ParentView
+          model: @model
+          ModelType: ResourceIdentifier
+          modelAttribute: 'resourceIdentifiers'
+          label: 'Dataset Identifiers'
+          ObjectInputView: ResourceIdentifierView
+          helpText: """
+                    <p>A unique string or number used to identify the data resource.</p>
+                    <p> The codespace identifies the context in which the code is unique.</p>
+                    """
 #        new ResourceIdentifiersView
 #          model: @model
       ]
@@ -147,12 +176,13 @@ define [
       label: 'Ten'
       views: []
     ]
-    do @render
+
+    EditorView.prototype.initialize.apply @
 
 
 
 
-    @components = [
+#    @components = [
 #      new TitleView
 #        el: @$('#editorTitle')
 #        model: @model
@@ -202,4 +232,4 @@ define [
 #      new ResourceIdentifiersView
 #        el: @$('#editorResourceIdentifiers')
 #        model: @model
-    ]
+#    ]

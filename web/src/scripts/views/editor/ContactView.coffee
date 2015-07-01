@@ -1,16 +1,13 @@
 define [
-  'cs!views/editor/ChildView'
   'underscore'
-  'tpl!templates/editor/ContactsItem.tpl'
-  'cs!models/editor/Contact'
-], (ChildView, _, template, Contact) -> ChildView.extend
+  'cs!views/editor/ObjectInputView'
+  'tpl!templates/editor/Contact.tpl'
+], (_, ObjectInputView, template) -> ObjectInputView.extend
 
   template: template
-  ModelType: Contact
-  className: 'component'
 
   render: ->
-    ChildView.prototype.render.apply @
+    ObjectInputView.prototype.render.apply @
     @$('select').val @model.get 'role'
     @
 

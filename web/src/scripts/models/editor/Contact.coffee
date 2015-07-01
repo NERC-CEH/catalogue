@@ -4,10 +4,6 @@ define [
 ], (Backbone, _) -> Backbone.Model.extend
 
   defaults:
-    individualName: ''
-    organisationName: ''
-    email: ''
-    role: ''
     address: {}
 
   toJSON: ->

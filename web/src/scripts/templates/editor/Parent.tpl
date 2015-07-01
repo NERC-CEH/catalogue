@@ -10,8 +10,10 @@
   </div>
   <div class="col-sm-9 col-lg-9">
     <h5>Add New <%= data.label %></h5>
-    <div class="addNew row"></div>
+    <div class="container-fluid">
+      <div class="addNew row"></div>
+    </div>
     <h5>Existing <%= data.label %></h5>
-    <div class="existing"></div>
+    <div class="existing container-fluid"></div>
   </div>
 </div>

@@ -8,8 +8,6 @@ define [
     @modelAttribute = options.modelAttribute
 
   render: ->
-    console.log JSON.stringify @model.toJSON()
-    console.dir @model
     @$el.html template
       data:
         modelAttribute: @modelAttribute

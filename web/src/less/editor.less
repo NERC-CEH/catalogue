@@ -35,15 +35,12 @@
     line-height: 1.5;
   }
 
-  .step {
+  .component  {
+    .form-group;
     display: none;
     &.visible {
       display: block;
     }
-  }
-
-  .component  {
-    .form-group;
     border-style: solid;
     border-width: 2px;
     border-color: lighten(@gray-light, 15%);
@@ -57,5 +54,15 @@
         padding-top: @spacer;
       }
     }
+    .dataentry label {
+      font-size: 12px;
+    }
+  }
+  .multiline .existing > .row, .multiline .addNew {
+    border-style: solid;
+    border-width: 2px;
+    border-color: lighten(@gray-light, 15%);
+    border-radius: 5px;
+    padding: 4px;
   }
 }

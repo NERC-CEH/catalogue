@@ -26,6 +26,9 @@ define [
     @$attach = @$(".existing")
     @collection.reset modelData
 
+    if @data.multiline
+      @$el.addClass 'multiline'
+
     addView = new ChildView _.extend {}, @data,
       el: @$('.addNew')
       model: new @data.ModelType
