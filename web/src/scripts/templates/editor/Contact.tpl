@@ -41,6 +41,14 @@
 </div>
 <div class="row">
   <div class="col-sm-2 col-lg-2">
+    <label class="control-label" for="contacts<%= data.index %>Orcid">ORCID iD</label>
+  </div>
+  <div class="col-sm-5 col-lg-5">
+    <input data-name='orcid' class="editor-input" id="contacts<%= data.index %>Orcid" value="<%= data.orcid %>">
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-2 col-lg-2">
     <label class="control-label" for="contacts<%= data.index %>Address">Address</label>
   </div>
   <div class="col-sm-10 col-lg-10">
@@ -61,7 +69,7 @@
     <input data-name="administrativeArea" class="editor-input" id="contacts<%= data.index %>County" value="<%= data.address.administrativeArea %>">
   </div>
 </div>
-<div class="row bottom">
+<div class="row">
   <div class="col-sm-2 col-lg-2">
     <label class="control-label" for="contacts<%= data.index %>Country">Country</label>
   </div>

@@ -102,7 +102,7 @@ define [
       views: [
 #        'dataFormat'
 #        'spatialRepresentationType'
-#        'spatialResolution'                                                                A bounding box representing the limits of the data resource's study area.  If you do not wish to reveal the exact location publicly, it is recommended that you generalise the location.  Such sensitive locations may include endangered species and their habitats.
+#        'spatialResolution'
       ]
     ,
       label: 'Four'
@@ -169,8 +169,6 @@ define [
                     <p>A unique string or number used to identify the data resource.</p>
                     <p> The codespace identifies the context in which the code is unique.</p>
                     """
-#        new ResourceIdentifiersView
-#          model: @model
       ]
     ,
       label: 'Ten'
