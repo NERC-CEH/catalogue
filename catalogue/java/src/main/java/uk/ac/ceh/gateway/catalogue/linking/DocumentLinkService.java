@@ -1,10 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.linking;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.Link;
 
 public interface DocumentLinkService {
     /**
@@ -22,47 +18,15 @@ public interface DocumentLinkService {
     /**
      * Link datasets and services
      * @param fileIdentifiers
+     * @param revision
      * @throws DocumentLinkingException 
      */
-    void linkDocuments(List<String> fileIdentifiers) throws DocumentLinkingException;
+    void linkDocuments(List<String> fileIdentifiers, String revision) throws DocumentLinkingException;
     
     /**
-     * Get the links associated with this Gemini Document.
-     * 
-     * For a Service return links to Datasets.
-     * For a Dataset return links to Services.
-     * 
-     * @param document to find links for
-     * @param urlFragment to use to create link url from (expects to have context/documents/ or context/history/ in path)
-     * @return a set of Links
+     * Remove any links associated with the given fileIdentifiers
+     * @param fileIdentifiers
+     * @throws DocumentLinkingException 
      */
-    Set<Link> getLinks(GeminiDocument document, String urlFragment);
-    
-    /**
-     * Get link to parent of this Gemini Document.
-     * 
-     * @param document to find parent of
-     * @param urlFragment to use to create link url from (expects to have context/documents/ or context/history/ in path)
-     * @return a Link to the parent Metadata
-     */
-    Optional<Link> getParent(GeminiDocument document, String urlFragment);
-    
-    /**
-     * Get links to children of this Gemini Document.
-     * 
-     * @param document to find children of
-     * @param urlFragment to use to create link url from (expects to have context/documents/ or context/history/ in path)
-     * @return a set of Links to the child Metadata
-     */
-    Set<Link> getChildren(GeminiDocument document, String urlFragment);
-    
-    /**
-     * 
-     * @param document to find revision
-     * @param urlFragment to use to create link url from (expects to have context/documents/ or context/history/ in path)
-     * @return a Link to the revised Metadata
-     */
-    Optional<Link> getRevised(GeminiDocument document, String urlFragment);
-    
-    Optional<Link> getRevisionOf(GeminiDocument document, String urlFragment);
+    void unlinkDocuments(List<String> fileIdentifiers) throws DocumentLinkingException;
 }

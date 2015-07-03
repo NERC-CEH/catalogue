@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -28,8 +29,8 @@ import uk.ac.ceh.gateway.catalogue.indexing.ExtractTopicFromDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
-import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
-import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
+import uk.ac.ceh.gateway.catalogue.linking.JenaDocumentLinkService;
+import uk.ac.ceh.gateway.catalogue.linking.MetadataDocumenttLDExtractor;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -65,7 +66,7 @@ public class ServiceConfig {
     @Autowired RestTemplate restTemplate;
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
-    @Autowired LinkDatabase linkDatabase;
+    @Autowired Model jenaTdb;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
     @Autowired CodeLookupService codeLookupService;
@@ -192,13 +193,14 @@ public class ServiceConfig {
     }
     
     @Bean
-    public GitDocumentLinkService documentLinkingService() throws XPathExpressionException, IOException {
-        GitDocumentLinkService toReturn = new GitDocumentLinkService(
+    public JenaDocumentLinkService documentLinkingService() throws XPathExpressionException, IOException {
+        JenaDocumentLinkService toReturn = new JenaDocumentLinkService(
                 dataRepository,
                 bundledReaderService(),
                 documentListingService(),
                 documentIdentifierService(),
-                linkDatabase
+                new MetadataDocumenttLDExtractor(documentIdentifierService()),
+                jenaTdb
         );
         
         performRelinkIfNothingIsLinked(toReturn);

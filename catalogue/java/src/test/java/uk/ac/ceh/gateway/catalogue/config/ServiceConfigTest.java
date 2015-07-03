@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import com.hp.hpl.jena.rdf.model.Model;
 import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
@@ -29,8 +30,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
-import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
-import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
+import uk.ac.ceh.gateway.catalogue.linking.JenaDocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -46,7 +46,7 @@ public class ServiceConfigTest {
     @Mock ObjectMapper jacksonMapper;
     @Mock DataRepository dataRepository;
     @Mock SolrServer solrServer;
-    @Mock LinkDatabase linkDatabase;
+    @Mock Model jenaTdb;
     
     private ServiceConfig services;
     
@@ -58,7 +58,7 @@ public class ServiceConfigTest {
         services.dataRepository = dataRepository;
         services.solrServer = solrServer;
         services.bus = bus;
-        services.linkDatabase = linkDatabase;
+        services.jenaTdb = jenaTdb;
     }
     
     @Test
@@ -210,29 +210,12 @@ public class ServiceConfigTest {
     }
     
     @Test
-    public void checkThatDocumentLinkingServiceIsComposedCorrectly() throws XPathExpressionException, IOException {
-        //Given
-        MetadataInfoBundledReaderService reader = mock(MetadataInfoBundledReaderService.class);
-        
-        doReturn(reader).when(services).bundledReaderService();
-        doNothing().when(services).performRelinkIfNothingIsLinked(any(DocumentLinkService.class));
-        
-        //When
-        GitDocumentLinkService documentLinkingService = services.documentLinkingService();
-        
-        //Then
-        assertEquals("Expected to find the reader", reader, documentLinkingService.getDocumentBundleReader());
-        assertEquals("Expected to find the linking database", linkDatabase, documentLinkingService.getLinkDatabase());
-        assertEquals("Expected to find the dataRepository", dataRepository, documentLinkingService.getRepo());
-    }
-
-    @Test
     public void checkThatLinkingServiceIsRequestedToBeLinkedAfterCreation() throws XPathExpressionException, IOException {
         //Given
         doNothing().when(services).performRelinkIfNothingIsLinked(any(DocumentLinkService.class));
         
         //When
-        GitDocumentLinkService documentLinkingService = services.documentLinkingService();
+        JenaDocumentLinkService documentLinkingService = services.documentLinkingService();
         
         //Then
         verify(services).performRelinkIfNothingIsLinked(documentLinkingService);

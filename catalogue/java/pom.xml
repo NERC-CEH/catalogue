@@ -152,6 +152,13 @@
             <version>${spring.version}</version>
         </dependency>
         
+        <!-- Semantic Linking -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-tdb</artifactId>
+            <version>1.1.2</version>    
+        </dependency>
+        
         <!-- Apache file upload -->
         <dependency>
             <groupId>commons-fileupload</groupId>

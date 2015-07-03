@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.events;
 
 import com.google.common.eventbus.Subscribe;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.ac.ceh.components.datastore.DataDeletedEvent;
+import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataSubmittedEvent;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
@@ -22,8 +24,10 @@ public class LinkIndexEventSubscriber {
     }
         
     @Subscribe
-    public void indexLinks(DataSubmittedEvent<?> event) throws DocumentLinkingException {       
-        service.linkDocuments(listingService.filterFilenames(event.getFilenames()));
+    public void indexLinks(DataSubmittedEvent<?> event) throws DocumentLinkingException, DataRepositoryException {
+        List<String> filenames = listingService.filterFilenames(event.getFilenames());
+        String revisionID = event.getDataRepository().getLatestRevision().getRevisionID();   
+        service.linkDocuments(filenames, revisionID);
     }
     
     @Subscribe
