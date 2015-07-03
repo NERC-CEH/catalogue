@@ -4,9 +4,3 @@ define [
 ], (ObjectInputView, template) -> ObjectInputView.extend
 
   template:  template
-
-  events:
-    'click #resourceIdentifiersAddNewEidc': 'generate'
-
-  generate: ->
-    do @model.generateIdentifier

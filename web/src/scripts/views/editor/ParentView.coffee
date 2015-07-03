@@ -6,6 +6,9 @@ define [
   'tpl!templates/editor/Parent.tpl'
 ], (_, Backbone, SingleView, ChildView, template) -> SingleView.extend
 
+  events:
+    'click button.add': 'add'
+
   initialize: (options) ->
     SingleView.prototype.initialize.call @, options
     modelData = if @model.has @data.modelAttribute then @model.get @data.modelAttribute else []
@@ -29,13 +32,6 @@ define [
     if @data.multiline
       @$el.addClass 'multiline'
 
-    addView = new ChildView _.extend {}, @data,
-      el: @$('.addNew')
-      model: new @data.ModelType
-
-    @listenTo addView, 'add', (model) ->
-      @collection.add model
-
   render: ->
     @$el.html template data: @data
     @
@@ -48,6 +44,9 @@ define [
   addAll: ->
     @$attach.html('')
     @collection.each @addOne, @
+
+  add: ->
+    @collection.add new @data.ModelType
 
   saveRequired: ->
     @model.trigger 'save:required'

@@ -4,16 +4,12 @@
       <%= data.label %>
       <a data-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="glyphicon glyphicon-question-sign"></i></a>
     </label>
+    <button class="editor-button add">Add <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
     <div id="help-<%= data.modelAttribute %>" class="editor-help">
       <%= data.helpText %>
     </div>
   </div>
   <div class="col-sm-9 col-lg-9">
-    <h5>Add New <%= data.label %></h5>
-    <div class="container-fluid">
-      <div class="addNew row"></div>
-    </div>
-    <h5>Existing <%= data.label %></h5>
     <div class="existing container-fluid"></div>
   </div>
 </div>

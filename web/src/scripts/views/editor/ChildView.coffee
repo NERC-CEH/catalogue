@@ -7,11 +7,10 @@ define [
   className: 'row'
 
   events:
-    'click button.add':    'add'
     'click button.remove': 'delete'
 
   initialize: (options) ->
-    @index = if @model.collection then @model.collection.indexOf @model else 'Add'
+    @index = @model.collection.indexOf @model
     do @render
     new options.ObjectInputView
       el: @$('.dataentry')
@@ -21,11 +20,6 @@ define [
   render: ->
     @$el.html template index: @index
     @
-
-  add: ->
-    @trigger 'add', @model.clone()
-    _.each @model.keys(), (key) =>
-      @model.unset key
 
   delete: ->
     @model.collection.remove @model

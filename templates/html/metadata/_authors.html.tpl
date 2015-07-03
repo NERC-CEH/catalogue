@@ -24,7 +24,7 @@
           </#if>
         </#if>
         <#if author.orcid?has_content>
-          <a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank">${author.orcid?html}</a><br>
+        <a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank">${author.orcid?html}</a><br>
         </#if>
         <#if author.address?has_content>
           <address class="hidden-xs">

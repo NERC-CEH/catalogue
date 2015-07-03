@@ -6,7 +6,9 @@ define [
 
   events:
     'click #editorDelete': 'attemptDelete'
-    'click #editorExit': 'exit'
+    'click #confirmDeleteYes': 'delete'
+    'click #editorExit': 'attemptExit'
+    'click #exitWithoutSaving': 'exit'
     'click #editorSave': 'save'
     'click #editorBack': 'back'
     'click #editorNext': 'next'
@@ -14,35 +16,54 @@ define [
 
   initialize: ->
     @currentStep = 1
-    @listenTo @model, 'error', (model, response) ->
-      alert "Problem communicating with server: #{response.status} (#{response.statusText})"
-    @listenTo @model, 'change save:required', @toggleSave
+    @listenTo @model, 'error', @errorMessage
+    @listenTo @model, 'sync', @noSaveRequired
+    @listenTo @model, 'change save:required', @saveRequired
     _.invoke @sections[0].views, 'show'
+    @saveRequired = false
     do @render
 
-  toggleSave: ->
-    @$('#editorSave').prop 'disabled', (i, current) -> not current
+  errorMessage: (model, response) ->
+    @$('#editorErrorMessage')
+      .find('#editorErrorMessageResponse').text("#{response.status} #{response.statusText}")
+      .end()
+      .find('#editorErrorMessageJson').text(JSON.stringify model.toJSON())
+      .end()
+      .modal 'show'
+
+  saveRequired: ->
+    @saveState true
+
+  noSaveRequired: ->
+    @saveState false
+
+  saveState: (state) ->
+    @saveRequired = state
+    @$('#editorSave').prop 'disabled', not @saveRequired
 
   attemptDelete: ->
-    if confirm "Delete metadata?"
-      do @model.destroy
+    @$('#confirmDelete').modal 'show'
+
+  delete: ->
+    @$('#confirmDelete').modal 'hide'
+    do @model.destroy
 
   save: ->
     @model.save {},
       error: (model, response) ->
         console.log "Error saving metadata: #{response.status} (#{response.statusText})"
 
-  exit: ->
-    reallyExit = =>
-      _.invoke @sections, 'remove'
-      do @remove
-      do Backbone.history.location.reload
-
-    if not @$('#editorSave').prop 'disabled'
-      if confirm "Exit without saving changes to metadata?"
-        do reallyExit
+  attemptExit: ->
+    if @saveRequired
+      @$('#confirmExit').modal 'show'
     else
-      do reallyExit
+      do @exit
+
+  exit: ->
+    @$('#confirmExit').modal 'hide'
+    _.invoke @sections, 'remove'
+    do @remove
+    do Backbone.history.location.reload
 
   back: ->
     @navigate @currentStep - 1

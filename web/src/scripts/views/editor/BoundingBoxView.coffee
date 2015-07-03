@@ -5,6 +5,7 @@ define [
 
   template: template
 
+  # These bounding box values were copied from terraCatalog
   boundingBoxes:
     eng:
       northBoundLatitude: 55.812
@@ -50,4 +51,5 @@ define [
     value = $(event.target).val()
     boundingBox = @boundingBoxes[value]
     @model.set boundingBox
+    @$('select').val value
 

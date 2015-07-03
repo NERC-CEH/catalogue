@@ -3,14 +3,10 @@ define [
   'tpl!templates/editor/Textarea.tpl'
 ], (ObjectInputView, template) -> ObjectInputView.extend
 
-  initialize: (options) ->
-    @modelAttribute = options.modelAttribute
-    @rows = if options.rows then options.rows else 13
-    do @render
+  template: template
 
-  render: ->
-    @$el.html template
-      identifier: @modelAttribute
-      value: @model.get 'value'
-      rows: @rows
-    @
+  initialize: (options) ->
+    unless options.rows?
+      options.rows = 13
+
+    ObjectInputView.prototype.initialize.call @, options
