@@ -1,7 +1,8 @@
 define [
   'jquery'
-  'cs!models/Metadata'
-  'cs!views/EditorView'
+  'cs!models/GeminiMetadata'
+  'cs!views/GeminiEditorView'
+  'bootstrap'
 ], ($, Metadata, EditorView) ->
   describe 'EditorView', ->
     view = null
@@ -57,30 +58,16 @@ define [
         do view.render
 
       it 'clicking Save calls method', ->
-        view.$('#editorSave').trigger 'click'
+        view.$('#editorSave').prop("disabled", false).trigger 'click'
         expect(view.save).toHaveBeenCalled()
         expect(model.save).toHaveBeenCalled()
 
     describe 'when delete clicked', ->
 
       beforeEach ->
-        spyOn(view, 'delete').and.callThrough()
         spyOn(model, 'destroy')
-        do view.delegateEvents
         do view.render
 
       it 'clicking Delete calls method', ->
-        view.$('#editorDelete').trigger 'click'
-        expect(view.delete).toHaveBeenCalled()
+        view.$('#confirmDeleteYes').trigger 'click'
         expect(model.destroy).toHaveBeenCalled()
-
-    describe 'when Step 4 clicked', ->
-
-      beforeEach ->
-        spyOn(view, 'direct')
-        do view.delegateEvents
-        do view.render
-
-      it 'direct method called', ->
-        view.$('#editorNav li:eq(4)').trigger 'click'
-        expect(view.direct).toHaveBeenCalled()
