@@ -11,12 +11,15 @@ define [
   'cs!routers/SearchRouter'
   'cs!models/GeminiMetadata'
   'cs!views/GeminiEditorView'
+  'cs!models/MonitoringMetadata'
+  'cs!views/MonitoringEditorView'
   'cs!models/PermissionApp'
   'cs!routers/PermissionRouter'
   'cs!views/PermissionAppView'
   'bootstrap'
 ], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
-    SearchRouter, GeminiMetadata, GeminiEditorView, PermissionApp, PermissionRouter, PermissionAppView) ->
+    SearchRouter, GeminiMetadata, GeminiEditorView, MonitoringMetadata, MonitoringEditorView, PermissionApp, PermissionRouter,
+    PermissionAppView) ->
   
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -66,11 +69,16 @@ define [
   ###
   initEditor: ->
 
-    $('.edit-control.gemini').on 'click', (event) ->
-      model = null
-      el = null
-
+    bindEditorView = (event, model, el, View) ->
       do event.preventDefault
+      new View
+        el: el
+        model: model
+
+      $('#editorCreate').toggle()
+
+    $('.edit-control.gemini').on 'click', (event) ->
+      model = el = null
 
       if gemini?
         model = new GeminiMetadata gemini
@@ -79,9 +87,20 @@ define [
         model = new GeminiMetadata()
         el = '#search'
 
-      view = new GeminiEditorView
-        el: el
-        model: model
+      bindEditorView event, model, el, GeminiEditorView
+
+    $('.edit-control.monitoring').on('click', (event) ->
+      model = el = null
+
+      if monitoring?
+        model = new MonitoringMetadata monitoring
+        el = '#metadata'
+      else
+        model = new MonitoringMetadata()
+        el = '#search'
+
+      bindEditorView event, model, el, MonitoringEditorView
+    )
 
   ###
   Initialize the permission application

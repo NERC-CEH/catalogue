@@ -39,7 +39,18 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <#if searching && permission.userCanCreate()>
-                <li><a class="edit-control gemini" href="#">Create new metadata</a></li>
+              <li>
+                <div id="editorCreate" class="dropdown">
+                  <button class="btn btn-default navbar-btn dropdown-toggle" type="button" id="createMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Create
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="createMenu">
+                    <li><a class="edit-control gemini" href="#">Gemini</a></li>
+                    <li><a class="edit-control monitoring" href="#">Monitoring</a></li>
+                  </ul>
+                </div>
+              </li>
             </#if>
             <li id="sso-user"><a>Joe Bloggs</a></li>
           </ul>

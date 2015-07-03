@@ -68,7 +68,8 @@ define [
           ObjectInputView: TextareaView,
           rows: 17
           helpText: """
-                    A brief description of the data resource. This should include some explanation as to purpose and how the data resource has been used since creation. It is best to write a concise abstract.
+                    <p>A brief description of the data resource. This should include some explanation as to purpose and how the data resource has been used since creation.</p>
+                    <p>It is best to write a concise abstract.</p>
                     """
 
         new SingleObjectView
