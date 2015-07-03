@@ -16,6 +16,8 @@ define [
 
   initialize: ->
     @currentStep = 1
+    @saveRequired = false
+
     @listenTo @model, 'error', (model, response) ->
       @$('#editorAjax').toggleClass 'visible'
       @$('#editorErrorMessage')
@@ -31,9 +33,15 @@ define [
       @saveState true
     @listenTo @model, 'request', ->
       @$('#editorAjax').toggleClass 'visible'
+
     _.invoke @sections[0].views, 'show'
-    @saveRequired = false
     do @render
+
+    $editorNav = @$('#editorNav')
+    _.each @sections, (section) ->
+      $editorNav.append(@$("<li>#{section.label}</li>"))
+
+    $editorNav.find('li').first().addClass('active')
 
   saveState: (state) ->
     @saveRequired = state

@@ -1,15 +1,4 @@
-<ol id="editorNav" class="breadcrumb hidden-xs">
-  <li class="active">One</li>
-  <li>Two</li>
-  <li>Three</li>
-  <li>Four</li>
-  <li>Five</li>
-  <li>Six</li>
-  <li>Seven</li>
-  <li>Eight</li>
-  <li>Nine</li>
-  <li>Ten</li>
-</ol>
+<ol id="editorNav" class="breadcrumb hidden-xs"></ol>
 <div id="editor" class="container-fluid" role="form"></div>
 <div class="navbar navbar-default navbar-fixed-bottom">
   <div class="container-fluid">
