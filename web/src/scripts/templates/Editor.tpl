@@ -17,6 +17,7 @@
       <button id="editorDelete" class="btn btn-default navbar-btn">Delete <i class="glyphicon glyphicon-remove"></i></button>
     </div>
     <div class="navbar-right">
+      <p id="editorAjax" class="navbar-text">Saving: <img src="/static/img/ajax-loader.gif"></p>
       <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
       <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="glyphicon glyphicon-chevron-right"></i></button>
       <button id="editorSave" class="btn btn-default navbar-btn" disabled>Save <i class="glyphicon glyphicon-save"></i></button>

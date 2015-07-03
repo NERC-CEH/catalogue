@@ -16,26 +16,24 @@ define [
 
   initialize: ->
     @currentStep = 1
-    @listenTo @model, 'error', @errorMessage
-    @listenTo @model, 'sync', @noSaveRequired
-    @listenTo @model, 'change save:required', @saveRequired
+    @listenTo @model, 'error', (model, response) ->
+      @$('#editorAjax').toggleClass 'visible'
+      @$('#editorErrorMessage')
+        .find('#editorErrorMessageResponse').text("#{response.status} #{response.statusText}")
+        .end()
+        .find('#editorErrorMessageJson').text(JSON.stringify model.toJSON())
+        .end()
+        .modal 'show'
+    @listenTo @model, 'sync', ->
+      @$('#editorAjax').toggleClass 'visible'
+      @saveState false
+    @listenTo @model, 'change save:required', ->
+      @saveState true
+    @listenTo @model, 'request', ->
+      @$('#editorAjax').toggleClass 'visible'
     _.invoke @sections[0].views, 'show'
     @saveRequired = false
     do @render
-
-  errorMessage: (model, response) ->
-    @$('#editorErrorMessage')
-      .find('#editorErrorMessageResponse').text("#{response.status} #{response.statusText}")
-      .end()
-      .find('#editorErrorMessageJson').text(JSON.stringify model.toJSON())
-      .end()
-      .modal 'show'
-
-  saveRequired: ->
-    @saveState true
-
-  noSaveRequired: ->
-    @saveState false
 
   saveState: (state) ->
     @saveRequired = state
