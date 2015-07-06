@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.io.IOException;
 import java.util.List;
+import lombok.Data;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;

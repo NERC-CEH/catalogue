@@ -19,9 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
@@ -37,12 +36,12 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 @Secured(DocumentController.MAINTENANCE_ROLE)
 public class MaintenanceController {
     private final DataRepositoryOptimizingService repoService;
-    private final DocumentIndexingService solrIndex;
-    private final DocumentLinkService linkingService;
+    private final SolrIndexingService solrIndex;
+    private final JenaIndexingService linkingService;
     private final TerraCatalogImporterService terraCatalogImporterService;
     
     @Autowired
-    public MaintenanceController(DataRepositoryOptimizingService repoService, DocumentIndexingService solrIndex, DocumentLinkService linkingService, TerraCatalogImporterService terraCatalogImporterService) {
+    public MaintenanceController(DataRepositoryOptimizingService repoService, SolrIndexingService solrIndex, JenaIndexingService linkingService, TerraCatalogImporterService terraCatalogImporterService) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
@@ -53,7 +52,11 @@ public class MaintenanceController {
     @ResponseBody
     public MaintenanceResponse loadMaintenancePage() {
         MaintenanceResponse toReturn = new MaintenanceResponse();
-        toReturn.setLinked(!linkingService.isEmpty());
+        try {
+            toReturn.setLinked(!linkingService.isIndexEmpty());
+        } catch(DocumentIndexingException ex) {
+            toReturn.addMessage(ex.getMessage());
+        }
         try {
             toReturn.setIndexed(!solrIndex.isIndexEmpty());
         } catch(DocumentIndexingException ex) {
@@ -106,9 +109,9 @@ public class MaintenanceController {
     @ResponseBody
     public HttpEntity<MaintenanceResponse> reindexLinks() {
         try {
-            linkingService.rebuildLinks();
+            linkingService.rebuildIndex();
             return ResponseEntity.ok(loadMaintenancePage().addMessage("All documents successfully linked"));
-        } catch (DocumentLinkingException ex) {
+        } catch (DocumentIndexingException ex) {
             MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
             Arrays.stream(ex.getSuppressed()).forEach(e -> response.addMessage(e.getMessage()));
             return ResponseEntity

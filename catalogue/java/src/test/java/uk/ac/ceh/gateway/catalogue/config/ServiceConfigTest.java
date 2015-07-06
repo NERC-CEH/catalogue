@@ -27,14 +27,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
-import uk.ac.ceh.gateway.catalogue.linking.JenaDocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
-import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 
 /**
@@ -149,7 +147,7 @@ public class ServiceConfigTest {
     public void checkThatDocumentExceptionWhenReindexingIsPostedToEventBus() throws DocumentIndexingException {
         //Given
         DocumentIndexingException documentIndexingException = new DocumentIndexingException("Failed to check if index is empty");
-        SolrIndexingService<GeminiDocument> documentIndexingService = mock(SolrIndexingService.class);
+        DocumentIndexingService documentIndexingService = mock(DocumentIndexingService.class);
         when(documentIndexingService.isIndexEmpty()).thenThrow(documentIndexingException);
         
         //When
@@ -192,53 +190,12 @@ public class ServiceConfigTest {
     @Test
     public void checkThatLinkingServiceIsRequestedToBeLinkedAfterCreation() throws XPathExpressionException, IOException {
         //Given
-        doNothing().when(services).performRelinkIfNothingIsLinked(any(DocumentLinkService.class));
+        doNothing().when(services).performReindexIfNothingIsIndexed(any(DocumentIndexingService.class));
         
         //When
-        JenaDocumentLinkService documentLinkingService = services.documentLinkingService();
+        JenaIndexingService documentLinkingService = services.documentLinkingService();
         
         //Then
-        verify(services).performRelinkIfNothingIsLinked(documentLinkingService);
-    }
-    
-    @Test
-    public void checkThatLinkingServiceIsReLinkedIfEmpty() throws DocumentLinkingException {
-        //Given
-        DocumentLinkService documentLinkingService = mock(DocumentLinkService.class);
-        when(documentLinkingService.isEmpty()).thenReturn(true);
-        
-        //When
-        services.performRelinkIfNothingIsLinked(documentLinkingService);
-        
-        //Then
-        verify(documentLinkingService).rebuildLinks();
-    }
-    
-    @Test
-    public void checkThatLinkingServiceIsNotRelinkedIfPopulated() throws DocumentLinkingException {
-        //Given
-        DocumentLinkService documentLinkingService = mock(DocumentLinkService.class);
-        when(documentLinkingService.isEmpty()).thenReturn(false);
-        
-        //When
-        services.performRelinkIfNothingIsLinked(documentLinkingService);
-        
-        //Then
-        verify(documentLinkingService, never()).rebuildLinks();
-    }
-    
-    @Test
-    public void checkThatLinkExceptionWhenRelinkingIsPostedToEventBus() throws DocumentLinkingException {
-        //Given
-        DocumentLinkingException documentLinkingException = new DocumentLinkingException("Failed to check if index is empty");
-        DocumentLinkService documentLinkingService = mock(DocumentLinkService.class);
-        when(documentLinkingService.isEmpty()).thenReturn(true);
-        doThrow(documentLinkingException).when(documentLinkingService).rebuildLinks();
-        
-        //When
-        services.performRelinkIfNothingIsLinked(documentLinkingService);
-        
-        //Then
-        verify(bus).post(documentLinkingException);
+        verify(services).performReindexIfNothingIsIndexed(documentLinkingService);
     }
 }

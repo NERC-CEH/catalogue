@@ -25,12 +25,11 @@ import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.ExtractTopicFromDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
-import uk.ac.ceh.gateway.catalogue.linking.JenaDocumentLinkService;
-import uk.ac.ceh.gateway.catalogue.linking.MetadataDocumenttLDExtractor;
+import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentJenaIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -193,17 +192,16 @@ public class ServiceConfig {
     }
     
     @Bean
-    public JenaDocumentLinkService documentLinkingService() throws XPathExpressionException, IOException {
-        JenaDocumentLinkService toReturn = new JenaDocumentLinkService(
-                dataRepository,
+    public JenaIndexingService documentLinkingService() throws XPathExpressionException, IOException {
+        JenaIndexingService toReturn = new JenaIndexingService(
                 bundledReaderService(),
                 documentListingService(),
-                documentIdentifierService(),
-                new MetadataDocumenttLDExtractor(documentIdentifierService()),
+                dataRepository,
+                new MetadataDocumentJenaIndexGenerator(documentIdentifierService()),
                 jenaTdb
         );
         
-        performRelinkIfNothingIsLinked(toReturn);
+        performReindexIfNothingIsIndexed(toReturn);
         return toReturn;
     }
     
@@ -228,7 +226,7 @@ public class ServiceConfig {
     }
     
     //Perform an initial index of solr if their is no content inside
-    protected void performReindexIfNothingIsIndexed(SolrIndexingService<?> service) {
+    protected void performReindexIfNothingIsIndexed(DocumentIndexingService service) {
         try {
             if(service.isIndexEmpty()) {
                 service.rebuildIndex();
@@ -237,18 +235,6 @@ public class ServiceConfig {
         catch(DocumentIndexingException ex) {
             //Indexing or reading from solr failed... 
             bus.post(ex); //Silently hand over to the event bus
-        }
-    }
-    
-    //Perform an initial relink if there is no links already populated
-    protected void performRelinkIfNothingIsLinked(DocumentLinkService service) {
-        try {
-            if(service.isEmpty()) {
-                service.rebuildLinks();
-            }
-        }
-        catch(DocumentLinkingException ex) {
-            bus.post(ex);
         }
     }
 }

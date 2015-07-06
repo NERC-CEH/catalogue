@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.linking;
+package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -17,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
  * @param <D>
  */
 @Data
-public class MetadataDocumenttLDExtractor<D extends MetadataDocument> implements LDExtractor<D> {
+public class MetadataDocumentJenaIndexGenerator implements IndexGenerator<MetadataDocument, List<Statement>> {
     private static final Property IDENTIFIER = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");
     private static final Property TITLE = ResourceFactory.createProperty("http://purl.org/dc/terms/title");
     private static final Property TYPE = ResourceFactory.createProperty("http://purl.org/dc/terms/type");
@@ -26,7 +26,7 @@ public class MetadataDocumenttLDExtractor<D extends MetadataDocument> implements
     private final DocumentIdentifierService documentIdentifierService;
 
     @Override
-    public List<Statement> getStatements(D document) {
+    public List<Statement> generateIndex(MetadataDocument document) {
         List<Statement> toReturn = new ArrayList<>();
         
         Resource me = resource(document.getId());
