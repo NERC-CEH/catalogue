@@ -7,6 +7,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
  * The resultant bean will be submitted to solr for indexing.
  * @author cjohn
  */
-public interface SolrIndexGenerator<D> {
-    Object generateIndex(D toIndex);
+public interface IndexGenerator<D, I> {
+    I generateIndex(D toIndex);
 }

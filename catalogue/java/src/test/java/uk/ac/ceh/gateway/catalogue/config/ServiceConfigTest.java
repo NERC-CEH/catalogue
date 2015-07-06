@@ -190,26 +190,6 @@ public class ServiceConfigTest {
     }
     
     @Test
-    public void checkThatDocumentIndexingServiceIsComposedCorrectly() throws XPathExpressionException, IOException {
-        //Given
-        MetadataInfoBundledReaderService reader = mock(MetadataInfoBundledReaderService.class);
-        ExtensionDocumentListingService listingService = mock(ExtensionDocumentListingService.class);
-        
-        doReturn(reader).when(services).bundledReaderService();
-        doReturn(listingService).when(services).documentListingService();
-        doNothing().when(services).performReindexIfNothingIsIndexed(any(SolrIndexingService.class));
-        
-        //When
-        SolrIndexingService<MetadataDocument> documentIndexingService = services.documentIndexingService();
-        
-        //Then
-        assertEquals("Expected to find the reader", reader, documentIndexingService.getReader());
-        assertEquals("Expected to find the listingService", listingService, documentIndexingService.getListingService());
-        assertEquals("Expected to find the dataRepository", dataRepository, documentIndexingService.getRepo());
-        assertEquals("Expected to find the solrServer", solrServer, documentIndexingService.getSolrServer());
-    }
-    
-    @Test
     public void checkThatLinkingServiceIsRequestedToBeLinkedAfterCreation() throws XPathExpressionException, IOException {
         //Given
         doNothing().when(services).performRelinkIfNothingIsLinked(any(DocumentLinkService.class));

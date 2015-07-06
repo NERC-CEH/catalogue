@@ -10,10 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.Data;
-import lombok.experimental.Accessors;
-import org.apache.solr.client.solrj.beans.Field;
-import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Geometry;
@@ -34,7 +30,7 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
  * beans which are solr indexable
  * @author cjohn
  */
-public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<MetadataDocument> {
+public class MetadataDocumentSolrIndexGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
     private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
     private static final String CEH_OGL_URL = "http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
     private final TopicIndexer topicIndexer;
@@ -50,9 +46,9 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
     }
 
     @Override
-    public DocumentSolrIndex generateIndex(MetadataDocument document) {
+    public SolrIndex generateIndex(MetadataDocument document) {
         List<String> locations = new ArrayList<>();
-        DocumentSolrIndex toReturn = new DocumentSolrIndex()
+        SolrIndex toReturn = new SolrIndex()
                 .setDescription(document.getDescription())
                 .setTitle(document.getTitle())
                 .setIdentifier(identifierService.generateFileId(document.getId()))
@@ -158,57 +154,5 @@ public class MetadataDocumentSolrIndexGenerator implements SolrIndexGenerator<Me
                         .filter(Objects::nonNull)
                         .distinct()
                         .collect(Collectors.toList());
-    }
-    
-    /**
-    * The following represents the elements of a gemini document which can be indexed
-    * by solr
-    * @author cjohn
-    */
-    @Data
-    @Accessors(chain=true)
-    public static class DocumentSolrIndex {
-        protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 265;
-        private @Field String identifier;
-        private @Field String title;
-        private @Field List<String> altTitle;
-        private @Field String description;
-        private @Field String lineage;
-        private @Field List<String> organisation;
-        private @Field List<String> individual;
-        private @Field List<String> onlineResourceName;
-        private @Field List<String> onlineResourceDescription;
-        private @Field List<String> resourceIdentifier;
-        private @Field String resourceType;
-        private @Field List<String> locations;
-        private @Field String licence;
-        private @Field String state;
-        private @Field List<String> topic;
-        private @Field List<String> view;
-        private @Field String dataCentre;
-        
-        public String getShortenedDescription(){
-            return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);
-        }
-        
-        private String shortenLongString(String toShorten, int desiredLength){
-            toShorten = Strings.nullToEmpty(toShorten);
-            if(toShorten.length() > desiredLength){
-                return breakAtNextSpace(toShorten);
-            }else{
-                return toShorten;
-            }
-        }
-        
-        private String breakAtNextSpace(String toBreak){
-            int nextSpace = toBreak.indexOf(" ", MAX_DESCRIPTION_CHARACTER_LENGTH);
-            String toReturn;
-            if(nextSpace != -1){
-                toReturn = toBreak.substring(0,nextSpace);
-            }else{
-                toReturn = toBreak.substring(0,MAX_DESCRIPTION_CHARACTER_LENGTH);
-            }
-            return toReturn + "...";
-        }
     }
 }

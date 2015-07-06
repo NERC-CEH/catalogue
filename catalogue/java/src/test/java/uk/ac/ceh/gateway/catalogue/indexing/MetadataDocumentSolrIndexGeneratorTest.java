@@ -14,7 +14,6 @@ import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
@@ -43,7 +42,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         List<String> expected = Arrays.asList("0/Biodiversity/", "0/Phenology/");
         
         //When
-        DocumentSolrIndex index = generator.generateIndex(document);
+        SolrIndex index = generator.generateIndex(document);
         List<String> actual = index.getTopic();
         
         //Then
@@ -57,7 +56,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         document.setTitle("my gemini document");
         
         //When
-        DocumentSolrIndex index = generator.generateIndex(document);
+        SolrIndex index = generator.generateIndex(document);
         
         //Then
         assertEquals("Expected to get my title", "my gemini document", index.getTitle());
@@ -72,7 +71,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         document.setId(id);
         
         //When
-        DocumentSolrIndex index = generator.generateIndex(document);
+        SolrIndex index = generator.generateIndex(document);
         
         //Then
         assertEquals("Expected to get my id", "myid", index.getIdentifier());
@@ -86,7 +85,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         document.setDescription(description);
         
         //When
-        DocumentSolrIndex index = generator.generateIndex(document);
+        SolrIndex index = generator.generateIndex(document);
         
         //Then
         assertEquals("Expected to get my description", description, index.getDescription());
@@ -100,7 +99,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         when(codeLookupService.lookup("metadata.resourceType", "dataset")).thenReturn("Dataset");
         
         //When
-        DocumentSolrIndex index = generator.generateIndex(document);
+        SolrIndex index = generator.generateIndex(document);
         
         //Then
         assertEquals("Expected to get my resourceType", "Dataset", index.getResourceType());
@@ -124,7 +123,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
         
         //When
-        DocumentSolrIndex index = generator.generateIndex(document);
+        SolrIndex index = generator.generateIndex(document);
         
         //Then
         assertEquals("Expected isOgl to be true", "IS OGL", index.getLicence());
@@ -148,7 +147,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
         
         //When
-        DocumentSolrIndex index = generator.generateIndex(document);
+        SolrIndex index = generator.generateIndex(document);
         
         //Then
         assertEquals("Expected isOgl to be true", "IS OGL", index.getLicence());
@@ -169,7 +168,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         when(codeLookupService.lookup("licence.isOgl", false)).thenReturn("ISNT OGL");
         
         //When
-        DocumentSolrIndex index = generator.generateIndex(document);
+        SolrIndex index = generator.generateIndex(document);
         
         //Then
         assertEquals("Expected isOgl to be false", "ISNT OGL", index.getLicence());
@@ -183,7 +182,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         document.setResponsibleParties(Arrays.asList(custodian));
         
         //When
-        DocumentSolrIndex actual = generator.generateIndex(document);
+        SolrIndex actual = generator.generateIndex(document);
         
         //Then
         assertThat("Expected dataCentre to be EIDCHub", actual.getDataCentre(), equalTo("EIDCHub"));
@@ -197,7 +196,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
         document.setResponsibleParties(Arrays.asList(custodian));
         
         //When
-        DocumentSolrIndex index = generator.generateIndex(document);
+        SolrIndex index = generator.generateIndex(document);
         
         //Then
         assertThat("Expected dataCentre to be empty", index.getDataCentre(), equalTo(""));
@@ -206,9 +205,9 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     @Test
     public void checkThatLongDescriptionWithSpacesIsShortened(){
         //Given
-        int maxDescriptionLength = MetadataDocumentSolrIndexGenerator.DocumentSolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
+        int maxDescriptionLength = SolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
         String description = "Once_upon_a_time,_there_was_a_metadata_description_that_had_to_be_more_than_" + maxDescriptionLength + "_characters_in_length.__It_started_its_life_at_only_30_characters_long,_but_it_ate_its_porridge_every_morning_and_soon_started_to_grow.__After_a_month_it_was_241_characters_in_length.__At_this_stage_Description_Growth_Hormone_(DGH)_really_kicked_in_and_in_now_time_it_was_all_grown_up_happily_exceeded_the_required_number_of_characters_and_ready_to_be_used_for_junit_testing._And_here_is_more_guff._And_here_is_more_guff_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more.";
-        MetadataDocumentSolrIndexGenerator.DocumentSolrIndex document = new MetadataDocumentSolrIndexGenerator.DocumentSolrIndex();
+        SolrIndex document = new SolrIndex();
         document.setDescription(description);
         
         //Then
@@ -219,9 +218,9 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     @Test
     public void checkThatLongDescriptionWithoutSpacesIsShortened(){
         //Given
-        int maxDescriptionLength = MetadataDocumentSolrIndexGenerator.DocumentSolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
+        int maxDescriptionLength = SolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
         String description = "Once_upon_a_time,_there_was_a_metadata_description_that_had_to_be_more_than_" + maxDescriptionLength + "_characters_in_length.__It_started_its_life_at_only_30_characters_long,_but_it_ate_its_porridge_every_morning_and_soon_started_to_grow.__After_a_month_it_was_241_characters_in_length.__At_this_stage_Description_Growth_Hormone_(DGH)_really_kicked_in_and_in_now_time_it_was_all_grown_up_happily_exceeded_the_required_number_of_characters_and_ready_to_be_used_for_junit_testing._And_here_is_more_guff._And_here_is_more_guff_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more.";
-        MetadataDocumentSolrIndexGenerator.DocumentSolrIndex document = new MetadataDocumentSolrIndexGenerator.DocumentSolrIndex();
+        SolrIndex document = new SolrIndex();
         document.setDescription(description);
 
         //Then
@@ -232,9 +231,9 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     @Test
     public void checkThatShortDescriptionIsNotShortened(){
         //Given
-        int maxDescriptionLength = MetadataDocumentSolrIndexGenerator.DocumentSolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
+        int maxDescriptionLength = SolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
         String description = "I am short";
-        MetadataDocumentSolrIndexGenerator.DocumentSolrIndex document = new MetadataDocumentSolrIndexGenerator.DocumentSolrIndex();
+        SolrIndex document = new SolrIndex();
         document.setDescription(description);
         
         //Then
@@ -245,7 +244,7 @@ public class MetadataDocumentSolrIndexGeneratorTest {
     @Test
     public void checkNullDescriptionGeneratesEmptyStringForShortenedDescription(){
         //Given
-        MetadataDocumentSolrIndexGenerator.DocumentSolrIndex document = new MetadataDocumentSolrIndexGenerator.DocumentSolrIndex();
+        SolrIndex document = new SolrIndex();
         document.setDescription(null);
         
         //When
