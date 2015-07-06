@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.base.Strings;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -37,6 +38,13 @@ public class SolrIndex {
     private @Field List<String> view;
     private @Field String dataCentre;
 
+    public SolrIndex addLocations(List<String> locations) {
+        if(this.locations == null) {
+            this.locations = new ArrayList<>();
+        }
+        this.locations.addAll(locations);
+        return this;
+    }
     public String getShortenedDescription(){
         return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);
     }

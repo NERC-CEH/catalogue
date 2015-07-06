@@ -8,5 +8,5 @@ package uk.ac.ceh.gateway.catalogue.indexing;
  * @author cjohn
  */
 public interface IndexGenerator<D, I> {
-    I generateIndex(D toIndex);
+    I generateIndex(D toIndex) throws DocumentIndexingException;
 }
