@@ -11,7 +11,7 @@ import uk.ac.ceh.gateway.catalogue.util.ClassMap;
  */
 @Data
 public class IndexGeneratorRegistry<D, I> implements IndexGenerator<D, I> {
-    private final ClassMap<IndexGenerator> lookup;
+    private final ClassMap<IndexGenerator<?, I>> lookup;
         
     @Override
     public I generateIndex(D toIndex) throws DocumentIndexingException {

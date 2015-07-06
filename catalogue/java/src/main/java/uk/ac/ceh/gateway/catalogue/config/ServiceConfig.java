@@ -33,6 +33,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentJenaIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
@@ -190,7 +191,7 @@ public class ServiceConfig {
         SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(new ExtractTopicFromDocument(), codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
         
-        ClassMap<IndexGenerator> mappings = new MostSpecificClassMap<IndexGenerator>()
+        ClassMap<IndexGenerator<?, SolrIndex>> mappings = new MostSpecificClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(metadataDocument, solrGeometryService(), codeLookupService))
             .register(Facility.class,           new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
             .register(BaseMonitoringType.class, baseMonitoringType)
