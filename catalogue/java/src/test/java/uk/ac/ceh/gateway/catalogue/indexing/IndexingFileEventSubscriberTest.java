@@ -1,5 +1,6 @@
-package uk.ac.ceh.gateway.catalogue.events;
+package uk.ac.ceh.gateway.catalogue.indexing;
 
+import uk.ac.ceh.gateway.catalogue.indexing.IndexingFileEventListener;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
@@ -18,16 +19,16 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
-public class SolrIndexFileEventSubscriberTest {
+public class IndexingFileEventSubscriberTest {
     @Mock private SolrIndexingService<MetadataDocument> service;
     @Mock private DataSubmittedEvent<?> event;
     @Mock private DocumentListingService listingService;
-    private SolrIndexFileEventSubscriber eventSubscriber; 
+    private IndexingFileEventListener eventSubscriber; 
     
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        eventSubscriber = new SolrIndexFileEventSubscriber(service, listingService);
+        eventSubscriber = new IndexingFileEventListener(service, listingService);
     }
 
     @Test

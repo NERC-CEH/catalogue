@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.events;
+package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.eventbus.Subscribe;
 import java.util.List;
@@ -8,20 +8,16 @@ import org.springframework.stereotype.Component;
 import uk.ac.ceh.components.datastore.DataDeletedEvent;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataSubmittedEvent;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
 @Component
-@Subscriber
 @Slf4j
-public class SolrIndexFileEventSubscriber {
-    private final SolrIndexingService<MetadataDocument> service;
+public class IndexingFileEventListener {
+    private final DocumentIndexingService service;
     private final DocumentListingService listingService;
 
     @Autowired
-    public SolrIndexFileEventSubscriber(SolrIndexingService<MetadataDocument> service,  DocumentListingService listingService) {
+    public IndexingFileEventListener(DocumentIndexingService service,  DocumentListingService listingService) {
         this.service = service;
         this.listingService = listingService;
     }
