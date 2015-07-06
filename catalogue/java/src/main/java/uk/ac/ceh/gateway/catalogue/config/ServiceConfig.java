@@ -3,8 +3,10 @@ package uk.ac.ceh.gateway.catalogue.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
@@ -30,13 +32,15 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGeneratorRegistry;
 import uk.ac.ceh.gateway.catalogue.indexing.ExtractTopicFromDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexGeminiDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentJenaIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
+import uk.ac.ceh.gateway.catalogue.linking.JenaQuerying;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -211,11 +215,17 @@ public class ServiceConfig {
     
     @Bean
     public JenaIndexingService documentLinkingService() throws XPathExpressionException, IOException {
+        JenaIndexMetadataDocumentGenerator metadataDocument = new JenaIndexMetadataDocumentGenerator(documentIdentifierService());
+        
+        ClassMap<IndexGenerator<?, List<Statement>>> mappings = new MostSpecificClassMap<IndexGenerator<?, List<Statement>>>()
+                .register(MetadataDocument.class, metadataDocument)
+                .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument));
+        
         JenaIndexingService toReturn = new JenaIndexingService(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new MetadataDocumentJenaIndexGenerator(documentIdentifierService()),
+                new IndexGeneratorRegistry(mappings),
                 jenaTdb
         );
         

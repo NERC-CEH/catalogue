@@ -3,20 +3,16 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import com.google.common.eventbus.Subscribe;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.ac.ceh.components.datastore.DataDeletedEvent;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataSubmittedEvent;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
-@Component
 @Slf4j
 public class IndexingFileEventListener {
     private final DocumentIndexingService service;
     private final DocumentListingService listingService;
 
-    @Autowired
     public IndexingFileEventListener(DocumentIndexingService service,  DocumentListingService listingService) {
         this.service = service;
         this.listingService = listingService;
