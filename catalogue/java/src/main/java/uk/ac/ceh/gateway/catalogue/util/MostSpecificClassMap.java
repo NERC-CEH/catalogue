@@ -25,6 +25,28 @@ public class MostSpecificClassMap<T> implements ClassMap<T> {
         this.lookup = new HashMap<>();
     }
     
+    /**
+     * Returns the an instance which has been mapped to the given class. The 
+     * class lookup. The instance which gets returned map have been mapped to a 
+     * super class of the one specified. Given the following class hierarchy and
+     * registration:
+     * 
+     *   Object       classMap.register(A.class, "Alice")
+     *     |                  .register(B.class, "Bob");
+     *     A
+     *    / \
+     *   B   C
+     * 
+     * The following calls will be true:
+     * 
+     *    classMap.get(A.class) -> "Alice";
+     *    classMap.get(C.class) -> "Alice";
+     *    classMap.get(B.class) -> "Bob";
+     * 
+     * @param clazz to lookup
+     * @return instance mapped to the class (or a super class of it) or null if
+     *  no match can be made.
+     */
     @Override
     public T get(Class<?> clazz) {
         for(Class<?> curr: clazzes) {
