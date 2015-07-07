@@ -28,11 +28,15 @@ define [
         .modal 'show'
     @listenTo @model, 'sync', ->
       @$('#editorAjax').toggleClass 'visible'
-      @saveState false
+      @saveRequired = false
     @listenTo @model, 'change save:required', ->
-      @saveState true
+      @saveRequired = true
     @listenTo @model, 'request', ->
       @$('#editorAjax').toggleClass 'visible'
+    @listenTo @model, 'destroy', ->
+      _.invoke @sections, 'remove'
+      do @remove
+      do Backbone.history.location.replace('/documents')
 
     _.invoke @sections[0].views, 'show'
     do @render
@@ -43,10 +47,6 @@ define [
 
     $editorNav.find('li').first().addClass('active')
 
-  saveState: (state) ->
-    @saveRequired = state
-    @$('#editorSave').prop 'disabled', not @saveRequired
-
   attemptDelete: ->
     @$('#confirmDelete').modal 'show'
 
@@ -55,9 +55,8 @@ define [
     do @model.destroy
 
   save: ->
-    @model.save {},
-      error: (model, response) ->
-        console.log "Error saving metadata: #{response.status} (#{response.statusText})"
+    if @model.changed
+      do @model.save
 
   attemptExit: ->
     if @saveRequired

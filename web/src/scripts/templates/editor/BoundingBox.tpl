@@ -13,17 +13,4 @@
     <label for="boundingBox<%= data.index %>EastBoundLongitude">East Bounding Longitude</label>
     <input data-name="eastBoundLongitude" id="boundingBox<%= data.index %>EastBoundLongitude" class="editor-input" value="<%= data.eastBoundLongitude %>">
   </div>
-  <div class="col-sm-3 col-lg-3">
-    <label for="boundingBox<%= data.index %>Predefined">Predefined Spatial Extents</label>
-    <select class="editor-input" id="boundingBox<%= data.index %>Predefined">
-      <option value="">- Select Spatial Extent -</option>
-      <option value="eng">England</option>
-      <option value="gb">Great Britain</option>
-      <option value="ni">Northern Ireland</option>
-      <option value="sco">Scotland</option>
-      <option value="uk">United Kingdom</option>
-      <option value="wal">Wales</option>
-      <option value="wor">World</option>
-    </select>
-  </div>
 </div>

@@ -2,6 +2,7 @@ define [
   'cs!views/EditorView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/ParentView'
+  'cs!views/editor/PredefinedParentView'
   'cs!models/editor/String'
   'cs!views/editor/ResourceTypeView'
   'cs!models/editor/ResourceType'
@@ -15,7 +16,8 @@ define [
   'cs!models/editor/Contact'
   'cs!models/editor/ResourceIdentifier'
   'cs!views/editor/BoundingBoxView'
-], (EditorView, SingleObjectView, ParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, ResourceIdentifier, BoundingBoxView) -> EditorView.extend
+  'cs!views/editor/OnlineResourceView'
+], (EditorView, SingleObjectView, ParentView, PredefinedParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, ResourceIdentifier, BoundingBoxView, OnlineResourceView) -> EditorView.extend
 
 
   initialize: ->
@@ -30,7 +32,7 @@ define [
           label: 'Resource Type'
           ObjectInputView: ResourceTypeView,
           helpText: """
-                    Type of resource.
+                    <p>Type of resource.</p>
                     """
 
         new SingleObjectView
@@ -87,12 +89,49 @@ define [
     ,
       label: 'Two'
       views: [
-        new ParentView
+        new PredefinedParentView
           model: @model
           modelAttribute: 'boundingBoxes'
           label: 'Spatial Extents'
           ObjectInputView: BoundingBoxView
           multiline: true
+          # These bounding box values were copied from terraCatalog
+          predefined:
+            England:
+              northBoundLatitude: 55.812
+              eastBoundLongitude: 1.7675
+              southBoundLatitude: 49.864
+              westBoundLongitude: -6.4526
+            'Great Britain':
+              northBoundLatitude: 60.861
+              eastBoundLongitude: 1.768
+              southBoundLatitude: 49.864
+              westBoundLongitude: -8.648
+            'Northern Ireland':
+              northBoundLatitude: 55.313
+              eastBoundLongitude: -5.432
+              southBoundLatitude: 54.022
+              westBoundLongitude: -8.178
+            Scotland:
+              northBoundLatitude: 60.861
+              eastBoundLongitude: -0.728
+              southBoundLatitude: 54.634
+              westBoundLongitude: -8.648
+            'United Kingdom':
+              northBoundLatitude: 60.86099
+              eastBoundLongitude: 1.767549
+              southBoundLatitude: 49.86382
+              westBoundLongitude: -8.648393
+            Wales:
+              northBoundLatitude: 53.434
+              eastBoundLongitude: -2.654
+              southBoundLatitude: 51.375
+              westBoundLongitude: -5.473
+            World:
+              northBoundLatitude: 90.00
+              eastBoundLongitude: 180.00
+              southBoundLatitude: -90.00
+              westBoundLongitude: -180.00
           helpText: """
                     <p>A bounding box representing the limits of the data resource's study area.</p>
                     <p>If you do not wish to reveal the exact location publicly, it is recommended that you generalise the location.  Such sensitive locations may include endangered species and their habitats.</p>
@@ -123,13 +162,162 @@ define [
     ,
       label: 'Five'
       views: [
-        new ParentView
+        new PredefinedParentView
           model: @model
           ModelType: Contact
           modelAttribute: 'responsibleParties'
           label: 'Contacts'
           ObjectInputView: ContactView
           multiline: true
+          predefined:
+            'CEH Author':
+              organisationName: 'Centre for Ecology & Hydrology'
+              role: 'author'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
+                postalCode: 'OX10 8BB'
+                city: 'Wallingford'
+                administrativeArea: 'Oxfordshire'
+                country: 'United Kingdom'
+            'CEH Bangor':
+              organisationName: 'Centre for Ecology & Hydrology'
+              role: 'pointOfContact'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Environment Centre Wales, Deiniol Road'
+                postalCode: 'LL57 2UW'
+                city: 'Bangor'
+                administrativeArea: 'Gwynedd'
+                country: 'United Kingdom'
+            'CEH Edinburgh':
+              organisationName: 'Centre for Ecology & Hydrology'
+              role: 'pointOfContact'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Bush Estate'
+                postalCode: 'EH26 0QB'
+                city: 'Penicuik'
+                administrativeArea: 'Midlothian'
+                country: 'United Kingdom'
+            'CEH Lancaster':
+              organisationName: 'Centre for Ecology & Hydrology'
+              role: 'pointOfContact'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Lancaster Environment Centre, Library Avenue, Bailrigg'
+                postalCode: 'LA1 4AP'
+                city: 'Lancaster'
+                administrativeArea: 'Lancashire'
+                country: 'United Kingdom'
+            'CEH Wallingford':
+              organisationName: 'Centre for Ecology & Hydrology'
+              role: 'pointOfContact'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
+                postalCode: 'OX10 8BB'
+                city: 'Wallingford'
+                administrativeArea: 'Oxfordshire'
+                country: 'United Kingdom'
+            'EIDC Custodian':
+              organisationName: 'EIDC'
+              role: 'custodian'
+              email: 'enquiries@ceh.ac.uk'
+            'NERC Publisher':
+              organisationName: 'NERC Environmental Information Data Centre'
+              role: 'publisher'
+              email: 'eidc@ceh.ac.uk'
+            'Acreman Section':
+              organisationName: 'Acreman Section'
+              role: 'resourceProvider'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
+                postalCode: 'OX10 8BB'
+                city: 'Wallingford'
+                administrativeArea: 'Oxfordshire'
+                country: 'United Kingdom'
+            'Dise Section':
+              organisationName: 'Dise Section'
+              role: 'resourceProvider'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Bush Estate'
+                postalCode: 'EH26 0QB'
+                city: 'Penicuik'
+                administrativeArea: 'Midlothian'
+                country: 'United Kingdom'
+            'Emmett Section':
+              organisationName: 'Emmett Section'
+              role: 'resourceProvider'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Environment Centre Wales, Deiniol Road'
+                postalCode: 'LL57 2UW'
+                city: 'Bangor'
+                administrativeArea: 'Gwynedd'
+                country: 'United Kingdom'
+            'Parr Section':
+              organisationName: 'Parr Section'
+              role: 'resourceProvider'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Lancaster Environment Centre, Library Avenue, Bailrigg'
+                postalCode: 'LA1 4AP'
+                city: 'Lancaster'
+                administrativeArea: 'Lancashire'
+                country: 'United Kingdom'
+            'Pywell Section':
+              organisationName: 'Pywell Section'
+              role: 'resourceProvider'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
+                postalCode: 'OX10 8BB'
+                city: 'Wallingford'
+                administrativeArea: 'Oxfordshire'
+                country: 'United Kingdom'
+            'Rees Section':
+              organisationName: 'Rees Section'
+              role: 'resourceProvider'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
+                postalCode: 'OX10 8BB'
+                city: 'Wallingford'
+                administrativeArea: 'Oxfordshire'
+                country: 'United Kingdom'
+            'Reynard Section':
+              organisationName: 'Reynard Section'
+              role: 'resourceProvider'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
+                postalCode: 'OX10 8BB'
+                city: 'Wallingford'
+                administrativeArea: 'Oxfordshire'
+                country: 'United Kingdom'
+            'Shore Section':
+              organisationName: 'Shore Section'
+              role: 'resourceProvider'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Lancaster Environment Centre, Library Avenue, Bailrigg'
+                postalCode: 'LA1 4AP'
+                city: 'Lancaster'
+                administrativeArea: 'Lancashire'
+                country: 'United Kingdom'
+            'Watt Section':
+              organisationName: 'Watt Section'
+              role: 'resourceProvider'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Bush Estate'
+                postalCode: 'EH26 0QB'
+                city: 'Penicuik'
+                administrativeArea: 'Midlothian'
+                country: 'United Kingdom'
           helpText: """
                     <p>The organisation or person responsible for the authorship, maintenance and curation of the data resource.</p>
                     <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
@@ -153,7 +341,17 @@ define [
       ]
     ,
       label: 'Seven'
-      views: []
+      views: [
+        new ParentView
+          model: @model
+          modelAttribute: 'onlineResources'
+          label: 'Online Resources'
+          ObjectInputView: OnlineResourceView
+          multiline: true
+          helpText: """
+                    <p>Links to websites and web services which provide additional information about the data resource.</p>
+                    """
+      ]
     ,
       label: 'Eight'
       views: []
@@ -177,58 +375,3 @@ define [
     ]
 
     EditorView.prototype.initialize.apply @
-
-
-
-
-#    @components = [
-#      new TitleView
-#        el: @$('#editorTitle')
-#        model: @model
-#
-#      new SingleObjectView
-#        el: @$('#editorResourceType')
-#        model: @model
-#        modelAttribute: 'resourceType'
-#        label: 'Resource Type'
-#        ObjectInputView: ResourceTypeView,
-#        helpText: """
-#                  Type of resource.
-#                  """
-#
-#      new SingleObjectView
-#        el: @$('#editorDatasetReferenceDate')
-#        model: @model
-#        modelAttribute: 'datasetReferenceDate'
-#        label: 'Dataset Reference Date'
-#        ObjectInputView: DatasetReferenceDateView,
-#        helpText: """
-#                  <p>Creation date, the date the data resource is created.</p>
-#                  <p>The publication date is the date when the data resource is being made available or released for use - it is <strong>NOT</strong> the date of creation.</p>
-#                  <p>If you include a revision date, it implies that the resource has been changed as a consequence of edits or updates.  For EIDC Hub records it is usual practice for revised resources to have an entirely new record, therefore <em>revision date</em> is rarely necessary.</p>
-#                  """
-#
-#      new AlternateTitlesView
-#        el: @$('#editorAlternateTitles')
-#        model: @model
-#
-#      new DescriptionView
-#        el: @$('#editorDescription')
-#        model: @model
-#
-#      new LineageView
-#        el: @$('#editorLineage')
-#        model: @model
-#
-#      new TopicCategoriesView
-#        el: @$('#editorTopicCategories')
-#        model: @model
-#
-#      new ContactsView
-#        el: @$('#editorContacts')
-#        model: @model
-#
-#      new ResourceIdentifiersView
-#        el: @$('#editorResourceIdentifiers')
-#        model: @model
-#    ]

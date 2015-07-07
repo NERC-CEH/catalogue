@@ -8,7 +8,7 @@ define [
 
   render: ->
     ObjectInputView.prototype.render.apply @
-    @$('select').val @model.get 'role'
+    @$('select.role').val @model.get 'role'
     @
 
   modify: (event) ->

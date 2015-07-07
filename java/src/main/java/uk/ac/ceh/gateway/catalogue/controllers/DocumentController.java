@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -131,6 +133,8 @@ public class DocumentController {
        
         String id = UUID.randomUUID().toString();
         updateIdAndMetadataDate(geminiDocument, id);
+        URI recordUri = getCurrentUri(request, id, repo.getLatestRevision().getRevisionID());
+        addRecordUriAsResourceIdentifier(geminiDocument, recordUri);
 
         MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(geminiDocument, user);
         
@@ -139,12 +143,16 @@ public class DocumentController {
             .commit(user, String.format("new Gemini document: %s", id));
                 
         return ResponseEntity
-            .created(getCurrentUri(request, id, repo.getLatestRevision().getRevisionID()))
+            .created(recordUri)
             .body(readMetadata(user, id, request));
     }
     
     private void updateIdAndMetadataDate(GeminiDocument document, String id) {
         document.setId(id).setMetadataDate(LocalDateTime.now());
+    }
+    
+    private void addRecordUriAsResourceIdentifier(GeminiDocument document, URI recordUri) {
+        document.getResourceIdentifiers().add(ResourceIdentifier.builder().code(recordUri.toString()).build());
     }
     
     private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user) {
@@ -224,7 +232,7 @@ public class DocumentController {
         log.debug("document requested: {}", document);
         return document;
     }
-
+    
     @PreAuthorize("@permission.toAccess(#user, #file, 'DELETE')")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.DELETE)

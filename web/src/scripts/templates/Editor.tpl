@@ -9,7 +9,7 @@
       <p id="editorAjax" class="navbar-text">Saving: <img src="/static/img/ajax-loader.gif"></p>
       <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
       <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="glyphicon glyphicon-chevron-right"></i></button>
-      <button id="editorSave" class="btn btn-default navbar-btn" disabled>Save <i class="glyphicon glyphicon-save"></i></button>
+      <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="glyphicon glyphicon-save"></i></button>
       <button id="editorExit" class="btn btn-default navbar-btn">Exit <i class="glyphicon glyphicon-off"></i></button>
     </div>
   </div>
@@ -31,7 +31,7 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<div id="confirmDelete" class="modal">
+<div id="confirmDelete" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -47,14 +47,14 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<div id="editorErrorMessage" class="modal">
+<div id="editorErrorMessage" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">There was a problem communicating with the server</h4>
       </div>
       <div class="modal-body">
-        <p>Server response</p>
+        <p>Server response:</p>
         <pre id="editorErrorMessageResponse"></pre>
         <p>Please save this record locally by copying the text below to a file.</p>
         <pre id="editorErrorMessageJson" class="pre-scrollable"></pre>
