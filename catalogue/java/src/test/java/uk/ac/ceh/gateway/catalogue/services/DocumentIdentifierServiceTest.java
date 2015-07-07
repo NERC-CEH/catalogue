@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,7 +16,7 @@ public class DocumentIdentifierServiceTest {
     
     @Before
     public void init() {
-        service = new DocumentIdentifierService('-');
+        service = new DocumentIdentifierService("https://catalogue.ceh.ac.uk", '-');
     }
     
     @Test
@@ -52,5 +53,29 @@ public class DocumentIdentifierServiceTest {
         
         //Then
         assertNull("Expected result to be null", fileId);
+    }
+    
+    @Test
+    public void checkThatGeneratesIdInCorrectFormat() {
+        //Given
+        String id = "myPath";
+        
+        //When
+        String url = service.generateUri(id);
+        
+        //Then
+        assertThat(url, equalTo("https://catalogue.ceh.ac.uk/documents/id/myPath"));
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void checkThatFailsWhenCreatingAUriWithoutAnId() {
+        //Given
+        String id = null;
+        
+        //When
+        String uri = service.generateUri(id);
+        
+        //Then
+        fail("Expected to fail");
     }
 }

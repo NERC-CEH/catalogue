@@ -6,15 +6,14 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.Data;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 /**
- *
+ * A triple extractor for generic metadata documents.
  * @author cjohn
- * @param <D>
  */
 @Data
 public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, List<Statement>> {
@@ -28,16 +27,20 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     @Override
     public List<Statement> generateIndex(MetadataDocument document) {
         List<Statement> toReturn = new ArrayList<>();
-        
-        Resource me = resource(document.getId());
-        toReturn.add(ResourceFactory.createStatement(me, IDENTIFIER, ResourceFactory.createPlainLiteral(document.getId())));
-        toReturn.add(ResourceFactory.createStatement(me, TITLE, ResourceFactory.createPlainLiteral(document.getTitle())));
-        toReturn.add(ResourceFactory.createStatement(me, TYPE, ResourceFactory.createPlainLiteral(document.getType())));
+        if(document.getId() != null) {
+            Resource me = resource(document.getId());
+            toReturn.add(ResourceFactory.createStatement(me, IDENTIFIER, ResourceFactory.createPlainLiteral(document.getId())));
+            
+            Optional.ofNullable(document.getTitle())
+                    .ifPresent(t -> toReturn.add(ResourceFactory.createStatement(me, TITLE, ResourceFactory.createPlainLiteral(t))));
+            
+            Optional.ofNullable(document.getType())
+                    .ifPresent(t -> toReturn.add(ResourceFactory.createStatement(me, TYPE, ResourceFactory.createPlainLiteral(t))));
+        }
         return toReturn;
     }
     
-    public Resource resource(String fileIdentifier) {
-        String uri = "https://catalogue.ceh.ac.uk/id/" + documentIdentifierService.generateFileId(fileIdentifier);
-        return ResourceFactory.createResource(uri);
+    public Resource resource(String id) {
+        return ResourceFactory.createResource(documentIdentifierService.generateUri(id));
     }
 }

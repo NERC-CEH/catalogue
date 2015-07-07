@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -77,6 +78,7 @@ import uk.ac.ceh.gateway.catalogue.util.terracatalog.StateTranslatingMetadataInf
  */
 @Configuration
 public class ServiceConfig {
+    @Value("documents.baseUri") String baseUri;
     @Autowired RestTemplate restTemplate;
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
@@ -184,7 +186,7 @@ public class ServiceConfig {
     
     @Bean
     public DocumentIdentifierService documentIdentifierService() {
-        return new DocumentIdentifierService('-');
+        return new DocumentIdentifierService(baseUri, '-');
     }
     
     @Bean
