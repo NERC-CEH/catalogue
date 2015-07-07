@@ -1,40 +1,36 @@
 define [
-  'cs!models/Metadata'
-  'cs!views/editor/ResourceTypeView'
-], (Metadata, ResourceTypeView) ->
+  'cs!models/GeminiMetadata'
+  'cs!views/editor/SingleObjectView'
+  'cs!views/editor/InputView'
+  'cs!models/editor/String'
+], (GeminiMetadata, SingleObjectView, InputView, String) ->
   describe 'SingleObjectView', ->
     view = null
-    model = new Metadata()
+    model = new GeminiMetadata()
 
     beforeEach ->
-      view = new ResourceTypeView
+      view = new SingleObjectView
         model: model
+        modelAttribute: 'title'
+        ModelType: String
+        label: 'Title'
+        ObjectInputView: InputView,
+        helpText: """
+                  <p>Test</p>
+                  """
 
     describe 'when view is constructing', ->
       it 'should exist', ->
         expect(view).toBeDefined()
 
-    describe 'when view is rendered with populated model', ->
-
-      beforeEach ->
-        model = new Metadata
-          resourceType:
-            value: 'dataset'
-
-        view = new ResourceTypeView
-          model: model
-        do view.render
-
-      it 'there should be dataset selected', ->
-        expect(view.$('#resourceType').val()).toEqual 'dataset'
-
-    describe 'selecting Resource Type to model', ->
-
-      beforeEach ->
-        spyOn model, 'set'
-        do view.render
-
-      it 'should set model', ->
-        view.$('#resourceType').val('series').trigger 'change'
-
-        expect(model.set).toHaveBeenCalled()
+#    describe 'edit title', ->
+#
+#      beforeEach ->
+#        spyOn view, 'updateMetadataModel'
+#        do view.delegateEvents
+#        do view.render
+#
+#      it 'should update model', ->
+#        view.$('#input-title').trigger 'change'
+#
+#        expect(view.updateMetadataModel).toHaveBeenCalled()

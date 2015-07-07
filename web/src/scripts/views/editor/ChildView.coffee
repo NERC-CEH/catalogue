@@ -7,7 +7,7 @@ define [
   className: 'row'
 
   events:
-    'click button.remove': 'delete'
+    'click button.remove': 'remove'
 
   initialize: (options) ->
     @index = @model.collection.indexOf @model
@@ -21,6 +21,6 @@ define [
     @$el.html template index: @index
     @
 
-  delete: ->
+  remove: ->
     @model.collection.remove @model
     do @remove

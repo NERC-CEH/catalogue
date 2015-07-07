@@ -1,13 +1,21 @@
 define [
-  'cs!views/editor/ResourceIdentifiersView'
-  'cs!models/Metadata'
-], (View, Metadata) ->
+  'cs!views/editor/ParentView'
+  'cs!models/GeminiMetadata'
+  'cs!views/editor/ResourceIdentifierView'
+], (ParentView, GeminiMetadata, ResourceIdentifierView) ->
   describe 'ParentView', ->
-    view = null
-    model = new Metadata()
+    view = model = null
 
     beforeEach ->
-      view = new View model: model
+      model = new GeminiMetadata()
+      view = new ParentView
+        model: model
+        modelAttribute: 'resourceIdentifiers'
+        label: 'Resource Identifiers'
+        ObjectInputView: ResourceIdentifierView
+        helpText: """
+                  <p>Test</p>
+                  """
 
     describe 'when view is constructing', ->
       it 'should exist', ->
@@ -16,7 +24,7 @@ define [
     describe 'when view is created with populated model', ->
 
       beforeEach ->
-        model = new Metadata
+        model = new GeminiMetadata
           resourceIdentifiers: [
               code: '1234'
               codeSpace: 'CEH:EIDC:'
@@ -25,13 +33,28 @@ define [
               codeSpace: 'doi:'
           ]
 
-        view = new View
+        view = new ParentView
           model: model
+          modelAttribute: 'resourceIdentifiers'
+          label: 'Resource Identifiers'
+          ObjectInputView: ResourceIdentifierView
+          helpText: """
+                    <p>Test</p>
+                    """
         do view.render
 
       it 'should be a resourceIdentifiers collection', ->
         expect(view.collection).toBeDefined()
 
-      it 'should be populated from metadata model', ->
+      it 'should be populated from GeminiMetadata model', ->
         identifier = view.collection.at 0
         expect(identifier.get 'code').toEqual '1234'
+
+    describe 'clicking add', ->
+
+      beforeEach ->
+        spyOn view.collection, 'add'
+
+      it 'should add new model to collection', ->
+        view.$('.add').trigger 'click'
+        expect(view.collection.add).toHaveBeenCalled()

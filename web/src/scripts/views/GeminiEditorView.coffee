@@ -14,10 +14,9 @@ define [
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/DatasetReferenceDateView'
   'cs!models/editor/Contact'
-  'cs!models/editor/ResourceIdentifier'
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/OnlineResourceView'
-], (EditorView, SingleObjectView, ParentView, PredefinedParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, ResourceIdentifier, BoundingBoxView, OnlineResourceView) -> EditorView.extend
+], (EditorView, SingleObjectView, ParentView, PredefinedParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView) -> EditorView.extend
 
 
   initialize: ->
@@ -360,7 +359,6 @@ define [
       views: [
         new ParentView
           model: @model
-          ModelType: ResourceIdentifier
           modelAttribute: 'resourceIdentifiers'
           label: 'Dataset Identifiers'
           ObjectInputView: ResourceIdentifierView
