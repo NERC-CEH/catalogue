@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.linking;
+package uk.ac.ceh.gateway.catalogue.postprocess;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -6,33 +6,76 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.tdb.TDBFactory;
-import static com.hp.hpl.jena.vocabulary.RSS.link;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Link;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.services.CitationService;
 
 /**
  *
  * @author cjohn
  */
-public class JenaQueryingTest {
+public class GeminiDocumentPostProcessingServiceTest {
     private static final Property IDENTIFIER = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");
     private static final Property TITLE = ResourceFactory.createProperty("http://purl.org/dc/terms/title");
     private static final Property TYPE = ResourceFactory.createProperty("http://purl.org/dc/terms/type");
     private static final Property PART_OF = ResourceFactory.createProperty("http://purl.org/dc/terms/isPartOf");
     
+    @Mock CitationService citationService;
     private Model model;
-    private JenaQuerying service;
+    private GeminiDocumentPostProcessingService service;
     
     @Before
     public void init() {
+        MockitoAnnotations.initMocks(this);
         Dataset dataset = TDBFactory.createDataset();
         model = dataset.getDefaultModel();
-        service = new JenaQuerying(model);
+        service = spy(new GeminiDocumentPostProcessingService(citationService, model));
+    }
+    
+    @Test
+    public void populatesParentsLinkWhenParentIdIsPresent() {
+        //Given
+        Link parent = Link.builder().build();
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(citationService.getCitation(document)).thenReturn(Optional.empty());
+        when(document.getParentIdentifier()).thenReturn("id");
+        doReturn(parent).when(service).getLink("id");
+        
+        //When
+        service.postProcess(document);
+        
+        //Then
+        verify(document).setParent(parent);
+    }
+        
+    @Test
+    public void checkAddsCitationInIfPresent() {
+        //Given
+        GeminiDocument document = mock(GeminiDocument.class);
+        Citation citation = Citation.builder().build();
+        when(citationService.getCitation(document)).thenReturn(Optional.of(citation));
+        
+        //When
+        service.postProcess(document);
+        
+        //Then
+        verify(document).setCitation(citation);
     }
     
     @Test
@@ -65,7 +108,7 @@ public class JenaQueryingTest {
         model.add(child, TYPE, ResourceFactory.createPlainLiteral("child type"));
         
         //When
-        List<Link> children = service.getReverseLinks("parent");
+        List<Link> children = new ArrayList<>(service.getReverseLinks("parent"));
         
         //Then
         assertThat(children.size(), is(1));

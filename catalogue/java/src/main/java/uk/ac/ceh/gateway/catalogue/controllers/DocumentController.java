@@ -6,10 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +29,13 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.linking.JenaQuerying;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -65,8 +60,7 @@ public class DocumentController {
     private final DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final DocumentWritingService<MetadataDocument> documentWriter;
-    private final JenaQuerying linkService;
-    private final CitationService citationService;
+    private final PostProcessingService postProcessingService;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
@@ -76,8 +70,7 @@ public class DocumentController {
                                 DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory,
                                 BundledReaderService<MetadataDocument> documentBundleReader,
                                 DocumentWritingService<MetadataDocument> documentWritingService,
-                                JenaQuerying linkService,
-                                CitationService citationService) {
+                                PostProcessingService postProcessingService) {
         this.repo = repo;
         this.documentIdentifierService = documentIdentifierService;
         this.documentReader = documentReader;
@@ -85,8 +78,7 @@ public class DocumentController {
         this.infoFactory = infoFactory;
         this.documentBundleReader = documentBundleReader;
         this.documentWriter = documentWritingService;
-        this.linkService = linkService;
-        this.citationService = citationService;
+        this.postProcessingService = postProcessingService;
     }
     
     @Secured(EDITOR_ROLE)
@@ -210,24 +202,7 @@ public class DocumentController {
             HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
         MetadataDocument document = documentBundleReader.readBundle(file, revision);
         document.attachUri(getCurrentUri(request, file, revision));
-        if(document instanceof GeminiDocument) {
-            String urlFragment = getLinkUrlFragment(request, revision);
-            GeminiDocument geminiDocument = (GeminiDocument)document;
-            Set<Link> docLinks = geminiDocument.getCoupledResources().stream().map(c -> linkService.getLink(c) ).collect(Collectors.toSet());
-            geminiDocument.setDocumentLinks(docLinks);
-            
-            
-            //geminiDocument.setDocumentLinks(linkService.getLinks(geminiDocument, urlFragment));
-            
-            geminiDocument.setParent(linkService.getLink(geminiDocument.getParentIdentifier()));
-            geminiDocument.setChildren(new HashSet<>(linkService.getReverseLinks(geminiDocument.getId())));
-//            linkService.getRevised(geminiDocument, urlFragment)
-//                .ifPresent(r -> geminiDocument.setRevised(r));
-//            linkService.getRevisionOf(geminiDocument, urlFragment)
-//                .ifPresent(r -> geminiDocument.setRevisionOf(r));
-            citationService.getCitation(geminiDocument)
-                .ifPresent(c -> geminiDocument.setCitation(c));
-        }
+        postProcessingService.postProcess(document);
         log.debug("document requested: {}", document);
         return document;
     }

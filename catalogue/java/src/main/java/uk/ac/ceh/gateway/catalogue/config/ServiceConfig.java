@@ -40,8 +40,10 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.linking.JenaQuerying;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
+import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
@@ -188,6 +190,13 @@ public class ServiceConfig {
     @Bean
     public SolrGeometryService solrGeometryService() {
         return new SolrGeometryService(new WKTReader());
+    }
+    
+    @Bean
+    public PostProcessingService postProcessingService() {
+        ClassMap<PostProcessingService> mappings = new MostSpecificClassMap<PostProcessingService>()
+                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), jenaTdb));
+        return new ClassMapPostProcessingService(mappings);
     }
     
     @Bean

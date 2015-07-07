@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.linking;
+package uk.ac.ceh.gateway.catalogue.postprocess;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -6,19 +6,41 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Data;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Link;
+import uk.ac.ceh.gateway.catalogue.services.CitationService;
+
 /**
- *
+ * Defines a post processing service which can be used adding additional 
+ * information to a Gemini Document
  * @author cjohn
  */
 @Data
-public class JenaQuerying {
-    private final Model model;
+public class GeminiDocumentPostProcessingService implements PostProcessingService<GeminiDocument> {
+    private final CitationService citationService;
+    private final Model jenaTdb;
     
-    public Link getLink(String identifier) {
+    @Override
+    public void postProcess(GeminiDocument document) {
+        Optional.ofNullable(document.getParentIdentifier())
+                .ifPresent(i -> document.setParent(getLink(i)));
+        
+        Optional.ofNullable(document.getId())
+                .ifPresent(i -> document.setChildren(getReverseLinks(i)));
+        
+        Optional.ofNullable(document.getCoupledResources())
+                .ifPresent(r -> document.setDocumentLinks(r.stream().map(c -> getLink(c)).collect(Collectors.toSet())));
+        
+        citationService.getCitation(document)
+                .ifPresent(c -> document.setCitation(c));
+    }
+    
+    protected Link getLink(String identifier) {
         ParameterizedSparqlString pss = new ParameterizedSparqlString("SELECT ?node ?title ?type WHERE {"
                 + "?node <http://purl.org/dc/terms/identifier> ?id . "
                 + "?node <http://purl.org/dc/terms/title> ?title . "
@@ -27,11 +49,11 @@ public class JenaQuerying {
         
         pss.setLiteral("id", identifier);
 
-        try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), model)) {
+        try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
             ResultSet results = qexec.execSelect();
             if(results.hasNext()) {
               QuerySolution soln = results.nextSolution();
-              return Link.builder().associationType(soln.getLiteral("type").getString())
+              return uk.ac.ceh.gateway.catalogue.gemini.Link.builder().associationType(soln.getLiteral("type").getString())
                       .href(soln.getResource("node").getURI())
                       .title(soln.getLiteral("title").getString())
                       .build();
@@ -40,7 +62,7 @@ public class JenaQuerying {
         return null;
     }
     
-    public List<Link> getReverseLinks(String identifier) {
+    protected Set<Link> getReverseLinks(String identifier) {
         ParameterizedSparqlString pss = new ParameterizedSparqlString("SELECT ?node ?title ?type WHERE {"
                 + "?parent <http://purl.org/dc/terms/identifier> ?id . "
                 + "?node <http://purl.org/dc/terms/isPartOf> ?parent . "
@@ -51,8 +73,8 @@ public class JenaQuerying {
         
         pss.setLiteral("id", identifier);
         
-        List<Link> toReturn = new ArrayList<>();
-        try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), model)) {
+        Set<Link> toReturn = new HashSet<>();
+        try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
             ResultSet results = qexec.execSelect();
             while(results.hasNext()) {
               QuerySolution soln = results.nextSolution();
