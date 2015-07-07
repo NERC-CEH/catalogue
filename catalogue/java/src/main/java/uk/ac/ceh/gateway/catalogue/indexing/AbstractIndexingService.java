@@ -38,7 +38,6 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         }
     }
     
-    
     @Override
     public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
         DocumentIndexingException joinedException = new DocumentIndexingException("Failed to index one or more documents");

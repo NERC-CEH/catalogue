@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.query.Dataset;
 import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
@@ -14,7 +14,6 @@ import static org.mockito.Matchers.any;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -44,7 +43,7 @@ public class ServiceConfigTest {
     @Mock ObjectMapper jacksonMapper;
     @Mock DataRepository dataRepository;
     @Mock SolrServer solrServer;
-    @Mock Model jenaTdb;
+    @Mock Dataset jenaTdb;
     
     private ServiceConfig services;
     

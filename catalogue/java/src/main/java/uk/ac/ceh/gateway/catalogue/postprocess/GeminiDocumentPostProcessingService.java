@@ -1,11 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -23,7 +23,7 @@ import uk.ac.ceh.gateway.catalogue.services.CitationService;
 @Data
 public class GeminiDocumentPostProcessingService implements PostProcessingService<GeminiDocument> {
     private final CitationService citationService;
-    private final Model jenaTdb;
+    private final Dataset jenaTdb;
     
     @Override
     public void postProcess(GeminiDocument document) {
@@ -53,7 +53,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
             ResultSet results = qexec.execSelect();
             if(results.hasNext()) {
               QuerySolution soln = results.nextSolution();
-              return uk.ac.ceh.gateway.catalogue.gemini.Link.builder().associationType(soln.getLiteral("type").getString())
+              return Link.builder().associationType(soln.getLiteral("type").getString())
                       .href(soln.getResource("node").getURI())
                       .title(soln.getLiteral("title").getString())
                       .build();

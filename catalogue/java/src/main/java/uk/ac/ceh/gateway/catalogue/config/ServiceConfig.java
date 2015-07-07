@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.IOException;
@@ -82,7 +82,7 @@ public class ServiceConfig {
     @Autowired RestTemplate restTemplate;
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
-    @Autowired Model jenaTdb;
+    @Autowired Dataset jenaTdb;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
     @Autowired CodeLookupService codeLookupService;
@@ -237,6 +237,7 @@ public class ServiceConfig {
                 documentListingService(),
                 dataRepository,
                 new IndexGeneratorRegistry(mappings),
+                documentIdentifierService(),
                 jenaTdb
         );
         

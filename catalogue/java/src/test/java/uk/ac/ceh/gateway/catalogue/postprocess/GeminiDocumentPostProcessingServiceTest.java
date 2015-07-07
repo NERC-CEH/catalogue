@@ -37,15 +37,14 @@ public class GeminiDocumentPostProcessingServiceTest {
     private static final Property PART_OF = ResourceFactory.createProperty("http://purl.org/dc/terms/isPartOf");
     
     @Mock CitationService citationService;
-    private Model model;
+    private Dataset jenaTdb;
     private GeminiDocumentPostProcessingService service;
     
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-        Dataset dataset = TDBFactory.createDataset();
-        model = dataset.getDefaultModel();
-        service = spy(new GeminiDocumentPostProcessingService(citationService, model));
+        jenaTdb = TDBFactory.createDataset();
+        service = spy(new GeminiDocumentPostProcessingService(citationService, jenaTdb));
     }
     
     @Test
@@ -82,6 +81,7 @@ public class GeminiDocumentPostProcessingServiceTest {
     public void canGetLinkFromIdentifier() {
         //Given
         Resource resource = ResourceFactory.createProperty("http://my.resource.com/uuid");
+        Model model = jenaTdb.getDefaultModel();
         model.add(resource, IDENTIFIER, ResourceFactory.createPlainLiteral("uuid"));
         model.add(resource, TITLE, ResourceFactory.createPlainLiteral("title"));
         model.add(resource, TYPE, ResourceFactory.createPlainLiteral("crazy type"));
@@ -99,6 +99,7 @@ public class GeminiDocumentPostProcessingServiceTest {
     public void canGetReverseLinksFromIdentifier() {
         //Given
         Resource parent = ResourceFactory.createProperty("http://my.resource.com/parent");
+        Model model = jenaTdb.getDefaultModel();
         model.add(parent, IDENTIFIER, ResourceFactory.createPlainLiteral("parent"));
         
         Resource child = ResourceFactory.createProperty("http://my.resource.com/child");
