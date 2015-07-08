@@ -40,4 +40,5 @@
 	<div id="footer">
 	    <#include "gemini/_footer.html.tpl">
 	</div>
+  <#include "gemini/_json.html.tpl">
 </@skeleton.master>
