@@ -18,7 +18,6 @@ import uk.ac.ceh.gateway.catalogue.ef.Link;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 /**
  * Defines a post processing service which can be used adding additional 
@@ -29,7 +28,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
  */
 @Data
 public class BaseMonitoringTypePostProcessingService implements PostProcessingService<BaseMonitoringType> {
-    private final static boolean HAS_INCOMING = true, HAS_OUTGOING = false;
     private final Dataset jenaTdb;
     
     @Override
@@ -37,30 +35,30 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
         Resource uri = ResourceFactory.createResource(document.getUri().toString());
         if (document instanceof Activity) {
             Activity activity = (Activity)document;
-            appendLinks(activity.getSetUpFor(), withLinksWhere(uri, HAS_OUTGOING, SET_UP_FOR));
-            appendLinks(activity.getUses(), withLinksWhere(uri, HAS_OUTGOING, USES));
+            appendLinks(activity.getSetUpFor(), withLinks(TRIGGERS, uri));
+            appendLinks(activity.getUses(), withLinks(INVOLVED_IN, uri));
         } else if (document instanceof Facility) {
             Facility facility = (Facility)document;
-            appendLinks(facility.getInvolvedIn(), withLinksWhere(uri, HAS_INCOMING, USES));
-            appendLinks(facility.getSupersedes(), withLinksWhere(uri, HAS_OUTGOING, SUPERSEDES));
-            appendLinks(facility.getSupersededBy(), withLinksWhere(uri, HAS_INCOMING, SUPERSEDES));
+            appendLinks(facility.getInvolvedIn(), withLinks(USES, uri));
+            appendLinks(facility.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
+            appendLinks(facility.getSupersededBy(), withLinks(SUPERSEDES, uri));
 //            facility.setNarrowerThan(joinedLinks(facility.getNarrowerThan(), links(uri, BROADER, INCOMING)));
 //            facility.setBroaderThan(joinedLinks(facility.getBroaderThan(), links(uri, BROADER, OUTGOING)));
 //            facility.setBelongsTo(joinedLinks(facility.getBelongsTo(), links(uri, BELONGS_TO, OUTGOING)));
-            appendLinks(facility.getRelatedTo(), withLinksWhere(uri, HAS_OUTGOING, RELATED_TO));
+            appendLinks(facility.getRelatedTo(), withLinks(RELATED_TO, uri));
         } else if (document instanceof Network) {
             Network network = (Network)document;            
-            appendLinks(network.getInvolvedIn(), withLinksWhere(uri, HAS_INCOMING, USES));
-            appendLinks(network.getSupersedes(), withLinksWhere(uri, HAS_OUTGOING, SUPERSEDES));
-            appendLinks(network.getSupersededBy(), withLinksWhere(uri, HAS_INCOMING, SUPERSEDES));
+            appendLinks(network.getInvolvedIn(), withLinks(USES, uri));
+            appendLinks(network.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
+            appendLinks(network.getSupersededBy(), withLinks(SUPERSEDES, uri));
 //            network.setNarrowerThan(joinedLinks(network.getNarrowerThan(), links(uri, BROADER, INCOMING)));
 //            network.setBroaderThan(joinedLinks(network.getBroaderThan(), links(uri, BROADER, OUTGOING)));
 //            network.setContains(joinedLinks(network.getContains(), links(uri, BELONGS_TO, INCOMING)));
         } else if (document instanceof Programme) {
             Programme programme = (Programme)document;
-            appendLinks(programme.getTriggers(), withLinksWhere(uri, HAS_INCOMING, SET_UP_FOR));
-            appendLinks(programme.getSupersedes(), withLinksWhere(uri, HAS_OUTGOING, SUPERSEDES));
-            appendLinks(programme.getSupersededBy(), withLinksWhere(uri, HAS_INCOMING, SUPERSEDES));
+            appendLinks(programme.getTriggers(), withLinks(SET_UP_FOR, uri));
+            appendLinks(programme.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
+            appendLinks(programme.getSupersededBy(), withLinks(SUPERSEDES, uri));
 //            programme.setNarrowerThan(joinedLinks(programme.getNarrowerThan(), links(uri, BROADER, OUTGOING)));
 //            programme.setBroaderThan(joinedLinks(programme.getBroaderThan(), links(uri, BROADER, INCOMING)));
         }
@@ -83,14 +81,12 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
      * 
      * @param relationship
      * @param doc
-     * @param incoming
      * @return 
      */
-    private List<Link> withLinksWhere(Resource doc, boolean incoming, Property relationship) {
+    private List<Link> withLinks(Property relationship, Resource doc) {
         ParameterizedSparqlString pss = new ParameterizedSparqlString(
-                "SELECT ?link ?title WHERE {" + (
-                    (incoming) ? "?link ?relationship ?doc . " 
-                               : "?doc ?relationship ?link . ")+
+                "SELECT ?link ?title WHERE {" +
+                "?link ?relationship ?doc . " +
                 "?link <http://purl.org/dc/terms/title> ?title . }");
         pss.setParam("doc", doc);
         pss.setParam("relationship", relationship);

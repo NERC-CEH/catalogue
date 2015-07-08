@@ -24,9 +24,7 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
  * @author cjohn
  */
 @Data
-public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<BaseMonitoringType, List<Statement>>{
-    private final static boolean INCOMING = true, OUTGOING = false;
-    
+public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<BaseMonitoringType, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;
     
     @Override
@@ -36,30 +34,30 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
             Resource me = generator.resource(baseMonitoringType.getId());
             if (baseMonitoringType instanceof Activity) {
                 Activity activity = (Activity)baseMonitoringType;
-                createRelationships(links, me, activity.getSetUpFor(), SET_UP_FOR, OUTGOING);
-                createRelationships(links, me, activity.getUses(),     USES,       OUTGOING);
+                createRelationships(links, me, activity.getSetUpFor(), SET_UP_FOR);
+                createRelationships(links, me, activity.getUses(),     USES);
             } else if (baseMonitoringType instanceof Facility) {
                 Facility facility = (Facility)baseMonitoringType;
-                createRelationships(links, me, facility.getInvolvedIn(),   USES,       INCOMING);
-                createRelationships(links, me, facility.getSupersedes(),   SUPERSEDES, OUTGOING);
-                createRelationships(links, me, facility.getSupersededBy(), SUPERSEDES, INCOMING);
+                createRelationships(links, me, facility.getInvolvedIn(),   INVOLVED_IN);
+                createRelationships(links, me, facility.getSupersedes(),   SUPERSEDES);
+                createRelationships(links, me, facility.getSupersededBy(), SUPERSEDED_BY);
 //                createRelationships(links, me, facility.getNarrowerThan(), BROADER,    INCOMING);
 //                createRelationships(links, me, facility.getBroaderThan(),  BROADER,    OUTGOING);
 //                createRelationships(links, me, facility.getBelongsTo(),    BELONGS_TO, OUTGOING);
-                createRelationships(links, me, facility.getRelatedTo(),    RELATED_TO, OUTGOING);
+                createRelationships(links, me, facility.getRelatedTo(),    RELATED_TO);
             } else if (baseMonitoringType instanceof Network) {
                 Network network = (Network)baseMonitoringType;
-                createRelationships(links, me, network.getInvolvedIn(),   SET_UP_FOR, INCOMING);
-                createRelationships(links, me, network.getSupersedes(),   SUPERSEDES, OUTGOING);
-                createRelationships(links, me, network.getSupersededBy(), SUPERSEDES, INCOMING);
+                createRelationships(links, me, network.getInvolvedIn(),   INVOLVED_IN);
+                createRelationships(links, me, network.getSupersedes(),   SUPERSEDES);
+                createRelationships(links, me, network.getSupersededBy(), SUPERSEDED_BY);
 //                createRelationships(links, me, network.getNarrowerThan(), BROADER,    INCOMING);
 //                createRelationships(links, me, network.getBroaderThan(),  BROADER,    OUTGOING);
 //                createRelationships(links, me, network.getContains(),     BELONGS_TO, INCOMING);
             } else if (baseMonitoringType instanceof Programme) {
                 Programme programme = (Programme)baseMonitoringType;
-                createRelationships(links, me, programme.getTriggers(),     SET_UP_FOR, INCOMING);
-                createRelationships(links, me, programme.getSupersedes(),   SUPERSEDES, OUTGOING);
-                createRelationships(links, me, programme.getSupersededBy(), SUPERSEDES, INCOMING);
+                createRelationships(links, me, programme.getTriggers(),     TRIGGERS);
+                createRelationships(links, me, programme.getSupersedes(),   SUPERSEDES);
+                createRelationships(links, me, programme.getSupersededBy(), SUPERSEDED_BY);
 //                createRelationships(links, me, programme.getNarrowerThan(), BROADER,    INCOMING);
 //                createRelationships(links, me, programme.getBroaderThan(),  BROADER,    OUTGOING);
             }
@@ -67,23 +65,18 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
         return links;
     }
     
-    private void createRelationships(List<Statement> statements, Resource id, List<Link> links, Property property, boolean incoming) {
+    private void createRelationships(List<Statement> statements, Resource id, List<Link> links, Property property) {
         statements.addAll(Optional.ofNullable(links)
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(Objects::nonNull)
                 .map(Link::getHref)
                 .filter(Objects::nonNull)
-                .map( l -> statement(id, property, l, incoming))
+                .map( l -> statement(id, property, l))
                 .collect(Collectors.toList()));  
     }
     
-    private static Statement statement(Resource id, Property property, String link, boolean incoming) {
-        if(incoming) {
-            return ResourceFactory.createStatement(ResourceFactory.createResource(link), property, id);
-        }
-        else {
-            return ResourceFactory.createStatement(id, property, ResourceFactory.createResource(link));
-        }
+    private static Statement statement(Resource id, Property property, String link) {
+        return ResourceFactory.createStatement(id, property, ResourceFactory.createResource(link));
     }
 }

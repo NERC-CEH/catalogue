@@ -15,8 +15,8 @@ import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.Link;
 import uk.ac.ceh.gateway.catalogue.ef.Metadata;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SET_UP_FOR;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TITLE;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TRIGGERS;
 
 /**
  *
@@ -43,7 +43,7 @@ public class BaseMonitoringTypePostProcessingServiceTest {
         
         Resource knownLink = ResourceFactory.createResource("https://linkedTo");
         tripleStore.add(knownLink, TITLE, ResourceFactory.createPlainLiteral("Link from some other document"));
-        tripleStore.add(ResourceFactory.createResource("https://my.activity"), SET_UP_FOR, knownLink);
+        tripleStore.add(knownLink, TRIGGERS, ResourceFactory.createResource("https://my.activity"));
         
         //When
         service.postProcess(activity);
@@ -65,7 +65,7 @@ public class BaseMonitoringTypePostProcessingServiceTest {
         
         Resource knownLink = ResourceFactory.createResource("https://linkedTo");
         tripleStore.add(knownLink, TITLE, ResourceFactory.createPlainLiteral("Link from some other document"));
-        tripleStore.add(ResourceFactory.createResource("https://my.activity"), SET_UP_FOR, knownLink);
+        tripleStore.add(knownLink, TRIGGERS, ResourceFactory.createResource("https://my.activity"));
         
         //When
         service.postProcess(activity);
