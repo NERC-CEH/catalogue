@@ -20,28 +20,30 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.IndexGeneratorRegistry;
 import uk.ac.ceh.gateway.catalogue.indexing.ExtractTopicFromDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.IndexGeneratorRegistry;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexGeminiDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
@@ -49,23 +51,23 @@ import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
-import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
-import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
-import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
-import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
+import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
-import uk.ac.ceh.gateway.catalogue.services.PermissionService;
+import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
-import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
+import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
+import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
+import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.TerraCatalogImporterService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.MostSpecificClassMap;
@@ -197,7 +199,8 @@ public class ServiceConfig {
     @Bean
     public PostProcessingService postProcessingService() {
         ClassMap<PostProcessingService> mappings = new MostSpecificClassMap<PostProcessingService>()
-                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), jenaTdb));
+                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), jenaTdb))
+                .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb));
         return new ClassMapPostProcessingService(mappings);
     }
     
@@ -230,7 +233,8 @@ public class ServiceConfig {
         
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new MostSpecificClassMap<IndexGenerator<?, List<Statement>>>()
                 .register(MetadataDocument.class, metadataDocument)
-                .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument));
+                .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument))
+                .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(metadataDocument));
         
         JenaIndexingService toReturn = new JenaIndexingService(
                 bundledReaderService(),

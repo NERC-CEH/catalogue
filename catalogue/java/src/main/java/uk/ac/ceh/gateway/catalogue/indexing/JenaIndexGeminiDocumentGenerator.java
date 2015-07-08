@@ -6,8 +6,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import java.util.List;
 import lombok.Data;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import static uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator.IDENTIFIER;
-import static uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator.PARENT;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 /**
  *
@@ -25,7 +24,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         
         Resource me = generator.resource(document.getId());
         if(document.getParentIdentifier() != null) {
-            toReturn.add(ResourceFactory.createStatement(me, PARENT, generator.resource(document.getParentIdentifier())));
+            toReturn.add(ResourceFactory.createStatement(me, IS_PART_OF, generator.resource(document.getParentIdentifier())));
         }
 
         document.getResourceIdentifiers().forEach( r -> {

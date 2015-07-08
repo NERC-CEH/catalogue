@@ -44,8 +44,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         ParameterizedSparqlString pss = new ParameterizedSparqlString("SELECT ?node ?title ?type WHERE {"
                 + "?node <http://purl.org/dc/terms/identifier> ?id . "
                 + "?node <http://purl.org/dc/terms/title> ?title . "
-                + "?node <http://purl.org/dc/terms/type> ?type ."
-                + "}");
+                + "?node <http://purl.org/dc/terms/type> ?type .}");
         
         pss.setLiteral("id", identifier);
 
@@ -67,22 +66,20 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
                 + "?parent <http://purl.org/dc/terms/identifier> ?id . "
                 + "?node <http://purl.org/dc/terms/isPartOf> ?parent . "
                 + "?node <http://purl.org/dc/terms/title> ?title . "
-                + "?node <http://purl.org/dc/terms/type> ?type ."
-                + "}");
+                + "?node <http://purl.org/dc/terms/type> ?type . }");
         
         
         pss.setLiteral("id", identifier);
         
         Set<Link> toReturn = new HashSet<>();
         try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
-            ResultSet results = qexec.execSelect();
-            while(results.hasNext()) {
-              QuerySolution soln = results.nextSolution();
-              toReturn.add(Link.builder().associationType(soln.getLiteral("type").getString())
-                      .href(soln.getResource("node").getURI())
-                      .title(soln.getLiteral("title").getString())
+            qexec.execSelect().forEachRemaining(s -> {
+              toReturn.add(Link.builder()
+                      .associationType(s.getLiteral("type").getString())
+                      .href(s.getResource("node").getURI())
+                      .title(s.getLiteral("title").getString())
                       .build());
-            }
+            });
         }
         return toReturn;
     }

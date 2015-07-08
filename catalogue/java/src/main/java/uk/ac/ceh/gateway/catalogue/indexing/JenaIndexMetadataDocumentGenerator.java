@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -8,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.Data;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
@@ -17,10 +17,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
  */
 @Data
 public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, List<Statement>> {
-    public static final Property IDENTIFIER = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");
-    public static final Property TITLE = ResourceFactory.createProperty("http://purl.org/dc/terms/title");
-    public static final Property TYPE = ResourceFactory.createProperty("http://purl.org/dc/terms/type");
-    public static final Property PARENT = ResourceFactory.createProperty("http://purl.org/dc/terms/isPartOf");
     
     private final DocumentIdentifierService documentIdentifierService;
 
