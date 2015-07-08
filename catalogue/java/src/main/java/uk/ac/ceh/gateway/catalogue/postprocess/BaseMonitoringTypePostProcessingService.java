@@ -1,20 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
+import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Data;
+import org.joda.time.LocalDate;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
+import uk.ac.ceh.gateway.catalogue.ef.Lifespan;
 import uk.ac.ceh.gateway.catalogue.ef.Link;
+import uk.ac.ceh.gateway.catalogue.ef.Link.TimedLink;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
@@ -42,25 +49,25 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
             appendLinks(facility.getInvolvedIn(), withLinks(USES, uri));
             appendLinks(facility.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
             appendLinks(facility.getSupersededBy(), withLinks(SUPERSEDES, uri));
-//            facility.setNarrowerThan(joinedLinks(facility.getNarrowerThan(), links(uri, BROADER, INCOMING)));
-//            facility.setBroaderThan(joinedLinks(facility.getBroaderThan(), links(uri, BROADER, OUTGOING)));
-//            facility.setBelongsTo(joinedLinks(facility.getBelongsTo(), links(uri, BELONGS_TO, OUTGOING)));
+            appendLinks(facility.getNarrowerThan(), withLinks(BROADER, uri));
+            appendLinks(facility.getBroaderThan(), withLinks(NARROWER, uri));
+            appendLinks(facility.getBelongsTo(), withLinks(CONTAINS, uri));
             appendLinks(facility.getRelatedTo(), withLinks(RELATED_TO, uri));
         } else if (document instanceof Network) {
             Network network = (Network)document;            
             appendLinks(network.getInvolvedIn(), withLinks(USES, uri));
             appendLinks(network.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
             appendLinks(network.getSupersededBy(), withLinks(SUPERSEDES, uri));
-//            network.setNarrowerThan(joinedLinks(network.getNarrowerThan(), links(uri, BROADER, INCOMING)));
-//            network.setBroaderThan(joinedLinks(network.getBroaderThan(), links(uri, BROADER, OUTGOING)));
-//            network.setContains(joinedLinks(network.getContains(), links(uri, BELONGS_TO, INCOMING)));
+            appendLinks(network.getNarrowerThan(), withLinks(BROADER, uri));
+            appendLinks(network.getBroaderThan(), withLinks(NARROWER, uri));
+            appendLinks(network.getContains(), withLinks(BELONGS_TO, uri));
         } else if (document instanceof Programme) {
             Programme programme = (Programme)document;
             appendLinks(programme.getTriggers(), withLinks(SET_UP_FOR, uri));
             appendLinks(programme.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
             appendLinks(programme.getSupersededBy(), withLinks(SUPERSEDES, uri));
-//            programme.setNarrowerThan(joinedLinks(programme.getNarrowerThan(), links(uri, BROADER, OUTGOING)));
-//            programme.setBroaderThan(joinedLinks(programme.getBroaderThan(), links(uri, BROADER, INCOMING)));
+            appendLinks(programme.getNarrowerThan(), withLinks(BROADER, uri));
+            appendLinks(programme.getBroaderThan(), withLinks(NARROWER, uri));
         }
     }
     
@@ -70,35 +77,54 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
      * @param a List which will contain all of the processed links
      * @param b The list with prospective links to add
      */
-    private void appendLinks(List<Link> a, List<Link> b) {
+    private void appendLinks(List<? extends Link> a, List<Link> b) {
         List<String> hrefs = a.stream().map(Link::getHref).collect(Collectors.toList());
         b.removeIf(e -> hrefs.contains(e.getHref()));
-        a.addAll(b);
+        a.addAll((List)b);
     }
     
-    /**
-     * Get the links which this relationship
-     * 
-     * @param relationship
-     * @param doc
-     * @return 
+    /*
+    Query out a standard link, which may or may not have a title
      */
     private List<Link> withLinks(Property relationship, Resource doc) {
         ParameterizedSparqlString pss = new ParameterizedSparqlString(
-                "SELECT ?link ?title WHERE {" +
-                "?link ?relationship ?doc . " +
-                "?link <http://purl.org/dc/terms/title> ?title . }");
+            "SELECT ?link ?title ?start ?end " +
+            "WHERE {{" +
+            "    ?link ?relationship ?doc ." +
+            "    MINUS { ?link <http://purl.org/voc/ef#linkingTime> ?time . } ." +
+            "    OPTIONAL { ?link <http://purl.org/dc/terms/title> ?title . } ." +
+            "  } " +
+            "  UNION {" +
+            "    ?timingLink ?relationship ?doc ." +
+            "    ?timingLink <http://purl.org/dc/terms/identifier> ?link . " +
+            "    ?timingLink <http://purl.org/voc/ef#linkingTime> ?time ." +
+            "    OPTIONAL { ?link <http://purl.org/dc/terms/title> ?title . } . " +
+            "    OPTIONAL { ?time <http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#begin> ?start } . " +
+            "    OPTIONAL { ?time <http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#end> ?end }" +
+            "}}"
+        );
         pss.setParam("doc", doc);
         pss.setParam("relationship", relationship);
         List<Link> toReturn = new ArrayList<>();
         try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
             qexec.execSelect().forEachRemaining(s -> {
-                toReturn.add(new Link()
-                        .setHref(s.getResource("link").getURI())
-                        .setTitle(s.getLiteral("title").getString())
-                );
+                Link link = (s.contains("start") || s.contains("end")) ? new TimedLink().setLinkingTime(lifespan(s)) : new Link();
+                link.setHref(s.getResource("link").getURI());
+                Optional.ofNullable(s.getLiteral("title")).ifPresent(t -> link.setTitle(t.getString()));
+                toReturn.add(link);
             });
         }
         return toReturn;
+    }
+
+    private Lifespan lifespan(QuerySolution s) {
+        Lifespan toReturn = new Lifespan();
+        Optional.ofNullable(s.getLiteral("start")).ifPresent(d -> toReturn.setStart(getDate(d)));
+        Optional.ofNullable(s.getLiteral("end")).ifPresent(d -> toReturn.setEnd(getDate(d)));
+        return toReturn;
+    }
+
+    private LocalDate getDate(Literal d) {
+        return LocalDate.fromCalendarFields(((XSDDateTime)d.getValue()).asCalendar());
     }
 }

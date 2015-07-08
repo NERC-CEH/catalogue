@@ -24,4 +24,8 @@ public class Ontology {
     public static final Property RELATED_TO    = ResourceFactory.createProperty("http://purl.org/voc/ef#relatedTo");
     public static final Property CONTAINS      = ResourceFactory.createProperty("http://purl.org/voc/ef#contains");
     public static final Property TRIGGERS      = ResourceFactory.createProperty("http://purl.org/voc/ef#triggers");
+    
+    public static final Property LINKING_TIME   = ResourceFactory.createProperty("http://purl.org/voc/ef#linkingTime");
+    public static final Property TEMPORAL_BEGIN = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#begin");
+    public static final Property TEMPORAL_END   = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#end");
 }
