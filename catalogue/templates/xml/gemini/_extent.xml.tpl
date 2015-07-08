@@ -1,3 +1,13 @@
+<#escape x as x?xml>
+
+<#macro temporalPosition type temporal>
+	<#if temporal[type]?has_content>
+		<gml:${type}Position>${temporal[type]}</gml:${type}Position>
+	<#else>
+		<gml:${type}Position indeterminatePosition="unknown"/>
+	</#if>
+</#macro>
+
 <#if temporalExtents?has_content>
 <#list temporalExtents as temporal>
 <${ns}:extent>
@@ -6,12 +16,8 @@
 			<gmd:EX_TemporalExtent>
 				<gmd:extent>
 					<gml:TimePeriod gml:id="EIDC79854${temporal_index}">
-						<gml:beginPosition>${temporal.begin}</gml:beginPosition>
-						<#if temporal.end?has_content>
-						<gml:endPosition>${temporal.end}</gml:endPosition>
-						<#else>
-						<gml:endPosition indeterminatePosition="unknown"/>
-						</#if>
+						<@temporalPosition 'begin' temporal/>
+						<@temporalPosition 'end' temporal/>
 					</gml:TimePeriod>
 				</gmd:extent>
 			</gmd:EX_TemporalExtent>
@@ -26,10 +32,12 @@
 	<gmd:EX_Extent>
 		<gmd:geographicElement>
 			<gmd:EX_GeographicBoundingBox>
-				<gmd:westBoundLongitude><gco:Decimal>${boundingBox.westBoundLongitude}</gco:Decimal></gmd:westBoundLongitude>
-				<gmd:eastBoundLongitude><gco:Decimal>${boundingBox.eastBoundLongitude}</gco:Decimal></gmd:eastBoundLongitude>
-				<gmd:southBoundLatitude><gco:Decimal>${boundingBox.southBoundLatitude}</gco:Decimal></gmd:southBoundLatitude>
-				<gmd:northBoundLatitude><gco:Decimal>${boundingBox.northBoundLatitude}</gco:Decimal></gmd:northBoundLatitude>
+				<#escape x as x?c>
+					<gmd:westBoundLongitude><gco:Decimal>${boundingBox.westBoundLongitude}</gco:Decimal></gmd:westBoundLongitude>
+					<gmd:eastBoundLongitude><gco:Decimal>${boundingBox.eastBoundLongitude}</gco:Decimal></gmd:eastBoundLongitude>
+					<gmd:southBoundLatitude><gco:Decimal>${boundingBox.southBoundLatitude}</gco:Decimal></gmd:southBoundLatitude>
+					<gmd:northBoundLatitude><gco:Decimal>${boundingBox.northBoundLatitude}</gco:Decimal></gmd:northBoundLatitude>
+				</#escape>
 			</gmd:EX_GeographicBoundingBox>
 		</gmd:geographicElement>
 	</gmd:EX_Extent>
@@ -37,5 +45,6 @@
 </#list>
 </#if>
 <#if supplementalInfo?has_content>
-<gmd:supplementalInformation><gco:CharacterString>${supplementalInfo?xml}</gco:CharacterString></gmd:supplementalInformation>
+<gmd:supplementalInformation><gco:CharacterString>${supplementalInfo}</gco:CharacterString></gmd:supplementalInformation>
 </#if>
+</#escape>
