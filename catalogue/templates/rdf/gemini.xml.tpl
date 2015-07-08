@@ -107,6 +107,7 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
    <#if type=='dataset' || type=='nonGeographicDataset'>
       <dcat:Distribution>
         <rdf:Description>
+<<<<<<< HEAD:catalogue/templates/rdf/gemini.xml.tpl
 <<<<<<< HEAD
           <#if downloadOrder??>
             <#if downloadOrder.orderUrl?has_content>
@@ -122,6 +123,12 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
             <dcat:accessURL rdf:resource="${downloadOrder.orderUrl}"/>
          </#if>
 >>>>>>> FETCH_HEAD
+=======
+         <#assign downloadOrder=downloadOrderDetails.from(onlineResources)>
+         <#if downloadOrder.orderUrl?has_content>
+            <dcat:accessURL rdf:resource="${downloadOrder.orderUrl}"/>
+         </#if>
+>>>>>>> develop:catalogue/templates/rdf/gemini.xml.tpl
          <#if citation?has_content>
             <dct:rights>If you reuse this data, you must cite ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}</dct:rights>
          </#if>
@@ -149,11 +156,6 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
         </rdf:Description>
       </dcat:Distribution>
    <#elseif type=='service'>
-   <#if downloadOrder.licenseUrl?has_content>
-      <dct:license rdf:resource="${downloadOrder.licenseUrl}"/>
-      <dct:rights rdf:resource="${downloadOrder.licenseUrl}"/>
-   </#if>
-
       <#if useLimitations?has_content>
         <#list useLimitations as useLimitation>
          <#if !useLimitation?starts_with("If you re")>

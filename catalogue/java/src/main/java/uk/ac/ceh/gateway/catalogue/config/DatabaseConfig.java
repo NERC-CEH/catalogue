@@ -1,12 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import javax.sql.DataSource;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,16 +23,16 @@ public class DatabaseConfig {
     @Value("${postgresql.schemaHash}") File schemaHash;
     
     @Bean(destroyMethod = "close")
-    public DataSource dataSource() throws IOException, URISyntaxException {
-        PoolProperties p = new PoolProperties();
-        p.setUrl(url);
-        p.setDriverClassName("org.postgresql.Driver");
-        p.setUsername(username);
-        p.setPassword(password);
-        p.setJmxEnabled(true);
-        p.setValidationQuery("select 1");
-        
-        DataSource toReturn = new org.apache.tomcat.jdbc.pool.DataSource(p);
+    public DataSource dataSource() throws IOException, URISyntaxException, PropertyVetoException {        
+        ComboPooledDataSource toReturn = new ComboPooledDataSource();
+        toReturn.setJdbcUrl(url);
+        toReturn.setDriverClass("org.postgresql.Driver");
+        toReturn.setUser(username);
+        toReturn.setPassword(password);
+        toReturn.setIdleConnectionTestPeriod(3600);
+        toReturn.setMinPoolSize(10);
+        toReturn.setMaxPoolSize(100);
+        toReturn.setMaxStatements(100);
         performSetSchemaIfNotPresent(new JdbcTemplate(toReturn));
         return toReturn;
     }

@@ -17,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
@@ -30,7 +31,7 @@ public class RunCatalogImporter {
     @Autowired ObjectMapper jacksonMapper;
     @Autowired private DataRepository<CatalogueUser> repo;
     @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
-    @Autowired CodeLookupService codeLookupService; 
+    @Autowired CodeLookupService codeLookupService;
     
     @BeforeClass
     public static void before() {
@@ -45,6 +46,7 @@ public class RunCatalogImporter {
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService));
         DocumentInfoMapper<MetadataInfo> documentInfoMapper = new JacksonDocumentInfoMapper(jacksonMapper, MetadataInfo.class);
         DocumentListingService documentList = new ExtensionDocumentListingService();
+        DocumentIdentifierService documentIdentifierService = new DocumentIdentifierService('-');
         OfflineTerraCatalogUserFactory<CatalogueUser> userFactory = new OfflineTerraCatalogUserFactory<>(phantomUserBuilderFactory);
         userFactory.put("ceh", "@ceh.ac.uk");
         StateTranslatingMetadataInfoFactory infoFactory = new StateTranslatingMetadataInfoFactory();
@@ -56,6 +58,7 @@ public class RunCatalogImporter {
         TerraCatalogImporter<MetadataInfo, CatalogueUser> importer = new TerraCatalogImporter<>(
             repo,
             documentList,
+            documentIdentifierService,
             userFactory,
             documentReader,
             documentInfoMapper,

@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <gmd:identificationInfo>
 	<#if type = 'service'>
 	<srv:SV_ServiceIdentification>
@@ -7,17 +8,17 @@
 		<gmd:citation>
 			<gmd:CI_Citation>
 				<gmd:title>
-					<gco:CharacterString>${title?xml}</gco:CharacterString>
+					<gco:CharacterString>${title}</gco:CharacterString>
 				</gmd:title>
 				<#if datasetReferenceDate?has_content>
 				<#if datasetReferenceDate.publicationDate?has_content>
 				<gmd:date>
 					<gmd:CI_Date>
 						<gmd:date>
-							<gco:Date>${datasetReferenceDate.publicationDate?xml}</gco:Date>
+							<gco:Date>${datasetReferenceDate.publicationDate}</gco:Date>
 						</gmd:date>
 						<gmd:dateType>
-							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+						<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</CI_DateTypeCode>
 						</gmd:dateType>
 					</gmd:CI_Date>
 				</gmd:date>
@@ -26,10 +27,10 @@
 				<gmd:date>
 					<gmd:CI_Date>
 						<gmd:date>
-							<gco:Date>${datasetReferenceDate.creationDate?xml}</gco:Date>
+							<gco:Date>${datasetReferenceDate.creationDate}</gco:Date>
 						</gmd:date>
 						<gmd:dateType>
-							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation">creation</CI_DateTypeCode>
 						</gmd:dateType>
 					</gmd:CI_Date>
 				</gmd:date>
@@ -38,10 +39,10 @@
 				<gmd:date>
 					<gmd:CI_Date>
 						<gmd:date>
-							<gco:Date>${datasetReferenceDate.revisionDate?xml}</gco:Date>
+							<gco:Date>${datasetReferenceDate.revisionDate}</gco:Date>
 						</gmd:date>
 						<gmd:dateType>
-							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision"/>
+							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</CI_DateTypeCode>
 						</gmd:dateType>
 					</gmd:CI_Date>
 				</gmd:date>
@@ -53,17 +54,17 @@
 				<#if uri.code?starts_with("http://") || uri.code?starts_with("https://")>
 				   <gmd:MD_Identifier>
 				      <gmd:code>
-					     <gco:CharacterString>${uri.code?xml}</gco:CharacterString>
+					     <gco:CharacterString>${uri.code}</gco:CharacterString>
 					</gmd:code>
 				   </gmd:MD_Identifier>
 				<#else>
 					<gmd:RS_Identifier>
-						<gmd:code><gco:CharacterString>${uri.code?xml}</gco:CharacterString></gmd:code>
+						<gmd:code><gco:CharacterString>${uri.code}</gco:CharacterString></gmd:code>
 						<#if uri.codeSpace?has_content>
-						<gmd:codeSpace><gco:CharacterString>${uri.codeSpace?xml}</gco:CharacterString></gmd:codeSpace>
+						<gmd:codeSpace><gco:CharacterString>${uri.codeSpace}</gco:CharacterString></gmd:codeSpace>
 						</#if>
 						<#if uri.version?has_content>
-						<gmd:version><gco:CharacterString>${uri.version?xml}</gco:CharacterString></gmd:version>
+						<gmd:version><gco:CharacterString>${uri.version}</gco:CharacterString></gmd:version>
 						</#if>
 					</gmd:RS_Identifier>
 				</#if>
@@ -72,17 +73,17 @@
 				</#if>
 				<#if citation?has_content>
 				<gmd:otherCitationDetails>
-					<gco:CharacterString>${citation.authors?join(', ')?xml} (${citation.year?xml}). ${citation.title?xml}. ${citation.publisher?xml} ${citation.doi?xml}</gco:CharacterString>
+					<gco:CharacterString>${citation.authors?join(', ')} (${citation.year}). ${citation.title}. ${citation.publisher} ${citation.doi}</gco:CharacterString>
 				</gmd:otherCitationDetails>
 				</#if>
 			</gmd:CI_Citation>
 		</gmd:citation>
 		<gmd:abstract>
-			<gco:CharacterString>${description!''?xml}</gco:CharacterString>
+			<gco:CharacterString>${description!''}</gco:CharacterString>
 		</gmd:abstract>
     <#if resourceStatus??>
       <gmd:status>
-        <MD_ProgressCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="${resourceStatus}"/>
+	  <MD_ProgressCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="${resourceStatus}">${resourceStatus}</MD_ProgressCode>
       </gmd:status>
     </#if>
 		<#if responsibleParties?has_content>
@@ -90,39 +91,39 @@
 		<gmd:pointOfContact>
 			<gmd:CI_ResponsibleParty>
 				<#if responsibleParty.individualName?has_content>
-				<gmd:individualName><gco:CharacterString>${responsibleParty.individualName?xml}</gco:CharacterString></gmd:individualName>
+				<gmd:individualName><gco:CharacterString>${responsibleParty.individualName}</gco:CharacterString></gmd:individualName>
 				</#if>
 				<#if responsibleParty.organisationName?has_content>
-				<gmd:organisationName><gco:CharacterString>${responsibleParty.organisationName?xml}</gco:CharacterString></gmd:organisationName>
+				<gmd:organisationName><gco:CharacterString>${responsibleParty.organisationName}</gco:CharacterString></gmd:organisationName>
 				</#if>
 				<gmd:contactInfo>
 					<gmd:CI_Contact>
 						<gmd:address>
 							<gmd:CI_Address>
 								<#if responsibleParty.deliveryPoint?has_content>
-								<gmd:deliveryPoint><gco:CharacterString>${responsibleParty.deliveryPoint?xml}</gco:CharacterString></gmd:deliveryPoint>
+								<gmd:deliveryPoint><gco:CharacterString>${responsibleParty.deliveryPoint}</gco:CharacterString></gmd:deliveryPoint>
 								</#if>
 								<#if responsibleParty.city?has_content>
-								<gmd:city><gco:CharacterString>${responsibleParty.city?xml}</gco:CharacterString></gmd:city>
+								<gmd:city><gco:CharacterString>${responsibleParty.city}</gco:CharacterString></gmd:city>
 								</#if>
 								<#if responsibleParty.administrativeArea?has_content>
-								<gmd:administrativeArea><gco:CharacterString>${responsibleParty.administrativeArea?xml}</gco:CharacterString></gmd:administrativeArea>
+								<gmd:administrativeArea><gco:CharacterString>${responsibleParty.administrativeArea}</gco:CharacterString></gmd:administrativeArea>
 								</#if>
 								<#if responsibleParty.postalCode?has_content>
-								<gmd:postalCode><gco:CharacterString>${responsibleParty.postalCode?xml}</gco:CharacterString></gmd:postalCode>
+								<gmd:postalCode><gco:CharacterString>${responsibleParty.postalCode}</gco:CharacterString></gmd:postalCode>
 								</#if>
 								<#if responsibleParty.country?has_content>
-								<gmd:country><gco:CharacterString>${responsibleParty.country?xml}</gco:CharacterString></gmd:country>
+								<gmd:country><gco:CharacterString>${responsibleParty.country}</gco:CharacterString></gmd:country>
 								</#if>
 								<#if responsibleParty.email?has_content>
-								<gmd:electronicMailAddress><gco:CharacterString>${responsibleParty.email?xml}</gco:CharacterString></gmd:electronicMailAddress>
+								<gmd:electronicMailAddress><gco:CharacterString>${responsibleParty.email}</gco:CharacterString></gmd:electronicMailAddress>
 								</#if>
 							</gmd:CI_Address>
 						</gmd:address>
 					</gmd:CI_Contact>
 				</gmd:contactInfo>
 				<gmd:role>
-					<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="${responsibleParty.role?xml}">${responsibleParty.role?xml}</gmd:CI_RoleCode>
+					<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="${responsibleParty.role}">${responsibleParty.role}</gmd:CI_RoleCode>
 				</gmd:role>
 			</gmd:CI_ResponsibleParty>
 		</gmd:pointOfContact>
@@ -134,12 +135,12 @@
           <gmd:MD_MaintenanceInformation>
             <#if rm.frequencyOfUpdate?has_content>
             <gmd:maintenanceAndUpdateFrequency>
-              <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="${rm.frequencyOfUpdate?xml}"/>
+              <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="${rm.frequencyOfUpdate}">${rm.frequencyOfUpdate}</gmd:MD_MaintenanceFrequencyCode>
             </gmd:maintenanceAndUpdateFrequency>
             </#if>
             <#if rm.note?has_content>
             <gmd:maintenanceNote>
-              <gco:CharacterString>${rm.note?xml}</gco:CharacterString>
+              <gco:CharacterString>${rm.note}</gco:CharacterString>
             </gmd:maintenanceNote>
             </#if>
           </gmd:MD_MaintenanceInformation>
@@ -151,7 +152,7 @@
 		<#if spatialRepresentationTypes?has_content>
 		<#list spatialRepresentationTypes as spatialRepresentationType>
 		<gmd:spatialRepresentationType>
-			<gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="${spatialRepresentationType?xml}"/>
+		<gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="${spatialRepresentationType}">${spatialRepresentationType}</gmd:MD_SpatialRepresentationTypeCode>
 		</gmd:spatialRepresentationType>
 		</#list>
 		</#if>
@@ -174,7 +175,7 @@
 			 <gmd:spatialResolution>
 				<gmd:MD_Resolution>
 				   <gmd:distance>
-					  <gco:Distance uom="${spatialResolution.uom?xml}">${spatialResolution.distance}</gco:Distance>
+					  <gco:Distance uom="${spatialResolution.uom}">${spatialResolution.distance}</gco:Distance>
 				   </gmd:distance>
 				</gmd:MD_Resolution>
 			 </gmd:spatialResolution>
@@ -183,17 +184,17 @@
 		</#if>
 		<#if type != 'service'>
 		<gmd:language>
-			<LanguageCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng"/>
+		<LanguageCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">eng</LanguageCode>
 		</gmd:language>
 		<gmd:characterSet>
-			<MD_CharacterSetCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+		<MD_CharacterSetCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</MD_CharacterSetCode>
 		</gmd:characterSet>	
 		</#if>
 		<#if topicCategories??>
 		<#list topicCategories as topicCategory>
       <#if topicCategory.value?has_content>
         <gmd:topicCategory>
-          <gmd:MD_TopicCategoryCode>${topicCategory.value?xml}</gmd:MD_TopicCategoryCode>
+          <gmd:MD_TopicCategoryCode>${topicCategory.value}</gmd:MD_TopicCategoryCode>
         </gmd:topicCategory>
       </#if>
 		</#list>
@@ -210,3 +211,4 @@
 	</#if>
 
 </gmd:identificationInfo>
+</#escape>

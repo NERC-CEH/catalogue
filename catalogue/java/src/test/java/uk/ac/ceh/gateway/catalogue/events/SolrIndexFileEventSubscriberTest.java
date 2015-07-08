@@ -16,16 +16,18 @@ import uk.ac.ceh.components.datastore.DataSubmittedEvent;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
 public class SolrIndexFileEventSubscriberTest {
     @Mock private SolrIndexingService<MetadataDocument> service;
     @Mock private DataSubmittedEvent<?> event;
+    @Mock private DocumentListingService listingService;
     private SolrIndexFileEventSubscriber eventSubscriber; 
     
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        eventSubscriber = new SolrIndexFileEventSubscriber(service);
+        eventSubscriber = new SolrIndexFileEventSubscriber(service, listingService);
     }
 
     @Test
@@ -35,6 +37,7 @@ public class SolrIndexFileEventSubscriberTest {
         List<String> originalFilenames = Arrays.asList("asd.raw", "asd.meta", "trd.meta");
         List<String> processedFilenames = Arrays.asList("asd", "trd");
         given(event.getFilenames()).willReturn(originalFilenames);
+        given(listingService.filterFilenames(originalFilenames)).willReturn(processedFilenames);
         DataRepository repo = mock(DataRepository.class);
         DataRevision latestRevision = mock(DataRevision.class);
         given(latestRevision.getRevisionID()).willReturn(revisionId);

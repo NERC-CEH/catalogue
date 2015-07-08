@@ -2,7 +2,9 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import com.vividsolutions.jts.io.WKTReader;
 import java.io.IOException;
+import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +14,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.Xml2UKEOFDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -29,6 +33,8 @@ import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -39,12 +45,16 @@ import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
-import uk.ac.ceh.gateway.catalogue.ukeof.UKEOFDocument;
+import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+import uk.ac.ceh.gateway.catalogue.services.TerraCatalogImporterService;
+import uk.ac.ceh.gateway.catalogue.util.terracatalog.OfflineTerraCatalogUserFactory;
+import uk.ac.ceh.gateway.catalogue.util.terracatalog.StateTranslatingMetadataInfoFactory;
 
 /**
  * The following spring configuration will populate service beans
@@ -59,6 +69,7 @@ public class ServiceConfig {
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
     @Autowired CodeLookupService codeLookupService;
+    @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
     @Autowired GroupStore<CatalogueUser> groupStore;
     
     @Bean
@@ -70,12 +81,17 @@ public class ServiceConfig {
     public CitationService citationService() {
         return new CitationService();
     }
-        
+    
+    @Bean
+    public DataRepositoryOptimizingService dataRepositoryOptimizingService() {
+        return new DataRepositoryOptimizingService(dataRepository);
+    }
+    
     @Bean
     public DocumentReadingService documentReadingService() throws XPathExpressionException, IOException {
         return new MessageConverterReadingService()
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService))
-                .addMessageConverter(new Xml2UKEOFDocumentMessageConverter())
+                .addMessageConverter(new UkeofXml2EFDocumentMessageConverter())
                 .addMessageConverter(new MappingJackson2HttpMessageConverter(jacksonMapper));
     }
     
@@ -88,7 +104,7 @@ public class ServiceConfig {
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
                 .register("GEMINI_DOCUMENT", GeminiDocument.class)
-                .register("UKEOF_DOCUMENT", UKEOFDocument.class);
+                .register("EF_DOCUMENT", BaseMonitoringType.class);
     }
     
     @Bean
@@ -104,6 +120,13 @@ public class ServiceConfig {
     @Bean
     public TMSToWMSGetMapService tmsToWmsGetMapService() {
         return new TMSToWMSGetMapService();
+    }
+    
+    @Bean
+    public DownloadOrderDetailsService downloadOrderDetailsService() {
+        Pattern eidchub = Pattern.compile("http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*");
+        Pattern orderMan = Pattern.compile("http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*");
+        return new DownloadOrderDetailsService(eidchub, orderMan);
     }
     
     @Bean
@@ -142,7 +165,17 @@ public class ServiceConfig {
     @Bean
     public ExtensionDocumentListingService documentListingService() {
         return new ExtensionDocumentListingService();
-    } 
+    }
+    
+    @Bean
+    public DocumentIdentifierService documentIdentifierService() {
+        return new DocumentIdentifierService('-');
+    }
+    
+    @Bean
+    public SolrGeometryService solrGeometryService() {
+        return new SolrGeometryService(new WKTReader());
+    }
     
     @Bean
     public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException {
@@ -150,7 +183,7 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService),
+                new MetadataDocumentSolrIndexGenerator(new ExtractTopicFromDocument(), codeLookupService, documentIdentifierService(), solrGeometryService()),
                 solrServer
         );
         
@@ -163,6 +196,8 @@ public class ServiceConfig {
         GitDocumentLinkService toReturn = new GitDocumentLinkService(
                 dataRepository,
                 bundledReaderService(),
+                documentListingService(),
+                documentIdentifierService(),
                 linkDatabase
         );
         
@@ -170,6 +205,25 @@ public class ServiceConfig {
         return toReturn;
     }
     
+    @Bean
+    public TerraCatalogImporterService terraCatalogImporterService() throws XPathExpressionException, IOException {
+        OfflineTerraCatalogUserFactory<CatalogueUser> userFactory = new OfflineTerraCatalogUserFactory<>(phantomUserBuilderFactory);
+        userFactory.put("ceh", "@ceh.ac.uk");
+
+        StateTranslatingMetadataInfoFactory infoFactory = new StateTranslatingMetadataInfoFactory();
+        infoFactory.put("private", "draft");
+        infoFactory.put("public", "published");
+        
+        return new TerraCatalogImporterService(
+                dataRepository,
+                documentListingService(),
+                documentIdentifierService(),
+                userFactory,
+                documentReadingService(),
+                documentInfoMapper(),
+                infoFactory
+        );
+    }
     
     //Perform an initial index of solr if their is no content inside
     protected void performReindexIfNothingIsIndexed(SolrIndexingService<?> service) {

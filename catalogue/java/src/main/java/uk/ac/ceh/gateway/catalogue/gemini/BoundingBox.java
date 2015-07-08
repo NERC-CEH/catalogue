@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Value
 @Slf4j
-@JsonIgnoreProperties({"solrGeometry", "wkt"})
+@JsonIgnoreProperties({"wkt"})
 public class BoundingBox {
     private final BigDecimal westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude;
     
@@ -26,18 +26,6 @@ public class BoundingBox {
         this.eastBoundLongitude = new BigDecimal(eastBoundLongitude);
         this.southBoundLatitude = new BigDecimal(southBoundLatitude);
         this.northBoundLatitude = new BigDecimal(northBoundLatitude);
-    }
-    
-    public String getSolrGeometry() {
-        return new StringBuilder()
-                .append(westBoundLongitude)
-                .append(" ")
-                .append(southBoundLatitude)
-                .append(" ")
-                .append(eastBoundLongitude)
-                .append(" ")
-                .append(northBoundLatitude)
-                .toString();
     }
     
     public String getWkt() {

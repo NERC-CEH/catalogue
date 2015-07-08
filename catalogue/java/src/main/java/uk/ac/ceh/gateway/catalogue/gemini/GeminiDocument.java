@@ -53,7 +53,6 @@ public class GeminiDocument implements MetadataDocument {
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<ConformanceResult> conformanceResults;
     private List<SpatialResolution> spatialResolutions;
-    private DownloadOrder downloadOrder;
     @JsonIgnore
     private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;
@@ -85,7 +84,7 @@ public class GeminiDocument implements MetadataDocument {
             return "";
         }
     }
-    
+        
     @JsonProperty("citation")
     public Citation getCitation() {
         return citation;
@@ -119,15 +118,6 @@ public class GeminiDocument implements MetadataDocument {
             toReturn.add(revisionOf);
         }
         return toReturn;
-    }
-    
-    @Override
-    public List<String> getLocations() {
-        return Optional.ofNullable(boundingBoxes)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(BoundingBox::getSolrGeometry)
-            .collect(Collectors.toList());
     }
     
     /**

@@ -199,6 +199,19 @@ public class MetadataInfoTest {
         assertThat("Readonly user should not be able to delete", actual, is(false));
     }
     
+    @Test
+    public void userInPublisherGroupCanView() {
+        //Given
+        MetadataInfo info = new MetadataInfo();
+        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        
+        //When
+        boolean actual = info.canAccess(Permission.VIEW, publisher, createGroups("ROLE_CIG_PUBLISHER"));
+        
+        //Then
+        assertThat("Publisher should be able to view", actual, is(true));
+    }
+    
     private List<Group> createGroups(String... groupnames) {
         List<Group> toReturn = new ArrayList<>();
         for (String groupname : groupnames) {

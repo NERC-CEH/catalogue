@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 
 /**
  * Defines a listing service which will filter a list of filenames into a list
- * of document names if their exist filenames with the given extensions
+ * of document names if there exists filenames with the given extensions
  * @author cjohn
  */
 @Data
@@ -22,7 +23,7 @@ public class ExtensionDocumentListingService implements DocumentListingService {
     }
     
     @Override
-    public List<String> filterFilenames(List<String> files) {
+    public List<String> filterFilenames(Collection<String> files) {
         //Scan through the files list return any which there exists a .meta and .raw
         //file
         return files.stream()

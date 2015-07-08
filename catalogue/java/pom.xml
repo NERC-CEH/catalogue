@@ -4,7 +4,7 @@
 
     <groupId>uk.ac.ceh.gateway</groupId>
     <artifactId>Catalogue</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.11-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>CEH Information Gateway Catalogue</name>
@@ -24,6 +24,8 @@
         <guava.version>18.0</guava.version>
         <solr.version>4.8.0</solr.version>
         <freemarker.version>2.3.22</freemarker.version>
+        <jts.version>1.13</jts.version>
+        <joda-time.version>2.3</joda-time.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -104,6 +106,11 @@
           <artifactId>jackson-datatype-guava</artifactId>
           <version>${jackson.version}</version>
         </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
+        </dependency>
         
         <!-- Guava -->
         <dependency>
@@ -145,6 +152,13 @@
             <version>${spring.version}</version>
         </dependency>
         
+        <!-- Apache file upload -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        
         <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -166,10 +180,9 @@
         
         <!-- Database Connection Pooling -->
         <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
-            <version>8.0.9</version>
-            <scope>provided</scope>
+            <groupId>c3p0</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.1.2</version>
         </dependency>
         
         <!-- Solr4j -->
@@ -191,6 +204,13 @@
                     <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        
+        <!-- Spatial -->
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>${jts.version}</version>
         </dependency>
         
         <!-- Logging -->

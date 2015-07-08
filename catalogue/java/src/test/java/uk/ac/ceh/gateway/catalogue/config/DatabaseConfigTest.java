@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -79,7 +80,7 @@ public class DatabaseConfigTest {
     }
     
     @Test
-    public void checkThatDatasourceSetsSchemaIfNotPresent() throws IOException, URISyntaxException {
+    public void checkThatDatasourceSetsSchemaIfNotPresent() throws IOException, URISyntaxException, PropertyVetoException {
         //Given
         doNothing().when(databaseConfig).performSetSchemaIfNotPresent(any(JdbcTemplate.class));
         
