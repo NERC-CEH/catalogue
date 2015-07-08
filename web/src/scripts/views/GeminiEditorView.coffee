@@ -16,7 +16,10 @@ define [
   'cs!models/editor/Contact'
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/OnlineResourceView'
-], (EditorView, SingleObjectView, ParentView, PredefinedParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView) -> EditorView.extend
+  'cs!views/editor/UseLimitationView'
+  'cs!views/editor/OtherConstraintView'
+  'cs!views/editor/TemporalExtentView'
+], (EditorView, SingleObjectView, ParentView, PredefinedParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView) -> EditorView.extend
 
 
   initialize: ->
@@ -134,6 +137,17 @@ define [
           helpText: """
                     <p>A bounding box representing the limits of the data resource's study area.</p>
                     <p>If you do not wish to reveal the exact location publicly, it is recommended that you generalise the location.  Such sensitive locations may include endangered species and their habitats.</p>
+                    """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'temporalExtents'
+          label: 'Temporal Extents'
+          ObjectInputView: TemporalExtentView
+          helpText: """
+                    <p>The main theme(s) of the data resource as defined by the INSPIRE Directive.</p>
+                    <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
+                    <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
                     """
       ]
     ,
@@ -353,7 +367,41 @@ define [
       ]
     ,
       label: 'Eight'
-      views: []
+      views: [
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'useLimitations'
+          label: 'Use Constraints'
+          ObjectInputView: UseLimitationView
+          multiline: true
+          predefined:
+            'Open Government Licence':
+              value: 'license conditions apply'
+              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain'
+          helpText: """
+                    <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
+                    <ul class="list-unstyled">
+                      <li>"Licence conditions apply"</li>
+                      <li>"If you reuse this data you must cite …"</li>
+                      <li>"Do not use for navigation purposes"</li>
+                    </ul>
+                    <p>Where possible include a link to a document describing the terms and conditions.</p>
+                    <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>
+                    """
+
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'otherConstraints'
+          label: 'Limitations on public access'
+          ObjectInputView: OtherConstraintView
+          predefined:
+            'no limitations':
+              value: 'no limitations'
+          helpText: """
+                    <p>Any conditions that are in place to restrict a user's <strong>access</strong> to the data. These may include, for example, restrictions imposed for reasons of security or for licensing purposes.</p>
+                    <p>You MUST enter something even if there are no access limitations. In the rare case that there are none, enter "no limitations".</p>
+                    """
+      ]
     ,
       label: 'Nine'
       views: [
@@ -369,7 +417,31 @@ define [
       ]
     ,
       label: 'Ten'
-      views: []
+      views: [
+        new PredefinedParentView
+          model: @model
+          ModelType: Contact
+          modelAttribute: 'metadataPointsOfContact'
+          label: 'Metadata Points of Contact'
+          ObjectInputView: ContactView
+          multiline: true
+          predefined:
+            'CEH Point of Contact':
+              organisationName: 'Centre for Ecology & Hydrology'
+              role: 'pointOfContact'
+              email: 'enquiries@ceh.ac.uk'
+              address:
+                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
+                postalCode: 'OX10 8BB'
+                city: 'Wallingford'
+                administrativeArea: 'Oxfordshire'
+                country: 'United Kingdom'
+          helpText: """
+                    <p>The organisation or person responsible for the authorship, maintenance and curation of the metadata resource.</p>
+                    <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
+                    <p>The names of individuals should be included in the format <em>Surname, First Initial. Second Initial.</em>  For example <b>Brown, A.B.</b></p>
+                    """
+      ]
     ]
 
     EditorView.prototype.initialize.apply @

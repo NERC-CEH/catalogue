@@ -153,7 +153,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setDistributorContacts(distributorConverter.convert(document));
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
             toReturn.setBrowseGraphicUrl(browseGraphicUrl.evaluate(document));
-            toReturn.setTemporalExtent(temporalExtentConverter.convert(document));
+            toReturn.setTemporalExtents(temporalExtentConverter.convert(document));
             toReturn.setCoupledResources(getListOfStrings(document, coupledResource));
             toReturn.setResourceStatus(resourceStatus.evaluate(document));
             toReturn.setSpatialReferenceSystems(spatialReferenceSystem.convert(document));

@@ -60,7 +60,7 @@ public class GeminiDocument implements MetadataDocument {
     private List<ResponsibleParty> metadataPointsOfContact;
     private List<ResponsibleParty> distributorContacts;
     private List<ResponsibleParty> responsibleParties;
-    private List<TimePeriod> temporalExtent;
+    private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private Link parent, revised, revisionOf;
     private Set<Link> documentLinks, children;

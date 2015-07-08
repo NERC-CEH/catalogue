@@ -199,7 +199,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<TimePeriod> actual = document.getTemporalExtent();
+        List<TimePeriod> actual = document.getTemporalExtents();
         
         //Then
         assertThat("TemporalExtent 'actual' should be equal to 'expected'", actual, equalTo(expected));

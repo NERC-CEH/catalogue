@@ -1,5 +1,5 @@
-<#if temporalExtent?has_content>
-<#list temporalExtent as temporal>
+<#if temporalExtents?has_content>
+<#list temporalExtents as temporal>
 <${ns}:extent>
 	<gmd:EX_Extent>
 		<gmd:temporalElement>
