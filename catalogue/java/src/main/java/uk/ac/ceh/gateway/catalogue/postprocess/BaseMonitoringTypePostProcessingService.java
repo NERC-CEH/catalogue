@@ -13,7 +13,6 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.Data;
 import org.joda.time.LocalDate;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
@@ -72,19 +71,35 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
     }
     
     /**
-     * The following method adds all of the links in B to A where the hrefs don't
-     * match.
+     * The following method will add the elements of b into a when there is no
+     * matching element in a.
      * @param a List which will contain all of the processed links
      * @param b The list with prospective links to add
      */
-    private void appendLinks(List<? extends Link> a, List<Link> b) {
-        List<String> hrefs = a.stream().map(Link::getHref).collect(Collectors.toList());
-        b.removeIf(e -> hrefs.contains(e.getHref()));
-        a.addAll((List)b);
+    private void appendLinks(List a, List b) {
+        b.stream().filter(e -> !a.contains(e)).forEach(e -> a.add(e));
     }
     
-    /*
-    Query out a standard link, which may or may not have a title
+    /**
+     * Links in EF documents can be quite complicated. For the normal links, the
+     * generated triples are as expected. E.g.
+     * 
+     *          <Activity_URI> -> <Related_To> -> <Facility _URI>
+     *
+     * However timed links are a different story, these look more like this:
+     *
+     *                                 <Start> -> "20-10-12"
+     *                               /
+     *  <Activity_URI> -> <Triggers> --> <End>   -> "24-10-30"
+     *                               \
+     *                                 <Identifier> -> <Facility_URI>
+     * 
+     * The code here will create a collection of links for both types of graph,
+     * where the type is either Link or TimedLink based upon the structure.
+     * @param relationship The back relationship between the supplied doc
+     * @param doc uri to search for
+     * @return a list of links which link to the given doc by the specified 
+     *  relationship
      */
     private List<Link> withLinks(Property relationship, Resource doc) {
         ParameterizedSparqlString pss = new ParameterizedSparqlString(

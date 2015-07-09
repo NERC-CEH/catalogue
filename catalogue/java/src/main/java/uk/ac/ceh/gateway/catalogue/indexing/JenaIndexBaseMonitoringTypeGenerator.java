@@ -89,6 +89,7 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
      * @param resource which the link has come off
      * @param relation of how this link is related to the resource
      * @param link to expand and define semantically
+     * @see uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService#withLinks(com.hp.hpl.jena.rdf.model.Property, com.hp.hpl.jena.rdf.model.Resource) 
      * @return a list of statements representing this linking
      */
     private List<Statement> linkStatements(Resource resource, Property relation, Link link) {
