@@ -28,23 +28,7 @@
         <joda-time.version>2.3</joda-time.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
-    <profiles>
-        <profile>
-            <id>dev</id>
-        </profile>
-        <profile>
-            <id>integration-test</id>
-            <properties>
-                <!-- Used to locate the profile specific configuration file. -->
-                <build.profile.id>integration-test</build.profile.id>
-                <!-- Only integration tests are run. -->
-                <skip.integration.tests>false</skip.integration.tests>
-                <skip.unit.tests>true</skip.unit.tests>
-            </properties>
-        </profile>
-    </profiles>
-    
+    </properties>    
     <dependencies>       
         <dependency>
             <groupId>org.projectlombok</groupId>
