@@ -64,7 +64,7 @@ public class DocumentIdentifierServiceTest {
         String url = service.generateUri(id);
         
         //Then
-        assertThat(url, equalTo("https://catalogue.ceh.ac.uk/documents/id/myPath"));
+        assertThat(url, equalTo("https://catalogue.ceh.ac.uk/id/myPath"));
     }
     
     @Test(expected=NullPointerException.class)

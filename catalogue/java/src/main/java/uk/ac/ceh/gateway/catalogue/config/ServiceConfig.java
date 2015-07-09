@@ -70,7 +70,7 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.TerraCatalogImporterService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
-import uk.ac.ceh.gateway.catalogue.util.MostSpecificClassMap;
+import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.util.terracatalog.OfflineTerraCatalogUserFactory;
 import uk.ac.ceh.gateway.catalogue.util.terracatalog.StateTranslatingMetadataInfoFactory;
 
@@ -80,7 +80,7 @@ import uk.ac.ceh.gateway.catalogue.util.terracatalog.StateTranslatingMetadataInf
  */
 @Configuration
 public class ServiceConfig {
-    @Value("documents.baseUri") String baseUri;
+    @Value("${documents.baseUri}") String baseUri;
     @Autowired RestTemplate restTemplate;
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
@@ -198,7 +198,7 @@ public class ServiceConfig {
     
     @Bean
     public PostProcessingService postProcessingService() {
-        ClassMap<PostProcessingService> mappings = new MostSpecificClassMap<PostProcessingService>()
+        ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
                 .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), jenaTdb))
                 .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb));
         return new ClassMapPostProcessingService(mappings);
@@ -209,7 +209,7 @@ public class ServiceConfig {
         SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(new ExtractTopicFromDocument(), codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
         
-        ClassMap<IndexGenerator<?, SolrIndex>> mappings = new MostSpecificClassMap<IndexGenerator<?, SolrIndex>>()
+        ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(metadataDocument, solrGeometryService(), codeLookupService))
             .register(Facility.class,           new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
             .register(BaseMonitoringType.class, baseMonitoringType)
@@ -231,10 +231,10 @@ public class ServiceConfig {
     public JenaIndexingService documentLinkingService() throws XPathExpressionException, IOException {
         JenaIndexMetadataDocumentGenerator metadataDocument = new JenaIndexMetadataDocumentGenerator(documentIdentifierService());
         
-        ClassMap<IndexGenerator<?, List<Statement>>> mappings = new MostSpecificClassMap<IndexGenerator<?, List<Statement>>>()
-                .register(MetadataDocument.class, metadataDocument)
+        ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
+                .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(metadataDocument))
                 .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument))
-                .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(metadataDocument));
+                .register(MetadataDocument.class, metadataDocument);
         
         JenaIndexingService toReturn = new JenaIndexingService(
                 bundledReaderService(),

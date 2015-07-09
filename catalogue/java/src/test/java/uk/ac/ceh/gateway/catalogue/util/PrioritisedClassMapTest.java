@@ -15,12 +15,12 @@ import static org.junit.Assert.*;
  *
  * @author cjohn
  */
-public class MostSpecificClassMapTest {
+public class PrioritisedClassMapTest {
     @Test
     public void canFindExactMatch() {
         //Given
         String expectedValue = "Expected value";
-        MostSpecificClassMap<String> classMap = new MostSpecificClassMap<>();
+        PrioritisedClassMap<String> classMap = new PrioritisedClassMap<>();
         classMap.register(String.class, expectedValue);
         
         //When
@@ -33,7 +33,7 @@ public class MostSpecificClassMapTest {
     @Test
     public void returnsNullIfNoMapping() {
         //Given
-        MostSpecificClassMap<String> classMap = new MostSpecificClassMap<>();
+        PrioritisedClassMap<String> classMap = new PrioritisedClassMap<>();
         classMap.register(Number.class, "not a string");
         
         //When
@@ -47,9 +47,24 @@ public class MostSpecificClassMapTest {
     public void canTraverseTheObjectHierarchy() {
         //Given
         String expectedValue = "Expected value";
-        MostSpecificClassMap<String> classMap = new MostSpecificClassMap<>();
+        PrioritisedClassMap<String> classMap = new PrioritisedClassMap<>();
         classMap.register(Number.class, expectedValue);
         
+        //When
+        String value = classMap.get(Integer.class);
+        
+        //Then
+        assertThat(value, is(expectedValue));
+    }
+    
+    @Test
+    public void returnsFirstRegisteredMatch() {
+        //Given
+        String expectedValue = "Expected value";
+        PrioritisedClassMap<String> classMap = new PrioritisedClassMap<>();
+        classMap.register(Number.class, expectedValue);
+        classMap.register(Integer.class, "The wrong value");
+                
         //When
         String value = classMap.get(Integer.class);
         

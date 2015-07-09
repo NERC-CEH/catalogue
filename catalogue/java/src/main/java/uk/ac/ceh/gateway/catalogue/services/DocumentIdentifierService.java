@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.Data;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * This application hosts metadata documents on paths which take the form:
@@ -40,7 +39,7 @@ public class DocumentIdentifierService {
     
     public String generateUri(String identifier) {
         String id = Objects.requireNonNull(identifier, "A identifier is required for it to be assigned a uri");
-        return baseUri + "/documents/id/" + generateFileId(id);
+        return baseUri + "/id/" + generateFileId(id);
     }
     
     /**
