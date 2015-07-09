@@ -7,8 +7,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
-import com.hp.hpl.jena.update.UpdateFactory;
-import com.hp.hpl.jena.update.UpdateRequest;
 import java.util.List;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -16,9 +14,11 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
 /**
- *
+ * This is the Jena Indexing Service. Instances of this can read documents from
+ * a DataRepository and index them with the supplied IndexGenerator. The indexes
+ * will then go into a Jena Triple Store for later retrieval. 
  * @author cjohn
- * @param <D>
+ * @param <D> type of documents to be read from the DataRepository
  */
 public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Statement>> {
     private final DocumentIdentifierService documentIdentifierService;

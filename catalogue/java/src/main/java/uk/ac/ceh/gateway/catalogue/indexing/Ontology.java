@@ -3,10 +3,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
-/**
- *
- * @author cjohn
- */
 public class Ontology {
     public static final Property IDENTIFIER    = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");
     public static final Property TITLE         = ResourceFactory.createProperty("http://purl.org/dc/terms/title");

@@ -15,7 +15,8 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
 /**
- *
+ * Processes a GeminiDocument and populates a SolrIndex object will all of the
+ * bits of the document transferred. Ready to be indexed by Solr
  * @author cjohn
  */
 @Data

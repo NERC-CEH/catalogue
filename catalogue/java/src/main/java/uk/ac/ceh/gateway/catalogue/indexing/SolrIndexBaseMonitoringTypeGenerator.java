@@ -6,7 +6,8 @@ import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGene
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
 /**
- *
+ * Based upon a general MetadataDocument generator, instances of this class will
+ * index BaseMonitoringType specific details.
  * @author cjohn
  */
 @Data

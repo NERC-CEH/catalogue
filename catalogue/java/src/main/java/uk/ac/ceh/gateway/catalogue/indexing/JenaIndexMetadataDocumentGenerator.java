@@ -17,7 +17,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
  */
 @Data
 public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, List<Statement>> {
-    
     private final DocumentIdentifierService documentIdentifierService;
 
     @Override

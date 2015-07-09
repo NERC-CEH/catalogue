@@ -9,13 +9,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 /**
- *
+ * The following class extracts semantic details from a GeminiDocument and 
+ * returns these as Jena Statements (triples)
  * @author cjohn
- * @param <D>
  */
 @Data
 public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, List<Statement>> {
-    
     private final JenaIndexMetadataDocumentGenerator generator;
 
     @Override

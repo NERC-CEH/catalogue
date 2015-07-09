@@ -1,11 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 /**
- * The following interface should parse some bean and generate a bean which is
- * annotated with solrj annotations such as @Field
+ * The following interface will enable an indexing representation of a given D
+ * which can then be processed by some indexing implementation
  * 
- * The resultant bean will be submitted to solr for indexing.
  * @author cjohn
+ * @param <D> Document type
+ * @param <I> Indexable representation
  */
 public interface IndexGenerator<D, I> {
     I generateIndex(D toIndex) throws DocumentIndexingException;

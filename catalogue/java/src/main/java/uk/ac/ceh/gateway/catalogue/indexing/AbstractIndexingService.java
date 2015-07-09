@@ -9,10 +9,19 @@ import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
 /**
- *
+ * The following abstract class defines the common structure for a 
+ * DocumentIndexingService which hydrates documents using a BundledReaderService.
+ * 
+ * Ultimately the class backs on to an implementation of IndexGenerator. This is 
+ * used to create a required index object from a document which has been read 
+ * using the BundledReaderService.
+ * 
+ * Implementations of this class need to define the way in which the generated
+ * index (I) gets indexed.
+ * 
  * @author cjohn
- * @param <D>
- * @param <I>
+ * @param <D> type of documents which get indexed
+ * @param <I> indexable representation of a given document
  */
 @Data
 @Slf4j
