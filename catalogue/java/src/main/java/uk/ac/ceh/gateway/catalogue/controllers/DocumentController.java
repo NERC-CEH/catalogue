@@ -32,13 +32,13 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -63,9 +63,7 @@ public class DocumentController {
     private final DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final DocumentWritingService<MetadataDocument> documentWriter;
-    private final DocumentLinkService linkService;
-    private final CitationService citationService;
-    private final ObjectMapper mapper;
+    private final PostProcessingService postProcessingService;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
@@ -75,9 +73,7 @@ public class DocumentController {
                                 DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory,
                                 BundledReaderService<MetadataDocument> documentBundleReader,
                                 DocumentWritingService<MetadataDocument> documentWritingService,
-                                DocumentLinkService linkService,
-                                CitationService citationService,
-                                ObjectMapper mapper) {
+                                PostProcessingService postProcessingService) {
         this.repo = repo;
         this.documentIdentifierService = documentIdentifierService;
         this.documentReader = documentReader;
@@ -85,9 +81,7 @@ public class DocumentController {
         this.infoFactory = infoFactory;
         this.documentBundleReader = documentBundleReader;
         this.documentWriter = documentWritingService;
-        this.linkService = linkService;
-        this.citationService = citationService;
-        this.mapper = mapper;
+        this.postProcessingService = postProcessingService;
     }
     
     @Secured(EDITOR_ROLE)
@@ -132,7 +126,7 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> uploadDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody GeminiDocument geminiDocument,
-            HttpServletRequest request) throws IOException, UnknownContentTypeException  {
+            HttpServletRequest request) throws IOException, UnknownContentTypeException, PostProcessingException  {
        
         String id = documentIdentifierService.generateFileId();
         updateIdAndMetadataDate(geminiDocument, id);
@@ -175,7 +169,7 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody GeminiDocument geminiDocument,
-            HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException {
+            HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException, PostProcessingException {
         
         
         MetadataInfo metadataInfo = updatingRawType(file);
@@ -201,7 +195,7 @@ public class DocumentController {
     @ResponseBody
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
+            @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
         return readMetadata(user, file, latestRev.getRevisionID(), request);
     }
@@ -214,24 +208,10 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @PathVariable("revision") String revision,
-            HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
+            HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         MetadataDocument document = documentBundleReader.readBundle(file, revision);
         document.attachUri(getCurrentUri(request, file, revision));
-        if(document instanceof GeminiDocument) {
-            String urlFragment = getLinkUrlFragment(request, revision);
-            GeminiDocument geminiDocument = (GeminiDocument)document;
-            geminiDocument.setDocumentLinks(linkService.getLinks(geminiDocument, urlFragment));
-            linkService.getParent(geminiDocument, urlFragment)
-                .ifPresent(p -> geminiDocument.setParent(p));
-            geminiDocument.setChildren(linkService.getChildren(geminiDocument, urlFragment));
-            linkService.getRevised(geminiDocument, urlFragment)
-                .ifPresent(r -> geminiDocument.setRevised(r));
-            linkService.getRevisionOf(geminiDocument, urlFragment)
-                .ifPresent(r -> geminiDocument.setRevisionOf(r));
-            citationService.getCitation(geminiDocument)
-                .ifPresent(c -> geminiDocument.setCitation(c));
-            geminiDocument.setJsonString(mapper.writeValueAsString(geminiDocument));   
-        }
+        postProcessingService.postProcess(document);
         log.debug("document requested: {}", document);
         return document;
     }

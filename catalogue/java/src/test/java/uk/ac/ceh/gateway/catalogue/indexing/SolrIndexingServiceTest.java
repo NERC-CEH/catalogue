@@ -41,7 +41,7 @@ public class SolrIndexingServiceTest {
     @Mock BundledReaderService<GeminiDocument> reader;
     @Mock DocumentListingService listingService;
     @Mock DataRepository<?> repo;
-    @Mock SolrIndexGenerator<GeminiDocument> indexGenerator;
+    @Mock IndexGenerator<GeminiDocument, SolrIndex> indexGenerator;
     @Mock SolrServer solrServer;
     
     private SolrIndexingService service;
@@ -100,8 +100,8 @@ public class SolrIndexingServiceTest {
         when(reader.readBundle("doc1", revId)).thenReturn(document1);
         when(reader.readBundle("doc2", revId)).thenReturn(document2);
         
-        Object document1Index = mock(Object.class);
-        Object document2Index = mock(Object.class);
+        SolrIndex document1Index = mock(SolrIndex.class);
+        SolrIndex document2Index = mock(SolrIndex.class);
         when(indexGenerator.generateIndex(document1)).thenReturn(document1Index);
         when(indexGenerator.generateIndex(document2)).thenReturn(document2Index);
         
