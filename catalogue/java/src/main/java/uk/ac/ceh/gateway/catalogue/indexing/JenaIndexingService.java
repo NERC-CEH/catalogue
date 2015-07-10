@@ -40,6 +40,12 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
     public boolean isIndexEmpty() throws DocumentIndexingException {
        return jenaTdb.getDefaultModel().isEmpty();
     }
+    
+    @Override
+    public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
+        unindexDocuments(documents);
+        super.indexDocuments(documents, revision);
+    }
         
     @Override
     public void unindexDocuments(List<String> documents) throws DocumentIndexingException {
@@ -51,6 +57,8 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
             UpdateExecutionFactory.create(pss.asUpdate(), graph).execute();
         }
     }
+    
+    
     
     @Override
     public void clearIndex() throws DocumentIndexingException {

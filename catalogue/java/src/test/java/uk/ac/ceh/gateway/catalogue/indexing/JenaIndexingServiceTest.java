@@ -5,13 +5,16 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.tdb.TDBFactory;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -113,5 +116,17 @@ public class JenaIndexingServiceTest {
         
         //Then
         assertThat(service.isIndexEmpty(), is(true));
+    }
+    
+    @Test
+    public void checkThatUnindexesDocumentsBeforeIndexing() throws DocumentIndexingException {
+        //Given
+        List<String> docs = new ArrayList<>();
+        
+        //When
+        service.indexDocuments(docs, "some revision");
+        
+        //Then
+        verify(service).unindexDocuments(docs);
     }
 }

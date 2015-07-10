@@ -27,8 +27,8 @@ public class PrioritisedClassMap<T> implements ClassMap<T> {
      * super class of the one specified. Given the following class hierarchy and
      * registration:
      * 
-     *   Object       classMap.register(A.class, "Alice")
-     *     |                  .register(B.class, "Bob");
+     *   Object       classMap.register(B.class, "Bob")
+     *     |                  .register(A.class, "Alice");
      *     A
      *    / \
      *   B   C
