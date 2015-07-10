@@ -19,7 +19,10 @@ define [
   'cs!views/editor/UseLimitationView'
   'cs!views/editor/OtherConstraintView'
   'cs!views/editor/TemporalExtentView'
-], (EditorView, SingleObjectView, ParentView, PredefinedParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView) -> EditorView.extend
+  'cs!views/editor/ResourceStatusView'
+  'cs!views/editor/ResourceMaintenanceView'
+  'cs!views/editor/SpatialReferenceSystemView'
+], (EditorView, SingleObjectView, ParentView, PredefinedParentView, String, ResourceTypeView, ResourceType, InputView, TextareaView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView) -> EditorView.extend
 
 
   initialize: ->
@@ -74,6 +77,16 @@ define [
           helpText: """
                     <p>A brief description of the data resource. This should include some explanation as to purpose and how the data resource has been used since creation.</p>
                     <p>It is best to write a concise abstract.</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'resourceStatus'
+          ModelType: String
+          label: 'Resource Status'
+          ObjectInputView: ResourceStatusView,
+          helpText: """
+                    <p>Status of resource</p>
                     """
 
         new SingleObjectView
@@ -145,15 +158,46 @@ define [
           label: 'Temporal Extents'
           ObjectInputView: TemporalExtentView
           helpText: """
-                    <p>The main theme(s) of the data resource as defined by the INSPIRE Directive.</p>
-                    <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
-                    <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
+                    <p>Temporal Extent</p>
                     """
       ]
     ,
       label: 'Three'
       views: [
 #        'dataFormat'
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'spatialReferenceSystems'
+          label: 'Spatial Reference Systems'
+          ObjectInputView: SpatialReferenceSystemView
+          predefined:
+            'OSGB 1936 / British National Grid':
+              code: 27700
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'TM65 / Irish National Grid':
+              code: 29900
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'OSNI 1952 / Irish National Grid':
+              code: 29901
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'TM65 / Irish Grid':
+              code: 29902
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'WGS 84':
+              code: 4326
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'WGS 84 longitude-latitude (CRS:84)':
+              code: 'CRS:84'
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+          helpText: """
+                    <p>The spatial referencing systems used within the data resource.</p>
+                    <p>There are three commonly used co-ordinate systems for British Isle data resources:</p>
+                    <ul  class="list-unstyled">
+                    <li>British National Grid</li>
+                    <li>Irish National Grid</li>
+                    <li>WGS84 (which is a global reference system)</li>
+                    </ul>
+                    """
 #        'spatialRepresentationType'
 #        'spatialResolution'
       ]
@@ -351,6 +395,15 @@ define [
                     <p>Information about the source data used in the construction of this data resource.</p>
                     <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>
                     """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'resourceMaintenance'
+          label: 'Resource Maintenance'
+          ObjectInputView: ResourceMaintenanceView
+          helpText: """
+                    <p>Resource Maintenance</p>
+                    """
       ]
     ,
       label: 'Seven'
@@ -440,6 +493,16 @@ define [
                     <p>The organisation or person responsible for the authorship, maintenance and curation of the metadata resource.</p>
                     <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
                     <p>The names of individuals should be included in the format <em>Surname, First Initial. Second Initial.</em>  For example <b>Brown, A.B.</b></p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'parentIdentifier'
+          ModelType: String
+          label: 'Parent Identifier'
+          ObjectInputView: InputView,
+          helpText: """
+                    <p>Identifier of parent series</p>
                     """
       ]
     ]
