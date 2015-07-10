@@ -2,9 +2,8 @@ define [
   'backbone'
 ], (Backbone) -> Backbone.Model.extend
 
-  defaults: {
+  defaults:
     value: ''
-  }
 
   uris:
     biota: 'http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/biota'

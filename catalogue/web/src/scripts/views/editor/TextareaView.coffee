@@ -7,6 +7,7 @@ define [
 
   initialize: (options) ->
     unless options.rows?
+      # default number of rows for a textarea
       options.rows = 13
 
     ObjectInputView.prototype.initialize.call @, options

@@ -10,4 +10,4 @@ define [
     if _.isEmpty @get 'address'
       return _.omit @attributes, 'address'
     else
-      return @attributes
+      return _.clone @attributes

@@ -55,8 +55,7 @@ define [
     do @model.destroy
 
   save: ->
-    if @model.changed
-      do @model.save
+    do @model.save
 
   attemptExit: ->
     if @saveRequired
