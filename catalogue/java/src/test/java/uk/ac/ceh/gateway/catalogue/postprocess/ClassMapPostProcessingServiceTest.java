@@ -15,7 +15,7 @@ import uk.ac.ceh.gateway.catalogue.util.ClassMap;
  */
 public class ClassMapPostProcessingServiceTest {
     @Test
-    public void checkThatDelegatesToClassMapPostProcessingService() {
+    public void checkThatDelegatesToClassMapPostProcessingService() throws PostProcessingException {
         //Given
         PostProcessingService delegatee = mock(PostProcessingService.class);
         ClassMap<PostProcessingService> map = mock(ClassMap.class);
@@ -33,7 +33,7 @@ public class ClassMapPostProcessingServiceTest {
     }
     
     @Test
-    public void checkThatDoesNothingIfNoMatchFound() {
+    public void checkThatDoesNothingIfNoMatchFound() throws PostProcessingException {
         //Given
         ClassMap<PostProcessingService> map = mock(ClassMap.class);
         ClassMapPostProcessingService service = new ClassMapPostProcessingService(map);

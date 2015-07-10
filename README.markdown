@@ -28,7 +28,7 @@ Then in a bash window run
 
 The vagrant box will run and deploy built versions of the java catalogue code from *catalogue/java/target/ROOT.war*. This happens during a vagrant provision. You can build the application with maven at the command line:
 
-    mvn -f catalogue/java/pom.xml
+    mvn -f catalogue/java/pom.xml clean install
     vagrant provision --provision-with puppet_server
 
 Or alternatively, you can get the latest built version from [nexus](http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war)

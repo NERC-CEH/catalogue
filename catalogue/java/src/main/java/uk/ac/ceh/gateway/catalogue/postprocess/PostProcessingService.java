@@ -12,5 +12,5 @@ public interface PostProcessingService<T> {
      * information. (e.g. link titles)
      * @param value
      */
-    void postProcess(T value);
+    void postProcess(T value) throws PostProcessingException;
 }

@@ -14,7 +14,7 @@ public class ClassMapPostProcessingService implements PostProcessingService<Obje
     private final ClassMap<PostProcessingService> lookup;
     
     @Override
-    public void postProcess(Object value) {
+    public void postProcess(Object value) throws PostProcessingException {
         PostProcessingService bestService = lookup.get(value.getClass());
         if(bestService != null) {
             bestService.postProcess(value);

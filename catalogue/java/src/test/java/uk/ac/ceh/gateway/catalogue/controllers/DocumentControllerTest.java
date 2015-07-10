@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -49,6 +50,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
@@ -72,6 +74,7 @@ public class DocumentControllerTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock PostProcessingService postProcessingService;
     @Mock DocumentWritingService<MetadataDocument> documentWritingService;
+    @Mock ObjectMapper mapper;
     
     private DocumentController controller;
     
@@ -165,7 +168,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkThatReadingDelegatesToBundledReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException {
+    public void checkThatReadingDelegatesToBundledReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
         GeminiDocument bundledDocument = new GeminiDocument();
         bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
@@ -189,7 +192,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkThatLinksAreAddedToDataset() throws IOException, DataRepositoryException, UnknownContentTypeException {
+    public void checkThatLinksAreAddedToDataset() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
         GeminiDocument bundledDocument = new GeminiDocument();
         bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
@@ -212,7 +215,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkThatReadingLatestFileComesFromLatestRevision() throws IOException, DataRepositoryException, UnknownContentTypeException {
+    public void checkThatReadingLatestFileComesFromLatestRevision() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
         String latestRevisionId = "latestRev";
         String file = "myFile";
@@ -233,7 +236,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkThatReadingLatestFileDelegatesToReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException {
+    public void checkThatReadingLatestFileDelegatesToReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
         String latestRevisionId = "latestRev";
         String file = "myFile";
@@ -255,7 +258,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkThatURIsAttachedToDocumentOnReading() throws IOException, UnknownContentTypeException, URISyntaxException {
+    public void checkThatURIsAttachedToDocumentOnReading() throws IOException, UnknownContentTypeException, URISyntaxException, PostProcessingException {
         //Given        
         GeminiDocument bundledDocument = mock(GeminiDocument.class);
         URI uri = new URI("http://whatever.com");
@@ -278,7 +281,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkThatDelegatesToPostProcessingService() throws IOException, UnknownContentTypeException {
+    public void checkThatDelegatesToPostProcessingService() throws IOException, UnknownContentTypeException, PostProcessingException {
         //Given
         GeminiDocument bundledDocument = mock(GeminiDocument.class);
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(bundledDocument);

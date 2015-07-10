@@ -9,7 +9,7 @@
   <ul>
     <#list results as facet>
       <li>
-        <a href="${facet.url}">${facet.name}</a> <small class="text-muted">(${facet.count})</small></span>
+        <a href="${facet.url}">${facet.name}</a> <small class="text-muted">(${facet.count})</small>
         <#if facet.active >
           <a href="${facet.url}">
             <span class="glyphicon glyphicon-remove"></span>

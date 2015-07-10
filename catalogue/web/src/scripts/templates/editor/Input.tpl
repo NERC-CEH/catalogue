@@ -1,0 +1,1 @@
+<input data-name="value" class="editor-input" id="input-<%= data.modelAttribute %>" value="<%= data.value %>">

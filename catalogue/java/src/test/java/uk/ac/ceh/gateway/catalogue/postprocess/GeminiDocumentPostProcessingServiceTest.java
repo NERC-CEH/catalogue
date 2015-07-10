@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -37,6 +38,7 @@ public class GeminiDocumentPostProcessingServiceTest {
     private static final Property PART_OF = ResourceFactory.createProperty("http://purl.org/dc/terms/isPartOf");
     
     @Mock CitationService citationService;
+    @Mock ObjectMapper mapper;
     private Dataset jenaTdb;
     private GeminiDocumentPostProcessingService service;
     
@@ -44,11 +46,11 @@ public class GeminiDocumentPostProcessingServiceTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
         jenaTdb = TDBFactory.createDataset();
-        service = spy(new GeminiDocumentPostProcessingService(citationService, jenaTdb));
+        service = spy(new GeminiDocumentPostProcessingService(citationService, mapper, jenaTdb));
     }
     
     @Test
-    public void populatesParentsLinkWhenParentIdIsPresent() {
+    public void populatesParentsLinkWhenParentIdIsPresent() throws PostProcessingException {
         //Given
         Link parent = Link.builder().build();
         GeminiDocument document = mock(GeminiDocument.class);
@@ -64,7 +66,7 @@ public class GeminiDocumentPostProcessingServiceTest {
     }
         
     @Test
-    public void checkAddsCitationInIfPresent() {
+    public void checkAddsCitationInIfPresent() throws PostProcessingException {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         Citation citation = Citation.builder().build();

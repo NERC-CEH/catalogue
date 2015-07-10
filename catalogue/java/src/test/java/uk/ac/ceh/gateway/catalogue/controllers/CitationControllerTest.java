@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -36,7 +37,7 @@ public class CitationControllerTest {
     }
     
     @Test
-    public void checkThatGettingCitationDelegatesToDocumentControllerREV() throws IOException, DataRepositoryException, UnknownContentTypeException {
+    public void checkThatGettingCitationDelegatesToDocumentControllerREV() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
         MetadataDocument document = mock(MetadataDocument.class);
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -54,7 +55,7 @@ public class CitationControllerTest {
     }
     
     @Test
-    public void checkThatGettingCitationDelegatesToDocumentController() throws IOException, DataRepositoryException, UnknownContentTypeException {
+    public void checkThatGettingCitationDelegatesToDocumentController() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
         MetadataDocument document = mock(MetadataDocument.class);
         MockHttpServletRequest request = new MockHttpServletRequest();

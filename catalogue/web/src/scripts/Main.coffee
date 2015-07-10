@@ -9,15 +9,17 @@ define [
   'cs!views/MessageView'
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
-  'cs!models/EditorApp'
-  'cs!routers/EditorRouter'
-  'cs!views/EditorAppView'
+  'cs!models/GeminiMetadata'
+  'cs!views/GeminiEditorView'
+  'cs!models/MonitoringMetadata'
+  'cs!views/MonitoringEditorView'
   'cs!models/PermissionApp'
   'cs!routers/PermissionRouter'
   'cs!views/PermissionAppView'
   'bootstrap'
 ], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
-    SearchRouter, EditorApp, EditorRouter, EditorAppView, PermissionApp, PermissionRouter, PermissionAppView) ->
+    SearchRouter, GeminiMetadata, GeminiEditorView, MonitoringMetadata, MonitoringEditorView, PermissionApp, PermissionRouter,
+    PermissionAppView) ->
   
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -66,15 +68,39 @@ define [
   Initialize the editor application
   ###
   initEditor: ->
-    app = new EditorApp()
-    view = new EditorAppView model: app
-    router = new EditorRouter model: app
 
-    @createMessageViewFor app
-    try
-      do Backbone.history.start
-    catch ex
-      console.log "history already started"
+    bindEditorView = (event, model, el, View) ->
+      do event.preventDefault
+      new View
+        el: el
+        model: model
+
+      $('#editorCreate').toggle()
+
+    $('.edit-control.gemini').on 'click', (event) ->
+      model = el = null
+
+      if gemini?
+        model = new GeminiMetadata gemini
+        el = '#metadata'
+      else
+        model = new GeminiMetadata()
+        el = '#search'
+
+      bindEditorView event, model, el, GeminiEditorView
+
+    $('.edit-control.monitoring').on('click', (event) ->
+      model = el = null
+
+      if monitoring?
+        model = new MonitoringMetadata monitoring
+        el = '#metadata'
+      else
+        model = new MonitoringMetadata()
+        el = '#search'
+
+      bindEditorView event, model, el, MonitoringEditorView
+    )
 
   ###
   Initialize the permission application

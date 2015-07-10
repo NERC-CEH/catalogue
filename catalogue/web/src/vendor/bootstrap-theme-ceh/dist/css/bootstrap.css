@@ -1,6 +1,4 @@
-@import url(//fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic);
-
-@import url(//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic,700italic);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:300,400,700);
 
 @import url(//fonts.googleapis.com/css?family=Source+Code+Pro:400,500,700);
 
@@ -1144,11 +1142,11 @@ html {
 }
 
 body {
-  font-family: "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.6;
-  color: #353438;
-  background-color: #f8f8f8;
+  color: #333333;
+  background-color: #ffffff;
 }
 
 input,
@@ -1207,7 +1205,7 @@ img {
   max-width: 100%;
   padding: 4px;
   line-height: 1.6;
-  background-color: #f8f8f8;
+  background-color: #ffffff;
   border: 1px solid #dddddd;
   border-radius: 4px;
   -webkit-transition: all 0.2s ease-in-out;
@@ -1259,10 +1257,10 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 300;
   line-height: 1.1;
-  color: #5cb85c;
+  color: #333333;
 }
 
 h1 small,
@@ -1346,22 +1344,22 @@ h6 .small,
 
 h1,
 .h1 {
-  font-size: 28px;
+  font-size: 30px;
 }
 
 h2,
 .h2 {
-  font-size: 22px;
+  font-size: 24px;
 }
 
 h3,
 .h3 {
-  font-size: 18px;
+  font-size: 21px;
 }
 
 h4,
 .h4 {
-  font-size: 16px;
+  font-size: 17px;
 }
 
 h5,
@@ -1705,7 +1703,7 @@ pre {
   margin: 0 0 11px;
   font-size: 13px;
   line-height: 1.6;
-  color: #353438;
+  color: #333333;
   word-break: break-all;
   word-wrap: break-word;
   background-color: #f5f5f5;
@@ -2592,7 +2590,7 @@ th {
 }
 
 .table .table {
-  background-color: #f8f8f8;
+  background-color: #ffffff;
 }
 
 .table-condensed > thead > tr > th,
@@ -2822,7 +2820,7 @@ legend {
   margin-bottom: 22px;
   font-size: 21px;
   line-height: inherit;
-  color: #353438;
+  color: #333333;
   border: 0;
   border-bottom: 1px solid #e5e5e5;
 }
@@ -3211,7 +3209,7 @@ select[multiple].input-lg {
   display: block;
   margin-top: 5px;
   margin-bottom: 10px;
-  color: #74717a;
+  color: #737373;
 }
 
 @media (min-width: 768px) {
@@ -3807,13 +3805,13 @@ tbody.collapse.in {
   clear: both;
   font-weight: normal;
   line-height: 1.6;
-  color: #353438;
+  color: #333333;
   white-space: nowrap;
 }
 
 .dropdown-menu > li > a:hover,
 .dropdown-menu > li > a:focus {
-  color: #28282b;
+  color: #262626;
   text-decoration: none;
   background-color: #f5f5f5;
 }
@@ -4375,7 +4373,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav-tabs > li.active > a:focus {
   color: #828c7f;
   cursor: default;
-  background-color: #f8f8f8;
+  background-color: #ffffff;
   border: 1px solid #dddddd;
   border-bottom-color: transparent;
 }
@@ -4428,7 +4426,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .nav-tabs.nav-justified > .active > a,
   .nav-tabs.nav-justified > .active > a:hover,
   .nav-tabs.nav-justified > .active > a:focus {
-    border-bottom-color: #f8f8f8;
+    border-bottom-color: #ffffff;
   }
 }
 
@@ -4511,7 +4509,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .nav-tabs-justified > .active > a,
   .nav-tabs-justified > .active > a:hover,
   .nav-tabs-justified > .active > a:focus {
-    border-bottom-color: #f8f8f8;
+    border-bottom-color: #ffffff;
   }
 }
 
@@ -5479,7 +5477,7 @@ a.list-group-item.active > .badge,
   padding: 4px;
   margin-bottom: 22px;
   line-height: 1.6;
-  background-color: #f8f8f8;
+  background-color: #ffffff;
   border: 1px solid #dddddd;
   border-radius: 4px;
   -webkit-transition: all 0.2s ease-in-out;
@@ -5501,7 +5499,7 @@ a.thumbnail.active {
 
 .thumbnail .caption {
   padding: 9px;
-  color: #353438;
+  color: #333333;
 }
 
 .alert {
@@ -6198,7 +6196,7 @@ a.list-group-item-danger.active:focus {
 }
 
 .panel-default > .panel-heading {
-  color: #353438;
+  color: #333333;
   background-color: #a5d4a0;
   border-color: #dddddd;
 }
@@ -6209,7 +6207,7 @@ a.list-group-item-danger.active:focus {
 
 .panel-default > .panel-heading .badge {
   color: #a5d4a0;
-  background-color: #353438;
+  background-color: #333333;
 }
 
 .panel-default > .panel-footer + .panel-collapse > .panel-body {
@@ -7364,4 +7362,29 @@ button.close {
 
 .navbar-brand {
   padding: 0 15px;
+}
+
+h1 DELETE ME a,
+h2 DELETE ME a,
+h3 DELETE ME a,
+h4 DELETE ME a,
+h5 DELETE ME a,
+h6 DELETE ME a {
+  color: #5cb85c;
+}
+
+h1 DELETE ME a:hover,
+h2 DELETE ME a:hover,
+h3 DELETE ME a:hover,
+h4 DELETE ME a:hover,
+h5 DELETE ME a:hover,
+h6 DELETE ME a:hover,
+h1 DELETE ME a:focus,
+h2 DELETE ME a:focus,
+h3 DELETE ME a:focus,
+h4 DELETE ME a:focus,
+h5 DELETE ME a:focus,
+h6 DELETE ME a:focus {
+  color: #3d8b3d;
+  text-decoration: none;
 }

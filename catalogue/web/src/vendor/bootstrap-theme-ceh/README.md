@@ -2,6 +2,8 @@
 
 A theme for CEH sites using the [Bootstrap](http://getbootstrap.com/) framework.  It has been built using [Themestrap](https://github.com/divshot/themestrap).
 
+You can see it in action by visiting the [github pages](http://nerc-ceh.github.io/bootstrap-theme-ceh)
+
 You can install it using bower eg.:
 
     bower install bootstrap-theme-ceh
@@ -24,6 +26,8 @@ Now you're ready to go, simply edit the `less/variables.less` and `less/theme.le
 To release a new version commit your changes and create a new tag in git with the latest version number as listed in `bower.json`.  Use [semantic versioning](http://semver.org/).
 
 After release update `bower.json` with the next version number and run `grunt assemble` to update templates that use the version number.
+
+Once published, merge the tagged into the gh-pages branch.
 
 ## Copyright and license
 

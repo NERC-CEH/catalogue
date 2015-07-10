@@ -199,7 +199,7 @@ public class ServiceConfig {
     @Bean
     public PostProcessingService postProcessingService() {
         ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
-                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), jenaTdb))
+                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), jacksonMapper, jenaTdb))
                 .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb));
         return new ClassMapPostProcessingService(mappings);
     }

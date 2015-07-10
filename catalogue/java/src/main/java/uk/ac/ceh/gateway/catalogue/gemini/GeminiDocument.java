@@ -43,6 +43,8 @@ public class GeminiDocument implements MetadataDocument {
     private URI uri;
     private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
         metadataStandardName, metadataStandardVersion, supplementalInfo, parentIdentifier, revisionOfIdentifier;
+    @JsonIgnore
+    private String jsonString;
     private List<String> alternateTitles, coupledResources, spatialRepresentationTypes, datasetLanguages,
         accessConstraints, securityConstraints;
     private Keyword resourceType;        
@@ -57,7 +59,7 @@ public class GeminiDocument implements MetadataDocument {
     private List<ResponsibleParty> metadataPointsOfContact;
     private List<ResponsibleParty> distributorContacts;
     private List<ResponsibleParty> responsibleParties;
-    private List<TimePeriod> temporalExtent;
+    private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private Link parent, revised, revisionOf;
     private Set<Link> documentLinks, children;
@@ -172,4 +174,6 @@ public class GeminiDocument implements MetadataDocument {
     public void attachUri(URI uri) {
         setUri(uri);
     }
+    
+    
 }

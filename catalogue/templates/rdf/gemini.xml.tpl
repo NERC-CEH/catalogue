@@ -65,8 +65,8 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
         <dct:spatial rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">${extent.wkt}</dct:spatial>
       </#list>
     </#if>
-   <#if temporalExtent?has_content>
-      <#list temporalExtent as extent>
+   <#if temporalExtents?has_content>
+      <#list temporalExtents as extent>
         <dct:temporal rdf:datatype="http://purl.org/dc/terms/PeriodOfTime">${(extent.begin?date)!''}/${(extent.end?date)!''}</dct:temporal>
       </#list>
     </#if>

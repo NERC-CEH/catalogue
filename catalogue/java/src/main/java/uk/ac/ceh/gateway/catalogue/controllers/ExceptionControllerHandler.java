@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 
 /**
  *
@@ -29,13 +30,13 @@ import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
 public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     
     @Override
-	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, 
-        HttpHeaders headers, HttpStatus status, WebRequest request) {
-        
-        String message = (body != null)? body.toString() : status.getReasonPhrase();
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
+            HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+        String message = (body != null) ? body.toString() : status.getReasonPhrase();
         logger.error(message, ex);
-		return new ResponseEntity<>(new ErrorResponse(message), headers, status);
-	}
+        return new ResponseEntity<>(new ErrorResponse(message), headers, status);
+    }
     
     private ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpStatus status) {
         return handleExceptionInternal(ex, body, null, status, null);
@@ -47,6 +48,11 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     })
     public ResponseEntity<Object> handleNotFoundExceptions(Exception ex) {
         return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+    
+    @ExceptionHandler(PostProcessingException.class)
+    public ResponseEntity<Object> handlePostProcessingException(Exception ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     
     @ExceptionHandler(AccessDeniedException.class)

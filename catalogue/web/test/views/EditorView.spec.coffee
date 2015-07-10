@@ -1,7 +1,8 @@
 define [
   'jquery'
-  'cs!models/Metadata'
-  'cs!views/EditorView'
+  'cs!models/GeminiMetadata'
+  'cs!views/GeminiEditorView'
+  'bootstrap'
 ], ($, Metadata, EditorView) ->
   describe 'EditorView', ->
     view = null
@@ -10,21 +11,21 @@ define [
     beforeEach ->
       view = new EditorView
         model: model
-        parent: {}
 
     describe 'when view is constructing', ->
       it 'should exist', ->
         expect(view).toBeDefined()
 
-    describe 'when view is initialized without model', ->
-      it 'should throw exception', ->
-        expect(() -> new EditorView()).toThrow(new Error('model is required'))
+    describe 'when exit clicked', ->
 
-    describe 'when view is initialized without parent model', ->
-      it 'should throw exception', ->
-        expect(() -> new EditorView
-          model: model
-        ).toThrow(new Error('parent is required'))
+      beforeEach ->
+        spyOn(view, 'exit')
+        do view.delegateEvents
+        do view.render
+
+      it 'exit clicked', ->
+        view.$('#editorExit').trigger 'click'
+        expect(view.exit).toHaveBeenCalled()
 
     describe 'when next clicked', ->
 
@@ -57,17 +58,16 @@ define [
         do view.render
 
       it 'clicking Save calls method', ->
-        view.$('#editorSave').trigger 'click'
+        view.$('#editorSave').prop("disabled", false).trigger 'click'
         expect(view.save).toHaveBeenCalled()
         expect(model.save).toHaveBeenCalled()
 
-    describe 'when Step 4 clicked', ->
+    describe 'when delete clicked', ->
 
       beforeEach ->
-        spyOn(view, 'direct')
-        do view.delegateEvents
+        spyOn(model, 'destroy')
         do view.render
 
-      it 'direct method called', ->
-        view.$('#editorNav li:eq(4)').trigger 'click'
-        expect(view.direct).toHaveBeenCalled()
+      it 'clicking Delete calls method', ->
+        view.$('#confirmDeleteYes').trigger 'click'
+        expect(model.destroy).toHaveBeenCalled()

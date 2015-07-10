@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -29,11 +30,13 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
@@ -123,10 +126,12 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> uploadDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody GeminiDocument geminiDocument,
-            HttpServletRequest request) throws IOException, UnknownContentTypeException  {
+            HttpServletRequest request) throws IOException, UnknownContentTypeException, PostProcessingException  {
        
         String id = documentIdentifierService.generateFileId();
         updateIdAndMetadataDate(geminiDocument, id);
+        URI recordUri = getCurrentUri(request, id, repo.getLatestRevision().getRevisionID());
+        addRecordUriAsResourceIdentifier(geminiDocument, recordUri);
 
         MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(geminiDocument, user);
         
@@ -135,12 +140,16 @@ public class DocumentController {
             .commit(user, String.format("new Gemini document: %s", id));
                 
         return ResponseEntity
-            .created(getCurrentUri(request, id, repo.getLatestRevision().getRevisionID()))
+            .created(recordUri)
             .body(readMetadata(user, id, request));
     }
     
     private void updateIdAndMetadataDate(GeminiDocument document, String id) {
         document.setId(id).setMetadataDate(LocalDateTime.now());
+    }
+    
+    private void addRecordUriAsResourceIdentifier(GeminiDocument document, URI recordUri) {
+        document.getResourceIdentifiers().add(ResourceIdentifier.builder().code(recordUri.toString()).build());
     }
     
     private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user) {
@@ -160,7 +169,7 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody GeminiDocument geminiDocument,
-            HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException {
+            HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException, PostProcessingException {
         
         
         MetadataInfo metadataInfo = updatingRawType(file);
@@ -186,7 +195,7 @@ public class DocumentController {
     @ResponseBody
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
+            @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
         return readMetadata(user, file, latestRev.getRevisionID(), request);
     }
@@ -199,14 +208,14 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @PathVariable("revision") String revision,
-            HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
+            HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         MetadataDocument document = documentBundleReader.readBundle(file, revision);
         document.attachUri(getCurrentUri(request, file, revision));
         postProcessingService.postProcess(document);
         log.debug("document requested: {}", document);
         return document;
     }
-
+    
     @PreAuthorize("@permission.toAccess(#user, #file, 'DELETE')")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.DELETE)
