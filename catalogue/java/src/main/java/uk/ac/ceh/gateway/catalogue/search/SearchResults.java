@@ -9,7 +9,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.indexing.MetadataDocumentSolrIndexGenerator.DocumentSolrIndex;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 
 /**
  * A search results object for documents
@@ -103,8 +103,8 @@ public class SearchResults {
         return query.toUrl();
     }
     
-    public List<DocumentSolrIndex> getResults() {
-        return response.getBeans(DocumentSolrIndex.class);
+    public List<SolrIndex> getResults() {
+        return response.getBeans(SolrIndex.class);
     }
     
     public List<Facet> getFacets(){

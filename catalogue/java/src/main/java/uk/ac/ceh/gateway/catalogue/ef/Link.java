@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 @Data
+@EqualsAndHashCode(exclude = {"title","value"})
 @Accessors(chain = true)
 @XmlSeeAlso({Link.TimedLink.class})
 public class Link {

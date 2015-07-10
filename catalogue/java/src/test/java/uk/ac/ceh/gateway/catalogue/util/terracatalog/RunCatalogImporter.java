@@ -46,7 +46,7 @@ public class RunCatalogImporter {
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService));
         DocumentInfoMapper<MetadataInfo> documentInfoMapper = new JacksonDocumentInfoMapper(jacksonMapper, MetadataInfo.class);
         DocumentListingService documentList = new ExtensionDocumentListingService();
-        DocumentIdentifierService documentIdentifierService = new DocumentIdentifierService('-');
+        DocumentIdentifierService documentIdentifierService = new DocumentIdentifierService("https://catalogue.ceh.ac.uk", '-');
         OfflineTerraCatalogUserFactory<CatalogueUser> userFactory = new OfflineTerraCatalogUserFactory<>(phantomUserBuilderFactory);
         userFactory.put("ceh", "@ceh.ac.uk");
         StateTranslatingMetadataInfoFactory infoFactory = new StateTranslatingMetadataInfoFactory();

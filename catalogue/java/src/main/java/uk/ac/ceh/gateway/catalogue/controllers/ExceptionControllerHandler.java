@@ -14,7 +14,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
@@ -55,7 +54,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.FORBIDDEN);
     }
     
-    @ExceptionHandler({DocumentIndexingException.class, DocumentLinkingException.class})
+    @ExceptionHandler({DocumentIndexingException.class})
     public ResponseEntity<Object> handleIndexingExceptions(Exception ex) {
         return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
