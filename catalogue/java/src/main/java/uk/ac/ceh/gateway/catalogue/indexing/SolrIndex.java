@@ -35,6 +35,7 @@ public class SolrIndex {
     private @Field String licence;
     private @Field String state;
     private @Field List<String> topic;
+    private @Field List<String> keyword;
     private @Field List<String> view;
     private @Field String dataCentre;
 
