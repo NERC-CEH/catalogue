@@ -8,6 +8,7 @@ import lombok.Data;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.*;
+import java.util.Collections;
 
 /**
  * The following class extracts semantic details from a GeminiDocument and 
@@ -31,6 +32,10 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
 
         Optional.ofNullable(document.getRevisionOfIdentifier()).ifPresent( r -> {
             toReturn.add(createStatement(me, REPLACES, createPlainLiteral(r)));
+        });
+        
+        Optional.ofNullable(document.getBoundingBoxes()).orElse(Collections.emptyList()).forEach(b -> {
+            toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getWkt(), WKT_LITERAL)));
         });
         
         document.getResourceIdentifiers().forEach( r -> {

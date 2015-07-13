@@ -8,6 +8,13 @@
       <#if geometry??>
         <span content="${geometry.value?html}" datatype="geo:wktLiteral"/>
       </#if>
+      <#if uses??>
+        <#list uses as facility>
+          <#list jena.wkt(facility.href) as wkt>
+            <span content="${wkt?html}" datatype="geo:wktLiteral" href="${facility.href}"/>
+          </#list>
+        </#list>
+      </#if>
     </div>
   </#if>
   <#if lifespan?has_content>

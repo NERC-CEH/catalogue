@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import com.hp.hpl.jena.datatypes.BaseDatatype;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
@@ -26,4 +28,7 @@ public class Ontology {
     public static final Property LINKING_TIME   = ResourceFactory.createProperty("http://purl.org/voc/ef#linkingTime");
     public static final Property TEMPORAL_BEGIN = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#begin");
     public static final Property TEMPORAL_END   = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#end");
+    
+    public static final Property HAS_GEOMETRY   = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#hasGeometry");
+    public static final RDFDatatype WKT_LITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#wktLiteral");
 }
