@@ -22,7 +22,7 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 @Data
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
     private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
-    private static final String CEH_OGL_URL = "http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
+    private static final String CEH_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
     
     private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;
     private final SolrGeometryService geometryService;
