@@ -41,10 +41,10 @@ public class SolrIndexGeminiDocumentGeneratorTest {
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUseLimitations()).thenReturn(Arrays.asList(
             Keyword.builder()
-                .URI("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
+                .URI("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
                 .build(),
             Keyword.builder()
-                .URI("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
+                .URI("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
                 .build(),
             Keyword.builder()
                 .value("More use limitations")
@@ -68,7 +68,7 @@ public class SolrIndexGeminiDocumentGeneratorTest {
                 .URI("http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/")
                 .build(),
             Keyword.builder()
-                .URI("http://eidchub.ceh.ac.uk")
+                .URI("http://eidc.ceh.ac.uk")
                 .build(),
             Keyword.builder()
                 .value("More use limitations")
@@ -89,7 +89,7 @@ public class SolrIndexGeminiDocumentGeneratorTest {
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUseLimitations()).thenReturn(Arrays.asList(
             Keyword.builder()
-                .URI("http://eidchub.ceh.ac.uk/metadata/eb7599f4-35f8-4365-bd4a-4056ee6c6083")
+                .URI("http://eidc.ceh.ac.uk/metadata/eb7599f4-35f8-4365-bd4a-4056ee6c6083")
                 .build(),
             Keyword.builder()
                 .value("More use limitations")
