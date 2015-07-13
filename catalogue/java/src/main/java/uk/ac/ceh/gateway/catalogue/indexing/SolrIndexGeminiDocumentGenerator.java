@@ -2,7 +2,9 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.Data;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -40,10 +42,20 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 .setOnlineResourceName(grab(document.getOnlineResources(), OnlineResource::getName))
                 .setOnlineResourceDescription(grab(document.getOnlineResources(), OnlineResource::getDescription))
                 .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
+                .setKeyword(grab(getKeywords(document), Keyword::getValue))
                 .setDataCentre(getDataCentre(document))
                 .addLocations(geometryService.toSolrGeometry(grab(document.getBoundingBoxes(), BoundingBox::getWkt)));
     }
 
+    private List<Keyword> getKeywords(GeminiDocument document) {
+        return Optional.ofNullable(document.getDescriptiveKeywords())
+                .orElse(Collections.emptyList())
+                .stream()
+                .flatMap(d -> d.getKeywords().stream())
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+    }
 
     private String getLicence(GeminiDocument document){
         boolean ogl = false;
