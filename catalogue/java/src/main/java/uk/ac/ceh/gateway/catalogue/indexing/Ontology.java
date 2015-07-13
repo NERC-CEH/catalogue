@@ -13,7 +13,7 @@ public class Ontology {
     
     public static final Property SET_UP_FOR    = ResourceFactory.createProperty("http://purl.org/voc/ef#setUpFor");
     public static final Property USES          = ResourceFactory.createProperty("http://purl.org/voc/ef#uses");
-    public static final Property INVOLVED_IN   = ResourceFactory.createProperty("http://purl.org/voc/efhttp://purl.org/voc/ef#involvedIn");
+    public static final Property INVOLVED_IN   = ResourceFactory.createProperty("http://purl.org/voc/ef#involvedIn");
     public static final Property SUPERSEDES    = ResourceFactory.createProperty("http://purl.org/voc/ef#supersedes");
     public static final Property SUPERSEDED_BY = ResourceFactory.createProperty("http://purl.org/voc/ef#supersededBy");
     public static final Property BROADER       = ResourceFactory.createProperty("http://purl.org/voc/ef#broader");
