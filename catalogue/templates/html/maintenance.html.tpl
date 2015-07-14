@@ -20,7 +20,13 @@
         <dt>Latest Revision</dt><dd>${latestRevision.revisionID}</dd>
         <dt>Author</dt><dd>${latestRevision.author.email}</dd>
         <dt>Message</dt><dd>${latestRevision.message}</dd>
+        <#if lastOptimized??>
+          <dt>Last Optimized</dt><dd>${lastOptimized?datetime}</dd>
+        </#if>
       </dl>
+      <form method="POST" action="/maintenance/documents/optimize">
+        <input type="submit" value="Optimize">
+      </form>
     </#if>
 
     <h2>Indexing</h2>
@@ -33,6 +39,7 @@
       <dt>Has Links?</dt><dd>${linked?string("Yes", "No")}
         <form method="POST" action="/maintenance/links/reindex">
           <input type="submit" value="Rebuild">
+          <a href="/maintenance/sparql">Sparql tester</a>
         </form>
       </dd>
     </dl>

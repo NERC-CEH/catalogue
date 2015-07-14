@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;

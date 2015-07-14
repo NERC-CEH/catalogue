@@ -1,9 +1,5 @@
-<label for="resourceType" class="control-label required">
-  Resource Type
-  <a data-toggle="collapse" title="Click for help" href="#help-resourceType" data-parent="#editor"><i class="glyphicon glyphicon-question-sign"></i></a>
-</label>
-<select id="resourceType" class="form-control">
-  <option value="" selected>Select Resource Type</option>
+<select data-name="value" class="editor-input" id="input-resourceType">
+  <option value="" selected>- Select Resource Type -</option>
   <optgroup label="GEMINI">
     <option value="dataset">Dataset</option>
     <option value="series">Series</option>
@@ -15,7 +11,7 @@
     <option value="attribute">Attribute</option>
     <option value="attributeType">Attribute type</option>
     <option value="collection">Collection</option>
-    <option value="collectionHardware">Collection hardware</option>
+    <option value="collectionHardware>Collection hardware</option>
     <option value="collectionSession">Collection session</option>
     <option value="coverage">Coverage</option>
     <option value="dimensionGroup">Dimension group</option>
@@ -35,6 +31,3 @@
     <option value="tile">Tile</option>
   </optgroup>
 </select>
-<p id="help-resourceType" class="help-block hidden-print collapse">
-  Resource Type help
-</p>

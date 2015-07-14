@@ -1,4 +1,4 @@
-<#if boundingBoxes?? || temporalExtent?? >
+<#if boundingBoxes?? || temporalExtents?? >
   <div id="section-extent">
   <h3 id="extent">Where/When</h3>
     <dl class="dl-horizontal">
@@ -12,10 +12,10 @@
           </div>
         </dd>
       </#if>
-      <#if temporalExtent?has_content>
+      <#if temporalExtents?has_content>
         <dt>Temporal extent</dt>
         <dd id="temporal-extent">
-        <#list temporalExtent as extent>
+        <#list temporalExtents as extent>
           <#if extent.begin?has_content>
             <span class="extentBegin">${extent.begin?date}</span>
           <#else>...

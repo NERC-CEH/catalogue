@@ -16,15 +16,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
+import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 import uk.ac.ceh.gateway.catalogue.services.TerraCatalogImporterService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
@@ -36,14 +35,14 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 @RequestMapping("maintenance")
 @Secured(DocumentController.MAINTENANCE_ROLE)
 public class MaintenanceController {
-    private final DataRepository<CatalogueUser> repo;
-    private final DocumentIndexingService solrIndex;
-    private final DocumentLinkService linkingService;
+    private final DataRepositoryOptimizingService repoService;
+    private final SolrIndexingService solrIndex;
+    private final JenaIndexingService linkingService;
     private final TerraCatalogImporterService terraCatalogImporterService;
     
     @Autowired
-    public MaintenanceController(DataRepository<CatalogueUser> repo, DocumentIndexingService solrIndex, DocumentLinkService linkingService, TerraCatalogImporterService terraCatalogImporterService) {
-        this.repo = repo;
+    public MaintenanceController(DataRepositoryOptimizingService repoService, SolrIndexingService solrIndex, JenaIndexingService linkingService, TerraCatalogImporterService terraCatalogImporterService) {
+        this.repoService = repoService;
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
         this.terraCatalogImporterService = terraCatalogImporterService;
@@ -53,18 +52,39 @@ public class MaintenanceController {
     @ResponseBody
     public MaintenanceResponse loadMaintenancePage() {
         MaintenanceResponse toReturn = new MaintenanceResponse();
-        toReturn.setLinked(!linkingService.isEmpty());
+        try {
+            toReturn.setLinked(!linkingService.isIndexEmpty());
+        } catch(DocumentIndexingException ex) {
+            toReturn.addMessage(ex.getMessage());
+        }
         try {
             toReturn.setIndexed(!solrIndex.isIndexEmpty());
         } catch(DocumentIndexingException ex) {
             toReturn.addMessage(ex.getMessage());
         }
         try {
-            toReturn.setLatestRevision(repo.getLatestRevision());
+            toReturn.setLatestRevision(repoService.getRepo().getLatestRevision());
         } catch(DataRepositoryException dre) {
             toReturn.addMessage(dre.getMessage());
         }
+        toReturn.setLastOptimized(repoService.getLastOptimized());
         return toReturn;
+    }
+    
+    @RequestMapping(value="/documents/optimize",
+                    method = RequestMethod.POST)
+    @ResponseBody
+    public HttpEntity<MaintenanceResponse> optimizeRepository() {
+        try {
+            repoService.performOptimization();
+            return ResponseEntity.ok(loadMaintenancePage().addMessage("Optimized repository"));
+        }
+        catch(DataRepositoryException ex) {
+            MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(response);
+        }   
     }
     
     @RequestMapping(value="/documents/reindex",
@@ -89,9 +109,9 @@ public class MaintenanceController {
     @ResponseBody
     public HttpEntity<MaintenanceResponse> reindexLinks() {
         try {
-            linkingService.rebuildLinks();
+            linkingService.rebuildIndex();
             return ResponseEntity.ok(loadMaintenancePage().addMessage("All documents successfully linked"));
-        } catch (DocumentLinkingException ex) {
+        } catch (DocumentIndexingException ex) {
             MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
             Arrays.stream(ex.getSuppressed()).forEach(e -> response.addMessage(e.getMessage()));
             return ResponseEntity

@@ -54,7 +54,7 @@ public class SearchQuery {
                 .setParam("defType", "edismax")
                 .setParam("qf", "title^50 description^25 lineage^5 organisation^2 " +
                                 "individual^2 onlineResourceName onlineResourceDescription " +
-                                "altTitle resourceIdentifier identifier")
+                                "altTitle resourceIdentifier identifier keyword")
                 .setStart((page-1)*rows)
                 .setRows(rows);
         setSpatialFilter(query);

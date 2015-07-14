@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import com.hp.hpl.jena.query.Dataset;
 import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
@@ -13,7 +14,6 @@ import static org.mockito.Matchers.any;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -26,15 +26,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
-import uk.ac.ceh.gateway.catalogue.linking.GitDocumentLinkService;
-import uk.ac.ceh.gateway.catalogue.linking.LinkDatabase;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
-import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 
 /**
@@ -46,7 +43,7 @@ public class ServiceConfigTest {
     @Mock ObjectMapper jacksonMapper;
     @Mock DataRepository dataRepository;
     @Mock SolrServer solrServer;
-    @Mock LinkDatabase linkDatabase;
+    @Mock Dataset jenaTdb;
     
     private ServiceConfig services;
     
@@ -58,7 +55,7 @@ public class ServiceConfigTest {
         services.dataRepository = dataRepository;
         services.solrServer = solrServer;
         services.bus = bus;
-        services.linkDatabase = linkDatabase;
+        services.jenaTdb = jenaTdb;
     }
     
     @Test
@@ -149,7 +146,7 @@ public class ServiceConfigTest {
     public void checkThatDocumentExceptionWhenReindexingIsPostedToEventBus() throws DocumentIndexingException {
         //Given
         DocumentIndexingException documentIndexingException = new DocumentIndexingException("Failed to check if index is empty");
-        SolrIndexingService<GeminiDocument> documentIndexingService = mock(SolrIndexingService.class);
+        DocumentIndexingService documentIndexingService = mock(DocumentIndexingService.class);
         when(documentIndexingService.isIndexEmpty()).thenThrow(documentIndexingException);
         
         //When
@@ -190,92 +187,14 @@ public class ServiceConfigTest {
     }
     
     @Test
-    public void checkThatDocumentIndexingServiceIsComposedCorrectly() throws XPathExpressionException, IOException {
-        //Given
-        MetadataInfoBundledReaderService reader = mock(MetadataInfoBundledReaderService.class);
-        ExtensionDocumentListingService listingService = mock(ExtensionDocumentListingService.class);
-        
-        doReturn(reader).when(services).bundledReaderService();
-        doReturn(listingService).when(services).documentListingService();
-        doNothing().when(services).performReindexIfNothingIsIndexed(any(SolrIndexingService.class));
-        
-        //When
-        SolrIndexingService<MetadataDocument> documentIndexingService = services.documentIndexingService();
-        
-        //Then
-        assertEquals("Expected to find the reader", reader, documentIndexingService.getReader());
-        assertEquals("Expected to find the listingService", listingService, documentIndexingService.getListingService());
-        assertEquals("Expected to find the dataRepository", dataRepository, documentIndexingService.getRepo());
-        assertEquals("Expected to find the solrServer", solrServer, documentIndexingService.getSolrServer());
-    }
-    
-    @Test
-    public void checkThatDocumentLinkingServiceIsComposedCorrectly() throws XPathExpressionException, IOException {
-        //Given
-        MetadataInfoBundledReaderService reader = mock(MetadataInfoBundledReaderService.class);
-        
-        doReturn(reader).when(services).bundledReaderService();
-        doNothing().when(services).performRelinkIfNothingIsLinked(any(DocumentLinkService.class));
-        
-        //When
-        GitDocumentLinkService documentLinkingService = services.documentLinkingService();
-        
-        //Then
-        assertEquals("Expected to find the reader", reader, documentLinkingService.getDocumentBundleReader());
-        assertEquals("Expected to find the linking database", linkDatabase, documentLinkingService.getLinkDatabase());
-        assertEquals("Expected to find the dataRepository", dataRepository, documentLinkingService.getRepo());
-    }
-
-    @Test
     public void checkThatLinkingServiceIsRequestedToBeLinkedAfterCreation() throws XPathExpressionException, IOException {
         //Given
-        doNothing().when(services).performRelinkIfNothingIsLinked(any(DocumentLinkService.class));
+        doNothing().when(services).performReindexIfNothingIsIndexed(any(DocumentIndexingService.class));
         
         //When
-        GitDocumentLinkService documentLinkingService = services.documentLinkingService();
+        JenaIndexingService documentLinkingService = services.documentLinkingService();
         
         //Then
-        verify(services).performRelinkIfNothingIsLinked(documentLinkingService);
-    }
-    
-    @Test
-    public void checkThatLinkingServiceIsReLinkedIfEmpty() throws DocumentLinkingException {
-        //Given
-        DocumentLinkService documentLinkingService = mock(DocumentLinkService.class);
-        when(documentLinkingService.isEmpty()).thenReturn(true);
-        
-        //When
-        services.performRelinkIfNothingIsLinked(documentLinkingService);
-        
-        //Then
-        verify(documentLinkingService).rebuildLinks();
-    }
-    
-    @Test
-    public void checkThatLinkingServiceIsNotRelinkedIfPopulated() throws DocumentLinkingException {
-        //Given
-        DocumentLinkService documentLinkingService = mock(DocumentLinkService.class);
-        when(documentLinkingService.isEmpty()).thenReturn(false);
-        
-        //When
-        services.performRelinkIfNothingIsLinked(documentLinkingService);
-        
-        //Then
-        verify(documentLinkingService, never()).rebuildLinks();
-    }
-    
-    @Test
-    public void checkThatLinkExceptionWhenRelinkingIsPostedToEventBus() throws DocumentLinkingException {
-        //Given
-        DocumentLinkingException documentLinkingException = new DocumentLinkingException("Failed to check if index is empty");
-        DocumentLinkService documentLinkingService = mock(DocumentLinkService.class);
-        when(documentLinkingService.isEmpty()).thenReturn(true);
-        doThrow(documentLinkingException).when(documentLinkingService).rebuildLinks();
-        
-        //When
-        services.performRelinkIfNothingIsLinked(documentLinkingService);
-        
-        //Then
-        verify(bus).post(documentLinkingException);
+        verify(services).performReindexIfNothingIsIndexed(documentLinkingService);
     }
 }

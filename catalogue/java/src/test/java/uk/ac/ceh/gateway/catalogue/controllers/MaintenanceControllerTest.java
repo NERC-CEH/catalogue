@@ -10,6 +10,7 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Matchers.any;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doAnswer;
@@ -22,14 +23,13 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.multipart.MultipartFile;
-import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
+import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 import uk.ac.ceh.gateway.catalogue.services.TerraCatalogImporterService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 import uk.ac.ceh.gateway.catalogue.util.terracatalog.TerraCatalogImporter;
@@ -39,9 +39,9 @@ import uk.ac.ceh.gateway.catalogue.util.terracatalog.TerraCatalogImporter;
  * @author jcoop, cjohn
  */
 public class MaintenanceControllerTest {
-    @Mock DataRepository<CatalogueUser> repo;
-    @Mock DocumentIndexingService indexService;
-    @Mock DocumentLinkService linkingService;
+    @Mock(answer=RETURNS_DEEP_STUBS) DataRepositoryOptimizingService repoService;
+    @Mock SolrIndexingService indexService;
+    @Mock JenaIndexingService linkingService;
     @Mock TerraCatalogImporterService terraCatalogImporterService;
     
     private MaintenanceController controller;
@@ -49,7 +49,7 @@ public class MaintenanceControllerTest {
     @Before
     public void createMaintenanceController() {
         MockitoAnnotations.initMocks(this);
-        controller = new MaintenanceController(repo, indexService, linkingService, terraCatalogImporterService);
+        controller = new MaintenanceController(repoService, indexService, linkingService, terraCatalogImporterService);
     }
     
     @Test
@@ -64,7 +64,7 @@ public class MaintenanceControllerTest {
     }
     
     @Test
-    public void checkThatReindexingDelegatesToLinkingService() throws DocumentLinkingException {
+    public void checkThatReindexingDelegatesToLinkingService() throws DocumentIndexingException {
         //Given
         //Nothing
         
@@ -72,14 +72,26 @@ public class MaintenanceControllerTest {
         controller.reindexLinks();
         
         //Then
-        verify(linkingService).rebuildLinks();
+        verify(linkingService).rebuildIndex();
+    }
+    
+    @Test
+    public void chechThatCanOptimizeGitRepository() throws DataRepositoryException {
+        //Given
+        //Nothing
+        
+        //When
+        controller.optimizeRepository();
+        
+        //Then
+        verify(repoService).performOptimization();
     }
     
     @Test
     public void checkThatCanLoadMaintenancePageWhenThereRepoIsBroken() throws DataRepositoryException {
         //Given
         String errorMessage = "Something has gone wrong";
-        when(repo.getLatestRevision()).thenThrow(new DataRepositoryException(errorMessage));
+        when(repoService.getRepo().getLatestRevision()).thenThrow(new DataRepositoryException(errorMessage));
         
         //When
         MaintenanceResponse response = controller.loadMaintenancePage();

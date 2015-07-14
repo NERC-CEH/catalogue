@@ -14,10 +14,10 @@ default to create an optimized version of this file.
 require.config({
   stubModules: ['cs', 'tpl'],
   shim: {
-    'bootstrap':         { deps: ["jquery"]},
-    'isInViewport':      { deps: ["jquery"]},
-    'jquery-scrollsnap': { deps: ["jquery", "jquery-scrollstop"]},
-    'openlayers':        { exports: 'OpenLayers'}
+    'bootstrap':         { deps: ['jquery']},
+    'isInViewport':      { deps: ['jquery']},
+    'openlayers':        { exports: 'OpenLayers'},
+    'backbone':          { deps: ['underscore', 'jquery'], exports: 'Backbone'}
   },
   paths: {
     'bootstrap':         '../vendor/bootstrap/dist/js/bootstrap',
@@ -28,8 +28,8 @@ require.config({
     'isInViewport':      '../vendor/isInViewport/lib/isInViewport',
     'jquery' :           '../vendor/jquery/dist/jquery',
     'jquery-deparam' :   '../vendor/jquery-deparam/jquery-deparam',
-    'underscore':        '../vendor/underscore-amd/underscore',
-    'backbone':          '../vendor/backbone-amd/backbone',
+    'underscore':        '../vendor/underscore/underscore',
+    'backbone':          '../vendor/backbone/backbone',
     'openlayers':        '../vendor/OpenLayers-custom',
     'jquery-ui':         '../vendor/jquery-ui/ui'
   },

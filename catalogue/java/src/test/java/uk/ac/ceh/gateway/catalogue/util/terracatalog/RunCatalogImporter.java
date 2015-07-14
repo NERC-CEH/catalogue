@@ -35,7 +35,7 @@ public class RunCatalogImporter {
     
     @BeforeClass
     public static void before() {
-        System.setProperty("config.file", "E:/repos/cig/vagrant/catalogue_config/development.properties");
+        System.setProperty("config.file", "c:/users/rjsc/desktop/catalogue.properties");
     }
     
     @Test
@@ -46,7 +46,7 @@ public class RunCatalogImporter {
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService));
         DocumentInfoMapper<MetadataInfo> documentInfoMapper = new JacksonDocumentInfoMapper(jacksonMapper, MetadataInfo.class);
         DocumentListingService documentList = new ExtensionDocumentListingService();
-        DocumentIdentifierService documentIdentifierService = new DocumentIdentifierService('-');
+        DocumentIdentifierService documentIdentifierService = new DocumentIdentifierService("https://catalogue.ceh.ac.uk", '-');
         OfflineTerraCatalogUserFactory<CatalogueUser> userFactory = new OfflineTerraCatalogUserFactory<>(phantomUserBuilderFactory);
         userFactory.put("ceh", "@ceh.ac.uk");
         StateTranslatingMetadataInfoFactory infoFactory = new StateTranslatingMetadataInfoFactory();

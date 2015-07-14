@@ -6,6 +6,9 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The following service allows us to process well known text geometries into 
@@ -52,5 +55,15 @@ public class SolrGeometryService {
         catch(ParseException pe) {
             return null;
         }
-    } 
+    }
+    
+    // Takes a list of wkt 
+    public List<String> toSolrGeometry(List<String> wktList) {
+        return wktList
+                .stream()
+                .filter(Objects::nonNull)
+                .map( w -> toSolrGeometry(w))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
 }
