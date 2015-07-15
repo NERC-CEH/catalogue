@@ -19,11 +19,11 @@ define [
   'cs!views/editor/UseLimitationView'
   'cs!views/editor/OtherConstraintView'
   'cs!views/editor/TemporalExtentView'
-  'cs!views/editor/SelectView'
+  'cs!views/editor/ResourceStatusView'
   'cs!views/editor/ResourceMaintenanceView'
   'cs!views/editor/SpatialReferenceSystemView'
   'cs!views/editor/SpatialRepresentationTypeView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, SelectView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView) -> EditorView.extend
 
 
   initialize: ->
@@ -74,32 +74,10 @@ define [
                     <p>It is best to write a concise abstract.</p>
                     """
 
-        new SelectView
+        new ResourceStatusView
           model: @model
           modelAttribute: 'resourceStatus'
           label: 'Resource Status'
-          options: [
-            value: 'completed'
-            label: 'Completed'
-          ,
-            value: 'historicalArchive'
-            label: 'Historical Archive'
-          ,
-            value: 'obsolete'
-            label: 'Obsolete'
-          ,
-            value: 'onGoing'
-            label: 'Ongoing'
-          ,
-            value: 'planned'
-            label: 'Planned'
-          ,
-            value: 'required'
-            label: 'Required'
-          ,
-            value: 'underDevelopment'
-            label: 'Under Development'
-          ]
           helpText: """
                     <p>Status of resource</p>
                     """
