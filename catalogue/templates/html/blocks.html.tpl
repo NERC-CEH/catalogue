@@ -3,7 +3,7 @@ Generates a title block of a metadata page. Do this by looking up the metadata
 type from a code list. Also display a label if this document is currently in
 draft or is pending publication
 -->
-<#macro title title type>
+<#macro title title="" type="">
   <div class="visible-print-block text-center"><img src="/static/img/CEHlogoSmall.png"></div>
 
   <#if title?has_content>

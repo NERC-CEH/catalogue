@@ -9,10 +9,9 @@ define [
 
     inputModel = new @data.ModelType @model.get @data.modelAttribute
     @listenTo inputModel, 'change', @updateMetadataModel
+    @listenTo @model, 'sync', (model) ->
+      inputModel.set model.get @data.modelAttribute
 
     new @data.ObjectInputView _.extend {}, @data,
       el: @$('.dataentry')
       model: inputModel
-
-  updateMetadataModel: (model) ->
-    @model.set @data.modelAttribute, model

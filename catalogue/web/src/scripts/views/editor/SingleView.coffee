@@ -19,3 +19,6 @@ define [
   render: ->
     @$el.html template  data: @data
     @
+
+  updateMetadataModel: (attribute) ->
+    @model.set @data.modelAttribute, attribute

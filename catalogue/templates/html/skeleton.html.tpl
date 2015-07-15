@@ -46,7 +46,7 @@
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" aria-labelledby="createMenu">
-                    <li><a class="edit-control gemini" href="#">Gemini</a></li>
+                    <li><a class="edit-control gemini" href="#">Data Resource</a></li>
                     <li><a class="edit-control monitoring" href="#">Monitoring</a></li>
                   </ul>
                 </div>

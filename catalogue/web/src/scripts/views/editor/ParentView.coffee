@@ -12,18 +12,18 @@ define [
   initialize: (options) ->
     SingleView.prototype.initialize.call @, options
     modelData = if @model.has @data.modelAttribute then @model.get @data.modelAttribute else []
-
-    # detect an array of Strings and create an object that can be turned into a Model
-    if _.isArray(modelData) and _.isString _.first modelData
-      modelData = modelData.map (value) ->
-        value: value
-
     @collection = new Backbone.Collection [], model: @data.ModelType
     @model.set @data.modelAttribute, @collection, silent: true
 
     @listenTo @collection, 'add', @addOne
     @listenTo @collection, 'reset', @addAll
     @listenTo @collection, 'add remove change', @saveRequired
+    @listenTo @model, 'sync', (model) ->
+      serverUpdate = model.get @data.modelAttribute
+      @collection.reset serverUpdate
+      # If the server has modified a repeating element the model will be returned with an array not a collection
+      if _.isArray serverUpdate
+        @model.set @data.modelAttribute, @collection
 
     do @render
     @$attach = @$(".existing")

@@ -8,10 +8,10 @@
   <div id="metadata">
     <div class="container">
 
-      <@blocks.title title resourceType.value />
+      <@blocks.title title!"Untitled" (resourceType.value)!"" />
       <#include "gemini/_notCurrent.html.tpl">
       <#include "gemini/_authorsTop.html.tpl">
-      <@blocks.description description />
+      <@blocks.description description!"No description" />
       <#include "gemini/_dates.html.tpl">
 
       <div class="row">
