@@ -46,6 +46,7 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
+import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
 @Configuration
@@ -73,6 +74,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
     @Autowired CodeLookupService codesLookup;
+    @Autowired JenaLookupService jenaLookupService;
     @Autowired DownloadOrderDetailsService downloadOrderDetailsService;
     @Autowired PermissionService permissionService;
     
@@ -114,6 +116,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public FreeMarkerConfigurer configureFreeMarker() {
         try {
             Map<String, Object> shared = new HashMap<>();
+            shared.put("jena", jenaLookupService);
             shared.put("codes", codesLookup);
             shared.put("downloadOrderDetails", downloadOrderDetailsService);
             shared.put("permission", permissionService);

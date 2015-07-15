@@ -18,7 +18,9 @@ import lombok.Data;
 import org.joda.time.LocalDate;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
+import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
+import uk.ac.ceh.gateway.catalogue.ef.Geometry;
 import uk.ac.ceh.gateway.catalogue.ef.Link;
 import uk.ac.ceh.gateway.catalogue.ef.Link.TimedLink;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
@@ -52,6 +54,9 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
                 createRelationships(links, me, facility.getBroaderThan(),  BROADER);
                 createRelationships(links, me, facility.getBelongsTo(),    BELONGS_TO);
                 createRelationships(links, me, facility.getRelatedTo(),    RELATED_TO);
+                Optional.ofNullable(facility.getGeometry()).map(Geometry::getValue).ifPresent(w -> {
+                    links.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(w, WKT_LITERAL)));
+                });
             } else if (baseMonitoringType instanceof Network) {
                 Network network = (Network)baseMonitoringType;
                 createRelationships(links, me, network.getInvolvedIn(),   INVOLVED_IN);
@@ -68,6 +73,13 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
                 createRelationships(links, me, programme.getNarrowerThan(), NARROWER);
                 createRelationships(links, me, programme.getBroaderThan(),  BROADER);
             }
+            Optional.ofNullable(baseMonitoringType.getBoundingBoxes())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(BoundingBox::getWkt)
+                    .forEach( w -> {
+                        links.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(w, WKT_LITERAL)));
+                    });
         }
         return links;
     }

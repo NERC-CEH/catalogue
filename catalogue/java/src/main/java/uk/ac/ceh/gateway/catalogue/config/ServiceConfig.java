@@ -61,6 +61,7 @@ import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
@@ -189,6 +190,11 @@ public class ServiceConfig {
     @Bean
     public DocumentIdentifierService documentIdentifierService() {
         return new DocumentIdentifierService(baseUri, '-');
+    }
+    
+    @Bean
+    public JenaLookupService jenaLookupService() {
+        return new JenaLookupService(jenaTdb);
     }
     
     @Bean
