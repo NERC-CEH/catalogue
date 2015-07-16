@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -25,8 +25,8 @@ public class ResourceIdentifierConverter {
         this.version = xpath.compile(VERSION);
     }
 
-    public Set<ResourceIdentifier> convert(Document document) throws XPathExpressionException {
-        Set<ResourceIdentifier> toReturn = new HashSet<>();
+    public List<ResourceIdentifier> convert(Document document) throws XPathExpressionException {
+        List<ResourceIdentifier> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) resourceIdentifiers.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
             Node node = nodeList.item(i);

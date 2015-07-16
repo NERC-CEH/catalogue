@@ -34,7 +34,7 @@ public class CitationService {
         
         Optional<ResourceIdentifier> citationResource = doc
             .map(GeminiDocument::getResourceIdentifiers)
-            .orElse(Collections.emptySet())
+            .orElse(Collections.emptyList())
             .stream()
             .filter((r)->r.getCodeSpace().equals(DOI_CODE_SPACE))
             .filter((r)->r.getCode().startsWith(NERC_DOI_PREFIX))

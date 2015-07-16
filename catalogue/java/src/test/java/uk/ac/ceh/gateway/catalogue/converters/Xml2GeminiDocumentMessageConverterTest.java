@@ -3,9 +3,7 @@ package uk.ac.ceh.gateway.catalogue.converters;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.xml.xpath.XPathExpressionException;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -886,15 +884,15 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceIdentifiers.xml"));
-        Set<ResourceIdentifier> expected = new HashSet(Arrays.asList(
+        List<ResourceIdentifier> expected = Arrays.asList(
             ResourceIdentifier.builder().code("1374152631039").codeSpace("CEH:EIDC:").version("123").build(),
             ResourceIdentifier.builder().code("10.5285/05e5d538-6be7-476d-9141-76d9328738a4").codeSpace("doi:").build(),
             ResourceIdentifier.builder().code("10/nt9").codeSpace("doi:").build()
-        ));
+        );
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //When
-        Set<ResourceIdentifier> actual = document.getResourceIdentifiers();
+        List<ResourceIdentifier> actual = document.getResourceIdentifiers();
         
         //Then
         assertThat("actual resourceIdentifiers are equal to expected", actual, equalTo(expected));

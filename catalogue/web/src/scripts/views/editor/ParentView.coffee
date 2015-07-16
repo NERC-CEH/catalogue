@@ -13,17 +13,12 @@ define [
     SingleView.prototype.initialize.call @, options
     modelData = if @model.has @data.modelAttribute then @model.get @data.modelAttribute else []
     @collection = new Backbone.Collection [], model: @data.ModelType
-    @model.set @data.modelAttribute, @collection, silent: true
 
     @listenTo @collection, 'add', @addOne
     @listenTo @collection, 'reset', @addAll
-    @listenTo @collection, 'add remove change', @saveRequired
-    @listenTo @model, 'sync', (model) ->
-      serverUpdate = model.get @data.modelAttribute
-      @collection.reset serverUpdate
-      # If the server has modified a repeating element the model will be returned with an array not a collection
-      if _.isArray serverUpdate
-        @model.set @data.modelAttribute, @collection
+    @listenTo @collection, 'add remove change', @updateModel
+    @listenTo @model, "change:#{@data.modelAttribute}", (model, value) ->
+      @collection.reset value
 
     do @render
     @$attach = @$(".existing")
@@ -39,7 +34,7 @@ define [
   addOne: (model) ->
     view = new ChildView _.extend {}, @data,
       model: model
-    @$attach.prepend view.el
+    @$attach.append view.el
 
   addAll: ->
     @$attach.html('')
@@ -48,5 +43,5 @@ define [
   add: ->
     @collection.add new @data.ModelType
 
-  saveRequired: ->
-    @model.trigger 'save:required'
+  updateModel: ->
+    @model.set @data.modelAttribute, @collection.toJSON()
