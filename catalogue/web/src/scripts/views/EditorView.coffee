@@ -33,14 +33,15 @@ define [
       @saveRequired = true
     @listenTo @model, 'request', ->
       @$('#editorAjax').toggleClass 'visible'
-    @listenTo @model, 'destroy', ->
-      _.invoke @sections, 'remove'
-      do @remove
-      do Backbone.history.location.replace('/documents')
+    @listenTo @model, 'invalid', (model, errors) ->
+      $modalBody = @$('#editorValidationMessage .modal-body')
+      $modalBody.html ''
+      _.each errors, (error) ->
+        $modalBody.append @$("<p>#{error}</p>")
+      @$('#editorValidationMessage').modal 'show'
 
-    _.invoke @sections[0].views, 'show'
     do @render
-
+    _.invoke @sections[0].views, 'show'
     $editorNav = @$('#editorNav')
     _.each @sections, (section) ->
       $editorNav.append(@$("<li>#{section.label}</li>"))
@@ -52,7 +53,11 @@ define [
 
   delete: ->
     @$('#confirmDelete').modal 'hide'
-    do @model.destroy
+    @model.destroy
+      success: =>
+        _.invoke @sections, 'remove'
+        do @remove
+        Backbone.history.location.replace '/documents'
 
   save: ->
     do @model.save
@@ -67,7 +72,12 @@ define [
     @$('#confirmExit').modal 'hide'
     _.invoke @sections, 'remove'
     do @remove
-    do Backbone.history.location.reload
+    # On new records navigate to the newly created record's page not back to the search page.
+    uri = @model.get 'uri'
+    if uri?
+      Backbone.history.location.replace uri
+    else
+      do Backbone.history.location.reload
 
   back: ->
     @navigate @currentStep - 1

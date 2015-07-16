@@ -1,13 +1,6 @@
 define [
-  'cs!views/editor/ObjectInputView'
+  'cs!views/editor/InputView'
   'tpl!templates/editor/Textarea.tpl'
-], (ObjectInputView, template) -> ObjectInputView.extend
+], (InputView, template) -> InputView.extend
 
   template: template
-
-  initialize: (options) ->
-    unless options.rows?
-      # default number of rows for a textarea
-      options.rows = 13
-
-    ObjectInputView.prototype.initialize.call @, options

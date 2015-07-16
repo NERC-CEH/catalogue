@@ -1,1 +1,1 @@
-<textarea data-name="value" rows="<%= data.rows %>" class="editor-textarea" id="input-<%= data.modelAttribute %>"><%= data.value %></textarea>
+<textarea data-name="<%= data.modelAttribute %>" rows="<%= data.rows %>" class="editor-textarea" id="input-<%= data.modelAttribute %>"><%= data.value %></textarea>
