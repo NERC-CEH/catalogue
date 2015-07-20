@@ -9,6 +9,7 @@ define [
   initialize: (options) ->
     @data = options
     @listenTo @model, 'change', @render
+    @listenTo @model, 'remove', -> do @remove
     do @render
 
   render: ->

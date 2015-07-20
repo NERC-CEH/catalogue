@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -147,8 +149,12 @@ public class DocumentController {
         document.setId(id).setMetadataDate(LocalDateTime.now());
     }
     
-    private void addRecordUriAsResourceIdentifier(GeminiDocument document, URI recordUri) {
-        document.getResourceIdentifiers().add(ResourceIdentifier.builder().code(recordUri.toString()).build());
+    protected void addRecordUriAsResourceIdentifier(GeminiDocument document, URI recordUri) {
+      List<ResourceIdentifier> resourceIdentifiers = Optional.ofNullable(document)
+        .map(GeminiDocument::getResourceIdentifiers)
+        .orElse(new ArrayList()); 
+      resourceIdentifiers.add(ResourceIdentifier.builder().code(recordUri.toString()).build());
+      document.setResourceIdentifiers(resourceIdentifiers);
     }
     
     private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user) {

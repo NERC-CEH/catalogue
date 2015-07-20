@@ -17,8 +17,7 @@ define [
     @listenTo @collection, 'add', @addOne
     @listenTo @collection, 'reset', @addAll
     @listenTo @collection, 'add remove change', @updateModel
-    @listenTo @model, "change:#{@data.modelAttribute}", (model, value) ->
-      @collection.reset value
+    @listenTo @model, 'sync', @updateCollection
 
     do @render
     @$attach = @$(".existing")
@@ -45,3 +44,25 @@ define [
 
   updateModel: ->
     @model.set @data.modelAttribute, @collection.toJSON()
+
+  updateCollection: (model) ->
+    if model.hasChanged @data.modelAttribute
+      updated = model.get @data.modelAttribute
+
+      collectionLength = @collection.length
+      # Update existing models
+      _.chain(updated)
+        .first(collectionLength)
+        .each((update, index) =>
+          @collection
+            .at(index)
+            .set(update)
+        )
+      # Add new models
+      _.chain(updated)
+        .rest(collectionLength)
+        .each ((update) =>
+          @collection.add update
+        )
+      # Remove models not in updated
+      @collection.remove(@collection.rest(updated.length))
