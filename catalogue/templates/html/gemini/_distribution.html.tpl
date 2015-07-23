@@ -13,15 +13,24 @@
     <div class="panel-heading"><p class="panel-title">${documentOrderTitle?html}</p></div>
     <div class="panel-body">
       <#if downloadOrder.orderable>
-        <#if (downloadOrder.orderUrl)?has_content>
-          <p><a href="${downloadOrder.orderUrl?html}"><i class="glyphicon glyphicon-save text-info"></i> Order/download</a></p>
-        </#if>
-      <#elseif (downloadOrder.orderMessage)?has_content>
-        <p class="alert alert-warning">${downloadOrder.orderMessage?html}
-          <#if (downloadOrder.orderUrl)?has_content>
-            <a href="${downloadOrder.orderUrl?html}">More Information</a>
-          </#if>
-        </p>
+        <#list downloadOrder.orderResources as onlineResource>
+          <p><a href="${onlineResource.url?html}"><i class="glyphicon glyphicon-save text-info"></i>
+            <#if onlineResource.name?has_content>
+              ${onlineResource.name?html}
+            <#else>
+              Order/download
+            </#if>
+            </a></p>
+        </#list>
+      <#else>
+        <#list downloadOrder.orderResources as onlineResource>
+          <div class="alert alert-warning">
+            <p>${onlineResource.description?html}</p>
+            <#if (onlineResource.url)?has_content>
+              <p><a href="${onlineResource.url?html}">More Information</a></p>
+            </#if>
+          </div>
+        </#list>
       </#if>
 
       <#if (downloadOrder.supportingDocumentsUrl)?has_content>
