@@ -10,16 +10,15 @@ define [
     'click button.remove': 'delete'
 
   initialize: (options) ->
+    @data = options
     @listenTo @model, 'remove', -> do @remove
-    @index = @model.collection.indexOf @model
     do @render
-    new options.ObjectInputView
+    new @data.ObjectInputView _.extend {}, @data,
       el: @$('.dataentry')
       model: @model
-      index: @index
 
   render: ->
-    @$el.html template index: @index
+    @$el.html template index: @data.index
     @
 
   delete: ->

@@ -22,3 +22,6 @@ for d in /vagrant/fixtures/datastore/*/ ; do
   git add -A
   git commit -m "Adding ${d} via vagrant script"
 done
+
+# Make tomcat7 owner of all files in DATASTORE_DIR
+chown -R tomcat7:tomcat7 $DATASTORE_DIR
