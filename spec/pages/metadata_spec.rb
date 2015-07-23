@@ -23,7 +23,7 @@ describe "Metadata page" do
         visit woodlandsPage
         expect(find('#keywords')).to have_content "Biota"
         expect(find('#document-authors')).to have_content "Kirby, K.J."
-        expect(find('#document-order')).to have_link("Order/download", href: "https://catalogue.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
+        expect(find('#document-order')).to have_link("Online ordering", href: "https://catalogue.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
         expect(find('#document-order')).to have_link("Supporting documentation", href: "http://eidc.ceh.ac.uk/metadata/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/zip")
         expect(find('#document-order')).not_to have_link("Preview on map")
       end
