@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -11,7 +10,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
 /**
  * The following class will process a list of OnlineResources to identify: - The
- * Supporting documentation of the document - A link to a resource in the order
+ * Supporting documentation of the document - Links to resources in the order
  * manager - If this document is currently orderable
  * 
  * If an order resource is present inside the online resource list but does not
