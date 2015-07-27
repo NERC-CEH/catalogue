@@ -10,6 +10,7 @@ define [
     'click button.remove': 'delete'
 
   initialize: (options) ->
+    @listenTo @model, 'remove', -> do @remove
     @index = @model.collection.indexOf @model
     do @render
     new options.ObjectInputView
@@ -23,4 +24,3 @@ define [
 
   delete: ->
     @model.collection.remove @model
-    do @remove

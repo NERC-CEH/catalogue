@@ -13,17 +13,11 @@ define [
     SingleView.prototype.initialize.call @, options
     modelData = if @model.has @data.modelAttribute then @model.get @data.modelAttribute else []
     @collection = new Backbone.Collection [], model: @data.ModelType
-    @model.set @data.modelAttribute, @collection, silent: true
 
     @listenTo @collection, 'add', @addOne
     @listenTo @collection, 'reset', @addAll
-    @listenTo @collection, 'add remove change', @saveRequired
-    @listenTo @model, 'sync', (model) ->
-      serverUpdate = model.get @data.modelAttribute
-      @collection.reset serverUpdate
-      # If the server has modified a repeating element the model will be returned with an array not a collection
-      if _.isArray serverUpdate
-        @model.set @data.modelAttribute, @collection
+    @listenTo @collection, 'add remove change', @updateModel
+    @listenTo @model, 'sync', @updateCollection
 
     do @render
     @$attach = @$(".existing")
@@ -39,7 +33,7 @@ define [
   addOne: (model) ->
     view = new ChildView _.extend {}, @data,
       model: model
-    @$attach.prepend view.el
+    @$attach.append view.el
 
   addAll: ->
     @$attach.html('')
@@ -48,5 +42,27 @@ define [
   add: ->
     @collection.add new @data.ModelType
 
-  saveRequired: ->
-    @model.trigger 'save:required'
+  updateModel: ->
+    @model.set @data.modelAttribute, @collection.toJSON()
+
+  updateCollection: (model) ->
+    if model.hasChanged @data.modelAttribute
+      updated = model.get @data.modelAttribute
+
+      collectionLength = @collection.length
+      # Update existing models
+      _.chain(updated)
+        .first(collectionLength)
+        .each((update, index) =>
+          @collection
+            .at(index)
+            .set(update)
+        )
+      # Add new models
+      _.chain(updated)
+        .rest(collectionLength)
+        .each ((update) =>
+          @collection.add update
+        )
+      # Remove models not in updated
+      @collection.remove(@collection.rest(updated.length))

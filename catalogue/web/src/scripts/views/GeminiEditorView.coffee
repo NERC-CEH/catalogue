@@ -521,7 +521,7 @@ define [
           modelAttribute: 'parentIdentifier'
           label: 'Parent Identifier'
           helpText: """
-                    <p>Identifier of parent series</p>
+                    <p>File identifier of parent series.</p>
                     """
 
         new InputView
@@ -530,8 +530,8 @@ define [
           label: 'File Identifier'
           readonly: true
           helpText: """
-                    <p>File identifier of metadata record</p>
-                    <p>For information only, non-editable</p>
+                    <p>File identifier of metadata record.</p>
+                    <p>For information only, not editable.</p>
                     """
 
         new InputView
@@ -540,8 +540,18 @@ define [
           label: 'URL'
           readonly: true
           helpText: """
-                    <p>URL of metadata record</p>
-                    <p>For information only, non-editable</p>
+                    <p>URL of metadata record.</p>
+                    <p>For information only, not editable.</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'metadataDate'
+          label: 'Metadata Date'
+          readonly: true
+          helpText: """
+                    <p>Date and time metadata last updated.</p>
+                    <p>For information only, not editable.</p>
                     """
       ]
     ]

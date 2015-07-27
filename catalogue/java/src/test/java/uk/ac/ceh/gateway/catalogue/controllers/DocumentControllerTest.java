@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -46,6 +47,7 @@ import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -334,6 +336,21 @@ public class DocumentControllerTest {
         
         //Then
         assertThat("Expected latest uri", docUri.toString(), equalTo("http://localhost/history/inThePast/file"));
+    }
+    
+    @Test
+    public void checkThatNewMetadataRecordUriAddedToResourceIdentifiers() throws IOException, UnknownContentTypeException, PostProcessingException {
+      //Given
+      GeminiDocument document = new GeminiDocument();
+      document.setTitle("new test");
+      URI newRecord = URI.create("http://localhost/id/1234-1234-12345678-1234");
+      ResourceIdentifier expected = ResourceIdentifier.builder().code(newRecord.toString()).build();
+      
+      //When
+      controller.addRecordUriAsResourceIdentifier(document, newRecord);
+      
+      //Then
+      assertThat("ResourceIdentifiers should contain URI", document.getResourceIdentifiers(), contains(expected));
     }
     
     private DataRevision<CatalogueUser> lastCommit(String file) throws DataRepositoryException {

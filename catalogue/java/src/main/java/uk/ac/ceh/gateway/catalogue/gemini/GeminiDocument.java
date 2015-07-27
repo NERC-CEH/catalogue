@@ -63,7 +63,7 @@ public class GeminiDocument implements MetadataDocument {
     private List<OnlineResource> onlineResources;
     private Link parent, revised, revisionOf;
     private Set<Link> documentLinks, children;
-    private Set<ResourceIdentifier> resourceIdentifiers;
+    private List<ResourceIdentifier> resourceIdentifiers;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     @JsonIgnore
     private Citation citation;
