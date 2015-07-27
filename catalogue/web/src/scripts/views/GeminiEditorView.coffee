@@ -25,7 +25,9 @@ define [
   'cs!views/editor/SpatialRepresentationTypeView'
   'cs!views/editor/DescriptiveKeywordView'
   'cs!models/editor/DescriptiveKeyword'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword) -> EditorView.extend
+  'cs!views/editor/DistributionFormatView'
+  'cs!views/editor/SpatialResolutionView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView) -> EditorView.extend
 
 
   initialize: ->
@@ -159,7 +161,6 @@ define [
     ,
       label: 'Three'
       views: [
-#        'dataFormat'
         new PredefinedParentView
           model: @model
           modelAttribute: 'spatialReferenceSystems'
@@ -201,7 +202,16 @@ define [
           helpText: """
                     <p>Spatial Representation Type.</p>
                     """
-#        'spatialResolution'
+
+        new ParentView
+          model: @model
+          modelAttribute: 'spatialResolutions'
+          label: 'Spatial Resolutions'
+          ObjectInputView: SpatialResolutionView
+          helpText: """
+                    <p>For gridded data, this is the area of the ground (in metres) represented in each pixel.</p>
+                    <p>For point data, the ground sample distance is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
+                    """
       ]
     ,
       label: 'Four'
@@ -411,6 +421,33 @@ define [
     ,
       label: 'Six'
       views: [
+        new PredefinedParentView
+          model: @model
+          ModelType: Contact
+          modelAttribute: 'distributorContacts'
+          label: 'Distributor Contacts'
+          ObjectInputView: ContactView
+          multiline: true
+          predefined:
+            'CEH Distributor':
+              organisationName: 'Centre for Ecology & Hydrology'
+              role: 'distributor'
+              email: 'enquiries@ceh.ac.uk'
+          helpText: """
+                    <p>The organisation responsible for distributing the data resource</p>
+                    <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
+                    <p>The names of individuals should be included in the format <em>Surname, First Initial. Second Initial.</em>  For example <b>Brown, A.B.</b></p>
+                    """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'distributionFormats'
+          label: 'Distribution Formats'
+          ObjectInputView: DistributionFormatView
+          helpText: """
+                    <p>file format of dataset</p>
+                    """
+
         new TextareaView
           model: @model
           modelAttribute: 'lineage'
