@@ -22,18 +22,27 @@ define [
         @model.set 'thesaurusName', _.extend thesaurusName,
           dateType: dateType
 
-      'click .add': ->
-        do @add
+      'click .add': -> do @add
+
+      'click .predefined': -> @addPredefined event
 
   initialize: (options) ->
     ObjectInputView.prototype.initialize.call @, options
     do @render
+    title = @model.get('thesaurusName')?.title
+    if title?
+      if title.startsWith 'CEH Metadata'
+        @$('#cehTopic').removeClass 'hidden'
+        @$('.add').addClass 'hidden'
+      else if title.startsWith 'GEMET - INSPIRE themes'
+        @$('#inspireTheme').removeClass 'hidden'
+        @$('.add').addClass 'hidden'
     @$attach = @$('.keywords')
     @keywords = new Backbone.Collection []
 
     @listenTo @keywords, 'add', @addOne
     @listenTo @keywords, 'reset', @addAll
-#    @listenTo @keywords, 'add remove change', @updateModel
+    @listenTo @keywords, 'add remove change', @updateModel
 
     @keywords.reset @model.get 'keywords'
 
@@ -62,18 +71,21 @@ define [
       ObjectInputView: KeywordView
     @$attach.append view.el
 
-    console.log view.el
-
   addAll: ->
     @$attach.html('')
     @keywords.each @addOne, @
 
   add: ->
-    console.log 'adding new keyword'
     @keywords.add new Backbone.Model()
 
+  addPredefined: (event) ->
+    event.preventDefault()
+    $target = @$(event.target)
+    @keywords.add new Backbone.Model
+      value: $target.text()
+      uri: $target.attr 'href'
+
   updateModel: ->
-    console.log 'updating model'
     @model.set 'keywords', @keywords.toJSON()
 
   modify: (event) ->
