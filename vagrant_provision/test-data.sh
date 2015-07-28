@@ -10,7 +10,7 @@ fi
 # Create an empty git repository in the DATASTORE_DIR
 rm -Rf $DATASTORE_DIR
 mkdir -p $DATASTORE_DIR
-chmod -R 777 $WORKSPACE_DIR
+
 cd $DATASTORE_DIR
 git init
 git config user.name "Vagrant provision"
@@ -23,5 +23,5 @@ for d in /vagrant/fixtures/datastore/*/ ; do
   git commit -m "Adding ${d} via vagrant script"
 done
 
-# Make tomcat7 owner of all files in DATASTORE_DIR
-chown -R tomcat7:tomcat7 $DATASTORE_DIR
+# Make everyone has full control of all files in DATASTORE_DIR
+chmod -R 777 $WORKSPACE_DIR
