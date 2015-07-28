@@ -30,10 +30,9 @@ define [
     @$el.html template data: @data
     @
 
-  addOne: (model, index) ->
+  addOne: (model) ->
     view = new ChildView _.extend {}, @data,
       model: model
-      index: index
     @$attach.append view.el
 
   addAll: ->

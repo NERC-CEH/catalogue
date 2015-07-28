@@ -27,7 +27,9 @@ define [
   'cs!models/editor/DescriptiveKeyword'
   'cs!views/editor/DistributionFormatView'
   'cs!views/editor/SpatialResolutionView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView) -> EditorView.extend
+  'cs!views/editor/ServiceView'
+  'cs!models/editor/Service'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, ServiceView, Service) -> EditorView.extend
 
 
   initialize: ->
@@ -551,6 +553,15 @@ define [
           helpText: """
                     <p>A unique string or number used to identify the data resource.</p>
                     <p> The codespace identifies the context in which the code is unique.</p>
+                    """
+
+        new ServiceView
+          model: @model
+          modelAttribute: 'service'
+          ModelType: Service
+          label: 'Service'
+          helpText: """
+                    <p>Service attributes</p>
                     """
       ]
     ,
