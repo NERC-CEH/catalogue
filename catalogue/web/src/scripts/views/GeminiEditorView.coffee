@@ -23,7 +23,9 @@ define [
   'cs!views/editor/ResourceMaintenanceView'
   'cs!views/editor/SpatialReferenceSystemView'
   'cs!views/editor/SpatialRepresentationTypeView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView) -> EditorView.extend
+  'cs!views/editor/DescriptiveKeywordView'
+  'cs!models/editor/DescriptiveKeyword'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword) -> EditorView.extend
 
 
   initialize: ->
@@ -214,6 +216,31 @@ define [
                     <p>The main theme(s) of the data resource as defined by the INSPIRE Directive.</p>
                     <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
                     <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
+                    """
+
+        new PredefinedParentView
+          model: @model
+          ModelType: DescriptiveKeyword
+          modelAttribute: 'descriptiveKeywords'
+          label: 'Keywords'
+          ObjectInputView: DescriptiveKeywordView
+          multiline: true
+          predefined:
+            'INSPIRE Theme':
+              type: 'theme'
+              thesaurusName:
+                title: 'GEMET - INSPIRE themes, version 1.0'
+                date: '2008-06-01'
+                dateType: 'revision'
+            'CEH Topic':
+              type: 'theme'
+              thesaurusName:
+                title: 'CEH Metadata Vocabulary'
+                date: '2014-09-19'
+                dateType: 'creation'
+          helpText: """
+                    <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
+                    <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>
                     """
       ]
     ,
