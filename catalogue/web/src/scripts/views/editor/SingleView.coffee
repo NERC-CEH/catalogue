@@ -21,5 +21,4 @@ define [
     @
 
   updateMetadataModel: (attribute) ->
-    console.log @data.modelAttribute
     @model.set @data.modelAttribute, attribute

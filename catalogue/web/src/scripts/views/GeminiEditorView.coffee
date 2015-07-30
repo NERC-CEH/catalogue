@@ -42,10 +42,7 @@ define [
           modelAttribute: 'resourceType'
           ModelType: ResourceType
           label: 'Resource Type'
-          ObjectInputView: ResourceTypeView,
-          helpText: """
-                    <p>Type of resource.</p>
-                    """
+          ObjectInputView: ResourceTypeView
 
         new InputView
           model: @model
@@ -84,9 +81,6 @@ define [
           model: @model
           modelAttribute: 'resourceStatus'
           label: 'Resource Status'
-          helpText: """
-                    <p>Status of resource</p>
-                    """
 
         new SingleObjectView
           model: @model
@@ -99,6 +93,12 @@ define [
                     <p>If you include a revision date, it implies that the resource has been changed as a consequence of edits or updates.
                     For EIDC records it is usual practice for revised resources to have an entirely new record, therefore <em>revision date</em> is rarely necessary.</p>
                     """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'supplementalInfo'
+          label: 'Additional Information Source'
+          rows: 7
       ]
     ,
       label: 'Two'
@@ -156,9 +156,6 @@ define [
           modelAttribute: 'temporalExtents'
           label: 'Temporal Extents'
           ObjectInputView: TemporalExtentView
-          helpText: """
-                    <p>Temporal Extent</p>
-                    """
       ]
     ,
       label: 'Three'
@@ -201,9 +198,6 @@ define [
           model: @model
           modelAttribute: 'spatialRepresentationTypes'
           label: 'Spatial Representation Types'
-          helpText: """
-                    <p>Spatial Representation Type.</p>
-                    """
 
         new ParentView
           model: @model
@@ -447,7 +441,7 @@ define [
           label: 'Distribution Formats'
           ObjectInputView: DistributionFormatView
           helpText: """
-                    <p>file format of dataset</p>
+                    <p>File format of dataset</p>
                     """
 
         new TextareaView
@@ -465,9 +459,6 @@ define [
           modelAttribute: 'resourceMaintenance'
           label: 'Resource Maintenance'
           ObjectInputView: ResourceMaintenanceView
-          helpText: """
-                    <p>Resource Maintenance</p>
-                    """
       ]
     ,
       label: 'Seven'
@@ -560,9 +551,6 @@ define [
           modelAttribute: 'service'
           ModelType: Service
           label: 'Service'
-          helpText: """
-                    <p>Service attributes</p>
-                    """
       ]
     ,
       label: 'Ten'
