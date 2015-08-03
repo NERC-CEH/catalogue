@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import com.google.common.collect.Sets;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
@@ -47,7 +46,7 @@ public class CitationServiceTest {
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getTitle()).thenReturn("document title");
         when(document.getUri()).thenReturn(new URI("http://document"));
-        when(document.getResourceIdentifiers()).thenReturn(Sets.newHashSet(
+        when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
             nercdoi()
         ));        
         when(document.getDatasetReferenceDate()).thenReturn(validDate());
@@ -74,7 +73,7 @@ public class CitationServiceTest {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUri()).thenReturn(new URI("http://document"));
-        when(document.getResourceIdentifiers()).thenReturn(Sets.newHashSet(
+        when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
             nercdoi()
         ));        
         when(document.getDatasetReferenceDate()).thenReturn(validDate());
@@ -95,7 +94,7 @@ public class CitationServiceTest {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUri()).thenReturn(new URI("http://document"));
-        when(document.getResourceIdentifiers()).thenReturn(Sets.newHashSet(
+        when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
             nercdoi()
         ));
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
@@ -115,7 +114,7 @@ public class CitationServiceTest {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUri()).thenReturn(new URI("http://document"));
-        when(document.getResourceIdentifiers()).thenReturn(Sets.newHashSet(
+        when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
             ResourceIdentifier
                         .builder()
                         .code("10.123456789/myDoI")

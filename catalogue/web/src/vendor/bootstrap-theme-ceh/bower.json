@@ -1,7 +1,7 @@
 {
   "name": "bootstrap-theme-ceh",
   "description": "CEH Bootstrap theme",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "author": "CEH Application Development Team <oss@ceh.ac.uk>",
   "main": "dist/bootstrap.css",
   "themestrap": {

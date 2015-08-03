@@ -1,43 +1,83 @@
 define [
   'underscore'
-  'jquery'
   'backbone'
   'tpl!templates/Editor.tpl'
-  'cs!views/MessageView'
-  'cs!views/editor/TitleView'
-  'cs!views/editor/ResourceTypeView'
-  'cs!views/editor/AlternateTitlesView'
-  'cs!views/editor/DescriptionView'
-  'cs!views/editor/LineageView'
-  'cs!views/editor/TopicCategoriesView'
-], (_, $, Backbone, template, MessageView, TitleView, ResourceTypeView, AlternateTitlesView, DescriptionView, LineageView, TopicCategoriesView) -> Backbone.View.extend
+], (_, Backbone, template) -> Backbone.View.extend
 
   events:
+    'click #editorDelete': 'attemptDelete'
+    'click #confirmDeleteYes': 'delete'
+    'click #editorExit': 'attemptExit'
+    'click #exitWithoutSaving': 'exit'
     'click #editorSave': 'save'
     'click #editorBack': 'back'
     'click #editorNext': 'next'
     'click #editorNav li': 'direct'
 
-  initialize: (options) ->
-    if not @model
-      throw new Error('model is required')
-    if not (options and options.parent)
-      throw new Error('parent is required')
-    @parent = options.parent
-
-    @listenTo @model, 'save:success', @leave
-
+  initialize: ->
     @currentStep = 1
+    @saveRequired = false
+
+    @listenTo @model, 'error', (model, response) ->
+      @$('#editorAjax').toggleClass 'visible'
+      @$('#editorErrorMessage')
+        .find('#editorErrorMessageResponse').text("#{response.status} #{response.statusText}")
+        .end()
+        .find('#editorErrorMessageJson').text(JSON.stringify model.toJSON())
+        .end()
+        .modal 'show'
+    @listenTo @model, 'sync', ->
+      @$('#editorAjax').toggleClass 'visible'
+      @saveRequired = false
+    @listenTo @model, 'change save:required', ->
+      @saveRequired = true
+    @listenTo @model, 'request', ->
+      @$('#editorAjax').toggleClass 'visible'
+    @listenTo @model, 'invalid', (model, errors) ->
+      $modalBody = @$('#editorValidationMessage .modal-body')
+      $modalBody.html ''
+      _.each errors, (error) ->
+        $modalBody.append @$("<p>#{error}</p>")
+      @$('#editorValidationMessage').modal 'show'
+
+    do @render
+    _.invoke @sections[0].views, 'show'
+    $editorNav = @$('#editorNav')
+    _.each @sections, (section) ->
+      $editorNav.append(@$("<li>#{section.label}</li>"))
+
+    $editorNav.find('li').first().addClass('active')
+
+  attemptDelete: ->
+    @$('#confirmDelete').modal 'show'
+
+  delete: ->
+    @$('#confirmDelete').modal 'hide'
+    @model.destroy
+      success: =>
+        _.invoke @sections, 'remove'
+        do @remove
+        Backbone.history.location.replace '/documents'
 
   save: ->
-    @model.save {},
-      success:  =>
-        @model.trigger "save:success"
-      error: (model, response) =>
-        @parent.trigger 'error', "Error saving metadata: #{response.status} (#{response.statusText})"
+    do @model.save
 
-  leave: ->
-    window.location.assign @model.get 'uri'
+  attemptExit: ->
+    if @saveRequired
+      @$('#confirmExit').modal 'show'
+    else
+      do @exit
+
+  exit: ->
+    @$('#confirmExit').modal 'hide'
+    _.invoke @sections, 'remove'
+    do @remove
+    # On new records navigate to the newly created record's page not back to the search page.
+    uri = @model.get 'uri'
+    if uri?
+      Backbone.history.location.replace uri
+    else
+      do Backbone.history.location.reload
 
   back: ->
     @navigate @currentStep - 1
@@ -55,97 +95,36 @@ define [
     @navigate step
 
   navigate: (newStep) ->
-    $nav = $('#editorNav li')
+    $nav = @$('#editorNav li')
     maxStep = $nav.length
     @currentStep = newStep
     @currentStep = 1 if @currentStep < 1
     @currentStep = maxStep if @currentStep > maxStep
 
-    $back = $('#editorBack')
+    $back = @$('#editorBack')
     if @currentStep == 1
       $back.prop 'disabled', true
     else
       $back.prop 'disabled', false
 
-    $next = $('#editorNext')
+    $next = @$('#editorNext')
     if @currentStep == maxStep
       $next.prop 'disabled', true
     else
       $next.prop 'disabled', false
 
     $nav.filter('.active').toggleClass 'active'
-    $($nav[@currentStep - 1]).toggleClass 'active'
+    @$($nav[@currentStep - 1]).toggleClass 'active'
 
-    $step = $('#editor .step')
-    $step.filter('.visible').toggleClass 'visible'
-    $($step[@currentStep - 1]).toggleClass 'visible'
+    _.each @sections, (section, index) =>
+      method = 'hide'
+      if (@currentStep - 1) == index
+        method = 'show'
+      _.invoke section.views, method
 
   render: ->
     @$el.html template
-
-    title = new TitleView
-      el: @$('#editorTitle')
-      model: @model
-    do title.render
-
-    resourceType = new ResourceTypeView
-      el: @$('#editorResourceType')
-      model: @model
-    do resourceType.render
-
-    alternateTitles = new AlternateTitlesView
-      el: @$('#editorAlternateTitles')
-      model: @model
-    do alternateTitles.render
-
-    description = new DescriptionView
-      el: @$('#editorDescription')
-      model: @model
-    do description.render
-
-    lineage = new LineageView
-      el: @$('#editorLineage')
-      model: @model
-    do lineage.render
-
-    topicCategories = new TopicCategoriesView
-      el: @$('#editorTopicCategories')
-      model: @model
-    do topicCategories.render
-
-
-
-
-#    publicationDates = new PublicationDatesView
-#      el: @$('#editorPublicationDates')
-#      model: metadata
-#
-#    revisionDates = new RevisionDatesView
-#      el: @$('#editorRevisionDates')
-#      model: metadata
-
-#    lineage = new TextareaView
-#      el: @$('#editorLineage')
-#      model: new Textarea
-#        id: 'lineage'
-#        name: 'Lineage'
-#        value: @model.get 'lineage'
-#        help: lineageHelp
-#        parent: @model
-
-#    additionalInformation = new TextareaView
-#      el: @$('#editorAdditionalInformation')
-#      model: new Textarea
-#        id: 'additionalInformation'
-#        name: 'Additional Information'
-#        value: @model.get 'additionalInformation'
-#        parent: @model
-
-# should be a list of string
-#    accessConstraints = new TextareaView
-#      el: @$('#editorAccessConstraints')
-#      model: new Textarea
-#        id: 'accessConstraints'
-#        name: 'Access Constraints'
-#        value: metadata.get 'accessConstraints'
-#        parent: @model
+    _.each @sections, (section) ->
+      _.each section.views, (view) ->
+        @$('#editor').append view.el
+    @

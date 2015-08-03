@@ -1,32 +1,16 @@
 define [
-  'backbone'
-  'cs!models/editor/ResourceType'
+  'cs!views/editor/ObjectInputView'
   'tpl!templates/editor/ResourceType.tpl'
-], (Backbone, ResourceType, template) -> Backbone.View.extend
+], (ObjectInputView, template) -> ObjectInputView.extend
 
-  events:
-    'change #resourceType': 'select'
+  template: template
 
   initialize: ->
-    if not @model
-      throw new Error('model is required')
-
-    @resourceType = new ResourceType @model.get 'resourceType'
+    ObjectInputView.prototype.initialize.apply @
+    @listenTo @model, 'change:resourceType', (model, value) ->
+      @model.set 'type', value.value
 
   render: ->
-    @$el.html template
-    @$('#resourceType').val @resourceType.get 'value'
-    return @
-
-  select: ->
-    value = @$('#resourceType').val()
-
-    if value
-      @resourceType.set 'value', value
-      @model.set
-        'resourceType': @resourceType
-        'type': @resourceType.get 'value'
-
-    else
-      @model.unset 'resourceType'
-      @model.unset 'type'
+    ObjectInputView.prototype.render.apply @
+    @$('select').val @model.get 'value'
+    @

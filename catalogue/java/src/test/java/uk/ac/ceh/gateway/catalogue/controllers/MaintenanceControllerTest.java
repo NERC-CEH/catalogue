@@ -25,9 +25,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkService;
-import uk.ac.ceh.gateway.catalogue.linking.DocumentLinkingException;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
@@ -41,8 +40,8 @@ import uk.ac.ceh.gateway.catalogue.util.terracatalog.TerraCatalogImporter;
  */
 public class MaintenanceControllerTest {
     @Mock(answer=RETURNS_DEEP_STUBS) DataRepositoryOptimizingService repoService;
-    @Mock DocumentIndexingService indexService;
-    @Mock DocumentLinkService linkingService;
+    @Mock SolrIndexingService indexService;
+    @Mock JenaIndexingService linkingService;
     @Mock TerraCatalogImporterService terraCatalogImporterService;
     
     private MaintenanceController controller;
@@ -65,7 +64,7 @@ public class MaintenanceControllerTest {
     }
     
     @Test
-    public void checkThatReindexingDelegatesToLinkingService() throws DocumentLinkingException {
+    public void checkThatReindexingDelegatesToLinkingService() throws DocumentIndexingException {
         //Given
         //Nothing
         
@@ -73,7 +72,7 @@ public class MaintenanceControllerTest {
         controller.reindexLinks();
         
         //Then
-        verify(linkingService).rebuildLinks();
+        verify(linkingService).rebuildIndex();
     }
     
     @Test

@@ -58,7 +58,7 @@ public class DataciteController {
         switch(document.getType()) {
             case "nonGeographicDataset": return "Dataset";
             case "dataset":              return "Dataset";
-            case "application":          return "Application";
+            case "application":          return "Other";
             case "model":                return "Model";
             case "service":              return "Service";
             case "software":             return "Software";

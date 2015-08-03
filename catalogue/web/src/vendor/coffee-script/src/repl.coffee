@@ -20,30 +20,40 @@ replDefaults =
     {Block, Assign, Value, Literal} = require './nodes'
 
     try
-      # Generate the AST of the clean input.
-      ast = CoffeeScript.nodes input
+      # Tokenize the clean input.
+      tokens = CoffeeScript.tokens input
+      # Collect referenced variable names just like in `CoffeeScript.compile`.
+      referencedVars = (
+        token[1] for token in tokens when token.variable
+      )
+      # Generate the AST of the tokens.
+      ast = CoffeeScript.nodes tokens
       # Add assignment to `_` variable to force the input to be an expression.
       ast = new Block [
         new Assign (new Value new Literal '_'), ast, '='
       ]
-      js = ast.compile bare: yes, locals: Object.keys(context)
-      result = if context is global
-        vm.runInThisContext js, filename 
-      else
-        vm.runInContext js, context, filename
-      cb null, result
+      js = ast.compile {bare: yes, locals: Object.keys(context), referencedVars}
+      cb null, runInContext js, context, filename
     catch err
       # AST's `compile` does not add source code information to syntax errors.
       updateSyntaxError err, input
       cb err
 
+runInContext = (js, context, filename) ->
+  if context is global
+    vm.runInThisContext js, filename
+  else
+    vm.runInContext js, context, filename
+
 addMultilineHandler = (repl) ->
   {rli, inputStream, outputStream} = repl
+  # Node 0.11.12 changed API, prompt is now _prompt.
+  origPrompt = repl._prompt ? repl.prompt
 
   multiline =
     enabled: off
-    initialPrompt: repl.prompt.replace /^[^> ]*/, (x) -> x.replace /./g, '-'
-    prompt: repl.prompt.replace /^[^> ]*>?/, (x) -> x.replace /./g, '.'
+    initialPrompt: origPrompt.replace /^[^> ]*/, (x) -> x.replace /./g, '-'
+    prompt: origPrompt.replace /^[^> ]*>?/, (x) -> x.replace /./g, '.'
     buffer: ''
 
   # Proxy node's line listener
@@ -55,6 +65,7 @@ addMultilineHandler = (repl) ->
       rli.setPrompt multiline.prompt
       rli.prompt true
     else
+      rli.setPrompt origPrompt
       nodeLineListener cmd
     return
 
@@ -65,7 +76,7 @@ addMultilineHandler = (repl) ->
       # allow arbitrarily switching between modes any time before multiple lines are entered
       unless multiline.buffer.match /\n/
         multiline.enabled = not multiline.enabled
-        rli.setPrompt repl.prompt
+        rli.setPrompt origPrompt
         rli.prompt true
         return
       # no-op unless the current line is empty
@@ -97,6 +108,7 @@ addHistory = (repl, filename, maxSize) ->
     readFd = fs.openSync filename, 'r'
     buffer = new Buffer(size)
     fs.readSync readFd, buffer, 0, size, stat.size - size
+    fs.close readFd
     # Set the history on the interpreter
     repl.rli.history = buffer.toString().split('\n').reverse()
     # If the history file was truncated we should pop off a potential partial line
@@ -114,14 +126,19 @@ addHistory = (repl, filename, maxSize) ->
       fs.write fd, "#{code}\n"
       lastLine = code
 
-  repl.rli.on 'exit', -> fs.close fd
+  repl.on 'exit', -> fs.close fd
 
   # Add a command to show the history stack
-  repl.commands['.history'] =
+  repl.commands[getCommandId(repl, 'history')] =
     help: 'Show command history'
     action: ->
       repl.outputStream.write "#{repl.rli.history[..].reverse().join '\n'}\n"
       repl.displayPrompt()
+
+getCommandId = (repl, commandName) ->
+  # Node 0.11 changed API, a command such as '.help' is now stored as 'help'
+  commandsHaveLeadingDot = repl.commands['.help']?
+  if commandsHaveLeadingDot then ".#{commandName}" else commandName
 
 module.exports =
   start: (opts = {}) ->
@@ -135,7 +152,10 @@ module.exports =
     process.argv = ['coffee'].concat process.argv[2..]
     opts = merge replDefaults, opts
     repl = nodeREPL.start opts
-    repl.on 'exit', -> repl.outputStream.write '\n'
+    runInContext opts.prelude, repl.context, 'prelude' if opts.prelude
+    repl.on 'exit', -> repl.outputStream.write '\n' if not repl.rli.closed
     addMultilineHandler repl
     addHistory repl, opts.historyFile, opts.historyMaxInputSize if opts.historyFile
+    # Adapt help inherited from the node REPL
+    repl.commands[getCommandId(repl, 'load')].help = 'Load code from a file into this REPL session'
     repl

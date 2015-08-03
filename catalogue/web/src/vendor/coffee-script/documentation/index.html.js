@@ -34,7 +34,7 @@
         <a href="#operators">Operators and Aliases</a>
         <a href="#classes">Classes, Inheritance, and Super</a>
         <a href="#destructuring">Destructuring Assignment</a>
-        <a href="#fat-arrow">Function Binding</a>
+        <a href="#fat-arrow">Bound and Generator Functions</a>
         <a href="#embedded">Embedded JavaScript</a>
         <a href="#switch">Switch and Try/Catch</a>
         <a href="#comparisons">Chained Comparisons</a>
@@ -87,7 +87,6 @@
         <a href="documentation/docs/sourcemap.html">Source Maps &mdash; src/sourcemap</a>
       </div>
     </div>
-    <div id="error" style="display:none;"></div>
   </div>
 
   <div class="container">
@@ -111,11 +110,10 @@
 
     <p>
       <b>Latest Version:</b>
-      <a href="http://github.com/jashkenas/coffee-script/tarball/1.7.0">1.7.0</a>
+      <a href="http://github.com/jashkenas/coffeescript/tarball/1.9.3">1.9.3</a>
     </p>
 
-    <pre>
-sudo npm install -g coffee-script</pre>
+    <pre>npm install -g coffee-script</pre>
 
     <h2>
       <span id="overview" class="bookmark"></span>
@@ -144,28 +142,31 @@ sudo npm install -g coffee-script</pre>
 
     <p>
       To install, first make sure you have a working copy of the latest stable version of
-      <a href="http://nodejs.org/">Node.js</a>, and <a href="http://npmjs.org">npm</a>
-      (the Node Package Manager). You can then install CoffeeScript with npm:
+      <a href="http://nodejs.org/">Node.js</a>. You can then install CoffeeScript globally
+      with <a href="http://npmjs.org">npm</a>:
     </p>
 
     <pre>
 npm install -g coffee-script</pre>
 
     <p>
-      (Leave off the <tt>-g</tt> if you don't wish to install globally.)
+      When you need CoffeeScript as a dependency, install it locally:
     </p>
+
+    <pre>
+npm install --save coffee-script</pre>
 
     <p>
       If you'd prefer to install the latest <b>master</b> version of CoffeeScript, you
       can clone the CoffeeScript
-      <a href="http://github.com/jashkenas/coffee-script">source repository</a>
+      <a href="http://github.com/jashkenas/coffeescript">source repository</a>
       from GitHub, or download
-      <a href="http://github.com/jashkenas/coffee-script/tarball/master">the source</a> directly.
-      To install the lastest master CoffeeScript compiler with npm:
+      <a href="http://github.com/jashkenas/coffeescript/tarball/master">the source</a> directly.
+      To install the latest master CoffeeScript compiler with npm:
     </p>
 
 <pre>
-npm install -g http://github.com/jashkenas/coffee-script/tarball/master</pre>
+npm install -g jashkenas/coffeescript</pre>
 
     <p>
       Or, if you want to install to <tt>/usr/local</tt>, and don't want to use
@@ -351,7 +352,7 @@ Expressions
       Just for kicks, a little bit of the compiler is currently implemented in this fashion:
       See it
       <a href="https://gist.github.com/jashkenas/3fc3c1a8b1009c00d9df">as a document</a>,
-      <a href="https://raw.github.com/jashkenas/coffee-script/master/src/scope.litcoffee">raw</a>,
+      <a href="https://raw.github.com/jashkenas/coffeescript/master/src/scope.litcoffee">raw</a>,
       and <a href="http://cl.ly/LxEu">properly highlighted in a text editor</a>.
     </p>
 
@@ -531,6 +532,10 @@ Expressions
       <tt>evens = (x for x in [0..10] by 2)</tt>
     </p>
     <p>
+      If you don't need the current iteration value you may omit it:<br />
+      <tt>browser.closeCurrentTab() for [0...count]</tt>
+    </p>
+    <p>
       Comprehensions can also be used to iterate over the keys and values in
       an object. Use <tt>of</tt> to signal comprehension over the properties of
       an object instead of the values in an array.
@@ -657,8 +662,12 @@ Expressions
       test for JavaScript object-key presence.
     </p>
     <p>
-      To simplify math expressions, <tt>**</tt> can be used for exponentiation, <tt>//</tt> performs integer division and <tt>%%</tt> provides true mathematical modulo.
+      To simplify math expressions, <tt>**</tt> can be used for exponentiation
+      and <tt>//</tt> performs integer division. <tt>%</tt> works just like in
+      JavaScript, while <tt>%%</tt> provides
+      <a href="http://en.wikipedia.org/wiki/Modulo_operation">“dividend dependent modulo”</a>:
     </p>
+    <%= codeFor('modulo') %>
     <p>
       All together now:
     </p>
@@ -706,7 +715,7 @@ Expressions
     <%= codeFor('soaks') %>
     <p>
       Soaking up nulls is similar to Ruby's
-      <a href="http://andand.rubyforge.org/">andand gem</a>, and to the
+      <a href="https://rubygems.org/gems/andand">andand gem</a>, and to the
       <a href="http://groovy.codehaus.org/Operators#Operators-SafeNavigationOperator%28%3F.%29">safe navigation operator</a>
       in Groovy.
     </p>
@@ -775,7 +784,7 @@ Expressions
       Destructuring assignment can be used with any depth of array and object nesting,
       to help pull out deeply nested properties.
     </p>
-    <%= codeFor('object_extraction', '"name + "-" + street"') %>
+    <%= codeFor('object_extraction', 'name + "-" + street') %>
     <p>
       Destructuring assignment can even be combined with splats.
     </p>
@@ -783,7 +792,7 @@ Expressions
     <p>
       Expansion can be used to retrieve elements from the end of an array without having to assign the rest of its values. It works in function parameter lists as well.
     </p>
-    <%= codeFor('expansion', '"first + " " + last"') %>
+    <%= codeFor('expansion', 'first + " " + last') %>
     <p>
       Destructuring assignment is also useful when combined with class constructors
       to assign properties to your instance from an options object passed to the constructor.
@@ -792,7 +801,7 @@ Expressions
 
     <p>
       <span id="fat-arrow" class="bookmark"></span>
-      <b class="header">Function binding</b>
+      <b class="header">Bound Functions, Generator Functions</b>
       In JavaScript, the <tt>this</tt> keyword is dynamically scoped to mean the
       object that the current function is attached to. If you pass a function as
       a callback or attach it to a different object, the original value of <tt>this</tt>
@@ -805,7 +814,7 @@ Expressions
       it to the current value of <tt>this</tt>, right on the spot. This is helpful
       when using callback-based libraries like Prototype or jQuery, for creating
       iterator functions to pass to <tt>each</tt>, or event-handler functions
-      to use with <tt>bind</tt>. Functions created with the fat arrow are able to access
+      to use with <tt>on</tt>. Functions created with the fat arrow are able to access
       properties of the <tt>this</tt> where they're defined.
     </p>
     <%= codeFor('fat_arrow') %>
@@ -818,6 +827,17 @@ Expressions
       When used in a class definition, methods declared with the fat arrow will
       be automatically bound to each instance of the class when the instance is
       constructed.
+    </p>
+    <p>
+      CoffeeScript functions also support
+      <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*">ES6 generator functions</a>
+      through the <tt>yield</tt> keyword. There's no <tt>function*(){}</tt>
+      nonsense &mdash; a generator in CoffeeScript is simply a function that yields.
+    </p>
+    <%= codeFor('generators', 'ps.next().value') %>
+    <p>
+      <tt>yield*</tt> is called <tt>yield from</tt>, and <tt>yield return</tt>
+      may be used if you need to force a generator that doesn't yield.
     </p>
 
     <p>
@@ -854,8 +874,9 @@ Expressions
     <p>
       <span id="try" class="bookmark"></span>
       <b class="header">Try/Catch/Finally</b>
-      Try/catch statements are just about the same as JavaScript (although
-      they work as expressions).
+      Try-expressions have the same semantics as try-statements in JavaScript,
+      though in CoffeeScript, you may omit <em>both</em> the catch and finally
+      parts. The catch part may also omit the error parameter if it is not needed.
     </p>
     <%= codeFor('try') %>
 
@@ -874,7 +895,8 @@ Expressions
       <b class="header">String Interpolation, Block Strings, and Block Comments</b>
       Ruby-style string interpolation is included in CoffeeScript. Double-quoted
       strings allow for interpolated values, using <tt>#{ ... }</tt>,
-      and single-quoted strings are literal.
+      and single-quoted strings are literal. You may even use interpolation in
+      object keys.
     </p>
     <%= codeFor('interpolation', 'sentence') %>
     <p>
@@ -1032,7 +1054,7 @@ Expressions
         size (Rails, Node).
       </li>
       <li>
-        <a href="http://ristrettolo.gy">CoffeeScript Ristretto</a>
+        <a href="https://leanpub.com/coffeescript-ristretto/read">CoffeeScript Ristretto</a>
         is a deep dive into CoffeeScript's semantics from simple functions up through
         closures, higher-order functions, objects, classes, combinators, and decorators.
         By <a href="http://braythwayt.com/">Reg Braithwaite</a>.
@@ -1044,13 +1066,19 @@ Expressions
       </li>
       <li>
         <a href="http://www.packtpub.com/coffeescript-application-development/book">CoffeeScript Application Development</a>
-        is a new book from Packt Publishing that introduces CoffeeScript while
+        from Packt, introduces CoffeeScript while
         walking through the process of building a demonstration web application.
+        A <a href="https://www.packtpub.com/web-development/coffeescript-application-development-cookbook">CoffeeScript Application Development Coookbook</a>
+        with over 90 "recipes" is also available.
       </li>
       <li>
         <a href="http://www.manning.com/lee/">CoffeeScript in Action</a>
-        is a new book from Manning Publications that covers CoffeeScript syntax, composition techniques
+        from Manning Publications, covers CoffeeScript syntax, composition techniques
         and application development.
+      </li>
+      <li>
+        <a href="http://www.dpunkt.de/buecher/4021/coffeescript.html">CoffeeScript: Die Alternative zu JavaScript</a>
+        from dpunkt.verlag, is the first CoffeeScript book in Deutsch.
       </li>
     </ul>
 
@@ -1082,7 +1110,7 @@ Expressions
     </h2>
 
     <p>
-      The <a href="https://github.com/languages/coffeescript">best list of
+      The <a href="https://github.com/trending?l=coffeescript&amp;since=monthly">best list of
       open-source CoffeeScript examples</a> can be found on GitHub. But just
       to throw out few more:
     </p>
@@ -1114,8 +1142,8 @@ Expressions
         the Bolo tank game for modern browsers.
       </li>
       <li>
-        <b>josh</b>'s <a href="http://josh.github.com/nack/">nack</a>, a Node.js-powered
-        <a href="http://rack.rubyforge.org/">Rack</a> server.
+        <b>github</b>'s <a href="https://atom.io/">Atom</a>,
+        a hackable text editor built on web technologies.
       </li>
     </ul>
 
@@ -1125,7 +1153,7 @@ Expressions
 
     <ul>
       <li>
-        <a href="http://github.com/jashkenas/coffee-script/">Source Code</a><br />
+        <a href="http://github.com/jashkenas/coffeescript/">Source Code</a><br />
         Use <tt>bin/coffee</tt> to test your changes,<br />
         <tt>bin/cake test</tt> to run the test suite,<br />
         <tt>bin/cake build</tt> to rebuild the CoffeeScript compiler, and <br />
@@ -1138,7 +1166,7 @@ Expressions
         they pass, there's a good chance you've made a successful change.
       </li>
       <li>
-        <a href="http://github.com/jashkenas/coffee-script/issues">CoffeeScript Issues</a><br />
+        <a href="http://github.com/jashkenas/coffeescript/issues">CoffeeScript Issues</a><br />
         Bug reports, feature proposals, and ideas for changes to the language belong here.
       </li>
       <li>
@@ -1146,15 +1174,15 @@ Expressions
         If you'd like to ask a question, the mailing list is a good place to get help.
       </li>
       <li>
-        <a href="http://github.com/jashkenas/coffee-script/wiki">The CoffeeScript Wiki</a><br />
+        <a href="http://github.com/jashkenas/coffeescript/wiki">The CoffeeScript Wiki</a><br />
         If you've ever learned a neat CoffeeScript tip or trick, or ran into a gotcha &mdash; share it on the wiki.
         The wiki also serves as a directory of handy
-        <a href="http://github.com/jashkenas/coffee-script/wiki/Text-editor-plugins">text editor extensions</a>,
-        <a href="http://github.com/jashkenas/coffee-script/wiki/Web-framework-plugins">web framework plugins</a>,
-        and general <a href="http://github.com/jashkenas/coffee-script/wiki/Build-tools">CoffeeScript build tools</a>.
+        <a href="http://github.com/jashkenas/coffeescript/wiki/Text-editor-plugins">text editor extensions</a>,
+        <a href="http://github.com/jashkenas/coffeescript/wiki/Web-framework-plugins">web framework plugins</a>,
+        and general <a href="http://github.com/jashkenas/coffeescript/wiki/Build-tools">CoffeeScript build tools</a>.
       </li>
       <li>
-        <a href="http://github.com/jashkenas/coffee-script/wiki/FAQ">The FAQ</a><br />
+        <a href="http://github.com/jashkenas/coffeescript/wiki/FAQ">The FAQ</a><br />
         Perhaps your CoffeeScript-related question has been asked before. Check the FAQ first.
       </li>
       <li>
@@ -1165,7 +1193,7 @@ Expressions
         point for converting simple scripts.
       </li>
       <li>
-        <a href="https://github.com/jashkenas/coffee-script/downloads">High-Rez Logo</a><br />
+        <a href="https://github.com/jashkenas/coffeescript/downloads">High-Rez Logo</a><br />
         The CoffeeScript logo is available in Illustrator, EPS and PSD formats, for use
         in presentations.
       </li>
@@ -1192,10 +1220,155 @@ Expressions
     </h2>
 
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.6.3...1.7.0">1.7.0</a>
-        <span class="timestamp"> &ndash; <small>January 28, 2014</small></span>
-      </b>
+      <%= releaseHeader('2015-05-14', '1.9.3', '1.9.2') %>
+      <ul>
+        <li>
+          Bugfix for interpolation in the first key of an object literal in an
+          implicit call.
+        </li>
+        <li>
+          Fixed broken error messages in the REPL, as well as a few minor bugs
+          with the REPL.
+        </li>
+        <li>
+          Fixed source mappings for tokens at the beginning of lines when
+          compiling with the <tt>--bare</tt> option. This has the nice side
+          effect of generating smaller source maps.
+        </li>
+        <li>
+          Slight formatting improvement of compiled block comments.
+        </li>
+        <li>
+          Better error messages for <tt>on</tt>, <tt>off</tt>, <tt>yes</tt> and
+          <tt>no</tt>.
+        </li>
+      </ul>
+    </p>
+
+    <p>
+      <%= releaseHeader('2015-04-15', '1.9.2', '1.9.1') %>
+      <ul>
+        <li>
+          Fixed a <b>watch</b> mode error introduced in 1.9.1 when compiling
+          multiple files with the same filename.
+        </li>
+        <li>
+          Bugfix for <tt>yield</tt> around expressions containing
+          <tt>this</tt>.
+        </li>
+        <li>
+          Added a Ruby-style <tt>-r</tt> option to the REPL, which allows
+          requiring a module before execution with <tt>--eval</tt> or
+          <tt>--interactive</tt>.
+        </li>
+        <li>
+          In <tt>&lt;script type="text/coffeescript"&gt;</tt> tags, to avoid
+          possible duplicate browser requests for .coffee files, 
+          you can now use the <tt>data-src</tt> attribute instead of <tt>src</tt>.
+        </li>
+        <li>
+          Minor bug fixes for IE8, strict ES5 regular expressions and Browserify.
+        </li>
+      </ul>
+    </p>
+
+    <p>
+      <%= releaseHeader('2015-02-18', '1.9.1', '1.9.0') %>
+      <ul>
+        <li>
+          Interpolation now works in object literal keys (again). You can use this to
+          dynamically name properties.
+        </li>
+        <li>
+          Internal compiler variable names no longer start with underscores. This makes
+          the generated JavaScript a bit prettier, and also fixes an issue with
+          the completely broken and ungodly way that AngularJS "parses" function
+          arguments.
+        </li>
+        <li>
+          Fixed a few <tt>yield</tt>-related edge cases with <tt>yield return</tt>
+          and <tt>yield throw</tt>.
+        </li>
+        <li>
+          Minor bug fixes and various improvements to compiler error messages.
+        </li>
+      </ul>
+    </p>
+
+    <p>
+      <%= releaseHeader('2015-01-29', '1.9.0', '1.8.0') %>
+      <ul>
+        <li>
+          CoffeeScript now supports ES6 generators. A generator is simply a function
+          that <tt>yield</tt>s.
+        </li>
+        <li>
+          More robust parsing and improved error messages for strings and regexes —
+          especially with respect to interpolation.
+        </li>
+        <li>
+          Changed strategy for the generation of internal compiler variable names.
+          Note that this means that <tt>@example</tt> function parameters are no longer
+          available as naked <tt>example</tt> variables within the function body.
+        </li>
+        <li>
+          Fixed REPL compatibility with latest versions of Node and Io.js.
+        </li>
+        <li>
+          Various minor bug fixes.
+        </li>
+      </ul>
+    </p>
+
+    <p>
+      <%= releaseHeader('2014-08-26', '1.8.0', '1.7.1') %>
+      <ul>
+        <li>
+          The <tt>--join</tt> option of the CLI is now deprecated.
+        </li>
+        <li>
+          Source maps now use <tt>.js.map</tt> as file extension, instead of just <tt>.map</tt>.
+        </li>
+        <li>
+          The CLI now exits with the exit code 1 when it fails to write a file to disk.
+        </li>
+        <li>
+          The compiler no longer crashes on unterminated, single-quoted strings.
+        </li>
+        <li>
+          Fixed location data for string interpolations, which made source maps out of sync.
+        </li>
+        <li>
+          The error marker in error messages is now correctly positioned if the code is indented with tabs.
+        </li>
+        <li>
+          Fixed a slight formatting error in CoffeeScript’s source map-patched stack traces.
+        </li>
+        <li>
+          The <tt>%%</tt> operator now coerces its right operand only once.
+        </li>
+        <li>
+          It is now possible to require CoffeeScript files from Cakefiles without having to register the compiler first.
+        </li>
+        <li>
+          The CoffeeScript REPL is now exported and can be required using <tt>require 'coffee-script/repl'</tt>.
+        </li>
+        <li>
+          Fixes for the REPL in Node 0.11.
+        </li>
+      </ul>
+    </p>
+
+    <p>
+      <%= releaseHeader('2014-01-29', '1.7.1', '1.7.0') %>
+      <ul>
+        <li>
+          Fixed a typo that broke node module lookup when running a script directly with the <tt>coffee</tt> binary.
+        </li>
+      </ul>
+    </p>
+    <p>
+      <%= releaseHeader('2014-01-28', '1.7.0', '1.6.3') %>
       <ul>
         <li>
           When requiring CoffeeScript files in Node you must now explicitly register the compiler. This can be done with <tt>require 'coffee-script/register'</tt> or <tt>CoffeeScript.register()</tt>. Also for configuration such as Mocha's, use <b>coffee-script/register</b>.
@@ -1219,7 +1392,7 @@ Expressions
           Closing brackets can now be indented and therefore no longer cause unexpected error.
         </li>
         <li>
-          Several breaking compilation fixes. Non-callable literals (strings, numbers etc.) don't compile in a call now and multiple postfix conditionals compile properly. Postfix conditionals and loops always bind object literals. Conditional assignment compiles properly in subexpressions. <tt>super</tt> is disallowed outside of methods and works correctly inside <tt>for</tt> loops. 
+          Several breaking compilation fixes. Non-callable literals (strings, numbers etc.) don't compile in a call now and multiple postfix conditionals compile properly. Postfix conditionals and loops always bind object literals. Conditional assignment compiles properly in subexpressions. <tt>super</tt> is disallowed outside of methods and works correctly inside <tt>for</tt> loops.
         </li>
         <li>
           Formatting of compiled block comments has been improved.
@@ -1233,10 +1406,7 @@ Expressions
       </ul>
     </p>
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.6.2...1.6.3">1.6.3</a>
-        <span class="timestamp"> &ndash; <small>June 2, 2013</small></span>
-      </b>
+      <%= releaseHeader('2013-06-02', '1.6.3', '1.6.2') %>
       <ul>
         <li>
           The CoffeeScript REPL now remembers your history between sessions.
@@ -1262,10 +1432,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.6.1...1.6.2">1.6.2</a>
-        <span class="timestamp"> &ndash; <small>March 18, 2013</small></span>
-      </b>
+      <%= releaseHeader('2013-03-18', '1.6.2', '1.6.1') %>
       <ul>
         <li>
           Source maps have been used to provide automatic line-mapping when
@@ -1291,10 +1458,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.5.0...1.6.1">1.6.1</a>
-        <span class="timestamp"> &ndash; <small>March 5, 2013</small></span>
-      </b>
+      <%= releaseHeader('2013-03-05', '1.6.1', '1.5.0') %>
       <ul>
         <li>
           First release of <a href="#source-maps">source maps</a>. Pass the
@@ -1320,10 +1484,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.4.0...1.5.0">1.5.0</a>
-        <span class="timestamp"> &ndash; <small>Feb 25, 2013</small></span>
-      </b>
+      <%= releaseHeader('2013-02-25', '1.5.0', '1.4.0') %>
       <ul>
         <li>
           First release of <a href="#literate">Literate CoffeeScript</a>.
@@ -1348,10 +1509,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.3.3...1.4.0">1.4.0</a>
-        <span class="timestamp"> &ndash; <small>Oct 23, 2012</small></span>
-      </b>
+      <%= releaseHeader('2012-10-23', '1.4.0', '1.3.3') %>
       <ul>
         <li>
           The CoffeeScript compiler now strips Microsoft's UTF-8 BOM if it
@@ -1369,15 +1527,12 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.3.1...1.3.3">1.3.3</a>
-        <span class="timestamp"> &ndash; <small>May 15, 2012</small></span>
-      </b>
+      <%= releaseHeader('2012-05-15', '1.3.3', '1.3.1') %>
       <ul>
         <li>
           Due to the new semantics of JavaScript's strict mode, CoffeeScript no
           longer guarantees that constructor functions have names in all runtimes.
-          See <a href="https://github.com/jashkenas/coffee-script/issues/2052">#2052</a>
+          See <a href="https://github.com/jashkenas/coffeescript/issues/2052">#2052</a>
           for discussion.
         </li>
         <li>
@@ -1398,10 +1553,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.2.0...1.3.1">1.3.1</a>
-        <span class="timestamp"> &ndash; <small>April 10, 2012</small></span>
-      </b>
+      <%= releaseHeader('2012-04-10', '1.3.1', '1.2.0') %>
       <ul>
         <li>
           CoffeeScript now enforces all of JavaScript's <b>Strict Mode</b> early syntax
@@ -1410,7 +1562,7 @@ Expressions
           a function definition, deleting naked variables, setting the value of
           <tt>eval</tt> or <tt>arguments</tt>, and more.
           See a full discussion at
-          <a href="https://github.com/jashkenas/coffee-script/issues/1547">#1547</a>.
+          <a href="https://github.com/jashkenas/coffeescript/issues/1547">#1547</a>.
         </li>
         <li>
           The REPL now has a handy new multi-line mode for entering large
@@ -1439,7 +1591,7 @@ Expressions
           effectively creating a shallow copy of the list.
         </li>
         <li>
-          Additional tweaks and improvments to <tt>coffee --watch</tt> under
+          Additional tweaks and improvements to <tt>coffee --watch</tt> under
           Node's "new" file watching API. Watch will now beep by default
           if you introduce a syntax error into a watched script. We also now
           ignore hidden directories by default when watching recursively.
@@ -1448,10 +1600,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.1.3...1.2.0">1.2.0</a>
-        <span class="timestamp"> &ndash; <small>Dec. 18, 2011</small></span>
-      </b>
+      <%= releaseHeader('2011-12-18', '1.2.0', '1.1.3') %>
       <ul>
         <li>
           Multiple improvements to <tt>coffee --watch</tt> and <tt>--join</tt>.
@@ -1475,10 +1624,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.1.2...1.1.3">1.1.3</a>
-        <span class="timestamp"> &ndash; <small>Nov. 8, 2011</small></span>
-      </b>
+      <%= releaseHeader('2011-11-08', '1.1.3', '1.1.2') %>
       <ul>
         <li>
           Ahh, whitespace. CoffeeScript's compiled JS now tries to space things
@@ -1518,10 +1664,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">
-        <a href="https://github.com/jashkenas/coffee-script/compare/1.1.1...1.1.2">1.1.2</a>
-        <span class="timestamp"> &ndash; <small>August 4, 2011</small></span>
-      </b>
+      <%= releaseHeader('2011-08-04', '1.1.2', '1.1.1') %>
       Fixes for block comment formatting, <tt>?=</tt> compilation, implicit calls
       against control structures, implicit invocation of a try/catch block,
       variadic arguments leaking from local scope, line numbers in syntax errors
@@ -1532,17 +1675,13 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">1.1.1
-        <span class="timestamp"> &ndash; <small>May 10, 2011</small></span>
-      </b>
+      <%= releaseHeader('2011-05-10', '1.1.1', '1.1.0') %>
       Bugfix release for classes with external constructor functions, see
       issue #1182.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">1.1.0
-        <span class="timestamp"> &ndash; <small>May 1, 2011</small></span>
-      </b>
+      <%= releaseHeader('2011-05-01', '1.1.0', '1.0.1') %>
       When running via the <tt>coffee</tt> executable, <tt>process.argv</tt> and
       friends now report <tt>coffee</tt> instead of <tt>node</tt>.
       Better compatibility with <b>Node.js 0.4.x</b> module lookup changes.
@@ -1558,9 +1697,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">1.0.1
-        <span class="timestamp"> &ndash; <small>Jan 31, 2011</small></span>
-      </b>
+      <%= releaseHeader('2011-01-31', '1.0.1', '1.0.0') %>
       Fixed a lexer bug with Unicode identifiers. Updated REPL for compatibility
       with Node.js 0.3.7. Fixed requiring relative paths in the REPL. Trailing
       <tt>return</tt> and <tt>return undefined</tt> are now optimized away.
@@ -1571,9 +1708,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">1.0.0
-        <span class="timestamp"> &ndash; <small>Dec 24, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-12-24', '1.0.0', '0.9.6') %>
       CoffeeScript loops no longer try to preserve block scope when functions
       are being generated within the loop body. Instead, you can use the
       <tt>do</tt> keyword to create a convenient closure wrapper.
@@ -1585,9 +1720,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.9.6
-        <span class="timestamp"> &ndash; <small>Dec 6, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-12-06', '0.9.6', '0.9.5') %>
       The REPL now properly formats stacktraces, and stays alive through
       asynchronous exceptions. Using <tt>--watch</tt> now prints timestamps as
       files are compiled. Fixed some accidentally-leaking variables within
@@ -1599,9 +1732,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.9.5
-        <span class="timestamp"> &ndash; <small>Nov 21, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-11-21', '0.9.5', '0.9.4') %>
       0.9.5 should be considered the first release candidate for CoffeeScript 1.0.
       There have been a large number of internal changes since the previous release,
       many contributed from <b>satyr</b>'s <a href="http://github.com/satyr/coco">Coco</a>
@@ -1615,9 +1746,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.9.4
-        <span class="timestamp"> &ndash; <small>Sep 21, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-09-21', '0.9.4', '0.9.3') %>
       CoffeeScript now uses appropriately-named temporary variables, and recycles
       their references after use. Added <tt>require.extensions</tt> support for
       <b>Node.js 0.3</b>. Loading CoffeeScript in the browser now adds just a
@@ -1626,9 +1755,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.9.3
-        <span class="timestamp"> &ndash; <small>Sep 16, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-09-16', '0.9.3', '0.9.2') %>
       CoffeeScript <tt>switch</tt> statements now compile into JS <tt>switch</tt>
       statements &mdash; they previously compiled into <tt>if/else</tt> chains
       for JavaScript 1.3 compatibility.
@@ -1637,9 +1764,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.9.2
-        <span class="timestamp"> &ndash; <small>Aug 23, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-08-23', '0.9.2', '0.9.1') %>
       Specifying the start and end of a range literal is now optional, eg. <tt>array[3..]</tt>.
       You can now say <tt>a not instanceof b</tt>.
       Fixed important bugs with nested significant and non-significant indentation (Issue #637).
@@ -1653,9 +1778,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.9.1
-        <span class="timestamp"> &ndash; <small>Aug 11, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-08-11', '0.9.1', '0.9.0') %>
       Bugfix release for <b>0.9.1</b>. Greatly improves the handling of mixed
       implicit objects, implicit function calls, and implicit indentation.
       String and regex interpolation is now strictly <tt>#{ ... }</tt> (Ruby style).
@@ -1664,9 +1787,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.9.0
-        <span class="timestamp"> &ndash; <small>Aug 4, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-08-04', '0.9.0', '0.7.2') %>
       The CoffeeScript <b>0.9</b> series is considered to be a release candidate
       for <b>1.0</b>; let's give her a shakedown cruise. <b>0.9.0</b> introduces a massive
       backwards-incompatible change: Assignment now uses <tt>=</tt>, and object
@@ -1690,17 +1811,13 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.7.2
-        <span class="timestamp"> &ndash; <small>Jul 12, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-07-12', '0.7.2', '0.7.1') %>
       Quick bugfix (right after 0.7.1) for a problem that prevented <tt>coffee</tt>
       command-line options from being parsed in some circumstances.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.7.1
-        <span class="timestamp"> &ndash; <small>Jul 11, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-07-11', '0.7.1', '0.7.0') %>
       Block-style comments are now passed through and printed as JavaScript block
       comments -- making them useful for licenses and copyright headers. Better
       support for running coffee scripts standalone via hashbangs.
@@ -1708,9 +1825,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.7.0
-        <span class="timestamp"> &ndash; <small>Jun 28, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-06-28', '0.7.0', '0.6.2') %>
       Official CoffeeScript variable style is now camelCase, as in JavaScript.
       Reserved words are now allowed as object keys, and will be quoted for you.
       Range comprehensions now generate cleaner code, but you have to specify <tt>by -1</tt>
@@ -1727,9 +1842,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.6.2
-        <span class="timestamp"> &ndash; <small>May 15, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-05-15', '0.6.2', '0.6.1') %>
       The <tt>coffee</tt> command will now preserve directory structure when
       compiling a directory full of scripts. Fixed two omissions that were preventing
       the CoffeeScript compiler from running live within Internet Explorer.
@@ -1744,26 +1857,20 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.6.1
-        <span class="timestamp"> &ndash; <small>Apr 12, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-04-12', '0.6.1', '0.6.0') %>
       Upgraded CoffeeScript for compatibility with the new Node.js <b>v0.1.90</b>
       series.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.6.0
-        <span class="timestamp"> &ndash; <small>Apr 3, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-04-03', '0.6.0', '0.5.6') %>
       Trailing commas are now allowed, a-la Python. Static
       properties may be assigned directly within class definitions,
       using <tt>@property</tt> notation.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.5.6
-        <span class="timestamp"> &ndash; <small>Mar 23, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-03-23', '0.5.6', '0.5.5') %>
       Interpolation can now be used within regular expressions and heredocs, as well as
       strings. Added the <tt>&lt;-</tt> bind operator.
       Allowing assignment to half-expressions instead of special <tt>||=</tt>-style
@@ -1774,9 +1881,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.5.5
-        <span class="timestamp"> &ndash; <small>Mar 8, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-03-08', '0.5.5', '0.5.4') %>
       String interpolation, contributed by
       <a href="http://github.com/StanAngeloff">Stan Angeloff</a>.
       Since <tt>--run</tt> has been the default since <b>0.5.3</b>, updating
@@ -1785,18 +1890,14 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.5.4
-        <span class="timestamp"> &ndash; <small>Mar 3, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-03-03', '0.5.4', '0.5.3') %>
       Bugfix that corrects the Node.js global constants <tt>__filename</tt> and
       <tt>__dirname</tt>. Tweaks for more flexible parsing of nested function
       literals and improperly-indented comments. Updates for the latest Node.js API.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.5.3
-        <span class="timestamp"> &ndash; <small>Feb 27, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-02-27', '0.5.3', '0.5.2') %>
       CoffeeScript now has a syntax for defining classes. Many of the core
       components (Nodes, Lexer, Rewriter, Scope, Optparse) are using them.
       Cakefiles can use <tt>optparse.coffee</tt> to define options for tasks.
@@ -1806,9 +1907,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.5.2
-        <span class="timestamp"> &ndash; <small>Feb 25, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-02-25', '0.5.2', '0.5.1') %>
       Added a compressed version of the compiler for inclusion in web pages as
       <br  /><tt>extras/coffee-script.js</tt>. It'll automatically run any script tags
       with type <tt>text/coffeescript</tt> for you. Added a <tt>--stdio</tt> option
@@ -1817,9 +1916,7 @@ Expressions
 
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.5.1
-        <span class="timestamp"> &ndash; <small>Feb 24, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-02-24', '0.5.1', '0.5.0') %>
       Improvements to null soaking with the existential operator, including
       soaks on indexed properties. Added conditions to <tt>while</tt> loops,
       so you can use them as filters with <tt>when</tt>, in the same manner as
@@ -1827,27 +1924,21 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.5.0
-        <span class="timestamp"> &ndash; <small>Feb 21, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-02-21', '0.5.0', '0.3.2') %>
       CoffeeScript 0.5.0 is a major release, While there are no language changes,
       the Ruby compiler has been removed in favor of a self-hosting
       compiler written in pure CoffeeScript.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.3.2
-        <span class="timestamp"> &ndash; <small>Feb 8, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-02-08', '0.3.2', '0.3.0') %>
       <tt>@property</tt> is now a shorthand for <tt>this.property</tt>.<br />
       Switched the default JavaScript engine from Narwhal to Node.js. Pass
       the <tt>--narwhal</tt> flag if you'd like to continue using it.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.3.0
-        <span class="timestamp"> &ndash; <small>Jan 26, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-01-26', '0.3.0', '0.2.6') %>
       CoffeeScript 0.3 includes major syntax changes:
       <br />
       The function symbol was changed to
@@ -1863,9 +1954,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.2.6
-        <span class="timestamp"> &ndash; <small>Jan 17, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-01-17', '0.2.6', '0.2.5') %>
       Added Python-style chained comparisons, the conditional existence
       operator <tt>?=</tt>, and some examples from <i>Beautiful Code</i>.
       Bugfixes relating to statement-to-expression conversion, arguments-to-array
@@ -1873,9 +1962,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.2.5
-        <span class="timestamp"> &ndash; <small>Jan 13, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-01-13', '0.2.5', '0.2.4') %>
       The conditions in switch statements can now take multiple values at once &mdash;
       If any of them are true, the case will run. Added the long arrow <tt>==></tt>,
       which defines and immediately binds a function to <tt>this</tt>. While loops can
@@ -1884,26 +1971,20 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.2.4
-        <span class="timestamp"> &ndash; <small>Jan 12, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-01-12', '0.2.4', '0.2.3') %>
       Added ECMAScript Harmony style destructuring assignment, for dealing with
       extracting values from nested arrays and objects. Added indentation-sensitive
       heredocs for nicely formatted strings or chunks of code.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.2.3
-        <span class="timestamp"> &ndash; <small>Jan 11, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-01-11', '0.2.3', '0.2.2') %>
       Axed the unsatisfactory <tt>ino</tt> keyword, replacing it with <tt>of</tt> for
       object comprehensions. They now look like: <tt>for prop, value of object</tt>.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.2.2
-        <span class="timestamp"> &ndash; <small>Jan 10, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-01-10', '0.2.2', '0.2.1') %>
       When performing a comprehension over an object, use <tt>ino</tt>, instead
       of <tt>in</tt>, which helps us generate smaller, more efficient code at
       compile time.
@@ -1924,16 +2005,12 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.2.1
-        <span class="timestamp"> &ndash; <small>Jan 5, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-01-05', '0.2.1', '0.2.0') %>
       Arguments objects are now converted into real arrays when referenced.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.2.0
-        <span class="timestamp"> &ndash; <small>Jan 5, 2010</small></span>
-      </b>
+      <%= releaseHeader('2010-01-05', '0.2.0', '0.1.6') %>
       Major release. Significant whitespace. Better statement-to-expression
       conversion. Splats. Splice literals. Object comprehensions. Blocks.
       The existential operator. Many thanks to all the folks who posted issues,
@@ -1943,18 +2020,14 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.1.6
-        <span class="timestamp"> &ndash; <small>Dec 27, 2009</small></span>
-      </b>
+      <%= releaseHeader('2009-12-27', '0.1.6', '0.1.5') %>
       Bugfix for running <tt>coffee --interactive</tt> and <tt>--run</tt>
       from outside of the CoffeeScript directory. Bugfix for nested
       function/if-statements.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.1.5
-        <span class="timestamp"> &ndash; <small>Dec 26, 2009</small></span>
-      </b>
+      <%= releaseHeader('2009-12-26', '0.1.5', '0.1.4') %>
       Array slice literals and array comprehensions can now both take Ruby-style
       ranges to specify the start and end. JavaScript variable declaration is
       now pushed up to the top of the scope, making all assignment statements into
@@ -1963,9 +2036,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.1.4
-        <span class="timestamp"> &ndash; <small>Dec 25, 2009</small></span>
-      </b>
+      <%= releaseHeader('2009-12-25', '0.1.4', '0.1.3') %>
       The official CoffeeScript extension is now <tt>.coffee</tt> instead of
       <tt>.cs</tt>, which properly belongs to
       <a href="http://en.wikipedia.org/wiki/C_Sharp_(programming_language)">C#</a>.
@@ -1977,9 +2048,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.1.3
-        <span class="timestamp"> &ndash; <small>Dec 25, 2009</small></span>
-      </b>
+      <%= releaseHeader('2009-12-25', '0.1.3', '0.1.2') %>
       The <tt>coffee</tt> command now includes <tt>--interactive</tt>,
       which launches an interactive CoffeeScript session, and <tt>--run</tt>,
       which directly compiles and executes a script. Both options depend on a
@@ -1993,9 +2062,7 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.1.2
-        <span class="timestamp"> &ndash; <small>Dec 24, 2009</small></span>
-      </b>
+      <%= releaseHeader('2009-12-24', '0.1.2', '0.1.1') %>
       Fixed a bug with calling <tt>super()</tt> through more than one level of
       inheritance, with the re-addition of the <tt>extends</tt> keyword.
       Added experimental <a href="http://narwhaljs.org/">Narwhal</a>
@@ -2007,16 +2074,12 @@ Expressions
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.1.1
-        <span class="timestamp"> &ndash; <small>Dec 24, 2009</small></span>
-      </b>
+      <%= releaseHeader('2009-12-24', '0.1.1', '0.1.0') %>
       Added <tt>instanceof</tt> and <tt>typeof</tt> as operators.
     </p>
 
     <p>
-      <b class="header" style="margin-top: 20px;">0.1.0
-        <span class="timestamp"> &ndash; <small>Dec 24, 2009</small></span>
-      </b>
+      <%= releaseHeader('2009-12-24', '0.1.0') %>
       Initial CoffeeScript release.
     </p>
 
@@ -2028,19 +2091,22 @@ Expressions
     # Set up the compilation function, to run when you stop typing.
     compileSource = ->
       source = $('#repl_source').val()
+      results = $('#repl_results')
       window.compiledJS = ''
       try
         window.compiledJS = CoffeeScript.compile source, bare: on
-        el = $('#repl_results')[0]
+        el = results[0]
         if el.innerText
           el.innerText = window.compiledJS
         else
-          $(el).text window.compiledJS
-        $('#error').hide()
+          results.text(window.compiledJS)
+        results.removeClass 'error'
+        $('.minibutton.run').removeClass 'error'
       catch {location, message}
         if location?
           message = "Error on line #{location.first_line + 1}: #{message}"
-        $('#error').text(message).show()
+        results.text(message).addClass 'error'
+        $('.minibutton.run').addClass 'error'
 
       # Update permalink
       $('#repl_permalink').attr 'href', "##{sourceFragment}#{encodeURIComponent source}"

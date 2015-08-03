@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -38,7 +39,7 @@ public class CitationController {
     public Citation getCitation(
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file, 
-        HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException {
+        HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
                 
         return getCitation(documents.readMetadata(user, file, request));
     }
@@ -51,7 +52,7 @@ public class CitationController {
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
         @PathVariable("revision") String revision,
-        HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException  {
+        HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
         
         return getCitation(documents.readMetadata(user, file, revision, request));
     }

@@ -41,10 +41,12 @@ import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
+import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
+import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
 @Configuration
@@ -72,6 +74,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
     @Autowired CodeLookupService codesLookup;
+    @Autowired JenaLookupService jenaLookupService;
     @Autowired DownloadOrderDetailsService downloadOrderDetailsService;
     @Autowired PermissionService permissionService;
     
@@ -94,6 +97,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         converters.add(new Object2TemplatedMessageConverter(StateResource.class,        configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,   configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(MaintenanceResponse.class,  configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(SparqlResponse.class,       configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,        configureFreeMarker().getConfiguration()));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
@@ -112,6 +116,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public FreeMarkerConfigurer configureFreeMarker() {
         try {
             Map<String, Object> shared = new HashMap<>();
+            shared.put("jena", jenaLookupService);
             shared.put("codes", codesLookup);
             shared.put("downloadOrderDetails", downloadOrderDetailsService);
             shared.put("permission", permissionService);

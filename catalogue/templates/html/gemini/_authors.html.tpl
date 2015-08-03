@@ -23,7 +23,9 @@
             <span>${author.organisationName?html}</span><br>
           </#if>
         </#if>
-        
+        <#if author.orcid?has_content>
+        <a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank">${author.orcid?html}</a><br>
+        </#if>
         <#if author.address?has_content>
           <address class="hidden-xs">
             <#if author.address.deliveryPoint?has_content>${author.address.deliveryPoint?html}<br></#if>

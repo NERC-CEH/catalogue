@@ -65,8 +65,8 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
         <dct:spatial rdf:datatype="http://www.opengis.net/ont/geosparql#wktLiteral">${extent.wkt}</dct:spatial>
       </#list>
     </#if>
-   <#if temporalExtent?has_content>
-      <#list temporalExtent as extent>
+   <#if temporalExtents?has_content>
+      <#list temporalExtents as extent>
         <dct:temporal rdf:datatype="http://purl.org/dc/terms/PeriodOfTime">${(extent.begin?date)!''}/${(extent.end?date)!''}</dct:temporal>
       </#list>
     </#if>
@@ -108,9 +108,9 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
       <dcat:Distribution>
         <rdf:Description>
          <#assign downloadOrder=downloadOrderDetails.from(onlineResources)>
-         <#if downloadOrder.orderUrl?has_content>
-            <dcat:accessURL rdf:resource="${downloadOrder.orderUrl}"/>
-         </#if>
+         <#list downloadOrder.orderResources as onlineResource>
+            <dcat:accessURL rdf:resource="${onlineResource.url}"/>
+         </#list>
          <#if citation?has_content>
             <dct:rights>If you reuse this data, you must cite ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}</dct:rights>
          </#if>

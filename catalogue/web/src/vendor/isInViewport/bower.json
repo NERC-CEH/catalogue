@@ -1,6 +1,6 @@
 {
   "name": "isInViewport",
-  "version": "2.1.0",
+  "version": "2.2.4",
   "homepage": "https://github.com/zeusdeux/isInViewport",
   "authors": [
     "Mudit Ameta <zeusdeux@gmail.com>"
@@ -14,6 +14,7 @@
   ],
   "license": "MIT",
   "ignore": [
+    "examples/**",
     "**/.*",
     "node_modules",
     "bower_components",
@@ -24,6 +25,7 @@
     "isInViewport_*.js",
     "*.jquery.json",
     ".travis*",
-    ".git*"
+    ".git*",
+    "/**/*.dmp"
   ]
 }

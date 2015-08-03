@@ -1,35 +1,29 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.datastore.DataSubmittedEvent;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import org.springframework.context.annotation.Configuration;
+import uk.ac.ceh.gateway.catalogue.indexing.IndexingFileEventListener;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
 /**
  *
  * @author cjohn
  */
+@Configuration
 public class EventWiring {
     @Autowired EventBus bus;
     
-    @Subscribe
-    public void indexNewFile(DataSubmittedEvent<DataRepository<CatalogueUser>> event) {
-        DataRepository<CatalogueUser> repo = event.getDataRepository();
-        
-        event.getFilenames()
-             .stream()
-             .filter(f -> f.endsWith("json"))
-             .forEach(f -> indexFile(f, repo));
-    }
+    @Autowired SolrIndexingService solrIndex;
+    @Autowired JenaIndexingService linkIndex;
+    @Autowired DocumentListingService listing;
     
-    public void indexFile(String filename, DataRepository<CatalogueUser> repo) {
-        try {
-            repo.getData(filename);
-        } catch (DataRepositoryException ex) {
-            bus.post(ex);
-        }
+    @PostConstruct
+    public void addEventListeners() {
+        bus.register(new IndexingFileEventListener(solrIndex, listing));
+        bus.register(new IndexingFileEventListener(linkIndex, listing));
     }
 }

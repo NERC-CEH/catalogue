@@ -1,33 +1,75 @@
-#editorNav {
-  position: fixed;
-  width: inherit;
+#editorNav li {
+  cursor: pointer;
+}
 
-  li {
-    color: #828c7f;
-    cursor: pointer;
-    &.active {
-      font-weight: bold;
-    }
+#editorAjax {
+  display: none;
+  &.visible {
+    display: inline;
   }
 }
 
 #editor {
-  margin-top: 40px;
   padding-bottom: 70px;
-  label.required::before {
-    content: "*";
-    color: #b40000;
-    font-size:150%;
+
+  .editor-input {
+    .form-control;
+    .input-sm;
   }
 
-  .editor-controls {
-    text-align: center;
+  .editor-textarea {
+    .form-control;
+    .input-sm;
+    height: auto;
   }
 
-  .step {
+  .editor-button {
+    .btn;
+    .btn-default;
+    .btn-sm;
+    .pull-right;
+  }
+
+  .editor-help {
+    .help-block;
+    .hidden-print;
+    .collapse;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .component  {
+    .form-group;
     display: none;
     &.visible {
       display: block;
     }
+    border-style: solid;
+    border-width: 2px;
+    border-color: lighten(@gray-light, 15%);
+    border-radius: 5px;
+    padding: 9px;
+    margin-bottom: 9px;
+    .row {
+      @spacer: 3px;
+      margin-bottom: @spacer;
+      label {
+        padding-top: @spacer;
+      }
+    }
+    .dataentry label {
+      font-size: 12px;
+    }
+  }
+  .multiline .existing > .row {
+    border-style: solid;
+    border-width: 2px;
+    border-color: lighten(@gray-light, 15%);
+    border-radius: 5px;
+    padding: 4px;
+  }
+  .dropdown {
+    .pull-right;
+    display: inline-block;
   }
 }
