@@ -23,4 +23,6 @@ define [
     if not value
       @model.unset name
     else
-      @model.set name, value
+      @model.set name, value,
+        validate: true
+      
