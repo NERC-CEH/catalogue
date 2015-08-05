@@ -25,7 +25,7 @@ public class ResourceIdentifier {
         this.version = nullToEmpty(version);
     }
     
-    public String getCoupleResource() {
+    public String getCoupledResource() {
         if (CEH_CODE_SPACE.equals(codeSpace)) {
             return format("%s#%s", codeSpace, code);
         } else {
