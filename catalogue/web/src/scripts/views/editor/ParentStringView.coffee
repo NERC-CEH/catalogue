@@ -45,7 +45,7 @@ define [
     do event.preventDefault
     @array.push ""
     index = @array.length - 1
-    @$(".existing").prepend @childTemplate data: _.extend {}, @data,
+    @$(".existing").append @childTemplate data: _.extend {}, @data,
       index: index
     @$("#input#{ @data.modelAttribute}#{ index } input").focus()
     do @updateModel
