@@ -31,10 +31,11 @@ define [
     do @render
     title = @model.get('thesaurusName')?.title
     if title?
-      if title.startsWith 'CEH Metadata'
+      # IE only supports .startsWith() in MS Edge (> version 11)
+      if title.lastIndexOf('CEH Metadata', 0) == 0
         @$('#cehTopic').removeClass 'hidden'
         @$('.add').addClass 'hidden'
-      else if title.startsWith 'GEMET - INSPIRE themes'
+      else if title.lastIndexOf('GEMET - INSPIRE themes', 0) == 0
         @$('#inspireTheme').removeClass 'hidden'
         @$('.add').addClass 'hidden'
     @$attach = @$('.keywords')

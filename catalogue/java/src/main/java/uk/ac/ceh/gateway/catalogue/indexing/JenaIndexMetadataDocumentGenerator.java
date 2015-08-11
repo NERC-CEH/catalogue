@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import static com.google.common.base.Strings.emptyToNull;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import java.util.ArrayList;
@@ -22,14 +23,14 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     @Override
     public List<Statement> generateIndex(MetadataDocument document) {
         List<Statement> toReturn = new ArrayList<>();
-        if(document.getId() != null) {
+        if(emptyToNull(document.getId()) != null) {
             Resource me = resource(document.getId());
             toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(document.getId())));
             
-            Optional.ofNullable(document.getTitle())
+            Optional.ofNullable(emptyToNull(document.getTitle()))
                     .ifPresent(t -> toReturn.add(createStatement(me, TITLE, createPlainLiteral(t))));
             
-            Optional.ofNullable(document.getType())
+            Optional.ofNullable(emptyToNull(document.getType()))
                     .ifPresent(t -> toReturn.add(createStatement(me, TYPE, createPlainLiteral(t))));
         }
         return toReturn;
