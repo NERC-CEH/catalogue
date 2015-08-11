@@ -288,7 +288,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("browseGraphicUrl.xml"));
-        String expected = "";
+        String expected = null;
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
@@ -318,7 +318,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("noBrowseGraphicUrl.xml"));
-        String expected = "";
+        String expected = null;
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
