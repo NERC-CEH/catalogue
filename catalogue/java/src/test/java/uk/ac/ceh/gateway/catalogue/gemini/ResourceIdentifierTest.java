@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -17,7 +16,7 @@ public class ResourceIdentifierTest {
         String expected = "CEH:EIDC:#1230549234";
         
         //When
-        String actual = identifier.getCoupleResource();
+        String actual = identifier.getCoupledResource();
         
         //Then
         assertThat("actual coupled resource string should equal expected", actual, equalTo(expected));
@@ -34,7 +33,7 @@ public class ResourceIdentifierTest {
         String expected = "doi:10.5285/05e5d538-6be7-476d-9141-76d9328738a4";
         
         //When
-        String actual = identifier.getCoupleResource();
+        String actual = identifier.getCoupledResource();
         
         //Then
         assertThat("actual coupled resource string should equal expected", actual, equalTo(expected));

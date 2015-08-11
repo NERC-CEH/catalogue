@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
+import static com.google.common.base.Strings.emptyToNull;
 import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.NodeListConverter;
 import java.io.IOException;
 import java.util.List;
@@ -133,11 +134,11 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             Document document = builder.parse(inputMessage.getBody());
 
             GeminiDocument toReturn = new GeminiDocument();
-            String identifier = id.evaluate(document);
+            String identifier = emptyToNull(id.evaluate(document));
             log.debug("Reading GeminiDocument: {}", identifier);
             toReturn.setId(identifier);
-            toReturn.setTitle(title.evaluate(document));
-            toReturn.setDescription(description.evaluate(document));
+            toReturn.setTitle(emptyToNull(title.evaluate(document)));
+            toReturn.setDescription(emptyToNull(description.evaluate(document)));
             toReturn.setAlternateTitles(getListOfStrings(document, alternateTitle));
             toReturn.setDatasetLanguages(getListOfStrings(document, datasetLanguage));
             toReturn.setDescriptiveKeywords(descriptiveKeywordsConverter.convert(document));
@@ -148,28 +149,28 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setMetadataPointsOfContact(metadataPointOfContactConverter.convert(document));
             toReturn.setDistributorContacts(distributorConverter.convert(document));
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
-            toReturn.setBrowseGraphicUrl(browseGraphicUrl.evaluate(document));
+            toReturn.setBrowseGraphicUrl(emptyToNull(browseGraphicUrl.evaluate(document)));
             toReturn.setTemporalExtents(temporalExtentConverter.convert(document));
             toReturn.setCoupledResources(getListOfStrings(document, coupledResource));
-            toReturn.setResourceStatus(resourceStatus.evaluate(document));
+            toReturn.setResourceStatus(emptyToNull(resourceStatus.evaluate(document)));
             toReturn.setSpatialReferenceSystems(spatialReferenceSystem.convert(document));
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
             toReturn.setMetadataDate(LocalDateFactory.parseForDateTime(metadataDate.evaluate(document)));
             toReturn.setOnlineResources(onlineResourceConverter.convert(document));
             toReturn.setDistributionFormats(distributionInfoConverter.convert(document));
-            toReturn.setLineage(lineage.evaluate(document));
+            toReturn.setLineage(emptyToNull(lineage.evaluate(document)));
             toReturn.setConformanceResults(conformanceResultConverter.convert(document));
             toReturn.setSpatialResolutions(spatialResolutionConverter.convert(document));
-            toReturn.setMetadataStandardName(metadataStandardName.evaluate(document));
-            toReturn.setMetadataStandardVersion(metadataStandardVersion.evaluate(document));
-            toReturn.setSupplementalInfo(supplementalInfo.evaluate(document));
+            toReturn.setMetadataStandardName(emptyToNull(metadataStandardName.evaluate(document)));
+            toReturn.setMetadataStandardVersion(emptyToNull(metadataStandardVersion.evaluate(document)));
+            toReturn.setSupplementalInfo(emptyToNull(supplementalInfo.evaluate(document)));
             toReturn.setSpatialRepresentationTypes(getListOfStrings(document, spatialRepresentationType));
             toReturn.setUseLimitations(useLimitationsConverter.convert(document));
             toReturn.setAccessConstraints(getListOfStrings(document, accessConstraints));
             toReturn.setOtherConstraints(otherConstraintsConverter.convert(document));
             toReturn.setSecurityConstraints(getListOfStrings(document, securityConstraints));
-            toReturn.setParentIdentifier(parentIdentifier.evaluate(document));
-            toReturn.setRevisionOfIdentifier(revisionOfConverter.convert(document));
+            toReturn.setParentIdentifier(emptyToNull(parentIdentifier.evaluate(document)));
+            toReturn.setRevisionOfIdentifier(emptyToNull(revisionOfConverter.convert(document)));
             toReturn.setResourceMaintenance(resourceMaintenaceConverter.convert(document));
             toReturn.setService(serviceConverter.convert(document));
             return toReturn;
