@@ -6,7 +6,7 @@
       <#if uri.codeSpace="doi:">
         <a href="http://doi.org/${uri.code?html}">${uri.coupleResource?html}</a>
       <#else>
-        ${uri.coupleResource?html}
+        ${uri.coupledResource?html}
       </#if>
       <#if uri_has_next><br></#if>
     </#list>

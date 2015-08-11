@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -59,7 +58,7 @@ public class DownloadOrderDetailsService {
                         .filter(r -> r.getFunction().equals("order"))
                         .collect(Collectors.toList());
             }
-            orderResources = ImmutableList.copyOf(potentialOrderResources);
+            orderResources = potentialOrderResources;
         }
     }
 }
