@@ -4,7 +4,7 @@
 
     <groupId>uk.ac.ceh.gateway</groupId>
     <artifactId>Catalogue</artifactId>
-    <version>1.2.11-SNAPSHOT</version>
+    <version>1.2.15-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>CEH Information Gateway Catalogue</name>

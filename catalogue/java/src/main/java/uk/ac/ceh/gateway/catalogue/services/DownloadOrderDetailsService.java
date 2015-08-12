@@ -1,15 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.Value;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
 /**
  * The following class will process a list of OnlineResources to identify: - The
- * Supporting documentation of the document - A link to a resource in the order
+ * Supporting documentation of the document - Links to resources in the order
  * manager - If this document is currently orderable
  * 
  * If an order resource is present inside the online resource list but does not
@@ -29,7 +29,8 @@ public class DownloadOrderDetailsService {
 
     @Value
     public class DownloadOrder {
-        private final String orderUrl, supportingDocumentsUrl, orderMessage;
+        private final String supportingDocumentsUrl;
+        private final List<OnlineResource> orderResources;
 
         // Decide if we should show an unavailable message on the UI. This value 
         // will be false if the dataset is embargoed or unavailable
@@ -44,27 +45,20 @@ public class DownloadOrderDetailsService {
                     .map(r -> r.getUrl())
                     .findFirst().orElse(null);
 
-            Optional<OnlineResource> orderResource = onlineResources
+            List<OnlineResource> potentialOrderResources = onlineResources
                     .stream()
                     .filter(r -> r.getFunction().equals("order"))
                     .filter(r -> orderManager.matcher(r.getUrl()).matches())
-                    .findFirst();
-            isOrderable = orderResource.isPresent();
+                    .collect(Collectors.toList());
+            isOrderable = !potentialOrderResources.isEmpty();
 
             if (!isOrderable) {
-                orderResource = onlineResources
+                potentialOrderResources = onlineResources
                         .stream()
                         .filter(r -> r.getFunction().equals("order"))
-                        .findFirst();
+                        .collect(Collectors.toList());
             }
-
-            if (orderResource.isPresent()) {
-                orderMessage = orderResource.get().getDescription();
-                orderUrl = orderResource.get().getUrl();
-            } else {
-                orderMessage = "";
-                orderUrl = "";
-            }
+            orderResources = potentialOrderResources;
         }
     }
 }

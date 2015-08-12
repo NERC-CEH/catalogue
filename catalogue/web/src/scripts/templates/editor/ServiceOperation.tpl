@@ -4,7 +4,8 @@
   </div>
   <div class="col-sm-4 col-lg-4">
     <select data-name='operationName' class="editor-input operationName" id="serviceOperation<%= data.index %>OperationName">
-      <option value="">- Select Operation Name -</option><option>Cancel</option>
+      <option value="">- Select Operation Name -</option>
+      <option>Cancel</option>
       <option>Confirm</option>
       <option>DescribeCoverage</option>
       <option>DescribeFeatureType</option>

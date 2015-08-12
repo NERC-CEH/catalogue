@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +41,7 @@ public class DownloadOrderDetailsServiceTest {
         
         //Then
         assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderUrl(), equalTo(orderUrl));
-        assertThat(order.getOrderMessage(), equalTo(orderMessage));
+        assertThat(order.getOrderResources(), contains(onlineResource));
     }
     
     @Test
@@ -60,8 +60,7 @@ public class DownloadOrderDetailsServiceTest {
         
         //Then
         assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderUrl(), equalTo(orderUrl));
-        assertThat(order.getOrderMessage(), equalTo(orderMessage));
+        assertThat(order.getOrderResources(), contains(orderable));
     }
     
     @Test
@@ -78,8 +77,7 @@ public class DownloadOrderDetailsServiceTest {
         
         //Then
         assertThat(order.isOrderable(), is(false));
-        assertThat(order.getOrderUrl(), equalTo(orderUrl));
-        assertThat(order.getOrderMessage(), equalTo(orderMessage));
+        assertThat(order.getOrderResources(), contains(onlineResource));
     }
     
     @Test
