@@ -4,6 +4,12 @@ define [
 ], (_, Backbone) -> Backbone.Model.extend {
 
   validate: (attrs) ->
+    labels =
+      westBoundLongitude: 'West Bounding Longitude'
+      eastBoundLongitude: 'East Bounding Longitude'
+      northBoundLatitude: 'North Bounding Longitude'
+      southBoundLatitude: 'South Bounding Longitude'
+
     errors = []
 
     isStringANumber = (input) ->
@@ -25,31 +31,37 @@ define [
       .keys()
       .each (key) ->
         if not isStringANumber attrs[key]
-          errors.push message: "#{key} needs to be a number"
+          errors.push message: "#{labels[key]} needs to be a number"
 
     if isGreater attrs.westBoundLongitude, attrs.eastBoundLongitude
       errors.push
-        message: "westBoundLongitude should be less the eastBoundLongitude"
+        message:
+          "West Bounding Longitude should be less the East Bounding Longitude"
 
     if isGreater attrs.southBoundLatitude, attrs.northBoundLatitude
       errors.push
-        message: "southBoundLatitude should be less the northBoundLatitude"
+        message:
+          "South Bounding Longitude should be less the North Bounding Longitude"
 
     if isOutOfRange attrs.westBoundLongitude, -180, 180
       errors.push
-        message: "westBoundLongitude should be between -180&deg; and 180&deg;"
+        message:
+          "West Bounding Longitude should be between -180&deg; and 180&deg;"
 
     if isOutOfRange attrs.eastBoundLongitude, -180, 180
       errors.push
-        message: "eastBoundLongitude should be between -180&deg; and 180&deg;"
+        message:
+          "East Bounding Longitude should be between -180&deg; and 180&deg;"
 
     if isOutOfRange attrs.northBoundLatitude, -90, 90
       errors.push
-        message: "northBoundLatitude should be between -90&deg; and 90&deg;"
+        message:
+          "North Bounding Longitude should be between -90&deg; and 90&deg;"
 
     if isOutOfRange attrs.southBoundLatitude, -90, 90
       errors.push
-        message: "southBoundLatitude should be between -90&deg; and 90&deg;"
+        message:
+          "South Bounding Longitude should be between -90&deg; and 90&deg;"
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

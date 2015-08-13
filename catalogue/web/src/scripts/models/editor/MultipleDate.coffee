@@ -5,6 +5,13 @@ define [
 # N.B. Use in Views that only has date attributes
 
   validate: (attrs) ->
+    labels =
+      creationDate: 'Creation Date'
+      publicationDate: 'Publication Date'
+      revisionDate: 'Revision Date'
+      begin: 'Begin'
+      end: 'End'
+
     dateRegExp = ///
       ^       # begining of string
       \d{4}   # four digit year
@@ -22,11 +29,13 @@ define [
         dateString = attrs[key]
         if not (dateString.match dateRegExp)
           errors.push
-            message: "#{key} is not in the correct date format of yyyy-mm-dd"
+            message:
+              "#{labels[key]} is not in the correct date format of yyyy-mm-dd"
 
         if isNaN Date.parse dateString
           errors.push
-            message: "#{key} is not a vaild date"
+            message:
+              "#{labels[key]} is not a vaild date"
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate
