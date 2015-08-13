@@ -17,6 +17,14 @@ define [
     @array = if @model.has @data.modelAttribute then _.clone @model.get @data.modelAttribute else []
     do @render
 
+    @$(".existing").sortable
+      start: (event, ui) =>
+        @_oldPosition = ui.item.index()
+      update: (event, ui) =>
+        toMove = (@array.splice @_oldPosition, 1)[0]
+        @array.splice ui.item.index(), 0, toMove
+        do @updateModel
+
   render: ->
     @$el.html parentTemplate data: @data
     $attach = @$(".existing")
@@ -52,5 +60,3 @@ define [
 
   updateModel: ->
     @model.set @data.modelAttribute, _.clone @array
-
-

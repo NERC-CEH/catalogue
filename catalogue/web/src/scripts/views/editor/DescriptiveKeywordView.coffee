@@ -1,11 +1,12 @@
 define [
   'underscore'
   'backbone'
+  'cs!collections/Positionable'
   'cs!views/editor/ObjectInputView'
   'cs!views/editor/ChildView'
   'cs!views/editor/KeywordView'
   'tpl!templates/editor/DescriptiveKeyword.tpl'
-], (_, Backbone, ObjectInputView, ChildView, KeywordView, template) -> ObjectInputView.extend
+], (_, Backbone, Positionable, ObjectInputView, ChildView, KeywordView, template) -> ObjectInputView.extend
 
   template: template
 
@@ -39,11 +40,18 @@ define [
         @$('#inspireTheme').removeClass 'hidden'
         @$('.add').addClass 'hidden'
     @$attach = @$('.keywords')
-    @keywords = new Backbone.Collection []
+
+    @$attach.sortable
+      start: (event, ui) =>
+        @_oldPosition = ui.item.index()
+      update: (event, ui) =>
+        @keywords.position @_oldPosition, ui.item.index()
+
+    @keywords = new Positionable []
 
     @listenTo @keywords, 'add', @addOne
     @listenTo @keywords, 'reset', @addAll
-    @listenTo @keywords, 'add remove change', @updateModel
+    @listenTo @keywords, 'add remove change position', @updateModel
 
     @keywords.reset @model.get 'keywords'
 
