@@ -2,6 +2,7 @@ define [
   'underscore'
   'backbone'
 ], (_, Backbone) -> Backbone.Model.extend
+# N.B. Use in Views that only has date attributes
 
   validate: (attrs) ->
     dateRegExp = ///
@@ -22,12 +23,11 @@ define [
         if not (dateString.match dateRegExp)
           errors.push
             message: "#{key} is not in the correct date format of yyyy-mm-dd"
-        
+
         if isNaN Date.parse dateString
           errors.push
             message: "#{key} is not a vaild date"
 
-    console.log attrs
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate
       # because returning something signals a validation error.
