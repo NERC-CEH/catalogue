@@ -13,7 +13,9 @@ define [
   'cs!views/editor/ContactView'
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/DatasetReferenceDateView'
+  'cs!models/editor/MultipleDate'
   'cs!models/editor/Contact'
+  'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/OnlineResourceView'
   'cs!views/editor/UseLimitationView'
@@ -29,7 +31,7 @@ define [
   'cs!views/editor/SpatialResolutionView'
   'cs!views/editor/ServiceView'
   'cs!models/editor/Service'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, ServiceView, Service) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, ServiceView, Service) -> EditorView.extend
 
 
   initialize: ->
@@ -85,6 +87,7 @@ define [
         new SingleObjectView
           model: @model
           modelAttribute: 'datasetReferenceDate'
+          ModelType: MultipleDate
           label: 'Dataset Reference Date'
           ObjectInputView: DatasetReferenceDateView,
           helpText: """
@@ -106,6 +109,7 @@ define [
         new PredefinedParentView
           model: @model
           modelAttribute: 'boundingBoxes'
+          ModelType: BoundingBox
           label: 'Spatial Extents'
           ObjectInputView: BoundingBoxView
           multiline: true
@@ -154,6 +158,7 @@ define [
         new ParentView
           model: @model
           modelAttribute: 'temporalExtents'
+          ModelType: MultipleDate
           label: 'Temporal Extents'
           ObjectInputView: TemporalExtentView
       ]
