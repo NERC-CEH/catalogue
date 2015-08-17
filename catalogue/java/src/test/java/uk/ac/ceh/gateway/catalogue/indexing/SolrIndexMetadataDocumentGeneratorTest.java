@@ -1,14 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.util.Arrays;
-import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -28,22 +25,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        generator = new SolrIndexMetadataDocumentGenerator(new ExtractTopicFromDocument(), codeLookupService, documentIdentifierService);
-    }
-    
-    @Test
-    public void checkThatTopicIsTransferedToIndex() {
-        //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/topic/2","http://onto.nerc.ac.uk/CEHMD/topic/3"));
-        List<String> expected = Arrays.asList("0/Biodiversity/", "0/Phenology/");
-        
-        //When
-        SolrIndex index = generator.generateIndex(document);
-        List<String> actual = index.getTopic();
-        
-        //Then
-        assertThat("Actual topic should have required items", actual, equalTo(expected));
+        generator = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService);
     }
     
     @Test

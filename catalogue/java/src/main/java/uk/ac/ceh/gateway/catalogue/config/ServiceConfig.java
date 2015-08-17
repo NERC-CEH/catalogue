@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.ExtractTopicFromDocument;
@@ -124,7 +125,8 @@ public class ServiceConfig {
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
                 .register("GEMINI_DOCUMENT", GeminiDocument.class)
-                .register("EF_DOCUMENT", BaseMonitoringType.class);
+                .register("EF_DOCUMENT", BaseMonitoringType.class)
+                .register("IMP_DOCUMENT", ImpDocument.class);
     }
     
     @Bean
@@ -212,11 +214,11 @@ public class ServiceConfig {
     
     @Bean
     public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException {
-        SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(new ExtractTopicFromDocument(), codeLookupService, documentIdentifierService());
+        SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
         
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
-            .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(metadataDocument, solrGeometryService(), codeLookupService))
+            .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
             .register(Facility.class,           new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
             .register(BaseMonitoringType.class, baseMonitoringType)
             .register(MetadataDocument.class,   metadataDocument);
