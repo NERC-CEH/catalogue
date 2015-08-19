@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.ef.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.slf4j.*;
+import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 
 public class LocalDateAdapter extends XmlAdapter<String, LocalDate>{
     private final Logger logger = LoggerFactory.getLogger(LocalDateAdapter.class);
@@ -14,7 +15,7 @@ public class LocalDateAdapter extends XmlAdapter<String, LocalDate>{
         if (v == null || v.isEmpty()) {
             return null;
         } else {
-            return new LocalDate(v);
+            return LocalDateFactory.parse(v);
         }
     }
 

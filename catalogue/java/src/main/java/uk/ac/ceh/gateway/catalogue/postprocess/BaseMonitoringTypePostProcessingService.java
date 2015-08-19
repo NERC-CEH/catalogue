@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.Data;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
@@ -140,6 +139,6 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
     }
 
     private LocalDate getDate(Literal d) {
-        return LocalDate.fromCalendarFields(((XSDDateTime)d.getValue()).asCalendar());
+      return (LocalDate) d.getValue();
     }
 }

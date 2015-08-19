@@ -8,11 +8,10 @@ import static com.hp.hpl.jena.rdf.model.ResourceFactory.createResource;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.createStatement;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.createTypedLiteral;
 import com.hp.hpl.jena.tdb.TDBFactory;
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import org.joda.time.LocalDate;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
@@ -112,8 +111,8 @@ public class BaseMonitoringTypePostProcessingServiceTest {
     @Test
     public void checkThatCanReadTimedLink() throws DocumentIndexingException {
         //Given
-        Calendar start = Calendar.getInstance(); start.set(2000, 3, 2);
-        Calendar end = Calendar.getInstance();   end.set(2020, 3, 2);
+        LocalDate start = LocalDate.of(2000, 3, 2);
+        LocalDate end = LocalDate.of(2020, 3, 2);
         Metadata metadata = mock(Metadata.class);
         when(metadata.getSelfUrl()).thenReturn("https://my.activity");
         Facility facility = new Facility();
@@ -138,7 +137,7 @@ public class BaseMonitoringTypePostProcessingServiceTest {
         TimedLink link = narrower.get(0);
         assertThat(link.getHref(), equalTo("https://linkedTo"));
         assertThat(link.getTitle(), equalTo("resource title"));
-        assertThat(link.getLinkingTime().getStart(), equalTo(LocalDate.fromCalendarFields(start)));
-        assertThat(link.getLinkingTime().getEnd(), equalTo(LocalDate.fromCalendarFields(end)));
+        assertThat(link.getLinkingTime().getStart(), equalTo(start));
+        assertThat(link.getLinkingTime().getEnd(), equalTo(end));
     }
 }

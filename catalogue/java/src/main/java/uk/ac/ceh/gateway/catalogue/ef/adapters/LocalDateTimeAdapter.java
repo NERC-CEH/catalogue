@@ -1,26 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.ef.adapters;
 
+import java.time.LocalDateTime;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import org.joda.time.DateTime;
 import org.slf4j.*;
+import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 
-public class DateTimeAdapter extends XmlAdapter<String, DateTime>{
-    private final Logger logger = LoggerFactory.getLogger(DateTimeAdapter.class);
+public class LocalDateTimeAdapter extends XmlAdapter<String, LocalDateTime>{
+    private final Logger logger = LoggerFactory.getLogger(LocalDateTimeAdapter.class);
 
     @Override
     // XML => Java
-    public DateTime unmarshal(String v) throws Exception {
+    public LocalDateTime unmarshal(String v) throws Exception {
         logger.debug("unmarshal dateTime: {}", v);
         if (v == null || v.isEmpty()) {
             return null;
         } else {
-            return new DateTime(v);
+            return LocalDateFactory.parseForDateTime(v);
         }
     }
 
     @Override
     // Java => XML
-    public String marshal(DateTime v) throws Exception {
+    public String marshal(LocalDateTime v) throws Exception {
         logger.debug("marshal dateTime: {}", v);
         if (v == null) {
             return null;
