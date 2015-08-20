@@ -8,14 +8,13 @@ import static com.hp.hpl.jena.rdf.model.ResourceFactory.createStatement;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.createTypedLiteral;
 import com.hp.hpl.jena.rdf.model.Statement;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Data;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType.BoundingBox;
@@ -148,8 +147,6 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
     
     // Turn the given localdate time into a semantic time literal
     private static Literal dateTime(LocalDate time){ 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(time.toDate());
-        return createTypedLiteral(cal);
+        return createTypedLiteral(time);
     }
  }
