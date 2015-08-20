@@ -19,12 +19,10 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
  * @author cjohn
  */
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
-    private final TopicIndexer topicIndexer;
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     
-    public SolrIndexMetadataDocumentGenerator(TopicIndexer topicIndexer, CodeLookupService codeLookupService, DocumentIdentifierService identifierService) {
-        this.topicIndexer = topicIndexer;
+    public SolrIndexMetadataDocumentGenerator(CodeLookupService codeLookupService, DocumentIdentifierService identifierService) {
         this.codeLookupService = codeLookupService;
         this.identifierService = identifierService;
     }
@@ -37,7 +35,6 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                 .setIdentifier(identifierService.generateFileId(document.getId()))
                 .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
                 .setState(getState(document))
-                .setTopic(topicIndexer.index(document))
                 .setView(getViews(document));
     }
     

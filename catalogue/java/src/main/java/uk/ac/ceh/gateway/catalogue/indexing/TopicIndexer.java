@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.List;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 
 public interface TopicIndexer {
     /**
@@ -15,5 +15,5 @@ public interface TopicIndexer {
      * @param document the GeminiDocument to extract Science Area keywords from
      * @return List of Topics
      */
-    List<String> index(MetadataDocument document);
+    List<String> index(GeminiDocument document);
 }

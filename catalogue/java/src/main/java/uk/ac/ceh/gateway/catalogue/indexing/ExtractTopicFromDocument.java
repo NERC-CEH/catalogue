@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 
 public class ExtractTopicFromDocument implements TopicIndexer {
     
@@ -35,7 +35,7 @@ public class ExtractTopicFromDocument implements TopicIndexer {
     }
 
     @Override
-    public List<String> index(MetadataDocument document) {        
+    public List<String> index(GeminiDocument document) {        
        return document.getTopics()
            .stream()
            .filter(t -> topicHierarchy.containsKey(t))

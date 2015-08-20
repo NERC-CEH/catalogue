@@ -42,7 +42,7 @@
   <alternateIdentifiers>
     <#list doc.resourceIdentifiers as uri>
       <#if uri.codeSpace!="doi:">
-        <alternateIdentifier alternateIdentifierType="URN">${uri.coupleResource}</alternateIdentifier>
+        <alternateIdentifier alternateIdentifierType="URN">${uri.coupledResource}</alternateIdentifier>
       </#if>
     </#list>
   </alternateIdentifiers>
@@ -63,7 +63,7 @@
           <rights>${useLimitation.value}</rights>
         </#if>
       </#list>
-    </rightsList> 
+    </rightsList>
   </#if>
   <descriptions>
     <description descriptionType="Abstract">${doc.description}</description>

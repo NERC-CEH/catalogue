@@ -1,10 +1,10 @@
 define [
   'underscore'
-  'backbone'
+  'cs!collections/Positionable'
   'cs!views/editor/SingleView'
   'cs!views/editor/ChildView'
   'tpl!templates/editor/Parent.tpl'
-], (_, Backbone, SingleView, ChildView, template) -> SingleView.extend
+], (_, Positionable, SingleView, ChildView, template) -> SingleView.extend
 
   events:
     'click button.add': 'add'
@@ -12,11 +12,11 @@ define [
   initialize: (options) ->
     SingleView.prototype.initialize.call @, options
     modelData = if @model.has @data.modelAttribute then @model.get @data.modelAttribute else []
-    @collection = new Backbone.Collection [], model: @data.ModelType
+    @collection = new Positionable [], model: @data.ModelType
 
     @listenTo @collection, 'add', @addOne
     @listenTo @collection, 'reset', @addAll
-    @listenTo @collection, 'add remove change', @updateModel
+    @listenTo @collection, 'add remove change position', @updateModel
     @listenTo @model, 'sync', @updateCollection
 
     do @render
@@ -25,6 +25,12 @@ define [
 
     if @data.multiline
       @$el.addClass 'multiline'
+
+    @$attach.sortable
+      start: (event, ui) =>
+        @_oldPosition = ui.item.index()
+      update: (event, ui) =>
+        @collection.position @_oldPosition, ui.item.index()
 
   render: ->
     @$el.html template data: @data

@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 
 @Data
 @Accessors(chain = true)
@@ -28,7 +28,7 @@ public class Metadata {
     @NotNull
     private UUID fileIdentifier;
     private String selfUrl;
-    private DateTime authorDate;
+    private LocalDateTime authorDate;
     @NotNull
     @Valid
     private ResponsibleParty author;

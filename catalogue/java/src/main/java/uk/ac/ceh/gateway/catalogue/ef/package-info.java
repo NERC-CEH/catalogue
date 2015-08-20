@@ -8,7 +8,7 @@
     }
 )
 @XmlJavaTypeAdapters({
-    @XmlJavaTypeAdapter(type=DateTime.class, value=uk.ac.ceh.gateway.catalogue.ef.adapters.DateTimeAdapter.class),
+    @XmlJavaTypeAdapter(type=LocalDateTime.class, value=uk.ac.ceh.gateway.catalogue.ef.adapters.LocalDateTimeAdapter.class),
     @XmlJavaTypeAdapter(type=LocalDate.class, value=uk.ac.ceh.gateway.catalogue.ef.adapters.LocalDateAdapter.class),
     @XmlJavaTypeAdapter(type=UUID.class, value=uk.ac.ceh.gateway.catalogue.ef.adapters.UuidAdapter.class)
 })
@@ -18,4 +18,4 @@ package uk.ac.ceh.gateway.catalogue.ef;
 import java.util.UUID;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.*;
-import org.joda.time.*;
+import java.time.*;

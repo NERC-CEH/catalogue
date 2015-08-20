@@ -17,6 +17,7 @@ define [
     new @data.ObjectInputView _.extend {}, @data,
       el: @$('.dataentry')
       model: @model
+      index: @index
 
   render: ->
     @$el.html template index: @index
