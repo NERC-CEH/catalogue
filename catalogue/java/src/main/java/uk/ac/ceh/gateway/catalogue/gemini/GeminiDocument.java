@@ -45,8 +45,8 @@ public class GeminiDocument implements MetadataDocument {
         metadataStandardName, metadataStandardVersion, supplementalInfo, parentIdentifier, revisionOfIdentifier;
     @JsonIgnore
     private String jsonString;
-    private List<String> alternateTitles, coupledResources, spatialRepresentationTypes, datasetLanguages,
-        accessConstraints, securityConstraints;
+    private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages, accessConstraints,
+      securityConstraints;
     private Keyword resourceType;        
     private List<Keyword> topicCategories, useLimitations, otherConstraints;
     private List<DistributionInfo> distributionFormats;
@@ -160,8 +160,13 @@ public class GeminiDocument implements MetadataDocument {
     }
     
     public List<String> getCoupledResources() {
-        return Optional.ofNullable(coupledResources)
-            .orElse(Collections.emptyList());
+        return Optional.ofNullable(service)
+            .map(Service::getCoupledResources)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(Service.CoupledResource::getIdentifier)
+            .filter(cr -> !cr.isEmpty())
+            .collect(Collectors.toList());
     }
     
     public List<ResponsibleParty> getResponsibleParties() {

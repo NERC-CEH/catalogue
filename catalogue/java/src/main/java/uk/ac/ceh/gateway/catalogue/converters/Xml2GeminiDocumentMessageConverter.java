@@ -51,7 +51,7 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 @Slf4j
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id, title, description, alternateTitle, resourceType, 
-        browseGraphicUrl, coupledResource, resourceStatus, metadataDate, lineage, 
+        browseGraphicUrl, resourceStatus, metadataDate, lineage, 
         metadataStandardName, metadataStandardVersion, supplementalInfo, 
         spatialRepresentationType, datasetLanguage, 
         accessConstraints, securityConstraints, parentIdentifier;
@@ -95,7 +95,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.boundingBoxesConverter = new BoundingBoxesConverter(xpath);
         this.browseGraphicUrl = xpath.compile(XPaths.BROWSE_GRAPHIC_URL);
         this.temporalExtentConverter = new TemporalExtentConverter(xpath);
-        this.coupledResource = xpath.compile(XPaths.COUPLED_RESOURCE);
         this.resourceStatus = xpath.compile(XPaths.RESOURCE_STATUS);
         this.spatialReferenceSystem = new SpatialReferenceSystemConverter(xpath);
         this.datasetReferenceDatesConverter = new DatasetReferenceDatesConverter(xpath);
@@ -151,7 +150,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
             toReturn.setBrowseGraphicUrl(emptyToNull(browseGraphicUrl.evaluate(document)));
             toReturn.setTemporalExtents(temporalExtentConverter.convert(document));
-            toReturn.setCoupledResources(getListOfStrings(document, coupledResource));
             toReturn.setResourceStatus(emptyToNull(resourceStatus.evaluate(document)));
             toReturn.setSpatialReferenceSystems(spatialReferenceSystem.convert(document));
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
