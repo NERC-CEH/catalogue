@@ -15,7 +15,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 public class Model extends ImpDocument {
     private String version, contact, license, operatingRequirements, applicationType,
             smallestAndLargestApplication, geographicalRestrictions, temporalResolution,
-            keyOutputs, outputData, calibrationRequired, modelStructure, dataInput;
-    private List<String> keyReferences;
+            keyOutputs, calibrationRequired, modelStructure, dataInput;
+    private List<String> keyReferences, inputData, outputData;
     private Link documentation;
 }
