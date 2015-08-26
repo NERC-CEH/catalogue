@@ -30,7 +30,11 @@
     "GIS-derived sub-catchment characteristics, e.g. stream length, sub-catchment area"
   ],
   "keyOutputs": "Nitrate concentration",
-  "outputData": "Discharge, ammonium concentration, also loads of both nitrate and ammonium",
+  "outputData": [
+    "Discharge",
+    "ammonium concentration",
+    "nitrate and ammonium"
+  ],
   "calibrationRequired": "Extensive",
   "modelStructure": "Conceptual process representation",
   "dataInput": "Mixture of expert based/calibrated and measurement-derived"
