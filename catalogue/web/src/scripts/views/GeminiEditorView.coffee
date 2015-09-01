@@ -52,10 +52,9 @@ define [
           label: 'Title'
           helpText: """
                     <p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-                    <p>Jargon should be avoided so as to provide clarity to a broad audience from various specialisation across the public sector</p>
-                    <p>The leading letter and proper nouns of the title should be capitalised.</p>
-                    <p>If it's necessary to include acronyms in the formal title of a data resource, then include both the acronym (in parentheses) and its phrase or word from which it was formed.</p>
-                    <p>In the event that there are multiple titles, translations of titles (e.g. Welsh), and those with acronyms, these titles should be added as alternative titles</p>
+                    <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
+                    <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
+                    <p>Please refer to <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank">guidance for metadata authors</a></p>
                     """
 
         new ParentStringView
@@ -63,10 +62,8 @@ define [
           modelAttribute: 'alternateTitles'
           label: 'Alternative Titles'
           helpText: """
-                    <p>Alternative titles allow for entries of multiple titles, translations of titles (e.g. Welsh), and those with acronyms.</p>
-                    <p>The leading letter and proper nouns of the title only should be capitalised.</p>
-                    <p>In the event that the alternative title includes acronyms in the formal title of a data resource, then include
-                    both the acronym (in parentheses) and its definition. Acronyms should not include full-stops between each letter.</p>
+                    <p>Alternative titles allow you to add multiple titles and non-English translations of titles (e.g. Welsh).</p>
+                    <p>Only the leading letter and proper nouns of titles should be capitalised. If the title includes acronyms, include both the acronym (in parentheses) and its definition. Acronyms should not include full-stops between each letter.</p>
                     """
 
         new TextareaView
@@ -75,14 +72,18 @@ define [
           label: 'Description'
           rows: 17
           helpText: """
-                    <p>A brief description of the data resource. This should include some explanation as to purpose and how the data resource has been used since creation.</p>
-                    <p>It is best to write a concise abstract.</p>
+                    <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
+                    <p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
+                    <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure - see <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank">guidance for metadata authors</a></p>
                     """
 
         new ResourceStatusView
           model: @model
           modelAttribute: 'resourceStatus'
           label: 'Resource Status'
+          helpText: """
+                    <p>The current status of the data resource.  For data curated by the EIDC, <strong>Completed</strong> is the usual expected value.  <strong>Historical archive</strong> is acceptable if the data have been withdrawn or replaced (e.g. due to corrections/updated data published elsewhere).  <strong>Obsolete</strong> may be used in exceptional circumstances.</p>
+                    """
 
         new SingleObjectView
           model: @model
@@ -91,10 +92,9 @@ define [
           label: 'Dataset Reference Date'
           ObjectInputView: DatasetReferenceDateView,
           helpText: """
-                    <p>Creation date, the date the data resource is created.</p>
-                    <p>The publication date is the date when the data resource is being made available or released for use - it is <strong>NOT</strong> the date of creation.</p>
+                    <p>The publication date is the date when the data resource is being made available or released for use. <u>This is different from the creation date</u> which is the date on which the data resource was created.</p>
                     <p>If you include a revision date, it implies that the resource has been changed as a consequence of edits or updates.
-                    For EIDC records it is usual practice for revised resources to have an entirely new record, therefore <em>revision date</em> is rarely necessary.</p>
+                    For EIDC records it is usual practice for revised resources to have an entirely new record, therefore revision date is rarely necessary.</p>
                     """
 
         new TextareaView
@@ -102,6 +102,10 @@ define [
           modelAttribute: 'supplementalInfo'
           label: 'Additional Information Source'
           rows: 7
+          helpText: """
+                    <p>Source(s) of further information about the data resource (e.g. journal articles).</p>
+                    <p>If the sources of information are available online, it is recommended they are added as <strong>Online resources</strong>, otherwise they can be added as plain-text here.</p>
+                    """
       ]
     ,
       label: 'Two'
@@ -152,7 +156,7 @@ define [
               westBoundLongitude: -180.00
           helpText: """
                     <p>A bounding box representing the limits of the data resource's study area.</p>
-                    <p>If you do not wish to reveal the exact location publicly, it is recommended that you generalise the location.  Such sensitive locations may include endangered species and their habitats.</p>
+                    <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
                     """
 
         new ParentView
@@ -161,6 +165,9 @@ define [
           ModelType: MultipleDate
           label: 'Temporal Extents'
           ObjectInputView: TemporalExtentView
+          helpText: """
+                    <p>The time period(s) the data resource covers.  This is often the same as the data capture period but it need not be so.</p>
+                    """
       ]
     ,
       label: 'Three'
@@ -190,13 +197,7 @@ define [
               code: 'CRS:84'
               codeSpace: 'urn:ogc:def:crs:EPSG'
           helpText: """
-                    <p>The spatial referencing systems used within the data resource.</p>
-                    <p>There are three commonly used co-ordinate systems for British Isle data resources:</p>
-                    <ul  class="list-unstyled">
-                    <li>British National Grid</li>
-                    <li>Irish National Grid</li>
-                    <li>WGS84 (which is a global reference system)</li>
-                    </ul>
+                    <p>The spatial referencing system used within the data resource.  <strong>This is mandatory for datasets</strong>; if the dataset has no spatial component (e.g. if it is a laboratory study) the resource type ‘non-geographic data’ should be used instead.</p>
                     """
 
         new SpatialRepresentationTypeView
@@ -416,7 +417,7 @@ define [
           helpText: """
                     <p>The organisation or person responsible for the authorship, maintenance and curation of the data resource.</p>
                     <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
-                    <p>The names of individuals should be included in the format <em>Surname, First Initial. Second Initial.</em>  For example <b>Brown, A.B.</b></p>
+                    <p>The names of individuals should be included in the format Surname, First Initial. Second Initial. For example <strong>Brown, A.B.</strong></p>
                     """
       ]
     ,
@@ -437,7 +438,7 @@ define [
           helpText: """
                     <p>The organisation responsible for distributing the data resource</p>
                     <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
-                    <p>The names of individuals should be included in the format <em>Surname, First Initial. Second Initial.</em>  For example <b>Brown, A.B.</b></p>
+                    <p>The names of individuals should be included in the format Surname, First Initial. Second Initial.  For example <strong>Brown, A.B.</strong></p>
                     """
 
         new ParentView
@@ -446,7 +447,7 @@ define [
           label: 'Distribution Formats'
           ObjectInputView: DistributionFormatView
           helpText: """
-                    <p>File format of dataset</p>
+                    <p>The format(s) in which the data is available.  Version is mandatory but if it’s not applicable, enter "unknown"</p>
                     """
 
         new TextareaView
@@ -457,6 +458,7 @@ define [
           helpText: """
                     <p>Information about the source data used in the construction of this data resource.</p>
                     <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>
+                    <p>See <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank">guidance for metadata authors</a>.</p>
                     """
 
         new ParentView
@@ -464,6 +466,9 @@ define [
           modelAttribute: 'resourceMaintenance'
           label: 'Resource Maintenance'
           ObjectInputView: ResourceMaintenanceView
+          helpText: """
+                    <p>This states how often the updated data resource is made available to the user.  For the vast majority of EIDC data, this value will be "not planned".</p>
+                    """
       ]
     ,
       label: 'Seven'
@@ -486,8 +491,7 @@ define [
               description: 'Order a copy of this dataset'
               'function': 'order'
           helpText: """
-                    <p>Links to websites and web services which provide additional information about the data resource.</p>
-                    <p>In the templates replace <samp>{fileIdentifier}</samp> with the actual metadata file identifier</p>
+                    <p>Links to web services to access the data and websites which provide additional information about the resource.</p>
                     """
       ]
     ,
@@ -581,7 +585,7 @@ define [
           helpText: """
                     <p>The organisation or person responsible for the authorship, maintenance and curation of the metadata resource.</p>
                     <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
-                    <p>The names of individuals should be included in the format <em>Surname, First Initial. Second Initial.</em>  For example <b>Brown, A.B.</b></p>
+                    <p>The names of individuals should be included in the format Surname, First Initial. Second Initial.  For example <strong>Brown, A.B.</strong></p>
                     """
 
         new InputView
