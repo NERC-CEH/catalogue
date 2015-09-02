@@ -26,8 +26,14 @@
     <select data-name="role" class="editor-input role" id="contacts<%= data.index %>Role">
       <option value="" selected >- Select Role -</option>
       <option value="author">Author</option>
+      <option value="coAuthor">Co-author</option>
+      <option value="collaborator">Collaborator</option>
+      <option value="contributor">Contributor</option>
       <option value="custodian">Custodian</option>
       <option value="distributor">Distributor</option>
+      <option value="editor">Editor</option>
+      <option value="funder">Funder</option>
+      <option value="mediator">Mediator</option>
       <option value="originator">Originator</option>
       <option value="owner">Owner</option>
       <option value="pointOfContact">Point Of Contact</option>
@@ -35,6 +41,9 @@
       <option value="processor">Processor</option>
       <option value="publisher">Publisher</option>
       <option value="resourceProvider">Resource Provider</option>
+      <option value="rightsHolder">Rights Holder</option>
+      <option value="sponsor">Sponsor</option>
+      <option value="stakeholder">Stakeholder</option>
       <option value="user">User</option>
     </select>
   </div>
