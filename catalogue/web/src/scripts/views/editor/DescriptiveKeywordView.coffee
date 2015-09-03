@@ -12,17 +12,6 @@ define [
 
   events: ->
     _.extend {}, ObjectInputView.prototype.events,
-      'click .descriptiveKeywordType button': (event) ->
-        @$('.descriptiveKeywordType button').addClass('btn-default').removeClass('btn-primary')
-        @model.set 'type', @$(event.target).toggleClass('btn-primary').text().toLowerCase()
-
-      'click .dateType button': (event) ->
-        @$('.dateType button').addClass('btn-default').removeClass('btn-primary')
-        dateType = @$(event.target).toggleClass('btn-primary').text().toLowerCase()
-        thesaurusName = _.clone @model.get 'thesaurusName'
-        @model.set 'thesaurusName', _.extend thesaurusName,
-          dateType: dateType
-
       'click .add': -> do @add
 
       'click .predefined': -> @addPredefined event
@@ -54,22 +43,12 @@ define [
     @listenTo @keywords, 'add remove change position', @updateModel
 
     @keywords.reset @model.get 'keywords'
+    @$('input.date').datepicker dateFormat: "yy-mm-dd"
 
   render: ->
     ObjectInputView.prototype.render.apply @
-    type = @model.get 'type'
-    @$('.descriptiveKeywordType button').each ->
-      $this = $ @
-      if $this.text().toLowerCase() == type
-        $this.toggleClass 'btn-default btn-primary'
-
-    @$('input.date').datepicker dateFormat: "yy-mm-dd"
-
-    dateType = @model.get('thesaurusName')?.dateType
-    @$('.dateType button').each ->
-      $this = $ @
-      if $this.text().toLowerCase() == dateType
-        $this.toggleClass 'btn-default btn-primary'
+    @$('.type').val @model.get 'type'
+    @$('.dateType').val  @model.get('thesaurusName')?.dateType
     @
 
   addOne: (model, keywordIndex) ->
