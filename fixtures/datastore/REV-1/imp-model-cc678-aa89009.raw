@@ -1,0 +1,18 @@
+{
+  "id": "imp-model-cc678-aa89009",
+  "type": "model",
+  "title": "Kennet Model",
+  "description": "Instream sediment, P, and macrophyte dynamics",
+  "contact": "Reading",
+  "inputData": [
+    "Upstream and STW flow and suspended sediment and phosphorus concentration",
+    "air temperature",
+    "solar radiation",
+    "reach length and average width"
+  ],
+  "outputData": [
+    "Water column and stream bed sediment concentration",
+    "water column and stream bed phosphorus concentration",
+    "macrophyte and epiphyte biomass"
+  ]
+}
