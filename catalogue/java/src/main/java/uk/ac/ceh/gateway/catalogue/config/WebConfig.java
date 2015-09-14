@@ -39,6 +39,7 @@ import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
+import uk.ac.ceh.gateway.catalogue.lake.LakeDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
@@ -95,6 +96,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         // IMP Message Converters
         converters.add(new Object2TemplatedMessageConverter(Model.class,            configureFreeMarker().getConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(ModelApplication.class, configureFreeMarker().getConfiguration()));
+        
+        // Lake Message Converters
+        converters.add(new Object2TemplatedMessageConverter(LakeDocument.class, configureFreeMarker().getConfiguration()));
         
         // Gemini Message Converters
         converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,       configureFreeMarker().getConfiguration()));

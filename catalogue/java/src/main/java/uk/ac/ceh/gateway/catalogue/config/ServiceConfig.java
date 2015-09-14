@@ -39,8 +39,10 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLakeDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
+import uk.ac.ceh.gateway.catalogue.lake.LakeDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -126,7 +128,8 @@ public class ServiceConfig {
         return new HashMapDocumentTypeLookupService()
                 .register("GEMINI_DOCUMENT", GeminiDocument.class)
                 .register("EF_DOCUMENT", BaseMonitoringType.class)
-                .register("IMP_DOCUMENT", ImpDocument.class);
+                .register("IMP_DOCUMENT", ImpDocument.class)
+                .register("LAKE_DOCUMENT", LakeDocument.class);
     }
     
     @Bean
@@ -220,6 +223,7 @@ public class ServiceConfig {
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
             .register(Facility.class,           new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
+            .register(LakeDocument.class,       new SolrIndexLakeDocumentGenerator(metadataDocument, solrGeometryService()))
             .register(BaseMonitoringType.class, baseMonitoringType)
             .register(MetadataDocument.class,   metadataDocument);
         
