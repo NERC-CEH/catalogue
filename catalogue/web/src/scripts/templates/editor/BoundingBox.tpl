@@ -13,4 +13,7 @@
     <label for="boundingBox<%= data.index %>EastBoundLongitude">East Bounding Longitude</label>
     <input data-name="eastBoundLongitude" id="boundingBox<%= data.index %>EastBoundLongitude" class="editor-input" value="<%= data.eastBoundLongitude %>">
   </div>
+  <div class="col-sm-6 col-lg-6">
+    <div class="map" style="width: 400px; height: 400px;"></div>
+  </div>
 </div>
