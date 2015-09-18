@@ -53,11 +53,21 @@ define [
       do drawing.activate
       do transform.activate
 
+    @listenTo @model, 'change', @render
+
   handleDrawnFeature: (bbox) ->
     bounds = bbox
       ?.feature
       ?.geometry
       .clone()
       .transform('EPSG:3857', 'EPSG:4326')
+      .getBounds()
+
+    @model.set
+      westBoundLongitude: bounds.left.toFixed 3
+      southBoundLatitude: bounds.bottom.toFixed 3
+      eastBoundLongitude: bounds.right.toFixed 3
+      northBoundLatitude: bounds.top.toFixed 3
+
     console.log 'updating'
     console.log bounds
