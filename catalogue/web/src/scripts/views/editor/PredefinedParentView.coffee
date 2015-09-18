@@ -23,7 +23,7 @@ define [
     value = $(event.target).text()
     selected = {}
 
-    if value != 'Blank'
+    if value != 'Custom'
       selected = @data.predefined[value]
 
     @collection.add selected

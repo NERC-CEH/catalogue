@@ -44,7 +44,7 @@ define [
     _.invoke @sections[0].views, 'show'
     $editorNav = @$('#editorNav')
     _.each @sections, (section) ->
-      $editorNav.append(@$("<li>#{section.label}</li>"))
+      $editorNav.append(@$("<li title=\"#{section.title}\">#{section.label}</li>"))
 
     $editorNav.find('li').first().addClass('active')
 
