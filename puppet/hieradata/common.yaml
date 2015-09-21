@@ -1,0 +1,11 @@
+---
+# This is the common.yaml. It contains the configuration details for the 
+# catalogue which we are happy to have stored in the git repository.
+solr::solr_home: /opt/ceh-catalogue/catalogue/solr-config
+
+catalogue_config:
+  'documents.baseUri':         'http://cig-developer.ceh.ac.uk'
+  'jena.location':             '/var/ceh-catalogue/tdb'
+  'data.repository.location':  '/var/ceh-catalogue/datastore'
+  'template.location':         '/opt/ceh-catalogue/catalogue/templates'
+  'solr.server.documents.url': 'http://localhost:7000/documents'
