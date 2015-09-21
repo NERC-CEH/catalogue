@@ -30,9 +30,10 @@ define [
   'cs!models/editor/DescriptiveKeyword'
   'cs!views/editor/DistributionFormatView'
   'cs!views/editor/SpatialResolutionView'
+  'cs!models/editor/SpatialResolution'
   'cs!views/editor/ServiceView'
   'cs!models/editor/Service'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, ServiceView, Service) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, SpatialResolution, ServiceView, Service) -> EditorView.extend
 
 
   initialize: ->
@@ -226,6 +227,7 @@ define [
         new ParentView
           model: @model
           modelAttribute: 'spatialResolutions'
+          ModelType: SpatialResolution
           label: 'Spatial Resolutions'
           ObjectInputView: SpatialResolutionView
           helpText: """
