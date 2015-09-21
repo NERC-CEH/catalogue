@@ -18,6 +18,7 @@ define [
   'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/OnlineResourceView'
+  'cs!models/editor/OnlineResource'
   'cs!views/editor/UseLimitationView'
   'cs!views/editor/OtherConstraintView'
   'cs!views/editor/TemporalExtentView'
@@ -29,15 +30,17 @@ define [
   'cs!models/editor/DescriptiveKeyword'
   'cs!views/editor/DistributionFormatView'
   'cs!views/editor/SpatialResolutionView'
+  'cs!models/editor/SpatialResolution'
   'cs!views/editor/ServiceView'
   'cs!models/editor/Service'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, ServiceView, Service) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, SpatialResolution, ServiceView, Service) -> EditorView.extend
 
 
   initialize: ->
 
     @sections = [
       label: 'One'
+      title:  'General information'
       views: [
         new SingleObjectView
           model: @model
@@ -77,6 +80,20 @@ define [
                     <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure - see <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank">guidance for metadata authors</a></p>
                     """
 
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'resourceIdentifiers'
+          label: 'Dataset Identifiers'
+          ObjectInputView: ResourceIdentifierView
+          predefined:
+            DOI:
+              codeSpace: 'doi:'
+              code: '10.'
+          helpText: """
+                    <p>A unique string or number used to identify the data resource.</p>
+                    <p> The codespace identifies the context in which the code is unique.</p>
+                    """
+
         new ResourceStatusView
           model: @model
           modelAttribute: 'resourceStatus'
@@ -109,6 +126,7 @@ define [
       ]
     ,
       label: 'Two'
+      title: 'Spatial and temporal extent'
       views: [
         new PredefinedParentView
           model: @model
@@ -171,6 +189,7 @@ define [
       ]
     ,
       label: 'Three'
+      title:  'Spatial characteristics of the data resource'
       views: [
         new PredefinedParentView
           model: @model
@@ -208,6 +227,7 @@ define [
         new ParentView
           model: @model
           modelAttribute: 'spatialResolutions'
+          ModelType: SpatialResolution
           label: 'Spatial Resolutions'
           ObjectInputView: SpatialResolutionView
           helpText: """
@@ -217,6 +237,7 @@ define [
       ]
     ,
       label: 'Four'
+      title:  'Categorisation and keywords'
       views: [
         new ParentView
           model: @model
@@ -245,7 +266,6 @@ define [
                 date: '2008-06-01'
                 dateType: 'revision'
             'CEH Topic':
-              type: 'theme'
               thesaurusName:
                 title: 'CEH Metadata Vocabulary'
                 date: '2014-09-19'
@@ -257,6 +277,7 @@ define [
       ]
     ,
       label: 'Five'
+      title: 'Contacts'
       views: [
         new PredefinedParentView
           model: @model
@@ -270,12 +291,6 @@ define [
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'author'
               email: 'enquiries@ceh.ac.uk'
-              address:
-                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
-                postalCode: 'OX10 8BB'
-                city: 'Wallingford'
-                administrativeArea: 'Oxfordshire'
-                country: 'United Kingdom'
             'CEH Bangor':
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'pointOfContact'
@@ -422,6 +437,7 @@ define [
       ]
     ,
       label: 'Six'
+      title: 'Distribution details and lineage'
       views: [
         new PredefinedParentView
           model: @model
@@ -472,10 +488,12 @@ define [
       ]
     ,
       label: 'Seven'
+      title: 'Online Resources'
       views: [
         new PredefinedParentView
           model: @model
           modelAttribute: 'onlineResources'
+          ModelType: OnlineResource
           label: 'Online Resources'
           ObjectInputView: OnlineResourceView
           multiline: true
@@ -483,7 +501,7 @@ define [
             'Supporting Information':
               url: 'http://eidc.ceh.ac.uk/metadata/{fileIdentifier}/zip_export/'
               name: 'Supporting information'
-              description: 'Supporting information available to assist in re-use of this datase. Link to data citation details.'
+              description: 'Supporting information available to assist in re-use of this dataset'
               'function': 'information'
             'Online Ordering':
               url: 'https://catalogue.ceh.ac.uk/download?fileIdentifier={fileIdentifier}'
@@ -496,6 +514,7 @@ define [
       ]
     ,
       label: 'Eight'
+      title: 'Licensing and constraints'
       views: [
         new PredefinedParentView
           model: @model
@@ -505,16 +524,14 @@ define [
           multiline: true
           predefined:
             'Open Government Licence':
-              value: 'Open Government Licence'
+              value: 'This resource is made available under the terms of the Open Government Licence'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain'
             'Open Government Licence - Non CEH data':
-              value: 'Open Government Licence'
+              value: 'This resource is made available under the terms of the Open Government Licence'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data/plain'
             'CEH Licence':
               value: 'Licence terms and conditions apply'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/standard-click-through/plain'
-            'Licence terms ...':
-              value: 'Licence terms and conditions apply'
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
                     <ul class="list-unstyled">
@@ -541,20 +558,8 @@ define [
       ]
     ,
       label: 'Nine'
+      title: 'Web service details'
       views: [
-        new PredefinedParentView
-          model: @model
-          modelAttribute: 'resourceIdentifiers'
-          label: 'Dataset Identifiers'
-          ObjectInputView: ResourceIdentifierView
-          predefined:
-            DOI:
-              codeSpace: 'doi:'
-          helpText: """
-                    <p>A unique string or number used to identify the data resource.</p>
-                    <p> The codespace identifies the context in which the code is unique.</p>
-                    """
-
         new ServiceView
           model: @model
           modelAttribute: 'service'
@@ -563,6 +568,7 @@ define [
       ]
     ,
       label: 'Ten'
+      title: 'Metadata about metadata'
       views: [
         new PredefinedParentView
           model: @model

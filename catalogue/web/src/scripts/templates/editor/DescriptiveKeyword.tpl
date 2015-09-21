@@ -16,10 +16,10 @@
 <h5>Keywords</h5>
 <div class="keywords"></div>
 <div class="row">
-  <div class="col-sm-4 col-lg-4">
+  <div class="col-sm-5 col-lg-5">
     <div class="dropdown hidden" id="inspireTheme">
       <button class="editor-button dropdown-toggle" type="button" id="dropdownInspireMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-        Add INSPIRE Theme
+        Choose keyword from the INSPIRE vocabulary
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu predefined" aria-labelledby="dropdownInspireMenu">
@@ -62,7 +62,7 @@
     </div>
     <div class="dropdown hidden" id="cehTopic">
       <button class="editor-button dropdown-toggle" type="button" id="dropdownCehTopicMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-        Add CEH Topic
+        Choose keyword from CEH themes
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu predefined" aria-labelledby="dropdownCehTopicMenu">

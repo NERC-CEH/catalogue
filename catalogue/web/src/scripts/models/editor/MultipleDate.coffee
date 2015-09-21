@@ -37,6 +37,15 @@ define [
             message:
               "#{labels[key]} is not a vaild date"
 
+    if attrs.begin && attrs.end
+      begin = Date.parse attrs.begin
+      end = Date.parse attrs.end
+
+      if begin > end
+        errors.push
+          message:
+            "End date is before Begin date"
+
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate
       # because returning something signals a validation error.

@@ -4,6 +4,6 @@
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdown<%= data.modelAttribute %>Menu">
-    <li><a href="#">Blank</a></li>
+    <li><a href="#">Custom</a></li>
   </ul>
 </div>
