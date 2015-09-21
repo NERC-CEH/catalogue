@@ -18,6 +18,7 @@ define [
   'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/OnlineResourceView'
+  'cs!models/editor/OnlineResource'
   'cs!views/editor/UseLimitationView'
   'cs!views/editor/OtherConstraintView'
   'cs!views/editor/TemporalExtentView'
@@ -31,7 +32,7 @@ define [
   'cs!views/editor/SpatialResolutionView'
   'cs!views/editor/ServiceView'
   'cs!models/editor/Service'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, ServiceView, Service) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, ServiceView, Service) -> EditorView.extend
 
 
   initialize: ->
@@ -490,6 +491,7 @@ define [
         new PredefinedParentView
           model: @model
           modelAttribute: 'onlineResources'
+          ModelType: OnlineResource
           label: 'Online Resources'
           ObjectInputView: OnlineResourceView
           multiline: true
