@@ -1,7 +1,24 @@
 define [
   'underscore'
   'backbone'
-], (_, Backbone) -> Backbone.Model.extend {
+  'openlayers'
+], (_, Backbone, Openlayers) -> Backbone.Model.extend {
+
+  hasBoundingBox: ->
+    return @has('westBoundLongitude') &&
+      @has('southBoundLatitude') &&
+      @has('eastBoundLongitude') &&
+      @has('northBoundLatitude')
+
+  getBoundingBox: ->
+    return new OpenLayers.Feature.Vector(
+      new OpenLayers.Bounds(
+        @get('westBoundLongitude'),
+        @get('southBoundLatitude'),
+        @get('eastBoundLongitude'),
+        @get('northBoundLatitude'))
+      .toGeometry().transform('EPSG:4326', 'EPSG:3857')
+    )
 
   validate: (attrs) ->
     labels =

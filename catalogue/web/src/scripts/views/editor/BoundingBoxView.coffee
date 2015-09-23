@@ -5,60 +5,89 @@ define [
   'cs!views/OpenLayersView'
   'openlayers'
 ],
-(_, ObjectInputView, template, OpenLayersView, OpenLayers) -> ObjectInputView.extend
+(
+  _,
+  ObjectInputView,
+  template,
+  OpenLayersView,
+  OpenLayers) -> ObjectInputView.extend
 
   template: template
 
-  initialize: ->
+  events: ->
+    _.extend {}, ObjectInputView.prototype.events,
+      'click button': 'viewMap'
+
+  initialize: (options) ->
+    _.bindAll(@,
+      'handleDrawnFeature',
+      'handleTransformedFeature'
+    )
     do @render
+    @listenTo @model, 'change:westBoundLongitude', (model, value) ->
+      @$('#boundingBoxWestBoundLongitude').val value
+    @listenTo @model, 'change:southBoundLatitude', (model, value) ->
+      @$('#boundingBoxSouthBoundLatitude').val value
+    @listenTo @model, 'change:eastBoundLongitude', (model, value) ->
+      @$('#boundingBoxEastBoundLongitude').val value
+    @listenTo @model, 'change:northBoundLatitude', (model, value) ->
+      @$('#boundingBoxNorthBoundLatitude').val value
+    @listenTo @model.collection, 'visible', @viewMap
+    @listenTo @model.collection, 'hidden', @closeMap
 
+  viewMap: ->
+    $map = @$('.map')
+    $map.html ''
     mapView = new OpenLayersView
-      el: @$('.map')
+      el: $map
+    @map = mapView.map
 
-    map = mapView.map
+    @boundingBoxLayer = new OpenLayers.Layer.Vector "Bounding Box"
+    @map.addLayer @boundingBoxLayer
 
-    boundingBoxLayer = new OpenLayers.Layer.Vector "Bounding Box"
-    map.addLayer boundingBoxLayer
-
-    transform = new OpenLayers.Control.TransformFeature boundingBoxLayer,
+    @transform = new OpenLayers.Control.TransformFeature @boundingBoxLayer,
       rotate: false
       irregular: true
-    map.addControl transform
+    @transform.events.register(
+      'transformcomplete', @boundingBoxLayer, @handleTransformedFeature
+      )
+    @map.addControl @transform
 
-    drawing = new OpenLayers.Control.DrawFeature boundingBoxLayer,
+    @drawing = new OpenLayers.Control.DrawFeature @boundingBoxLayer,
       OpenLayers.Handler.RegularPolygon,
+      title: 'Draw Bounding Box'
       handlerOptions:
         sides: 4,
         irregular: true
+    @drawing.events.register(
+      'featureadded', @boundingBoxLayer, @handleDrawnFeature
+      )
+    @map.addControl @drawing
 
-    _.bindAll @, 'handleDrawnFeature'
-    drawing.events.register 'featureadded', boundingBoxLayer, @handleDrawnFeature
-    map.addControl drawing
-
-    west = @model.get 'westBoundLongitude'
-    south = @model.get 'southBoundLatitude'
-    east = @model.get 'eastBoundLongitude'
-    north = @model.get 'northBoundLatitude'
-
-    if west && south && east && north
-      bounds = new OpenLayers.Bounds(west, south, east, north)
-        .toGeometry()
-      bounds.transform('EPSG:4326', 'EPSG:3857')
-      boundingBox = new OpenLayers.Feature.Vector(bounds)
-
-    if boundingBox
-      boundingBoxLayer.addFeatures [boundingBox]
-      map.zoomToExtent(boundingBoxLayer.getDataExtent())
+    if @model.hasBoundingBox()
+      do @createFeature
+      @map.zoomToExtent(@boundingBoxLayer.getDataExtent())
+      do @transform.activate
     else
-      do drawing.activate
-      do transform.activate
+      do mapView.refresh
+      do @drawing.activate
 
-    @listenTo @model, 'change', @render
+  closeMap: ->
+    do @map.destroy
 
-  handleDrawnFeature: (bbox) ->
-    bounds = bbox
-      ?.feature
-      ?.geometry
+  createFeature: ->
+    boundingBox = @model.getBoundingBox()
+    @boundingBoxLayer.addFeatures [boundingBox]
+    @transform.setFeature boundingBox
+
+  handleDrawnFeature: (obj) ->
+    do @drawing.deactivate
+    do @transform.activate
+    @transform.setFeature obj.feature
+    @handleTransformedFeature(obj)
+
+  handleTransformedFeature: (obj) ->
+    bounds = obj.feature.geometry
       .clone()
       .transform('EPSG:3857', 'EPSG:4326')
       .getBounds()
@@ -68,6 +97,3 @@ define [
       southBoundLatitude: bounds.bottom.toFixed 3
       eastBoundLongitude: bounds.right.toFixed 3
       northBoundLatitude: bounds.top.toFixed 3
-
-    console.log 'updating'
-    console.log bounds

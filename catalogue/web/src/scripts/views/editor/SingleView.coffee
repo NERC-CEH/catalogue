@@ -12,8 +12,10 @@ define [
 
   show: ->
     @$el.addClass 'visible'
+    @trigger 'visible'
 
   hide: ->
+    @trigger 'hidden'
     @$el.removeClass 'visible'
 
   render: ->
