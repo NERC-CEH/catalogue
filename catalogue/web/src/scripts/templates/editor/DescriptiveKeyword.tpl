@@ -1,24 +1,25 @@
 <div class="row">
   <div class="col-sm-1 col-lg-1">
-    <label class="control-label">Type</label>
+    <label class="control-label" for="descriptiveKeyword<%= data.index %>type">Type</label>
   </div>
-  <div class="col-sm-11 col-lg-11">
-    <div class="btn-group btn-group-sm descriptiveKeywordType">
-      <button type="button" class="btn btn-default">Discipline</button>
-      <button type="button" class="btn btn-default">Place</button>
-      <button type="button" class="btn btn-default">Stratum</button>
-      <button type="button" class="btn btn-default">Temporal</button>
-      <button type="button" class="btn btn-default">Theme</button>
-    </div>
+  <div class="col-sm-3 col-lg-3">
+    <select data-name="type" class="editor-input type" id="descriptiveKeyword<%= data.index %>type">
+      <option value="" selected >- Select Type -</option>
+      <option value="discipline">Discipline</button>
+      <option value="place">Place</button>
+      <option value="stratum">Stratum</button>
+      <option value="temporal">Temporal</button>
+      <option value="theme">Theme</button>
+    </select>
   </div>
 </div>
 <h5>Keywords</h5>
 <div class="keywords"></div>
 <div class="row">
-  <div class="col-sm-4 col-lg-4">
+  <div class="col-sm-5 col-lg-5">
     <div class="dropdown hidden" id="inspireTheme">
       <button class="editor-button dropdown-toggle" type="button" id="dropdownInspireMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-        Add INSPIRE Theme
+        Choose keyword from the INSPIRE vocabulary
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu predefined" aria-labelledby="dropdownInspireMenu">
@@ -61,7 +62,7 @@
     </div>
     <div class="dropdown hidden" id="cehTopic">
       <button class="editor-button dropdown-toggle" type="button" id="dropdownCehTopicMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-        Add CEH Topic
+        Choose keyword from CEH themes
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu predefined" aria-labelledby="dropdownCehTopicMenu">
@@ -106,13 +107,14 @@
     <input data-name='date' class="editor-input date" id="descriptiveKeyword<%= data.index %>Date" value="<%= data.thesaurusName.date %>">
   </div>
   <div class="col-sm-2 col-lg-2">
-    <label class="control-label">Date Type</label>
+    <label class="control-label" for="descriptiveKeyword<%= data.index %>dateType">Date Type</label>
   </div>
-  <div class="col-sm-7 col-lg-7">
-    <div class="btn-group btn-group-sm dateType">
-      <button type="button" class="btn btn-default">Creation</button>
-      <button type="button" class="btn btn-default">Publication</button>
-      <button type="button" class="btn btn-default">Revision</button>
+  <div class="col-sm-3 col-lg-3">
+    <select data-name="type" class="editor-input dateType" id="descriptiveKeyword<%= data.index %>dateType">
+      <option value="" selected >- Select Date Type -</option>
+      <option value="creation">Creation</button>
+      <option value="publication">Publication</button>
+      <option value="revision">Revision</button>
     </div>
   </div>
 </div>
