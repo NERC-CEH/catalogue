@@ -17,8 +17,6 @@ tomcat::deployment:
     war:    '/vagrant/catalogue/java/target/ROOT.war'
     tomcat: ceh_catalogue
 
-tomcat::instance: {}
-
 apache::vhost:
   catalogue_vhost:
     servername:    "%{fqdn}"
