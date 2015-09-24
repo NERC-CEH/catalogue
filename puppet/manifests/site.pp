@@ -24,7 +24,7 @@ file { '/var/ceh-catalogue' :
   require => Class['::tomcat'],
 }
 
-tomcat::instance { 'ceh_catalogue':
+tomcat::instance { 'ceh-catalogue':
   ajp_port          => hiera('catalogue_ajp_port'),
   system_properties => hiera_hash('catalogue_config'),
 }
