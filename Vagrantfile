@@ -13,19 +13,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.synced_folder ".", "/opt/ceh-catalogue"
 
-  config.vm.provider "vmware_workstation" do |v|
-    v.vmx["memsize"] = "4096"
-    v.vmx["remotedisplay.vnc.enabled"] = "false"
+  config.vm.provision :shell, :path => "shell/librarian.sh"
+  config.vm.provision :shell, :path => "shell/test-data.sh", run: "always"
+
+  # Now run the puppet provisioner. Note that the modules directory is entirely
+  # managed by librarian-puppet
+  config.vm.provision :puppet do |puppet|
+    puppet.manifests_path = "puppet/manifests"
+    puppet.manifest_file  = "site.pp"
+    puppet.hiera_config_path = "puppet/hiera.yaml"
   end
 
-  config.vm.provision :shell, :path => "vagrant_provision/copy-ssl.sh"
-  config.vm.provision :shell, :path => "vagrant_provision/test-data.sh", run: "always"
-
-  config.vm.provision "puppet_server", run: "always" do |puppet|
-    puppet.puppet_server = "lapuppet.nerc-lancaster.ac.uk"
-    puppet.puppet_node = "cig-developer.nerc-lancaster.ac.uk"
-    puppet.options = "--verbose"
-  end
-
-  config.vm.provision :shell, :path => "vagrant_provision/resume.sh", run: "always"
+  config.vm.provision :shell, :path => "shell/resume.sh", run: "always"
 end

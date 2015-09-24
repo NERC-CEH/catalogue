@@ -1,0 +1,36 @@
+---
+# This is the common.yaml. It contains the configuration details for the 
+# catalogue which we are happy to have stored in the git repository.
+solr::solr_home: /opt/ceh-catalogue/catalogue/solr-config
+
+catalogue_config:
+  'documents.baseUri':         'http://cig-developer.ceh.ac.uk'
+  'jena.location':             '/var/ceh-catalogue/tdb'
+  'data.repository.location':  '/var/ceh-catalogue/datastore'
+  'template.location':         '/opt/ceh-catalogue/catalogue/templates'
+  'solr.server.documents.url': 'http://localhost:7000/documents'
+  'spring.profiles.active':    'development'
+
+catalogue_ajp_port: 7100
+
+tomcat::deployment:
+  ceh_catalogue:
+    war:    '/vagrant/catalogue/java/target/ROOT.war'
+    tomcat: 'ceh-catalogue'
+
+apache::vhost:
+  catalogue_vhost:
+    servername:    "%{fqdn}"
+    port:          '80'
+    default_vhost: true
+    docroot:       '/var/www'
+    proxy_pass:
+      - path: '/static/'
+        url: '!'
+      - path: '/id'
+        url: '!'
+      - path: '/'
+        url: "ajp://localhost:%{hiera('catalogue_ajp_port')}/"
+    redirect_source: ['/id']
+    redirect_dest:   ['/documents']
+    redirect_status: ['seeother']
