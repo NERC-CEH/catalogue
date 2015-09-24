@@ -9,6 +9,7 @@ catalogue_config:
   'data.repository.location':  '/var/ceh-catalogue/datastore'
   'template.location':         '/opt/ceh-catalogue/catalogue/templates'
   'solr.server.documents.url': 'http://localhost:7000/documents'
+  'spring.profiles.active':    'development'
 
 catalogue_ajp_port: 7100
 

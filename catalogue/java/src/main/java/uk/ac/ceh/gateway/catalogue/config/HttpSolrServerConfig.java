@@ -5,7 +5,6 @@ import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 /**
  * The following spring JavaConfig defines the beans required for the interacting
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.Profile;
  * @author cjohn
  */
 @Configuration
-@Profile("production")
 public class HttpSolrServerConfig {
     @Value("${solr.server.documents.url}") String solrDocumentServerUrl;
     

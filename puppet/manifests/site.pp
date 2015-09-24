@@ -5,9 +5,9 @@ include tomcat
 include solr
 include solr::jts
 
-create_resources('apache::vhost',      hiera_hash('apache::vhost'), {})
-create_resources('tomcat::instance',   hiera_hash('tomcat::instance'), {})
-create_resources('tomcat::deployment', hiera_hash('tomcat::deployment'), {})
+create_resources('apache::vhost',      hiera_hash('apache::vhost', {}))
+create_resources('tomcat::instance',   hiera_hash('tomcat::instance', {}))
+create_resources('tomcat::deployment', hiera_hash('tomcat::deployment', {}))
 
 # Link to the static content of the catalogue section of the project
 file { '/var/www/static' :
