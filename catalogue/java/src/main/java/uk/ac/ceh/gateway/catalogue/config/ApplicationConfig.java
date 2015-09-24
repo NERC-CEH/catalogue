@@ -28,7 +28,6 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
  * @author cjohn
  */
 @Configuration
-@PropertySource("file:///${config.file}")
 public class ApplicationConfig {
     
     @Value("${data.repository.location}") private String dataRespository;

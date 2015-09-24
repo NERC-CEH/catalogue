@@ -9,3 +9,29 @@ catalogue_config:
   'data.repository.location':  '/var/ceh-catalogue/datastore'
   'template.location':         '/opt/ceh-catalogue/catalogue/templates'
   'solr.server.documents.url': 'http://localhost:7000/documents'
+
+catalogue_ajp_port: 7100
+
+tomcat::deployment:
+  ceh_catalogue:
+    war:    '/vagrant/catalogue/java/target/ROOT.war'
+    tomcat: ceh_catalogue
+
+tomcat::instance: {}
+
+apache::vhost:
+  catalogue_vhost:
+    servername:    "%{fqdn}"
+    port:          '80'
+    default_vhost: true
+    docroot:       '/var/www'
+    proxy_pass:
+      - path: '/static/'
+        url: '!'
+      - path: '/id'
+        url: '!'
+      - path: '/'
+        url: "ajp://localhost:%{hiera('catalogue_ajp_port')}/"
+    redirect_source: ['/id']
+    redirect_dest:   ['/documents']
+    redirect_status: ['seeother']
