@@ -70,11 +70,8 @@ import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
-import uk.ac.ceh.gateway.catalogue.services.TerraCatalogImporterService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
-import uk.ac.ceh.gateway.catalogue.util.terracatalog.OfflineTerraCatalogUserFactory;
-import uk.ac.ceh.gateway.catalogue.util.terracatalog.StateTranslatingMetadataInfoFactory;
 
 /**
  * The following spring configuration will populate service beans
@@ -255,26 +252,6 @@ public class ServiceConfig {
         
         performReindexIfNothingIsIndexed(toReturn);
         return toReturn;
-    }
-    
-    @Bean
-    public TerraCatalogImporterService terraCatalogImporterService() throws XPathExpressionException, IOException {
-        OfflineTerraCatalogUserFactory<CatalogueUser> userFactory = new OfflineTerraCatalogUserFactory<>(phantomUserBuilderFactory);
-        userFactory.put("ceh", "@ceh.ac.uk");
-
-        StateTranslatingMetadataInfoFactory infoFactory = new StateTranslatingMetadataInfoFactory();
-        infoFactory.put("private", "draft");
-        infoFactory.put("public", "published");
-        
-        return new TerraCatalogImporterService(
-                dataRepository,
-                documentListingService(),
-                documentIdentifierService(),
-                userFactory,
-                documentReadingService(),
-                documentInfoMapper(),
-                infoFactory
-        );
     }
     
     //Perform an initial index of solr if their is no content inside

@@ -62,16 +62,6 @@
         </dependency>
         <dependency>
             <groupId>uk.ac.ceh.components</groupId>
-            <artifactId>token-generation-api</artifactId>
-            <version>${ceh.components.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>uk.ac.ceh.components</groupId>
-            <artifactId>token-generation-stateless</artifactId>
-            <version>${ceh.components.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>uk.ac.ceh.components</groupId>
             <artifactId>springsecurity-userstore</artifactId>
             <version>${ceh.components.version}</version>
         </dependency>
