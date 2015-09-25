@@ -72,3 +72,11 @@ define [
         )
       # Remove models not in updated
       @collection.remove(@collection.rest(updated.length))
+
+  show: ->
+    SingleView.prototype.show.apply @
+    @collection.trigger 'visible'
+
+  hide: ->
+    @collection.trigger 'hidden'
+    SingleView.prototype.hide.apply @

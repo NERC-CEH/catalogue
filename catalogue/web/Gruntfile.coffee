@@ -18,42 +18,42 @@ module.exports = (grunt) ->
 
     exec:
       git_status: 'git diff --exit-code'
-    
+
     jasmine :
       test:
         options :
           specs : 'test-compiled/**/*spec.js'
           template: require 'grunt-template-jasmine-requirejs'
-          templateOptions: 
+          templateOptions:
             requireConfigFile: 'src/scripts/main.js'
-            requireConfig: baseUrl: 'src/scripts' 
-          junit : path : 'junit' 
+            requireConfig: baseUrl: 'src/scripts'
+          junit : path : 'junit'
 
-    coffee: 
+    coffee:
       test :
         expand: true
         cwd: 'test'
         src: ['**/*.coffee']
         dest: 'test-compiled'
         ext: '.spec.js'
-    
-    less: 
+
+    less:
       development:
         options:
           compress: false
           paths: ['less', '<%= bowerDirectory %>/bootstrap/less']
         files: 'src/css/style.css' : 'src/less/style.less'
 
-    requirejs: 
-      compile: 
-        options: 
+    requirejs:
+      compile:
+        options:
           exclude:['coffee-script']
           baseUrl: 'src/scripts'
           out: 'src/scripts/main-out.js'
           name: 'main'
           mainConfigFile: 'src/scripts/main.js'
 
-    combine_harvester: 
+    combine_harvester:
       openlayers:
         options:
           root: 'src/vendor/openlayers/lib/'
@@ -71,6 +71,7 @@ module.exports = (grunt) ->
             'src/vendor/openlayers/lib/OpenLayers/Control/Zoom.js'
             'src/vendor/openlayers/lib/OpenLayers/Control/Attribution.js'
             'src/vendor/openlayers/lib/OpenLayers/Control/DrawFeature.js'
+            'src/vendor/openlayers/lib/OpenLayers/Control/TransformFeature.js'
             'src/vendor/openlayers/lib/OpenLayers/Handler/RegularPolygon.js'
             'src/vendor/openlayers/lib/OpenLayers/Layer/TMS.js'
             'src/vendor/openlayers/lib/OpenLayers/Layer/Vector.js'
@@ -90,13 +91,13 @@ module.exports = (grunt) ->
       less:
         files: "src/less/*"
         tasks: ["less"]
-      
+
       requirejs:
         files: 'src/scripts/main.js'
         tasks: ["copy:requirejs"]
 
     concurrent:
-      watch: 
+      watch:
         tasks: ['watch:less', 'watch:requirejs']
         options:
           logConcurrentOutput: true
