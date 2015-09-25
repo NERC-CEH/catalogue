@@ -18,8 +18,6 @@ define [
     @listenTo @collection, 'reset', @addAll
     @listenTo @collection, 'add remove change position', @updateModel
     @listenTo @model, 'sync', @updateCollection
-    @listenTo @, 'visible', @notifyVisible
-    @listenTo @, 'hidden', @notifyHidden
 
     do @render
     @$attach = @$(".existing")
@@ -75,8 +73,10 @@ define [
       # Remove models not in updated
       @collection.remove(@collection.rest(updated.length))
 
-  notifyVisible: ->
+  show: ->
+    SingleView.prototype.show.apply @
     @collection.trigger 'visible'
 
-  notifyHidden: ->
+  hide: ->
     @collection.trigger 'hidden'
+    SingleView.prototype.hide.apply @
