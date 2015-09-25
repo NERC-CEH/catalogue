@@ -20,7 +20,7 @@ public class IndexingFileEventListener {
     
     @Subscribe
     public void indexDocument(DataSubmittedEvent<?> event) throws DocumentIndexingException, DataRepositoryException {
-        List<String> filenames = listingService.filterFilenames(event.getFilenames());
+        List<String> filenames = listingService.filterFilenamesEitherExtension(event.getFilenames());
         String revisionID = event.getDataRepository().getLatestRevision().getRevisionID();
         log.debug("About to index files: {} for revision: {}", filenames, revisionID);
         service.indexDocuments(filenames, revisionID);
@@ -28,7 +28,7 @@ public class IndexingFileEventListener {
     
     @Subscribe
     public void unindexDocument(DataDeletedEvent<?> event) throws DocumentIndexingException {
-        List<String> filenames = listingService.filterFilenames(event.getFilenames());
+        List<String> filenames = listingService.filterFilenamesEitherExtension(event.getFilenames());
         log.debug("About to unindex files: {}", filenames);
         service.unindexDocuments(filenames);
     }

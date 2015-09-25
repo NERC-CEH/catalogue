@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import uk.ac.ceh.gateway.catalogue.indexing.IndexingFileEventListener;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
@@ -14,8 +13,6 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataSubmittedEvent;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
@@ -38,7 +35,7 @@ public class IndexingFileEventSubscriberTest {
         List<String> originalFilenames = Arrays.asList("asd.raw", "asd.meta", "trd.meta");
         List<String> processedFilenames = Arrays.asList("asd", "trd");
         given(event.getFilenames()).willReturn(originalFilenames);
-        given(listingService.filterFilenames(originalFilenames)).willReturn(processedFilenames);
+        given(listingService.filterFilenamesEitherExtension(originalFilenames)).willReturn(processedFilenames);
         DataRepository repo = mock(DataRepository.class);
         DataRevision latestRevision = mock(DataRevision.class);
         given(latestRevision.getRevisionID()).willReturn(revisionId);
