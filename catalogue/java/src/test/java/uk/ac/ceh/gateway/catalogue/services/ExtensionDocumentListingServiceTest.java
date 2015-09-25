@@ -96,4 +96,29 @@ public class ExtensionDocumentListingServiceTest {
         assertTrue("Expected to find some", docs.contains("some"));
         assertTrue("Expected to find some1", docs.contains("some1"));
     }
+    
+    @Test
+    public void checkThatRawOnlyResultsInDocument() {
+        //Given
+        List raw = Arrays.asList("some.raw");
+        
+        //When
+        List<String> docs = service.filterFilenamesEitherExtension(raw);
+        
+        //Then
+        assertEquals("Expected One file", 1, docs.size());
+        assertEquals("Expected that file to be some", "some", docs.get(0));
+    }
+    
+    @Test
+    public void checkThatUnknownExtensionsDoesNotResultInDocument() {
+        //Given
+        List unknown = Arrays.asList("some.unkown");
+        
+        //When
+        List<String> docs = service.filterFilenamesEitherExtension(unknown);
+        
+        //Then
+        assertTrue("Expected to get no documents", docs.isEmpty());
+    }
 }

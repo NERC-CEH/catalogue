@@ -3,9 +3,12 @@ package uk.ac.ceh.gateway.catalogue.services;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -15,6 +18,7 @@ import org.apache.commons.io.FilenameUtils;
  */
 @Data
 @AllArgsConstructor
+@Slf4j
 public class ExtensionDocumentListingService implements DocumentListingService {
     private final List<String> extensions;
     
@@ -24,20 +28,38 @@ public class ExtensionDocumentListingService implements DocumentListingService {
     
     @Override
     public List<String> filterFilenames(Collection<String> files) {
-        //Scan through the files list return any which there exists a .meta and .raw
+        //Scan through the files list, return any which there exists a .meta and .raw
         //file
-        return files.stream()
-                .map((f) -> new Filename(f))
-                .collect(Collectors.groupingBy(Filename::getName))
-                .entrySet()
-                .stream()
-                .filter((e) -> e.getValue().stream()
-                                            .map((f)-> f.getExtension())
-                                            .collect(Collectors.toList())
-                                            .containsAll(extensions))
-                .map((e) -> e.getKey())
-                .collect(Collectors.toList());  
+        return filterFilenames(files,(e) -> e.getValue().stream()
+                                              .map((f)-> f.getExtension())
+                                              .collect(Collectors.toList())
+                                              .containsAll(extensions));
     }
+
+    @Override
+    public List<String> filterFilenamesEitherExtension(Collection<String> files) {
+      //Scan through the files list, return any which there exists a .meta or .raw
+      //file
+      return filterFilenames(files,(e) -> {
+          List<String> exts = e.getValue().stream()
+                                        .map((f)-> f.getExtension())
+                                        .collect(Collectors.toList());
+          return exts.contains("meta") || exts.contains("raw");
+        }
+      );
+    }
+
+    private List<String> filterFilenames(Collection<String> files, Predicate<Map.Entry<String,List<Filename>>> filter) {
+          log.debug("filtering filenames: {}", files);
+          return files.stream()
+                  .map((f) -> new Filename(f))
+                  .collect(Collectors.groupingBy(Filename::getName))
+                  .entrySet()
+                  .stream()
+                  .filter(filter)
+                  .map((e) -> e.getKey())
+                  .collect(Collectors.toList());  
+      }
     
     @Data
     private static class Filename {
