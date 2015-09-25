@@ -27,7 +27,9 @@ public class ExtensionDocumentListingService implements DocumentListingService {
     }
     
     @Override
-    public List<String> filterFilenames(Collection<String> files) {      
+    public List<String> filterFilenames(Collection<String> files) {
+        //Scan through the files list, return any which there exists a .meta and .raw
+        //file
         return filterFilenames(files,(e) -> e.getValue().stream()
                                               .map((f)-> f.getExtension())
                                               .collect(Collectors.toList())
@@ -36,6 +38,8 @@ public class ExtensionDocumentListingService implements DocumentListingService {
 
     @Override
     public List<String> filterFilenamesEitherExtension(Collection<String> files) {
+      //Scan through the files list, return any which there exists a .meta or .raw
+      //file
       return filterFilenames(files,(e) -> {
           List<String> exts = e.getValue().stream()
                                         .map((f)-> f.getExtension())
@@ -47,8 +51,6 @@ public class ExtensionDocumentListingService implements DocumentListingService {
 
     private List<String> filterFilenames(Collection<String> files, Predicate<Map.Entry<String,List<Filename>>> filter) {
           log.debug("filtering filenames: {}", files);
-          //Scan through the files list return any which there exists a .meta and .raw
-          //file
           return files.stream()
                   .map((f) -> new Filename(f))
                   .collect(Collectors.groupingBy(Filename::getName))
