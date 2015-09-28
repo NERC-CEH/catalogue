@@ -33,8 +33,8 @@ define [
   'cs!models/editor/SpatialResolution'
   'cs!views/editor/ServiceView'
   'cs!models/editor/Service'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, SpatialResolution, ServiceView, Service) -> EditorView.extend
-
+  'cs!views/editor/ConformanceResultView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, SpatialResolution, ServiceView, Service, ConformanceResultView) -> EditorView.extend
 
   initialize: ->
 
@@ -485,6 +485,18 @@ define [
           helpText: """
                     <p>This states how often the updated data resource is made available to the user.  For the vast majority of EIDC data, this value will be "not planned".</p>
                     """
+
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'conformanceResults'
+          label: 'Conformance Result'
+          multiline: true
+          ObjectInputView: ConformanceResultView
+          predefined:
+            INSPIRE:
+              title: 'COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services'
+              date: '2010-12-08'
+              dateType: 'publication'
       ]
     ,
       label: 'Seven'

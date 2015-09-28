@@ -78,5 +78,5 @@ define [
     @collection.trigger 'visible'
 
   hide: ->
-    @collection.trigger 'hidden'
     SingleView.prototype.hide.apply @
+    @collection.trigger 'hidden'
