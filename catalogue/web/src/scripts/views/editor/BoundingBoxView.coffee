@@ -33,7 +33,6 @@ define [
     @listenTo @model, 'change:northBoundLatitude', (model, value) ->
       @$('#boundingBoxNorthBoundLatitude').val value
     @listenTo @model.collection, 'visible', @viewMap
-    @listenTo @model.collection, 'hidden', @closeMap
 
   viewMap: ->
     $map = @$('.map')
@@ -71,9 +70,6 @@ define [
     else
       do mapView.refresh
       do @drawing.activate
-
-  closeMap: ->
-    do @map.destroy
 
   createFeature: ->
     boundingBox = @model.getBoundingBox()
