@@ -43,11 +43,5 @@
         </form>
       </dd>
     </dl>
-
-    <h2>Upload a terraCatalog export</h2>
-    <form method="POST" enctype="multipart/form-data" action="/maintenance/terraCatalogImport">
-      <input type="file" name="file">
-      <input type="submit" value="Import">
-    </form>
   </div>
 </@skeleton.master>
