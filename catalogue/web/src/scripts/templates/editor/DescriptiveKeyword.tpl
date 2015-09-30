@@ -115,6 +115,6 @@
       <option value="creation">Creation</button>
       <option value="publication">Publication</button>
       <option value="revision">Revision</button>
-    </div>
+    </select>
   </div>
 </div>
