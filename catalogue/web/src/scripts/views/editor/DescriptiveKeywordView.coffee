@@ -14,7 +14,7 @@ define [
     _.extend {}, ObjectInputView.prototype.events,
       'click .add': -> do @add
 
-      'click .predefined': -> @addPredefined event
+      'click .predefined': (event) -> @addPredefined event
 
   initialize: (options) ->
     ObjectInputView.prototype.initialize.call @, options
