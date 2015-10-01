@@ -12,7 +12,7 @@ create_resources('tomcat::deployment', hiera_hash('tomcat::deployment', {}))
 # Link to the static content of the catalogue section of the project
 file { '/var/www/static' :
   ensure => link,
-  target => "/vagrant/catalogue/web/src",
+  target => "/opt/ceh-catalogue/catalogue/web/src",
 }
 
 # Create a location for data to be stored in for the catalogue
