@@ -68,6 +68,9 @@ You can build a docker container which contains the catalogue in. To do this:
     mvn -f catalogue/java/pom.xml clean install
     docker build -t "nercceh/catalogue" .
 
+    # Start up the docker container
+    docker run -i -p 80:80 -p 7000:7000  -v /opt/datastore:/var/ceh-catalogue/datastore -t nercceh/catalogue 
+
 ## Testing
 
 The vagrant box can be functionally tested using capybara and selenium. The tests for this are written in rspec, and drive browsers hosted on the [selenium grid](http://bamboo.ceh.ac.uk:4444/grid/console). To run from a windows box you will need to:
