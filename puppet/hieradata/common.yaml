@@ -15,7 +15,7 @@ catalogue_ajp_port: 7100
 
 tomcat::deployment:
   ceh_catalogue:
-    war:    '/vagrant/catalogue/java/target/ROOT.war'
+    war:    '/opt/ceh-catalogue/catalogue/java/target/ROOT.war'
     tomcat: 'ceh-catalogue'
 
 apache::vhost:
