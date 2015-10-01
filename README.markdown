@@ -60,6 +60,13 @@ Or alternatively, you can get the latest built version from [nexus](http://nexus
     wget 'http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war' -O catalogue/java/target/ROOT.war
     vagrant provision --provision-with puppet_server
 
+### Building in Docker
+
+You can build a docker container which contains the catalogue in. To do this:
+
+    # Build the java application
+    mvn -f catalogue/java/pom.xml clean install
+    docker build -t "nercceh/catalogue" .
 
 ## Testing
 
