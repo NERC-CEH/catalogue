@@ -150,11 +150,22 @@ public class DocumentController {
     }
     
     protected void addRecordUriAsResourceIdentifier(GeminiDocument document, URI recordUri) {
-      List<ResourceIdentifier> resourceIdentifiers = Optional.ofNullable(document)
-        .map(GeminiDocument::getResourceIdentifiers)
-        .orElse(new ArrayList()); 
-      resourceIdentifiers.add(ResourceIdentifier.builder().code(recordUri.toString()).build());
-      document.setResourceIdentifiers(resourceIdentifiers);
+        List<ResourceIdentifier> resourceIdentifiers;
+        
+        if (document.getResourceIdentifiers() != null) {
+            resourceIdentifiers = new ArrayList(document.getResourceIdentifiers());
+        } else {
+            resourceIdentifiers = new ArrayList<>();
+        }
+
+        ResourceIdentifier self = ResourceIdentifier.builder()
+            .code(recordUri.toString())
+            .build();
+
+        if (!resourceIdentifiers.contains(self)) {
+            resourceIdentifiers.add(self);
+        }
+        document.setResourceIdentifiers(resourceIdentifiers);
     }
     
     private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user) {
@@ -179,6 +190,8 @@ public class DocumentController {
         
         MetadataInfo metadataInfo = updatingRawType(file);
         updateIdAndMetadataDate(geminiDocument, file);
+        URI recordUri = getCurrentUri(request, file, repo.getLatestRevision().getRevisionID());
+        addRecordUriAsResourceIdentifier(geminiDocument, recordUri);
         
         repo.submitData(String.format("%s.meta", file), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
             .submitData(String.format("%s.raw", file), (o) -> documentWriter.write(geminiDocument, o))

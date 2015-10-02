@@ -173,7 +173,7 @@ public class GeminiDocument implements MetadataDocument {
         return Optional.ofNullable(responsibleParties)
             .orElse(Collections.emptyList());
     }
-    
+      
     @Override
     public void attachUri(URI uri) {
         setUri(uri);

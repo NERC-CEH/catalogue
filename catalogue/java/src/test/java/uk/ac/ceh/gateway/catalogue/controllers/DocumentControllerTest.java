@@ -8,9 +8,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -351,6 +353,44 @@ public class DocumentControllerTest {
       
       //Then
       assertThat("ResourceIdentifiers should contain URI", document.getResourceIdentifiers(), contains(expected));
+    }
+    
+    @Test
+    public void checkResourceIdentifierNotAddedTwice() throws IOException, UnknownContentTypeException, PostProcessingException {
+      //Given
+      GeminiDocument document = new GeminiDocument();
+      document.setTitle("update test");
+      URI newRecord = URI.create("http://localhost/id/1234-1234-12345678-1234");
+      ResourceIdentifier expected = ResourceIdentifier.builder().code(newRecord.toString()).build();
+      document.setResourceIdentifiers(Arrays.asList(expected));
+      
+      //When
+      controller.addRecordUriAsResourceIdentifier(document, newRecord);
+      
+      //Then
+      assertThat("ResourceIdentifiers should only have one item", document.getResourceIdentifiers().size(), equalTo(1));
+      assertThat("ResourceIdentifiers should contain URI", document.getResourceIdentifiers(), contains(expected));
+    }
+    
+    @Test
+    public void checkResourceIdentifierAddedIfOtherPresent() throws IOException, UnknownContentTypeException, PostProcessingException {
+      //Given
+      GeminiDocument document = new GeminiDocument();
+      document.setTitle("update test");
+      URI newRecord = URI.create("http://localhost/id/1234-1234-12345678-1234");
+      ResourceIdentifier expected = ResourceIdentifier.builder().code(newRecord.toString()).build();
+      document.setResourceIdentifiers(Arrays.asList(
+          ResourceIdentifier.builder()
+              .codeSpace("doi")
+              .code("10.23935423/1239123213").build()
+      ));
+      
+      //When
+      controller.addRecordUriAsResourceIdentifier(document, newRecord);
+      
+      //Then
+      assertThat("ResourceIdentifiers should only have two items", document.getResourceIdentifiers().size(), equalTo(2));
+      assertThat("ResourceIdentifiers should contain URI", document.getResourceIdentifiers(), hasItem(expected));
     }
     
     private DataRevision<CatalogueUser> lastCommit(String file) throws DataRepositoryException {
