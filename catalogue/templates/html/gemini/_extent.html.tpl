@@ -28,8 +28,8 @@
             <span class="extentEnd">${extent.end?date}</span>
           <#elseif resourceStatus?has_content && resourceStatus == "onGoing">present
           <#else>&hellip;
-          </div>
 		  </#if>
+          </div>
         </#list>
         </dd>
       </#if>
