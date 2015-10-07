@@ -9,7 +9,12 @@
   <creators>
   <#list authors as author>
     <#if author.individualName?has_content>
-      <creator><creatorName>${author.individualName}</creatorName></creator>
+      <creator>
+	    <creatorName>${author.individualName}</creatorName>
+		<#if author.orcid?has_content>
+		<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org">${author.orcid}</nameIdentifier>
+		</#if>
+	  </creator>
     </#if>
   </#list>
   </creators>

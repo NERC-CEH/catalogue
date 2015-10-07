@@ -4,7 +4,7 @@
   <h3 id="authors">Authors</h3>
       
     <#list authors as author> 
-      <div>
+      <div class="responsibleParty">
 
         <#if author.email?has_content>
           <#if author.individualName?has_content>
@@ -24,7 +24,7 @@
           </#if>
         </#if>
         <#if author.orcid?has_content>
-        <a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank">${author.orcid?html}</a><br>
+        ORCID: <a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank">${author.orcid?html}</a><br>
         </#if>
         <#if author.address?has_content>
           <address class="hidden-xs">

@@ -12,6 +12,7 @@
   <div class="panel panel-default hidden-print" id="document-order">
     <div class="panel-heading"><p class="panel-title">${documentOrderTitle?html}</p></div>
     <div class="panel-body">
+      <div>	
       <#if downloadOrder.orderable>
         <#list downloadOrder.orderResources as onlineResource>
           <p><a href="${onlineResource.url?html}"><i class="glyphicon glyphicon-save text-info"></i>
@@ -40,11 +41,12 @@
       <#if mapViewable>
         <p><a href="${mapViewerUrl?html}"><i class="glyphicon glyphicon-map-marker text-info"></i> ${viewOnMap?html}</a></p>
       </#if>
+	  </div>
 
       <#if resourceType.value != 'service'>
           <#include "_formats.html.tpl">
       </#if>
-    <hr>
+    
     <#include "_limitations.html.tpl">
     </div>
   </div>

@@ -1,8 +1,9 @@
 <#if boundingBoxes?? || temporalExtents?? >
   <div id="section-extent">
   <h3 id="extent">Where/When</h3>
-    <dl class="dl-horizontal">
-      <#if boundingBoxes?has_content>
+    <dl class="">
+    
+	  <#if boundingBoxes?has_content>
         <dt>Study area</dt>
         <dd>
           <div id="studyarea-map">
@@ -12,25 +13,27 @@
           </div>
         </dd>
       </#if>
+	  
       <#if temporalExtents?has_content>
         <dt>Temporal extent</dt>
-        <dd id="temporal-extent">
-        <#list temporalExtents as extent>
-          <#if extent.begin?has_content>
+        <dd id="section-temporalExtents">
+		<#list temporalExtents as extent>
+          <div class="temporalExtent">
+		  <#if extent.begin?has_content>
             <span class="extentBegin">${extent.begin?date}</span>
-          <#else>...
+          <#else>&hellip;
           </#if>
-
           &nbsp;&nbsp;&nbsp;to&nbsp;&nbsp;&nbsp;
-
           <#if extent.end?has_content>
             <span class="extentEnd">${extent.end?date}</span>
           <#elseif resourceStatus?has_content && resourceStatus == "onGoing">present
-          <#else>...
-          </#if>
+          <#else>&hellip;
+          </div>
+		  </#if>
         </#list>
         </dd>
       </#if>
+	  
     </dl>            
   </div>
 </#if>

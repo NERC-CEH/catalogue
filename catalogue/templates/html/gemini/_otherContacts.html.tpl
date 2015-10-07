@@ -8,7 +8,8 @@
       <dt>${otherContact.roleDisplayName?html}</dt>
       <dd>
 
-      <#if otherContact.email?has_content>
+      <div class="responsibleParty">
+	  <#if otherContact.email?has_content>
         <#if otherContact.individualName?has_content>
           <a href="mailto:${otherContact.email?url}&amp;subject=RE: ${title?url}">${otherContact.individualName?html}</a><br>
             <#if otherContact.organisationName?has_content>
@@ -35,6 +36,7 @@
             <#if otherContact.address.country?has_content>${otherContact.address.country?html}</#if>
           </address>
         </#if>
+	  </div>
       </dd>
     </#list>
   </#if>
