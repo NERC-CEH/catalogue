@@ -2,37 +2,35 @@
   <div id="document-authors">
   
   <h3 id="authors">Authors</h3>
-      
     <#list authors as author> 
-      <div class="responsibleParty">
-
-        <#if author.email?has_content>
+      <div class="responsibleParty">        
+		<#if author.email?has_content>
           <#if author.individualName?has_content>
-            <a href="mailto:${author.email?url}&amp;subject=RE: ${title?url}">${author.individualName?html}</a><br>
+            <div class="individualName"><a href="mailto:${author.email?url}&amp;subject=RE: ${title?url}">${author.individualName?html}</a></div>
             <#if author.organisationName?has_content>
-              <span>${author.organisationName?html}</span><br>
+              <div class="organisationName">${author.organisationName?html}</div>
             </#if>
           <#else>
-            <a href="mailto:${author.email?url}&amp;subject=RE: ${title?url}">${author.organisationName?html}</a><br>
+            <div class="organisationName"><a href="mailto:${author.email?url}&amp;subject=RE: ${title?url}">${author.organisationName?html}</a></div>
           </#if>
         <#else>
           <#if author.individualName?has_content>
-            <span>${author.individualName?html}</span><br>
+           <div class="individualName">${author.individualName?html}</div>
           </#if>
           <#if author.organisationName?has_content>
-            <span>${author.organisationName?html}</span><br>
+            <div class="organisationName">${author.organisationName?html}</div>
           </#if>
         </#if>
         <#if author.orcid?has_content>
-        ORCID: <a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank">${author.orcid?html}</a><br>
+        <div class="orchid">ORCID: <a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank">${author.orcid?html}</a></div>
         </#if>
         <#if author.address?has_content>
           <address class="hidden-xs">
-            <#if author.address.deliveryPoint?has_content>${author.address.deliveryPoint?html}<br></#if>
-            <#if author.address.city?has_content>${author.address.city?html}<br></#if>
-            <#if author.address.administrativeArea?has_content>${author.address.administrativeArea?html}<br></#if>
-            <#if author.address.postalCode?has_content>${author.address.postalCode?html}<br></#if>
-            <#if author.address.country?has_content>${author.address.country?html}</#if>
+		  <#if author.address.deliveryPoint?has_content><div>${author.address.deliveryPoint?html}</div></#if>
+		  <#if author.address.city?has_content><div>${author.address.city?html}</div></#if>
+		  <#if author.address.administrativeArea?has_content><div>${author.address.administrativeArea?html}</div></#if>
+		  <#if author.address.postalCode?has_content><div>${author.address.postalCode?html}</div></#if>
+		  <#if author.address.country?has_content><div>${author.address.country?html}</div></#if>
           </address>
         </#if>
       </div>

@@ -8,36 +8,38 @@
       <dt>Record created by</dt>
         <#list metadataPointsOfContact as metadataPointOfContact>
           <dd>
+          <div class="responsibleParty">
             <#if metadataPointOfContact.individualName?has_content>
-              <span>${metadataPointOfContact.individualName?html}</span><br>
+               <div class="individualName">${metadataPointOfContact.individualName?html}</div>
             </#if>
             <#if metadataPointOfContact.organisationName?has_content>
-              <span>${metadataPointOfContact.organisationName?html}</span><br>
+              <div class="organisationName">${metadataPointOfContact.organisationName?html}</div>
             </#if>
 
             <#if metadataPointOfContact.address?has_content>
+			<address>
               <#if metadataPointOfContact.address.deliveryPoint?has_content>
-                <span>${metadataPointOfContact.address.deliveryPoint?html}</span><br>
+                <div>${metadataPointOfContact.address.deliveryPoint?html}</div>
               </#if>
               <#if metadataPointOfContact.address.city?has_content>
-                <span>${metadataPointOfContact.address.city?html}</span><br>
+                <div>${metadataPointOfContact.address.city?html}</div>
               </#if>
               <#if metadataPointOfContact.address.administrativeArea?has_content>
-                <span>${metadataPointOfContact.address.administrativeArea?html}</span><br>
+                <div>${metadataPointOfContact.address.administrativeArea?html}</div>
               </#if>
               <#if metadataPointOfContact.address.postalCode?has_content>
-                <span>${metadataPointOfContact.address.postalCode?html}</span><br>
+                <div>${metadataPointOfContact.address.postalCode?html}</div>
               </#if>
               <#if metadataPointOfContact.address.country?has_content>
-                <span>${metadataPointOfContact.address.country?html}</span>
+                <div>${metadataPointOfContact.address.country?html}</div>
               </#if>
+			</address>
             </#if>
 
             <#if metadataPointOfContact.email?has_content>
-              <p>
-                <a href="mailto:${metadataPointOfContact.email?url}">${metadataPointOfContact.email?html}</a>
-              </p>
+              <div><a href="mailto:${metadataPointOfContact.email?url}">${metadataPointOfContact.email?html}</a></div>
             </#if>
+          </div>
           </dd>
         </#list>
       </#if>  

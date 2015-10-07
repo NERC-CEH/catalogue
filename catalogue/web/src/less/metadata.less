@@ -1,8 +1,6 @@
 #metadata {
-  @light-gray-border: #DFDFDF;
+  @light-gray-border: #CCC;
 
-  hr {border-color:@light-gray-border;}
-  
   #document-description { margin-bottom:1em; }
 
   h3 {
@@ -16,8 +14,6 @@
     border-width: 1px 0;
     margin:       .75em 0;
     padding-top:  0.6em;
-	
-	.address{margin-bottom:0;}
   }
 
   #section-citation, .dataFormats, .useLimitations{
@@ -46,7 +42,14 @@
 
  .panel {overflow-wrap: break-word;}
  
- .responsibleParty {margin-bottom:.75em;}
+ .responsibleParty {
+    margin-bottom:1em;
+	  address{margin-bottom:0;}
+  }
+ 
+ #section-onlineResources {
+ p {margin-bottom:1.5em;}
+ }
  
  @media (min-width: 768px) {
     .dl-horizontal dt {
