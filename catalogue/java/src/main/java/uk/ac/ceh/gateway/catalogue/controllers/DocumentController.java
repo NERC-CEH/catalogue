@@ -37,6 +37,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -116,7 +117,7 @@ public class DocumentController {
             Files.delete(tmpFile); //file no longer needed
         }
         return ResponseEntity
-            .created(getCurrentUri(request, fileId, repo.getLatestRevision().getRevisionID()))
+            .created(getCurrentUri(request, fileId, getLatestRevision()))
             .build();
     }
     
@@ -131,7 +132,7 @@ public class DocumentController {
        
         String id = documentIdentifierService.generateFileId();
         updateIdAndMetadataDate(geminiDocument, id);
-        URI recordUri = getCurrentUri(request, id, repo.getLatestRevision().getRevisionID());
+        URI recordUri = getCurrentUri(request, id, getLatestRevision());
         addRecordUriAsResourceIdentifier(geminiDocument, recordUri);
 
         MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(geminiDocument, user);
@@ -190,7 +191,7 @@ public class DocumentController {
         
         MetadataInfo metadataInfo = updatingRawType(file);
         updateIdAndMetadataDate(geminiDocument, file);
-        URI recordUri = getCurrentUri(request, file, repo.getLatestRevision().getRevisionID());
+        URI recordUri = getCurrentUri(request, file, getLatestRevision());
         addRecordUriAsResourceIdentifier(geminiDocument, recordUri);
         
         repo.submitData(String.format("%s.meta", file), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
@@ -202,7 +203,7 @@ public class DocumentController {
     }
     
     private MetadataInfo updatingRawType(String file) throws IOException, DataRepositoryException, UnknownContentTypeException {
-        MetadataInfo metadataInfo = documentBundleReader.readBundle(file, repo.getLatestRevision().getRevisionID()).getMetadata();
+        MetadataInfo metadataInfo = documentBundleReader.readBundle(file, getLatestRevision()).getMetadata();
         metadataInfo.setRawType(GEMINI_JSON_VALUE);
         return metadataInfo;
     }
@@ -214,8 +215,7 @@ public class DocumentController {
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        return readMetadata(user, file, latestRev.getRevisionID(), request);
+        return readMetadata(user, file, getLatestRevision(), request);
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
@@ -256,7 +256,7 @@ public class DocumentController {
     }
     
     private String getLinkUrlFragment(HttpServletRequest request, String revision) throws DataRepositoryException {
-        if(revision.equals(repo.getLatestRevision().getRevisionID())) {
+        if(revision.equals(getLatestRevision())) {
            return ServletUriComponentsBuilder
                 .fromContextPath(request)
                 .path("/id/")
@@ -271,6 +271,16 @@ public class DocumentController {
                 .path("/")
                 .build()
                 .toUriString();
+        }
+    }
+    
+    private String getLatestRevision() throws DataRepositoryException {
+        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
+        if (latestRev != null) {
+            return latestRev.getRevisionID();
+        }
+        else {
+            throw new ResourceNotFoundException("Could not find the requested file");
         }
     }
 }

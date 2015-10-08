@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.net.URISyntaxException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -53,6 +54,11 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(PostProcessingException.class)
     public ResponseEntity<Object> handlePostProcessingException(Exception ex) {
         return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+    @ExceptionHandler(SolrServerException.class)
+    public ResponseEntity<Object> handleSolrServerException(Exception ex) {
+        return handleExceptionInternal(ex, "Solr did not respond as expected", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     
     @ExceptionHandler(AccessDeniedException.class)

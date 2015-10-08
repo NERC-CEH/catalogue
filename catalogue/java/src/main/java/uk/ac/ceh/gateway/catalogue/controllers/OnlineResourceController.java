@@ -59,8 +59,7 @@ public class OnlineResourceController {
     public List<OnlineResource> getOnlineResources(
             @PathVariable("file") String file
     ) throws DataRepositoryException, IOException, UnknownContentTypeException {
-        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        return getOnlineResources(latestRev.getRevisionID(), file);
+        return getOnlineResources(getLatestRevision(), file);
     }
     
     @RequestMapping (value = "history/{revision}/{file}/onlineResources",
@@ -86,8 +85,7 @@ public class OnlineResourceController {
     public Object processOrRedirectToOnlineResource(
             @PathVariable("file") String file,
             @PathVariable("index") int index) throws DataRepositoryException, IOException, UnknownContentTypeException {
-        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        return processOrRedirectToOnlineResource(latestRev.getRevisionID(), file, index);
+        return processOrRedirectToOnlineResource(getLatestRevision(), file, index);
     }
     
     @RequestMapping (value = "history/{revision}/{file}/onlineResources/{index}",
@@ -118,8 +116,7 @@ public class OnlineResourceController {
             @PathVariable("z") int z,
             @PathVariable("x") int x,
             @PathVariable("y") int y) throws IOException, UnknownContentTypeException, TransparentProxyException, URISyntaxException {
-        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        return proxyMapProxyTileRequest(latestRev.getRevisionID(), file, index, layer, z, x, y);
+        return proxyMapProxyTileRequest(getLatestRevision(), file, index, layer, z, x, y);
     }
     
     @RequestMapping (value    = "history/{revision}/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
@@ -149,8 +146,7 @@ public class OnlineResourceController {
             @PathVariable("file") String file,
             @PathVariable("index") int index,
             @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException, URISyntaxException {
-        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        return getMapLayerLegend(latestRev.getRevisionID(), file, index, layer);
+        return getMapLayerLegend(getLatestRevision(), file, index, layer);
     }
     
     @RequestMapping (value    = "history/{revision}/{file}/onlineResources/{index}/{layer}/legend",
@@ -184,6 +180,16 @@ public class OnlineResourceController {
         }
         else {
             return onlineResources.get(index);
+        }
+    }
+    
+    private String getLatestRevision() throws DataRepositoryException {
+        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
+        if (latestRev != null) {
+            return latestRev.getRevisionID();
+        }
+        else {
+            throw new ResourceNotFoundException("Could not find the requested file");
         }
     }
 }

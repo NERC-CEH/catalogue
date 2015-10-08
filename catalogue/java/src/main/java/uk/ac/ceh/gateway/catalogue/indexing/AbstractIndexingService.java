@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
@@ -39,8 +40,11 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     public void rebuildIndex() throws DocumentIndexingException {
         try {
             clearIndex();
-            String revision = repo.getLatestRevision().getRevisionID();
-            indexDocuments(listingService.filterFilenames(repo.getFiles(revision)), revision);
+            DataRevision<?> latestRevision = repo.getLatestRevision();
+            if (latestRevision != null) {
+                String revision = latestRevision.getRevisionID();
+                indexDocuments(listingService.filterFilenames(repo.getFiles(revision)), revision);
+            }
         }
         catch(IOException ex) {
             throw new DocumentIndexingException(ex);
