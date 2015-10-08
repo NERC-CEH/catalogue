@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
@@ -33,7 +34,13 @@ public class PermissionService {
     }
     
     public boolean toAccess(CatalogueUser user, String file, String permission) throws IOException {
-        return toAccess(user, file, repo.getLatestRevision().getRevisionID(), permission);
+        DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
+        if(latestRevision != null) {
+            return toAccess(user, file, latestRevision.getRevisionID(), permission);
+        }
+        else {
+            return false;
+        }
     }
     
     public boolean toAccess(CatalogueUser user, String file, String revision, String permission) throws IOException {

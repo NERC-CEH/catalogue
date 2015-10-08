@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.DataRevision;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_SHORT;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -39,14 +41,14 @@ public class GeminiWafController {
     @RequestMapping(value="/",
                     method=RequestMethod.GET)
     public ModelAndView getWaf() throws DataRepositoryException, IOException {
-        String revision = repo.getLatestRevision().getRevisionID();
         List<String> resourceTypes = Arrays.asList("dataset","series","service");
-
-        return new ModelAndView("/html/waf.html.tpl", "files", listing
-                .getPublicDocuments(revision, GeminiDocument.class, resourceTypes)
+        DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
+        List<String> files = (latestRevision == null) ? Collections.EMPTY_LIST : listing
+                .getPublicDocuments(latestRevision.getRevisionID(), GeminiDocument.class, resourceTypes)
                 .stream()
                 .map((d)-> d + ".xml")
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+        return new ModelAndView("/html/waf.html.tpl", "files", files);
     }
     
     @RequestMapping("{id}.xml")
