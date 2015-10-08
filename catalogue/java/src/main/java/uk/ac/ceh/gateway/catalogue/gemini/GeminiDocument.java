@@ -67,6 +67,8 @@ public class GeminiDocument implements MetadataDocument {
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     @JsonIgnore
     private Citation citation;
+    @JsonIgnore
+    private boolean isDatacitable;
     private DatasetReferenceDate datasetReferenceDate;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
