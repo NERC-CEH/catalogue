@@ -6,6 +6,7 @@
       <p><a href="/documents/${id?html}/permission">Permissions&hellip;</a></p>
       <p><a href="/documents/${id?html}/publication">Publish&hellip;</a></p>
       <#if dataciteUpdatable>
+        <hr>
         <p><a href="/documents/${id?html}/datacite.xml">Datacite XML</a></p>
       </#if>
       <#if dataciteMintable && permission.userCanDatacite()>

@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -39,6 +39,7 @@ public class DataciteService {
     private final String username;
     private final String password;
     private final Template dataciteRequest;
+    private final RestTemplate rest;
     
     /**
      * Contacts the DATACITE rest api and uploads a datacite requests and then
@@ -63,11 +64,10 @@ public class DataciteService {
         if(isDataciteUpdatable(document)) {
             try {
                 HttpHeaders headers = getBasicAuth();
-                headers.add("Content", "application/xml");
+                headers.setContentType(MediaType.APPLICATION_XML);
 
                 String request = getDatacitationRequest(document);
-                ResponseEntity<String> response = new RestTemplate()
-                        .postForEntity(DATACITE_API + "/metadata", new HttpEntity<>(request, headers), String.class);
+                rest.postForEntity(DATACITE_API + "/metadata", new HttpEntity<>(request, headers), String.class);
 
                 return ResourceIdentifier
                         .builder()
@@ -77,7 +77,7 @@ public class DataciteService {
             }
             catch(HttpClientErrorException ex) {
                 log.error("Failed to upload doi: {} - {}", getDoi(document), ex.getResponseBodyAsString());
-                throw new DataciteException("Failed to mint the doi", ex);
+                throw new DataciteException("Failed to submit the doi metdata", ex);
             }
             catch(RestClientException ex) {
                 throw new DataciteException("The datacite service failed to upload a record", ex);
@@ -91,21 +91,17 @@ public class DataciteService {
     /**
      * Mints a datacite metadata request for a given document.
      * @param document the document which should be doi minted
-     * @return the response body of the minting operation
      */
-    public String mintDoiRequest(GeminiDocument document) {
+    public void mintDoiRequest(GeminiDocument document) {
         if(isDataciteMintable(document)) {
             String doi = getDoi(document);
             String request = String.format("doi=%s\nurl=%s", doi, document.getUri().toString());
             log.info("Requesting mint of doi: {}", request);
             try {
                 HttpHeaders headers = getBasicAuth();
-                headers.add("Content", "text/plain");
+                headers.setContentType(MediaType.TEXT_PLAIN);
 
-                ResponseEntity<String> response = new RestTemplate()
-                        .postForEntity(DATACITE_API + "/doi", new HttpEntity<>(request, headers), String.class);
-
-                return response.getBody();
+                rest.postForEntity(DATACITE_API + "/doi", new HttpEntity<>(request, headers), String.class);
             }
             catch(HttpClientErrorException ex) {
                 log.error("Failed to mint doi: {} - {}", doi, ex.getResponseBodyAsString());
@@ -130,7 +126,7 @@ public class DataciteService {
         boolean hasAuthor = Optional.ofNullable(document.getResponsibleParties())
                 .orElse(Collections.emptyList())
                 .stream()
-                .anyMatch((p) -> p.getRole().equals("author"));
+                .anyMatch((p) -> "author".equals(p.getRole()));
         boolean hasCorrectPublisher = Optional.ofNullable(document.getResponsibleParties())
                 .orElse(Collections.emptyList())
                 .stream()
@@ -147,6 +143,12 @@ public class DataciteService {
                 && hasPublicationYear;
     }
     
+    /**
+     * Determine if this geminidocument can be submitted for a fresh doi. This 
+     * means it means the doi requirements and doesn't already have a doi
+     * @param document
+     * @return true if the GeminiDocument can be submitted for a doi
+     */
     public boolean isDataciteMintable(GeminiDocument document) {
         boolean hasDoi = Optional.ofNullable(document.getResourceIdentifiers())
                 .orElse(Collections.emptyList())
@@ -191,7 +193,7 @@ public class DataciteService {
         return doiPrefix + document.getId();
     }
     
-    private HttpHeaders getBasicAuth() {
+    protected HttpHeaders getBasicAuth() {
         String plainCreds = username + ':' + password;
         byte[] plainCredsBytes = plainCreds.getBytes();
         byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
