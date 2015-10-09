@@ -18,6 +18,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.DataciteException;
@@ -40,71 +41,82 @@ public class DataciteService {
     private final Template dataciteRequest;
     
     /**
-     * For the given gemini document, submit a request to datacite to get a DOI
-     * If obtained successfully, add this as a resource identifier to the 
-     * document and then return.
-     * @param document Gemini Document to submit to datacite
-     * @return GeminiDocument with doi as a resourceIdentifier
+     * Contacts the DATACITE rest api and uploads a datacite requests and then
+     * gets the that request minted
+     * @param document
+     * @return
+     * @throws DataciteException 
      */
     public ResourceIdentifier generateDoi(GeminiDocument document) throws DataciteException {
-        uploadDoiMetadata(document);
+        ResourceIdentifier doi = updateDoiMetadata(document);
         mintDoiRequest(document);
-        
-        return ResourceIdentifier
-            .builder()
-            .code(getDoi(document))
-            .codeSpace("doi:")
-            .build();
+        return doi;
     }
     
-    public String uploadDoiMetadata(GeminiDocument document) {
-        String doi = getDoi(document);
-        Map<String, Object> data = new HashMap<>();
-        data.put("doc", document);
-        data.put("resourceType", getDataciteResourceType(document));
-        data.put("doi", doi);
-        try {
-            String request = FreeMarkerTemplateUtils.processTemplateIntoString(dataciteRequest, data);
+    /**
+     * Contact the datacite rest api and submit a metadata request. This is only
+     * possible if the document is in the correct format
+     * @param document to submit a metadata datacite request of
+     * @return the generated doi represented as a resource identifier
+     */
+    public ResourceIdentifier updateDoiMetadata(GeminiDocument document) {
+        if(isDataciteUpdatable(document)) {
+            try {
+                HttpHeaders headers = getBasicAuth();
+                headers.add("Content", "application/xml");
 
-            HttpHeaders headers = getBasicAuth();
-            headers.add("Content", "application/xml");
-            
-            ResponseEntity<String> response = new RestTemplate()
-                    .postForEntity(DATACITE_API + "/metadata", new HttpEntity<>(request, headers), String.class);
-            
-            return response.getBody();
+                String request = getDatacitationRequest(document);
+                ResponseEntity<String> response = new RestTemplate()
+                        .postForEntity(DATACITE_API + "/metadata", new HttpEntity<>(request, headers), String.class);
+
+                return ResourceIdentifier
+                        .builder()
+                        .code(getDoi(document))
+                        .codeSpace("doi:")
+                        .build();
+            }
+            catch(HttpClientErrorException ex) {
+                log.error("Failed to upload doi: {} - {}", getDoi(document), ex.getResponseBodyAsString());
+                throw new DataciteException("Failed to mint the doi", ex);
+            }
+            catch(RestClientException ex) {
+                throw new DataciteException("The datacite service failed to upload a record", ex);
+            }
         }
-        catch(IOException | TemplateException ex) {
-            throw new DataciteException(ex);
-        }
-        catch(HttpClientErrorException ex) {
-            log.error("Failed to upload doi: {} - {}", doi, ex.getResponseBodyAsString());
-            throw new DataciteException("Failed to mint the doi", ex);
-        }
-        catch(RestClientException ex) {
-            throw new DataciteException("The datacite service failed to upload a record", ex);
+        else {
+            throw new DataciteException("This record does not meet the requirements for datacite updating");
         }
     }
     
+    /**
+     * Mints a datacite metadata request for a given document.
+     * @param document the document which should be doi minted
+     * @return the response body of the minting operation
+     */
     public String mintDoiRequest(GeminiDocument document) {
-        String doi = getDoi(document);
-        String request = String.format("doi=%s\nurl=%s", doi, document.getUri().toString());
-        log.info("Requesting mint of doi: {}", request);
-        try {
-            HttpHeaders headers = getBasicAuth();
-            headers.add("Content", "text/plain");
-            
-            ResponseEntity<String> response = new RestTemplate()
-                    .postForEntity(DATACITE_API + "/doi", new HttpEntity<>(request, headers), String.class);
-            
-            return response.getBody();
+        if(isDataciteMintable(document)) {
+            String doi = getDoi(document);
+            String request = String.format("doi=%s\nurl=%s", doi, document.getUri().toString());
+            log.info("Requesting mint of doi: {}", request);
+            try {
+                HttpHeaders headers = getBasicAuth();
+                headers.add("Content", "text/plain");
+
+                ResponseEntity<String> response = new RestTemplate()
+                        .postForEntity(DATACITE_API + "/doi", new HttpEntity<>(request, headers), String.class);
+
+                return response.getBody();
+            }
+            catch(HttpClientErrorException ex) {
+                log.error("Failed to mint doi: {} - {}", doi, ex.getResponseBodyAsString());
+                throw new DataciteException("Failed to mint the doi", ex);
+            }
+            catch(RestClientException ex) {
+                throw new DataciteException("Failed to mint the doi", ex);
+            }
         }
-        catch(HttpClientErrorException ex) {
-            log.error("Failed to mint doi: {} - {}", doi, ex.getResponseBodyAsString());
-            throw new DataciteException("Failed to mint the doi", ex);
-        }
-        catch(RestClientException ex) {
-            throw new DataciteException("Failed to mint the doi", ex);
+        else {
+            throw new DataciteException("This record does not meet the requirements for datacite minting");
         }
     }
         
@@ -114,11 +126,7 @@ public class DataciteService {
      * @param document to test if ready for data citation
      * @return true if this GeminiDocument can be submitted to datacite
      */
-    public boolean isDatacitable(GeminiDocument document) {
-        boolean hasDoi = Optional.ofNullable(document.getResourceIdentifiers())
-                .orElse(Collections.emptyList())
-                .stream()
-                .anyMatch((i) -> i.getCodeSpace().equals("doi:"));
+    public boolean isDataciteUpdatable(GeminiDocument document) {
         boolean hasAuthor = Optional.ofNullable(document.getResponsibleParties())
                 .orElse(Collections.emptyList())
                 .stream()
@@ -128,12 +136,43 @@ public class DataciteService {
                 .stream()
                 .filter((p) -> "publisher".equals(p.getRole()))
                 .anyMatch((p) -> publisher.equals(p.getOrganisationName()));
+        boolean hasPublicationYear = Optional.ofNullable(document.getDatasetReferenceDate())
+                .map(DatasetReferenceDate::getPublicationDate)
+                .isPresent();
         
         return document.getMetadata().isPubliclyViewable(Permission.VIEW)
                 && !Strings.isNullOrEmpty(document.getTitle())
-                && !hasDoi
                 && hasAuthor
-                && hasCorrectPublisher;
+                && hasCorrectPublisher
+                && hasPublicationYear;
+    }
+    
+    public boolean isDataciteMintable(GeminiDocument document) {
+        boolean hasDoi = Optional.ofNullable(document.getResourceIdentifiers())
+                .orElse(Collections.emptyList())
+                .stream()
+                .anyMatch((i) -> i.getCodeSpace().equals("doi:"));
+        return isDataciteUpdatable(document) && !hasDoi;
+    }
+    
+    /**
+     * Process the datacitation request template for the given document and 
+     * return the request as a string.
+     * @param document to get the prepare a datacitation request for
+     * @return an xml datacite request
+     */
+    public String getDatacitationRequest(GeminiDocument document) {
+        try {
+            String doi = getDoi(document);
+            Map<String, Object> data = new HashMap<>();
+            data.put("doc", document);
+            data.put("resourceType", getDataciteResourceType(document));
+            data.put("doi", doi);
+            return FreeMarkerTemplateUtils.processTemplateIntoString(dataciteRequest, data);
+        }
+        catch(IOException | TemplateException ex) {
+            throw new DataciteException(ex);
+        }
     }
         
     private String getDataciteResourceType(MetadataDocument document) {

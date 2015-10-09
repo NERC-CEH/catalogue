@@ -5,7 +5,10 @@
       <p><a href="#" class="edit-control gemini">Edit&hellip;</a><p>
       <p><a href="/documents/${id?html}/permission">Permissions&hellip;</a></p>
       <p><a href="/documents/${id?html}/publication">Publish&hellip;</a></p>
-      <#if datacitable && permission.userCanDatacite()>
+      <#if dataciteUpdatable>
+        <p><a href="/documents/${id?html}/datacite.xml">Datacite XML</a></p>
+      </#if>
+      <#if dataciteMintable && permission.userCanDatacite()>
         <form action="/documents/${id?html}/datacite" method="POST">
           <input type="submit" class="btn btn-default" value="Generate DOI">
         </form>
