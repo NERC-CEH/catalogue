@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.DataciteException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import static uk.ac.ceh.gateway.catalogue.services.CitationService.NERC_DOI_PREFIX;
 
 /**
  * A service which interacts with the datacite rest api to obtain a DOI for a 
@@ -167,7 +168,8 @@ public class DataciteService {
         return Optional.ofNullable(document.getResourceIdentifiers())
                 .orElse(Collections.emptyList())
                 .stream()
-                .anyMatch((i) -> i.getCodeSpace().equals("doi:"));
+                .filter((i) -> i.getCodeSpace().equals("doi:"))
+                .anyMatch((i)-> i.getCode().startsWith(doiPrefix));
     }
     
     /**
