@@ -61,7 +61,7 @@ public class DataciteService {
      * @return the generated doi represented as a resource identifier
      */
     public ResourceIdentifier updateDoiMetadata(GeminiDocument document) {
-        if(isDataciteUpdatable(document)) {
+        if(isDatacitable(document)) {
             try {
                 HttpHeaders headers = getBasicAuth();
                 headers.setContentType(MediaType.APPLICATION_XML);
@@ -122,7 +122,7 @@ public class DataciteService {
      * @param document to test if ready for data citation
      * @return true if this GeminiDocument can be submitted to datacite
      */
-    public boolean isDataciteUpdatable(GeminiDocument document) {
+    public boolean isDatacitable(GeminiDocument document) {
         boolean hasAuthor = Optional.ofNullable(document.getResponsibleParties())
                 .orElse(Collections.emptyList())
                 .stream()
@@ -144,17 +144,30 @@ public class DataciteService {
     }
     
     /**
+     * Determine if this geminidocument is datacitable and has already had a doi
+     * attached to it.
+     * @param document
+     * @return true if the GeminiDocument has already been submitted for a doi 
+     */
+    public boolean isDatacited(GeminiDocument document) {
+        return isDatacitable(document) && hasDoi(document);
+    }
+    
+    /**
      * Determine if this geminidocument can be submitted for a fresh doi. This 
      * means it means the doi requirements and doesn't already have a doi
      * @param document
      * @return true if the GeminiDocument can be submitted for a doi
      */
     public boolean isDataciteMintable(GeminiDocument document) {
-        boolean hasDoi = Optional.ofNullable(document.getResourceIdentifiers())
+        return isDatacitable(document) && !hasDoi(document);
+    }
+    
+    private boolean hasDoi(GeminiDocument document) {
+        return Optional.ofNullable(document.getResourceIdentifiers())
                 .orElse(Collections.emptyList())
                 .stream()
                 .anyMatch((i) -> i.getCodeSpace().equals("doi:"));
-        return isDataciteUpdatable(document) && !hasDoi;
     }
     
     /**

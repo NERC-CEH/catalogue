@@ -49,7 +49,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
                 .ifPresent(c -> document.setCitation(c));
         
         document.setDataciteMintable(dataciteService.isDataciteMintable(document));
-        document.setDataciteUpdatable(dataciteService.isDataciteUpdatable(document));
+        document.setDatacitable(dataciteService.isDatacitable(document));
         
         try {
             document.setJsonString(mapper.writeValueAsString(document));

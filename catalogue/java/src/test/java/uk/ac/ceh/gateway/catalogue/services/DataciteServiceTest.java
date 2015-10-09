@@ -73,7 +73,7 @@ public class DataciteServiceTest {
         document.setMetadata(metadata);
         
         //When
-        boolean dataciteUpdatable = service.isDataciteUpdatable(document);
+        boolean dataciteUpdatable = service.isDatacitable(document);
         
         //Then
         assertTrue("Expected document to be updateable", dataciteUpdatable);        
@@ -86,7 +86,7 @@ public class DataciteServiceTest {
         document.setMetadata(new MetadataInfo());
         
         //When
-        boolean dataciteUpdatable = service.isDataciteUpdatable(document);
+        boolean dataciteUpdatable = service.isDatacitable(document);
         
         //Then
         assertFalse("Expected document to not be updateable", dataciteUpdatable);        

@@ -70,7 +70,7 @@ public class GeminiDocument implements MetadataDocument {
     @JsonIgnore
     private boolean isDataciteMintable;
     @JsonIgnore
-    private boolean isDataciteUpdatable;
+    private boolean isDatacitable;
     private DatasetReferenceDate datasetReferenceDate;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
