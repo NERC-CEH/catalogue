@@ -167,7 +167,8 @@ public class DataciteService {
         return Optional.ofNullable(document.getResourceIdentifiers())
                 .orElse(Collections.emptyList())
                 .stream()
-                .anyMatch((i) -> i.getCodeSpace().equals("doi:"));
+                .filter((i) -> i.getCodeSpace().equals("doi:"))
+                .anyMatch((i) -> i.getCode().startsWith(doiPrefix));
     }
     
     /**
