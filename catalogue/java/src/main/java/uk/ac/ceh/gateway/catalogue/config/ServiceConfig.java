@@ -124,7 +124,15 @@ public class ServiceConfig {
     @Bean
     public DataciteService dataciteService() throws TemplateModelException, IOException {
         Template dataciteTemplate = freemarkerConfiguration().getTemplate("/datacite/datacite.xml.tpl");
-        return new DataciteService(doiPrefix, "NERC Environmental Information Data Centre", doiUsername, doiPassword, dataciteTemplate, new RestTemplate());
+        return new DataciteService(
+                doiPrefix, 
+                "NERC Environmental Information Data Centre", 
+                doiUsername, 
+                doiPassword,
+                documentIdentifierService(),
+                dataciteTemplate, 
+                new RestTemplate()
+        );
     }
     
     @Bean

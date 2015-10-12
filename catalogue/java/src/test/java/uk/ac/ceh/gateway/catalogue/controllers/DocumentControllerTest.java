@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -39,7 +38,6 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -102,9 +100,6 @@ public class DocumentControllerTest {
                                                 postProcessingService));
     }
     
-    private HttpServletRequest mockRequest() {
-        return new MockHttpServletRequest();
-    }
     
     @Test
     public void uploadingDocumentStoresInputStreamIntoGit() throws IOException, UnknownContentTypeException, DataRepositoryException, DocumentIndexingException {
@@ -132,6 +127,8 @@ public class DocumentControllerTest {
             StreamUtils.copy(metaInfoBytes, out);
             return null;
         }).when(documentInfoMapper).writeInfo(eq(metadataDocument), any(OutputStream.class));
+        
+        when(documentIdentifierService.generateUri(any(String.class))).thenReturn("http://www.website.com");
                 
         //When
         CatalogueUser user = new CatalogueUser();
@@ -185,10 +182,10 @@ public class DocumentControllerTest {
         doReturn(revision).when(repo).getLatestRevision();
         
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
-        doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
+        when(documentIdentifierService.generateUri(file, latestRevisionId)).thenReturn("http://www.website.com");
         
         //When
-        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, latestRevisionId, mockRequest());
+        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, latestRevisionId);
         
         //Then
         verify(documentBundleReader).readBundle(file, latestRevisionId);
@@ -210,9 +207,10 @@ public class DocumentControllerTest {
         doReturn(revision).when(repo).getLatestRevision();
         
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
+        when(documentIdentifierService.generateUri(any(String.class))).thenReturn("http://www.website.com");
         
         //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, file);
         
         //Then
         verify(documentBundleReader).readBundle(file, latestRevisionId);
@@ -229,11 +227,12 @@ public class DocumentControllerTest {
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
         
         DataRevision revision = mock(DataRevision.class);
+        when(documentIdentifierService.generateUri(file)).thenReturn("http://whatever.com");
         when(revision.getRevisionID()).thenReturn(latestRevisionId);
         doReturn(revision).when(repo).getLatestRevision();
         
         //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, file);
         
         //Then
         verify(documentBundleReader).readBundle(file, latestRevisionId);
@@ -248,13 +247,14 @@ public class DocumentControllerTest {
         GeminiDocument bundledDocument = new GeminiDocument();
         bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
         when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
+        when(documentIdentifierService.generateUri(file)).thenReturn("http://www.website.com");
         
         DataRevision revision = mock(DataRevision.class);
         when(revision.getRevisionID()).thenReturn(latestRevisionId);
         doReturn(revision).when(repo).getLatestRevision();
         
         //When
-        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, mockRequest());
+        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file);
         
         //Then
         verify(documentBundleReader).readBundle(eq(file), any(String.class));
@@ -266,22 +266,23 @@ public class DocumentControllerTest {
         //Given        
         GeminiDocument bundledDocument = mock(GeminiDocument.class);
         URI uri = new URI("http://whatever.com");
-        doReturn(uri).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(bundledDocument);
         
         String latestRevisionId = "latestRev";
+        
+        when(documentIdentifierService.generateUri(any(String.class), eq(latestRevisionId))).thenReturn("http://whatever.com");
         
         DataRevision revision = mock(DataRevision.class);
         when(revision.getRevisionID()).thenReturn(latestRevisionId);
         doReturn(revision).when(repo).getLatestRevision();
         
         //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId, mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId);
         
         //Then
         ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
         verify(bundledDocument).attachUri(uriCaptor.capture());
-        assertSame("Expected the same uri", uri, uriCaptor.getValue());
+        assertEquals("Expected the same uri", uri, uriCaptor.getValue());
     }
     
     @Test
@@ -289,55 +290,21 @@ public class DocumentControllerTest {
         //Given
         GeminiDocument bundledDocument = mock(GeminiDocument.class);
         when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(bundledDocument);
-        doReturn(null).when(controller).getCurrentUri(any(HttpServletRequest.class), any(String.class), any(String.class));
+        when(documentIdentifierService.generateUri(any(String.class))).thenReturn("http://www.website.com");
         
         String latestRevisionId = "latestRev";
         
         DataRevision revision = mock(DataRevision.class);
         when(revision.getRevisionID()).thenReturn(latestRevisionId);
         doReturn(revision).when(repo).getLatestRevision();
+
+        when(documentIdentifierService.generateUri("file", latestRevisionId)).thenReturn("http://www.website.com");
         
         //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId, mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId);
         
         //Then
         verify(postProcessingService).postProcess(bundledDocument);
-    }
-    
-    @Test
-    public void checkThatCurrentURIIsNonHistoricForLatestRevision() throws DataRepositoryException {
-        //Given
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        String file = "file";
-        String revisionId = "latest";
-        
-        DataRevision revision = mock(DataRevision.class);
-        when(revision.getRevisionID()).thenReturn(revisionId);
-        doReturn(revision).when(repo).getLatestRevision();
-        
-        //When
-        URI docUri = controller.getCurrentUri(request, file, revisionId);
-        
-        //Then
-        assertThat("Expected latest uri", docUri.toString(), equalTo("http://localhost/id/file"));
-    }
-    
-    @Test
-    public void checkThatCurrentURIIsHistoricForOtherRevision() throws DataRepositoryException {
-         //Given
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        String file = "file";
-        String revisionId = "inThePast";
-        
-        DataRevision revision = mock(DataRevision.class);
-        when(revision.getRevisionID()).thenReturn("latest");
-        doReturn(revision).when(repo).getLatestRevision();
-        
-        //When
-        URI docUri = controller.getCurrentUri(request, file, revisionId);
-        
-        //Then
-        assertThat("Expected latest uri", docUri.toString(), equalTo("http://localhost/history/inThePast/file"));
     }
     
     @Test

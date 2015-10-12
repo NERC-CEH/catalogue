@@ -71,7 +71,7 @@ public class PermissionController {
     
     private URI getMetadataUri(String file) {
         return MvcUriComponentsBuilder
-            .fromMethodName(DocumentController.class, "readMetadata", null, file, null)
+            .fromMethodName(DocumentController.class, "readMetadata", null, file)
             .buildAndExpand(file)
             .toUri();
     }

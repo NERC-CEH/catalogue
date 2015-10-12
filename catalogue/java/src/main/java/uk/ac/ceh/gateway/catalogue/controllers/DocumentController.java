@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -117,7 +116,7 @@ public class DocumentController {
             Files.delete(tmpFile); //file no longer needed
         }
         return ResponseEntity
-            .created(getCurrentUri(request, fileId, getLatestRevision()))
+            .created(URI.create(documentIdentifierService.generateUri(fileId)))
             .build();
     }
     
@@ -127,12 +126,11 @@ public class DocumentController {
                      consumes = GEMINI_JSON_VALUE)
     public ResponseEntity<MetadataDocument> uploadDocument(
             @ActiveUser CatalogueUser user,
-            @RequestBody GeminiDocument geminiDocument,
-            HttpServletRequest request) throws IOException, UnknownContentTypeException, PostProcessingException  {
+            @RequestBody GeminiDocument geminiDocument) throws IOException, UnknownContentTypeException, PostProcessingException  {
        
         String id = documentIdentifierService.generateFileId();
         updateIdAndMetadataDate(geminiDocument, id);
-        URI recordUri = getCurrentUri(request, id, getLatestRevision());
+        URI recordUri = URI.create(documentIdentifierService.generateUri(id));
         addRecordUriAsResourceIdentifier(geminiDocument, recordUri);
 
         MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(geminiDocument, user);
@@ -143,7 +141,7 @@ public class DocumentController {
                 
         return ResponseEntity
             .created(recordUri)
-            .body(readMetadata(user, id, request));
+            .body(readMetadata(user, id));
     }
     
     private void updateIdAndMetadataDate(GeminiDocument document, String id) {
@@ -185,13 +183,12 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> updateDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @RequestBody GeminiDocument geminiDocument,
-            HttpServletRequest request) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException, PostProcessingException {
+            @RequestBody GeminiDocument geminiDocument) throws IOException, DataRepositoryException, UnknownContentTypeException, DocumentIndexingException, PostProcessingException {
         
         
         MetadataInfo metadataInfo = updatingRawType(file);
         updateIdAndMetadataDate(geminiDocument, file);
-        URI recordUri = getCurrentUri(request, file, getLatestRevision());
+        URI recordUri = URI.create(documentIdentifierService.generateUri(file));
         addRecordUriAsResourceIdentifier(geminiDocument, recordUri);
         
         repo.submitData(String.format("%s.meta", file), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
@@ -199,7 +196,7 @@ public class DocumentController {
             .commit(user, String.format("edit Gemini document: %s", file));
         
         return ResponseEntity
-            .ok(readMetadata(user, file, request));
+            .ok(readMetadata(user, file));
     }
     
     private MetadataInfo updatingRawType(String file) throws IOException, DataRepositoryException, UnknownContentTypeException {
@@ -214,8 +211,12 @@ public class DocumentController {
     @ResponseBody
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file, HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-        return readMetadata(user, file, getLatestRevision(), request);
+            @PathVariable("file") String file) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+        MetadataDocument document = documentBundleReader.readBundle(file, getLatestRevision());
+        document.attachUri(URI.create(documentIdentifierService.generateUri(file)));
+        postProcessingService.postProcess(document);
+        log.debug("document requested: {}", document);
+        return document;
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
@@ -225,10 +226,9 @@ public class DocumentController {
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @PathVariable("revision") String revision,
-            HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+            @PathVariable("revision") String revision) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         MetadataDocument document = documentBundleReader.readBundle(file, revision);
-        document.attachUri(getCurrentUri(request, file, revision));
+        document.attachUri(URI.create(documentIdentifierService.generateUri(file, revision)));
         postProcessingService.postProcess(document);
         log.debug("document requested: {}", document);
         return document;
@@ -245,33 +245,6 @@ public class DocumentController {
         return repo.deleteData(file + ".meta")
                    .deleteData(file + ".raw")
                    .commit(user, reason);
-    }
-    
-    protected URI getCurrentUri(HttpServletRequest request, String file, String revision) throws DataRepositoryException {
-        return ServletUriComponentsBuilder
-             .fromHttpUrl(getLinkUrlFragment(request, revision))
-             .path(file)
-             .build()
-             .toUri();
-    }
-    
-    private String getLinkUrlFragment(HttpServletRequest request, String revision) throws DataRepositoryException {
-        if(revision.equals(getLatestRevision())) {
-           return ServletUriComponentsBuilder
-                .fromContextPath(request)
-                .path("/id/")
-                .build()
-                .toUriString();
-        }
-        else {
-            return ServletUriComponentsBuilder
-                .fromContextPath(request)
-                .path("/history/")
-                .path(revision)
-                .path("/")
-                .build()
-                .toUriString();
-        }
     }
     
     private String getLatestRevision() throws DataRepositoryException {

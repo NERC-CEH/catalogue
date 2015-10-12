@@ -37,9 +37,26 @@ public class DocumentIdentifierService {
                 .replace('.', replacement);
     }
     
+    /**
+     * Generates the latest uri for a document represented by a supplied 
+     *  identifier.
+     * @param identifier the identifier of the document
+     * @return a string representation of the uri for the document
+     */
     public String generateUri(String identifier) {
         String id = Objects.requireNonNull(identifier, "A identifier is required for it to be assigned a uri");
         return baseUri + "/id/" + generateFileId(id);
+    }
+    
+    /**
+     * Generates a uri for a document at a paricular revision.
+     * @param identifier the identifier of the document
+     * @param revision the revision which the document is being read from
+     * @return a string representation of a document from history
+     */
+    public String generateUri(String identifier, String revision) {
+        String id = Objects.requireNonNull(identifier, "A identifier is required for it to be assigned a uri");
+        return baseUri + "/history/" + revision + "/" + generateFileId(id);
     }
     
     /**

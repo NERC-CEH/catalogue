@@ -26,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.ShortDoiService;
@@ -40,6 +41,7 @@ public class DataciteController {
     public final static String DATACITE_ROLE = "ROLE_DATACITE";
     
     private final DataRepository<CatalogueUser> repo;
+    private final DocumentIdentifierService identifierService;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentWritingService<MetadataDocument> documentWriter;
@@ -49,12 +51,14 @@ public class DataciteController {
     
     @Autowired
     public DataciteController(DataRepository<CatalogueUser> repo,
+                              DocumentIdentifierService identifierService,
                               BundledReaderService<MetadataDocument> documentBundleReader,
                               DocumentInfoMapper<MetadataInfo> documentInfoMapper,
                               DocumentWritingService<MetadataDocument> documentWriter,
                               DataciteService dataciteService,
                               ShortDoiService doiShortenerService) {
         this.repo = repo;
+        this.identifierService = identifierService;
         this.documentBundleReader = documentBundleReader;
         this.documentInfoMapper = documentInfoMapper;
         this.documentWriter = documentWriter;
@@ -97,7 +101,7 @@ public class DataciteController {
                 .submitData(String.format("%s.raw", file), (o) -> documentWriter.write(geminiDocument, o))
                 .commit(user, String.format("datacite Gemini document: %s", file));
         }
-        return new RedirectView(geminiDocument.getUri().toString());
+        return new RedirectView(identifierService.generateUri(file));
     }
     
     protected GeminiDocument getDocument(String file) throws DataRepositoryException, IOException, UnknownContentTypeException {
