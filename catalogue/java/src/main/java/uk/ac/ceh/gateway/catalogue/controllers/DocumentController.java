@@ -226,8 +226,7 @@ public class DocumentController {
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @PathVariable("revision") String revision,
-            HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+            @PathVariable("revision") String revision) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         MetadataDocument document = documentBundleReader.readBundle(file, revision);
         document.attachUri(URI.create(documentIdentifierService.generateUri(file, revision)));
         postProcessingService.postProcess(document);

@@ -50,10 +50,9 @@ public class CitationController {
     public Citation getCitation(
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
-        @PathVariable("revision") String revision,
-        HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+        @PathVariable("revision") String revision) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
         
-        return getCitation(documents.readMetadata(user, file, revision, request));
+        return getCitation(documents.readMetadata(user, file, revision));
     }
     
     protected Citation getCitation(MetadataDocument document) {

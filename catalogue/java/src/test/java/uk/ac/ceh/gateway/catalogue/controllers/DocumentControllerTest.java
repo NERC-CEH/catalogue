@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -39,7 +38,6 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -102,9 +100,6 @@ public class DocumentControllerTest {
                                                 postProcessingService));
     }
     
-    private HttpServletRequest mockRequest() {
-        return new MockHttpServletRequest();
-    }
     
     @Test
     public void uploadingDocumentStoresInputStreamIntoGit() throws IOException, UnknownContentTypeException, DataRepositoryException, DocumentIndexingException {
@@ -190,7 +185,7 @@ public class DocumentControllerTest {
         when(documentIdentifierService.generateUri(file, latestRevisionId)).thenReturn("http://www.website.com");
         
         //When
-        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, latestRevisionId, mockRequest());
+        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, latestRevisionId);
         
         //Then
         verify(documentBundleReader).readBundle(file, latestRevisionId);
@@ -282,7 +277,7 @@ public class DocumentControllerTest {
         doReturn(revision).when(repo).getLatestRevision();
         
         //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId, mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId);
         
         //Then
         ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
@@ -306,7 +301,7 @@ public class DocumentControllerTest {
         when(documentIdentifierService.generateUri("file", latestRevisionId)).thenReturn("http://www.website.com");
         
         //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId, mockRequest());
+        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId);
         
         //Then
         verify(postProcessingService).postProcess(bundledDocument);
