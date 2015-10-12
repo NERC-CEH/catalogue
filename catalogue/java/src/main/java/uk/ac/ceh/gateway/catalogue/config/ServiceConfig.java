@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,8 @@ import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.AsyncDocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.DataciteIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.ExtractTopicFromDocument;
@@ -249,7 +252,7 @@ public class ServiceConfig {
         return new ClassMapPostProcessingService(mappings);
     }
     
-    @Bean
+    @Bean @Qualifier("solr-index")
     public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException {
         SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
@@ -272,7 +275,7 @@ public class ServiceConfig {
         return toReturn;
     }
     
-    @Bean
+    @Bean @Qualifier("jena-index")
     public JenaIndexingService documentLinkingService() throws XPathExpressionException, IOException {
         JenaIndexMetadataDocumentGenerator metadataDocument = new JenaIndexMetadataDocumentGenerator(documentIdentifierService());
         
@@ -292,6 +295,13 @@ public class ServiceConfig {
         
         performReindexIfNothingIsIndexed(toReturn);
         return toReturn;
+    }
+    
+    @Bean @Qualifier("datacite-index")
+    public DocumentIndexingService dataciteIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new AsyncDocumentIndexingService(
+                new DataciteIndexingService(bundledReaderService(), dataciteService())
+        );
     }
     
     //Perform an initial index of solr if their is no content inside

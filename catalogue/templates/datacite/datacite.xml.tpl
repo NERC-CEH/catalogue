@@ -32,7 +32,7 @@
   </#if>
   <dates>
     <#setting date_format = 'yyyy-MM-dd'>
-    <date dateType="Submitted">${.now?date}</date>
+    <date dateType="Submitted">${submitted?date}</date>
   </dates>
   <language>en</language>
   <#if resourceType?has_content>

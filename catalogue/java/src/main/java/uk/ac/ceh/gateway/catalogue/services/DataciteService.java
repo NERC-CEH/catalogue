@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.HttpClientErrorException;
@@ -55,6 +57,28 @@ public class DataciteService {
     }
     
     /**
+     * Grab the current metadata document from the datacite api. If this gemini
+     * document does not have a doi, then return null
+     * @param document
+     * @return string containing a doi metadata request, or null if nothing there
+     */
+    public String getDoiMetadata(GeminiDocument document) {
+        String doi = getDoi(document);
+        if (doi != null) {
+            return rest.exchange(
+                    DATACITE_API + "/metadata/{doi}", 
+                    HttpMethod.GET, 
+                    new HttpEntity<>(getBasicAuth()), 
+                    String.class, 
+                    doi
+            ).getBody();
+        }
+        else {
+            return null;
+        }
+    }
+    
+    /**
      * Contact the datacite rest api and submit a metadata request. This is only
      * possible if the document is in the correct format
      * @param document to submit a metadata datacite request of
@@ -71,12 +95,12 @@ public class DataciteService {
 
                 return ResourceIdentifier
                         .builder()
-                        .code(getDoi(document))
+                        .code(generateDoiString(document))
                         .codeSpace("doi:")
                         .build();
             }
             catch(HttpClientErrorException ex) {
-                log.error("Failed to upload doi: {} - {}", getDoi(document), ex.getResponseBodyAsString());
+                log.error("Failed to upload doi: {} - {}", generateDoiString(document), ex.getResponseBodyAsString());
                 throw new DataciteException("Failed to submit the doi metdata", ex);
             }
             catch(RestClientException ex) {
@@ -94,7 +118,7 @@ public class DataciteService {
      */
     public void mintDoiRequest(GeminiDocument document) {
         if(isDataciteMintable(document)) {
-            String doi = getDoi(document);
+            String doi = generateDoiString(document);
             String request = String.format("doi=%s\nurl=%s", doi, document.getUri().toString());
             log.info("Requesting mint of doi: {}", request);
             try {
@@ -164,26 +188,44 @@ public class DataciteService {
     }
     
     private boolean hasDoi(GeminiDocument document) {
+        return getDoi(document) != null;
+    }
+    
+    private String getDoi(GeminiDocument document) {
         return Optional.ofNullable(document.getResourceIdentifiers())
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter((i) -> i.getCodeSpace().equals("doi:"))
-                .anyMatch((i) -> i.getCode().startsWith(doiPrefix));
+                .filter((i) -> i.getCode().startsWith(doiPrefix))
+                .map(ResourceIdentifier::getCode)
+                .findFirst()
+                .orElse(null);
+    }
+    
+    /**
+     * Generate a datacitation request with the submitted value set to now
+     * @param document
+     * @return an xml datacite request
+     */
+    public String getDatacitationRequest(GeminiDocument document) {
+        return getDatacitationRequest(document, LocalDate.now());
     }
     
     /**
      * Process the datacitation request template for the given document and 
      * return the request as a string.
      * @param document to get the prepare a datacitation request for
+     * @param submitted the date this record was submitted
      * @return an xml datacite request
      */
-    public String getDatacitationRequest(GeminiDocument document) {
+    public String getDatacitationRequest(GeminiDocument document, LocalDate submitted) {
         try {
-            String doi = getDoi(document);
+            String doi = generateDoiString(document);
             Map<String, Object> data = new HashMap<>();
             data.put("doc", document);
             data.put("resourceType", getDataciteResourceType(document));
             data.put("doi", doi);
+            data.put("submitted", submitted);
             return FreeMarkerTemplateUtils.processTemplateIntoString(dataciteRequest, data);
         }
         catch(IOException | TemplateException ex) {
@@ -203,7 +245,7 @@ public class DataciteService {
         }
     }
     
-    private String getDoi(GeminiDocument document) {
+    private String generateDoiString(GeminiDocument document) {
         return doiPrefix + document.getId();
     }
     
