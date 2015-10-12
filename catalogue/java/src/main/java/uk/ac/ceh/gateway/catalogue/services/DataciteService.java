@@ -107,7 +107,7 @@ public class DataciteService {
             }
             catch(HttpClientErrorException ex) {
                 log.error("Failed to upload doi: {} - {}", generateDoiString(document), ex.getResponseBodyAsString());
-                throw new DataciteException("Failed to submit the doi metdata", ex);
+                throw new DataciteException("Failed to submit the doi metdata, please review the datacite.xml (is it valid?) then try again", ex);
             }
             catch(RestClientException ex) {
                 throw new DataciteException("The datacite service failed to upload a record", ex);
