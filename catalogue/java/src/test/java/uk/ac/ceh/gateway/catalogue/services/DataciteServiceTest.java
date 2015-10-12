@@ -7,15 +7,19 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,11 +42,12 @@ public class DataciteServiceTest {
     
     @Mock Template dataciteRequest;
     @Mock RestTemplate rest;
+    @Mock DocumentIdentifierService identifierService;
     
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-        service = new DataciteService("10.8268/", "Test publisher", "username", "password", dataciteRequest, rest);
+        service = new DataciteService("10.8268/", "Test publisher", "username", "password", identifierService, dataciteRequest, rest);
     }
     
     @Test
@@ -128,7 +133,7 @@ public class DataciteServiceTest {
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
-        document.setUri(new URI("http://ceh.com"));
+        when(identifierService.generateUri("MY_ID")).thenReturn("http://ceh.com");
         document.setId("MY_ID");
         
         //When

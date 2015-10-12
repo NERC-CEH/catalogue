@@ -26,7 +26,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.DataciteException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
-import static uk.ac.ceh.gateway.catalogue.services.CitationService.NERC_DOI_PREFIX;
 
 /**
  * A service which interacts with the datacite rest api to obtain a DOI for a 
@@ -41,6 +40,7 @@ public class DataciteService {
     private final String publisher;
     private final String username;
     private final String password;
+    private final DocumentIdentifierService identifierService;
     private final Template dataciteRequest;
     private final RestTemplate rest;
     
@@ -125,7 +125,7 @@ public class DataciteService {
     public void mintDoiRequest(GeminiDocument document) {
         if(isDataciteMintable(document)) {
             String doi = generateDoiString(document);
-            String request = String.format("doi=%s\nurl=%s", doi, document.getUri().toString());
+            String request = String.format("doi=%s\nurl=%s", doi, identifierService.generateUri(document.getId()));
             log.info("Requesting mint of doi: {}", request);
             try {
                 HttpHeaders headers = getBasicAuth();

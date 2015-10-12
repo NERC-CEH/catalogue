@@ -78,4 +78,17 @@ public class DocumentIdentifierServiceTest {
         //Then
         fail("Expected to fail");
     }
+    
+    @Test
+    public void checkThatGeneratesHistoricIdInCorrectFormat() {
+        //Given
+        String id = "myPath";
+        String revision = "revision";
+        
+        //When
+        String url = service.generateUri(id, revision);
+        
+        //Then
+        assertThat(url, equalTo("https://catalogue.ceh.ac.uk/history/revision/myPath"));
+    }
 }
