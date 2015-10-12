@@ -135,10 +135,10 @@ public class DataciteService {
             }
             catch(HttpClientErrorException ex) {
                 log.error("Failed to mint doi: {} - {}", doi, ex.getResponseBodyAsString());
-                throw new DataciteException("Failed to mint the doi", ex);
+                throw new DataciteException("Minting of the DOI failed, please review the datacite.xml (is it valid?) then try again", ex);
             }
             catch(RestClientException ex) {
-                throw new DataciteException("Failed to mint the doi", ex);
+                throw new DataciteException("Failed to communicate with the datacite api when trying to mint the doi", ex);
             }
         }
         else {
