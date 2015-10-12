@@ -110,7 +110,7 @@ public class DataciteService {
                 throw new DataciteException("Failed to submit the doi metdata, please review the datacite.xml (is it valid?) then try again", ex);
             }
             catch(RestClientException ex) {
-                throw new DataciteException("The datacite service failed to upload a record", ex);
+                throw new DataciteException("Failed to communicate with the datacite api when trying to upload a record", ex);
             }
         }
         else {
