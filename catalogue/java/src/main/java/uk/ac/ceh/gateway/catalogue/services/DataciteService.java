@@ -66,13 +66,18 @@ public class DataciteService {
     public String getDoiMetadata(GeminiDocument document) {
         String doi = getDoi(document);
         if (doi != null) {
-            return rest.exchange(
-                    DATACITE_API + "/metadata/{doi}", 
-                    HttpMethod.GET, 
-                    new HttpEntity<>(getBasicAuth()), 
-                    String.class, 
-                    doi
-            ).getBody();
+            try {
+                return rest.exchange(
+                        DATACITE_API + "/metadata/{doi}", 
+                        HttpMethod.GET, 
+                        new HttpEntity<>(getBasicAuth()), 
+                        String.class, 
+                        doi
+                ).getBody();
+            }
+            catch(RestClientException ex) {
+                throw new DataciteException("Failed to obtain datacite metadata", ex);
+            }
         }
         else {
             return null;
