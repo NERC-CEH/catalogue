@@ -15,6 +15,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
+import uk.ac.ceh.gateway.catalogue.controllers.DataciteController;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -79,6 +80,10 @@ public class PermissionService {
     
     public boolean userCanMakePublic() {
         return userCan((String name) -> name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE));
+    }
+    
+    public boolean userCanDatacite() {
+        return userCan((String name) -> name.equalsIgnoreCase(DataciteController.DATACITE_ROLE));
     }
     
     private List<Group> getGroupsForUser(CatalogueUser user) {

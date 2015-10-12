@@ -1,24 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import freemarker.cache.FileTemplateLoader;
-import freemarker.template.TemplateExceptionHandler;
-import java.io.File;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
@@ -46,10 +41,6 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
-import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
-import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
-import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
 @Configuration
 @EnableWebMvc
@@ -73,12 +64,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String EF_INSPIRE_XML_SHORT         = "efinspire";
     public static final String EF_INSPIRE_XML_VALUE         = "application/vnd.ukeof.inspire+xml";
     
-    @Value("${template.location}") File templates;
     @Autowired ObjectMapper mapper;
-    @Autowired CodeLookupService codesLookup;
-    @Autowired JenaLookupService jenaLookupService;
-    @Autowired DownloadOrderDetailsService downloadOrderDetailsService;
-    @Autowired PermissionService permissionService;
+    @Autowired freemarker.template.Configuration freemarkerConfiguration;
     
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -86,27 +73,28 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         mappingJackson2HttpMessageConverter.setObjectMapper(mapper);
         
         // EF Message Converters  
-        converters.add(new Object2TemplatedMessageConverter(Activity.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(Facility.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(Network.class,   configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(Programme.class, configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Activity.class,  freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(Facility.class,  freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(Network.class,   freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(Programme.class, freemarkerConfiguration));
         converters.add(new UkeofXml2EFDocumentMessageConverter());
         
         // IMP Message Converters
-        converters.add(new Object2TemplatedMessageConverter(Model.class,            configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(ModelApplication.class, configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Model.class,            freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(ModelApplication.class, freemarkerConfiguration));
         
         // Gemini Message Converters
-        converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,       configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(SearchResults.class,        configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(Citation.class,             configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(StateResource.class,        configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,   configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(MaintenanceResponse.class,  configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(SparqlResponse.class,       configureFreeMarker().getConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,        configureFreeMarker().getConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,       freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(SearchResults.class,        freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(Citation.class,             freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(StateResource.class,        freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,   freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(MaintenanceResponse.class,  freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(SparqlResponse.class,       freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,        freemarkerConfiguration));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
+        converters.add(new StringHttpMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
     }
     
@@ -120,26 +108,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     
     @Bean
     public FreeMarkerConfigurer configureFreeMarker() {
-        try {
-            Map<String, Object> shared = new HashMap<>();
-            shared.put("jena", jenaLookupService);
-            shared.put("codes", codesLookup);
-            shared.put("downloadOrderDetails", downloadOrderDetailsService);
-            shared.put("permission", permissionService);
-            
-            freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
-            config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-            config.setSharedVaribles(shared);
-            config.setDefaultEncoding("UTF-8");
-            config.setTemplateLoader(new FileTemplateLoader(templates));
-            
-            FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();
-            freemarkerConfig.setConfiguration(config);
-            return freemarkerConfig;
-        }
-        catch(Exception e) {
-            return null;
-        }
+        FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();
+        freemarkerConfig.setConfiguration(freemarkerConfiguration);
+        return freemarkerConfig;
     }
     
     @Bean

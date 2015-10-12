@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
+import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 
 /**
  * Defines a post processing service which can be used adding additional 
@@ -24,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.services.CitationService;
 @Data
 public class GeminiDocumentPostProcessingService implements PostProcessingService<GeminiDocument> {
     private final CitationService citationService;
+    private final DataciteService dataciteService;
     private final ObjectMapper mapper;
     private final Dataset jenaTdb;
     
@@ -45,6 +47,9 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
                 
         citationService.getCitation(document)
                 .ifPresent(c -> document.setCitation(c));
+        
+        document.setDataciteMintable(dataciteService.isDataciteMintable(document));
+        document.setDatacitable(dataciteService.isDatacitable(document));
         
         try {
             document.setJsonString(mapper.writeValueAsString(document));

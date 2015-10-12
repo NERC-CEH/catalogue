@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
+import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 
 /**
  *
@@ -34,6 +35,7 @@ import uk.ac.ceh.gateway.catalogue.services.CitationService;
  */
 public class GeminiDocumentPostProcessingServiceTest {    
     @Mock CitationService citationService;
+    @Mock DataciteService dataciteService;
     @Mock ObjectMapper mapper;
     @Captor ArgumentCaptor<Set<Link>> links;
     private Dataset jenaTdb;
@@ -44,7 +46,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         MockitoAnnotations.initMocks(this);
         when(citationService.getCitation(any(GeminiDocument.class))).thenReturn(Optional.empty());
         jenaTdb = TDBFactory.createDataset();
-        service = spy(new GeminiDocumentPostProcessingService(citationService, mapper, jenaTdb));
+        service = spy(new GeminiDocumentPostProcessingService(citationService, dataciteService, mapper, jenaTdb));
     }
     
     @Test
