@@ -38,10 +38,9 @@ public class CitationController {
     @ResponseBody
     public Citation getCitation(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file, 
-        HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+        @PathVariable("file") String file) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
                 
-        return getCitation(documents.readMetadata(user, file, request));
+        return getCitation(documents.readMetadata(user, file));
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")

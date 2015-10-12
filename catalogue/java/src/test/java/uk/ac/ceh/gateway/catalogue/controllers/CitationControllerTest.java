@@ -58,17 +58,16 @@ public class CitationControllerTest {
     public void checkThatGettingCitationDelegatesToDocumentController() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
         MetadataDocument document = mock(MetadataDocument.class);
-        MockHttpServletRequest request = new MockHttpServletRequest();
         String file = "file";
         doReturn(null).when(controller).getCitation(document);
-        when(documents.readMetadata(CatalogueUser.PUBLIC_USER, file, request))
+        when(documents.readMetadata(CatalogueUser.PUBLIC_USER, file))
                 .thenReturn(document);
         
         //When
-        controller.getCitation(CatalogueUser.PUBLIC_USER, file, request);
+        controller.getCitation(CatalogueUser.PUBLIC_USER, file);
         
         //Then
-        verify(documents).readMetadata(CatalogueUser.PUBLIC_USER, file, request);
+        verify(documents).readMetadata(CatalogueUser.PUBLIC_USER, file);
     }
     
     @Test(expected=ResourceNotFoundException.class)

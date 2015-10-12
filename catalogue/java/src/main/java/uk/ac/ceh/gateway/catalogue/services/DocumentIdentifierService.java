@@ -41,6 +41,11 @@ public class DocumentIdentifierService {
         String id = Objects.requireNonNull(identifier, "A identifier is required for it to be assigned a uri");
         return baseUri + "/id/" + generateFileId(id);
     }
+        
+    public String generateUri(String identifier, String revision) {
+        String id = Objects.requireNonNull(identifier, "A identifier is required for it to be assigned a uri");
+        return baseUri + "/history/" + revision + "/id/" + generateFileId(id);
+    }
     
     /**
      * Generate a fresh metadata document file identifier
