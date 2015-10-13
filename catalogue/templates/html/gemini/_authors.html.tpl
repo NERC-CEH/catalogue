@@ -25,13 +25,13 @@
         <div class="orchid">ORCID: <a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank">${author.orcid?html}</a></div>
         </#if>
         <#if author.address?has_content>
-          <address class="hidden-xs">
+          <div class="postalAddress hidden-xs">
 		  <#if author.address.deliveryPoint?has_content><div>${author.address.deliveryPoint?html}</div></#if>
 		  <#if author.address.city?has_content><div>${author.address.city?html}</div></#if>
 		  <#if author.address.administrativeArea?has_content><div>${author.address.administrativeArea?html}</div></#if>
 		  <#if author.address.postalCode?has_content><div>${author.address.postalCode?html}</div></#if>
 		  <#if author.address.country?has_content><div>${author.address.country?html}</div></#if>
-          </address>
+          </div>
         </#if>
       </div>
     </#list>

@@ -19,19 +19,19 @@
             <#if metadataPointOfContact.address?has_content>
 			<address>
               <#if metadataPointOfContact.address.deliveryPoint?has_content>
-                <div>${metadataPointOfContact.address.deliveryPoint?html}</div>
+                ${metadataPointOfContact.address.deliveryPoint?html}<br>
               </#if>
               <#if metadataPointOfContact.address.city?has_content>
-                <div>${metadataPointOfContact.address.city?html}</div>
+                ${metadataPointOfContact.address.city?html}<br>
               </#if>
               <#if metadataPointOfContact.address.administrativeArea?has_content>
-                <div>${metadataPointOfContact.address.administrativeArea?html}</div>
+                ${metadataPointOfContact.address.administrativeArea?html}<br>
               </#if>
               <#if metadataPointOfContact.address.postalCode?has_content>
-                <div>${metadataPointOfContact.address.postalCode?html}</div>
+                ${metadataPointOfContact.address.postalCode?html}<br>
               </#if>
               <#if metadataPointOfContact.address.country?has_content>
-                <div>${metadataPointOfContact.address.country?html}</div>
+                ${metadataPointOfContact.address.country?html}<br>
               </#if>
 			</address>
             </#if>

@@ -27,13 +27,13 @@
 			</#if>
 
 			<#if otherContact.address?has_content>
-				<address class="hidden-xs">
+				<div class="postalAddress hidden-xs">
 					<#if otherContact.address.deliveryPoint?has_content><div>${otherContact.address.deliveryPoint?html}</div></#if>
 					<#if otherContact.address.city?has_content><div>${otherContact.address.city?html}</div></#if>
 					<#if otherContact.address.administrativeArea?has_content><div>${otherContact.address.administrativeArea?html}</div></#if>
 					<#if otherContact.address.postalCode?has_content><div>${otherContact.address.postalCode?html}</div></#if>
 					<#if otherContact.address.country?has_content><div>${otherContact.address.country?html}</div></#if>
-				</address>
+				</div>
 			</#if>
 		</div>
 	 </dd>
@@ -63,13 +63,13 @@
         </#if>
                 
         <#if distributorContact.address?has_content>
-          <address class="hidden-xs">
+          <div class="postalAddress hidden-xs">
 		  <#if distributorContact.address.deliveryPoint?has_content><div>${distributorContact.address.deliveryPoint?html}</div></#if>
 		  <#if distributorContact.address.city?has_content><div>${distributorContact.address.city?html}</div></#if>
 		  <#if distributorContact.address.administrativeArea?has_content><div>${distributorContact.address.administrativeArea?html}</div></#if>
 		  <#if distributorContact.address.postalCode?has_content><div>${distributorContact.address.postalCode?html}</div></#if>
 		  <#if distributorContact.address.country?has_content><div>${distributorContact.address.country?html}</div></#if>
-          </address>
+          </div>
         </#if>
       </dd>
     </#list>
