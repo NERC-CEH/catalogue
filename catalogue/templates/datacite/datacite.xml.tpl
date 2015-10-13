@@ -12,7 +12,7 @@
       <creator>
 	    <creatorName>${author.individualName}</creatorName>
 		<#if author.orcid?has_content>
-		<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org">${author.orcid}</nameIdentifier>
+		<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">${author.orcid}</nameIdentifier>
 		</#if>
 	  </creator>
     </#if>
