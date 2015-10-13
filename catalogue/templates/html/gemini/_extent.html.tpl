@@ -1,7 +1,7 @@
 <#if boundingBoxes?? || temporalExtents?? >
   <div id="section-extent">
   <h3 id="extent">Where/When</h3>
-    <dl class="">
+    <dl>
     
 	  <#if boundingBoxes?has_content>
         <dt>Study area</dt>
