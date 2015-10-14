@@ -212,6 +212,19 @@ public class MetadataInfoTest {
         assertThat("Publisher should be able to view", actual, is(true));
     }
     
+    @Test
+    public void canCheckIfDocumentIsPublicIfStateIsNull() {
+        //Given
+        MetadataInfo info = new MetadataInfo();
+        info.addPermission(Permission.VIEW, "public");
+        
+        //When
+        boolean isPublic = info.isPubliclyViewable(Permission.VIEW);
+        
+        //Then
+        assertThat("Should not be public unless the state is published", isPublic, is(false));
+    }
+    
     private List<Group> createGroups(String... groupnames) {
         List<Group> toReturn = new ArrayList<>();
         for (String groupname : groupnames) {
