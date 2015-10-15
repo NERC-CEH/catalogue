@@ -94,7 +94,7 @@ public class DataciteService {
         if(isDatacitable(document)) {
             try {
                 HttpHeaders headers = getBasicAuth();
-                headers.setContentType(MediaType.APPLICATION_XML);
+                headers.setContentType(MediaType.valueOf("application/xml;charset=UTF-8"));
 
                 String request = getDatacitationRequest(document);
                 rest.postForEntity(DATACITE_API + "/metadata", new HttpEntity<>(request, headers), String.class);
