@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
@@ -94,7 +95,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,        freemarkerConfiguration));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
-        converters.add(new StringHttpMessageConverter());
+        converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
         converters.add(mappingJackson2HttpMessageConverter);
     }
     

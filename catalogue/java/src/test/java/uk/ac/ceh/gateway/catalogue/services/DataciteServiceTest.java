@@ -117,7 +117,7 @@ public class DataciteServiceTest {
         //Then
         ArgumentCaptor<HttpEntity> captor = ArgumentCaptor.forClass(HttpEntity.class);
         verify(rest).postForEntity(eq("https://mds.datacite.org/metadata"), captor.capture(), eq(String.class));
-        assertThat("correct content type", captor.getValue().getHeaders().getContentType(), equalTo(MediaType.APPLICATION_XML));
+        assertThat("correct content type", captor.getValue().getHeaders().getContentType(), equalTo(MediaType.valueOf("application/xml;charset=UTF-8")));
     }
     
     @Test
