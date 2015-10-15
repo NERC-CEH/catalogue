@@ -126,7 +126,7 @@ public class MetadataInfo {
             &&
             permissions.containsEntry(Permission.VIEW, PUBLIC_GROUP)
             && 
-            state.equalsIgnoreCase("published");
+            getState().equalsIgnoreCase("published");
     }
        
     public boolean canAccess(Permission requested, CatalogueUser user, List<Group> groups) {
