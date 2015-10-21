@@ -5,7 +5,7 @@
     ${citation.authors?first?html} 
 	<i>et al</i>
    <#else>
-   ${citation.authors?join(',')?html} 
+   ${citation.authors?join('; ')?html} 
    </#if>
 
    (${citation.year?c})<br>
