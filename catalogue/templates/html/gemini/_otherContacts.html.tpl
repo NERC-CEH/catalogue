@@ -7,35 +7,36 @@
     <#list otherContacts as otherContact>
       <dt>${otherContact.roleDisplayName?html}</dt>
       <dd>
+		<div class="responsibleParty">
+			<#if otherContact.email?has_content>
+				<#if otherContact.individualName?has_content>
+					<div class="individualName"><a href="mailto:${otherContact.email?url}&amp;subject=RE: ${title?url}">${otherContact.individualName?html}</a></div>
+					<#if otherContact.organisationName?has_content>
+						<div class="organisationName">${otherContact.organisationName?html}</div>
+					</#if>
+				<#else>
+					<div class="organisationName"><a href="mailto:${otherContact.email?url}&amp;subject=RE: ${title?url}">${otherContact.organisationName?html}</a></div>
+				</#if>
+			<#else>
+				<#if otherContact.individualName?has_content>
+					<div class="individualName">${otherContact.individualName?html}</div>
+				</#if>
+				<#if otherContact.organisationName?has_content>
+					<div class="organisationName">${otherContact.organisationName?html}</div>
+				</#if>
+			</#if>
 
-      <#if otherContact.email?has_content>
-        <#if otherContact.individualName?has_content>
-          <a href="mailto:${otherContact.email?url}&amp;subject=RE: ${title?url}">${otherContact.individualName?html}</a><br>
-            <#if otherContact.organisationName?has_content>
-              <span>${otherContact.organisationName?html}</span><br>
-            </#if>
-          <#else>
-            <a href="mailto:${otherContact.email?url}&amp;subject=RE: ${title?url}">${otherContact.organisationName?html}</a><br>
-          </#if>
-        <#else>
-          <#if otherContact.individualName?has_content>
-            <span>${otherContact.individualName?html}</span><br>
-          </#if>
-          <#if otherContact.organisationName?has_content>
-            <span>${otherContact.organisationName?html}</span><br>
-          </#if>
-        </#if>
-                
-        <#if otherContact.address?has_content>
-          <address class="hidden-xs">
-            <#if otherContact.address.deliveryPoint?has_content>${otherContact.address.deliveryPoint?html}<br></#if>
-            <#if otherContact.address.city?has_content>${otherContact.address.city?html}<br></#if>
-            <#if otherContact.address.administrativeArea?has_content>${otherContact.address.administrativeArea?html}<br></#if>
-            <#if otherContact.address.postalCode?has_content>${otherContact.address.postalCode?html}<br></#if>
-            <#if otherContact.address.country?has_content>${otherContact.address.country?html}</#if>
-          </address>
-        </#if>
-      </dd>
+			<#if otherContact.address?has_content>
+				<div class="postalAddress hidden-xs">
+					<#if otherContact.address.deliveryPoint?has_content><div>${otherContact.address.deliveryPoint?html}</div></#if>
+					<#if otherContact.address.city?has_content><div>${otherContact.address.city?html}</div></#if>
+					<#if otherContact.address.administrativeArea?has_content><div>${otherContact.address.administrativeArea?html}</div></#if>
+					<#if otherContact.address.postalCode?has_content><div>${otherContact.address.postalCode?html}</div></#if>
+					<#if otherContact.address.country?has_content><div>${otherContact.address.country?html}</div></#if>
+				</div>
+			</#if>
+		</div>
+	 </dd>
     </#list>
   </#if>
     
@@ -45,30 +46,30 @@
       <dd>
         <#if distributorContact.email?has_content>
           <#if distributorContact.individualName?has_content>
-            <a href="mailto:${distributorContact.email?url}&amp;subject=RE: ${title?url}">${distributorContact.individualName?html}</a><br>
+             <div class="individualName"><a href="mailto:${distributorContact.email?url}&amp;subject=RE: ${title?url}">${distributorContact.individualName?html}</a></div>
             <#if distributorContact.organisationName?has_content>
-              <span>${distributorContact.organisationName?html}</span><br>
+              <div class="organisationName">${distributorContact.organisationName?html}</div>
             </#if>
           <#else>
-            <a href="mailto:${distributorContact.email?url}&amp;subject=RE: ${title?url}">${distributorContact.organisationName?html}</a><br>
+		  <div class="organisationName"><a href="mailto:${distributorContact.email?url}&amp;subject=RE: ${title?url}">${distributorContact.organisationName?html}</a></div>
           </#if>
         <#else>
           <#if distributorContact.individualName?has_content>
-            <span>${distributorContact.individualName?html}</span><br>
+             <div class="individualName">${distributorContact.individualName?html}</div>
           </#if>
           <#if distributorContact.organisationName?has_content>
-            <span>${distributorContact.organisationName?html}</span><br>
+            <div class="organisationName">${distributorContact.organisationName?html}</div>
           </#if>
         </#if>
                 
         <#if distributorContact.address?has_content>
-          <address class="hidden-xs">
-            <#if distributorContact.address.deliveryPoint?has_content>${distributorContact.address.deliveryPoint?html}<br></#if>
-            <#if distributorContact.address.city?has_content>${distributorContact.address.city?html}<br></#if>
-            <#if distributorContact.address.administrativeArea?has_content>${distributorContact.address.administrativeArea?html}<br></#if>
-            <#if distributorContact.address.postalCode?has_content>${distributorContact.address.postalCode?html}<br></#if>
-            <#if distributorContact.address.country?has_content>${distributorContact.address.country?html}</#if>
-          </address>
+          <div class="postalAddress hidden-xs">
+		  <#if distributorContact.address.deliveryPoint?has_content><div>${distributorContact.address.deliveryPoint?html}</div></#if>
+		  <#if distributorContact.address.city?has_content><div>${distributorContact.address.city?html}</div></#if>
+		  <#if distributorContact.address.administrativeArea?has_content><div>${distributorContact.address.administrativeArea?html}</div></#if>
+		  <#if distributorContact.address.postalCode?has_content><div>${distributorContact.address.postalCode?html}</div></#if>
+		  <#if distributorContact.address.country?has_content><div>${distributorContact.address.country?html}</div></#if>
+          </div>
         </#if>
       </dd>
     </#list>

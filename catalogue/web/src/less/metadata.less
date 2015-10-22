@@ -1,8 +1,6 @@
 #metadata {
-  @light-gray-border: #DFDFDF;
+  @light-gray-border: #CCC;
 
-  hr {border-color:@light-gray-border;}
-  
   #document-description { margin-bottom:1em; }
 
   h3 {
@@ -18,6 +16,12 @@
     padding-top:  0.6em;
   }
 
+  #section-citation, .dataFormats, .useLimitations{
+      border-top: 1px solid @light-gray-border;
+	  margin-top:1.25em;
+	  padding-top:1.25em;
+  }
+  
   #studyarea-map { height: 300px; width: 300px; }
 
   // If the current metadata document is a historic archive, a warning is 
@@ -36,5 +40,32 @@
     white-space: normal;
   }
 
+ .panel {overflow-wrap: break-word;}
+ 
+ .responsibleParty {
+    margin-bottom:1em;
+	address{margin-bottom:0;}
+  }
+ 
+ #section-onlineResources {
+	p {margin-bottom:1.5em;}
  }
-  #footer {background-color:#CCC; padding-top:1em;}
+ 
+ @media (min-width: 768px) {
+    .dl-horizontal dt {
+        width:15em;
+        white-space: normal;
+    }
+    .dl-horizontal dd {
+        margin-left:16em;
+        margin-bottom:.3em;
+    }
+ }
+
+ @media (min-width: 468px) {
+    .dl-horizontal dd { margin-bottom:1em;}
+  }
+
+ }
+
+#footer {background-color:#CCC; padding-top:1em;}

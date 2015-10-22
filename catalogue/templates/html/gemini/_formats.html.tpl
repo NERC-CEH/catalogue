@@ -1,5 +1,5 @@
 <#if distributionFormats?has_content>
-<hr>
+<div class="dataFormats" id="section-formats">
 	<#if distributionFormats?size = 1>
 		<p>Format of the data: 
 		<#list distributionFormats as format>
@@ -14,4 +14,5 @@
 		  </#list>
 		</ul>
 	</#if>
+</div>
 </#if>
