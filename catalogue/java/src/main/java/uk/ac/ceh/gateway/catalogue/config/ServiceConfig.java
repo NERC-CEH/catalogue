@@ -67,14 +67,12 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
-import uk.ac.ceh.gateway.catalogue.services.JsonDocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
@@ -162,11 +160,6 @@ public class ServiceConfig {
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService))
                 .addMessageConverter(new UkeofXml2EFDocumentMessageConverter())
                 .addMessageConverter(new MappingJackson2HttpMessageConverter(jacksonMapper));
-    }
-    
-    @Bean
-    public DocumentWritingService<MetadataDocument> documentWritingService() {
-        return new JsonDocumentWritingService(jacksonMapper);
     }
     
     @Bean

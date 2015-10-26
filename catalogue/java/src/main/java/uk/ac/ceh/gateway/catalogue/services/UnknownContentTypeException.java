@@ -4,7 +4,7 @@ package uk.ac.ceh.gateway.catalogue.services;
  *
  * @author cjohn
  */
-public class UnknownContentTypeException extends Exception {
+public class UnknownContentTypeException extends RuntimeException {
     public UnknownContentTypeException() {
         super();
     }

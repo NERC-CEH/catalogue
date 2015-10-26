@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
@@ -42,6 +43,8 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
+import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.services.MessageConverterWritingService;
 
 @Configuration
 @EnableWebMvc
@@ -97,6 +100,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         converters.add(new ResourceHttpMessageConverter());
         converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
         converters.add(mappingJackson2HttpMessageConverter);
+    }
+    
+    @Bean
+    public DocumentWritingService documentWritingService() {
+        List<HttpMessageConverter<?>> converters = new ArrayList<>();
+        configureMessageConverters(converters);
+        return new MessageConverterWritingService(converters);
     }
     
     @Bean

@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +45,7 @@ public class DataciteController {
     private final DocumentIdentifierService identifierService;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
-    private final DocumentWritingService<MetadataDocument> documentWriter;
+    private final DocumentWritingService documentWriter;
     private final DataciteService dataciteService;
     private final ShortDoiService doiShortenerService;
     
@@ -54,7 +55,7 @@ public class DataciteController {
                               DocumentIdentifierService identifierService,
                               BundledReaderService<MetadataDocument> documentBundleReader,
                               DocumentInfoMapper<MetadataInfo> documentInfoMapper,
-                              DocumentWritingService<MetadataDocument> documentWriter,
+                              DocumentWritingService documentWriter,
                               DataciteService dataciteService,
                               ShortDoiService doiShortenerService) {
         this.repo = repo;
@@ -98,7 +99,7 @@ public class DataciteController {
         finally {
             geminiDocument.setMetadataDate(LocalDateTime.now()); // Update the last edit date
             repo.submitData(String.format("%s.meta", file), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
-                .submitData(String.format("%s.raw", file), (o) -> documentWriter.write(geminiDocument, o))
+                .submitData(String.format("%s.raw", file), (o) -> documentWriter.write(geminiDocument, MediaType.APPLICATION_JSON, o))
                 .commit(user, String.format("datacite Gemini document: %s", file));
         }
         return new RedirectView(identifierService.generateUri(file));

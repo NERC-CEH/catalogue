@@ -63,7 +63,7 @@ public class DocumentController {
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
-    private final DocumentWritingService<MetadataDocument> documentWriter;
+    private final DocumentWritingService documentWriter;
     private final PostProcessingService postProcessingService;
     
     @Autowired
@@ -73,7 +73,7 @@ public class DocumentController {
                                 DocumentInfoMapper documentInfoMapper,
                                 DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory,
                                 BundledReaderService<MetadataDocument> documentBundleReader,
-                                DocumentWritingService<MetadataDocument> documentWritingService,
+                                DocumentWritingService documentWritingService,
                                 PostProcessingService postProcessingService) {
         this.repo = repo;
         this.documentIdentifierService = documentIdentifierService;
@@ -136,7 +136,7 @@ public class DocumentController {
         MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(geminiDocument, user);
         
         repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o) )
-            .submitData(String.format("%s.raw", id), (o) -> documentWriter.write(geminiDocument, o))
+            .submitData(String.format("%s.raw", id), (o) -> documentWriter.write(geminiDocument, MediaType.APPLICATION_JSON, o))
             .commit(user, String.format("new Gemini document: %s", id));
                 
         return ResponseEntity
@@ -192,7 +192,7 @@ public class DocumentController {
         addRecordUriAsResourceIdentifier(geminiDocument, recordUri);
         
         repo.submitData(String.format("%s.meta", file), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
-            .submitData(String.format("%s.raw", file), (o) -> documentWriter.write(geminiDocument, o))
+            .submitData(String.format("%s.raw", file), (o) -> documentWriter.write(geminiDocument, MediaType.APPLICATION_JSON, o))
             .commit(user, String.format("edit Gemini document: %s", file));
         
         return ResponseEntity

@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +56,7 @@ public class MetadataListingService {
                     toReturn.add(doc.getId());
                 }
             }
-            catch(RuntimeException | UnknownContentTypeException ex) {
+            catch(RuntimeException ex) {
                 log.error("Failed to read " + file + " @ " + revision);
             }
         }
