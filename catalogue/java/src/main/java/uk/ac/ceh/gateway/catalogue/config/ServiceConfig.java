@@ -313,7 +313,7 @@ public class ServiceConfig {
     }
     
     @Bean @Qualifier("validation-index")
-    public ValidationIndexingService validationIndexingService() throws XPathExpressionException, IOException {        
+    public ValidationIndexingService validationIndexingService() throws XPathExpressionException, IOException, TemplateModelException {        
         ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
                 .register(MetadataDocument.class, new ValidationIndexGenerator(Arrays.asList(new DummyValidator(documentWritingService))));
         
@@ -321,6 +321,7 @@ public class ServiceConfig {
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
+                postProcessingService(),
                 new IndexGeneratorRegistry(mappings)
         );
         

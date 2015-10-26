@@ -9,6 +9,7 @@ import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import java.util.List;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.gateway.catalogue.postprocess.NullPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
@@ -31,7 +32,7 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
             IndexGenerator<D, List<Statement>> indexGenerator,
             DocumentIdentifierService documentIdentifierService,
             Dataset jenaTdb) {
-        super(reader, listingService, repo, indexGenerator);
+        super(reader, listingService, repo, new NullPostProcessingService(), indexGenerator);
         this.documentIdentifierService = documentIdentifierService;
         this.jenaTdb = jenaTdb;
     }

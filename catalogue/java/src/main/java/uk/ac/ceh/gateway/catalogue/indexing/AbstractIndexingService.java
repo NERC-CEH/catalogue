@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
@@ -30,6 +32,7 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     private final BundledReaderService<D> reader;
     private final DocumentListingService listingService;
     private final DataRepository<?> repo;
+    private final PostProcessingService<D> postProcessingService;
     private final IndexGenerator<D, I> indexGenerator;
     
     public abstract void clearIndex() throws DocumentIndexingException;
@@ -57,8 +60,7 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         documents.stream().forEach((document) -> {
             try {
                 log.debug("Indexing: {}, revision: {}", document, revision);
-                index(indexGenerator.generateIndex(
-                        reader.readBundle(document, revision)));
+                index(indexGenerator.generateIndex(readDocument(document, revision)));
             }
             catch(Exception ex) {
                 log.error("Failed to index: {}", document, ex);
@@ -74,5 +76,11 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         if(joinedException.getSuppressed().length != 0) {
             throw joinedException;
         }
+    }
+    
+    protected D readDocument(String document, String revision) throws IOException, PostProcessingException {
+        D toReturn = reader.readBundle(document, revision);
+        postProcessingService.postProcess(toReturn);
+        return toReturn;
     }
 }

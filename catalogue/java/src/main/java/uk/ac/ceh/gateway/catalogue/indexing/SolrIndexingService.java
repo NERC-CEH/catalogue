@@ -6,6 +6,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.gateway.catalogue.postprocess.NullPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
@@ -25,7 +26,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
             DataRepository<?> repo,
             IndexGenerator<D, SolrIndex> indexGenerator,
             SolrServer solrServer) {
-        super(reader, listingService, repo, indexGenerator);
+        super(reader, listingService, repo, new NullPostProcessingService(), indexGenerator);
         this.solrServer = solrServer;
     }
     

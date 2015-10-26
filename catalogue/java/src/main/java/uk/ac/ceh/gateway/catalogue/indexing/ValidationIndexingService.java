@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
@@ -21,9 +22,10 @@ public class ValidationIndexingService<D> extends AbstractIndexingService<D, Val
     public ValidationIndexingService(
             BundledReaderService<D> reader, 
             DocumentListingService listingService, 
-            DataRepository<?> repo, 
+            DataRepository<?> repo,
+            PostProcessingService<D> postProcessingService,
             IndexGenerator<D, ValidationReport> indexGenerator) {
-        super(reader, listingService, repo, indexGenerator);
+        super(reader, listingService, repo, postProcessingService, indexGenerator);
         results = new HashMap<>();
     }
     
