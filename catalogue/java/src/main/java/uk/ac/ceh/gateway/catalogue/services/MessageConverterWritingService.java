@@ -39,6 +39,7 @@ public class MessageConverterWritingService implements DocumentWritingService {
         for(HttpMessageConverter converter: messageConverters) {
             if(converter.canWrite(document.getClass(), contentType)) {
                 converter.write(document, contentType, new HttpOutputMessageWrapper(output));
+                return;
             }
         }
         throw new UnknownContentTypeException("I don't know how to read " + contentType);

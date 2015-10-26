@@ -11,6 +11,7 @@ import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateModelException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,8 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -67,6 +70,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
@@ -82,6 +86,8 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
+import uk.ac.ceh.gateway.catalogue.validation.DummyValidator;
+import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 
 /**
  * The following spring configuration will populate service beans
@@ -103,6 +109,7 @@ public class ServiceConfig {
     @Autowired CodeLookupService codeLookupService;
     @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
     @Autowired GroupStore<CatalogueUser> groupStore;
+    @Autowired DocumentWritingService documentWritingService;
     
     @Bean
     public PermissionService permission() {
@@ -303,6 +310,22 @@ public class ServiceConfig {
         return new AsyncDocumentIndexingService(
                 new DataciteIndexingService(bundledReaderService(), dataciteService())
         );
+    }
+    
+    @Bean @Qualifier("validation-index")
+    public ValidationIndexingService validationIndexingService() throws XPathExpressionException, IOException {        
+        ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
+                .register(MetadataDocument.class, new ValidationIndexGenerator(Arrays.asList(new DummyValidator(documentWritingService))));
+        
+        ValidationIndexingService toReturn = new ValidationIndexingService(
+                bundledReaderService(),
+                documentListingService(),
+                dataRepository,
+                new IndexGeneratorRegistry(mappings)
+        );
+        
+        performReindexIfNothingIsIndexed(toReturn);
+        return toReturn;
     }
     
     //Perform an initial index of solr if their is no content inside

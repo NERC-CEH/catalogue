@@ -14,6 +14,7 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
@@ -28,12 +29,14 @@ public class MaintenanceController {
     private final DataRepositoryOptimizingService repoService;
     private final SolrIndexingService solrIndex;
     private final JenaIndexingService linkingService;
+    private final ValidationIndexingService validationService;
     
     @Autowired
-    public MaintenanceController(DataRepositoryOptimizingService repoService, SolrIndexingService solrIndex, JenaIndexingService linkingService) {
+    public MaintenanceController(DataRepositoryOptimizingService repoService, SolrIndexingService solrIndex, JenaIndexingService linkingService, ValidationIndexingService validationService) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
+        this.validationService = validationService;
     }
     
     @RequestMapping (method = RequestMethod.GET)
@@ -56,6 +59,7 @@ public class MaintenanceController {
             toReturn.addMessage(dre.getMessage());
         }
         toReturn.setLastOptimized(repoService.getLastOptimized());
+        toReturn.setValidation(validationService.getResults());
         return toReturn;
     }
     
