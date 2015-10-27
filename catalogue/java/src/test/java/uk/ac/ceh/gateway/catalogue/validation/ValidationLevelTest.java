@@ -18,7 +18,7 @@ public class ValidationLevelTest {
         ValidationLevel failed = FAILED_TO_READ;
         
         //When
-        boolean moreSevere = ValidationLevel.isMoreSevere(valid, failed);
+        boolean moreSevere = failed.isMoreSevere(valid);
         
         //Then
         assertTrue("Expected failed to be more severe", moreSevere);
@@ -31,7 +31,7 @@ public class ValidationLevelTest {
         ValidationLevel failed = FAILED_TO_READ;
         
         //When
-        boolean moreSevere = ValidationLevel.isMoreSevere(failed, valid);
+        boolean moreSevere = valid.isMoreSevere(failed);
         
         //Then
         assertFalse("Expected failed to be less severe", moreSevere);
@@ -43,7 +43,7 @@ public class ValidationLevelTest {
         ValidationLevel valid = VALID;
         
         //When
-        boolean moreSevere = ValidationLevel.isMoreSevere(valid, valid);
+        boolean moreSevere = valid.isMoreSevere(valid);
         
         //Then
         assertFalse("Expected failed to be less severe", moreSevere);

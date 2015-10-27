@@ -32,7 +32,6 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     private final BundledReaderService<D> reader;
     private final DocumentListingService listingService;
     private final DataRepository<?> repo;
-    private final PostProcessingService<D> postProcessingService;
     private final IndexGenerator<D, I> indexGenerator;
     
     public abstract void clearIndex() throws DocumentIndexingException;
@@ -78,9 +77,18 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         }
     }
     
-    protected D readDocument(String document, String revision) throws IOException, PostProcessingException {
-        D toReturn = reader.readBundle(document, revision);
-        postProcessingService.postProcess(toReturn);
-        return toReturn;
+    /**
+     * An overridable method which uses the message bundle reader load a 
+     * particular document from the bundle.
+     * 
+     * Sub classes are free to adjust this method to add postprocessing 
+     * capabilities to the reading logic
+     * @param document id of the document to read
+     * @param revision the revision which to read at
+     * @return a document which has been read
+     * @throws Exception if something went wrong
+     */
+    protected D readDocument(String document, String revision) throws Exception {
+        return reader.readBundle(document, revision);
     }
 }

@@ -29,7 +29,7 @@ public class ValidationResult {
      * @return this
      */
     public ValidationResult reject(ValidationMessage message) {
-        if(ValidationLevel.isMoreSevere(worstLevel, message.getLevel())) {
+        if(message.getLevel().isMoreSevere(worstLevel)) {
             worstLevel = message.getLevel();
         }
         

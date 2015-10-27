@@ -8,10 +8,10 @@ import java.util.List;
  * @author cjohn
  */
 public enum ValidationLevel {
-    VALID, FAILED_TO_READ;
+    VALID, WARNING, ERROR, FAILED_TO_READ;
         
-    public static boolean isMoreSevere(ValidationLevel a, ValidationLevel b) {
+    public boolean isMoreSevere(ValidationLevel a) {
         List<ValidationLevel> levels = Arrays.asList(values());
-        return levels.indexOf(b) > levels.indexOf(a);
+        return levels.indexOf(this) > levels.indexOf(a);
     }
 }

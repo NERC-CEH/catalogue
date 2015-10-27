@@ -1,12 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.validation;
 
-import java.io.IOException;
 import java.io.InputStream;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
  * The following is a validator which will read a document from the 
@@ -25,7 +23,7 @@ public abstract class AbstractDocumentValidator implements Validator {
     public ValidationResult validate(Object input) {
         try {
             return validate(documentWritingService.write(input, mediaType));
-        } catch (IOException | UnknownContentTypeException ex) {
+        } catch (Exception ex) {
             log.error("Failed to validate document {}", ex.getMessage());
             return new ValidationResult()
                     .reject(ex.getMessage(), ValidationLevel.FAILED_TO_READ);

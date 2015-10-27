@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -64,7 +65,7 @@ public class PermissionService {
     
     public boolean userCanEdit(String file) throws IOException {
         Objects.requireNonNull(file);
-        CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CatalogueUser user = getCurrentUser();
         if (user.isPublic()) {
             return false;
         } else if(userCanMakePublic()) {
@@ -95,7 +96,7 @@ public class PermissionService {
     }
     
     private boolean userCan(Predicate<String> filter) {
-        CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CatalogueUser user = getCurrentUser();
         log.debug("principal: {}", user);
         if (user.isPublic()) {
             return false;
@@ -107,6 +108,14 @@ public class PermissionService {
                 .findFirst()
                 .isPresent();
         }
+    }
+    
+    // If the current thread of execution is running outside of spring mvc, an
+    // authentication may not have been set. If this is the case, we can assume
+    // that the current user is PUBLIC.
+    private CatalogueUser getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (authentication != null) ? (CatalogueUser)authentication.getPrincipal() : CatalogueUser.PUBLIC_USER;
     }
     
     private Optional<MetadataInfo> getMetadataInfo(String file, String revision) {

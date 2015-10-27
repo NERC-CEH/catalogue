@@ -11,12 +11,18 @@ import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateModelException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.xml.xpath.XPathExpressionException;
+import lombok.Data;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,17 +30,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.GroupStore;
+import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
+import uk.ac.ceh.gateway.catalogue.ef.Network;
+import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
+import uk.ac.ceh.gateway.catalogue.imp.Model;
+import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
 import uk.ac.ceh.gateway.catalogue.indexing.AsyncDocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DataciteIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
@@ -55,12 +71,19 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
+import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
+import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
@@ -78,6 +101,7 @@ import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
+import uk.ac.ceh.gateway.catalogue.services.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
@@ -86,7 +110,7 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
-import uk.ac.ceh.gateway.catalogue.validation.DummyValidator;
+import uk.ac.ceh.gateway.catalogue.validation.HtmlValidator;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 
 /**
@@ -141,6 +165,55 @@ public class ServiceConfig {
     }
     
     @Bean
+    public MessageConvertersHolder messageConverters() throws TemplateModelException, IOException {
+        List<HttpMessageConverter<?>> converters = new ArrayList<>();
+        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+        mappingJackson2HttpMessageConverter.setObjectMapper(jacksonMapper);
+        
+        // EF Message Converters  
+        converters.add(new Object2TemplatedMessageConverter(Activity.class,  freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Facility.class,  freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Network.class,   freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Programme.class, freemarkerConfiguration()));
+        converters.add(new UkeofXml2EFDocumentMessageConverter());
+        
+        // IMP Message Converters
+        converters.add(new Object2TemplatedMessageConverter(Model.class,            freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(ModelApplication.class, freemarkerConfiguration()));
+        
+        // Gemini Message Converters
+        converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,       freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(SearchResults.class,        freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(Citation.class,             freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(StateResource.class,        freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,   freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(MaintenanceResponse.class,  freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(SparqlResponse.class,       freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,        freemarkerConfiguration()));
+        converters.add(new TransparentProxyMessageConverter(httpClient()));
+        converters.add(new ResourceHttpMessageConverter());
+        converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
+        converters.add(mappingJackson2HttpMessageConverter);
+        return new MessageConvertersHolder(converters);
+    }    
+        
+    @Bean
+    public CloseableHttpClient httpClient() {
+        PoolingHttpClientConnectionManager connPool = new PoolingHttpClientConnectionManager();
+        connPool.setMaxTotal(100);
+        connPool.setDefaultMaxPerRoute(20);
+        
+        return HttpClients.custom()
+                          .setConnectionManager(connPool)
+                          .build();
+    }
+        
+    @Data
+    public static class MessageConvertersHolder {
+        private final List<HttpMessageConverter<?>> converters;
+    }
+    
+    @Bean
     public freemarker.template.Configuration freemarkerConfiguration() throws TemplateModelException, IOException {
         Map<String, Object> shared = new HashMap<>();
         shared.put("jena", jenaLookupService());
@@ -167,6 +240,11 @@ public class ServiceConfig {
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService))
                 .addMessageConverter(new UkeofXml2EFDocumentMessageConverter())
                 .addMessageConverter(new MappingJackson2HttpMessageConverter(jacksonMapper));
+    }
+    
+    @Bean
+    public DocumentWritingService documentWritingService() throws TemplateModelException, IOException {
+        return new MessageConverterWritingService(messageConverters().getConverters());
     }
     
     @Bean
@@ -313,20 +391,27 @@ public class ServiceConfig {
     }
     
     @Bean @Qualifier("validation-index")
-    public ValidationIndexingService validationIndexingService() throws XPathExpressionException, IOException, TemplateModelException {        
-        ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
-                .register(MetadataDocument.class, new ValidationIndexGenerator(Arrays.asList(new DummyValidator(documentWritingService))));
+    public DocumentIndexingService asyncValidationIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
+        DocumentIndexingService toReturn = new AsyncDocumentIndexingService(validationIndexingService());
         
-        ValidationIndexingService toReturn = new ValidationIndexingService(
+        performReindexIfNothingIsIndexed(toReturn);
+        return toReturn;
+    }
+    
+    
+    @Bean 
+    public ValidationIndexingService validationIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
+        ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
+                .register(MetadataDocument.class, new ValidationIndexGenerator(Arrays.asList(new HtmlValidator(documentWritingService))));
+        
+        return new ValidationIndexingService(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
                 postProcessingService(),
+                documentIdentifierService(),
                 new IndexGeneratorRegistry(mappings)
         );
-        
-        performReindexIfNothingIsIndexed(toReturn);
-        return toReturn;
     }
     
     //Perform an initial index of solr if their is no content inside
