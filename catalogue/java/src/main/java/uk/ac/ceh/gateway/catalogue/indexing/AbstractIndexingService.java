@@ -76,8 +76,8 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     }
     
     /**
-     * An overridable method which uses the message bundle reader load a 
-     * particular document from the bundle.
+     * An overridable method which uses the message bundle reader to load a 
+     * particular document.
      * 
      * Sub classes are free to adjust this method to add postprocessing 
      * capabilities to the reading logic
