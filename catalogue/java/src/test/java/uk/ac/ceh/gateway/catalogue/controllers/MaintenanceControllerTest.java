@@ -73,6 +73,18 @@ public class MaintenanceControllerTest {
     }
     
     @Test
+    public void checkThatReindexingDelegatesToValidationService() throws DocumentIndexingException {
+        //Given
+        //Nothing
+        
+        //When
+        controller.validateRepository();
+        
+        //Then
+        verify(validationService).rebuildIndex();
+    }
+    
+    @Test
     public void checkThatCanLoadMaintenancePageWhenThereRepoIsBroken() throws DataRepositoryException {
         //Given
         String errorMessage = "Something has gone wrong";

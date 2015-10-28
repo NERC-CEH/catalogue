@@ -35,8 +35,6 @@ define [
     do @initPermission if $('.permission').length
     
     $('.chart').each (i, e) -> new ChartView el: e
-
-  initBarchart: ->
       
   initStudyAreaMap: ->
     view = new StudyAreaView();
