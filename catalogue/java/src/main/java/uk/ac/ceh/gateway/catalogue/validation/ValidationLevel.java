@@ -8,7 +8,17 @@ import java.util.List;
  * @author cjohn
  */
 public enum ValidationLevel {
-    VALID, WARNING, ERROR, FAILED_TO_READ;
+    VALID("Valid"), WARNING("Warning"), ERROR("Error"), FAILED_TO_READ("Failed to read");
+    
+    private final String label;
+    
+    ValidationLevel(String label) {
+        this.label = label;
+    }
+    
+    public String getLabel() {
+        return label;
+    }
         
     public boolean isMoreSevere(ValidationLevel a) {
         List<ValidationLevel> levels = Arrays.asList(values());

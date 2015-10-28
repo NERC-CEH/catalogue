@@ -4,7 +4,6 @@ import java.io.InputStream;
 import org.springframework.http.MediaType;
 import org.w3c.tidy.Tidy;
 import org.w3c.tidy.TidyMessage;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 
 /**

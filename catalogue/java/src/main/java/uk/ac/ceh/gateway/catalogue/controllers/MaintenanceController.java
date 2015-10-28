@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
@@ -27,12 +29,16 @@ import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 @Secured(DocumentController.MAINTENANCE_ROLE)
 public class MaintenanceController {
     private final DataRepositoryOptimizingService repoService;
-    private final SolrIndexingService solrIndex;
-    private final JenaIndexingService linkingService;
-    private final ValidationIndexingService validationService;
+    private final DocumentIndexingService solrIndex;
+    private final DocumentIndexingService linkingService;
+    private final DocumentIndexingService validationService;
     
     @Autowired
-    public MaintenanceController(DataRepositoryOptimizingService repoService, SolrIndexingService solrIndex, JenaIndexingService linkingService, ValidationIndexingService validationService) {
+    public MaintenanceController(
+            DataRepositoryOptimizingService repoService, 
+            @Qualifier("solr-index") DocumentIndexingService solrIndex, 
+            @Qualifier("jena-index") DocumentIndexingService linkingService, 
+            @Qualifier("validation-index") DocumentIndexingService validationService) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
@@ -54,12 +60,16 @@ public class MaintenanceController {
             toReturn.addMessage(ex.getMessage());
         }
         try {
+            toReturn.setValidated(!validationService.isIndexEmpty());
+        } catch(DocumentIndexingException ex) {
+            toReturn.addMessage(ex.getMessage());
+        }
+        try {
             toReturn.setLatestRevision(repoService.getRepo().getLatestRevision());
         } catch(DataRepositoryException dre) {
             toReturn.addMessage(dre.getMessage());
         }
         toReturn.setLastOptimized(repoService.getLastOptimized());
-        toReturn.setValidation(validationService.getResults());
         return toReturn;
     }
     
@@ -72,6 +82,22 @@ public class MaintenanceController {
             return ResponseEntity.ok(loadMaintenancePage().addMessage("Optimized repository"));
         }
         catch(DataRepositoryException ex) {
+            MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(response);
+        }   
+    }
+    
+    @RequestMapping(value="/documents/validate",
+                    method = RequestMethod.POST)
+    @ResponseBody
+    public HttpEntity<MaintenanceResponse> validateRepository() {
+        try {
+            validationService.rebuildIndex();
+            return ResponseEntity.ok(loadMaintenancePage().addMessage("Validating repository"));
+        }
+        catch(DocumentIndexingException ex) {
             MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

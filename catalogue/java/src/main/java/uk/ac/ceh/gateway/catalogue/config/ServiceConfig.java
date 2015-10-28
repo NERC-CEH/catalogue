@@ -78,6 +78,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
+import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
@@ -189,6 +190,7 @@ public class ServiceConfig {
         converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,   freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(MaintenanceResponse.class,  freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(SparqlResponse.class,       freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(ValidationResponse.class,   freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,        freemarkerConfiguration()));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
@@ -397,8 +399,7 @@ public class ServiceConfig {
         performReindexIfNothingIsIndexed(toReturn);
         return toReturn;
     }
-    
-    
+        
     @Bean 
     public ValidationIndexingService validationIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
         ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()

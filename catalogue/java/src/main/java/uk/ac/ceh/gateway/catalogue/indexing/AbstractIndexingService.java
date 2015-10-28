@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
@@ -63,7 +61,7 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
             }
             catch(Exception ex) {
                 log.error("Failed to index: {}", document, ex);
-                joinedException.addSuppressed(new DocumentIndexingException(
+                joinedException.addSuppressed(document, new DocumentIndexingException(
                     String.format("Failed to index %s : %s", document, ex.getMessage()), ex));
                 log.error("Suppressed indexing errors", (Object[]) joinedException.getSuppressed());
             }

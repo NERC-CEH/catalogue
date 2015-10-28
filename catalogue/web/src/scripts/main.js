@@ -31,6 +31,7 @@ require.config({
     'underscore':        '../vendor/underscore/underscore',
     'backbone':          '../vendor/backbone/backbone',
     'openlayers':        '../vendor/OpenLayers-custom',
+    'chartjs':           '../vendor/chartjs/Chart',
     'jquery-ui':         '../vendor/jquery-ui/ui'
   },
   waitSeconds:1000

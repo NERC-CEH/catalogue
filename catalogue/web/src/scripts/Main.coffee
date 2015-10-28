@@ -16,10 +16,11 @@ define [
   'cs!models/PermissionApp'
   'cs!routers/PermissionRouter'
   'cs!views/PermissionAppView'
+  'cs!views/ChartView'
   'bootstrap'
 ], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, GeminiMetadata, GeminiEditorView, MonitoringMetadata, MonitoringEditorView, PermissionApp, PermissionRouter,
-    PermissionAppView) ->
+    PermissionAppView, ChartView) ->
   
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -32,6 +33,10 @@ define [
     do @initSearch if $('#search').length
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
+    
+    $('.chart').each (i, e) -> new ChartView el: e
+
+  initBarchart: ->
       
   initStudyAreaMap: ->
     view = new StudyAreaView();

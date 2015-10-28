@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 
 /**
  *
@@ -22,9 +21,9 @@ public class MaintenanceResponse {
     private List<String> messages = new ArrayList<>();
     private boolean isLinked;
     private boolean isIndexed;
+    private boolean isValidated;
     private DataRevision<CatalogueUser> latestRevision;
     private Date lastOptimized;
-    private List<ValidationReport> validation;
     
     public MaintenanceResponse addMessage(String message) {
         messages.add(message);
