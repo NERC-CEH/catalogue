@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import javax.xml.validation.Schema;
 import javax.xml.xpath.XPathExpressionException;
 import lombok.Data;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -38,6 +39,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.GroupStore;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
@@ -113,6 +115,7 @@ import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.validation.HtmlValidator;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
+import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
 
 /**
  * The following spring configuration will populate service beans
@@ -135,6 +138,7 @@ public class ServiceConfig {
     @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
     @Autowired GroupStore<CatalogueUser> groupStore;
     @Autowired DocumentWritingService documentWritingService;
+    @Autowired @Qualifier("gemini") Schema geminiSchema;
     
     @Bean
     public PermissionService permission() {
@@ -393,7 +397,7 @@ public class ServiceConfig {
     }
     
     @Bean @Qualifier("validation-index")
-    public DocumentIndexingService asyncValidationIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
+    public DocumentIndexingService asyncValidationIndexingService() throws Exception {
         DocumentIndexingService toReturn = new AsyncDocumentIndexingService(validationIndexingService());
         
         performReindexIfNothingIsIndexed(toReturn);
@@ -401,9 +405,17 @@ public class ServiceConfig {
     }
         
     @Bean 
-    public ValidationIndexingService validationIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
+    public ValidationIndexingService validationIndexingService() throws Exception {
+        HtmlValidator html = new HtmlValidator(documentWritingService);
+        
         ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
-                .register(MetadataDocument.class, new ValidationIndexGenerator(Arrays.asList(new HtmlValidator(documentWritingService))));
+                .register(GeminiDocument.class, new ValidationIndexGenerator(Arrays.asList(
+                        new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService, geminiSchema),
+                        html
+                )))
+                .register(MetadataDocument.class, new ValidationIndexGenerator(Arrays.asList(
+                        html
+                )));
         
         return new ValidationIndexingService(
                 bundledReaderService(),

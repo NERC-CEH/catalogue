@@ -6,6 +6,7 @@ solr::solr_home: /opt/ceh-catalogue/catalogue/solr-config
 catalogue_config:
   'documents.baseUri':         'http://catalogue.ceh.ac.uk'
   'jena.location':             '/var/ceh-catalogue/tdb'
+  'schemas.location':          '/opt/ceh-catalogue/catalogue/schemas'
   'data.repository.location':  '/var/ceh-catalogue/datastore'
   'template.location':         '/opt/ceh-catalogue/catalogue/templates'
   'solr.server.documents.url': 'http://localhost:7000/documents'
