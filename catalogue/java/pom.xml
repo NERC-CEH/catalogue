@@ -178,13 +178,6 @@
             <version>${jts.version}</version>
         </dependency>
         
-        <!-- Validation -->
-        <dependency>
-            <groupId>net.sf.jtidy</groupId>
-            <artifactId>jtidy</artifactId>
-            <version>r938</version>
-        </dependency>
-        
         <!-- Logging -->
         <dependency>
             <groupId>ch.qos.logback</groupId>

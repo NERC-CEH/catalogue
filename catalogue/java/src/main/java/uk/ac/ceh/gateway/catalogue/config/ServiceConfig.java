@@ -113,7 +113,7 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
-import uk.ac.ceh.gateway.catalogue.validation.HtmlValidator;
+import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
 
@@ -406,7 +406,7 @@ public class ServiceConfig {
         
     @Bean 
     public ValidationIndexingService validationIndexingService() throws Exception {
-        HtmlValidator html = new HtmlValidator(documentWritingService);
+        MediaTypeValidator html = new MediaTypeValidator("HTML Generation", MediaType.TEXT_HTML, documentWritingService);
         
         ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
                 .register(GeminiDocument.class, new ValidationIndexGenerator(Arrays.asList(
