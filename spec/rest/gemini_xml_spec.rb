@@ -1,6 +1,6 @@
 describe "Gemini XML Generation", :retry => 1, :retry_wait => 0, :restful => true do
   let(:schema) { 
-    xsd_path = 'fixtures/gemini-schema/gmx/gmx.xsd'
+    xsd_path = 'catalogue/schemas/gemini/gmx/gmx.xsd'
     xsddoc = Nokogiri::XML(File.read(xsd_path), xsd_path)
     Nokogiri::XML::Schema.from_document(xsddoc)
   }

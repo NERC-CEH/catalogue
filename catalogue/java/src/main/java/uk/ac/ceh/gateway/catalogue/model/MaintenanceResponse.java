@@ -21,6 +21,7 @@ public class MaintenanceResponse {
     private List<String> messages = new ArrayList<>();
     private boolean isLinked;
     private boolean isIndexed;
+    private boolean isValidated;
     private DataRevision<CatalogueUser> latestRevision;
     private Date lastOptimized;
     

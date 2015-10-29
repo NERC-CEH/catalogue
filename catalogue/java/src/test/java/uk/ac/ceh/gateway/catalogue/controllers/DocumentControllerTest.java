@@ -75,7 +75,7 @@ public class DocumentControllerTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock PostProcessingService postProcessingService;
-    @Mock DocumentWritingService<MetadataDocument> documentWritingService;
+    @Mock DocumentWritingService documentWritingService;
     @Mock ObjectMapper mapper;
     
     private DocumentController controller;

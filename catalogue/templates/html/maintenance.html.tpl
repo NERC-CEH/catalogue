@@ -42,6 +42,12 @@
           <a href="/maintenance/sparql">Sparql tester</a>
         </form>
       </dd>
+      <dt>Has Validation?</dt><dd>${validated?string("Yes", "No")}
+        <form method="POST" action="/maintenance/documents/validate">
+          <input type="submit" value="Rebuild">
+          <a href="/maintenance/validation">Validation Dashboard</a>
+        </form>
+      </dd>
     </dl>
   </div>
 </@skeleton.master>

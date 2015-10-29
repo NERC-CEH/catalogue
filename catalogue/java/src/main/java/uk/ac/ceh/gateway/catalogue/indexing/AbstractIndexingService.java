@@ -57,12 +57,11 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         documents.stream().forEach((document) -> {
             try {
                 log.debug("Indexing: {}, revision: {}", document, revision);
-                index(indexGenerator.generateIndex(
-                        reader.readBundle(document, revision)));
+                index(indexGenerator.generateIndex(readDocument(document, revision)));
             }
             catch(Exception ex) {
                 log.error("Failed to index: {}", document, ex);
-                joinedException.addSuppressed(new DocumentIndexingException(
+                joinedException.addSuppressed(document, new DocumentIndexingException(
                     String.format("Failed to index %s : %s", document, ex.getMessage()), ex));
                 log.error("Suppressed indexing errors", (Object[]) joinedException.getSuppressed());
             }
@@ -74,5 +73,20 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         if(joinedException.getSuppressed().length != 0) {
             throw joinedException;
         }
+    }
+    
+    /**
+     * An overridable method which uses the message bundle reader to load a 
+     * particular document.
+     * 
+     * Sub classes are free to adjust this method to add postprocessing 
+     * capabilities to the reading logic
+     * @param document id of the document to read
+     * @param revision the revision which to read at
+     * @return a document which has been read
+     * @throws Exception if something went wrong
+     */
+    protected D readDocument(String document, String revision) throws Exception {
+        return reader.readBundle(document, revision);
     }
 }
