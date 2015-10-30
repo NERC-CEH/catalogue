@@ -6,6 +6,7 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Property;
 import java.util.HashSet;
 import java.util.Optional;
@@ -32,17 +33,22 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     @Override
     public void postProcess(GeminiDocument document) throws PostProcessingException {
         Optional.ofNullable(document.getId()).ifPresent(i -> {
-            findLinksWhere(i, has(), IS_PART_OF).stream()
-                    .findFirst().ifPresent( p -> document.setParent(p));
-            
-            document.setChildren(findLinksWhere(i, isHadBy(), IS_PART_OF));  
-            document.setDocumentLinks(findLinksWhere(i, connectedBy(), RELATION));
-            
-            findLinksWhere(i, has(), REPLACES).stream()
-                    .findFirst().ifPresent( r -> document.setRevisionOf(r));
-            
-            findLinksWhere(i, isHadBy(), REPLACES).stream()
-                    .findFirst().ifPresent( r -> document.setRevised(r));
+            jenaTdb.begin(ReadWrite.READ);
+            try {
+                findLinksWhere(i, has(), IS_PART_OF).stream()
+                        .findFirst().ifPresent( p -> document.setParent(p));
+
+                document.setChildren(findLinksWhere(i, isHadBy(), IS_PART_OF));  
+                document.setDocumentLinks(findLinksWhere(i, connectedBy(), RELATION));
+
+                findLinksWhere(i, has(), REPLACES).stream()
+                        .findFirst().ifPresent( r -> document.setRevisionOf(r));
+
+                findLinksWhere(i, isHadBy(), REPLACES).stream()
+                        .findFirst().ifPresent( r -> document.setRevised(r));
+            } finally {
+                jenaTdb.end();
+            }
         });
                 
         citationService.getCitation(document)
