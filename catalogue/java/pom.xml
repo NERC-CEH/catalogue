@@ -12,7 +12,7 @@
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <hibernate-validator.version>5.1.1.Final</hibernate-validator.version>
-        <ceh.components.version>1.0.35</ceh.components.version>
+        <ceh.components.version>1.0.36</ceh.components.version>
         <lombok.version>1.16.2</lombok.version>
         <jackson.version>2.5.0</jackson.version>
         <spring.version>4.1.4.RELEASE</spring.version>
