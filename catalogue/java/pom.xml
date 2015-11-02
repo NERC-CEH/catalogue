@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
 
+    <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.ceh.gateway</groupId>
     <artifactId>Catalogue</artifactId>
     <version>1.2.88-SNAPSHOT</version>
     <packaging>war</packaging>
-
     <name>CEH Information Gateway Catalogue</name>
+    <description>CEH Metadata Catalogue</description>
+    <url>https://catalogue.ceh.ac.uk</url>
 
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
@@ -26,10 +32,59 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License, version 2</name>
+            <url>http://www.gnu.org/licenses/gpl-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
     <scm>
         <connection>scm:git:https://stash.ceh.ac.uk/scm/cig/catalogue.git</connection>
-        <tag>1.2.37</tag>
-    </scm>    
+        <url>http://github.com/NERC-CEH/catalogue.git</url>
+        <developerConnection>scm:git:https://stash.ceh.ac.uk/scm/cig/catalogue.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+  
+    <developers>
+        <developer>
+            <name>Christopher Johnson</name>
+            <email>cjohn@ceh.ac.uk</email>
+            <organization>Centre for Ecology &amp; Hydrology</organization>
+            <organizationUrl>http://www.ceh.ac.uk/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Rod Scott</name>
+            <email>rjsc@ceh.ac.uk</email>
+            <organization>Centre for Ecology &amp; Hydrology</organization>
+            <organizationUrl>http://www.ceh.ac.uk/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Jon Cooper</name>
+            <email>jcoop@ceh.ac.uk</email>
+            <organization>Centre for Ecology &amp; Hydrology</organization>
+            <organizationUrl>http://www.ceh.ac.uk/</organizationUrl>
+        </developer>
+    </developers>
+
+    <profiles>
+        <profile>
+            <id>ceh-nexus</id>
+            <distributionManagement>
+              <repository>
+                    <id>ceh-releases-nexus</id>
+                    <url>http://nexus.nerc-lancaster.ac.uk/content/repositories/releases</url>
+              </repository>
+              <snapshotRepository>
+                    <uniqueVersion>true</uniqueVersion>
+                    <id>ceh-snapshots-nexus</id>
+                    <url>http://nexus.nerc-lancaster.ac.uk/content/repositories/snapshots</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+    </profiles>
+    
     <dependencies>       
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -281,16 +336,4 @@
             </plugin>
         </plugins>
     </build>
-    
-    <distributionManagement>
-        <repository>
-            <id>ceh-releases-nexus</id>
-            <url>http://nexus.nerc-lancaster.ac.uk/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <uniqueVersion>true</uniqueVersion>
-            <id>ceh-snapshots-nexus</id>
-            <url>http://nexus.nerc-lancaster.ac.uk/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
