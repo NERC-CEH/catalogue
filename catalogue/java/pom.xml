@@ -4,7 +4,7 @@
 
     <groupId>uk.ac.ceh.gateway</groupId>
     <artifactId>Catalogue</artifactId>
-    <version>1.2.84-SNAPSHOT</version>
+    <version>1.2.87</version>
     <packaging>war</packaging>
 
     <name>CEH Information Gateway Catalogue</name>
@@ -28,7 +28,7 @@
     </properties>
     <scm>
         <connection>scm:git:https://stash.ceh.ac.uk/scm/cig/catalogue.git</connection>
-        <tag>1.2.37</tag>
+        <tag>1.2.87</tag>
     </scm>    
     <dependencies>       
         <dependency>
