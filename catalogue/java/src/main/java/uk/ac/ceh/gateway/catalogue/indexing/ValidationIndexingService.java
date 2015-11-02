@@ -49,7 +49,7 @@ public class ValidationIndexingService<D extends MetadataDocument> extends Abstr
     }
 
     @Override
-    public void clearIndex() throws DocumentIndexingException {
+    protected void clearIndex() throws DocumentIndexingException {
         results.clear();
         failed.clear();
     }
@@ -66,7 +66,7 @@ public class ValidationIndexingService<D extends MetadataDocument> extends Abstr
     }
 
     @Override
-    public void index(ValidationReport toIndex) throws Exception {
+    protected void index(ValidationReport toIndex) throws Exception {
         results.put(toIndex.getDocumentId(), toIndex);
     }
 
@@ -74,9 +74,6 @@ public class ValidationIndexingService<D extends MetadataDocument> extends Abstr
     public void unindexDocuments(List<String> unIndex) throws DocumentIndexingException {
         unIndex.stream().forEach(results::remove);
     }
-
-    @Override
-    public void commit() throws DocumentIndexingException {}
     
     /**
      * @return a list of validation reports for each of the documents which have

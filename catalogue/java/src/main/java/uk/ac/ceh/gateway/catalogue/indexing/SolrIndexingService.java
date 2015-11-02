@@ -37,20 +37,29 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
         catch(SolrServerException ex) {
             throw new DocumentIndexingException(ex);
         }
+    }    
+    
+    @Override
+    public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
+        try {
+            super.indexDocuments(documents, revision);
+        } finally {
+            commit();
+        }
     }
         
     @Override
     public void unindexDocuments(List<String> documents) throws DocumentIndexingException {
         try {            
             solrServer.deleteById(documents);
-            solrServer.commit();
+            commit();
         } catch (IOException | SolrServerException ex) {
             throw new DocumentIndexingException(ex);
         }
     }
 
     @Override
-    public void clearIndex() throws DocumentIndexingException {
+    protected void clearIndex() throws DocumentIndexingException {
         try {
             solrServer.deleteByQuery("*:*");
         } catch (IOException | SolrServerException ex) {
@@ -59,12 +68,11 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     }
 
     @Override
-    public void index(SolrIndex toIndex) throws Exception {
+    protected void index(SolrIndex toIndex) throws Exception {
         solrServer.addBean(toIndex);
     }
-
-    @Override
-    public void commit() throws DocumentIndexingException {
+    
+    private void commit() throws DocumentIndexingException {
         try {
             solrServer.commit();
         } catch (IOException | SolrServerException ex) {

@@ -32,9 +32,8 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     private final DataRepository<?> repo;
     private final IndexGenerator<D, I> indexGenerator;
     
-    public abstract void clearIndex() throws DocumentIndexingException;
-    public abstract void index(I toIndex) throws Exception;
-    public abstract void commit() throws DocumentIndexingException;
+    protected abstract void clearIndex() throws DocumentIndexingException;
+    protected abstract void index(I toIndex) throws Exception;
     
     @Override
     public void rebuildIndex() throws DocumentIndexingException {
@@ -66,8 +65,6 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
                 log.error("Suppressed indexing errors", (Object[]) joinedException.getSuppressed());
             }
         });
-        
-        commit(); // Commit the changes
 
         //If an exception was supressed, then throw
         if(joinedException.getSuppressed().length != 0) {

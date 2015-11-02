@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
@@ -8,6 +9,7 @@ import com.hp.hpl.jena.tdb.TDBFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
@@ -128,5 +130,23 @@ public class JenaIndexingServiceTest {
         
         //Then
         verify(service).unindexDocuments(docs);
+    }
+    
+    @Test
+    public void checkThatisInTransactionIsThreadSpecific() throws Exception {
+        //Given
+        jenaTdb.begin(ReadWrite.WRITE);
+        
+        //When
+        boolean otherThreadInTransaction = Executors
+                .newSingleThreadExecutor()
+                .submit( () -> jenaTdb.isInTransaction())
+                .get();
+        
+        boolean thisThreadInTransaction = jenaTdb.isInTransaction();
+        
+        //Then
+        assertThat(otherThreadInTransaction, is(false));
+        assertThat(thisThreadInTransaction, is(true));
     }
 }
