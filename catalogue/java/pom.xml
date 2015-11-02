@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.ceh.gateway</groupId>
     <artifactId>Catalogue</artifactId>
-    <version>1.2.92</version>
+    <version>1.2.93-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>CEH Information Gateway Catalogue</name>
     <description>CEH Metadata Catalogue</description>
@@ -44,7 +44,7 @@
         <connection>scm:git:https://stash.ceh.ac.uk/scm/cig/catalogue.git</connection>
         <url>http://github.com/NERC-CEH/catalogue.git</url>
         <developerConnection>scm:git:https://stash.ceh.ac.uk/scm/cig/catalogue.git</developerConnection>
-        <tag>1.2.92</tag>
+        <tag>HEAD</tag>
     </scm>
   
     <developers>
