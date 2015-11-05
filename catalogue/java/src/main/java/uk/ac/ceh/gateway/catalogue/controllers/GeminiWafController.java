@@ -41,7 +41,7 @@ public class GeminiWafController {
     @RequestMapping(value="/",
                     method=RequestMethod.GET)
     public ModelAndView getWaf() throws DataRepositoryException, IOException {
-        List<String> resourceTypes = Arrays.asList("dataset","series","service");
+        List<String> resourceTypes = Arrays.asList("dataset", "service");
         DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
         List<String> files = (latestRevision == null) ? Collections.EMPTY_LIST : listing
                 .getPublicDocuments(latestRevision.getRevisionID(), GeminiDocument.class, resourceTypes)
