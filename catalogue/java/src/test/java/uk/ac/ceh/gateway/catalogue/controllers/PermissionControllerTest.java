@@ -21,11 +21,13 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoEditingService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
 public class PermissionControllerTest {
     @Mock private MetadataInfoEditingService metadataInfoEditingService;
+    @Mock private DocumentIdentifierService documentIdentifierService;
     @Mock private PermissionService permissionService;
     
     private PermissionController permissionController;
@@ -33,7 +35,7 @@ public class PermissionControllerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        permissionController = new PermissionController(metadataInfoEditingService, permissionService);
+        permissionController = new PermissionController(metadataInfoEditingService, documentIdentifierService, permissionService);
     }
     
     @Test
@@ -50,6 +52,7 @@ public class PermissionControllerTest {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/documents/1234-567-890");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         
+        given(documentIdentifierService.generateUri(file)).willReturn("http://catalogue/documents/1234-567-890");
         given(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).willReturn(document);
         
         
@@ -82,6 +85,7 @@ public class PermissionControllerTest {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/documents/1234-567-890");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         
+        given(documentIdentifierService.generateUri(file)).willReturn("http://catalogue/documents/1234-567-890");
         given(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).willReturn(document);
         
         //When
@@ -117,6 +121,7 @@ public class PermissionControllerTest {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/documents/1234-567-890");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         
+        given(documentIdentifierService.generateUri(file)).willReturn("http://catalogue/documents/1234-567-890");
         given(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).willReturn(document);
         given(permissionService.userCanMakePublic()).willReturn(Boolean.TRUE);
         
