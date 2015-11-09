@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -23,6 +22,7 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoEditingService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
@@ -31,11 +31,15 @@ import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 @Slf4j
 public class PermissionController {
     private final MetadataInfoEditingService metadataInfoEditingService;
+    private final DocumentIdentifierService documentIdentifierService;
     private final PermissionService permissionService;
 
     @Autowired
-    public PermissionController(MetadataInfoEditingService metadataInfoEditingService, PermissionService permissionService) {
+    public PermissionController(MetadataInfoEditingService metadataInfoEditingService, 
+                                DocumentIdentifierService documentIdentifierService,
+                                PermissionService permissionService) {
         this.metadataInfoEditingService = metadataInfoEditingService;
+        this.documentIdentifierService = documentIdentifierService;
         this.permissionService = permissionService;
     }
     
@@ -45,7 +49,7 @@ public class PermissionController {
     public HttpEntity<PermissionResource> currentPermission (
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file) {
-        URI metadataUri = getMetadataUri(file);
+        URI metadataUri = URI.create(documentIdentifierService.generateUri(file));
         MetadataDocument document = metadataInfoEditingService.getMetadataDocument(file, metadataUri);
         return ResponseEntity.ok(new PermissionResource(document)); 
     }
@@ -58,7 +62,7 @@ public class PermissionController {
             @PathVariable("file") String file,
             @RequestBody PermissionResource permissionResource) throws DataRepositoryException {
         log.debug("Updating permissions to: {} for: {}", permissionResource, file);
-        URI metadataUri = getMetadataUri(file);
+        URI metadataUri =  URI.create(documentIdentifierService.generateUri(file));
         MetadataInfo original = metadataInfoEditingService.getMetadataDocument(file, metadataUri).getMetadata();
         MetadataInfo returned = removeAddedPublicGroupIfNotPublisher(original, permissionResource);
         if ( !returned.equals(original)) {
@@ -67,13 +71,6 @@ public class PermissionController {
         }
         log.debug("Updated permissions now: {}", returned);
         return ResponseEntity.ok(new PermissionResource(metadataInfoEditingService.getMetadataDocument(file, metadataUri))); 
-    }
-    
-    private URI getMetadataUri(String file) {
-        return MvcUriComponentsBuilder
-            .fromMethodName(DocumentController.class, "readMetadata", null, file)
-            .buildAndExpand(file)
-            .toUri();
     }
     
     private MetadataInfo removeAddedPublicGroupIfNotPublisher(MetadataInfo original, PermissionResource permissionResource) {
