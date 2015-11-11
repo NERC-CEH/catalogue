@@ -16,7 +16,7 @@ git init
 git config user.name "Vagrant provision"
 git config user.email vagrant@localhost
 
-for d in /vagrant/fixtures/datastore/*/ ; do
+for d in /opt/ceh-catalogue/fixtures/datastore/*/ ; do
   git rm -rf .  # Remove all index files
   cp ${d}* .
   git add -A

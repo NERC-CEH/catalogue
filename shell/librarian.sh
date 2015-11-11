@@ -12,7 +12,7 @@ apt-get -q -y install ruby1.9.1-dev
 if [ ! -d "$PUPPET_DIR" ]; then
   mkdir -p $PUPPET_DIR
 fi
-cp /vagrant/Puppetfile $PUPPET_DIR
+cp /opt/ceh-catalogue/Puppetfile $PUPPET_DIR
 
 if [ "$(gem list -i '^librarian-puppet$')" = "false" ]; then
   gem install librarian-puppet -v '2.2.1'

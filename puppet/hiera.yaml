@@ -1,7 +1,7 @@
 ---
 :backends: yaml
 :yaml:
-  :datadir: /vagrant/puppet/hieradata
+  :datadir: /opt/ceh-catalogue/puppet/hieradata
 :hierarchy:
   - secrets
   - common
