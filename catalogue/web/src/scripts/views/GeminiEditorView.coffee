@@ -451,6 +451,10 @@ define [
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'distributor'
               email: 'enquiries@ceh.ac.uk'
+            'EIDC':
+              organisationName: 'EIDC'
+              role: 'distributor'
+              email: 'eidc@ceh.ac.uk'
           helpText: """
                     <p>The organisation responsible for distributing the data resource</p>
                     <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
