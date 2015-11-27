@@ -10,7 +10,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.contains;
@@ -39,6 +38,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.http.MediaType;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -59,6 +59,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
@@ -77,6 +78,7 @@ public class DocumentControllerTest {
     @Mock PostProcessingService postProcessingService;
     @Mock DocumentWritingService documentWritingService;
     @Mock ObjectMapper mapper;
+    @Mock DocumentTypeLookupService documentTypeLookupService;
     
     private DocumentController controller;
     
@@ -97,31 +99,29 @@ public class DocumentControllerTest {
                                                 infoFactory,
                                                 documentBundleReader,
                                                 documentWritingService,
-                                                postProcessingService));
+                                                postProcessingService,
+                                                documentTypeLookupService));
     }
     
     
     @Test
     public void uploadingDocumentStoresInputStreamIntoGit() throws IOException, UnknownContentTypeException, DataRepositoryException, DocumentIndexingException {
         //Given
-        byte[] contentToUpload = "geminidocument".getBytes();
+        byte[] contentToUpload = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes();
         byte[] metaInfoBytes = "metadataInfo".getBytes();
         String uploadMessage = "My upload message";
         
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getInputStream()).thenReturn(new DelegatedServletInputStream(new ByteArrayInputStream(contentToUpload)));
-        when(request.getContextPath()).thenReturn("/documents");
-        when(request.getScheme()).thenReturn("https");
-        when(request.getServerName()).thenReturn("example.com");
-        when(request.getServerPort()).thenReturn(443);
+        MultipartFile multipartFile = mock(MultipartFile.class);
+        when(multipartFile.getContentType()).thenReturn(MediaType.APPLICATION_XML_VALUE);
+        when(multipartFile.getInputStream()).thenReturn(new DelegatedServletInputStream(new ByteArrayInputStream(contentToUpload)));
         
         GeminiDocument document = new GeminiDocument();
         document.setId("id");
         when(documentIdentifierService.generateFileId("id")).thenReturn("id");
-        when(documentReader.read(any(InputStream.class), eq(MediaType.APPLICATION_JSON), eq(GeminiDocument.class))).thenReturn(document);
+        when(documentReader.read(any(), any(), any())).thenReturn(document);
         
         MetadataInfo metadataDocument = mock(MetadataInfo.class);
-        when(infoFactory.createInfo(eq(document), eq(MediaType.APPLICATION_JSON))).thenReturn(metadataDocument);
+        when(infoFactory.createInfo(eq(document), eq(MediaType.APPLICATION_XML))).thenReturn(metadataDocument);
         doAnswer((Answer) (InvocationOnMock invocation) -> {
             OutputStream out = (OutputStream)invocation.getArguments()[1];
             StreamUtils.copy(metaInfoBytes, out);
@@ -134,7 +134,7 @@ public class DocumentControllerTest {
         CatalogueUser user = new CatalogueUser();
         user.setUsername("user");
         user.setEmail("user@test.com");
-        controller.uploadDocument(user, uploadMessage, request, MediaType.APPLICATION_JSON_VALUE);
+        controller.uploadDocument(user, uploadMessage, multipartFile, "GEMINI_DOCUMENT");
         
         //Then
         byte[] rawWrittenData = StreamUtils.copyToByteArray(repo.getData("id.raw").getInputStream());

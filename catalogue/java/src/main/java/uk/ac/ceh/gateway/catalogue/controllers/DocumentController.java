@@ -9,21 +9,24 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -44,6 +47,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
@@ -65,6 +69,7 @@ public class DocumentController {
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final DocumentWritingService documentWriter;
     private final PostProcessingService postProcessingService;
+    private final DocumentTypeLookupService documentTypeLookupService;
     
     @Autowired
     public DocumentController(  DataRepository<CatalogueUser> repo,
@@ -74,7 +79,8 @@ public class DocumentController {
                                 DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory,
                                 BundledReaderService<MetadataDocument> documentBundleReader,
                                 DocumentWritingService documentWritingService,
-                                PostProcessingService postProcessingService) {
+                                PostProcessingService postProcessingService,
+                                DocumentTypeLookupService documentTypeLookupService) {
         this.repo = repo;
         this.documentIdentifierService = documentIdentifierService;
         this.documentReader = documentReader;
@@ -83,41 +89,65 @@ public class DocumentController {
         this.documentBundleReader = documentBundleReader;
         this.documentWriter = documentWritingService;
         this.postProcessingService = postProcessingService;
+        this.documentTypeLookupService = documentTypeLookupService;
+    }
+    
+    @Secured(EDITOR_ROLE)
+    @RequestMapping (value = "documents/upload",
+                     method = RequestMethod.GET)
+    public ModelAndView uploadForm() {
+        return new ModelAndView("/html/upload.html.tpl");
     }
     
     @Secured(EDITOR_ROLE)
     @RequestMapping (value = "documents",
-                     method = RequestMethod.POST)
+                     method = RequestMethod.POST,
+                     consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity uploadDocument(
             @ActiveUser CatalogueUser user,
             @RequestParam(value = "message", defaultValue = "new document") String commitMessage,
-            HttpServletRequest request,
-            @RequestHeader("Content-Type") String contentType) throws IOException, UnknownContentTypeException  {
+            @RequestParam("file") MultipartFile multipartFile,
+            @RequestParam("type") String type) throws IOException, UnknownContentTypeException  {
         
-        MediaType contentMediaType = MediaType.parseMediaType(contentType);
+        MediaType contentMediaType = MediaType.parseMediaType(multipartFile.getContentType());
         Path tmpFile = Files.createTempFile("upload", null); //Create a temp file to upload the input stream to
         String fileId;
-        GeminiDocument data;
+        MetadataDocument data;
+        Class<? extends MetadataDocument> metadataType = documentTypeLookupService.getType(type);
+        
         try {
-            Files.copy(request.getInputStream(), tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
+            Files.copy(multipartFile.getInputStream(), tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
             
             //the documentReader will close the underlying inputstream
-            data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType, GeminiDocument.class); 
-            MetadataInfo metadataDocument = infoFactory.createInfo(data, contentMediaType); //get the metadata info
+            data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType, metadataType); 
+            MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(data, user, contentMediaType); //get the metadata info
             
             fileId = Optional.ofNullable(documentIdentifierService.generateFileId(data.getId()))
                              .orElse(documentIdentifierService.generateFileId());
             
-            repo.submitData(String.format("%s.meta", fileId), (o)-> documentInfoMapper.writeInfo(metadataDocument, o) )
+            repo.submitData(String.format("%s.meta", fileId), (o)-> documentInfoMapper.writeInfo(metadataInfo, o) )
                 .submitData(String.format("%s.raw", fileId), (o) -> Files.copy(tmpFile, o) )
                 .commit(user, commitMessage);
         }
         finally {
             Files.delete(tmpFile); //file no longer needed
         }
-        return ResponseEntity
-            .created(URI.create(documentIdentifierService.generateUri(fileId)))
-            .build();
+        if (data.getId() == null && data instanceof GeminiDocument) {
+            GeminiDocument geminiDocument = ((GeminiDocument) data);
+            updateIdAndMetadataDate(geminiDocument, fileId);
+            
+            repo.submitData(String.format("%s.meta", fileId), (o)-> documentInfoMapper.writeInfo(updatingRawType(fileId), o))
+                .submitData(String.format("%s.raw", fileId), (o) -> documentWriter.write(geminiDocument, MediaType.APPLICATION_JSON, o))
+                .commit(user, String.format("Adding Id to: %s", fileId));
+        }
+        
+        return seeOther(fileId);
+    }
+    
+    private ResponseEntity seeOther(String fileId) {
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("Location", documentIdentifierService.generateUri(fileId));
+        return new ResponseEntity(headers, HttpStatus.SEE_OTHER);
     }
     
     @Secured(EDITOR_ROLE)
@@ -133,7 +163,7 @@ public class DocumentController {
         URI recordUri = URI.create(documentIdentifierService.generateUri(id));
         addRecordUriAsResourceIdentifier(geminiDocument, recordUri);
 
-        MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(geminiDocument, user);
+        MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(geminiDocument, user, MediaType.APPLICATION_JSON);
         
         repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o) )
             .submitData(String.format("%s.raw", id), (o) -> documentWriter.write(geminiDocument, MediaType.APPLICATION_JSON, o))
@@ -167,8 +197,8 @@ public class DocumentController {
         document.setResourceIdentifiers(resourceIdentifiers);
     }
     
-    private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user) {
-        MetadataInfo toReturn = infoFactory.createInfo(document, MediaType.parseMediaType(GEMINI_JSON_VALUE));
+    private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user, MediaType mediaType) {
+        MetadataInfo toReturn = infoFactory.createInfo(document, mediaType);
         String username = user.getUsername();
         toReturn.addPermission(Permission.VIEW, username);
         toReturn.addPermission(Permission.EDIT, username);
