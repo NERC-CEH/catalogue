@@ -1,11 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.eventbus.EventBus;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -18,33 +14,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.http.MediaType;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
-import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
-import uk.ac.ceh.components.datastore.git.GitDataRepository;
-import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
-import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -53,14 +38,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
-import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -69,299 +47,103 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  */
 public class DocumentControllerTest {
     
-    @Spy DataRepository<CatalogueUser> repo;
-    @Mock DocumentIdentifierService documentIdentifierService;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService documentReader;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<MetadataDocument> documentBundleReader;
-    @Mock PostProcessingService postProcessingService;
-    @Mock DocumentWritingService documentWritingService;
-    @Mock ObjectMapper mapper;
-    @Mock DocumentTypeLookupService documentTypeLookupService;
-    
+    @Mock DocumentRepository documentRepository;
     private DocumentController controller;
-    
-    @Rule
-    public TemporaryFolder folder= new TemporaryFolder();
     
     @Before
     public void initMocks() throws IOException {
-        repo = new GitDataRepository(folder.getRoot(),
-                                     new InMemoryUserStore<>(),
-                                     new AnnotatedUserHelper(CatalogueUser.class),
-                                     new EventBus());
         MockitoAnnotations.initMocks(this);
-        controller = spy(new DocumentController(repo,
-                                                documentIdentifierService,
-                                                documentReader,
-                                                documentInfoMapper,
-                                                infoFactory,
-                                                documentBundleReader,
-                                                documentWritingService,
-                                                postProcessingService,
-                                                documentTypeLookupService));
+        controller = new DocumentController(documentRepository);
     }
     
     
     @Test
-    public void uploadingDocumentStoresInputStreamIntoGit() throws IOException, UnknownContentTypeException, DataRepositoryException, DocumentIndexingException {
+    public void checkCanUploadFile() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
-        byte[] contentToUpload = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes();
-        byte[] metaInfoBytes = "metadataInfo".getBytes();
-        String uploadMessage = "My upload message";
-        
+        CatalogueUser user = mock(CatalogueUser.class);
         MultipartFile multipartFile = mock(MultipartFile.class);
-        when(multipartFile.getContentType()).thenReturn(MediaType.APPLICATION_XML_VALUE);
-        when(multipartFile.getInputStream()).thenReturn(new DelegatedServletInputStream(new ByteArrayInputStream(contentToUpload)));
+        String type = "GEMINI_DOCUMENT";
+        GeminiDocument document = mock(GeminiDocument.class);
         
-        GeminiDocument document = new GeminiDocument();
-        document.setId("id");
-        when(documentIdentifierService.generateFileId("id")).thenReturn("id");
-        when(documentReader.read(any(), any(), any())).thenReturn(document);
-        
-        MetadataInfo metadataDocument = mock(MetadataInfo.class);
-        when(infoFactory.createInfo(eq(document), eq(MediaType.APPLICATION_XML))).thenReturn(metadataDocument);
-        doAnswer((Answer) (InvocationOnMock invocation) -> {
-            OutputStream out = (OutputStream)invocation.getArguments()[1];
-            StreamUtils.copy(metaInfoBytes, out);
-            return null;
-        }).when(documentInfoMapper).writeInfo(eq(metadataDocument), any(OutputStream.class));
-        
-        when(documentIdentifierService.generateUri(any(String.class))).thenReturn("http://www.website.com");
-                
+        given(documentRepository.save(user, multipartFile, type)).willReturn(document);
+        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+              
         //When
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("user");
-        user.setEmail("user@test.com");
-        controller.uploadDocument(user, uploadMessage, multipartFile, "GEMINI_DOCUMENT");
+        controller.uploadDocument(user, multipartFile, type);
         
         //Then
-        byte[] rawWrittenData = StreamUtils.copyToByteArray(repo.getData("id.raw").getInputStream());
-        byte[] rawMetaInfo = StreamUtils.copyToByteArray(repo.getData("id.meta").getInputStream());
-        assertArrayEquals("Expected the data written to the repo to the same as the raw type", contentToUpload, rawWrittenData);
-        assertArrayEquals("Expected the data metaInfo writen to the repo to the same as the read data", metaInfoBytes, rawMetaInfo);
-        assertEquals("Expected the user to be the author of the commit", user, lastCommit("id.meta").getAuthor());
-        assertEquals("Got wrong upload message", uploadMessage, lastCommit("id.meta").getMessage());
-        assertEquals("Expected the user to be the author of the commit", user, lastCommit("id.raw").getAuthor());
-        assertEquals("Got wrong upload message", uploadMessage, lastCommit("id.raw").getMessage());
+        verify(documentRepository).save(user, multipartFile, type);
+    }
+    
+    @Test
+    public void checkCanCreateGeminiDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+        //Given
+        CatalogueUser user = mock(CatalogueUser.class);
+        GeminiDocument document = mock(GeminiDocument.class);
+        
+        given(documentRepository.save(user, document)).willReturn(document);
+        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+              
+        //When
+        controller.uploadDocument(user, document);
+        
+        //Then
+        verify(documentRepository).save(user, document);
+    }
+    
+    @Test
+    public void checkCanEditGeminiDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+        //Given
+        CatalogueUser user = mock(CatalogueUser.class);
+        GeminiDocument document = mock(GeminiDocument.class);
+        String fileId = "test";
+        
+        given(documentRepository.save(user, document)).willReturn(document);
+        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+              
+        //When
+        controller.updateDocument(user, fileId, document);
+        
+        //Then
+        verify(documentRepository).save(user, document, fileId);
     }
     
     @Test
     public void checkCanDeleteAFile() throws IOException {
         //Given
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("user");
-        user.setEmail("user@test.com");
-        repo.submitData("id.meta", (o)->{})
-            .submitData("id.raw", (o)->{})
-            .commit(user, "Uploading files");
+        CatalogueUser user = mock(CatalogueUser.class);
         
         //When
-        controller.deleteDocument(user, "documents no longer wanted", "id");
+        controller.deleteDocument(user, "id");
         
         //Then
-        assertTrue("Didn't expect any files in git", repo.getFiles().isEmpty());
-        assertEquals("Expected the user to be the author of the commit", user, lastCommit("id.meta").getAuthor());
-        assertEquals("Got wrong upload message", "Uploading files", lastCommit("id.meta").getMessage());
-        assertEquals("Expected the user to be the author of the commit", user, lastCommit("id.raw").getAuthor());
-        assertEquals("Got wrong upload message", "Uploading files", lastCommit("id.raw").getMessage());
+        verify(documentRepository).delete(user, "id");
     }
     
     @Test
-    public void checkThatReadingDelegatesToBundledReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanReadDocumentAtRevision() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
-        GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
-        
+        CatalogueUser user = mock(CatalogueUser.class);
         String file = "myFile";       
         String latestRevisionId = "latestRev";
         
-        DataRevision revision = mock(DataRevision.class);
-        when(revision.getRevisionID()).thenReturn(latestRevisionId);
-        doReturn(revision).when(repo).getLatestRevision();
-        
-        when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
-        when(documentIdentifierService.generateUri(file, latestRevisionId)).thenReturn("http://www.website.com");
-        
         //When
-        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file, latestRevisionId);
+        controller.readMetadata(user, file, latestRevisionId);
         
         //Then
-        verify(documentBundleReader).readBundle(file, latestRevisionId);
-        assertEquals("Expected the mocked gemini document", bundledDocument, readDocument);
+        verify(documentRepository).read(file, latestRevisionId);
     }
     
     @Test
-    public void checkThatLinksAreAddedToDataset() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanReadDocumentLatestRevision() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
-        GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
-        bundledDocument.setResourceType(Keyword.builder().value("dataset").build());
-        
-        String file = "myFile";
-        String latestRevisionId = "latestRev";
-        
-        DataRevision revision = mock(DataRevision.class);
-        when(revision.getRevisionID()).thenReturn(latestRevisionId);
-        doReturn(revision).when(repo).getLatestRevision();
-        
-        when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
-        when(documentIdentifierService.generateUri(any(String.class))).thenReturn("http://www.website.com");
-        
-        //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, file);
-        
-        //Then
-        verify(documentBundleReader).readBundle(file, latestRevisionId);
-    }
-    
-    @Test
-    public void checkThatReadingLatestFileComesFromLatestRevision() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
-        //Given
-        String latestRevisionId = "latestRev";
+        CatalogueUser user = mock(CatalogueUser.class);
         String file = "myFile";
         
-        GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
-        when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
-        
-        DataRevision revision = mock(DataRevision.class);
-        when(documentIdentifierService.generateUri(file)).thenReturn("http://whatever.com");
-        when(revision.getRevisionID()).thenReturn(latestRevisionId);
-        doReturn(revision).when(repo).getLatestRevision();
-        
         //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, file);
+        controller.readMetadata(user, file);
         
         //Then
-        verify(documentBundleReader).readBundle(file, latestRevisionId);
-    }
-    
-    @Test
-    public void checkThatReadingLatestFileDelegatesToReadingService() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
-        //Given
-        String latestRevisionId = "latestRev";
-        String file = "myFile";
-        
-        GeminiDocument bundledDocument = new GeminiDocument();
-        bundledDocument.setMetadata(new MetadataInfo().setState("public").setDocumentType("GEMINI_DOCUMENT"));
-        when(documentBundleReader.readBundle(file, latestRevisionId)).thenReturn(bundledDocument);
-        when(documentIdentifierService.generateUri(file)).thenReturn("http://www.website.com");
-        
-        DataRevision revision = mock(DataRevision.class);
-        when(revision.getRevisionID()).thenReturn(latestRevisionId);
-        doReturn(revision).when(repo).getLatestRevision();
-        
-        //When
-        MetadataDocument readDocument = controller.readMetadata(CatalogueUser.PUBLIC_USER, file);
-        
-        //Then
-        verify(documentBundleReader).readBundle(eq(file), any(String.class));
-        assertEquals("Expected the mocked gemini document", bundledDocument, readDocument);
-    }
-    
-    @Test
-    public void checkThatURIsAttachedToDocumentOnReading() throws IOException, UnknownContentTypeException, URISyntaxException, PostProcessingException {
-        //Given        
-        GeminiDocument bundledDocument = mock(GeminiDocument.class);
-        URI uri = new URI("http://whatever.com");
-        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(bundledDocument);
-        
-        String latestRevisionId = "latestRev";
-        
-        when(documentIdentifierService.generateUri(any(String.class), eq(latestRevisionId))).thenReturn("http://whatever.com");
-        
-        DataRevision revision = mock(DataRevision.class);
-        when(revision.getRevisionID()).thenReturn(latestRevisionId);
-        doReturn(revision).when(repo).getLatestRevision();
-        
-        //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId);
-        
-        //Then
-        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
-        verify(bundledDocument).attachUri(uriCaptor.capture());
-        assertEquals("Expected the same uri", uri, uriCaptor.getValue());
-    }
-    
-    @Test
-    public void checkThatDelegatesToPostProcessingService() throws IOException, UnknownContentTypeException, PostProcessingException {
-        //Given
-        GeminiDocument bundledDocument = mock(GeminiDocument.class);
-        when(documentBundleReader.readBundle(any(String.class), any(String.class))).thenReturn(bundledDocument);
-        when(documentIdentifierService.generateUri(any(String.class))).thenReturn("http://www.website.com");
-        
-        String latestRevisionId = "latestRev";
-        
-        DataRevision revision = mock(DataRevision.class);
-        when(revision.getRevisionID()).thenReturn(latestRevisionId);
-        doReturn(revision).when(repo).getLatestRevision();
-
-        when(documentIdentifierService.generateUri("file", latestRevisionId)).thenReturn("http://www.website.com");
-        
-        //When
-        controller.readMetadata(CatalogueUser.PUBLIC_USER, "file", latestRevisionId);
-        
-        //Then
-        verify(postProcessingService).postProcess(bundledDocument);
-    }
-    
-    @Test
-    public void checkThatNewMetadataRecordUriAddedToResourceIdentifiers() throws IOException, UnknownContentTypeException, PostProcessingException {
-      //Given
-      GeminiDocument document = new GeminiDocument();
-      document.setTitle("new test");
-      URI newRecord = URI.create("http://localhost/id/1234-1234-12345678-1234");
-      ResourceIdentifier expected = ResourceIdentifier.builder().code(newRecord.toString()).build();
-      
-      //When
-      controller.addRecordUriAsResourceIdentifier(document, newRecord);
-      
-      //Then
-      assertThat("ResourceIdentifiers should contain URI", document.getResourceIdentifiers(), contains(expected));
-    }
-    
-    @Test
-    public void checkResourceIdentifierNotAddedTwice() throws IOException, UnknownContentTypeException, PostProcessingException {
-      //Given
-      GeminiDocument document = new GeminiDocument();
-      document.setTitle("update test");
-      URI newRecord = URI.create("http://localhost/id/1234-1234-12345678-1234");
-      ResourceIdentifier expected = ResourceIdentifier.builder().code(newRecord.toString()).build();
-      document.setResourceIdentifiers(Arrays.asList(expected));
-      
-      //When
-      controller.addRecordUriAsResourceIdentifier(document, newRecord);
-      
-      //Then
-      assertThat("ResourceIdentifiers should only have one item", document.getResourceIdentifiers().size(), equalTo(1));
-      assertThat("ResourceIdentifiers should contain URI", document.getResourceIdentifiers(), contains(expected));
-    }
-    
-    @Test
-    public void checkResourceIdentifierAddedIfOtherPresent() throws IOException, UnknownContentTypeException, PostProcessingException {
-      //Given
-      GeminiDocument document = new GeminiDocument();
-      document.setTitle("update test");
-      URI newRecord = URI.create("http://localhost/id/1234-1234-12345678-1234");
-      ResourceIdentifier expected = ResourceIdentifier.builder().code(newRecord.toString()).build();
-      document.setResourceIdentifiers(Arrays.asList(
-          ResourceIdentifier.builder()
-              .codeSpace("doi")
-              .code("10.23935423/1239123213").build()
-      ));
-      
-      //When
-      controller.addRecordUriAsResourceIdentifier(document, newRecord);
-      
-      //Then
-      assertThat("ResourceIdentifiers should only have two items", document.getResourceIdentifiers().size(), equalTo(2));
-      assertThat("ResourceIdentifiers should contain URI", document.getResourceIdentifiers(), hasItem(expected));
-    }
-    
-    private DataRevision<CatalogueUser> lastCommit(String file) throws DataRepositoryException {
-        List<DataRevision<CatalogueUser>> revisions = repo.getRevisions(file);
-        return revisions.get(revisions.size()-1);
+        verify(documentRepository).read(file);
     }
 }

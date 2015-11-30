@@ -86,6 +86,7 @@ import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -137,7 +138,6 @@ public class ServiceConfig {
     @Autowired CodeLookupService codeLookupService;
     @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
     @Autowired GroupStore<CatalogueUser> groupStore;
-    @Autowired DocumentWritingService documentWritingService;
     @Autowired @Qualifier("gemini") Schema geminiSchema;
     
     @Bean
@@ -169,8 +169,7 @@ public class ServiceConfig {
         );
     }
     
-    @Bean
-    public MessageConvertersHolder messageConverters() throws TemplateModelException, IOException {
+    private MessageConvertersHolder messageConverters() throws TemplateModelException, IOException {
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setObjectMapper(jacksonMapper);
@@ -201,10 +200,14 @@ public class ServiceConfig {
         converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
         converters.add(mappingJackson2HttpMessageConverter);
         return new MessageConvertersHolder(converters);
-    }    
+    } 
+    
+    @Data
+    public static class MessageConvertersHolder {
+        private final List<HttpMessageConverter<?>> converters;
+    }
         
-    @Bean
-    public CloseableHttpClient httpClient() {
+    private CloseableHttpClient httpClient() {
         PoolingHttpClientConnectionManager connPool = new PoolingHttpClientConnectionManager();
         connPool.setMaxTotal(100);
         connPool.setDefaultMaxPerRoute(20);
@@ -212,11 +215,6 @@ public class ServiceConfig {
         return HttpClients.custom()
                           .setConnectionManager(connPool)
                           .build();
-    }
-        
-    @Data
-    public static class MessageConvertersHolder {
-        private final List<HttpMessageConverter<?>> converters;
     }
     
     @Bean
@@ -238,6 +236,20 @@ public class ServiceConfig {
     @Bean
     public DataRepositoryOptimizingService dataRepositoryOptimizingService() {
         return new DataRepositoryOptimizingService(dataRepository);
+    }
+    
+    @Bean DocumentRepository documentRepository() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentRepository(
+            metadataRepresentationService(),
+            documentReadingService(),
+            documentIdentifierService(),
+            documentInfoFactory(),
+            dataRepository,
+            documentInfoMapper(),
+            documentWritingService(),
+            bundledReaderService(),
+            postProcessingService()
+        );
     }
     
     @Bean
@@ -406,11 +418,11 @@ public class ServiceConfig {
         
     @Bean 
     public ValidationIndexingService validationIndexingService() throws Exception {
-        MediaTypeValidator html = new MediaTypeValidator("HTML Generation", MediaType.TEXT_HTML, documentWritingService);
+        MediaTypeValidator html = new MediaTypeValidator("HTML Generation", MediaType.TEXT_HTML, documentWritingService());
         
         ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
                 .register(GeminiDocument.class, new ValidationIndexGenerator(Arrays.asList(
-                        new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService, geminiSchema),
+                        new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService(), geminiSchema),
                         html
                 )))
                 .register(MetadataDocument.class, new ValidationIndexGenerator(Arrays.asList(
