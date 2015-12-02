@@ -12,10 +12,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
-import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
-import uk.ac.ceh.components.datastore.DataWriter;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -23,13 +21,11 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
@@ -40,41 +36,34 @@ public class DocumentRepository {
     private final DocumentReadingService documentReader;
     private final DocumentIdentifierService documentIdentifierService;
     private final DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
-    private final DataRepository<CatalogueUser> repo;
-    private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentWritingService documentWriter;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
-    private final PostProcessingService postProcessingService;
+    private final GitRepoWrapper repo;
 
     @Autowired
     public DocumentRepository(DocumentTypeLookupService documentTypeLookupService,
             DocumentReadingService documentReader,
             DocumentIdentifierService documentIdentifierService,
             DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory,
-            DataRepository<CatalogueUser> repo,
-            DocumentInfoMapper<MetadataInfo> documentInfoMapper,
             DocumentWritingService documentWriter,
             BundledReaderService<MetadataDocument> documentBundleReader,
-            PostProcessingService postProcessingService) {
+            PostProcessingService postProcessingService,
+            GitRepoWrapper repoWrapper) {
         this.documentTypeLookupService = documentTypeLookupService;
         this.documentReader = documentReader;
         this.documentIdentifierService = documentIdentifierService;
         this.infoFactory = infoFactory;
-        this.repo = repo;
-        this.documentInfoMapper = documentInfoMapper;
         this.documentWriter = documentWriter;
         this.documentBundleReader = documentBundleReader;
-        this.postProcessingService = postProcessingService;
+        this.repo = repoWrapper;
     }
     
     public MetadataDocument read(String file) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-        return read(file, getLatestRevision());
+        return documentBundleReader.readBundle(file);
     }
     
     public MetadataDocument read(String file, String revision) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-        MetadataDocument document = documentBundleReader.readBundle(file, revision);
-        postProcessingService.postProcess(document);
-        return document;
+        return documentBundleReader.readBundle(file, revision);
     }
     
     public MetadataDocument save(CatalogueUser user, MultipartFile multipartFile, String type) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
@@ -90,12 +79,12 @@ public class DocumentRepository {
             //the documentReader will close the underlying inputstream
             data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType, metadataType); 
             MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(data, user, contentMediaType); //get the metadata info
+            data.attachMetadata(metadataInfo);
             
             id = Optional.ofNullable(documentIdentifierService.generateFileId(data.getId()))
                              .orElse(documentIdentifierService.generateFileId());
             
-            commit(user, id, "new Gemini XML document: %s", metadataInfo,
-            (o) -> Files.copy(tmpFile, o));
+            repo.save(user, id, "new Gemini XML document: %s", metadataInfo, (o) -> Files.copy(tmpFile, o));
         }
         finally {
             Files.delete(tmpFile); //file no longer needed
@@ -120,7 +109,7 @@ public class DocumentRepository {
     public MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, String id) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         return save(user,
             geminiDocument, 
-            updatingRawType(id), 
+            retrieveMetadataInfoUpdatingRawType(id), 
             id, 
             "edit Gemini document: %s"
         );
@@ -132,28 +121,14 @@ public class DocumentRepository {
         addRecordUriAsResourceIdentifier(geminiDocument, uri);
         geminiDocument.attachUri(URI.create(uri));
         
-        commit(user, id, messageTemplate, metadataInfo,
+        repo.save(user, id, messageTemplate, metadataInfo,
             (o) -> documentWriter.write(geminiDocument, MediaType.APPLICATION_JSON, o));
         
         return read(id);
     }
     
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) throws DataRepositoryException {
-        return repo.deleteData(id + ".meta")
-                   .deleteData(id + ".raw")
-                   .commit(user, String.format("delete document: %s", id));
-    }
-    
-    private void commit(CatalogueUser user, String id, String messageTemplate, MetadataInfo metadataInfo, DataWriter dataWriter) throws DataRepositoryException {
-        repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
-            .submitData(String.format("%s.raw", id), dataWriter)
-            .commit(user, String.format(messageTemplate, id));
-    }
-    
-    private MetadataInfo updatingRawType(String id) throws IOException, DataRepositoryException, UnknownContentTypeException {
-        MetadataInfo metadataInfo = documentBundleReader.readBundle(id, getLatestRevision()).getMetadata();
-        metadataInfo.setRawType(GEMINI_JSON_VALUE);
-        return metadataInfo;
+        return repo.delete(user, id);
     }
     
     private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user, MediaType mediaType) {
@@ -188,13 +163,9 @@ public class DocumentRepository {
         document.setResourceIdentifiers(resourceIdentifiers);
     }
     
-    private String getLatestRevision() throws DataRepositoryException {
-        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
-        if (latestRev != null) {
-            return latestRev.getRevisionID();
-        }
-        else {
-            throw new ResourceNotFoundException("Could not find the requested file");
-        }
+     private MetadataInfo retrieveMetadataInfoUpdatingRawType(String id) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+        MetadataInfo metadataInfo = documentBundleReader.readBundle(id).getMetadata();
+        metadataInfo.setRawType(GEMINI_JSON_VALUE);
+        return metadataInfo;
     }
 }

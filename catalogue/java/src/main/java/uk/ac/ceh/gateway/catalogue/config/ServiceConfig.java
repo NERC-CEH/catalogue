@@ -87,6 +87,7 @@ import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingServi
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -169,7 +170,8 @@ public class ServiceConfig {
         );
     }
     
-    private MessageConvertersHolder messageConverters() throws TemplateModelException, IOException {
+    @Bean
+    public MessageConvertersHolder messageConverters() throws TemplateModelException, IOException {
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setObjectMapper(jacksonMapper);
@@ -207,7 +209,8 @@ public class ServiceConfig {
         private final List<HttpMessageConverter<?>> converters;
     }
         
-    private CloseableHttpClient httpClient() {
+    @Bean
+    public CloseableHttpClient httpClient() {
         PoolingHttpClientConnectionManager connPool = new PoolingHttpClientConnectionManager();
         connPool.setMaxTotal(100);
         connPool.setDefaultMaxPerRoute(20);
@@ -238,17 +241,22 @@ public class ServiceConfig {
         return new DataRepositoryOptimizingService(dataRepository);
     }
     
-    @Bean DocumentRepository documentRepository() throws XPathExpressionException, IOException, TemplateModelException {
+    @Bean
+    GitRepoWrapper gitRepoWrapper() {
+        return new GitRepoWrapper(dataRepository, documentInfoMapper());
+    }
+    
+    @Bean 
+    DocumentRepository documentRepository() throws XPathExpressionException, IOException, TemplateModelException {
         return new DocumentRepository(
             metadataRepresentationService(),
             documentReadingService(),
             documentIdentifierService(),
             documentInfoFactory(),
-            dataRepository,
-            documentInfoMapper(),
             documentWritingService(),
             bundledReaderService(),
-            postProcessingService()
+            postProcessingService(),
+            gitRepoWrapper()
         );
     }
     
@@ -279,7 +287,7 @@ public class ServiceConfig {
     }
     
     @Bean
-    public MetadataListingService getWafListingService() throws XPathExpressionException, IOException {
+    public MetadataListingService getWafListingService() throws XPathExpressionException, IOException, TemplateModelException {
         return new MetadataListingService(dataRepository, documentListingService(), bundledReaderService());
     }
     
@@ -319,12 +327,14 @@ public class ServiceConfig {
     }
     
     @Bean
-    public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException, IOException {
+    public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException, IOException, TemplateModelException {
         return new MetadataInfoBundledReaderService(
                 dataRepository,
                 documentReadingService(),
                 documentInfoMapper(),
-                metadataRepresentationService()
+                metadataRepresentationService(),
+                postProcessingService(),
+                documentIdentifierService()
         );
     }
     
@@ -357,7 +367,7 @@ public class ServiceConfig {
     }
     
     @Bean @Qualifier("solr-index")
-    public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException {
+    public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
         SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
         
@@ -380,7 +390,7 @@ public class ServiceConfig {
     }
     
     @Bean @Qualifier("jena-index")
-    public JenaIndexingService documentLinkingService() throws XPathExpressionException, IOException {
+    public JenaIndexingService documentLinkingService() throws XPathExpressionException, IOException, TemplateModelException {
         JenaIndexMetadataDocumentGenerator metadataDocument = new JenaIndexMetadataDocumentGenerator(documentIdentifierService());
         
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()

@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
@@ -19,6 +20,8 @@ import uk.ac.ceh.components.datastore.git.GitDataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 
 /**
  *
@@ -30,6 +33,8 @@ public class MetadataInfoBundledReaderServiceTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentTypeLookupService representationService;
+    @Mock PostProcessingService postProcessingService;
+    @Mock DocumentIdentifierService documentIdentifierService;
     private MetadataInfoBundledReaderService service;
     
     
@@ -39,14 +44,17 @@ public class MetadataInfoBundledReaderServiceTest {
         service = new MetadataInfoBundledReaderService(repo,
                                             documentReader,
                                             documentInfoMapper,
-                                            representationService);
+                                            representationService,
+                                            postProcessingService,
+                                            documentIdentifierService);
     }
     
     @Test
-    public void checkDocumentIsBundledWhenReadFromParticularRevision() throws DataRepositoryException, IOException, UnknownContentTypeException {
+    public void checkDocumentIsBundledWhenReadFromParticularRevision() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         //Given
         String fileToRead = "file";
         String revision = "HEAD";
+        String uri = "http://example.com/file";
         
         ByteArrayInputStream metadataInfoInputStream = new ByteArrayInputStream("meta".getBytes());
         GitDataDocument metadataInfoDocument = mock(GitDataDocument.class);
@@ -67,10 +75,15 @@ public class MetadataInfoBundledReaderServiceTest {
         GeminiDocument geminiDocument = mock(GeminiDocument.class);
         when(documentReader.read(rawInputStream, MediaType.TEXT_XML, GeminiDocument.class)).thenReturn(geminiDocument);
         
+        when(documentIdentifierService.generateUri(fileToRead, revision)).thenReturn(uri);
+        
         //When
         service.readBundle(fileToRead, revision);
         
         //Then
         verify(geminiDocument).attachMetadata(metadata);
+        verify(metadata).hideMediaType();
+        verify(geminiDocument).attachUri(URI.create(uri));
+        verify(postProcessingService).postProcess(geminiDocument);
     }
 }
