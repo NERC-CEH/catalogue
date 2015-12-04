@@ -1,7 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import org.junit.Test;
 import org.junit.Before;
 import static org.mockito.BDDMockito.given;
@@ -11,8 +13,6 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
@@ -80,8 +80,8 @@ public class DocumentRepositoryTest {
     public void savingMultipartFileStoresInputStreamIntoRepo() throws IOException, UnknownContentTypeException, DataRepositoryException, DocumentIndexingException, PostProcessingException {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
-        MultipartFile multipartFile = new MockMultipartFile("file", null, MediaType.TEXT_XML_VALUE, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes());
-        String type = "GEMINI_DOCUMENT";
+        InputStream inputStream = new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes());
+        String documentType = "GEMINI_DOCUMENT";
         GeminiDocument document = new GeminiDocument();
         MetadataInfo metadataInfo = new MetadataInfo();
         
@@ -92,7 +92,7 @@ public class DocumentRepositoryTest {
         given(documentBundleReader.readBundle(eq("test"))).willReturn(document);
        
         //When
-        documentRepository.save(user, multipartFile, type);
+        documentRepository.save(user, inputStream, MediaType.TEXT_XML, documentType);
         
         //Then
         verify(repo).save(eq(user), eq("test"), eq("new Gemini XML document: %s"), eq(metadataInfo), any());

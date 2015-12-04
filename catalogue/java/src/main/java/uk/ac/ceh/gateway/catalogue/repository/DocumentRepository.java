@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -66,19 +67,18 @@ public class DocumentRepository {
         return documentBundleReader.readBundle(file, revision);
     }
     
-    public MetadataDocument save(CatalogueUser user, MultipartFile multipartFile, String type) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
-        MediaType contentMediaType = MediaType.parseMediaType(multipartFile.getContentType());
+    public MetadataDocument save(CatalogueUser user, InputStream inputStream, MediaType mediaType, String documentType) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         Path tmpFile = Files.createTempFile("upload", null); //Create a temp file to upload the input stream to
         String id;
         MetadataDocument data;
-        Class<? extends MetadataDocument> metadataType = documentTypeLookupService.getType(type);
+        Class<? extends MetadataDocument> metadataType = documentTypeLookupService.getType(documentType);
         
         try {
-            Files.copy(multipartFile.getInputStream(), tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
+            Files.copy(inputStream, tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
             
             //the documentReader will close the underlying inputstream
-            data = documentReader.read(Files.newInputStream(tmpFile), contentMediaType, metadataType); 
-            MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(data, user, contentMediaType); //get the metadata info
+            data = documentReader.read(Files.newInputStream(tmpFile), mediaType, metadataType); 
+            MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(data, user, mediaType); //get the metadata info
             data.attachMetadata(metadataInfo);
             
             id = Optional.ofNullable(documentIdentifierService.generateFileId(data.getId()))

@@ -54,9 +54,14 @@ public class DocumentController {
     public Object uploadDocument(
             @ActiveUser CatalogueUser user,
             @RequestParam("file") MultipartFile multipartFile,
-            @RequestParam("type") String type) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
+            @RequestParam("type") String documentType) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
         
-        MetadataDocument data = documentRepository.save(user, multipartFile, type);
+        MetadataDocument data = documentRepository.save(
+            user,
+            multipartFile.getInputStream(),
+            MediaType.parseMediaType(multipartFile.getContentType()),
+            documentType
+        );
         return new RedirectView(data.getUri().toString());
     }
     

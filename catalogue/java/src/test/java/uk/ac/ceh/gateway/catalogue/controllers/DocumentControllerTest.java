@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -26,8 +27,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -60,19 +63,21 @@ public class DocumentControllerTest {
     @Test
     public void checkCanUploadFile() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
-        MultipartFile multipartFile = mock(MultipartFile.class);
-        String type = "GEMINI_DOCUMENT";
-        GeminiDocument document = mock(GeminiDocument.class);
+        CatalogueUser user = new CatalogueUser();
+        InputStream inputStream = new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes());
+        MediaType mediaType = MediaType.TEXT_XML;
+        MultipartFile multipartFile = new MockMultipartFile("test", "test", MediaType.TEXT_XML_VALUE, inputStream);
+        String documentType = "GEMINI_DOCUMENT";
+        GeminiDocument document = new GeminiDocument();
+        document.setUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
         
-        given(documentRepository.save(user, multipartFile, type)).willReturn(document);
-        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        given(documentRepository.save(eq(user), any(), eq(mediaType), eq(documentType))).willReturn(document);
               
         //When
-        controller.uploadDocument(user, multipartFile, type);
+        controller.uploadDocument(user, multipartFile, documentType);
         
         //Then
-        verify(documentRepository).save(user, multipartFile, type);
+        verify(documentRepository).save(eq(user), any(), eq(mediaType), eq(documentType));
     }
     
     @Test
