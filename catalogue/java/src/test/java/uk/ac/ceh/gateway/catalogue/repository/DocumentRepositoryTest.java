@@ -82,6 +82,7 @@ public class DocumentRepositoryTest {
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
         InputStream inputStream = new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes());
         String documentType = "GEMINI_DOCUMENT";
+        String message = "message";
         GeminiDocument document = new GeminiDocument();
         MetadataInfo metadataInfo = new MetadataInfo();
         
@@ -92,11 +93,11 @@ public class DocumentRepositoryTest {
         given(documentBundleReader.readBundle(eq("test"))).willReturn(document);
        
         //When
-        documentRepository.save(user, inputStream, MediaType.TEXT_XML, documentType);
+        documentRepository.save(user, inputStream, MediaType.TEXT_XML, documentType, message);
         
         //Then
-        verify(repo).save(eq(user), eq("test"), eq("new Gemini XML document: %s"), eq(metadataInfo), any());
-        verify(repo).save(eq(user), eq("test"), eq("edit Gemini document: %s"), eq(metadataInfo), any());
+        verify(repo).save(eq(user), eq("test"), eq(message), eq(metadataInfo), any());
+        verify(repo).save(eq(user), eq("test"), eq("File upload for id: test"), eq(metadataInfo), any());
     }
     
     @Test
@@ -105,16 +106,17 @@ public class DocumentRepositoryTest {
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
         GeminiDocument document = new GeminiDocument();
         MetadataInfo metadataInfo = new MetadataInfo();
+        String message = "new Gemini document";
         
         given(infoFactory.createInfo(document, MediaType.APPLICATION_JSON)).willReturn(metadataInfo);
         given(documentIdentifierService.generateFileId()).willReturn("test");
         given(documentIdentifierService.generateUri("test")).willReturn("http://localhost:8080/id/test");
        
         //When
-        documentRepository.save(user, document);
+        documentRepository.save(user, document, message);
         
         //Then
-        verify(repo).save(eq(user), eq("test"), eq("new Gemini document: %s"), eq(metadataInfo), any());
+        verify(repo).save(eq(user), eq("test"), eq("new Gemini document"), eq(metadataInfo), any());
     }
     
     @Test
@@ -126,15 +128,16 @@ public class DocumentRepositoryTest {
         MetadataInfo metadataInfo = new MetadataInfo();
         GeminiDocument retrieved = new GeminiDocument();
         retrieved.setMetadata(metadataInfo);
+        String message = "message";
         
         given(documentIdentifierService.generateUri(id)).willReturn("http://localhost:8080/id/test");
         given(documentBundleReader.readBundle(id)).willReturn(retrieved);
         
         //When
-        documentRepository.save(user, incomingDocument, "tulips");
+        documentRepository.save(user, incomingDocument, "tulips", message);
         
         //Then
-        verify(repo).save(eq(user), eq(id), eq("edit Gemini document: %s"), eq(metadataInfo), any());
+        verify(repo).save(eq(user), eq(id), eq(message), eq(metadataInfo), any());
     }
     
     @Test

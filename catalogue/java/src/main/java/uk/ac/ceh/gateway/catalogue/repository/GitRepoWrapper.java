@@ -20,10 +20,10 @@ public class GitRepoWrapper {
         this.documentInfoMapper = documentInfoMapper;
     }
     
-    public void save(CatalogueUser user, String id, String messageTemplate, MetadataInfo metadataInfo, DataWriter dataWriter) throws DataRepositoryException {
+    public void save(CatalogueUser user, String id, String message, MetadataInfo metadataInfo, DataWriter dataWriter) throws DataRepositoryException {
         repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
             .submitData(String.format("%s.raw", id), dataWriter)
-            .commit(user, String.format(messageTemplate, id));
+            .commit(user, message);
     }
     
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) throws DataRepositoryException {

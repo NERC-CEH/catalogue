@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
@@ -67,7 +66,7 @@ public class DocumentRepository {
         return documentBundleReader.readBundle(file, revision);
     }
     
-    public MetadataDocument save(CatalogueUser user, InputStream inputStream, MediaType mediaType, String documentType) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public MetadataDocument save(CatalogueUser user, InputStream inputStream, MediaType mediaType, String documentType, String message) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         Path tmpFile = Files.createTempFile("upload", null); //Create a temp file to upload the input stream to
         String id;
         MetadataDocument data;
@@ -84,44 +83,44 @@ public class DocumentRepository {
             id = Optional.ofNullable(documentIdentifierService.generateFileId(data.getId()))
                              .orElse(documentIdentifierService.generateFileId());
             
-            repo.save(user, id, "new Gemini XML document: %s", metadataInfo, (o) -> Files.copy(tmpFile, o));
+            repo.save(user, id, message, metadataInfo, (o) -> Files.copy(tmpFile, o));
         }
         finally {
             Files.delete(tmpFile); //file no longer needed
         }
         
         if (data instanceof GeminiDocument) {
-            data = save(user, (GeminiDocument)data, id);
+            data = save(user, (GeminiDocument)data, id, String.format("File upload for id: %s", id));
         }
         
         return data;
     }
     
-    public MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {       
+    public MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {       
         return save(user, 
             geminiDocument,
             createMetadataInfoWithDefaultPermissions(geminiDocument, user, MediaType.APPLICATION_JSON), 
             documentIdentifierService.generateFileId(),
-            "new Gemini document: %s"
+            message
         );
     }
     
-    public MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, String id) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, String id, String message) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         return save(user,
             geminiDocument, 
             retrieveMetadataInfoUpdatingRawType(id), 
             id, 
-            "edit Gemini document: %s"
+            message
         );
     }
     
-    private MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, MetadataInfo metadataInfo, String id, String messageTemplate) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    private MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, MetadataInfo metadataInfo, String id, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         updateIdAndMetadataDate(geminiDocument, id);
         String uri = documentIdentifierService.generateUri(id);
         addRecordUriAsResourceIdentifier(geminiDocument, uri);
         geminiDocument.attachUri(URI.create(uri));
         
-        repo.save(user, id, messageTemplate, metadataInfo,
+        repo.save(user, id, message, metadataInfo,
             (o) -> documentWriter.write(geminiDocument, MediaType.APPLICATION_JSON, o));
         
         return read(id);

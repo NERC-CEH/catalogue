@@ -4,41 +4,20 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -58,8 +37,7 @@ public class DocumentControllerTest {
         MockitoAnnotations.initMocks(this);
         controller = new DocumentController(documentRepository);
     }
-    
-    
+     
     @Test
     public void checkCanUploadFile() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
@@ -70,30 +48,32 @@ public class DocumentControllerTest {
         String documentType = "GEMINI_DOCUMENT";
         GeminiDocument document = new GeminiDocument();
         document.setUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        String message = "new file upload";
         
-        given(documentRepository.save(eq(user), any(), eq(mediaType), eq(documentType))).willReturn(document);
+        given(documentRepository.save(eq(user), any(), any(MediaType.class), eq(documentType), eq(message))).willReturn(document);
               
         //When
         controller.uploadDocument(user, multipartFile, documentType);
         
         //Then
-        verify(documentRepository).save(eq(user), any(), eq(mediaType), eq(documentType));
+        verify(documentRepository).save(eq(user), any(), eq(mediaType), eq(documentType), eq(message));
     }
     
     @Test
     public void checkCanCreateGeminiDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
-        GeminiDocument document = mock(GeminiDocument.class);
+        CatalogueUser user = new CatalogueUser();
+        GeminiDocument document = new GeminiDocument();
+        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        String message = "new Gemini Document";
         
-        given(documentRepository.save(user, document)).willReturn(document);
-        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        given(documentRepository.save(user, document, message)).willReturn(document);
               
         //When
         controller.uploadDocument(user, document);
         
         //Then
-        verify(documentRepository).save(user, document);
+        verify(documentRepository).save(user, document, message);
     }
     
     @Test
@@ -102,15 +82,16 @@ public class DocumentControllerTest {
         CatalogueUser user = mock(CatalogueUser.class);
         GeminiDocument document = mock(GeminiDocument.class);
         String fileId = "test";
+        String message = "message";
         
-        given(documentRepository.save(user, document)).willReturn(document);
+        given(documentRepository.save(user, document, fileId, message)).willReturn(document);
         given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
               
         //When
         controller.updateDocument(user, fileId, document);
         
         //Then
-        verify(documentRepository).save(user, document, fileId);
+        verify(documentRepository).save(user, document, fileId, "Edited document: test");
     }
     
     @Test

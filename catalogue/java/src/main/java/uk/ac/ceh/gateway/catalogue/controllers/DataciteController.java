@@ -79,7 +79,7 @@ public class DataciteController {
             return new ErrorResponse("The record has had a DOI added, but we failed to add a short doi: " + ex.getMessage());
         }
         finally {
-            repo.save(user, geminiDocument, file);
+            repo.save(user, geminiDocument, file, String.format("datacite Gemini document: %s", file));
         }
         return new RedirectView(identifierService.generateUri(file));
     }

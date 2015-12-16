@@ -14,7 +14,6 @@ import uk.ac.ceh.components.datastore.DataOngoingCommit;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataWriter;
-import uk.ac.ceh.components.datastore.git.GitDataOngoingCommit;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
@@ -36,7 +35,7 @@ public class GitRepoWrapperTest {
         //Given
         CatalogueUser user = new CatalogueUser();
         String id = "test";
-        String messageTemplate = "template: %s";
+        String message = "template: test";
         MetadataInfo metadataInfo = new MetadataInfo();
         DataWriter dataWriter = (OutputStream out) -> {
             throw new UnsupportedOperationException("Not supported yet.");
@@ -47,7 +46,7 @@ public class GitRepoWrapperTest {
         given(dataOngoingCommit.submitData("test.raw", dataWriter)).willReturn(dataOngoingCommit);
                      
         //When
-        repoWrapper.save(user, id, messageTemplate, metadataInfo, dataWriter);
+        repoWrapper.save(user, id, message, metadataInfo, dataWriter);
         
         //Then
         verify(dataOngoingCommit).commit(user, "template: test");

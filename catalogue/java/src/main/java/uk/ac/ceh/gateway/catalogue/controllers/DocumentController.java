@@ -60,7 +60,8 @@ public class DocumentController {
             user,
             multipartFile.getInputStream(),
             MediaType.parseMediaType(multipartFile.getContentType()),
-            documentType
+            documentType,
+            "new file upload"
         );
         return new RedirectView(data.getUri().toString());
     }
@@ -73,7 +74,7 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody GeminiDocument geminiDocument) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
-        MetadataDocument data = documentRepository.save(user, geminiDocument);
+        MetadataDocument data = documentRepository.save(user, geminiDocument, "new Gemini Document");
         return ResponseEntity
             .created(data.getUri())
             .body(data);
@@ -88,7 +89,7 @@ public class DocumentController {
             @PathVariable("file") String file,
             @RequestBody GeminiDocument geminiDocument) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
               
-        MetadataDocument data = documentRepository.save(user, geminiDocument, file);
+        MetadataDocument data = documentRepository.save(user, geminiDocument, file, String.format("Edited document: %s", file));
         return ResponseEntity
             .ok(data);
     }
