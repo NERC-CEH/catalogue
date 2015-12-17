@@ -5,7 +5,6 @@ import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -39,39 +38,34 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
     @Override
     public void postProcess(BaseMonitoringType document) {
         Resource uri = ResourceFactory.createResource(document.getUri().toString());
-        jenaTdb.begin(ReadWrite.READ);
-        try {
-            if (document instanceof Activity) {
-                Activity activity = (Activity)document;
-                appendLinks(activity.getSetUpFor(), withLinks(TRIGGERS, uri));
-                appendLinks(activity.getUses(), withLinks(INVOLVED_IN, uri));
-            } else if (document instanceof Facility) {
-                Facility facility = (Facility)document;
-                appendLinks(facility.getInvolvedIn(), withLinks(USES, uri));
-                appendLinks(facility.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
-                appendLinks(facility.getSupersededBy(), withLinks(SUPERSEDES, uri));
-                appendLinks(facility.getNarrowerThan(), withLinks(BROADER, uri));
-                appendLinks(facility.getBroaderThan(), withLinks(NARROWER, uri));
-                appendLinks(facility.getBelongsTo(), withLinks(CONTAINS, uri));
-                appendLinks(facility.getRelatedTo(), withLinks(RELATED_TO, uri));
-            } else if (document instanceof Network) {
-                Network network = (Network)document;            
-                appendLinks(network.getInvolvedIn(), withLinks(USES, uri));
-                appendLinks(network.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
-                appendLinks(network.getSupersededBy(), withLinks(SUPERSEDES, uri));
-                appendLinks(network.getNarrowerThan(), withLinks(BROADER, uri));
-                appendLinks(network.getBroaderThan(), withLinks(NARROWER, uri));
-                appendLinks(network.getContains(), withLinks(BELONGS_TO, uri));
-            } else if (document instanceof Programme) {
-                Programme programme = (Programme)document;
-                appendLinks(programme.getTriggers(), withLinks(SET_UP_FOR, uri));
-                appendLinks(programme.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
-                appendLinks(programme.getSupersededBy(), withLinks(SUPERSEDES, uri));
-                appendLinks(programme.getNarrowerThan(), withLinks(BROADER, uri));
-                appendLinks(programme.getBroaderThan(), withLinks(NARROWER, uri));
-            }
-        } finally {
-            jenaTdb.end();
+        if (document instanceof Activity) {
+            Activity activity = (Activity)document;
+            appendLinks(activity.getSetUpFor(), withLinks(TRIGGERS, uri));
+            appendLinks(activity.getUses(), withLinks(INVOLVED_IN, uri));
+        } else if (document instanceof Facility) {
+            Facility facility = (Facility)document;
+            appendLinks(facility.getInvolvedIn(), withLinks(USES, uri));
+            appendLinks(facility.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
+            appendLinks(facility.getSupersededBy(), withLinks(SUPERSEDES, uri));
+            appendLinks(facility.getNarrowerThan(), withLinks(BROADER, uri));
+            appendLinks(facility.getBroaderThan(), withLinks(NARROWER, uri));
+            appendLinks(facility.getBelongsTo(), withLinks(CONTAINS, uri));
+            appendLinks(facility.getRelatedTo(), withLinks(RELATED_TO, uri));
+        } else if (document instanceof Network) {
+            Network network = (Network)document;            
+            appendLinks(network.getInvolvedIn(), withLinks(USES, uri));
+            appendLinks(network.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
+            appendLinks(network.getSupersededBy(), withLinks(SUPERSEDES, uri));
+            appendLinks(network.getNarrowerThan(), withLinks(BROADER, uri));
+            appendLinks(network.getBroaderThan(), withLinks(NARROWER, uri));
+            appendLinks(network.getContains(), withLinks(BELONGS_TO, uri));
+        } else if (document instanceof Programme) {
+            Programme programme = (Programme)document;
+            appendLinks(programme.getTriggers(), withLinks(SET_UP_FOR, uri));
+            appendLinks(programme.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
+            appendLinks(programme.getSupersededBy(), withLinks(SUPERSEDES, uri));
+            appendLinks(programme.getNarrowerThan(), withLinks(BROADER, uri));
+            appendLinks(programme.getBroaderThan(), withLinks(NARROWER, uri));
         }
     }
     

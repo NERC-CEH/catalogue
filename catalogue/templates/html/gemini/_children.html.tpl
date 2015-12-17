@@ -1,4 +1,4 @@
-<#if children?? && children?size gt 0>
+<#if children?size gt 0 && children??>
   <div class="panel panel-default" id="document-children">
     <div class="panel-heading">
       <p class="panel-title">This data series comprises the following datasets</p>

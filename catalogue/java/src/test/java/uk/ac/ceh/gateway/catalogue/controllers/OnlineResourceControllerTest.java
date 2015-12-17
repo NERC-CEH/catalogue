@@ -22,16 +22,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.servlet.view.RedirectView;
+import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
@@ -42,6 +44,7 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  * @author cjohn
  */
 public class OnlineResourceControllerTest {
+    @Mock DataRepository<CatalogueUser> repo;
     @Mock BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock GetCapabilitiesObtainerService getCapabilitiesObtainerService;
     @Mock TMSToWMSGetMapService tmsToWMSGetMapService;
@@ -52,11 +55,11 @@ public class OnlineResourceControllerTest {
     public void createOnlineController() {
         MockitoAnnotations.initMocks(this);
         
-        controller = spy(new OnlineResourceController(documentBundleReader, getCapabilitiesObtainerService, tmsToWMSGetMapService));
+        controller = spy(new OnlineResourceController(repo, documentBundleReader, getCapabilitiesObtainerService, tmsToWMSGetMapService));
     }
         
     @Test
-    public void checkThatCanGetOnlineResourceWhichExists() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checkThatCanGetOnlineResourceWhichExists() throws IOException, UnknownContentTypeException {
         //Given
         String file = "file";
         String revision = "revision";
@@ -71,7 +74,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test(expected=ResourceNotFoundException.class)
-    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNotPresent() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException  {
+    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNotPresent() throws IOException, UnknownContentTypeException  {
         //Given
         String file = "file";
         String revision = "revision";
@@ -85,7 +88,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test(expected=ResourceNotFoundException.class)
-    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNegative() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException  {
+    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNegative() throws IOException, UnknownContentTypeException  {
         //Given
         String file = "file";
         String revision = "revision";
@@ -99,7 +102,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test(expected=ResourceNotFoundException.class)
-    public void checkThatFailsToGetOnlineResourcesFromUnknownMetadataDocumentType() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checkThatFailsToGetOnlineResourcesFromUnknownMetadataDocumentType() throws IOException, UnknownContentTypeException {
         //Given
         MetadataDocument document = mock(MetadataDocument.class);
         String file = "file";
@@ -114,7 +117,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test
-    public void checkThatGettingOnlineResourcesDelegatesToDocumentReader() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checkThatGettingOnlineResourcesDelegatesToDocumentReader() throws IOException, UnknownContentTypeException {
         //Given
         String file = "bob";
         String revision = "bob";
@@ -129,7 +132,26 @@ public class OnlineResourceControllerTest {
     }
     
     @Test
-    public void checkThatGetCapabilitesResourceIsProcessed() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checkThatProcessOrRedirectToOnlineResourceDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException {
+        //Given
+        String file = "my filename";
+        int index = 1;
+        
+        DataRevision revision = mock(DataRevision.class);
+        when(revision.getRevisionID()).thenReturn("12");
+        when(repo.getLatestRevision()).thenReturn(revision);
+        
+        doReturn(null).when(controller).processOrRedirectToOnlineResource("12", file, index);
+        
+        //When
+        controller.processOrRedirectToOnlineResource(file, index);
+        
+        //Then
+        verify(controller).processOrRedirectToOnlineResource("12", file, index);
+    }
+    
+    @Test
+    public void checkThatGetCapabilitesResourceIsProcessed() throws IOException, UnknownContentTypeException {
         //Given
         String file = "file";
         String revision = "revision";
@@ -152,7 +174,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test
-    public void checkThatOtherResourceIsRedirectedTo() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checkThatOtherResourceIsRedirectedTo() throws IOException, UnknownContentTypeException {
         //Given
         String file = "file";
         String revision = "revision";
@@ -172,7 +194,28 @@ public class OnlineResourceControllerTest {
     }
     
     @Test
-    public void checkThatTMSProxies() throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
+    public void checkProxyingOfLatestRevisionDelegates() throws DataRepositoryException, IOException, UnknownContentTypeException, URISyntaxException {
+        //Given
+        String file = "my filename", layer="wms layer";
+        int index = 1, z = 1, x=3, y =2;
+        
+        DataRevision revision = mock(DataRevision.class);
+        when(revision.getRevisionID()).thenReturn("12");
+        when(repo.getLatestRevision()).thenReturn(revision);
+        
+        TransparentProxy proxy = mock(TransparentProxy.class);
+        doReturn(proxy).when(controller).proxyMapProxyTileRequest("12", file, index, layer, z, x, y);
+        
+        //When
+        TransparentProxy proxyView = controller.proxyMapProxyTileRequest(file, index, layer, z, x, y);
+        
+        //Then
+        verify(controller).proxyMapProxyTileRequest("12", file, index, layer, z, x, y);
+        assertThat("expected mocked response to be passed through", proxyView, equalTo(proxy));
+    }
+    
+    @Test
+    public void checkThatTMSProxies() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given        
         String file = "file";
         int index = 2;
@@ -196,9 +239,30 @@ public class OnlineResourceControllerTest {
         //Then
         assertThat("Expected url to proxy mapProxy", "http://wwww.whereever.com/legend.png", equalTo(proxy.getUri().toString()));
     }
-       
+    
     @Test
-    public void checkThatGetLegendUrlIsProxied() throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
+    public void checkThatLatestLegendUrlDelegatesToRevision() throws IOException, UnknownContentTypeException, URISyntaxException {
+        //Given
+        String file = "file";
+        int index = 2;
+        String layer = "layer";
+        
+        DataRevision dataRevision = mock(DataRevision.class);
+        when(dataRevision.getRevisionID()).thenReturn("12");
+        when(repo.getLatestRevision()).thenReturn(dataRevision);
+        
+        TransparentProxy proxy = mock(TransparentProxy.class);
+        doReturn(proxy).when(controller).getMapLayerLegend("12", file, index, layer);
+        
+        //When
+        TransparentProxy mapLayerLegendView = controller.getMapLayerLegend(file, index, layer);
+        
+        //Then
+        assertThat("Expected the call to the map legend to be delegated", proxy, equalTo(mapLayerLegendView));
+    }
+    
+    @Test
+    public void checkThatGetLegendUrlIsProxied() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String revision = "revision";
         String file = "file";
@@ -225,7 +289,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test(expected=LegendGraphicMissingException.class)
-    public void checkThatExceptionIsThrownWhenNoLegendGraphicIsPresentForGivenLayer() throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
+    public void checkThatExceptionIsThrownWhenNoLegendGraphicIsPresentForGivenLayer() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String revision = "revision";
         String file = "file";
@@ -252,7 +316,7 @@ public class OnlineResourceControllerTest {
     }
     
     @Test(expected=IllegalArgumentException.class)
-    public void checkThatIllegalArgumentExceptionIsThrownIfLayerDoesNotExistWhenGettingLegend() throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
+    public void checkThatIllegalArgumentExceptionIsThrownIfLayerDoesNotExistWhenGettingLegend() throws IOException, UnknownContentTypeException, URISyntaxException {
         //Given
         String revision = "revision";
         String file = "file";

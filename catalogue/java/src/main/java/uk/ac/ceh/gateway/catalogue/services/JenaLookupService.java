@@ -4,7 +4,6 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.createResource;
@@ -51,11 +50,8 @@ public class JenaLookupService {
         pss.setParam("uri", createResource(uri));
         pss.setParam("relationship", relationship);
         List<Literal> toReturn = new ArrayList<>();
-        jenaTdb.begin(ReadWrite.READ);
         try (QueryExecution q = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
             q.execSelect().forEachRemaining(s -> { toReturn.add(s.getLiteral("attr")); });
-        } finally {
-            jenaTdb.end();
         }
         return toReturn;
     }

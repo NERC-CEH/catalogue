@@ -48,8 +48,6 @@
                   <ul class="dropdown-menu" aria-labelledby="createMenu">
                     <li><a class="edit-control gemini" href="#">Data Resource</a></li>
                     <li><a class="edit-control monitoring" href="#">Monitoring</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a class="edit-control" href="/documents/upload">File Upload</a></li>
                   </ul>
                 </div>
               </li>

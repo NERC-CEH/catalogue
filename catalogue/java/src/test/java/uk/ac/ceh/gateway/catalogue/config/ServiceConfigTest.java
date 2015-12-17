@@ -3,17 +3,11 @@ package uk.ac.ceh.gateway.catalogue.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import com.hp.hpl.jena.query.Dataset;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateModelException;
 import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.client.solrj.SolrServer;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.any;
@@ -111,12 +105,9 @@ public class ServiceConfigTest {
     }
     
     @Test
-    public void checkThatIndexingServiceIsRequestedToBeIndexedAfterCreation() throws XPathExpressionException, IOException, TemplateModelException {
+    public void checkThatIndexingServiceIsRequestedToBeIndexedAfterCreation() throws XPathExpressionException, IOException {
         //Given
-        freemarker.template.Configuration freemarkerConfiguration = mock(freemarker.template.Configuration.class);
-        
         doNothing().when(services).performReindexIfNothingIsIndexed(any(SolrIndexingService.class));
-        doReturn(freemarkerConfiguration).when(services).freemarkerConfiguration();
         
         //When
         SolrIndexingService<MetadataDocument> documentIndexingService = services.documentIndexingService();
@@ -178,29 +169,26 @@ public class ServiceConfigTest {
     }
     
     @Test
-    public void checkThatBundledReaderServiceIsComposedCorrectly() throws XPathExpressionException, IOException, TemplateModelException {
+    public void checkThatBundledReaderServiceIsComposedCorrectly() throws XPathExpressionException, IOException {
         //Given
         DocumentReadingService readingService = mock(DocumentReadingService.class);
         DocumentInfoMapper infoMapper = mock(DocumentInfoMapper.class);
-        Configuration freemarkerConfiguration = mock(Configuration.class);
         
         doReturn(readingService).when(services).documentReadingService();
         doReturn(infoMapper).when(services).documentInfoMapper();
-        doReturn(freemarkerConfiguration).when(services).freemarkerConfiguration();
         
         //When
         MetadataInfoBundledReaderService reader = services.bundledReaderService();
         
         //Then
-        assertThat("BundledReaderService should not be null", reader, is(not(nullValue())));
+        assertEquals("Expected to find the dataRepository", dataRepository, reader.getRepo());
+        assertEquals("Expected to find the readingService", readingService, reader.getDocumentReader());
+        assertEquals("Expected to find the infoMapper", infoMapper, reader.getDocumentInfoMapper());
     }
     
     @Test
-    public void checkThatLinkingServiceIsRequestedToBeLinkedAfterCreation() throws XPathExpressionException, IOException, TemplateModelException {
+    public void checkThatLinkingServiceIsRequestedToBeLinkedAfterCreation() throws XPathExpressionException, IOException {
         //Given
-        Configuration freemarkerConfiguration = mock(Configuration.class);
-        
-        doReturn(freemarkerConfiguration).when(services).freemarkerConfiguration();
         doNothing().when(services).performReindexIfNothingIsIndexed(any(DocumentIndexingService.class));
         
         //When

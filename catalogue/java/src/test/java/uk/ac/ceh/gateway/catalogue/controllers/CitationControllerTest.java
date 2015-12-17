@@ -12,6 +12,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletRequest;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -19,7 +20,6 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -27,13 +27,13 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  * @author cjohn
  */
 public class CitationControllerTest {
-    @Mock DocumentRepository documentRespository;
+    @Mock DocumentController documents;
     private CitationController controller;
     
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        controller = spy(new CitationController(documentRespository));
+        controller = spy(new CitationController(documents));
     }
     
     @Test
@@ -43,14 +43,14 @@ public class CitationControllerTest {
         String file = "file";
         String revision = "revision";
         doReturn(null).when(controller).getCitation(document);
-        when(documentRespository.read(file, revision))
+        when(documents.readMetadata(CatalogueUser.PUBLIC_USER, file, revision))
                 .thenReturn(document);
         
         //When
         controller.getCitation(CatalogueUser.PUBLIC_USER, file, revision);
         
         //Then
-        verify(documentRespository).read(file, revision);
+        verify(documents).readMetadata(CatalogueUser.PUBLIC_USER, file, revision);
     }
     
     @Test
@@ -59,14 +59,14 @@ public class CitationControllerTest {
         MetadataDocument document = mock(MetadataDocument.class);
         String file = "file";
         doReturn(null).when(controller).getCitation(document);
-        when(documentRespository.read(file))
+        when(documents.readMetadata(CatalogueUser.PUBLIC_USER, file))
                 .thenReturn(document);
         
         //When
         controller.getCitation(CatalogueUser.PUBLIC_USER, file);
         
         //Then
-        verify(documentRespository).read(file);
+        verify(documents).readMetadata(CatalogueUser.PUBLIC_USER, file);
     }
     
     @Test(expected=ResourceNotFoundException.class)

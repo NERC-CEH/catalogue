@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +18,6 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_SHORT;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
 /**
@@ -40,7 +40,7 @@ public class GeminiWafController {
     
     @RequestMapping(value="/",
                     method=RequestMethod.GET)
-    public ModelAndView getWaf() throws DataRepositoryException, IOException, PostProcessingException {
+    public ModelAndView getWaf() throws DataRepositoryException, IOException {
         List<String> resourceTypes = Arrays.asList("dataset", "service");
         DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
         List<String> files = (latestRevision == null) ? Collections.EMPTY_LIST : listing

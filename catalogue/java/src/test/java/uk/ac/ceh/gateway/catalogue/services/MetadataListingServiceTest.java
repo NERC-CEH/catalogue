@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static org.junit.Assert.assertSame;
@@ -15,13 +16,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 
 /**
  *
@@ -32,7 +31,7 @@ public class MetadataListingServiceTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentListingService listingService;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) BundledReaderService<MetadataDocument> documentBundleReader;
     private MetadataListingService service;
-    private final List<String> defaultResourceTypes = Arrays.asList("Dataset","Series","Service");
+    private List<String> defaultResourceTypes = Arrays.asList("Dataset","Series","Service");
     
     @Before
     public void initMocks() throws IOException {
@@ -44,7 +43,7 @@ public class MetadataListingServiceTest {
     
     
     @Test
-    public void checkThatReadsDocumentsListFromDataRepositiory() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checkThatReadsDocumentsListFromDataRepositiory() throws IOException, UnknownContentTypeException {
         //Given
         String revision = "revision";
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList("uid"));
@@ -65,7 +64,7 @@ public class MetadataListingServiceTest {
     }
     
     @Test
-    public void checkThatSkipsUnreadableDocuments() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checkThatSkipsUnreadableDocuments() throws IOException, UnknownContentTypeException {
         //Given
         String revision = "revision";
         String id = "mydoc id";
@@ -80,7 +79,7 @@ public class MetadataListingServiceTest {
     }
     
     @Test
-    public void checkThatOnlyReadsDocumentsOfCorrectType() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checkThatOnlyReadsDocumentsOfCorrectType() throws IOException, UnknownContentTypeException {
         //Given
         String revision = "revision";
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList("uid"));
@@ -95,7 +94,7 @@ public class MetadataListingServiceTest {
     }
     
     @Test
-    public void checkThatOnlyReadsUserAccessableDocuments() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checkThatOnlyReadsUserAccessableDocuments() throws IOException, UnknownContentTypeException {
         //Givenss);
         String id = "id";
         String revision = "revision";
@@ -115,7 +114,7 @@ public class MetadataListingServiceTest {
     }
     
     @Test
-    public void checksThatTypeIsMatched() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checksThatTypeIsMatched() throws IOException, UnknownContentTypeException {
         //Given
         String id = "a";
         String resourceType = "Dataset";
@@ -138,7 +137,7 @@ public class MetadataListingServiceTest {
     }
     
     @Test
-    public void checksThatTypeIsNotMatched() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checksThatTypeIsNotMatched() throws IOException, UnknownContentTypeException {
         //Given
         String id = "a";
         String documentResourceType = "A_N_Other";
@@ -162,7 +161,7 @@ public class MetadataListingServiceTest {
     }
     
     @Test
-    public void checksThatTypeIsCaseInsensitive() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+    public void checksThatTypeIsCaseInsensitive() throws IOException, UnknownContentTypeException {
         //Given
         String id = "a";
         String documentResourceType = "dataset";

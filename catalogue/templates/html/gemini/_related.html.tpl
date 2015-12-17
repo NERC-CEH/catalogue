@@ -1,4 +1,4 @@
-<#if documentLinks?? && documentLinks?size gt 0>
+<#if documentLinks?size gt 0 && documentLinks??>
   <div class="panel panel-default" id="document-related">
     <div class="panel-heading"><p class="panel-title">
 	  <#if resourceType.value == 'dataset'>

@@ -19,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
 /**
@@ -40,7 +39,7 @@ public class GeminiWafControllerTest {
     
     
     @Test
-    public void checkThatXmlExtensionIsAppendedToGeminiMetadataRecords() throws DataRepositoryException, IOException, PostProcessingException {
+    public void checkThatXmlExtensionIsAppendedToGeminiMetadataRecords() throws DataRepositoryException, IOException {
         //Given
         List<String> files = Arrays.asList("test1", "test2");
         List<String> resourceTypes = new ArrayList<>(Arrays.asList("dataset", "service"));

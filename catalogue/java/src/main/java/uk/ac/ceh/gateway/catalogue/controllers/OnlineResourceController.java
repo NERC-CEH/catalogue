@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -11,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.RedirectView;
+import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
@@ -21,7 +25,6 @@ import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
@@ -32,15 +35,19 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  * @author cjohn
  */
 @Controller
+@Slf4j
 public class OnlineResourceController {
+    private final DataRepository<CatalogueUser> repo;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final GetCapabilitiesObtainerService getCapabilitiesObtainerService;
     private final TMSToWMSGetMapService tmsToWmsGetMapService;
     
     @Autowired
-    public OnlineResourceController(BundledReaderService<MetadataDocument> documentBundleReader,
+    public OnlineResourceController(DataRepository<CatalogueUser> repo,
+                                    BundledReaderService<MetadataDocument> documentBundleReader,
                                     GetCapabilitiesObtainerService getCapabilitiesObtainerService,
                                     TMSToWMSGetMapService tmsToWmsGetMapService) {
+        this.repo = repo;
         this.documentBundleReader = documentBundleReader;
         this.getCapabilitiesObtainerService = getCapabilitiesObtainerService;
         this.tmsToWmsGetMapService = tmsToWmsGetMapService;
@@ -51,8 +58,8 @@ public class OnlineResourceController {
     @ResponseBody
     public List<OnlineResource> getOnlineResources(
             @PathVariable("file") String file
-    ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-        return getOnlineResources(documentBundleReader.readBundle(file));
+    ) throws DataRepositoryException, IOException, UnknownContentTypeException {
+        return getOnlineResources(getLatestRevision(), file);
     }
     
     @RequestMapping (value = "history/{revision}/{file}/onlineResources",
@@ -61,11 +68,8 @@ public class OnlineResourceController {
     public List<OnlineResource> getOnlineResources(
             @PathVariable("revision") String revision,
             @PathVariable("file") String file
-    ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-        return getOnlineResources(documentBundleReader.readBundle(file, revision));
-    }
-    
-    private List<OnlineResource> getOnlineResources(MetadataDocument document) {
+    ) throws DataRepositoryException, IOException, UnknownContentTypeException {
+        MetadataDocument document = documentBundleReader.readBundle(file, revision);
         if(document instanceof GeminiDocument) {
             GeminiDocument geminiDocument = (GeminiDocument)document;
             return geminiDocument.getOnlineResources();
@@ -74,15 +78,14 @@ public class OnlineResourceController {
             throw new ResourceNotFoundException("This document is not a gemini document, so does not have online resources");
         }
     }
-
     
     @RequestMapping (value = "documents/{file}/onlineResources/{index}",
                      method = RequestMethod.GET)
     @ResponseBody
     public Object processOrRedirectToOnlineResource(
             @PathVariable("file") String file,
-            @PathVariable("index") int index) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-        return processOrRedirectToOnlineResource(getOnlineResource(file, index));
+            @PathVariable("index") int index) throws DataRepositoryException, IOException, UnknownContentTypeException {
+        return processOrRedirectToOnlineResource(getLatestRevision(), file, index);
     }
     
     @RequestMapping (value = "history/{revision}/{file}/onlineResources/{index}",
@@ -91,12 +94,9 @@ public class OnlineResourceController {
     public Object processOrRedirectToOnlineResource(
             @PathVariable("revision") String revision,
             @PathVariable("file") String file,
-            @PathVariable("index") int index) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+            @PathVariable("index") int index) throws DataRepositoryException, IOException, UnknownContentTypeException {
         
-        return processOrRedirectToOnlineResource(getOnlineResource(revision, file, index));
-    }
-    
-    private Object processOrRedirectToOnlineResource(OnlineResource onlineResource) {
+        OnlineResource onlineResource = getOnlineResource(revision, file, index);
         switch(onlineResource.getType()) {
             case WMS_GET_CAPABILITIES : 
                 return getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
@@ -115,8 +115,8 @@ public class OnlineResourceController {
             @PathVariable("layer") String layer,
             @PathVariable("z") int z,
             @PathVariable("x") int x,
-            @PathVariable("y") int y) throws IOException, UnknownContentTypeException, TransparentProxyException, URISyntaxException, DataRepositoryException, PostProcessingException {
-        return proxyMapProxyTileRequest(getOnlineResource(file, index), layer, z, x, y);
+            @PathVariable("y") int y) throws IOException, UnknownContentTypeException, TransparentProxyException, URISyntaxException {
+        return proxyMapProxyTileRequest(getLatestRevision(), file, index, layer, z, x, y);
     }
     
     @RequestMapping (value    = "history/{revision}/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
@@ -130,15 +130,12 @@ public class OnlineResourceController {
             @PathVariable("layer") String layer,
             @PathVariable("z") int z,
             @PathVariable("x") int x,
-            @PathVariable("y") int y) throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
-        return proxyMapProxyTileRequest(getOnlineResource(revision, file, index), layer, z, x, y); 
-    }
-    
-    private TransparentProxy proxyMapProxyTileRequest(OnlineResource onlineResource, String layer, int z, int x, int y) throws URISyntaxException {
-        WmsCapabilities wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
+            @PathVariable("y") int y) throws IOException, UnknownContentTypeException, URISyntaxException {
+        OnlineResource resource = getOnlineResource(revision, file, index); 
+        WmsCapabilities wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(resource);
         String url = tmsToWmsGetMapService.getWMSMapRequest(wmsCapabilities.getDirectMap(), layer, z, x, y);
         
-        return new TransparentProxy(url, MediaType.IMAGE_PNG);  
+        return new TransparentProxy(url, MediaType.IMAGE_PNG);
     }
     
     @RequestMapping (value    = "documents/{file}/onlineResources/{index}/{layer}/legend",
@@ -148,8 +145,8 @@ public class OnlineResourceController {
     public TransparentProxy getMapLayerLegend(
             @PathVariable("file") String file,
             @PathVariable("index") int index,
-            @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
-        return getMapLayerLegend(getOnlineResource(file, index), layer);
+            @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException, URISyntaxException {
+        return getMapLayerLegend(getLatestRevision(), file, index, layer);
     }
     
     @RequestMapping (value    = "history/{revision}/{file}/onlineResources/{index}/{layer}/legend",
@@ -160,11 +157,8 @@ public class OnlineResourceController {
             @PathVariable("revision") String revision,
             @PathVariable("file") String file,
             @PathVariable("index") int index,
-            @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
-        return getMapLayerLegend(getOnlineResource(revision, file, index), layer);  
-    }
-    
-    private TransparentProxy getMapLayerLegend(OnlineResource onlineResource, String layer) throws URISyntaxException {
+            @PathVariable("layer") String layer) throws IOException, UnknownContentTypeException, URISyntaxException {
+        OnlineResource onlineResource = getOnlineResource(revision, file, index);
         WmsCapabilities wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
         for(Layer wmsLayer : wmsCapabilities.getLayers()) {
             if(wmsLayer.getName().equals(layer)) {
@@ -179,8 +173,8 @@ public class OnlineResourceController {
         throw new ResourceNotFoundException("The layer: " + layer + " is not present in the given service" );
     }
     
-    protected OnlineResource getOnlineResource(String file, int index) throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
-        List<OnlineResource> onlineResources = getOnlineResources(file);
+    protected OnlineResource getOnlineResource(String revision, String file, int index) throws IOException, UnknownContentTypeException {
+        List<OnlineResource> onlineResources = getOnlineResources(revision, file);
         if(index < 0 || onlineResources.size() <= index) {
             throw new ResourceNotFoundException("No online resource exists on this document at index " + index);
         }
@@ -189,13 +183,13 @@ public class OnlineResourceController {
         }
     }
     
-    protected OnlineResource getOnlineResource(String revision, String file, int index) throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
-        List<OnlineResource> onlineResources = getOnlineResources(revision, file);
-        if(index < 0 || onlineResources.size() <= index) {
-            throw new ResourceNotFoundException("No online resource exists on this document at index " + index);
+    private String getLatestRevision() throws DataRepositoryException {
+        DataRevision<CatalogueUser> latestRev = repo.getLatestRevision();
+        if (latestRev != null) {
+            return latestRev.getRevisionID();
         }
         else {
-            return onlineResources.get(index);
+            throw new ResourceNotFoundException("Could not find the requested file");
         }
     }
 }

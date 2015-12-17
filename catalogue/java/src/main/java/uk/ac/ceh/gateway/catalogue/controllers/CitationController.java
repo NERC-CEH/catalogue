@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -16,7 +17,6 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -25,11 +25,11 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
  */
 @Controller
 public class CitationController {
-    private final DocumentRepository documentRepository;
+    private final DocumentController documents;
     
     @Autowired
-    public CitationController(DocumentRepository documentRepository) {
-        this.documentRepository = documentRepository;
+    public CitationController(DocumentController documents) {
+        this.documents = documents;
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -40,7 +40,7 @@ public class CitationController {
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
                 
-        return getCitation(documentRepository.read(file));
+        return getCitation(documents.readMetadata(user, file));
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
@@ -52,7 +52,7 @@ public class CitationController {
         @PathVariable("file") String file,
         @PathVariable("revision") String revision) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
         
-        return getCitation(documentRepository.read(file, revision));
+        return getCitation(documents.readMetadata(user, file, revision));
     }
     
     protected Citation getCitation(MetadataDocument document) {
