@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
@@ -110,7 +111,7 @@ public class DataciteIndexingServiceTest {
     }
     
     @Test
-    public void checkThatLoopsOverIndexingDocuments() throws IOException, DataRepositoryException, UnknownContentTypeException {
+    public void checkThatLoopsOverIndexingDocuments() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
         List<String> metadataIds = Arrays.asList("1");
         
