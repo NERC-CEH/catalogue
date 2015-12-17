@@ -45,6 +45,23 @@ public class DownloadOrderDetailsServiceTest {
     }
     
     @Test
+    public void canDownloadOrderWithDownloadResource() {
+        //Given
+        String orderUrl = "http://distrubtion.server.com";
+        String orderMessage = "Message";
+        OnlineResource onlineResource = OnlineResource.builder()
+                .function("download").url(orderUrl).description(orderMessage).build();
+        List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
+        
+        //When
+        DownloadOrder order = service.from(onlineResources);
+        
+        //Then
+        assertThat(order.isOrderable(), is(true));
+        assertThat(order.getOrderResources(), contains(onlineResource));
+    }
+    
+    @Test
     public void checkThatOrderableResourceTakesPresedentOverNonOrderable() {
         //Given
         String orderUrl = "http://catalogue.ceh.ac.uk/download?fileIdentifier=downloadMe";
