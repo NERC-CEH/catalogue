@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -8,9 +9,11 @@ import lombok.Value;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
 /**
- * The following class will process a list of OnlineResources to identify: - The
- * Supporting documentation of the document - Links to resources in the order
- * manager - If this document is currently orderable
+ * The following class will process a list of OnlineResources to identify: 
+ * - The Supporting documentation of the document 
+ * - Links to resources in the order manager
+ * - Links to download resources
+ * - If this document is currently orderable/downloadable
  * 
  * If an order resource is present inside the online resource list but does not
  * link to the order manager, then we will deem this to not be orderable (e.g.
@@ -44,21 +47,32 @@ public class DownloadOrderDetailsService {
                     .filter(r -> eidchub.matcher(r.getUrl()).matches())
                     .map(r -> r.getUrl())
                     .findFirst().orElse(null);
-
-            List<OnlineResource> potentialOrderResources = onlineResources
+            
+            // Locate online resources which are defined as DOWNLOAD
+            orderResources = new ArrayList<>();
+            onlineResources
+                    .stream()
+                    .filter(r -> r.getFunction().equals("download"))
+                    .forEach(orderResources::add);
+            
+            // Locate online resources which are defined as ORDER and connect
+            // to order manager
+            onlineResources
                     .stream()
                     .filter(r -> r.getFunction().equals("order"))
                     .filter(r -> orderManager.matcher(r.getUrl()).matches())
-                    .collect(Collectors.toList());
-            isOrderable = !potentialOrderResources.isEmpty();
+                    .forEach(orderResources::add);
+
+            isOrderable = !orderResources.isEmpty();
 
             if (!isOrderable) {
-                potentialOrderResources = onlineResources
+                // No DOWNLOADs or order manager ORDERs were found. Does an 
+                // embargoed message exist as a dummy order?
+                onlineResources
                         .stream()
                         .filter(r -> r.getFunction().equals("order"))
-                        .collect(Collectors.toList());
+                        .forEach(orderResources::add);
             }
-            orderResources = potentialOrderResources;
         }
     }
 }
