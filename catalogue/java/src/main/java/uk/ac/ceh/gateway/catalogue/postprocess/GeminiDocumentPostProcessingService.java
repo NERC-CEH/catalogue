@@ -33,21 +33,15 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     @Override
     public void postProcess(GeminiDocument document) throws PostProcessingException {
         Optional.ofNullable(document.getId()).ifPresent(i -> {
-            jenaTdb.begin(ReadWrite.READ);
-            try {
-                findLinksWhere(i, has(), IS_PART_OF).stream()
-                        .findFirst().ifPresent( p -> document.setParent(p));
-
-                document.setChildren(findLinksWhere(i, isHadBy(), IS_PART_OF));  
-                document.setDocumentLinks(findLinksWhere(i, connectedBy(), RELATION));
-
-                findLinksWhere(i, has(), REPLACES).stream()
-                        .findFirst().ifPresent( r -> document.setRevisionOf(r));
-
-                findLinksWhere(i, isHadBy(), REPLACES).stream()
-                        .findFirst().ifPresent( r -> document.setRevised(r));
-            } finally {
-                jenaTdb.end();
+            if (jenaTdb.isInTransaction()) {
+                process(document, i);
+            } else {
+                jenaTdb.begin(ReadWrite.READ);  
+                try {
+                    process(document, i);
+                } finally {
+                    jenaTdb.end();
+                }
             }
         });
                 
@@ -63,6 +57,20 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         catch(JsonProcessingException ex) {
             throw new PostProcessingException(ex);
         }
+    }
+    
+    private void process(GeminiDocument document, String id) {
+        findLinksWhere(id, has(), IS_PART_OF).stream()
+                .findFirst().ifPresent( p -> document.setParent(p));
+
+        document.setChildren(findLinksWhere(id, isHadBy(), IS_PART_OF));  
+        document.setDocumentLinks(findLinksWhere(id, connectedBy(), RELATION));
+
+        findLinksWhere(id, has(), REPLACES).stream()
+                .findFirst().ifPresent( r -> document.setRevisionOf(r));
+
+        findLinksWhere(id, isHadBy(), REPLACES).stream()
+                .findFirst().ifPresent( r -> document.setRevised(r));
     }
     
     private Set<Link> findLinksWhere(String identifier, ParameterizedSparqlString pss, Property rel) {
