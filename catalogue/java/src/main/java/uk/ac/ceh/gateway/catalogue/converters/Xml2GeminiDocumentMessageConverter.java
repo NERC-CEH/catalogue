@@ -77,7 +77,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final LegalConstraintsWithAnchorConverter otherConstraintsConverter;
     
     public Xml2GeminiDocumentMessageConverter(CodeLookupService codeLookupService) throws XPathExpressionException {
-        super(MediaType.APPLICATION_XML);
+        super(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
         
         xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(new HardcodedGeminiNamespaceResolver());

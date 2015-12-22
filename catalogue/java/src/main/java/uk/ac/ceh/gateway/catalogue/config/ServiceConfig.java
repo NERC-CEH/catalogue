@@ -86,6 +86,8 @@ import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -137,7 +139,6 @@ public class ServiceConfig {
     @Autowired CodeLookupService codeLookupService;
     @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
     @Autowired GroupStore<CatalogueUser> groupStore;
-    @Autowired DocumentWritingService documentWritingService;
     @Autowired @Qualifier("gemini") Schema geminiSchema;
     
     @Bean
@@ -201,7 +202,12 @@ public class ServiceConfig {
         converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
         converters.add(mappingJackson2HttpMessageConverter);
         return new MessageConvertersHolder(converters);
-    }    
+    } 
+    
+    @Data
+    public static class MessageConvertersHolder {
+        private final List<HttpMessageConverter<?>> converters;
+    }
         
     @Bean
     public CloseableHttpClient httpClient() {
@@ -212,11 +218,6 @@ public class ServiceConfig {
         return HttpClients.custom()
                           .setConnectionManager(connPool)
                           .build();
-    }
-        
-    @Data
-    public static class MessageConvertersHolder {
-        private final List<HttpMessageConverter<?>> converters;
     }
     
     @Bean
@@ -238,6 +239,25 @@ public class ServiceConfig {
     @Bean
     public DataRepositoryOptimizingService dataRepositoryOptimizingService() {
         return new DataRepositoryOptimizingService(dataRepository);
+    }
+    
+    @Bean
+    GitRepoWrapper gitRepoWrapper() {
+        return new GitRepoWrapper(dataRepository, documentInfoMapper());
+    }
+    
+    @Bean 
+    DocumentRepository documentRepository() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentRepository(
+            metadataRepresentationService(),
+            documentReadingService(),
+            documentIdentifierService(),
+            documentInfoFactory(),
+            documentWritingService(),
+            bundledReaderService(),
+            postProcessingService(),
+            gitRepoWrapper()
+        );
     }
     
     @Bean
@@ -267,7 +287,7 @@ public class ServiceConfig {
     }
     
     @Bean
-    public MetadataListingService getWafListingService() throws XPathExpressionException, IOException {
+    public MetadataListingService getWafListingService() throws XPathExpressionException, IOException, TemplateModelException {
         return new MetadataListingService(dataRepository, documentListingService(), bundledReaderService());
     }
     
@@ -307,12 +327,14 @@ public class ServiceConfig {
     }
     
     @Bean
-    public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException, IOException {
+    public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException, IOException, TemplateModelException {
         return new MetadataInfoBundledReaderService(
                 dataRepository,
                 documentReadingService(),
                 documentInfoMapper(),
-                metadataRepresentationService()
+                metadataRepresentationService(),
+                postProcessingService(),
+                documentIdentifierService()
         );
     }
     
@@ -345,7 +367,7 @@ public class ServiceConfig {
     }
     
     @Bean @Qualifier("solr-index")
-    public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException {
+    public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
         SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
         
@@ -368,7 +390,7 @@ public class ServiceConfig {
     }
     
     @Bean @Qualifier("jena-index")
-    public JenaIndexingService documentLinkingService() throws XPathExpressionException, IOException {
+    public JenaIndexingService documentLinkingService() throws XPathExpressionException, IOException, TemplateModelException {
         JenaIndexMetadataDocumentGenerator metadataDocument = new JenaIndexMetadataDocumentGenerator(documentIdentifierService());
         
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
@@ -406,11 +428,11 @@ public class ServiceConfig {
         
     @Bean 
     public ValidationIndexingService validationIndexingService() throws Exception {
-        MediaTypeValidator html = new MediaTypeValidator("HTML Generation", MediaType.TEXT_HTML, documentWritingService);
+        MediaTypeValidator html = new MediaTypeValidator("HTML Generation", MediaType.TEXT_HTML, documentWritingService());
         
         ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
                 .register(GeminiDocument.class, new ValidationIndexGenerator(Arrays.asList(
-                        new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService, geminiSchema),
+                        new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService(), geminiSchema),
                         html
                 )))
                 .register(MetadataDocument.class, new ValidationIndexGenerator(Arrays.asList(
