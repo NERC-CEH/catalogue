@@ -24,6 +24,7 @@
 							<gmd:title>
 								<gco:CharacterString>${conformanceResult.title}</gco:CharacterString>
 							</gmd:title>
+              <#if conformanceResult.date??>
 							<gmd:date>
 								<gmd:CI_Date>
 									<gmd:date>
@@ -34,6 +35,7 @@
 									</gmd:dateType>
 								</gmd:CI_Date>
 							</gmd:date>
+              </#if>
 						</gmd:CI_Citation>
 					</gmd:specification>
 					<gmd:explanation>
