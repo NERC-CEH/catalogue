@@ -107,10 +107,12 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
    <#if type=='dataset' || type=='nonGeographicDataset'>
       <dcat:Distribution>
         <rdf:Description>
-         <#assign downloadOrder=downloadOrderDetails.from(onlineResources)>
-         <#list downloadOrder.orderResources as onlineResource>
-            <dcat:accessURL rdf:resource="${onlineResource.url}"/>
-         </#list>
+         <#if onlineResources??>
+          <#assign downloadOrder=downloadOrderDetails.from(onlineResources)>
+          <#list downloadOrder.orderResources as onlineResource>
+             <dcat:accessURL rdf:resource="${onlineResource.url}"/>
+          </#list>
+         </#if>
          <#if citation?has_content>
             <dct:rights>If you reuse this data, you must cite ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}</dct:rights>
          </#if>
@@ -267,7 +269,7 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
    </#if>
    <#if conformanceResults?has_content>
       <#list conformanceResults as conformanceResult>
-         <dct:conformsTo>${conformanceResult.title?xml} (${conformanceResult.date?xml} - ${conformanceResult.pass?c})</dct:conformsTo>
+         <dct:conformsTo>${conformanceResult.title?xml} (<#if conformanceResult.date??>${conformanceResult.date?xml} - </#if>${conformanceResult.pass?c})</dct:conformsTo>
       </#list>
    </#if>
   </${rootElement}>
