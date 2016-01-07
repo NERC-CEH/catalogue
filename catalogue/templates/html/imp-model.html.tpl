@@ -51,31 +51,51 @@
     </dl>
 
     <#if keyReferences?? >
-      <h3>Key References</h3>
-      <ul>
-      <#list keyReferences as reference>
-        <li>${reference}</li>
+      <#list keyReferences>
+        <h3>Key References</h3>
+        <ul>
+        <#items as reference>
+          <li>${reference}</li>
+        </#items>
+        </ul>
       </#list>
-      </ul>
     </#if>
 
     <#if inputData?? >
-      <h3>Input Data</h3>
-      <ul>
-      <#list inputData as input>
-        <li>${input}</li>
+      <#list inputData>
+        <h3>Input Data</h3>
+        <ul>
+        <#items as input>
+          <li>${input}</li>
+        </#items>
+        </ul>
       </#list>
-      </ul>
     </#if>
 
     <#if outputData?? >
-      <h3>Output Data</h3>
-      <ul>
-      <#list outputData as output>
-        <li>${output}</li>
+      <#list outputData>
+        <h3>Output Data</h3>
+        <ul>
+          <#items as output>
+            <li>${output}</li>
+          </#items>
+        </ul>
       </#list>
-      </ul>
     </#if>
+    
+    <h3>Quality Assurance</h3>
+    <dl class="dl-horizontal">
+      <dt>Developer Testing</dt><dd><#if developerTesting?has_content>${developerTesting?then('Yes', 'No')}<#else>Unknown</#if></dd>
+      <dt>Internal Peer Review</dt><dd><#if internalPeerReview?has_content>${internalPeerReview?then('Yes', 'No')}<#else>Unknown</#if></dd>
+      <dt>External Peer Review</dt><dd><#if externalPeerReview?has_content>${externalPeerReview?then('Yes', 'No')}<#else>Unknown</#if></dd>
+      <dt>Use of Version Control</dt><dd><#if useOfVersionControl?has_content>${useOfVersionControl?then('Yes', 'No')}<#else>Unknown</#if></dd>
+      <dt>Internal Model Audit</dt><dd><#if internalModelAudit?has_content>${internalModelAudit?then('Yes', 'No')}<#else>Unknown</#if></dd>
+      <dt>External Model Audit</dt><dd><#if externalModelAudit?has_content>${externalModelAudit?then('Yes', 'No')}<#else>Unknown</#if></dd>
+      <dt>Quality Assurance Guidelines and Checklists</dt><dd><#if qualityAssuranceGuidelinesAndChecklists?has_content>${qualityAssuranceGuidelinesAndChecklists?then('Yes', 'No')}<#else>Unknown</#if></dd>
+      <dt>Governance</dt><dd><#if governance?has_content>${governance?then('Yes', 'No')}<#else>Unknown</#if></dd>
+      <dt>Transparency</dt><dd><#if transparency?has_content>${transparency?then('Yes', 'No')}<#else>Unknown</#if></dd>
+      <dt>Periodic Review</dt><dd><#if periodicReview?has_content>${periodicReview?then('Yes', 'No')}<#else>Unknown</#if></dd>
+    </dl>
 
   </div>
 </#escape>
