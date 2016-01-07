@@ -37,5 +37,10 @@
   ],
   "calibrationRequired": "Extensive",
   "modelStructure": "Conceptual process representation",
-  "dataInput": "Mixture of expert based/calibrated and measurement-derived"
+  "dataInput": "Mixture of expert based/calibrated and measurement-derived",
+  "developerTesting": true,
+  "internalPeerReview": false,
+  "externalPeerReview": false,
+  "useOfVersionControl": true,
+  "internalModelAudit": false
 }
