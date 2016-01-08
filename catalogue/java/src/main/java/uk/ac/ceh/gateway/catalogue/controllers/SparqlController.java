@@ -6,6 +6,7 @@ import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -57,6 +58,7 @@ public class SparqlController {
     }
     
     private void executeQuery(Query query, SparqlResponse response) {
+        jenaTdb.begin(ReadWrite.READ);
         try ( QueryExecution qExec = QueryExecutionFactory.create(query, jenaTdb)) {
             if(query.isSelectType()) {
                 response.setResult(ResultSetFormatter.asText(qExec.execSelect()));
@@ -73,6 +75,8 @@ public class SparqlController {
                 boolean ask = qExec.execAsk();
                 response.setResult(Boolean.toString(ask));
             }
+        } finally {
+            jenaTdb.end();
         }
     }
 }

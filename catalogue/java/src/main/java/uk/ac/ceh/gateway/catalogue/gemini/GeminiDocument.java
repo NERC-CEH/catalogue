@@ -62,8 +62,8 @@ public class GeminiDocument implements MetadataDocument {
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private Link parent, revised, revisionOf;
-    private Set<Link> documentLinks, children;
-    private List<ResourceIdentifier> resourceIdentifiers;
+    private Set<Link> documentLinks, children, composedOf;
+    private List<ResourceIdentifier> resourceIdentifiers, partOfRepository;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     @JsonIgnore
     private Citation citation;

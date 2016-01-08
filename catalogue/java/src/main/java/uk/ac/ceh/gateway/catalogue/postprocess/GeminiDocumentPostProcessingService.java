@@ -65,6 +65,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
 
         document.setChildren(findLinksWhere(id, isHadBy(), IS_PART_OF));  
         document.setDocumentLinks(findLinksWhere(id, connectedBy(), RELATION));
+        document.setComposedOf(findLinksWhere(id, has(), IS_COMPOSED_OF));
 
         findLinksWhere(id, has(), REPLACES).stream()
                 .findFirst().ifPresent( r -> document.setRevisionOf(r));
@@ -90,11 +91,11 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     }
     
     /**
-     * @return a sparql query which finds gemini links which are loosely coupled
-     * (based upon the identifier) from the document represented by ?id by ?rel e.g.
+     * @return a sparql query which finds gemini links which are tightly coupled
+     * from the document represented by ?id by ?rel e.g.
      * 
      *    <http://document1> <IDENTIFIER> "doc1ID"
-     *    <http://document1> <CONNECTED_TO> "doc2ID"
+     *    <http://document1> <CONNECTED_TO> <http://document2>
      *    <http://document2> <IDENTIFIER> "doc2ID"
      *    ...
      * 
@@ -106,8 +107,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
             "SELECT ?node ?type ?title " +
             "WHERE { " +
             "  ?me <http://purl.org/dc/terms/identifier> ?id . " +
-            "  ?me ?rel ?altid . " +
-            "  ?node <http://purl.org/dc/terms/identifier> ?altid ." +
+            "  ?me ?rel ?node . " +
             "  ?node <http://purl.org/dc/terms/title> ?title . " +
             "  ?node <http://purl.org/dc/terms/type> ?type . " +
             "}"
@@ -115,24 +115,23 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     }
     
     /**
-     * @return a sparql query which finds gemini links which are loosely linked 
+     * @return a sparql query which finds gemini links which are tightly linked 
      * to the concept specified by ?id with relationship ?rel. e.g.
      * 
      *    <http://document1> <IDENTIFIER> "doc1ID"
-     *    <http://document1> <CONNECTED_TO> "doc2ID"
+     *    <http://document1> <CONNECTED_TO> <http://document2>
      *    <http://document2> <IDENTIFIER> "doc2ID"
      *    ...
      * 
-     * Looking up document with id "doc2ID" and relationship <CONNECTED_TO> 
-     * will locate <http://document1>
+     * Looking up document with id "doc1ID" and relationship <CONNECTED_TO> 
+     * will locate <http://document2>
      */
     private ParameterizedSparqlString isHadBy() {
         return new ParameterizedSparqlString(
             "SELECT ?node ?type ?title " +
             "WHERE { " +
             "  ?me <http://purl.org/dc/terms/identifier> ?id . " +
-            "  ?me <http://purl.org/dc/terms/identifier> ?altid . " +
-            "  ?node ?rel ?altid ." +
+            "  ?node ?rel ?me . " +
             "  ?node <http://purl.org/dc/terms/title> ?title . " +
             "  ?node <http://purl.org/dc/terms/type> ?type . " +
             "}"
@@ -141,18 +140,16 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     
     /**
      * @return returns the union query of #isHadBy and #has. Essentially this 
-     * finds links which are directly or indirectly linked to the given doc (with
-     * identifier ?id)
+     * finds links which are linked from either source or target
      */
     private ParameterizedSparqlString connectedBy() {
         return new ParameterizedSparqlString(
             "SELECT ?node ?type ?title " +
             "WHERE { " +
             "  ?me <http://purl.org/dc/terms/identifier> ?id . " +
-            "  { { ?me ?rel ?altid . ?node <http://purl.org/dc/terms/identifier> ?altid } " +
-            "    UNION " +
-            "    { ?me <http://purl.org/dc/terms/identifier> ?altid . ?node ?rel ?altid } " +
-            "  } . " +
+            "  { ?me ?rel ?node } " +
+            "  UNION " +
+            "  { ?node ?rel ?me } . " +
             "  ?node <http://purl.org/dc/terms/title> ?title . " +
             "  ?node <http://purl.org/dc/terms/type> ?type . " +
             "}"

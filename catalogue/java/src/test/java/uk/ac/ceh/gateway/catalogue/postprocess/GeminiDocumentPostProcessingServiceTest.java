@@ -68,7 +68,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://doc1"), IDENTIFIER, "child");
-        triples.add(createResource("http://doc1"), IS_PART_OF, "parent");
+        triples.add(createResource("http://doc1"), IS_PART_OF, createResource("http://doc2"));
         triples.add(createResource("http://doc2"), IDENTIFIER, "parent");
         triples.add(createResource("http://doc2"), TITLE, "Daddy");
         triples.add(createResource("http://doc2"), TYPE, "Person");
@@ -94,7 +94,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         triples.add(createResource("http://doc1"), IDENTIFIER, "child");
         triples.add(createResource("http://doc1"), TITLE, "Baby");
         triples.add(createResource("http://doc1"), TYPE, "person");
-        triples.add(createResource("http://doc1"), IS_PART_OF, "parent");
+        triples.add(createResource("http://doc1"), IS_PART_OF, createResource("http://doc2"));
         triples.add(createResource("http://doc2"), IDENTIFIER, "parent");
         
         GeminiDocument document = mock(GeminiDocument.class);
@@ -121,7 +121,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         triples.add(createResource("http://man"), TITLE, "Big City");
         triples.add(createResource("http://man"), TYPE, "CITY");
         triples.add(createResource("http://altrincham"), IDENTIFIER, "altrincham");
-        triples.add(createResource("http://altrincham"), RELATION, "manchester");
+        triples.add(createResource("http://altrincham"), RELATION, createResource("http://man"));
                 
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getId()).thenReturn("altrincham");
@@ -145,7 +145,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://man"), IDENTIFIER, "manchester");
         triples.add(createResource("http://altrincham"), IDENTIFIER, "altrincham");
-        triples.add(createResource("http://altrincham"), RELATION, "manchester");
+        triples.add(createResource("http://altrincham"), RELATION, createResource("http://man"));
         triples.add(createResource("http://altrincham"), TITLE, "Town");
         triples.add(createResource("http://altrincham"), TYPE, "TOWN");
                 

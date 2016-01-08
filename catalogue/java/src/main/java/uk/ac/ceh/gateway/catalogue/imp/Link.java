@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class Link {
-    private String href, value;
+    private String href, title;
 }

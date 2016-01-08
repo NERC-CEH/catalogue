@@ -1,0 +1,16 @@
+{
+	"id": "8770c16d-465b-46b3-a768-6eb9d6bf2b8e",
+	"title": "Dataset 2 in repository",
+	"resourceType": {
+		"value": "dataset"
+	},
+	"type": "dataset",
+  "partOfRepository": [
+    {
+      "code": "a2489491-d1a8-47dc-8bd7-1db98b8251c2"
+    },
+    {
+      "code": "5b4d0ee4-49ed-4fb4-b2f6-e390ef42c00c"
+    }
+  ]
+}
