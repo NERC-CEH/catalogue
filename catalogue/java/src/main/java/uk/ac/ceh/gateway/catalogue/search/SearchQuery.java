@@ -33,6 +33,7 @@ public class SearchQuery {
     public static final String DEFAULT_SEARCH_TERM = "*";
     private static final String RANDOM_DYNAMIC_FIELD_NAME = "random";
     private final List<Facet> facets = Arrays.asList(
+        Facet.builder().fieldName("repository").displayName("Repository").hierarchical(false).build(),
         Facet.builder().fieldName("topic").displayName("Topic").hierarchical(true).build(),
         Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
         Facet.builder().fieldName("licence").displayName("Licence").hierarchical(false).build()
