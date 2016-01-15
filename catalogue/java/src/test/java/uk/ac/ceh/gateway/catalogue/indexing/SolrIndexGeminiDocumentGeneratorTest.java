@@ -22,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.*;
+import java.net.URI;
 import static org.hamcrest.Matchers.contains;
 
 /**
@@ -162,12 +163,12 @@ public class SolrIndexGeminiDocumentGeneratorTest {
     public void checkThatRepositoryIsIndexed() {
         //Given
         GeminiDocument document = new GeminiDocument();
-        document.setId("123");
+        document.setUri(URI.create("http://dataset"));
         
         Model model = jenaTdb.getDefaultModel();
-        model.add(createResource("http://dataset"), createProperty("http://purl.org/dc/terms/identifier"), "123");
+        model.add(createResource("http://dataset"), createProperty("http://purl.org/dc/terms/isPartOf"), createResource("http://repository"));
         model.add(createResource("http://repository"), createProperty("http://purl.org/dc/terms/title"), "EIDC");
-        model.add(createResource("http://repository"), createProperty("http://def.seegrid.csiro.au/isotc211/iso19115/2003/code/AssociationType/isComposedOf"), createResource("http://dataset"));
+        model.add(createResource("http://repository"), createProperty("http://purl.org/dc/terms/type"), "repository");
             
         
         //When

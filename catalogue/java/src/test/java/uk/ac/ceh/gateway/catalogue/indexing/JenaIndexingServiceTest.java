@@ -103,7 +103,11 @@ public class JenaIndexingServiceTest {
     }
     
     @Test
-    public void checkThatCanUnindexObjectTriples() throws Exception {
+    public void checkThatCannotUnindexObjectTriples() throws Exception {
+        /*
+        Do not want to remove Object triples as they have been asserted by 
+        another resource.
+        */
         //Given
         String objectUri = "http://www.ceh.ac.uk/removeMe";
         Resource subject = ResourceFactory.createResource("http://www.external.com/subject");
@@ -117,7 +121,7 @@ public class JenaIndexingServiceTest {
         service.unindexDocuments(Arrays.asList("removeMe"));
         
         //Then
-        assertThat(service.isIndexEmpty(), is(true));
+        assertThat(service.isIndexEmpty(), is(false));
     }
     
     @Test

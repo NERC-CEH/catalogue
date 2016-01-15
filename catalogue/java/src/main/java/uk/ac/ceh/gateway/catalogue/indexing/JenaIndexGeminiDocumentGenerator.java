@@ -34,7 +34,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         Optional.ofNullable(document.getPartOfRepository()).orElse(Collections.emptyList())
             .stream()
             .forEach(p -> {
-                toReturn.add(createStatement(generator.resource(p.getCode()), IS_COMPOSED_OF, me));
+                toReturn.add(createStatement(me, IS_PART_OF, generator.resource(p)));
         });
 
         Optional.ofNullable(emptyToNull(document.getRevisionOfIdentifier())).ifPresent( r -> {

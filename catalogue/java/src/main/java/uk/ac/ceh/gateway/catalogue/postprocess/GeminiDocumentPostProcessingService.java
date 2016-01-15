@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
@@ -24,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.services.DataciteService;
  * @author cjohn
  */
 @Data
+@Slf4j
 public class GeminiDocumentPostProcessingService implements PostProcessingService<GeminiDocument> {
     private final CitationService citationService;
     private final DataciteService dataciteService;
@@ -32,13 +34,15 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     
     @Override
     public void postProcess(GeminiDocument document) throws PostProcessingException {
-        Optional.ofNullable(document.getId()).ifPresent(i -> {
+        Optional.ofNullable(document.getUri()).ifPresent(u -> {
+            String uri = u.toString();
+            log.debug(uri);
             if (jenaTdb.isInTransaction()) {
-                process(document, i);
+                process(document, uri);
             } else {
                 jenaTdb.begin(ReadWrite.READ);  
                 try {
-                    process(document, i);
+                    process(document, uri);
                 } finally {
                     jenaTdb.end();
                 }
@@ -60,13 +64,14 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     }
     
     private void process(GeminiDocument document, String id) {
-        findLinksWhere(id, has(), IS_PART_OF).stream()
+        findLinksWhere(id, parent(), IS_PART_OF).stream()
                 .findFirst().ifPresent( p -> document.setParent(p));
 
-        document.setChildren(findLinksWhere(id, isHadBy(), IS_PART_OF));  
+        document.setChildren(findLinksWhere(id, children(), IS_PART_OF));  
         document.setDocumentLinks(findLinksWhere(id, connectedBy(), RELATION));
-        document.setComposedOf(findLinksWhere(id, has(), IS_COMPOSED_OF));
-        document.setModels(findLinksWhere(id, isHadBy(), REFERENCES));
+        document.setComposedOf(findLinksWhere(id, isComposedOf(), IS_PART_OF));
+        log.debug("about to get models for: {}", id);
+        document.setModelLinks(findLinksWhere(id, models(), REFERENCES));
 
         findLinksWhere(id, has(), REPLACES).stream()
                 .findFirst().ifPresent( r -> document.setRevisionOf(r));
@@ -76,7 +81,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     }
     
     private Set<Link> findLinksWhere(String identifier, ParameterizedSparqlString pss, Property rel) {
-        pss.setLiteral("id", identifier);
+        pss.setIri("me", identifier);
         pss.setParam("rel", rel);
         Set<Link> toReturn = new HashSet<>();
         try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
@@ -107,10 +112,9 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         return new ParameterizedSparqlString(
             "SELECT ?node ?type ?title " +
             "WHERE { " +
-            "  ?me <http://purl.org/dc/terms/identifier> ?id . " +
             "  ?me ?rel ?node . " +
-            "  ?node <http://purl.org/dc/terms/title> ?title . " +
-            "  ?node <http://purl.org/dc/terms/type> ?type . " +
+            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
+            "        <http://purl.org/dc/terms/type>  ?type . " +
             "}"
         );
     }
@@ -131,10 +135,70 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         return new ParameterizedSparqlString(
             "SELECT ?node ?type ?title " +
             "WHERE { " +
-            "  ?me <http://purl.org/dc/terms/identifier> ?id . " +
             "  ?node ?rel ?me . " +
-            "  ?node <http://purl.org/dc/terms/title> ?title . " +
-            "  ?node <http://purl.org/dc/terms/type> ?type . " +
+            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
+            "        <http://purl.org/dc/terms/type>  ?type . " +
+            "}"
+        );
+    }
+    
+    /**
+     * @return sparql query to find resources linked to a repository
+     */
+    private ParameterizedSparqlString isComposedOf() {
+        return new ParameterizedSparqlString(
+            "SELECT ?node ?type ?title " +
+            "WHERE { " +
+            "  ?node ?rel ?me ; " +
+            "        <http://purl.org/dc/terms/title> ?title ; " +
+            "        <http://purl.org/dc/terms/type>  ?type . " +
+            "  ?me <http://purl.org/dc/terms/type> 'repository' " +
+            "}"
+        );
+    }
+    
+    /**
+     * @return sparql query to find parent resource
+     */
+    private ParameterizedSparqlString parent() {
+        return new ParameterizedSparqlString(
+            "SELECT ?node ?type ?title " +
+            "WHERE { " +
+            "  ?me ?rel ?node . " +
+            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
+            "        <http://purl.org/dc/terms/type>  ?type . " +
+            "   FILTER ( ?type != 'repository' )" +
+            "}"
+        );
+    }
+    
+    /**
+     * @return sparql query to find child resources
+     */
+    private ParameterizedSparqlString children() {
+        return new ParameterizedSparqlString(
+            "SELECT ?node ?type ?title " +
+            "WHERE { " +
+            "  ?node ?rel ?me ; " +
+            "        <http://purl.org/dc/terms/title> ?title ; " +
+            "        <http://purl.org/dc/terms/type>  ?type . " +
+            "   ?me <http://purl.org/dc/terms/type> ?myType" +
+            "   FILTER ( ?myType != 'repository' )" +
+            "}"
+        );
+    }
+    
+    /**
+     * @return sparql query to find model resources
+     */
+    private ParameterizedSparqlString models() {
+        return new ParameterizedSparqlString(
+            "SELECT ?node ?type ?title " +
+            "WHERE { " +
+            "  ?node ?rel ?me ; " +
+            "        <http://purl.org/dc/terms/title> ?title ; " +
+            "        <http://purl.org/dc/terms/type>  ?type . " +
+            "   FILTER ( ?type = 'model' )" +
             "}"
         );
     }
@@ -147,12 +211,9 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         return new ParameterizedSparqlString(
             "SELECT ?node ?type ?title " +
             "WHERE { " +
-            "  ?me <http://purl.org/dc/terms/identifier> ?id . " +
-            "  { ?me ?rel ?node } " +
-            "  UNION " +
-            "  { ?node ?rel ?me } . " +
-            "  ?node <http://purl.org/dc/terms/title> ?title . " +
-            "  ?node <http://purl.org/dc/terms/type> ?type . " +
+            "  { ?me ?rel ?node } UNION { ?node ?rel ?me } . " +
+            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
+            "        <http://purl.org/dc/terms/type>  ?type . " +
             "}"
         );
     }

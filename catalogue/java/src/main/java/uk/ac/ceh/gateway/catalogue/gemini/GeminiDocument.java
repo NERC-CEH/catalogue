@@ -46,7 +46,7 @@ public class GeminiDocument implements MetadataDocument {
     @JsonIgnore
     private String jsonString;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages, accessConstraints,
-      securityConstraints;
+      securityConstraints, partOfRepository;
     private Keyword resourceType;        
     private List<Keyword> topicCategories, useLimitations, otherConstraints;
     private List<DistributionInfo> distributionFormats;
@@ -62,8 +62,8 @@ public class GeminiDocument implements MetadataDocument {
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private Link parent, revised, revisionOf;
-    private Set<Link> documentLinks, children, composedOf, models;
-    private List<ResourceIdentifier> resourceIdentifiers, partOfRepository;
+    private Set<Link> documentLinks, children, composedOf, modelLinks;
+    private List<ResourceIdentifier> resourceIdentifiers;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     @JsonIgnore
     private Citation citation;

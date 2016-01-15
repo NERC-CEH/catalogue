@@ -32,7 +32,4 @@ public class Ontology {
     
     public static final Property HAS_GEOMETRY   = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#hasGeometry");
     public static final RDFDatatype WKT_LITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#wktLiteral");
-    
-    // This is made up URL but will have to do. isComposedOf is not yet published
-    public static final Property IS_COMPOSED_OF = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19115/2003/code/AssociationType/isComposedOf");
 }

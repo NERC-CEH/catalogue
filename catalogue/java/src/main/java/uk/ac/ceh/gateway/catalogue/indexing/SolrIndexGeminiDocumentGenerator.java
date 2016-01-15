@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -28,6 +29,7 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
  * @author cjohn
  */
 @Data
+@Slf4j
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
     private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
     private static final String CEH_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
@@ -98,19 +100,20 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     }
     
     private List<String> getRepository(GeminiDocument document) {
-        String identifier = document.getId();
         List<String> toReturn = new ArrayList<>();
-        if (identifier != null) {
+        Optional.ofNullable(document.getUri()).ifPresent(uri -> {
             ParameterizedSparqlString pss = new ParameterizedSparqlString(
                 "SELECT ?title " +
                 "WHERE { " +
-                "?me <http://purl.org/dc/terms/identifier> ?id . " +
-                "?node <http://def.seegrid.csiro.au/isotc211/iso19115/2003/code/AssociationType/isComposedOf> ?me . " +
-                "?node <http://purl.org/dc/terms/title> ?title " +
+                "?me <http://purl.org/dc/terms/isPartOf> _:a . " +
+                "_:a <http://purl.org/dc/terms/title> ?title ; " +
+                "    <http://purl.org/dc/terms/type> 'repository' " +
                 "}"
             );
-            pss.setLiteral("id", identifier);
-
+            pss.setIri("me", uri.toString());
+            
+            log.info("query: {}", pss.toString());
+            
             jenaTdb.begin(ReadWrite.READ);  
             try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
                 qexec.execSelect().forEachRemaining(s -> {
@@ -119,7 +122,9 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             } finally {
                 jenaTdb.end();
             }
-        }
+        
+        });
+        
         return toReturn;
     }
 }

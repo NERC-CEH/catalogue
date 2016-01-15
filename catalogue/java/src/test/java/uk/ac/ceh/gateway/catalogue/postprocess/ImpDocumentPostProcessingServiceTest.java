@@ -4,8 +4,12 @@ package uk.ac.ceh.gateway.catalogue.postprocess;
 import com.hp.hpl.jena.query.Dataset;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.createResource;
 import com.hp.hpl.jena.tdb.TDBFactory;
+import java.net.URI;
 import java.util.Arrays;
+import lombok.extern.slf4j.Slf4j;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.Before;
@@ -13,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.imp.Link;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
+@Slf4j
 public class ImpDocumentPostProcessingServiceTest {
     private ImpDocumentPostProcessingService service;
     private Dataset jenaTdb;
@@ -27,19 +32,20 @@ public class ImpDocumentPostProcessingServiceTest {
     public void addLinks() throws PostProcessingException {
         //Given
         Model model = new Model();
-        model.setId("123");
+        model.setUri(URI.create("http://model"));
         model.setIdentifiers(Arrays.asList("dataset1"));
         Link expected = new Link("http://dataset1", "Dataset 1");
         
         com.hp.hpl.jena.rdf.model.Model triples = jenaTdb.getDefaultModel();
-        triples.add(createResource("http://model"), IDENTIFIER, "123");
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset1"));
         
         //When
         service.postProcess(model);
+        log.info("links: {}", model.getLinks());
         
         //Then
+        assertThat("Links should not be null", model.getLinks(), not(nullValue()));
         assertThat("Should have link to dataset with title: Dataset 1", model.getLinks().get(0), equalTo(expected));
     }
     
