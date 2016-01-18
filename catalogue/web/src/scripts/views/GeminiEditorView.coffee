@@ -581,6 +581,22 @@ define [
           modelAttribute: 'service'
           ModelType: Service
           label: 'Service'
+
+        new ParentStringView
+          model: @model
+          modelAttribute: 'partOfRepository'
+          label: 'Repository Membership'
+          helpText: """
+                    <p>File Identifier of repository.</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'revisionOfIdentifier'
+          label: 'Revision Of'
+          helpText: """
+                    <p>File Identifier of data resource being revised.</p>
+                    """
       ]
     ,
       label: 'Ten'
