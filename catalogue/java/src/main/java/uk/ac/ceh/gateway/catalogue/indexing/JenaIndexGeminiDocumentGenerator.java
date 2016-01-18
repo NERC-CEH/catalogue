@@ -28,11 +28,17 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
         
         Optional.ofNullable(emptyToNull(document.getParentIdentifier())).ifPresent( p -> {
-            toReturn.add(createStatement(me, IS_PART_OF, createPlainLiteral(p)));
+            toReturn.add(createStatement(me, IS_PART_OF, generator.resource(p)));
+        });
+        
+        Optional.ofNullable(document.getPartOfRepository()).orElse(Collections.emptyList())
+            .stream()
+            .forEach(p -> {
+                toReturn.add(createStatement(me, IS_PART_OF, generator.resource(p)));
         });
 
         Optional.ofNullable(emptyToNull(document.getRevisionOfIdentifier())).ifPresent( r -> {
-            toReturn.add(createStatement(me, REPLACES, createPlainLiteral(r)));
+            toReturn.add(createStatement(me, REPLACES, generator.resource(r)));
         });
         
         Optional.ofNullable(document.getBoundingBoxes()).orElse(Collections.emptyList()).forEach(b -> {
@@ -46,7 +52,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         });
         
         document.getCoupledResources().stream().filter(r -> !r.isEmpty()).forEach( r -> {
-            toReturn.add(createStatement(me, RELATION, createPlainLiteral(r)));
+            toReturn.add(createStatement(me, RELATION, createResource(r)));
         });
         
         return toReturn;

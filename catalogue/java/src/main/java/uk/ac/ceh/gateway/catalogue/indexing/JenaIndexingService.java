@@ -9,6 +9,7 @@ import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
@@ -21,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
  * @author cjohn
  * @param <D> type of documents to be read from the DataRepository
  */
+@Slf4j
 public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Statement>> {
     private final DocumentIdentifierService documentIdentifierService;
     private final Dataset jenaTdb;
@@ -64,9 +66,11 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
         perform(ReadWrite.WRITE, () -> {
             GraphStore graph = GraphStoreFactory.create(jenaTdb);
             for(String document : documents) {
-                //Remove any triples where this given document id is the subject or object
-                ParameterizedSparqlString pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }; DELETE WHERE { ?s ?p ?id }");
-                pss.setParam("id", ResourceFactory.createResource(documentIdentifierService.generateUri(document)));
+                String uri = documentIdentifierService.generateUri(document);
+                log.debug("Unindexing: {}", uri);
+                //Remove any triples where this document uri is the subject
+                ParameterizedSparqlString pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
+                pss.setParam("id", ResourceFactory.createResource(uri));
                 UpdateExecutionFactory.create(pss.asUpdate(), graph).execute();
             }
             return null;

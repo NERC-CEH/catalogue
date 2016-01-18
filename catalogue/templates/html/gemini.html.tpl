@@ -22,6 +22,7 @@
           <#include "gemini/_actions.html.tpl">
         </div>
         <div class="col-sm-8 col-xs-12">
+          <#include "gemini/_repository.html.tpl">
           <#include "gemini/_extent.html.tpl">
           <#include "gemini/_onlineResources.html.tpl">
           <#include "gemini/_quality.html.tpl">
@@ -31,6 +32,7 @@
           <#include "gemini/_spatial.html.tpl">
           <#include "gemini/_keywords.html.tpl">
           <#include "gemini/_uris.html.tpl">
+          <#include "gemini/_model.html.tpl">
         </div>
       </div>
       <#include "gemini/_metadata.html.tpl">

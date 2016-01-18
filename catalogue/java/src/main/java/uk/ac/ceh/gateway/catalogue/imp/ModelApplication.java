@@ -16,5 +16,4 @@ public class ModelApplication extends ImpDocument {
     private String date, studySite, studyScale, objective, funderDetails;
     private List<String> inputData;
     private Contact modellerDetails;
-    private List<AssociationResource> associatedResources;
 }

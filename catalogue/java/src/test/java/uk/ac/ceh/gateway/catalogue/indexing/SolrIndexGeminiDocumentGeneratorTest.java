@@ -1,5 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.tdb.TDBFactory;
 import java.util.Arrays;
 import java.util.List;
 import static org.hamcrest.Matchers.equalTo;
@@ -18,6 +21,9 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+import static com.hp.hpl.jena.rdf.model.ResourceFactory.*;
+import java.net.URI;
+import static org.hamcrest.Matchers.contains;
 
 /**
  *
@@ -27,13 +33,14 @@ public class SolrIndexGeminiDocumentGeneratorTest {
     @Mock SolrIndexMetadataDocumentGenerator documentIndexer;
     @Mock SolrGeometryService geometryService;
     @Mock CodeLookupService codeLookupService;
+    Dataset jenaTdb = TDBFactory.createDataset();
     private SolrIndexGeminiDocumentGenerator generator;
     
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
         when(documentIndexer.generateIndex(any(MetadataDocument.class))).thenReturn(new SolrIndex());
-        generator = new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), documentIndexer, geometryService, codeLookupService);
+        generator = new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), documentIndexer, geometryService, codeLookupService, jenaTdb);
     }
     
     @Test
@@ -41,6 +48,7 @@ public class SolrIndexGeminiDocumentGeneratorTest {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/topic/2","http://onto.nerc.ac.uk/CEHMD/topic/3"));
+        when(document.getId()).thenReturn("123");
         List<String> expected = Arrays.asList("0/Biodiversity/", "0/Phenology/");
         
         //When
@@ -66,6 +74,7 @@ public class SolrIndexGeminiDocumentGeneratorTest {
                 .value("More use limitations")
                 .build()
         ));
+        when(document.getId()).thenReturn("123");
         when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
         
         //When
@@ -90,6 +99,7 @@ public class SolrIndexGeminiDocumentGeneratorTest {
                 .value("More use limitations")
                 .build()
         ));
+        when(document.getId()).thenReturn("123");
         when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
         
         //When
@@ -111,6 +121,7 @@ public class SolrIndexGeminiDocumentGeneratorTest {
                 .value("More use limitations")
                 .build()
         ));
+        when(document.getId()).thenReturn("123");
         when(codeLookupService.lookup("licence.isOgl", false)).thenReturn("ISNT OGL");
         
         //When
@@ -146,6 +157,26 @@ public class SolrIndexGeminiDocumentGeneratorTest {
         
         //Then
         assertThat("Expected dataCentre to be empty", index.getDataCentre(), equalTo(""));
+    }
+    
+    @Test
+    public void checkThatRepositoryIsIndexed() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setUri(URI.create("http://dataset"));
+        
+        Model model = jenaTdb.getDefaultModel();
+        model.add(createResource("http://dataset"), createProperty("http://purl.org/dc/terms/isPartOf"), createResource("http://repository"));
+        model.add(createResource("http://repository"), createProperty("http://purl.org/dc/terms/title"), "EIDC");
+        model.add(createResource("http://repository"), createProperty("http://purl.org/dc/terms/type"), "repository");
+            
+        
+        //When
+        SolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertThat("Expected repository to be EIDC", index.getRepository(), contains("EIDC"));
+        
     }
     
 }

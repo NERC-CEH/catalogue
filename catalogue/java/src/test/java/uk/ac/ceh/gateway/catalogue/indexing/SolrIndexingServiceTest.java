@@ -99,8 +99,8 @@ public class SolrIndexingServiceTest {
         
         GeminiDocument document1 = mock(GeminiDocument.class);
         GeminiDocument document2 = mock(GeminiDocument.class);
-        when(reader.readBundle("doc1", revId)).thenReturn(document1);
-        when(reader.readBundle("doc2", revId)).thenReturn(document2);
+        when(reader.readBundle("doc1")).thenReturn(document1);
+        when(reader.readBundle("doc2")).thenReturn(document2);
         
         SolrIndex document1Index = mock(SolrIndex.class);
         SolrIndex document2Index = mock(SolrIndex.class);

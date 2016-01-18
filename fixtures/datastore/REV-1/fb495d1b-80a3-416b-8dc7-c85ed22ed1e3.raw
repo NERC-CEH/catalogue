@@ -463,17 +463,7 @@
 						<gco:CharacterString>GetMap</gco:CharacterString>
 					</srv:operationName>
 					<srv:identifier>
-						<gco:CharacterString>CEH:EIDC:#1271758286281</gco:CharacterString>
-					</srv:identifier>
-				</srv:SV_CoupledResource>
-			</srv:coupledResource>
-			<srv:coupledResource>
-				<srv:SV_CoupledResource>
-					<srv:operationName>
-						<gco:CharacterString>GetMap</gco:CharacterString>
-					</srv:operationName>
-					<srv:identifier>
-						<gco:CharacterString>https://gateway.ceh.ac.uk/soapServices/CSWStartup?Service=CSW&amp;Request=GetRecordById&amp;Version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetname=full&amp;id=bb2d7874-7bf4-44de-aa43-348bd684a2fe</gco:CharacterString>
+						<gco:CharacterString>http://catalogue.ceh.ac.uk/id/bb2d7874-7bf4-44de-aa43-348bd684a2fe</gco:CharacterString>
 					</srv:identifier>
 				</srv:SV_CoupledResource>
 			</srv:coupledResource>

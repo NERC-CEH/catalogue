@@ -20,6 +20,7 @@
       <field name="view" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="locations" type="spatial" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="dataCentre" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
+      <field name="repository" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
       <dynamicField name="random*" type="random" indexed="true" stored="false"/>
     </fields>

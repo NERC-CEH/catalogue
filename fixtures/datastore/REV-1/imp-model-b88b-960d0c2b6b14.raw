@@ -42,5 +42,10 @@
   "internalPeerReview": false,
   "externalPeerReview": false,
   "useOfVersionControl": true,
-  "internalModelAudit": false
+  "internalModelAudit": false,
+  "identifiers": [
+    "2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
+    "4e214aac-221b-4254-a03b-6219ae2d6e90",
+    "8770c16d-465b-46b3-a768-6eb9d6bf2b8e"
+  ]
 }

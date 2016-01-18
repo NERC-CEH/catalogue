@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.*;
+import java.net.URI;
 import java.util.Set;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -67,46 +68,40 @@ public class GeminiDocumentPostProcessingServiceTest {
     public void checkThatCanScanLinksToFindParent() throws PostProcessingException {
         //Given
         Model triples = jenaTdb.getDefaultModel();
-        triples.add(createResource("http://doc1"), IDENTIFIER, "child");
-        triples.add(createResource("http://doc1"), IS_PART_OF, "parent");
-        triples.add(createResource("http://doc2"), IDENTIFIER, "parent");
+        triples.add(createResource("http://doc1"), IS_PART_OF, createResource("http://doc2"));
         triples.add(createResource("http://doc2"), TITLE, "Daddy");
         triples.add(createResource("http://doc2"), TYPE, "Person");
         
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getId()).thenReturn("child");
+        GeminiDocument document = new GeminiDocument();
+        document.setUri(URI.create("http://doc1"));
         
         //When
         service.postProcess(document);
         
         //Then
-        ArgumentCaptor<Link> parent = ArgumentCaptor.forClass(Link.class);
-        verify(document).setParent(parent.capture());
-        assertThat(parent.getValue().getHref(), equalTo("http://doc2"));
-        assertThat(parent.getValue().getTitle(), equalTo("Daddy"));
-        assertThat(parent.getValue().getAssociationType(), equalTo("Person"));
+        assertThat(document.getParent().getHref(), equalTo("http://doc2"));
+        assertThat(document.getParent().getTitle(), equalTo("Daddy"));
+        assertThat(document.getParent().getAssociationType(), equalTo("Person"));
     }
     
     @Test
     public void checkThatCanFindChildren() throws PostProcessingException {
         //Given
         Model triples = jenaTdb.getDefaultModel();
-        triples.add(createResource("http://doc1"), IDENTIFIER, "child");
         triples.add(createResource("http://doc1"), TITLE, "Baby");
         triples.add(createResource("http://doc1"), TYPE, "person");
-        triples.add(createResource("http://doc1"), IS_PART_OF, "parent");
-        triples.add(createResource("http://doc2"), IDENTIFIER, "parent");
+        triples.add(createResource("http://doc1"), IS_PART_OF, createResource("http://doc2"));
+        triples.add(createResource("http://doc2"), TYPE, "series");
         
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getId()).thenReturn("parent");
+        GeminiDocument document = new GeminiDocument();
+        document.setUri(URI.create("http://doc2"));
         
         //When
         service.postProcess(document);
         
         //Then
-        verify(document).setChildren(links.capture());
-        assertThat(links.getValue().size(), is(1));
-        assertThat(links.getValue(), hasItem(Link.builder()
+        assertThat(document.getChildren().size(), is(1));
+        assertThat(document.getChildren(), hasItem(Link.builder()
                 .associationType("person")
                 .title("Baby")
                 .href("http://doc1")
@@ -117,22 +112,19 @@ public class GeminiDocumentPostProcessingServiceTest {
     public void checkThatCanFindDocumentsLinkedTo() throws PostProcessingException {
         //Given
         Model triples = jenaTdb.getDefaultModel();
-        triples.add(createResource("http://man"), IDENTIFIER, "manchester");
         triples.add(createResource("http://man"), TITLE, "Big City");
         triples.add(createResource("http://man"), TYPE, "CITY");
-        triples.add(createResource("http://altrincham"), IDENTIFIER, "altrincham");
-        triples.add(createResource("http://altrincham"), RELATION, "manchester");
+        triples.add(createResource("http://altrincham"), RELATION, createResource("http://man"));
                 
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getId()).thenReturn("altrincham");
+        GeminiDocument document = new GeminiDocument();
+        document.setUri(URI.create("http://altrincham"));
         
         //When
         service.postProcess(document);
         
         //Then
-        verify(document).setDocumentLinks(links.capture());
-        assertThat(links.getValue().size(), is(1));
-        assertThat(links.getValue(), hasItem(Link.builder()
+        assertThat(document.getDocumentLinks().size(), is(1));
+        assertThat(document.getDocumentLinks(), hasItem(Link.builder()
                 .associationType("CITY")
                 .title("Big City")
                 .href("http://man")
@@ -143,25 +135,45 @@ public class GeminiDocumentPostProcessingServiceTest {
     public void checkThatCanFindDocumentsLinkedFrom() throws PostProcessingException {
         //Given
         Model triples = jenaTdb.getDefaultModel();
-        triples.add(createResource("http://man"), IDENTIFIER, "manchester");
-        triples.add(createResource("http://altrincham"), IDENTIFIER, "altrincham");
-        triples.add(createResource("http://altrincham"), RELATION, "manchester");
+        triples.add(createResource("http://altrincham"), RELATION, createResource("http://man"));
         triples.add(createResource("http://altrincham"), TITLE, "Town");
         triples.add(createResource("http://altrincham"), TYPE, "TOWN");
                 
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getId()).thenReturn("manchester");
+        GeminiDocument document = new GeminiDocument();
+        document.setUri(URI.create("http://man"));
         
         //When
         service.postProcess(document);
         
         //Then
-        verify(document).setDocumentLinks(links.capture());
-        assertThat(links.getValue().size(), is(1));
-        assertThat(links.getValue(), hasItem(Link.builder()
+        assertThat(document.getDocumentLinks().size(), is(1));
+        assertThat(document.getDocumentLinks(), hasItem(Link.builder()
                 .associationType("TOWN")
                 .title("Town")
                 .href("http://altrincham")
+                .build()));
+    }
+    
+    @Test
+    public void checkCanFindModelLinks() throws PostProcessingException {
+        //Given
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset"));
+        triples.add(createResource("http://model"), TITLE, "Model");
+        triples.add(createResource("http://model"), TYPE, "model");
+                
+        GeminiDocument document = new GeminiDocument();
+        document.setUri(URI.create("http://dataset"));
+        
+        //When
+        service.postProcess(document);
+        
+        //Then
+        assertThat(document.getModelLinks().size(), is(1));
+        assertThat(document.getModelLinks(), hasItem(Link.builder()
+                .associationType("model")
+                .title("Model")
+                .href("http://model")
                 .build()));
     }
 }

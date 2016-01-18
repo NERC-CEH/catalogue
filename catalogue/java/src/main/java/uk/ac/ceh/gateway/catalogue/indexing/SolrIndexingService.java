@@ -72,6 +72,11 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
         solrServer.addBean(toIndex);
     }
     
+    @Override
+    protected D readDocument(String document, String revision) throws Exception {
+        return getReader().readBundle(document);
+    }
+    
     private void commit() throws DocumentIndexingException {
         try {
             solrServer.commit();

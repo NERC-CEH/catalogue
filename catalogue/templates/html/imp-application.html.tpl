@@ -37,7 +37,7 @@
       <h3>Associated Resources</h3>
       <ul>
       <#list associatedResources as resource>
-        <li>${resource.associationType!} <a href="${resource.href!}">${resource.value!resource.href}</a></li>
+        <li>${resource.associationType!} <a href="${resource.href!}">${resource.title!resource.href}</a></li>
       </#list>
       </ul>
     </#if>

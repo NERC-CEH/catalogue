@@ -12,6 +12,7 @@ public class Ontology {
     public static final Property IS_PART_OF    = ResourceFactory.createProperty("http://purl.org/dc/terms/isPartOf");
     public static final Property RELATION      = ResourceFactory.createProperty("http://purl.org/dc/terms/relation");
     public static final Property REPLACES      = ResourceFactory.createProperty("http://purl.org/dc/terms/replaces");
+    public static final Property REFERENCES    = ResourceFactory.createProperty("http://purl.org/dc/terms/references");
     
     public static final Property SET_UP_FOR    = ResourceFactory.createProperty("http://purl.org/voc/ef#setUpFor");
     public static final Property USES          = ResourceFactory.createProperty("http://purl.org/voc/ef#uses");

@@ -38,6 +38,7 @@ public class SolrIndex {
     private @Field List<String> keyword;
     private @Field List<String> view;
     private @Field String dataCentre;
+    private @Field List<String> repository;
 
     public SolrIndex addLocations(List<String> locations) {
         if(this.locations == null) {

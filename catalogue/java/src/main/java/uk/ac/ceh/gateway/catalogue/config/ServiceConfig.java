@@ -62,6 +62,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGeneratorRegistry;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexGeminiDocumentGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexImpDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
@@ -84,6 +85,7 @@ import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
+import uk.ac.ceh.gateway.catalogue.postprocess.ImpDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -362,7 +364,8 @@ public class ServiceConfig {
     public PostProcessingService postProcessingService() throws TemplateModelException, IOException {
         ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
                 .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), dataciteService(), jacksonMapper, jenaTdb))
-                .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb));
+                .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb))
+                .register(ImpDocument.class, new ImpDocumentPostProcessingService(jenaTdb));
         return new ClassMapPostProcessingService(mappings);
     }
     
@@ -372,7 +375,7 @@ public class ServiceConfig {
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
         
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
-            .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
+            .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService, jenaTdb))
             .register(Facility.class,           new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
             .register(BaseMonitoringType.class, baseMonitoringType)
             .register(MetadataDocument.class,   metadataDocument);
@@ -396,6 +399,7 @@ public class ServiceConfig {
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
                 .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(metadataDocument))
                 .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument))
+                .register(ImpDocument.class, new JenaIndexImpDocumentGenerator(metadataDocument))
                 .register(MetadataDocument.class, metadataDocument);
         
         JenaIndexingService toReturn = new JenaIndexingService(

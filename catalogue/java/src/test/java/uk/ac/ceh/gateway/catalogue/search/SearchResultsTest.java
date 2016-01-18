@@ -58,6 +58,10 @@ public class SearchResultsTest {
         
         List<Facet> expected = Arrays.asList(
             Facet.builder()
+                .fieldName("repository")
+                .displayName("Repository")
+                .build(),
+            Facet.builder()
                 .fieldName("topic")
                 .displayName("Topic")
                 .hierarchical(true)
