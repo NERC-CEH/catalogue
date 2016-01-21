@@ -363,7 +363,7 @@ public class ServiceConfig {
     @Bean
     public PostProcessingService postProcessingService() throws TemplateModelException, IOException {
         ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
-                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), dataciteService(), jacksonMapper, jenaTdb))
+                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), dataciteService(), jacksonMapper, jenaTdb, documentIdentifierService()))
                 .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb))
                 .register(ImpDocument.class, new ImpDocumentPostProcessingService(jenaTdb));
         return new ClassMapPostProcessingService(mappings);

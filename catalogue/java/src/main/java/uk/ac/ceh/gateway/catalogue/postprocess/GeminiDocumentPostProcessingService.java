@@ -11,31 +11,41 @@ import com.hp.hpl.jena.rdf.model.Property;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 /**
  * Defines a post processing service which can be used adding additional 
  * information to a Gemini Document
  * @author cjohn
  */
-@Data
 @Slf4j
 public class GeminiDocumentPostProcessingService implements PostProcessingService<GeminiDocument> {
     private final CitationService citationService;
     private final DataciteService dataciteService;
     private final ObjectMapper mapper;
     private final Dataset jenaTdb;
-    
+    private final DocumentIdentifierService documentIdentifierService;
+
+    @Autowired
+    public GeminiDocumentPostProcessingService(CitationService citationService, DataciteService dataciteService, ObjectMapper mapper, Dataset jenaTdb, DocumentIdentifierService DocumentIdentifierService) {
+        this.citationService = citationService;
+        this.dataciteService = dataciteService;
+        this.mapper = mapper;
+        this.jenaTdb = jenaTdb;
+        this.documentIdentifierService = DocumentIdentifierService;
+    }
+        
     @Override
     public void postProcess(GeminiDocument document) throws PostProcessingException {
-        Optional.ofNullable(document.getUri()).ifPresent(u -> {
-            String uri = u.toString();
+        Optional.ofNullable(document.getId()).ifPresent(u -> {
+            String uri = documentIdentifierService.generateUri(u);
             log.debug(uri);
             if (jenaTdb.isInTransaction()) {
                 process(document, uri);

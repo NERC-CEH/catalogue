@@ -9,26 +9,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.*;
 import java.net.URI;
-import java.util.Set;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import static org.mockito.Matchers.any;
 import uk.ac.ceh.gateway.catalogue.gemini.Link;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 /**
  *
@@ -38,7 +35,7 @@ public class GeminiDocumentPostProcessingServiceTest {
     @Mock CitationService citationService;
     @Mock DataciteService dataciteService;
     @Mock ObjectMapper mapper;
-    @Captor ArgumentCaptor<Set<Link>> links;
+    @Mock DocumentIdentifierService documentIdentifierService;
     private Dataset jenaTdb;
     private GeminiDocumentPostProcessingService service;
     
@@ -47,7 +44,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         MockitoAnnotations.initMocks(this);
         when(citationService.getCitation(any(GeminiDocument.class))).thenReturn(Optional.empty());
         jenaTdb = TDBFactory.createDataset();
-        service = spy(new GeminiDocumentPostProcessingService(citationService, dataciteService, mapper, jenaTdb));
+        service = new GeminiDocumentPostProcessingService(citationService, dataciteService, mapper, jenaTdb, documentIdentifierService);
     }
     
     @Test
@@ -56,6 +53,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         GeminiDocument document = mock(GeminiDocument.class);
         Citation citation = Citation.builder().build();
         when(citationService.getCitation(document)).thenReturn(Optional.of(citation));
+        when(documentIdentifierService.generateUri(any(String.class))).thenReturn("123");
         
         //When
         service.postProcess(document);
@@ -73,7 +71,8 @@ public class GeminiDocumentPostProcessingServiceTest {
         triples.add(createResource("http://doc2"), TYPE, "Person");
         
         GeminiDocument document = new GeminiDocument();
-        document.setUri(URI.create("http://doc1"));
+        document.setId("doc1");
+        when(documentIdentifierService.generateUri("doc1")).thenReturn("http://doc1");
         
         //When
         service.postProcess(document);
@@ -94,7 +93,8 @@ public class GeminiDocumentPostProcessingServiceTest {
         triples.add(createResource("http://doc2"), TYPE, "series");
         
         GeminiDocument document = new GeminiDocument();
-        document.setUri(URI.create("http://doc2"));
+        document.setId("doc2");
+        when(documentIdentifierService.generateUri("doc2")).thenReturn("http://doc2");
         
         //When
         service.postProcess(document);
@@ -117,7 +117,8 @@ public class GeminiDocumentPostProcessingServiceTest {
         triples.add(createResource("http://altrincham"), RELATION, createResource("http://man"));
                 
         GeminiDocument document = new GeminiDocument();
-        document.setUri(URI.create("http://altrincham"));
+        document.setId("altrincham");
+        when(documentIdentifierService.generateUri("altrincham")).thenReturn("http://altrincham");
         
         //When
         service.postProcess(document);
@@ -140,7 +141,8 @@ public class GeminiDocumentPostProcessingServiceTest {
         triples.add(createResource("http://altrincham"), TYPE, "TOWN");
                 
         GeminiDocument document = new GeminiDocument();
-        document.setUri(URI.create("http://man"));
+        document.setId("man");
+        when(documentIdentifierService.generateUri("man")).thenReturn("http://man");
         
         //When
         service.postProcess(document);
@@ -163,7 +165,8 @@ public class GeminiDocumentPostProcessingServiceTest {
         triples.add(createResource("http://model"), TYPE, "model");
                 
         GeminiDocument document = new GeminiDocument();
-        document.setUri(URI.create("http://dataset"));
+        document.setId("dataset");
+        when(documentIdentifierService.generateUri("dataset")).thenReturn("http://dataset");
         
         //When
         service.postProcess(document);
