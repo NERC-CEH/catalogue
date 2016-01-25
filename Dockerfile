@@ -17,11 +17,11 @@ RUN mkdir -p /var/log/supervisor
 ADD Puppetfile / 
 RUN librarian-puppet install 
 RUN mkdir -p /vagrant /opt/ceh-catalogue 
-ADD /puppet/ /vagrant/puppet/ 
+ADD /puppet/ /opt/ceh-catalogue/puppet 
 ADD /catalogue /opt/ceh-catalogue/catalogue 
 
 # TODO: Puppet will attempt to start the tomcat services which fail inside a container 
-RUN puppet apply --modulepath=/modules --hiera_config=/vagrant/puppet/hiera.yaml /vagrant/puppet/manifests/site.pp 
+RUN puppet apply --modulepath=/modules --hiera_config=/opt/ceh-catalogue/puppet/hiera.yaml /opt/ceh-catalogue/puppet/manifests/site.pp 
 
 # Configure the services 
 COPY supervisord/catalogue.conf /etc/supervisor/conf.d/catalogue.conf 
