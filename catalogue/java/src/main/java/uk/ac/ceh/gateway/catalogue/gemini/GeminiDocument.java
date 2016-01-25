@@ -181,7 +181,11 @@ public class GeminiDocument implements MetadataDocument {
     @Override
     public void attachUri(URI uri) {
         setUri(uri);
+    }    
+
+    @Override
+    public void attachPartOfRepository(List<String> repositories) {
+        setPartOfRepository(repositories);
     }
-    
     
 }

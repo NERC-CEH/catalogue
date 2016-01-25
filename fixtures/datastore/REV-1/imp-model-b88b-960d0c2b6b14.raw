@@ -1,7 +1,7 @@
 {
   "id": "imp-model-b88b-960d0c2b6b14",
   "type": "model",
-  "title": "INCA-IN",
+  "title": "INCA-N",
   "version": "1.0.14",
   "description": "INCA-N is a processed based dynamic model representation of plant/soil system nitrogen dynamics and instream biogeochemical and hydrological dynamics. It is spatially semi-distributed.",
   "contact": "NIVA, Norway; University of Reading. Contact: Raoul-Marie Couture (NIVA)",
@@ -47,5 +47,22 @@
     "2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
     "4e214aac-221b-4254-a03b-6219ae2d6e90",
     "8770c16d-465b-46b3-a768-6eb9d6bf2b8e"
+  ],
+  "keywords": [
+    {
+      "value": "Nitrogen",
+      "uri": "http://vocabs.ceh.ac.uk/imp/wq/nitrogen"
+    },
+    {
+      "value": "National",
+      "uri": "http://vocabs.ceh.ac.uk/imp/scale/national"
+    },
+    {
+      "value": "Agri-environment",
+      "uri": "http://vocabs.ceh.ac.uk/imp/bci/agri-environment"
+    }
+  ],
+  "partOfRepository": [
+    "5b4d0ee4-49ed-4fb4-b2f6-e390ef42c00c"
   ]
 }

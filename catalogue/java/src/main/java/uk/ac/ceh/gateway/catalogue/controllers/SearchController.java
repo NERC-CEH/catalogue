@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.search.FacetFilter;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
 import uk.ac.ceh.gateway.catalogue.search.SpatialOperation;
+import uk.ac.ceh.gateway.catalogue.util.FeatureToggle;
 
 @Controller
 @Slf4j
@@ -40,11 +41,13 @@ public class SearchController {
     
     private final SolrServer solrServer;
     private final GroupStore<CatalogueUser> groupStore;
+    private final FeatureToggle featureToggle;
       
     @Autowired
-    public SearchController(SolrServer solrServer, GroupStore<CatalogueUser> groupStore){
+    public SearchController(SolrServer solrServer, GroupStore<CatalogueUser> groupStore, FeatureToggle featureToggle){
         this.solrServer = Objects.requireNonNull(solrServer);
         this.groupStore = Objects.requireNonNull(groupStore);
+        this.featureToggle = featureToggle;
     }
     
     @RequestMapping(value = "documents",
@@ -68,7 +71,8 @@ public class SearchController {
             page,
             rows,
             facetFilters,
-            groupStore
+            groupStore,
+            featureToggle
         );
         log.debug("query: {}", searchQuery);
         return new SearchResults(

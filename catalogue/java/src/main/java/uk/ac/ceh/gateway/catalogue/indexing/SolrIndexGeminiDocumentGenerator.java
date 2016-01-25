@@ -1,18 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.ReadWrite;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -28,17 +21,25 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
  * bits of the document transferred. Ready to be indexed by Solr
  * @author cjohn
  */
-@Data
-@Slf4j
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
     private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
     private static final String CEH_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
+    public static final String IMP_BROADER_CATCHMENT_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/bci/";
+    public static final String IMP_SCALE_URL = "http://vocabs.ceh.ac.uk/imp/scale/";
+    public static final String IMP_WATER_QUALITY_URL = "http://vocabs.ceh.ac.uk/imp/wq/";
     
     private final TopicIndexer topicIndexer;
     private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;
     private final SolrGeometryService geometryService;
     private final CodeLookupService codeLookupService;
-    private final Dataset jenaTdb;
+
+    @Autowired
+    public SolrIndexGeminiDocumentGenerator(TopicIndexer topicIndexer, SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex, SolrGeometryService geometryService, CodeLookupService codeLookupService) {
+        this.topicIndexer = topicIndexer;
+        this.metadataDocumentSolrIndex = metadataDocumentSolrIndex;
+        this.geometryService = geometryService;
+        this.codeLookupService = codeLookupService;
+    }
     
     @Override
     public SolrIndex generateIndex(GeminiDocument document) {
@@ -56,7 +57,10 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 .setKeyword(grab(getKeywords(document), Keyword::getValue))
                 .setDataCentre(getDataCentre(document))
                 .addLocations(geometryService.toSolrGeometry(grab(document.getBoundingBoxes(), BoundingBox::getWkt)))
-                .setRepository(getRepository(document));
+                .setImpBroaderCatchmentIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_BROADER_CATCHMENT_ISSUES_URL), Keyword::getValue))
+                .setImpScale(grab(getKeywordsFilteredByUrlFragment(document, IMP_SCALE_URL), Keyword::getValue))
+                .setImpWaterQuality(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_QUALITY_URL), Keyword::getValue))
+            ;
     }
 
     private List<Keyword> getKeywords(GeminiDocument document) {
@@ -99,32 +103,14 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         }
     }
     
-    private List<String> getRepository(GeminiDocument document) {
-        List<String> toReturn = new ArrayList<>();
-        Optional.ofNullable(document.getUri()).ifPresent(uri -> {
-            ParameterizedSparqlString pss = new ParameterizedSparqlString(
-                "SELECT ?title " +
-                "WHERE { " +
-                "?me <http://purl.org/dc/terms/isPartOf> _:a . " +
-                "_:a <http://purl.org/dc/terms/title> ?title ; " +
-                "    <http://purl.org/dc/terms/type> 'repository' " +
-                "}"
-            );
-            pss.setIri("me", uri.toString());
-            
-            log.info("query: {}", pss.toString());
-            
-            jenaTdb.begin(ReadWrite.READ);  
-            try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
-                qexec.execSelect().forEachRemaining(s -> {
-                    toReturn.add(s.getLiteral("title").getString());
-                });
-            } finally {
-                jenaTdb.end();
-            }
-        
-        });
-        
-        return toReturn;
+    private List<Keyword> getKeywordsFilteredByUrlFragment(GeminiDocument document, String urlFragment) {
+        return Optional.ofNullable(document.getDescriptiveKeywords())
+                .orElse(Collections.emptyList())
+                .stream()
+                .flatMap(d -> d.getKeywords().stream())
+                .filter(k -> {
+                    return k.getUri().startsWith(urlFragment);
+                })
+                .collect(Collectors.toList());
     }
 }

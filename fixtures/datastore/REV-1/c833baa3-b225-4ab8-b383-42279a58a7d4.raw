@@ -6,5 +6,15 @@
 	},
 	"type": "dataset",
   "parentIdentifier": "571a676f-6c32-489b-b7ec-18dcc617a9f1",
-  "revisionOfIdentifier": "4e214aac-221b-4254-a03b-6219ae2d6e90"
+  "revisionOfIdentifier": "4e214aac-221b-4254-a03b-6219ae2d6e90",
+  "descriptiveKeywords": [
+    {
+      "keywords":[
+        {
+          "value": "Catchment",
+          "uri": "http://vocabs.ceh.ac.uk/imp/scale/catchment"
+        }
+      ]
+    }
+  ]
 }

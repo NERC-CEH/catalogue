@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.solr.client.solrj.SolrQuery;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasItemInArray;
@@ -21,6 +22,7 @@ import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.util.FeatureToggle;
 
 public class SearchQueryTest {
     public static final String ENDPOINT = "http://catalogue.com/documents";
@@ -28,6 +30,7 @@ public class SearchQueryTest {
     public static final int DEFAULT_PAGE = 1;
     public static final int DEFAULT_ROWS = 20;
     public static final List<FacetFilter> DEFAULT_FILTERS = Collections.EMPTY_LIST;
+    public static final FeatureToggle featureToggle = FeatureToggle.builder().impFacetsEnabled(false).build();
     @Mock private GroupStore<CatalogueUser> groupStore; 
     
     @Before
@@ -48,7 +51,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -73,7 +77,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -98,7 +103,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -135,7 +141,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -164,7 +171,8 @@ public class SearchQueryTest {
             2,
             40,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -188,7 +196,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -212,7 +221,8 @@ public class SearchQueryTest {
             Arrays.asList(
                 new FacetFilter("resourceType","dataset"),
                 new FacetFilter("topic","0/Climate/")),
-            groupStore
+            groupStore,
+            featureToggle
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -237,7 +247,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -261,7 +272,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -285,7 +297,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -307,7 +320,8 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -331,7 +345,8 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             Arrays.asList(filter),
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -354,7 +369,8 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -377,7 +393,8 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             Arrays.asList(filter),
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -400,7 +417,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             filters,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         FacetFilter filter = new FacetFilter("hey", "lo");
@@ -424,7 +442,8 @@ public class SearchQueryTest {
             24,
             30,
             Arrays.asList(new FacetFilter("a","b")),
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -452,7 +471,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -476,7 +496,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -498,7 +519,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            featureToggle
         );
         
         //When
@@ -506,5 +528,36 @@ public class SearchQueryTest {
         
         //Then
         assertSame("Expected the new query to be exactly the same", newQuery, query);
+    }
+    
+    @Test
+    public void impFacetsAddedToQuery() {
+        //Given        
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS,
+            groupStore,
+            FeatureToggle.builder().impFacetsEnabled(true).build()
+        );
+        
+        //When
+        List<Facet> actual = query.getFacets();
+        
+        //Then
+        assertThat("impScale should be added to facets",
+            actual,
+            hasItem(Facet.builder()
+                .fieldName("impScale")
+                .displayName("Scale")
+                .hierarchical(false)
+                .build()
+            )
+        );
     }
 }

@@ -30,12 +30,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         Optional.ofNullable(emptyToNull(document.getParentIdentifier())).ifPresent( p -> {
             toReturn.add(createStatement(me, IS_PART_OF, generator.resource(p)));
         });
-        
-        Optional.ofNullable(document.getPartOfRepository()).orElse(Collections.emptyList())
-            .stream()
-            .forEach(p -> {
-                toReturn.add(createStatement(me, IS_PART_OF, generator.resource(p)));
-        });
 
         Optional.ofNullable(emptyToNull(document.getRevisionOfIdentifier())).ifPresent( r -> {
             toReturn.add(createStatement(me, REPLACES, generator.resource(r)));

@@ -35,7 +35,8 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -158,7 +159,8 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -192,7 +194,8 @@ public class SearchResultsTest {
             2,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -217,7 +220,8 @@ public class SearchResultsTest {
             1,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -242,7 +246,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -268,7 +273,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -295,7 +301,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         //When
@@ -319,7 +326,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         //When
@@ -344,7 +352,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         
@@ -370,7 +379,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         
@@ -395,7 +405,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         
@@ -421,7 +432,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         
@@ -447,7 +459,8 @@ public class SearchResultsTest {
             page,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            SearchQueryTest.featureToggle
         );
         
         //When
