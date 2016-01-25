@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * This is the interface for a metadata document. Specific implementations such 
@@ -14,6 +15,8 @@ public interface MetadataDocument {
     String getTitle();
     String getId();
     String getType();
+    List<String> getPartOfRepository();
+    void attachPartOfRepository(List<String> repositories);
     MetadataInfo getMetadata();
     void attachMetadata(MetadataInfo metadata);
     void attachUri(URI uri);

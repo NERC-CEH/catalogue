@@ -26,19 +26,15 @@ import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_QUER
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.TERM_QUERY_PARAM;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.util.FeatureToggle;
 
 @Value
 @Slf4j
 public class SearchQuery {
     public static final String DEFAULT_SEARCH_TERM = "*";
     private static final String RANDOM_DYNAMIC_FIELD_NAME = "random";
-    private final List<Facet> facets = Arrays.asList(
-        Facet.builder().fieldName("repository").displayName("Repository").hierarchical(false).build(),
-        Facet.builder().fieldName("topic").displayName("Topic").hierarchical(true).build(),
-        Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
-        Facet.builder().fieldName("licence").displayName("Licence").hierarchical(false).build()
-    );
     
+    private final List<Facet> facets;
     private final String endpoint;
     private final CatalogueUser user; 
     private final @NotNull String term;
@@ -48,6 +44,50 @@ public class SearchQuery {
     private final int rows;
     private final @NotNull List<FacetFilter> facetFilters;
     private final GroupStore<CatalogueUser> groupStore;
+    private final FeatureToggle featureToggle;
+
+    public SearchQuery(String endpoint, CatalogueUser user, String term, String bbox, SpatialOperation spatialOperation, int page, int rows, List<FacetFilter> facetFilters, GroupStore<CatalogueUser> groupStore, FeatureToggle featureToggle) {
+        this.endpoint = endpoint;
+        this.user = user;
+        this.term = term;
+        this.bbox = bbox;
+        this.spatialOperation = spatialOperation;
+        this.page = page;
+        this.rows = rows;
+        this.facetFilters = facetFilters;
+        this.groupStore = groupStore;
+        this.featureToggle = featureToggle;
+        
+        List<Facet> newFacets  = new ArrayList(Arrays.asList(
+            Facet.builder().fieldName("repository").displayName("Repository").hierarchical(false).build(),
+            Facet.builder().fieldName("topic").displayName("Topic").hierarchical(true).build(),
+            Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
+            Facet.builder().fieldName("licence").displayName("Licence").hierarchical(false).build()
+        ));
+        
+        if (featureToggle.isImpFacetsEnabled()) {
+            newFacets.add(1, Facet.builder().fieldName("impBroaderCatchmentIssues").displayName("Broader Catchment Issues").hierarchical(false).build());
+            newFacets.add(2, Facet.builder().fieldName("impScale").displayName("Scale").hierarchical(false).build());
+            newFacets.add(3, Facet.builder().fieldName("impWaterQuality").displayName("Water Quality").hierarchical(false).build());
+        }
+        this.facets = newFacets;
+    }
+
+    private SearchQuery(List<Facet> facets, String endpoint, CatalogueUser user, String term, String bbox, SpatialOperation spatialOperation, int page, int rows, List<FacetFilter> facetFilters, GroupStore<CatalogueUser> groupStore, FeatureToggle featureToggle) {
+        this.facets = facets;
+        this.endpoint = endpoint;
+        this.user = user;
+        this.term = term;
+        this.bbox = bbox;
+        this.spatialOperation = spatialOperation;
+        this.page = page;
+        this.rows = rows;
+        this.facetFilters = facetFilters;
+        this.groupStore = groupStore;
+        this.featureToggle = featureToggle;
+    }
+    
+    
       
     public SolrQuery build(){
         SolrQuery query = new SolrQuery()
@@ -79,7 +119,7 @@ public class SearchQuery {
      */
     public SearchQuery withBbox(String newBbox) {
         if ( (bbox == null && newBbox != null) || (bbox !=null && !bbox.equals(newBbox)) ) {
-            return new SearchQuery(endpoint, user, term, newBbox, spatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore);
+            return new SearchQuery(facets, endpoint, user, term, newBbox, spatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore, featureToggle);
         }
         else {
             return this;
@@ -95,7 +135,7 @@ public class SearchQuery {
      */
     public SearchQuery withSpatialOperation(SpatialOperation newSpatialOperation) {
         if ( !spatialOperation.equals(newSpatialOperation) ) {
-            return new SearchQuery(endpoint, user, term, bbox, newSpatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore);
+            return new SearchQuery(facets, endpoint, user, term, bbox, newSpatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore, featureToggle);
         }
         else {
             return this;
@@ -116,7 +156,7 @@ public class SearchQuery {
         if (!containsFacetFilter(filter)) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.add(filter);
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore);
+            return new SearchQuery(facets, endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore, featureToggle);
         }
         else {
             return this;
@@ -135,7 +175,7 @@ public class SearchQuery {
         if(containsFacetFilter(filter) ) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.remove(filter);
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore);
+            return new SearchQuery(facets, endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore, featureToggle);
         }
         else {
             return this;

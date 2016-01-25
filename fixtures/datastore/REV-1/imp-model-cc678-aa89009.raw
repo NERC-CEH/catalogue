@@ -14,5 +14,30 @@
     "Water column and stream bed sediment concentration",
     "water column and stream bed phosphorus concentration",
     "macrophyte and epiphyte biomass"
+  ],
+  "keywords": [
+    {
+      "value": "Nitrogen",
+      "uri": "http://vocabs.ceh.ac.uk/imp/wq/nitrogen"
+    },
+    {
+      "value": "Phosphorous",
+      "uri": "http://vocabs.ceh.ac.uk/imp/wq/phosphorous"
+    },
+    {
+      "value": "Sediment",
+      "uri": "http://vocabs.ceh.ac.uk/imp/wq/sediment"
+    },
+    {
+      "value": "Catchment",
+      "uri": "http://vocabs.ceh.ac.uk/imp/scale/catchment"
+    },
+    {
+      "value": "Agri-environment",
+      "uri": "http://vocabs.ceh.ac.uk/imp/bci/agri-environment"
+    }
+  ],
+  "partOfRepository": [
+    "5b4d0ee4-49ed-4fb4-b2f6-e390ef42c00c"
   ]
 }

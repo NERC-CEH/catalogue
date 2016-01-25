@@ -14,6 +14,7 @@ catalogue_config:
   'doi.username':              'INVALID_USERNAME'
   'doi.password':              'INVALID_PASSWORD'
   'spring.profiles.active':    'development'
+  'toggle.impFacetsEnabled':   true
 
 catalogue_ajp_port: 7100
 

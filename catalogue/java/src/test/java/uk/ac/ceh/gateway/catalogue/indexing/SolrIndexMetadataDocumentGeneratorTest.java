@@ -1,5 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.rdf.model.Model;
+import static com.hp.hpl.jena.rdf.model.ResourceFactory.createProperty;
+import static com.hp.hpl.jena.rdf.model.ResourceFactory.createResource;
+import com.hp.hpl.jena.tdb.TDBFactory;
+import java.net.URI;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -20,12 +26,13 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 public class SolrIndexMetadataDocumentGeneratorTest {
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
+    Dataset jenaTdb = TDBFactory.createDataset();
     private SolrIndexMetadataDocumentGenerator generator;
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        generator = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService);
+        generator = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService, jenaTdb);
     }
     
     @Test
@@ -134,6 +141,26 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         
         //Then
         assertThat("Expected shortenedDescription to be empty string" , expected, equalTo(""));
+    }
+    
+    @Test
+    public void checkThatRepositoryIsIndexed() {
+        //Given
+        GeminiDocument document = new GeminiDocument();
+        document.setUri(URI.create("http://dataset"));
+        
+        Model model = jenaTdb.getDefaultModel();
+        model.add(createResource("http://dataset"), createProperty("http://purl.org/dc/terms/isPartOf"), createResource("http://repository"));
+        model.add(createResource("http://repository"), createProperty("http://purl.org/dc/terms/title"), "EIDC");
+        model.add(createResource("http://repository"), createProperty("http://purl.org/dc/terms/type"), "repository");
+            
+        
+        //When
+        SolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertThat("Expected repository to be EIDC", index.getRepository(), contains("EIDC"));
+        
     }
 
 }
