@@ -1,10 +1,28 @@
 <#if modelLinks??>
   <#list modelLinks>
-  <h3>Models</h3>
-  <ul class="list-unstyled">
-  <#items as model>
-    <li><a href="${model.href}">${model.title}</a></li>
-  </#items>
-  </ul>
+  <div class="panel panel-default" id="document-children">
+    <div class="panel-heading">
+      <p class="panel-title">Models</p>
+    </div>
+    <div class="panel-body">
+    <#items as model>
+      <p><a href="${model.href?html}">${model.title?html}</a></p>
+    </#items>
+    </div>
+  </div>
+  </#list>
+</#if>
+<#if modelApplicationLinks??>
+  <#list modelApplicationLinks>
+  <div class="panel panel-default" id="document-children">
+    <div class="panel-heading">
+      <p class="panel-title">Model Applications</p>
+    </div>
+    <div class="panel-body">
+    <#items as modelApplication>
+      <p><a href="${modelApplication.href?html}">${modelApplication.title?html}</a></p>
+    </#items>
+    </div>
+  </div>
   </#list>
 </#if>

@@ -64,5 +64,11 @@
   ],
   "partOfRepository": [
     "5b4d0ee4-49ed-4fb4-b2f6-e390ef42c00c"
+  ],
+  "modelApplications": [
+    {
+      "href": "/documents/imp-app-9204-ad6858a3f438",
+      "title": "Effectiveness of pollution control measures under scenarios of future climate and land cover change at the catchment scale"
+    }
   ]
 }
