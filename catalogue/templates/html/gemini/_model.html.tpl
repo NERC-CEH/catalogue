@@ -1,6 +1,6 @@
 <#if modelLinks??>
   <#list modelLinks>
-  <div class="panel panel-default" id="document-children">
+  <div class="panel panel-default">
     <div class="panel-heading">
       <p class="panel-title">Models</p>
     </div>
@@ -14,7 +14,7 @@
 </#if>
 <#if modelApplicationLinks??>
   <#list modelApplicationLinks>
-  <div class="panel panel-default" id="document-children">
+  <div class="panel panel-default">
     <div class="panel-heading">
       <p class="panel-title">Model Applications</p>
     </div>

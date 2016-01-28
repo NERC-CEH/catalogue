@@ -1,5 +1,5 @@
 <#if children?? && children?size gt 0>
-  <div class="panel panel-default" id="document-children">
+  <div class="panel panel-default">
     <div class="panel-heading">
       <p class="panel-title">This data series comprises the following datasets</p>
     </div>
@@ -11,7 +11,7 @@
   </div>
 </#if>
 <#if parent?has_content>
-  <div class="panel panel-default" id="document-children">
+  <div class="panel panel-default">
     <div class="panel-heading">
       <p class="panel-title">This ${resourceType.value?html} is part of the series</p>
     </div>
