@@ -81,7 +81,7 @@ define [
     name = $target.data('name')
     value = $target.val()
 
-    if _.contains(['title', 'date'], name)
+    if _.contains(['title', 'date', 'dateType'], name)
       thesaurus = _.clone @model.get 'thesaurusName'
       if value
         thesaurus[name] = value
