@@ -521,8 +521,8 @@ define [
               'function': 'information'
             'Online Ordering':
               url: 'https://catalogue.ceh.ac.uk/download?fileIdentifier={fileIdentifier}'
-              name: 'Online ordering'
-              description: 'Order a copy of this dataset'
+              name: 'Download the data'
+              description: 'Download a copy of this data'
               'function': 'order'
           helpText: """
                     <p>Links to web services to access the data and websites which provide additional information about the resource.</p>
