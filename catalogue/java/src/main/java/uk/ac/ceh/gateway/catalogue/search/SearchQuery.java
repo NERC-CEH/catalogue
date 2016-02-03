@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import com.google.common.collect.Lists;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
@@ -57,20 +57,41 @@ public class SearchQuery {
         this.facetFilters = facetFilters;
         this.groupStore = groupStore;
         this.featureToggle = featureToggle;
+        this.facets = setFacets(facetFilters);
+    }
+    
+    private List<Facet> setFacets(List<FacetFilter> facetFilters) {
+        List<Facet> requiredFacets;
         
-        List<Facet> newFacets  = new ArrayList(Arrays.asList(
-            Facet.builder().fieldName("repository").displayName("Repository").hierarchical(false).build(),
-            Facet.builder().fieldName("topic").displayName("Topic").hierarchical(true).build(),
-            Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
-            Facet.builder().fieldName("licence").displayName("Licence").hierarchical(false).build()
-        ));
+        String value = facetFilters
+            .stream()
+            .filter(ff -> {
+                return ff.getField().equals("repository");
+            })
+            .findFirst()
+            .orElse(new FacetFilter("repository", "none"))
+            .getValue();
         
-        if (featureToggle.isImpFacetsEnabled()) {
-            newFacets.add(1, Facet.builder().fieldName("impBroaderCatchmentIssues").displayName("Broader Catchment Issues").hierarchical(false).build());
-            newFacets.add(2, Facet.builder().fieldName("impScale").displayName("Scale").hierarchical(false).build());
-            newFacets.add(3, Facet.builder().fieldName("impWaterQuality").displayName("Water Quality").hierarchical(false).build());
+        switch (value) {
+            
+            case "Catchment Management Platform": requiredFacets = Lists.newArrayList(
+                    Facet.builder().fieldName("repository").displayName("Repository").hierarchical(false).build(),
+                    Facet.builder().fieldName("impBroaderCatchmentIssues").displayName("Broader Catchment Issues").hierarchical(false).build(),
+                    Facet.builder().fieldName("impScale").displayName("Scale").hierarchical(false).build(),
+                    Facet.builder().fieldName("impWaterQuality").displayName("Water Quality").hierarchical(false).build()
+                );
+                break;
+            
+            default: requiredFacets = Lists.newArrayList(
+                    Facet.builder().fieldName("repository").displayName("Repository").hierarchical(false).build(),
+                    Facet.builder().fieldName("topic").displayName("Topic").hierarchical(true).build(),
+                    Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
+                    Facet.builder().fieldName("licence").displayName("Licence").hierarchical(false).build()
+                );
+                break;
         }
-        this.facets = newFacets;
+        
+        return requiredFacets;
     }
 
     private SearchQuery(List<Facet> facets, String endpoint, CatalogueUser user, String term, String bbox, SpatialOperation spatialOperation, int page, int rows, List<FacetFilter> facetFilters, GroupStore<CatalogueUser> groupStore, FeatureToggle featureToggle) {

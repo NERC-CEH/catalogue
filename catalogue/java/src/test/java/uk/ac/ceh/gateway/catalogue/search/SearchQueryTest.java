@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,9 +9,12 @@ import org.apache.solr.client.solrj.SolrQuery;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasItemInArray;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -407,7 +411,7 @@ public class SearchQueryTest {
     @Test
     public void checkThatContainsFilterDelegatesToList() {
         //Given
-        List<FacetFilter> filters = spy(new ArrayList<FacetFilter>());
+        List<FacetFilter> filters = Arrays.asList(new FacetFilter("hey", "lo"));
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -427,7 +431,7 @@ public class SearchQueryTest {
         query.containsFacetFilter(filter);
         
         //Then
-        verify(filters).contains(filter);
+        assertThat(filters.contains(filter), is(true));
     }
     
     @Test
@@ -531,8 +535,8 @@ public class SearchQueryTest {
     }
     
     @Test
-    public void impFacetsAddedToQuery() {
-        //Given        
+    public void impFacetsConfigured() {
+        //Given          
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -541,7 +545,7 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            DEFAULT_FILTERS,
+            Arrays.asList(new FacetFilter("repository","Catchment Management Platform")),
             groupStore,
             FeatureToggle.builder().impFacetsEnabled(true).build()
         );
@@ -550,14 +554,7 @@ public class SearchQueryTest {
         List<Facet> actual = query.getFacets();
         
         //Then
-        assertThat("impScale should be added to facets",
-            actual,
-            hasItem(Facet.builder()
-                .fieldName("impScale")
-                .displayName("Scale")
-                .hierarchical(false)
-                .build()
-            )
-        );
+        assertThat("Should be 4 facets", actual.size(), is(4));
+        assertThat("Second facet should be Broader Catachment issues", actual.get(1).getFieldName(), is("impBroaderCatchmentIssues"));
     }
 }
