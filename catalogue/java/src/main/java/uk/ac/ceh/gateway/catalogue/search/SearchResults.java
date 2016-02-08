@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -18,26 +19,46 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 @ConvertUsing({
     @Template(called = "/html/search.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
-@AllArgsConstructor
+@Value
 @Slf4j
 public class SearchResults {
-    private final QueryResponse response;
-    private final SearchQuery query;
-    
-    public long getNumFound() {
-        return response.getResults().getNumFound();
+
+    private final long numFound;
+    private final String term;
+    private final int page;
+    private final int rows;
+    private final String url;
+    private final String withoutBbox;
+    private final String intersectingBbox;
+    private final String withinBbox;
+    private final String prevPage;
+    private final String nextPage;
+    private final List<SolrIndex> results;
+    private final List<Facet> facets;
+
+    public SearchResults(QueryResponse response, SearchQuery query) {
+        checkNotNull(response);
+        checkNotNull(query);
+        this.numFound = populateNumFound(response);
+        this.term = query.getTermNotDefault();
+        this.page = query.getPage();
+        this.rows = query.getRows();
+        this.url = query.toUrl();
+        this.withoutBbox = populateWithoutBbox(query);
+        this.intersectingBbox = populateIntersectingBbox(query);
+        this.withinBbox = populateWithinBbox(query);
+        this.prevPage = populatePrevPage(query);
+        this.nextPage = populateNextPage(query);
+        this.results = response.getBeans(SolrIndex.class);
+        this.facets = populateFacets(response, query);
     }
     
-    public String getTerm() {
-        return query.getTermNotDefault();
-    }
-    
-    public int getPage() {
-        return query.getPage();
-    }
-    
-    public int getRows() {
-        return query.getRows();
+    private long populateNumFound(QueryResponse response) {
+        if (response.getResults() != null) {
+            return response.getResults().getNumFound();
+        } else {
+            return 0L;
+        }
     }
     
     /**
@@ -45,8 +66,8 @@ public class SearchResults {
      * first page.
      * @return url to the previous page or null.
      */
-    public String getPrevPage() {
-        if(getPage() != 1) {
+    private String populatePrevPage(SearchQuery query) {
+        if(page != 1) {
             return query.withPage(getPage() - 1).toUrl();
         }
         else {
@@ -58,8 +79,8 @@ public class SearchResults {
      * Return a link to the next page as long as there is a page to go to.
      * @return A link to the next page if there is one to go to.
      */
-    public String getNextPage() {
-        if(getNumFound() > getPage() * getRows()) {
+    private String populateNextPage(SearchQuery query) {
+        if(numFound > page * rows) {
             return query.withPage(getPage() + 1).toUrl();
         }
         else {
@@ -72,7 +93,7 @@ public class SearchResults {
      * filter
      * @return url to a search without the bbox component
      */
-    public String getWithoutBbox() {
+    private String populateWithoutBbox(SearchQuery query) {
         if(query.getBbox() != null) {
             return query.withBbox(null).toUrl();
         }
@@ -81,7 +102,7 @@ public class SearchResults {
         }
     }
     
-    public String getIntersectingBbox() {
+    private String populateIntersectingBbox(SearchQuery query) {
         if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.INTERSECTS) {
             return query.withSpatialOperation(SpatialOperation.INTERSECTS).toUrl();
         }
@@ -90,7 +111,7 @@ public class SearchResults {
         }
     }
     
-    public String getWithinBbox() {
+    private String populateWithinBbox(SearchQuery query) {
         if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.ISWITHIN) {
             return query.withSpatialOperation(SpatialOperation.ISWITHIN).toUrl();
         }
@@ -99,32 +120,24 @@ public class SearchResults {
         }
     }
     
-    public String getUrl() {
-        return query.toUrl();
-    }
-    
-    public List<SolrIndex> getResults() {
-        return response.getBeans(SolrIndex.class);
-    }
-    
-    public List<Facet> getFacets(){
-        List<Facet> facets = query.getFacets();
-       
-        facets.forEach((facet) -> {
+    private List<Facet> populateFacets(QueryResponse response, SearchQuery query){
+        List<Facet> newFacets = query.getFacets();
+
+        newFacets.forEach((facet) -> {
             FacetField facetField = response.getFacetField(facet.getFieldName());
             if (facetField != null) {
                 if (facet.isHierarchical()) {
-                    facet.getResults().addAll(getHierarchicalFacetResults(facetField, "0/"));
+                    facet.getResults().addAll(getHierarchicalFacetResults(query, facetField, "0/"));
                 } else {
-                    facet.getResults().addAll(getFacetResults(facetField));
+                    facet.getResults().addAll(getFacetResults(query, facetField));
                 }
             }
         });
-        
-        return facets;
+        log.debug("populate facets: {}", newFacets);
+        return newFacets;
     }
 
-    private List<FacetResult> getFacetResults(FacetField facetField) {
+    private List<FacetResult> getFacetResults(SearchQuery query, FacetField facetField) {
         return facetField.getValues().stream()
             .map(count -> {
                 String field = facetField.getName();
@@ -141,14 +154,14 @@ public class SearchResults {
             .collect(Collectors.toList());
     }
     
-    private List<FacetResult> getHierarchicalFacetResults(FacetField facetField, String prefix) {
+    private List<FacetResult> getHierarchicalFacetResults(SearchQuery query, FacetField facetField, String prefix) {
         return facetField.getValues().stream()
             .filter(c -> c.getName().startsWith(prefix))
-            .map(c -> getFacetResultFromCount(c))
+            .map(c -> getFacetResultFromCount(query, c))
             .collect(Collectors.toList());
     }
     
-    private FacetResult getFacetResultFromCount(FacetField.Count count) {
+    private FacetResult getFacetResultFromCount(SearchQuery query, FacetField.Count count) {
         String name = count.getName();
         FacetFilter filter = new FacetFilter(count.getFacetField().getName(), name);
         boolean active = query.containsFacetFilter(filter);
@@ -157,7 +170,7 @@ public class SearchResults {
             .count(count.getCount())
             .active(active)
             .url(((active) ? query.withoutFacetFilter(filter) : query.withFacetFilter(filter)).toUrl())
-            .subFacetResults(getHierarchicalFacetResults(count.getFacetField(), getChildName(name)))
+            .subFacetResults(getHierarchicalFacetResults(query, count.getFacetField(), getChildName(name)))
             .build();
     }
     

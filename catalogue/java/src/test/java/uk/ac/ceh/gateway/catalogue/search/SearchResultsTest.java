@@ -1,8 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
@@ -14,9 +12,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import static org.mockito.BDDMockito.given;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
@@ -35,116 +32,19 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         QueryResponse response = mock(QueryResponse.class);
-        
-        FacetField topic = new FacetField("topic");
-        topic.add("0/Climate/", 5);
-        topic.add("1/Climate/Climate change/", 2);
-        topic.add("1/Climate/Meteorology/", 2);
-        topic.add("2/Climate/Meteorology/Medium term forecast/", 1);
-        topic.add("0/Modelling/", 8);
-        topic.add("1/Modelling/Integrated ecosystem modelling/", 3);
-        topic.add("0/Soil/", 5);
-        
-        FacetField resouceType = new FacetField("resouceType");
-        resouceType.add("dataset", 3);
-        resouceType.add("service", 12);
-        
-        given(response.getFacetField("topic")).willReturn(topic);
-        given(response.getFacetField("resourceType")).willReturn(resouceType);
-        
-        List<Facet> expected = Arrays.asList(
-            Facet.builder()
-                .fieldName("repository")
-                .displayName("Repository")
-                .build(),
-            Facet.builder()
-                .fieldName("topic")
-                .displayName("Topic")
-                .hierarchical(true)
-                .results(Arrays.asList(
-                    FacetResult.builder()
-                        .name("Climate")
-                        .url("http://catalogue.com/documents?facet=topic|0%2FClimate%2F")
-                        .active(false)
-                        .count(5)
-                        .subFacetResults(Arrays.asList(
-                            FacetResult.builder()
-                                .name("Climate change")
-                                .url("http://catalogue.com/documents?facet=topic|1%2FClimate%2FClimate+change%2F")
-                                .active(false)
-                                .count(2)
-                                .build(),
-                            FacetResult.builder()
-                                .name("Meteorology")
-                                .url("http://catalogue.com/documents?facet=topic|1%2FClimate%2FMeteorology%2F")
-                                .active(false)
-                                .count(2)
-                                .subFacetResults(Arrays.asList(
-                                    FacetResult.builder()
-                                        .name("Medium term forecast")
-                                        .url("http://catalogue.com/documents?facet=topic|2%2FClimate%2FMeteorology%2FMedium+term+forecast%2F")
-                                        .active(false)
-                                        .count(1)
-                                        .build()
-                                ))
-                                .build()
-                        ))
-                        .build(),
-                    FacetResult.builder()
-                        .name("Modelling")
-                        .url("http://catalogue.com/documents?facet=topic|0%2FModelling%2F")
-                        .active(false)
-                        .count(8)
-                        .subFacetResults(Arrays.asList(
-                            FacetResult.builder()
-                                .name("Integrated ecosystem modelling")
-                                .url("http://catalogue.com/documents?facet=topic|1%2FModelling%2FIntegrated+ecosystem+modelling%2F")
-                                .active(false)
-                                .count(3)
-                                .build()
-                        ))
-                        .build(),
-                    FacetResult.builder()
-                        .name("Soil")
-                        .url("http://catalogue.com/documents?facet=topic|0%2FSoil%2F")
-                        .active(false)
-                        .count(5)
-                        .build()
-                ))
-                .build(),
-            Facet.builder()
-                .fieldName("resourceType")
-                .displayName("Resource type")
-                .results(Arrays.asList(
-                    FacetResult.builder()
-                        .name("dataset")
-                        .url("http://catalogue.com/documents?facet=resouceType|dataset")
-                        .active(false)
-                        .count(3)
-                        .build(),
-                    FacetResult.builder()
-                        .name("service")
-                        .url("http://catalogue.com/documents?facet=resouceType|service")
-                        .active(false)
-                        .count(12)
-                        .build()))
-                .build(),
-            Facet.builder()
-                .fieldName("licence")
-                .displayName("Licence")
-                .build()
-        );
+        given(response.getFacetField("repository")).willReturn(new FacetField("repository"));
                 
         //When
-        List<Facet> actual = new SearchResults(response, query).getFacets();
+        new SearchResults(response, query).getFacets();
         
         //Then
-       assertThat("Actual Facets should equal expected", actual, equalTo(expected)); 
+        verify(response).getFacetField("repository");
+        verify(response).getFacetField("resourceType");
+        verify(response).getFacetField("licence");
     }
 
     @Test
@@ -159,8 +59,7 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -194,8 +93,7 @@ public class SearchResultsTest {
             2,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -220,8 +118,7 @@ public class SearchResultsTest {
             1,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -246,16 +143,16 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         QueryResponse response = mock(QueryResponse.class);
-        SearchResults results = spy(new SearchResults(response, query));
-        doReturn(30L).when(results).getNumFound();
+        SolrDocumentList solrDocumentList = mock(SolrDocumentList.class);
+        given(response.getResults()).willReturn(solrDocumentList);
+        given(solrDocumentList.getNumFound()).willReturn(30L);
         
         //When
-        String pageUrl = results.getNextPage();
+        String pageUrl = new SearchResults(response, query).getNextPage();
         
         //Then
         assertNull("Expected to not get a page url", pageUrl);
@@ -273,16 +170,16 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         QueryResponse response = mock(QueryResponse.class);
-        SearchResults results = spy(new SearchResults(response, query));
-        doReturn(50L).when(results).getNumFound();
+        SolrDocumentList solrDocumentList = mock(SolrDocumentList.class);
+        given(response.getResults()).willReturn(solrDocumentList);
+        given(solrDocumentList.getNumFound()).willReturn(50L);
         
         //When
-        String pageUrl = results.getNextPage();
+        String pageUrl = new SearchResults(response, query).getNextPage();
         
         //Then
         assertNotNull("Expected to not get a page url", pageUrl);
@@ -301,8 +198,7 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         //When
@@ -326,8 +222,7 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         //When
@@ -352,8 +247,7 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         
@@ -379,8 +273,7 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         
@@ -405,8 +298,7 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         
@@ -432,8 +324,7 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         
@@ -459,8 +350,7 @@ public class SearchResultsTest {
             page,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore,
-            SearchQueryTest.featureToggle
+            groupStore
         );
         
         //When

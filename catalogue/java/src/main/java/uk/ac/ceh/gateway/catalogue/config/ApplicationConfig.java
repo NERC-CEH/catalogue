@@ -21,7 +21,6 @@ import uk.ac.ceh.components.userstore.UsernameAlreadyTakenException;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
-import uk.ac.ceh.gateway.catalogue.util.FeatureToggle;
 
 /**
  *
@@ -30,18 +29,10 @@ import uk.ac.ceh.gateway.catalogue.util.FeatureToggle;
 @Configuration
 public class ApplicationConfig {
     @Value("${data.repository.location}") private String dataRespository;
-    @Value("${toggle.impFacetsEnabled:false}") private boolean impFacetsEnabled;
     
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
-    }
-    
-    @Bean
-    public FeatureToggle featureToggle() {
-        return FeatureToggle.builder()
-            .impFacetsEnabled(impFacetsEnabled)
-            .build();
     }
     
     @Bean
