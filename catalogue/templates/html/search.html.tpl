@@ -20,7 +20,7 @@
     <div class="results"><#include "search/_page.html.tpl"></div>
     <form class="search-form" action="/${docroot}" method="get">
       <div class="input-group">
-        <input placeholder="Search the catalogue" name="term" type="text" class="form-control">
+        <input placeholder="Search the catalogue" name="term" type="text" autocomplete="off" class="form-control">
         <div class="input-group-btn">
           <button tabindex="-1" class="btn btn-success" type="button">
             <span class="glyphicon glyphicon-search"></span>
