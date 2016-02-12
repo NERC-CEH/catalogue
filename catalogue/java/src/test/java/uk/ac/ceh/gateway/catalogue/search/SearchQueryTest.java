@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +10,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -210,8 +210,7 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             Arrays.asList(
-                new FacetFilter("resourceType","dataset"),
-                new FacetFilter("topic","0/Climate/")),
+                new FacetFilter("resourceType","dataset")),
             groupStore
         );
         //When
@@ -220,7 +219,6 @@ public class SearchQueryTest {
         //Then
         assertThat("Solr query should be the default text", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
         assertThat("Solr query should have resourceType filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=resourceType}dataset"));
-        assertThat("Solr query should have topic filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=topic}0/Climate/"));
     }
     
     @Test(expected=IllegalArgumentException.class)
@@ -321,7 +319,7 @@ public class SearchQueryTest {
     @Test
     public void checkThatWithoutFacetReturnsToFirstPage() {
         //Given
-        FacetFilter filter = new FacetFilter("what", "ever");
+        FacetFilter filter = new FacetFilter("licence", "ever");
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -344,7 +342,7 @@ public class SearchQueryTest {
     @Test
     public void checkThatWithFacetFilterAddsNewFilter() {
         //Given
-        FacetFilter filter = new FacetFilter("what", "ever");
+        FacetFilter filter = new FacetFilter("licence", "open");
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -423,7 +421,7 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             24,
             30,
-            Arrays.asList(new FacetFilter("a","b")),
+            Arrays.asList(new FacetFilter("licence","b")),
             groupStore
         );
         
@@ -436,7 +434,7 @@ public class SearchQueryTest {
         assertThat("OP should be present", url, containsString("op=IsWithin"));
         assertThat("page should be specified", url, containsString("page=24"));
         assertThat("rows should be present", url, containsString("rows=30"));
-        assertThat("facet should be filtered", url, containsString("facet=a|b"));
+        assertThat("facet should be filtered", url, containsString("facet=licence|b"));
         assertThat("endpoint should be defined ", url, startsWith("http://my.endpo.int?"));
     }
     
@@ -519,7 +517,11 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            Arrays.asList(new FacetFilter("repository","Catchment Management Platform")),
+            new ArrayList(
+                Arrays.asList(
+                    new FacetFilter("repository","Catchment Management Platform")
+                )
+            ),
             groupStore
         );
         
@@ -528,6 +530,47 @@ public class SearchQueryTest {
         
         //Then
         assertThat("Should be 6 facets", actual.size(), is(6));
-        assertThat("Second facet should be Broader Catachment issues", actual.get(1).getFieldName(), is("impBroaderCatchmentIssues"));
+        assertThat("Second facet should be Broader Catachment issues",
+            actual.get(1).getFieldName(),
+            is("impBroaderCatchmentIssues")
+        );
+    }
+    
+    @Test
+    public void cannotAddFilterQueryForNonExistentFacet() {
+        //Given  
+
+        FacetFilter facetFilterForNonExistentFacet
+            = new FacetFilter("unknown","something");
+        
+        FacetFilter facetFilterForKnownFacet
+            = new FacetFilter("repository","Catchment Management Platform");
+        
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            new ArrayList(
+                Arrays.asList(
+                    facetFilterForNonExistentFacet,
+                    facetFilterForKnownFacet
+                )
+            ),
+            groupStore
+        );
+        
+        //When
+        List<FacetFilter> actual = query.getFacetFilters();
+        
+        //Then
+        assertThat("Should be one facet filter", actual.size(), is(1));
+        assertThat("Known facet filter should be present",
+            actual,
+            contains(facetFilterForKnownFacet)
+        );
     }
 }

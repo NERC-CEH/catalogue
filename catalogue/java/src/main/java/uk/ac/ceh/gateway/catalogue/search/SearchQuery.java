@@ -54,9 +54,37 @@ public class SearchQuery {
         this.spatialOperation = spatialOperation;
         this.page = page;
         this.rows = rows;
-        this.facetFilters = facetFilters;
+        this.facetFilters = new ArrayList(facetFilters);
         this.groupStore = groupStore;
         this.facets = populateFacets(facetFilters);
+        removeFacetFiltersOfUndisplayedFacets();
+    }
+
+    private void removeFacetFiltersOfUndisplayedFacets() {
+        /* 
+        Prevent filter query being applied for a field that is not being used 
+        as a facet. 
+        
+        Facets appear and disappear on the search UI dependent on which
+        Repository is selected. A filter query on a facet field that is no
+        longer displayed causes confusion as a hidden filter is being applied.
+        */
+        List<String> facetFieldNames 
+            = facets
+                .stream()
+                .map(Facet::getFieldName)
+                .collect(Collectors.toList());
+        
+        List<FacetFilter> toRemove 
+            = facetFilters
+                .stream()
+                .filter(ff -> {
+                    return !facetFieldNames.contains(ff.getField());
+
+                })
+                .collect(Collectors.toList());
+        
+        facetFilters.removeAll(toRemove);
     }
     
     private List<Facet> standardFacets() {
@@ -91,8 +119,6 @@ public class SearchQuery {
             .forEach(ff -> {
                 toReturn.addAll(1, repositoryFacets.get(ff.getValue()));
             });
-        
-        log.debug("facets: {}", facets);
         return toReturn;
     }
        
@@ -191,9 +217,11 @@ public class SearchQuery {
         if(containsFacetFilter(filter) ) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.remove(filter);
+            log.debug("without facetFilter: {}", newFacetFilters);
             return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore);
         }
         else {
+            log.debug("without facet Filter, returned this: {}", this);
             return this;
         }
     }
