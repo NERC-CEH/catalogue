@@ -11,7 +11,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 80, host: 8080, auto_correct: true
   config.vm.network :forwarded_port, guest: 7000, host: 7000, auto_correct: true
 
-  config.vm.synced_folder ".", "/opt/ceh-catalogue"
+  config.vm.synced_folder ".", "/opt/ceh-catalogue", mount_options: ['dmode=777', 'fmode=777']
 
   config.vm.provision :shell, :path => "shell/librarian.sh"
   config.vm.provision :shell, :path => "shell/test-data.sh", run: "always"
