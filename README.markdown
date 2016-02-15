@@ -115,4 +115,4 @@ The vagrant box can be functionally tested using capybara and selenium. The test
 ### Updating test metadata records
 Test metadata records are available in the /fixtures directory. When changes are made to these test documents they need to be loaded into the vagrant datastore.
 
-    vagrant provision
+    sh shell/quick-reload.sh
