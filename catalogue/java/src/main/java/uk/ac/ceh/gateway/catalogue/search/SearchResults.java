@@ -20,7 +20,6 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
     @Template(called = "/html/search.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 @Value
-@Slf4j
 public class SearchResults {
 
     private final long numFound;
@@ -133,7 +132,6 @@ public class SearchResults {
                 }
             }
         });
-        log.debug("populate facets: {}", newFacets);
         return newFacets;
     }
 
@@ -183,8 +181,6 @@ public class SearchResults {
     private String getName(String name) {
         int last = name.length() - 1;
         int i = name.lastIndexOf("/", last - 1) + 1;
-        String toReturn = name.substring(i, last);
-        log.debug("name: {}, length: {}, last: {}, i: {}, return: {}", name, name.length(), last, i, toReturn);
-        return toReturn;
+        return name.substring(i, last);
     }
 }

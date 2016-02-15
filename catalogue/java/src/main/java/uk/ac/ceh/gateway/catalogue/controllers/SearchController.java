@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.util.List;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -22,7 +21,6 @@ import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
 import uk.ac.ceh.gateway.catalogue.search.SpatialOperation;
 
 @Controller
-@Slf4j
 public class SearchController {
     public static final String PAGE_DEFAULT_STRING = "1";
     public static final String ROWS_DEFAULT_STRING = "20";
@@ -70,15 +68,12 @@ public class SearchController {
             facetFilters,
             groupStore
         );
-        log.debug("query: {}", searchQuery);
-        SearchResults results = new SearchResults(
+        return new SearchResults(
             solrServer.query(
                 searchQuery.build(),
                 SolrRequest.METHOD.POST
             ),
             searchQuery
         );
-        log.debug("Search Results: {}", results);
-        return results;
     }
 }

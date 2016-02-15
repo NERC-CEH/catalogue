@@ -217,11 +217,9 @@ public class SearchQuery {
         if(containsFacetFilter(filter) ) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.remove(filter);
-            log.debug("without facetFilter: {}", newFacetFilters);
             return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore);
         }
         else {
-            log.debug("without facet Filter, returned this: {}", this);
             return this;
         }
     }
