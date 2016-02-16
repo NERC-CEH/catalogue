@@ -12,3 +12,4 @@ webdriver*
 .idea
 *~
 rspec_screenshots/
+**/nbproject/**

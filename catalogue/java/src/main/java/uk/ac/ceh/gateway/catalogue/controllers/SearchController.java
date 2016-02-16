@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.util.List;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -20,10 +19,8 @@ import uk.ac.ceh.gateway.catalogue.search.FacetFilter;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
 import uk.ac.ceh.gateway.catalogue.search.SpatialOperation;
-import uk.ac.ceh.gateway.catalogue.util.FeatureToggle;
 
 @Controller
-@Slf4j
 public class SearchController {
     public static final String PAGE_DEFAULT_STRING = "1";
     public static final String ROWS_DEFAULT_STRING = "20";
@@ -41,13 +38,11 @@ public class SearchController {
     
     private final SolrServer solrServer;
     private final GroupStore<CatalogueUser> groupStore;
-    private final FeatureToggle featureToggle;
       
     @Autowired
-    public SearchController(SolrServer solrServer, GroupStore<CatalogueUser> groupStore, FeatureToggle featureToggle){
+    public SearchController(SolrServer solrServer, GroupStore<CatalogueUser> groupStore){
         this.solrServer = Objects.requireNonNull(solrServer);
         this.groupStore = Objects.requireNonNull(groupStore);
-        this.featureToggle = featureToggle;
     }
     
     @RequestMapping(value = "documents",
@@ -71,10 +66,8 @@ public class SearchController {
             page,
             rows,
             facetFilters,
-            groupStore,
-            featureToggle
+            groupStore
         );
-        log.debug("query: {}", searchQuery);
         return new SearchResults(
             solrServer.query(
                 searchQuery.build(),
