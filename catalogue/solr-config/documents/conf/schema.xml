@@ -16,7 +16,7 @@
       <field name="licence" type="keyword" indexed="true" stored="true" multiValued="false"/>
       <field name="state" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="topic" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
-      <field name="keyword" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="keyword" type="keyword_lowercase" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="view" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="locations" type="spatial" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="dataCentre" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
@@ -31,9 +31,14 @@
         <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
         <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
         <fieldType name="random" class="solr.RandomSortField"/>
+        <fieldType name="keyword_lowercase" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+            <analyzer>
+                <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+            </analyzer>
+        </fieldType> 
         <fieldType name="keyword" class="solr.TextField" sortMissingLast="true" omitNorms="true">
             <analyzer>
-                <tokenizer class="solr.KeywordTokenizerFactory"/>           
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
             </analyzer>
         </fieldType> 
         <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">

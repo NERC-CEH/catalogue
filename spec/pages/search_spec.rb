@@ -22,5 +22,11 @@ describe "Search page" do
       click_on 'Previous'
       expect(page).not_to have_content results
     end
+    
+    it 'should find record when doing case-insesitive search for pollution keyword' do
+      visit '/documents?term=keyword%3Apollution'
+      result = first('.result .title').text
+      expect(result).to have_content 'Natural radionuclide concentrations in soil, water and sediments in England and Wales'
+    end
   end
 end
