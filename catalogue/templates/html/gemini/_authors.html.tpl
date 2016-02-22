@@ -22,7 +22,7 @@
           </#if>
         </#if>
         <#if author.orcid?has_content>
-        <div class="orchid">ORCID: <a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank">${author.orcid?html}</a></div>
+        <div class="orchid"><a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank"><img src="\static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD"> http://orcid.org/${author.orcid?html}</a></div>
         </#if>
         <#if author.address?has_content>
           <div class="postalAddress hidden-xs">
