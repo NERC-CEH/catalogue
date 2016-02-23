@@ -113,7 +113,6 @@ import uk.ac.ceh.gateway.catalogue.services.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
-import uk.ac.ceh.gateway.catalogue.services.ShortDoiService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
@@ -152,11 +151,6 @@ public class ServiceConfig {
     @Bean
     public CitationService citationService() {
         return new CitationService();
-    }
-    
-    @Bean
-    public ShortDoiService shortDoiService() {
-        return new ShortDoiService();
     }
     
     @Bean

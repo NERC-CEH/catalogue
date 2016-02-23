@@ -23,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.ShortDoiService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -37,18 +36,15 @@ public class DataciteController {
     private final DocumentRepository repo;
     private final DocumentIdentifierService identifierService;
     private final DataciteService dataciteService;
-    private final ShortDoiService doiShortenerService;
     
     
     @Autowired
     public DataciteController(DocumentRepository repo,
                               DocumentIdentifierService identifierService,
-                              DataciteService dataciteService,
-                              ShortDoiService doiShortenerService) {
+                              DataciteService dataciteService) {
         this.repo = repo;
         this.identifierService = identifierService;
         this.dataciteService = dataciteService;
-        this.doiShortenerService = doiShortenerService;
     }
         
     @RequestMapping(value    = "documents/{file}/datacite.xml",
@@ -68,19 +64,7 @@ public class DataciteController {
 
         ResourceIdentifier doi = dataciteService.generateDoi(geminiDocument);
         geminiDocument.getResourceIdentifiers().add(doi);
-        try {
-            //By this point we have been successful in generating a DOI for the record.
-            //If possible, we want to generate a shortDoi and attach this to the record
-            //as well. If that fails, still save the metadata record
-            ResourceIdentifier shortDoi = doiShortenerService.shortenDoi(doi.getCode());
-            geminiDocument.getResourceIdentifiers().add(shortDoi);
-        }
-        catch(RestClientException ex) {
-            return new ErrorResponse("The record has had a DOI added, but we failed to add a short doi: " + ex.getMessage());
-        }
-        finally {
-            repo.save(user, geminiDocument, file, String.format("datacite Gemini document: %s", file));
-        }
+        repo.save(user, geminiDocument, file, String.format("datacite Gemini document: %s", file));
         return new RedirectView(identifierService.generateUri(file));
     }
     
