@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import java.util.Arrays;
 import java.util.List;
 import static org.hamcrest.Matchers.equalTo;
@@ -18,6 +19,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+import static com.hp.hpl.jena.rdf.model.ResourceFactory.*;
+import java.net.URI;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.contains;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
@@ -63,28 +66,6 @@ public class SolrIndexGeminiDocumentGeneratorTest {
             Keyword.builder()
                 .URI("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
                 .build(),
-            Keyword.builder()
-                .URI("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
-                .build(),
-            Keyword.builder()
-                .value("More use limitations")
-                .build()
-        ));
-        when(document.getId()).thenReturn("123");
-        when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
-        
-        //When
-        SolrIndex index = generator.generateIndex(document);
-        
-        //Then
-        assertEquals("Expected isOgl to be true", "IS OGL", index.getLicence());
-    }
-    
-    @Test
-    public void checkThatIsOglTrueIsTransferredToIndexForOtherFormatOfUrl(){
-        //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getUseLimitations()).thenReturn(Arrays.asList(
             Keyword.builder()
                 .URI("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
                 .build(),
