@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
     private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
     private static final String CEH_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
+    private static final String OTHER_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence";
     public static final String IMP_BROADER_CATCHMENT_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/bci/";
     public static final String IMP_SCALE_URL = "http://vocabs.ceh.ac.uk/imp/scale/";
     public static final String IMP_WATER_QUALITY_URL = "http://vocabs.ceh.ac.uk/imp/wq/";
@@ -74,20 +75,20 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     }
 
     private String getLicence(GeminiDocument document){
-        boolean ogl = false;
-        List<Keyword> licences = Optional.ofNullable(document.getUseLimitations())
-            .orElse(Collections.emptyList());
-
-        for (Keyword keyword : licences) {
-            if ( !keyword.getUri().isEmpty()) {
-                String uri = keyword.getUri();
-                if (uri.startsWith(CEH_OGL_URL) || uri.startsWith(OGL_URL)) {
-                    ogl = true;
-                    break;
-                }
-            }
-        }
-        return codeLookupService.lookup("licence.isOgl", ogl);
+        return codeLookupService.lookup("licence.isOgl", hasOglLicence(document));
+    }
+    
+    private boolean hasOglLicence(GeminiDocument document) {
+        return Optional.ofNullable(document.getUseLimitations())
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter(k -> !k.getUri().isEmpty())
+            .anyMatch(k -> {
+                String uri = k.getUri();
+                return uri.startsWith(OTHER_OGL_URL)
+                    || uri.startsWith(CEH_OGL_URL)
+                    || uri.startsWith(OGL_URL);  
+            });
     }
         
     private String getDataCentre(GeminiDocument document) {
