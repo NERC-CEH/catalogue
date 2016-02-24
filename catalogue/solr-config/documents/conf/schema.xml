@@ -33,7 +33,8 @@
         <fieldType name="random" class="solr.RandomSortField"/>
         <fieldType name="keyword_lowercase" class="solr.TextField" sortMissingLast="true" omitNorms="true">
             <analyzer>
-                <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
             </analyzer>
         </fieldType> 
         <fieldType name="keyword" class="solr.TextField" sortMissingLast="true" omitNorms="true">
