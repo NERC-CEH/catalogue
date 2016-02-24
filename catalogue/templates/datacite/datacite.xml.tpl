@@ -54,7 +54,7 @@
   </#if>
   <#if doc.revisionOfIdentifier??>  
     <relatedIdentifiers>
-      <relatedIdentifier relatedIdentifierType="DOI" relationType="IsPreviousVersionOf">10.5285/${doc.revisionOfIdentifier}</relatedIdentifier>
+      <relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf">10.5285/${doc.revisionOfIdentifier}</relatedIdentifier>
     </relatedIdentifiers>
   </#if>  
   <#if doc.distributionFormats?has_content>
