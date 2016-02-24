@@ -52,6 +52,11 @@
     </#list>
   </alternateIdentifiers>
   </#if>
+  <#if doc.revisionOfIdentifier??>  
+    <relatedIdentifiers>
+      <relatedIdentifier relatedIdentifierType="DOI" relationType="IsPreviousVersionOf">10.5285/${doc.revisionOfIdentifier}</relatedIdentifier>
+    </relatedIdentifiers>
+  </#if>  
   <#if doc.distributionFormats?has_content>
   <formats>
     <#list doc.distributionFormats as format>

@@ -9,6 +9,6 @@
    </#if>
 
    (${citation.year?c})<br>
-	  <a href="${citation.url?html}">${citation.doiDisplay?html}</a>
+	  <a href="${citation.url?html}">${citation.url?html}</a>
     </small></p></div>
 </#if>

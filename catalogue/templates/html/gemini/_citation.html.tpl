@@ -2,7 +2,7 @@
   <div id="section-citation">
     <p><strong>If you reuse this data, you must cite</strong><br>
     <span id="citation-text">
-      ${citation.authors?join('; ')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. <a href="${citation.url?html}">doi:${citation.doi?html}</a>
+      ${citation.authors?join('; ')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. <a href="${citation.url?html}">${citation.url?html}</a>
     </span></p>
     
     <div class="btn-group btn-group-xs hidden-xs" title="Import this citation into your reference management software">
