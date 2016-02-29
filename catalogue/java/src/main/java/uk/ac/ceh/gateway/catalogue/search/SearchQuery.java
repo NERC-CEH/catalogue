@@ -89,7 +89,7 @@ public class SearchQuery {
     
     private List<Facet> standardFacets() {
         return new ArrayList(Arrays.asList(
-            Facet.builder().fieldName("repository").displayName("Repository").hierarchical(false).build(),
+            Facet.builder().fieldName("repository").displayName("Catalogue").hierarchical(false).build(),
             Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
             Facet.builder().fieldName("licence").displayName("Licence").hierarchical(false).build()
         ));
