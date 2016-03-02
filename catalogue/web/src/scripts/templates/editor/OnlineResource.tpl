@@ -11,6 +11,7 @@
   <div class="col-sm-3 col-lg-3">
     <select data-name="function" id="onlineResource<%= data.index %>Function" class="editor-input">
       <option value="" selected >- Select Function -</option>
+      <option value="browseGraphic">Browse Graphic</option>
       <option value="download">Download</option>
       <option value="information">Information</option>
       <option value="offlineAccess">Offline Access</option>

@@ -5,9 +5,13 @@
   <div class="col-sm-3 col-lg-3">
     <select data-name="type" class="editor-input type" id="descriptiveKeyword<%= data.index %>type">
       <option value="" selected >- Select Type -</option>
+      <option value="dataCentre">Data Centre</option>
       <option value="discipline">Discipline</button>
+      <option value="instrument">Instrument</option>
       <option value="place">Place</button>
+      <option value="project">Project</option>
       <option value="stratum">Stratum</button>
+      <option value="taxon">Taxon</option>
       <option value="temporal">Temporal</button>
       <option value="theme">Theme</button>
     </select>
