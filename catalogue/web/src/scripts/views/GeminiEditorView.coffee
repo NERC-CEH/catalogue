@@ -518,12 +518,22 @@ define [
               url: 'http://eidc.ceh.ac.uk/metadata/{fileIdentifier}/zip_export/'
               name: 'Supporting information'
               description: 'Supporting information available to assist in re-use of this dataset'
-              'function': 'information'
+              function: 'information'
             'Online Ordering':
               url: 'https://catalogue.ceh.ac.uk/download?fileIdentifier={fileIdentifier}'
               name: 'Download the data'
               description: 'Download a copy of this data'
-              'function': 'order'
+              function: 'order'
+            'Embargoed data':
+              url: 'http://eidc.ceh.ac.uk/administration-folder/tools/embargo'
+              name: 'Download the data'
+              description: 'This resource is under embargo and will be made available by {dd/mm/yyyy} at the latest'
+              function: 'order'
+            'Embargoed docs':
+              url: 'http://eidc.ceh.ac.uk/administration-folder/tools/embargo'
+              name: 'Supporting information'
+              description: 'This resource is under embargo and will be made available by {dd/mm/yyyy} at the latest'
+              function: 'information'
           helpText: """
                     <p>Links to web services to access the data and websites which provide additional information about the resource.</p>
                     """
