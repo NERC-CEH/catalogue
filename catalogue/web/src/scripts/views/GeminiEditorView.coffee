@@ -526,7 +526,7 @@ define [
               function: 'order'
             'Embargoed data':
               url: 'http://eidc.ceh.ac.uk/administration-folder/tools/embargo'
-              name: 'Download the data'
+              name: 'Online ordering'
               description: 'This resource is under embargo and will be made available by {dd/mm/yyyy} at the latest'
               function: 'order'
             'Embargoed docs':
