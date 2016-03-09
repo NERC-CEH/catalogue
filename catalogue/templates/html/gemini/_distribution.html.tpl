@@ -6,7 +6,7 @@
   <#assign viewOnMap="Preview on map">
 </#if>
 
-<#if onlineResources??>
+<#if onlineResources?? && resourceType != 'repository'>
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources)>
 
   <div class="panel panel-default hidden-print" id="document-order">
@@ -46,7 +46,7 @@
       <#if resourceType.value != 'service'>
           <#include "_formats.html.tpl">
       </#if>
-    
+
     <#include "_limitations.html.tpl">
     </div>
   </div>
