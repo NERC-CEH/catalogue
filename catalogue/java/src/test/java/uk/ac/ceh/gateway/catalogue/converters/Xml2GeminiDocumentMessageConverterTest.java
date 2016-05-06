@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceMaintenance;
 import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
@@ -477,27 +478,25 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
-    public void canGetUseLimitationsAlsoWithLinks() throws IOException {
+    public void canGetUseConstraintsAlsoWithLinks() throws IOException {
        
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("useLimitationsAnchor.xml"));
-        List<Keyword> expected = Arrays.asList(
-            Keyword.builder()
-                .URI("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
-                .value("Open Government Licence")
-                .build(),
-            Keyword.builder()
-                .value("Another Use Limitation")
+        when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
+        List<ResourceConstraint> expected = Arrays.asList(
+            ResourceConstraint.builder()
+                .uri("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
+                .value("licence")
+                .label("Licence terms and conditions apply")
                 .build()
         );
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<Keyword> actual = document.getUseLimitations();
+        List<ResourceConstraint> actual = document.getUseConstraints();
         
         //Then
-        assertThat("Actual useLimitations should equal expected", actual, equalTo(expected));
+        assertThat("Actual useConstraints should equal expected", actual, equalTo(expected));
     }
     
     @Test
@@ -506,45 +505,25 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
-        List<String> expected = Arrays.asList("copyright", "intellectualPropertyRights");
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<String> actual = document.getAccessConstraints();
-        
-        //Then
-        assertThat("Actual accessConstraints should equal expected", actual, equalTo(expected));
-    }
-    
-    @Test
-    public void canGetOtherConstraints() throws IOException {
-       
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
-        List<Keyword> expected = Arrays.asList(
-            Keyword.builder()
-                .value("limitations on public access 0")
+        List<ResourceConstraint> expected = Arrays.asList(
+            ResourceConstraint.builder()
+                .uri("http://example.com/1")
+                .value("copyright")
+                .label("description")
                 .build(),
-            Keyword.builder()
-                .value("lopa2")
-                .build(),
-            Keyword.builder()
-                .URI("http://example.com/1")
-                .value("description")
-                .build(),
-            Keyword.builder()
-                .URI("http://example.com/2")
-                .value("2")
+            ResourceConstraint.builder()
+                .uri("http://example.com/2")
+                .value("intellectualPropertyRights")
+                .label("limitations on public access")
                 .build()
         );
         
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<Keyword> actual = document.getOtherConstraints();
+        List<ResourceConstraint> actual = document.getAccessConstraints();
         
         //Then
-        assertThat("Actual otherConstraints should equal expected", actual, equalTo(expected));
+        assertThat("Actual accessConstraints should equal expected", actual, equalTo(expected));
     }
     
     @Test

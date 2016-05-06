@@ -79,7 +79,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     }
     
     private boolean hasOglLicence(GeminiDocument document) {
-        return Optional.ofNullable(document.getUseLimitations())
+        return Optional.ofNullable(document.getUseConstraints())
             .orElse(Collections.emptyList())
             .stream()
             .filter(k -> !k.getUri().isEmpty())

@@ -21,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.contains;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 
 /**
  *
@@ -59,14 +60,14 @@ public class SolrIndexGeminiDocumentGeneratorTest {
     public void checkThatIsOglTrueIsTransferredToIndex(){
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getUseLimitations()).thenReturn(Arrays.asList(
-            Keyword.builder()
-                .URI("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
+        when(document.getUseConstraints()).thenReturn(Arrays.asList(
+            ResourceConstraint.builder()
+                .uri("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
                 .build(),
-            Keyword.builder()
-                .URI("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
+            ResourceConstraint.builder()
+                .uri("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
                 .build(),
-            Keyword.builder()
+            ResourceConstraint.builder()
                 .value("More use limitations")
                 .build()
         ));
@@ -84,11 +85,11 @@ public class SolrIndexGeminiDocumentGeneratorTest {
     public void checkThatIsOglTrueIsTransferredToIndexForOtherFormatOfUrl(){
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getUseLimitations()).thenReturn(Arrays.asList(
-            Keyword.builder()
-                .URI("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
+        when(document.getUseConstraints()).thenReturn(Arrays.asList(
+            ResourceConstraint.builder()
+                .uri("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
                 .build(),
-            Keyword.builder()
+            ResourceConstraint.builder()
                 .value("More use limitations")
                 .build()
         ));
@@ -106,14 +107,14 @@ public class SolrIndexGeminiDocumentGeneratorTest {
     public void checkThatIsNationalArchivesOglTrueIsTransferredToIndex(){
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getUseLimitations()).thenReturn(Arrays.asList(
-            Keyword.builder()
-                .URI("http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/")
+        when(document.getUseConstraints()).thenReturn(Arrays.asList(
+            ResourceConstraint.builder()
+                .uri("http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/")
                 .build(),
-            Keyword.builder()
-                .URI("http://eidc.ceh.ac.uk")
+            ResourceConstraint.builder()
+                .uri("http://eidc.ceh.ac.uk")
                 .build(),
-            Keyword.builder()
+            ResourceConstraint.builder()
                 .value("More use limitations")
                 .build()
         ));
@@ -131,11 +132,11 @@ public class SolrIndexGeminiDocumentGeneratorTest {
     public void checkThatIsOglFalseIsTransferredToIndex(){
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getUseLimitations()).thenReturn(Arrays.asList(
-            Keyword.builder()
-                .URI("http://eidc.ceh.ac.uk/metadata/eb7599f4-35f8-4365-bd4a-4056ee6c6083")
+        when(document.getUseConstraints()).thenReturn(Arrays.asList(
+            ResourceConstraint.builder()
+                .uri("http://eidc.ceh.ac.uk/metadata/eb7599f4-35f8-4365-bd4a-4056ee6c6083")
                 .build(),
-            Keyword.builder()
+            ResourceConstraint.builder()
                 .value("More use limitations")
                 .build()
         ));
