@@ -1,39 +1,35 @@
 <#escape x as x?xml>
-<gmd:resourceConstraints>
-	<gmd:MD_LegalConstraints>
-	<#if useLimitations?has_content>
-	<#list useLimitations as useLimitation>
-    <#if useLimitation.uri?has_content>
-      <gmd:useLimitation><gmx:Anchor xlink:title="${useLimitation.value}" xlink:href="${useLimitation.uri}">${useLimitation.value}</gmx:Anchor></gmd:useLimitation>
-    <#else>
-      <gmd:useLimitation><gco:CharacterString>${useLimitation.value}</gco:CharacterString></gmd:useLimitation>
-    </#if>
-	</#list>
-	</#if>
-	<#if citation?has_content>
-		<gmd:useLimitation><gco:CharacterString>If you reuse this data, you must cite: ${citation.authors?join(', ')} (${citation.year}). ${citation.title}. ${citation.publisher} ${citation.doi}</gco:CharacterString></gmd:useLimitation>
-	</#if>
-		<gmd:accessConstraints><#--'otherRestrictions' must always be present so hard-coding into the template -->
-			<gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
-		</gmd:accessConstraints>
-	<#if accessConstraints?has_content>
-	<#list accessConstraints as accessConstraint>
-		<#if accessConstraint != 'otherRestrictions' >
-		<gmd:accessConstraints>
-		<gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="${accessConstraint}">${accessConstraint}</gmd:MD_RestrictionCode>
-		</gmd:accessConstraints>
-		</#if>
-	</#list>
-	</#if>
-	<#if otherConstraints?has_content>
-	<#list otherConstraints as otherConstraint>
-    <#if otherConstraint.uri?has_content>
-      <gmd:otherConstraints><gmx:Anchor xlink:title="${otherConstraint.value}" xlink:href="${otherConstraint.uri}">${otherConstraint.value}</gmx:Anchor> </gmd:otherConstraints>
-    <#else>
-      <gmd:otherConstraints><gco:CharacterString>${otherConstraint.value}</gco:CharacterString></gmd:otherConstraints>
-    </#if>
-	</#list>
-	</#if>
-	</gmd:MD_LegalConstraints>
-</gmd:resourceConstraints>
+<#list useConstraints as useConstraint>
+  <gmd:resourceConstraints>
+    <gmd:MD_LegalConstraints>
+      <gmd:useConstraints>
+        <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="${useConstraint.value}">${useConstraint.value}</gmd:MD_RestrictionCode>
+      </gmd:useConstraints>
+      <gmd:otherConstraints>
+        <gmx:Anchor xlink:title="${useConstraint.label}" xlink:href="${useConstraint.uri}">${useConstraint.label}</gmx:Anchor>
+      </gmd:otherConstraints>
+    </gmd:MD_LegalConstraints>
+  </gmd:resourceConstraints>
+</#list>
+<#if citation?has_content>
+  <gmd:resourceConstraints>
+    <gmd:MD_LegalConstraints>
+      <gmd:useLimitation>
+        <gco:CharacterString>If you reuse this data, you must cite: ${citation.authors?join(', ')} (${citation.year}). ${citation.title}. ${citation.publisher} ${citation.doi}</gco:CharacterString>
+      </gmd:useLimitation>
+    </gmd:MD_LegalConstraints>
+  </gmd:resourceConstraints>
+</#if>
+<#list accessConstraints as accessConstraint>
+  <gmd:resourceConstraints>
+    <gmd:MD_LegalConstraints>
+      <gmd:accessConstraints>
+        <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+      </gmd:accessConstraints>
+      <gmd:otherConstraints>
+        <gmx:Anchor xlink:title="${accessConstraint.label}" xlink:href="${accessConstraint.uri}">${accessConstraint.label}</gmx:Anchor>
+      </gmd:otherConstraints>
+    </gmd:MD_LegalConstraints>
+  </gmd:resourceConstraints>
+</#list>
 </#escape>

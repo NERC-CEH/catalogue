@@ -12,7 +12,7 @@
   <div class="panel panel-default hidden-print" id="document-order">
     <div class="panel-heading"><p class="panel-title">${documentOrderTitle?html}</p></div>
     <div class="panel-body">
-      <div>	
+      <div>
       <#if downloadOrder.orderable>
         <#list downloadOrder.orderResources as onlineResource>
           <p><a href="${onlineResource.url?html}"><i class="glyphicon glyphicon-save text-info"></i>
@@ -43,10 +43,10 @@
       </#if>
 	  </div>
 
-      <#if resourceType.value != 'service'>
-          <#include "_formats.html.tpl">
-      </#if>
-
+    <#if resourceType.value != 'service'>
+      <#include "_formats.html.tpl">
+    </#if>
+    <#include "_citation.html.tpl">
     <#include "_limitations.html.tpl">
     </div>
   </div>

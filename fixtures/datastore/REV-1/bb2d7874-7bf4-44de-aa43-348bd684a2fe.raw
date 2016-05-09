@@ -559,23 +559,21 @@ An Information Gateway view service is available. Search for 'Natural radionucli
 			</gmd:descriptiveKeywords>
 			<gmd:resourceConstraints xmlns:gmx="http://www.isotc211.org/2005/gmx">
 				<gmd:MD_LegalConstraints>
-					<gmd:useLimitation>
-						<gco:CharacterString>This resource is made available under the terms of the Open Government Licence [http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain]</gco:CharacterString>
-					</gmd:useLimitation>
-					<gmd:useLimitation>
-						<gco:CharacterString>If you re-use this data you must cite this dataset: to be completed</gco:CharacterString>
-					</gmd:useLimitation>
-					<accessConstraints xmlns="http://www.isotc211.org/2005/gmd">
-						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions"/>
-					</accessConstraints>
-					<accessConstraints xmlns="http://www.isotc211.org/2005/gmd">
+					<useConstraints xmlns="http://www.isotc211.org/2005/gmd">
 						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="license"/>
-					</accessConstraints>
-					<gmd:otherConstraints>
-						<gco:CharacterString>This resource is made available under the terms of the Open Government Licence [http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain]</gco:CharacterString>
-					</gmd:otherConstraints>
+					</useConstraints>
 					<gmd:otherConstraints xmlns:xlink="http://www.w3.org/1999/xlink">
 						<gmx:Anchor xlink:href="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain">This resource is made available under the terms of the Open Government Licence</gmx:Anchor>
+					</gmd:otherConstraints>
+				</gmd:MD_LegalConstraints>
+			</gmd:resourceConstraints>
+			<gmd:resourceConstraints xmlns:gmx="http://www.isotc211.org/2005/gmx">
+				<gmd:MD_LegalConstraints>
+					<accessConstraints xmlns="http://www.isotc211.org/2005/gmd">
+						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="copyright"/>
+					</accessConstraints>
+					<gmd:otherConstraints xmlns:xlink="http://www.w3.org/1999/xlink">
+						<gco:CharacterString>&#169; NERC-CEH 2016</gco:CharacterString>
 					</gmd:otherConstraints>
 				</gmd:MD_LegalConstraints>
 			</gmd:resourceConstraints>
