@@ -1,1 +1,275 @@
-{"uri":"http://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae","id":"2d023ce9-6dbe-4b4f-a0cd-34768e1455ae","title":"Woodlands survey flora data 1971-2001","description":"This dataset consists of the vascular plants,  bryophytes and lichens recorded in plots in 103 woodland sites surveyed across Great Britain in 1971 and again over the growing seasons of 2000, 2002 and 2003 (referred to as '2001 survey'), using exactly the same field methods.  Data were collected under projects managed by The Nature Conservancy (in 1971) and the Centre for Ecology and Hydrology (in 2001).  ","resourceStatus":"completed","lineage":"Data were collected from 103 woodlands by field surveyors employed by The Nature Conservancy, Merlewood Research Station, Cumbria (in 1971) and employed under a project managed by the  Centre for Ecology and Hydrology (in 2000-2003). Extensive training was undertaken by surveyors. Collected data were double punched into spreadsheets as a form of quality control.  Data collected are available as 4 separate datasets: flora data, soil data, tree diameter data and site details. ","metadataStandardName":"ISO 19115 (UK GEMINI)","metadataStandardVersion":"1.0 (2.2)","supplementalInfo":"Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J. (2005) Measuring Long Term Ecological Change in British woodlands (1971-2001): A re-survey and analysis of change based on the 103 sites in the ITE/NCC 'Bunce 1971' woodland survey. English Nature Research Reports 653. \n","datasetLanguages":["eng"],"accessConstraints":["otherRestrictions","license"],"resourceType":{"value":"dataset"},"topicCategories":[{"value":"biota","uri":"http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/biota"},{"value":"environment","uri":"http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment"}],"useLimitations":[{"value":"If you reuse this dataset you must cite this dataset: Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J., Shaw, M.W. (2013) Woodlands survey flora data 1971-2001 doi: 10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae as reported in Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J. (2005) Measuring Long Term Ecological Change in British woodlands (1971-2001): A re-survey and analysis of change based on the 103 sites in the ITE/NCC 'Bunce 1971' woodland survey. English Nature Research Reports 653. "}],"distributionFormats":[{"name":"Comma separated values","version":"2013"}],"descriptiveKeywords":[{"keywords":[{"value":"Environmental monitoring facilities"}],"type":"theme","thesaurusName":{"title":"GEMET - INSPIRE themes, version 1.0","date":"2008-06-01","dateType":"publication"}},{"keywords":[{"value":"woodland"},{"value":"trees"},{"value":"plants"}]},{"keywords":[{"value":"Britain"}],"type":"place"},{"keywords":[{"value":"Natural Capital"}],"thesaurusName":{"title":"CEH Metadata Vocabulary","date":"2014-09-19","dateType":"creation"}},{"keywords":[{"value":"Biodiversity"}],"thesaurusName":{"title":"CEH Metadata Vocabulary","date":"2014-09-19","dateType":"creation"}}],"boundingBoxes":[{"westBoundLongitude":-9,"eastBoundLongitude":2,"southBoundLatitude":50,"northBoundLatitude":61}],"metadataPointsOfContact":[{"organisationName":"Centre for Ecology & Hydrology","role":"pointOfContact","email":"enquiries@ceh.ac.uk","address":{"deliveryPoint":"Lancaster Environment Centre,  Library Avenue, Bailrigg","city":"Lancaster","administrativeArea":"Lancashire","postalCode":"LA1 4AP","country":"United Kingdom"}}],"distributorContacts":[{"organisationName":"Centre for Ecology & Hydrology","role":"distributor","email":"enquiries@ceh.ac.uk","address":{"deliveryPoint":"Lancaster Environment Centre,  Library Avenue, Bailrigg","city":"Lancaster","administrativeArea":"Lancashire","postalCode":"LA1 4AP","country":"United Kingdom"}}],"responsibleParties":[{"organisationName":"Centre for Ecology & Hydrology","role":"pointOfContact","email":"enquries@ceh.ac.uk"},{"organisationName":"Parr Section","role":"resourceProvider","email":"enquiries@ceh.ac.uk"},{"individualName":"Kirby, K.J.","organisationName":"English Nature","role":"author","email":"enquiries@ceh.ac.uk"},{"individualName":"Smart, S.M.","organisationName":"Centre for Ecology & Hydrology","role":"author","email":"enquiries@ceh.ac.uk"},{"individualName":"Black, H.I.J.","organisationName":"Centre for Ecology & Hydrology","role":"author","email":"enquiries@ceh.ac.uk"},{"individualName":"Bunce, R.G.H.","organisationName":"Alterra","role":"author","email":"enquiries@ceh.ac.uk"},{"individualName":"Corney, P.M.","organisationName":"University of Liverpool","role":"author","email":"enquiries@ceh.ac.uk"},{"individualName":"Smithers, R.J.","organisationName":"Woodland Trust","role":"author","email":"enquiries@ceh.ac.uk"},{"individualName":"Shaw, M.W.","organisationName":"The Nature Conservancy","role":"author","email":"enquiries@ceh.ac.uk"},{"organisationName":"EIDC Hub","role":"custodian","email":"eidc@ceh.ac.uk"},{"organisationName":"NERC Environmental Information Data Centre","role":"publisher","email":"eidc@ceh.ac.uk"}],"temporalExtents":[{"begin":"1971-05-01","end":"2003-10-31"}],"onlineResources":[{"url":"http://eidc.ceh.ac.uk/metadata/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/zip","name":"Supporting information","description":"Supporting information available to assist in re-use of this dataset and also link to data citation details","function":"information","type":"OTHER"},{"url":"https://catalogue.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae","name":"Online ordering","description":"Order this resource as a csv file.","function":"order","type":"OTHER"}],"modelLinks":[{"title":"INCA-N","href":"http://catalogue.ceh.ac.uk/id/imp-model-b88b-960d0c2b6b14","associationType":"model"}],"modelApplicationLinks":[{"title":"Effectiveness of pollution control measures under scenarios of future climate and land cover change at the catchment scale","href":"http://catalogue.ceh.ac.uk/id/imp-app-9204-ad6858a3f438"}],"resourceIdentifiers":[{"code":"1382104570732","codeSpace":"CEH:EIDC:","coupledResource":"CEH:EIDC:#1382104570732"},{"code":"https://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae","coupledResource":"https://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae"},{"code":"10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae","codeSpace":"doi","coupledResource":"doi10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae"},{"code":"10/q5v","codeSpace":"doi","coupledResource":"doi10/q5v"}],"spatialReferenceSystems":[{"code":"27700","codeSpace":"urn:ogc:def:crs:EPSG","title":"OSGB 1936 / British National Grid"}],"datasetReferenceDate":{"publicationDate":"2013-12-10"},"metadataDate":"2015-04-15T14:20:10","resourceMaintenance":[{"frequencyOfUpdate":"notPlanned"}],"datacitable":true,"dataciteMintable":true,"mapViewable":false,"type":"dataset"}
+{
+  "uri": "http://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
+  "id": "2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
+  "title": "Woodlands survey flora data 1971-2001",
+  "description": "This dataset consists of the vascular plants,  bryophytes and lichens recorded in plots in 103 woodland sites surveyed across Great Britain in 1971 and again over the growing seasons of 2000, 2002 and 2003 (referred to as '2001 survey'), using exactly the same field methods.  Data were collected under projects managed by The Nature Conservancy (in 1971) and the Centre for Ecology and Hydrology (in 2001).  ",
+  "resourceStatus": "completed",
+  "lineage": "Data were collected from 103 woodlands by field surveyors employed by The Nature Conservancy, Merlewood Research Station, Cumbria (in 1971) and employed under a project managed by the  Centre for Ecology and Hydrology (in 2000-2003). Extensive training was undertaken by surveyors. Collected data were double punched into spreadsheets as a form of quality control.  Data collected are available as 4 separate datasets: flora data, soil data, tree diameter data and site details. ",
+  "metadataStandardName": "ISO 19115 (UK GEMINI)",
+  "metadataStandardVersion": "1.0 (2.2)",
+  "supplementalInfo": "Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J. (2005) Measuring Long Term Ecological Change in British woodlands (1971-2001): A re-survey and analysis of change based on the 103 sites in the ITE/NCC 'Bunce 1971' woodland survey. English Nature Research Reports 653. \n",
+  "datasetLanguages": [
+    "eng"
+  ],
+  "accessConstraints": [
+    {
+      "value": "copyright",
+      "label": "If you reuse this dataset you must cite this dataset: Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J., Shaw, M.W. (2013) Woodlands survey flora data 1971-2001 doi: 10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae as reported in Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J. (2005) Measuring Long Term Ecological Change in British woodlands (1971-2001): A re-survey and analysis of change based on the 103 sites in the ITE/NCC 'Bunce 1971' woodland survey. English Nature Research Reports 653."
+    }
+  ],
+  "resourceType": {
+    "value": "dataset"
+  },
+  "topicCategories": [
+    {
+      "value": "biota",
+      "uri": "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/biota"
+    },
+    {
+      "value": "environment",
+      "uri": "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment"
+    }
+  ],
+  "distributionFormats": [
+    {
+      "name": "Comma separated values",
+      "version": "2013"
+    }
+  ],
+  "descriptiveKeywords": [
+    {
+      "keywords": [
+        {
+          "value": "Environmental monitoring facilities"
+        }
+      ],
+      "type": "theme",
+      "thesaurusName": {
+        "title": "GEMET - INSPIRE themes, version 1.0",
+        "date": "2008-06-01",
+        "dateType": "publication"
+      }
+    },
+    {
+      "keywords": [
+        {
+          "value": "woodland"
+        },
+        {
+          "value": "trees"
+        },
+        {
+          "value": "plants"
+        }
+      ]
+    },
+    {
+      "keywords": [
+        {
+          "value": "Britain"
+        }
+      ],
+      "type": "place"
+    },
+    {
+      "keywords": [
+        {
+          "value": "Natural Capital"
+        }
+      ],
+      "thesaurusName": {
+        "title": "CEH Metadata Vocabulary",
+        "date": "2014-09-19",
+        "dateType": "creation"
+      }
+    },
+    {
+      "keywords": [
+        {
+          "value": "Biodiversity"
+        }
+      ],
+      "thesaurusName": {
+        "title": "CEH Metadata Vocabulary",
+        "date": "2014-09-19",
+        "dateType": "creation"
+      }
+    }
+  ],
+  "boundingBoxes": [
+    {
+      "westBoundLongitude": -9,
+      "eastBoundLongitude": 2,
+      "southBoundLatitude": 50,
+      "northBoundLatitude": 61
+    }
+  ],
+  "metadataPointsOfContact": [
+    {
+      "organisationName": "Centre for Ecology & Hydrology",
+      "role": "pointOfContact",
+      "email": "enquiries@ceh.ac.uk",
+      "address": {
+        "deliveryPoint": "Lancaster Environment Centre,  Library Avenue, Bailrigg",
+        "city": "Lancaster",
+        "administrativeArea": "Lancashire",
+        "postalCode": "LA1 4AP",
+        "country": "United Kingdom"
+      }
+    }
+  ],
+  "distributorContacts": [
+    {
+      "organisationName": "Centre for Ecology & Hydrology",
+      "role": "distributor",
+      "email": "enquiries@ceh.ac.uk",
+      "address": {
+        "deliveryPoint": "Lancaster Environment Centre,  Library Avenue, Bailrigg",
+        "city": "Lancaster",
+        "administrativeArea": "Lancashire",
+        "postalCode": "LA1 4AP",
+        "country": "United Kingdom"
+      }
+    }
+  ],
+  "responsibleParties": [
+    {
+      "organisationName": "Centre for Ecology & Hydrology",
+      "role": "pointOfContact",
+      "email": "enquries@ceh.ac.uk"
+    },
+    {
+      "organisationName": "Parr Section",
+      "role": "resourceProvider",
+      "email": "enquiries@ceh.ac.uk"
+    },
+    {
+      "individualName": "Kirby, K.J.",
+      "organisationName": "English Nature",
+      "role": "author",
+      "email": "enquiries@ceh.ac.uk"
+    },
+    {
+      "individualName": "Smart, S.M.",
+      "organisationName": "Centre for Ecology & Hydrology",
+      "role": "author",
+      "email": "enquiries@ceh.ac.uk"
+    },
+    {
+      "individualName": "Black, H.I.J.",
+      "organisationName": "Centre for Ecology & Hydrology",
+      "role": "author",
+      "email": "enquiries@ceh.ac.uk"
+    },
+    {
+      "individualName": "Bunce, R.G.H.",
+      "organisationName": "Alterra",
+      "role": "author",
+      "email": "enquiries@ceh.ac.uk"
+    },
+    {
+      "individualName": "Corney, P.M.",
+      "organisationName": "University of Liverpool",
+      "role": "author",
+      "email": "enquiries@ceh.ac.uk"
+    },
+    {
+      "individualName": "Smithers, R.J.",
+      "organisationName": "Woodland Trust",
+      "role": "author",
+      "email": "enquiries@ceh.ac.uk"
+    },
+    {
+      "individualName": "Shaw, M.W.",
+      "organisationName": "The Nature Conservancy",
+      "role": "author",
+      "email": "enquiries@ceh.ac.uk"
+    },
+    {
+      "organisationName": "EIDC Hub",
+      "role": "custodian",
+      "email": "eidc@ceh.ac.uk"
+    },
+    {
+      "organisationName": "NERC Environmental Information Data Centre",
+      "role": "publisher",
+      "email": "eidc@ceh.ac.uk"
+    }
+  ],
+  "temporalExtents": [
+    {
+      "begin": "1971-05-01",
+      "end": "2003-10-31"
+    }
+  ],
+  "onlineResources": [
+    {
+      "url": "http://eidc.ceh.ac.uk/metadata/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/zip",
+      "name": "Supporting information",
+      "description": "Supporting information available to assist in re-use of this dataset and also link to data citation details",
+      "function": "information",
+      "type": "OTHER"
+    },
+    {
+      "url": "https://catalogue.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
+      "name": "Online ordering",
+      "description": "Order this resource as a csv file.",
+      "function": "order",
+      "type": "OTHER"
+    }
+  ],
+  "modelLinks": [
+    {
+      "title": "INCA-N",
+      "href": "http://catalogue.ceh.ac.uk/id/imp-model-b88b-960d0c2b6b14",
+      "associationType": "model"
+    }
+  ],
+  "modelApplicationLinks": [
+    {
+      "title": "Effectiveness of pollution control measures under scenarios of future climate and land cover change at the catchment scale",
+      "href": "http://catalogue.ceh.ac.uk/id/imp-app-9204-ad6858a3f438"
+    }
+  ],
+  "resourceIdentifiers": [
+    {
+      "code": "1382104570732",
+      "codeSpace": "CEH:EIDC:",
+      "coupledResource": "CEH:EIDC:#1382104570732"
+    },
+    {
+      "code": "https://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
+      "coupledResource": "https://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae"
+    },
+    {
+      "code": "10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
+      "codeSpace": "doi",
+      "coupledResource": "doi10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae"
+    },
+    {
+      "code": "10/q5v",
+      "codeSpace": "doi",
+      "coupledResource": "doi10/q5v"
+    }
+  ],
+  "spatialReferenceSystems": [
+    {
+      "code": "27700",
+      "codeSpace": "urn:ogc:def:crs:EPSG",
+      "title": "OSGB 1936 / British National Grid"
+    }
+  ],
+  "datasetReferenceDate": {
+    "publicationDate": "2013-12-10"
+  },
+  "metadataDate": "2015-04-15T14:20:10",
+  "resourceMaintenance": [
+    {
+      "frequencyOfUpdate": "notPlanned"
+    }
+  ],
+  "datacitable": true,
+  "dataciteMintable": true,
+  "mapViewable": false,
+  "type": "dataset"
+}
