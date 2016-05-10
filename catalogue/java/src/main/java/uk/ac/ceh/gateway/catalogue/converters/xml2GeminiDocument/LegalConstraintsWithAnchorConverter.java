@@ -15,8 +15,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
  * Extract anchors or text from useConstraints and accessConstraints. 
  */
 public class LegalConstraintsWithAnchorConverter {
-    private static final String URI = "gmd:otherConstraints/*/@xlink:href";
-    private static final String LABEL = "gmd:otherConstraints/*";
+    private static final String URI = "*/gmx:Anchor/@xlink:href";
+    private static final String LABEL = "*/gmx:Anchor/@xlink:title | */gmx:Anchor | */gco:CharacterString";
     private static final String VALUE = "*/gmd:MD_RestrictionCode/@codeListValue";
     private final XPathExpression legalConstraints, uri, label, value;
     

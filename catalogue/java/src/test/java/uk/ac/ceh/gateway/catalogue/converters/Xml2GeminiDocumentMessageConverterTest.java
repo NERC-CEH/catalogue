@@ -486,8 +486,10 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<ResourceConstraint> expected = Arrays.asList(
             ResourceConstraint.builder()
                 .uri("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
-                .value("licence")
                 .label("Licence terms and conditions apply")
+                .build(),
+            ResourceConstraint.builder()
+                .label("If you reuse this data, you must cite: Smith, A. B., Crake, E. F (2016)")
                 .build()
         );
         

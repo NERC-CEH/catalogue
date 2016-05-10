@@ -418,14 +418,11 @@
 				</MD_SecurityConstraints>
 			</resourceConstraints>
 			<gmd:resourceConstraints>
-				<gmd:MD_LegalConstraints>
-					<gmd:useConstraints>
-						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="license"/>
-					</gmd:useConstraints>
-					<gmd:otherConstraints>
+				<gmd:MD_Constraints>
+					<gmd:useLimitation>
 						<gmx:Anchor xlink:href="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/standard-click-through/plain">Licence terms and conditions apply</gmx:Anchor>
-					</gmd:otherConstraints>
-				</gmd:MD_LegalConstraints>
+					</gmd:useLimitation>
+				</gmd:MD_Constraints>
 			</gmd:resourceConstraints>
 			<gmd:resourceConstraints>
 				<gmd:MD_LegalConstraints>

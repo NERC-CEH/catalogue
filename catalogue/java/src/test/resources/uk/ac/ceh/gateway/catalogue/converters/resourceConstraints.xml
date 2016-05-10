@@ -17,14 +17,18 @@
 				</gmd:MD_SecurityConstraints>
 			</gmd:resourceConstraints>
 			<gmd:resourceConstraints>
-				<gmd:MD_LegalConstraints>
-					<gmd:useConstraints>
-						<gmd:MD_RestrictionCode codeListValue="licence">licence</gmd:MD_RestrictionCode>
-					</gmd:useConstraints>
-					<gmd:otherConstraints>
+				<gmd:MD_Constraints>
+					<gmd:useLimitation>
 						<gmx:Anchor xlink:href="http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain" xlink:title="Licence terms and conditions apply">Licence terms and conditions apply</gmx:Anchor>
-					</gmd:otherConstraints>
-				</gmd:MD_LegalConstraints>
+					</gmd:useLimitation>
+				</gmd:MD_Constraints>
+			</gmd:resourceConstraints>
+			<gmd:resourceConstraints>
+				<gmd:MD_Constraints>
+					<gmd:useLimitation>
+						<gco:CharacterString>If you reuse this data, you must cite: Smith, A. B., Crake, E. F (2016)</gco:CharacterString>
+					</gmd:useLimitation>
+				</gmd:MD_Constraints>
 			</gmd:resourceConstraints>
             <gmd:resourceConstraints>
 				<gmd:MD_LegalConstraints>
@@ -32,7 +36,7 @@
 						<gmd:MD_RestrictionCode codeListValue="copyright"/>
 					</gmd:accessConstraints>
 					<gmd:otherConstraints>
-						<gmx:Anchor xlink:href="http://example.com/1">description</gmx:Anchor>
+						<gmx:Anchor xlink:href="http://example.com/1" xlink:title="description">description</gmx:Anchor>
 					</gmd:otherConstraints>
 				</gmd:MD_LegalConstraints>
 			</gmd:resourceConstraints>
@@ -42,7 +46,7 @@
 						<gmd:MD_RestrictionCode codeListValue="intellectualPropertyRights"/>
 					</gmd:accessConstraints>
 					<gmd:otherConstraints>
-						<gmx:Anchor xlink:href="http://example.com/2">limitations on public access</gmx:Anchor>
+						<gmx:Anchor xlink:href="http://example.com/2" xlink:title="limitations on public access">limitations on public access</gmx:Anchor>
 					</gmd:otherConstraints>
 				</gmd:MD_LegalConstraints>
 			</gmd:resourceConstraints>

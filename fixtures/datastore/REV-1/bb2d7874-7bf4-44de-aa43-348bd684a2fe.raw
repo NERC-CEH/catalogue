@@ -558,14 +558,11 @@ An Information Gateway view service is available. Search for 'Natural radionucli
 				</gmd:MD_Keywords>
 			</gmd:descriptiveKeywords>
 			<gmd:resourceConstraints xmlns:gmx="http://www.isotc211.org/2005/gmx">
-				<gmd:MD_LegalConstraints>
-					<useConstraints xmlns="http://www.isotc211.org/2005/gmd">
-						<MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="license"/>
-					</useConstraints>
-					<gmd:otherConstraints xmlns:xlink="http://www.w3.org/1999/xlink">
+				<gmd:MD_Constraints>
+					<gmd:useLimitation xmlns:xlink="http://www.w3.org/1999/xlink">
 						<gmx:Anchor xlink:href="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain">This resource is made available under the terms of the Open Government Licence</gmx:Anchor>
-					</gmd:otherConstraints>
-				</gmd:MD_LegalConstraints>
+					</gmd:useLimitation>
+				</gmd:MD_Constraints>
 			</gmd:resourceConstraints>
 			<gmd:resourceConstraints xmlns:gmx="http://www.isotc211.org/2005/gmx">
 				<gmd:MD_LegalConstraints>

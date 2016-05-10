@@ -518,11 +518,11 @@
 				</gmd:MD_LegalConstraints>
 			</gmd:resourceConstraints>
 			<gmd:resourceConstraints>
-				<gmd:MD_LegalConstraints>
+				<gmd:MD_Constraints>
 					<gmd:useLimitation>
 						<gco:CharacterString>If you reuse this data, you must cite: Morton, R.D., Rowland, C., Wood, C., Meek, L., Marston, G., Smith, G., Wadsworth, R., Simpson, I. (2011). Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland). NERC Environmental Information Data Centre 10.5285/1e7d5e08-9e24-471b-ae37-49b477f695e3</gco:CharacterString>
 					</gmd:useLimitation>
-				</gmd:MD_LegalConstraints>
+				</gmd:MD_Constraints>
 			</gmd:resourceConstraints>
 			<gmd:spatialRepresentationType>
 				<MD_SpatialRepresentationTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="grid"/>
