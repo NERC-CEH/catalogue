@@ -508,14 +508,11 @@
 				</gmd:MD_Keywords>
 			</gmd:descriptiveKeywords>
 			<gmd:resourceConstraints>
-				<gmd:MD_LegalConstraints>
-					<gmd:useConstraints>
-						<MD_RestrictionCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license"/>
-					</gmd:useConstraints>
-					<gmd:otherConstraints xmlns:xlink="http://www.w3.org/1999/xlink">
+				<gmd:MD_Constraints>
+					<gmd:useLimitation>
 						<gmx:Anchor xlink:href="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain">This resource is made available under the terms of the Open Government Licence</gmx:Anchor>
-					</gmd:otherConstraints>
-				</gmd:MD_LegalConstraints>
+					</gmd:useLimitation>
+				</gmd:MD_Constraints>
 			</gmd:resourceConstraints>
 			<gmd:resourceConstraints>
 				<gmd:MD_Constraints>

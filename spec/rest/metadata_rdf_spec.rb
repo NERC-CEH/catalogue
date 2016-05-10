@@ -47,7 +47,7 @@ describe "Metadata RDF properties", :retry => 1, :retry_wait => 0, :restful => t
     it "should have rights" do
       rights = graph.query [distribution, DCT.rights, nil]
       expect(rights.count).to be 2
-      expect(rights.has_object? RDF::Literal.new('If you reuse this data, you must cite Morton, R.D.,Rowland, C.,Wood, C.,Meek, L.,Marston, G.,Smith, G.,Wadsworth, R.,Simpson, I. (2011). Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland). NERC Environmental Information Data Centre. http://doi.org/10.5285/1e7d5e08-9e24-471b-ae37-49b477f695e3')).to be true 
+      expect(rights.has_object? RDF::Literal.new('If you reuse this data, you must cite: Morton, R.D., Rowland, C., Wood, C., Meek, L., Marston, G., Smith, G., Wadsworth, R., Simpson, I. (2011). Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland). NERC Environmental Information Data Centre 10.5285/1e7d5e08-9e24-471b-ae37-49b477f695e3')).to be true
       expect(rights.has_object? RDF::URI.new('http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain')).to be true
     end
   end

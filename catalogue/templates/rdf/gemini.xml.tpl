@@ -96,7 +96,7 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
         <#list descriptiveKeywords as descriptiveKeyword>
         <#list descriptiveKeyword.keywords as keyword>
          <#if keyword.uri?has_content>
-         <dct:subject rdf:resource="${keyword.uri}"/>  
+         <dct:subject rdf:resource="${keyword.uri}"/>
          <#else>
          <dct:subject>${keyword.value}</dct:subject>
          </#if>
@@ -113,13 +113,14 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
              <dcat:accessURL rdf:resource="${onlineResource.url}"/>
           </#list>
          </#if>
-         <#if citation?has_content>
-            <dct:rights>If you reuse this data, you must cite ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}</dct:rights>
-         </#if>
          <#if useConstraints?has_content>
            <#list useConstraints as useConstraint>
-              <dct:license rdf:resource="${useConstraint.uri}"/>
-              <dct:rights rdf:resource="${useConstraint.uri}"/>
+              <#if useConstraint.uri?has_content>
+                <dct:license rdf:resource="${useConstraint.uri}"/>
+                <dct:rights rdf:resource="${useConstraint.uri}"/>
+              <#else>
+                <dct:rights>${useConstraint.label}</dct:rights>
+              </#if>
            </#list>
          </#if>
          <#if distributionFormats?has_content>
