@@ -16,14 +16,14 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
  */
 public class LegalConstraintsWithAnchorConverter {
     private static final String URI = "*/gmx:Anchor/@xlink:href";
-    private static final String LABEL = "*/gmx:Anchor/@xlink:title | */gmx:Anchor | */gco:CharacterString";
-    private static final String VALUE = "*/gmd:MD_RestrictionCode/@codeListValue";
-    private final XPathExpression legalConstraints, uri, label, value;
+    private static final String VALUE = "*/gmx:Anchor/@xlink:title | */gmx:Anchor | */gco:CharacterString";
+    private static final String CODE = "*/gmd:MD_RestrictionCode/@codeListValue";
+    private final XPathExpression legalConstraints, uri, code, value;
     
     public LegalConstraintsWithAnchorConverter(XPath xpath, String legalConstraints) throws XPathExpressionException {
         this.legalConstraints = xpath.compile(legalConstraints);
         this.uri = xpath.compile(URI);
-        this.label = xpath.compile(LABEL);
+        this.code = xpath.compile(CODE);
         this.value = xpath.compile(VALUE);
     }
 
@@ -35,7 +35,7 @@ public class LegalConstraintsWithAnchorConverter {
             ResourceConstraint resourceConstraint = ResourceConstraint.builder()
                 .value(value.evaluate(node))
                 .uri(uri.evaluate(node))
-                .label(label.evaluate(node))
+                .code(code.evaluate(node))
                 .build();
             toReturn.add(resourceConstraint);
         }

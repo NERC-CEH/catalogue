@@ -119,7 +119,7 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
                 <dct:license rdf:resource="${useConstraint.uri}"/>
                 <dct:rights rdf:resource="${useConstraint.uri}"/>
               <#else>
-                <dct:rights>${useConstraint.label}</dct:rights>
+                <dct:rights>${useConstraint.value}</dct:rights>
               </#if>
            </#list>
          </#if>
@@ -139,7 +139,7 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
       <#if useConstraints?has_content>
         <#list useConstraints as useConstraint>
          <#if !useConstraint?starts_with("If you re")>
-           <dct:rights>${useConstraint.label}</dct:rights>
+           <dct:rights>${useConstraint.value}</dct:rights>
          </#if>
         </#list>
       </#if>

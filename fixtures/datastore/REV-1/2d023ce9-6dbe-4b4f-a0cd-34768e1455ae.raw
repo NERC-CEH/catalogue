@@ -13,8 +13,8 @@
   ],
   "accessConstraints": [
     {
-      "value": "copyright",
-      "label": "If you reuse this dataset you must cite this dataset: Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J., Shaw, M.W. (2013) Woodlands survey flora data 1971-2001 doi: 10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae as reported in Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J. (2005) Measuring Long Term Ecological Change in British woodlands (1971-2001): A re-survey and analysis of change based on the 103 sites in the ITE/NCC 'Bunce 1971' woodland survey. English Nature Research Reports 653."
+      "code": "copyright",
+      "value": "If you reuse this dataset you must cite this dataset: Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J., Shaw, M.W. (2013) Woodlands survey flora data 1971-2001 doi: 10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae as reported in Kirby, K.J., Smart, S.M., Black, H.I.J., Bunce, R.G.H., Corney, P.M., Smithers, R.J. (2005) Measuring Long Term Ecological Change in British woodlands (1971-2001): A re-survey and analysis of change based on the 103 sites in the ITE/NCC 'Bunce 1971' woodland survey. English Nature Research Reports 653."
     }
   ],
   "resourceType": {

@@ -8,17 +8,17 @@ import lombok.Value;
 
 @Value
 public class ResourceConstraint {
-    private final String value, label, uri;
+    private final String value, code, uri;
     
     @Builder
     @JsonCreator
     public ResourceConstraint(
         @JsonProperty("value") String value,
-        @JsonProperty("label") String label,
+        @JsonProperty("code") String code,
         @JsonProperty("uri") String uri
     ) {
         this.value = nullToEmpty(value);
-        this.label = nullToEmpty(label);
+        this.code = nullToEmpty(code);
         this.uri = nullToEmpty(uri);
     }
 }

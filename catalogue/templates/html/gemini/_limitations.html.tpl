@@ -3,10 +3,10 @@
   <#list useConstraints as useConstraint>
     <p>
     <#if useConstraint.uri?has_content>
-      <a href="${useConstraint.uri}">${useConstraint.label!'Use Constraint'}</a>
+      <a href="${useConstraint.uri}">${useConstraint.value!'Use Constraint'}</a>
     <#-- starts_with shortened to catch 'reuse' and 're-use' in the wild -->
-    <#elseif !useConstraint.label?starts_with("If you re")>
-      ${useConstraint.label?html}
+    <#elseif !useConstraint.value?starts_with("If you re")>
+      ${useConstraint.value?html}
     </#if>
     </p>
   </#list>

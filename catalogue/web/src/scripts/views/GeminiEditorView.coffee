@@ -19,7 +19,7 @@ define [
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/OnlineResourceView'
   'cs!models/editor/OnlineResource'
-  'cs!views/editor/UseLimitationView'
+  'cs!views/editor/ResourceConstraintView'
   'cs!views/editor/OtherConstraintView'
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/ResourceStatusView'
@@ -34,7 +34,7 @@ define [
   'cs!views/editor/ServiceView'
   'cs!models/editor/Service'
   'cs!views/editor/ConformanceResultView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, UseLimitationView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, SpatialResolution, ServiceView, Service, ConformanceResultView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, SpatialResolution, ServiceView, Service, ConformanceResultView) -> EditorView.extend
 
   initialize: ->
 
@@ -544,20 +544,23 @@ define [
       views: [
         new PredefinedParentView
           model: @model
-          modelAttribute: 'useLimitations'
+          modelAttribute: 'useConstraints'
           label: 'Use Constraints'
-          ObjectInputView: UseLimitationView
+          ObjectInputView: ResourceConstraintView
           multiline: true
           predefined:
             'Open Government Licence':
-              value: 'This resource is made available under the terms of the Open Government Licence'
+              text: 'This resource is made available under the terms of the Open Government Licence'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain'
+              code: 'license'
             'Open Government Licence - Non CEH data':
-              value: 'This resource is made available under the terms of the Open Government Licence'
+              text: 'This resource is made available under the terms of the Open Government Licence'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data/plain'
+              code: 'license'
             'CEH Licence':
-              value: 'Licence terms and conditions apply'
+              text: 'Licence terms and conditions apply'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/standard-click-through/plain'
+              code: 'license'
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
                     <ul class="list-unstyled">
@@ -571,12 +574,14 @@ define [
 
         new PredefinedParentView
           model: @model
-          modelAttribute: 'otherConstraints'
+          modelAttribute: 'accessConstraints'
           label: 'Limitations on public access'
-          ObjectInputView: OtherConstraintView
+          ObjectInputView: ResourceConstraintView
+          multiline: true
           predefined:
             'no limitations':
               value: 'no limitations'
+              code:  'otherRestrictions'
           helpText: """
                     <p>Any conditions that are in place to restrict a user's <strong>access</strong> to the data. These may include, for example, restrictions imposed for reasons of security or for licensing purposes.</p>
                     <p>You MUST enter something even if there are no access limitations. In the rare case that there are none, enter "no limitations".</p>
