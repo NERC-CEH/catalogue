@@ -113,6 +113,9 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
              <dcat:accessURL rdf:resource="${onlineResource.url}"/>
           </#list>
          </#if>
+         <#if citation?has_content>
+            <dct:rights>If you reuse this data, you must cite: ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}</dct:rights>
+         </#if>
          <#if useConstraints?has_content>
            <#list useConstraints as useConstraint>
               <#if useConstraint.uri?has_content>
