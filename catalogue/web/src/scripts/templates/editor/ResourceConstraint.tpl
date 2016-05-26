@@ -21,7 +21,7 @@
     <label for="<%= data.modelAttribute %><%= data.index %>Value">Text</label>
   </div>
   <div class="col-sm-11 col-lg-11">
-    <input data-name="text" id="<%= data.modelAttribute %><%= data.index %>Value" class="editor-input" value="<%= data.value %>">
+    <input data-name="value" id="<%= data.modelAttribute %><%= data.index %>Value" class="editor-input" value="<%= data.value %>">
   </div>
 </div>
 <div class="row">
