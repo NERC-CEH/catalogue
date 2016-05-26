@@ -553,14 +553,6 @@ define [
               text: 'This resource is made available under the terms of the Open Government Licence'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain'
               code: 'license'
-            'Open Government Licence - Non CEH data':
-              text: 'This resource is made available under the terms of the Open Government Licence'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data/plain'
-              code: 'license'
-            'CEH Licence':
-              text: 'Licence terms and conditions apply'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/standard-click-through/plain'
-              code: 'license'
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
                     <ul class="list-unstyled">
@@ -634,6 +626,12 @@ define [
                 postalCode: 'OX10 8BB'
                 city: 'Wallingford'
                 administrativeArea: 'Oxfordshire'
+                country: 'United Kingdom'
+            'EIDC Point of Contact':
+              organisationName: 'Environmental Information Data Centre'
+              role: 'pointOfContact'
+              email: 'eidc@ceh.ac.uk'
+              address:
                 country: 'United Kingdom'
           helpText: """
                     <p>The organisation or person responsible for the authorship, maintenance and curation of the metadata resource.</p>
