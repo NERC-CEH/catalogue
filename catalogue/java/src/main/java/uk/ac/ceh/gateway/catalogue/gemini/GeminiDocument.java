@@ -45,10 +45,10 @@ public class GeminiDocument implements MetadataDocument {
         metadataStandardName, metadataStandardVersion, supplementalInfo, parentIdentifier, revisionOfIdentifier;
     @JsonIgnore
     private String jsonString;
-    private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages, accessConstraints,
+    private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
       securityConstraints, partOfRepository;
     private Keyword resourceType;        
-    private List<Keyword> topicCategories, useLimitations, otherConstraints;
+    private List<Keyword> topicCategories;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<ConformanceResult> conformanceResults;
@@ -77,6 +77,7 @@ public class GeminiDocument implements MetadataDocument {
     private LocalDateTime metadataDate;
     private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
+    private List<ResourceConstraint> accessConstraints, useConstraints;
     
     @JsonIgnore
     public String getMetadataDateTime() {

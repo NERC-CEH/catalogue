@@ -96,7 +96,7 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
         <#list descriptiveKeywords as descriptiveKeyword>
         <#list descriptiveKeyword.keywords as keyword>
          <#if keyword.uri?has_content>
-         <dct:subject rdf:resource="${keyword.uri}"/>  
+         <dct:subject rdf:resource="${keyword.uri}"/>
          <#else>
          <dct:subject>${keyword.value}</dct:subject>
          </#if>
@@ -114,17 +114,16 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
           </#list>
          </#if>
          <#if citation?has_content>
-            <dct:rights>If you reuse this data, you must cite ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}</dct:rights>
+            <dct:rights>If you reuse this data, you must cite: ${citation.authors?join(',')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. ${citation.url?html}</dct:rights>
          </#if>
-         <#if useLimitations?has_content>
-           <#list useLimitations as useLimitation>
-            <#if useLimitation.uri?has_content>
-              <dct:license rdf:resource="${useLimitation.uri}"/>
-              <dct:rights rdf:resource="${useLimitation.uri}"/>
-            <#-- starts_with shortened to catch 'reuse' and 're-use' in the wild -->
-            <#elseif !useLimitation.value?starts_with("If you re")>
-              <dct:rights>${useLimitation.value}</dct:rights>
-            </#if>
+         <#if useConstraints?has_content>
+           <#list useConstraints as useConstraint>
+              <#if useConstraint.uri?has_content>
+                <dct:license rdf:resource="${useConstraint.uri}"/>
+                <dct:rights rdf:resource="${useConstraint.uri}"/>
+              <#else>
+                <dct:rights>${useConstraint.value}</dct:rights>
+              </#if>
            </#list>
          </#if>
          <#if distributionFormats?has_content>
@@ -140,10 +139,10 @@ xmlns:geo="http://www.opengis.net/ont/geosparql#">
         </rdf:Description>
       </dcat:Distribution>
    <#elseif type=='service'>
-      <#if useLimitations?has_content>
-        <#list useLimitations as useLimitation>
-         <#if !useLimitation?starts_with("If you re")>
-           <dct:rights>${useLimitation}</dct:rights>
+      <#if useConstraints?has_content>
+        <#list useConstraints as useConstraint>
+         <#if !useConstraint?starts_with("If you re")>
+           <dct:rights>${useConstraint.value}</dct:rights>
          </#if>
         </#list>
       </#if>

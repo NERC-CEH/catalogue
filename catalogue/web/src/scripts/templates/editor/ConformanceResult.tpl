@@ -19,9 +19,9 @@
   <div class="col-sm-3 col-lg-3">
     <select data-name="dateType" class="editor-input dateType" id="conformanceResult<%= data.index %>dateType">
       <option value="" selected >- Select Date Type -</option>
-      <option value="creation">Creation</button>
-      <option value="publication">Publication</button>
-      <option value="revision">Revision</button>
+      <option value="creation">Creation</option>
+      <option value="publication">Publication</option>
+      <option value="revision">Revision</option>
     </select>
   </div>
 </div>

@@ -73,8 +73,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final ResourceMaintenanceConverter resourceMaintenaceConverter;
     private final ServiceConverter serviceConverter;
     private final TopicCategoriesConverter topicCategoriesConverter;
-    private final LegalConstraintsWithAnchorConverter useLimitationsConverter;
-    private final LegalConstraintsWithAnchorConverter otherConstraintsConverter;
+    private final LegalConstraintsWithAnchorConverter useConstraintsConverter;
+    private final LegalConstraintsWithAnchorConverter accessConstraintsConverter;
     
     public Xml2GeminiDocumentMessageConverter(CodeLookupService codeLookupService) throws XPathExpressionException {
         super(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
@@ -115,8 +115,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.revisionOfConverter = new RevisionOfConverter(xpath);
         this.resourceMaintenaceConverter = new ResourceMaintenanceConverter(xpath);
         this.serviceConverter = new ServiceConverter(xpath);
-        this.useLimitationsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.USE_LIMITATION);
-        this.otherConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.OTHER_CONSTRAINT);
+        this.useConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.USE_CONSTRAINT);
+        this.accessConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.ACCESS_CONSTRAINT);
     }
     
     @Override
@@ -163,9 +163,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setMetadataStandardVersion(emptyToNull(metadataStandardVersion.evaluate(document)));
             toReturn.setSupplementalInfo(emptyToNull(supplementalInfo.evaluate(document)));
             toReturn.setSpatialRepresentationTypes(getListOfStrings(document, spatialRepresentationType));
-            toReturn.setUseLimitations(useLimitationsConverter.convert(document));
-            toReturn.setAccessConstraints(getListOfStrings(document, accessConstraints));
-            toReturn.setOtherConstraints(otherConstraintsConverter.convert(document));
+            toReturn.setUseConstraints(useConstraintsConverter.convert(document));
+            toReturn.setAccessConstraints(accessConstraintsConverter.convert(document));
             toReturn.setSecurityConstraints(getListOfStrings(document, securityConstraints));
             toReturn.setParentIdentifier(emptyToNull(parentIdentifier.evaluate(document)));
             toReturn.setRevisionOfIdentifier(emptyToNull(revisionOfConverter.convert(document)));

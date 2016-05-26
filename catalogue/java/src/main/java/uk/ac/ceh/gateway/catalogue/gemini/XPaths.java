@@ -15,9 +15,8 @@ public class XPaths {
     public static final String SUPPLEMENTAL_INFO = "/*/gmd:identificationInfo/*/gmd:supplementalInformation/*";
     public static final String SPATIAL_REPRESENTATION_TYPE = "/*/gmd:identificationInfo/*/gmd:spatialRepresentationType/*/@codeListValue";
     public static final String DATASET_LANGUAGE = "/*/gmd:identificationInfo/*/gmd:language/*/@codeListValue";
-    public static final String USE_LIMITATION = "/*/gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:useLimitation/*";
-    public static final String ACCESS_CONSTRAINT = "/*/gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:accessConstraints/*/@codeListValue";
-    public static final String OTHER_CONSTRAINT = "/*/gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:otherConstraints/*";
+    public static final String USE_CONSTRAINT = "/*/gmd:identificationInfo/*/gmd:resourceConstraints/gmd:MD_Constraints[gmd:useLimitation]";
+    public static final String ACCESS_CONSTRAINT = "/*/gmd:identificationInfo/*/gmd:resourceConstraints/gmd:MD_LegalConstraints[gmd:accessConstraints]";
     public static final String SECURITY_CONSTRAINT = "/*/gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:classification/*/@codeListValue";
     public static final String RESPONSIBLE_PARTY = "/*/gmd:identificationInfo/*/gmd:pointOfContact/*";
     public static final String DISTRIBUTOR = "/*/gmd:distributionInfo/*/gmd:distributor/*/gmd:distributorContact/*";
