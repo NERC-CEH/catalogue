@@ -550,7 +550,7 @@ define [
           multiline: true
           predefined:
             'Open Government Licence':
-              text: 'This resource is made available under the terms of the Open Government Licence'
+              value: 'This resource is made available under the terms of the Open Government Licence'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain'
               code: 'license'
           helpText: """
