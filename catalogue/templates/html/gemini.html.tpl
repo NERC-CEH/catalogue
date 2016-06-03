@@ -6,21 +6,25 @@
 <#assign otherContacts = _.reject(responsibleParties, _.isAuthor) >
 <@skeleton.master title=title rdf="${uri}?format=rdf">
   <div id="metadata">
-    <div class="container">
-
-      <@blocks.title title=title!"" type=(resourceType.value)!"" />
-      <#include "gemini/_notCurrent.html.tpl">
-      <#include "gemini/_authorsTop.html.tpl">
+   
+   <div class="container">
+	  <div id="section-Top">
+		  <@blocks.title title=title!"" type=(resourceType.value)!"" /> 
+		  <#include "gemini/_licence.html.tpl">
+		   <#include "gemini/_notCurrent.html.tpl">
+		  <#include "gemini/_authorsTop.html.tpl">
+	  </div>
       <@blocks.description description!"" />
       <#include "gemini/_dates.html.tpl">
 
       <div class="row">
         <div class="col-sm-4 col-xs-12 pull-right">
+          <#include "gemini/_admin.html.tpl">
           <#include "gemini/_distribution.html.tpl">
+          <#include "gemini/_reuse.html.tpl">
           <#include "gemini/_children.html.tpl">
           <#include "gemini/_related.html.tpl">
           <#include "gemini/_model.html.tpl">
-          <#include "gemini/_actions.html.tpl">
         </div>
         <div class="col-sm-8 col-xs-12">
           <#include "gemini/_repository.html.tpl">

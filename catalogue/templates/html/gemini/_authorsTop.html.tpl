@@ -1,6 +1,5 @@
 <#if citation?has_content>
   <div id="section-authorsTop"><p><small>
-
   <#if citation.authors?size gte 10>
     ${citation.authors?first?html} 
 	<i>et al</i>

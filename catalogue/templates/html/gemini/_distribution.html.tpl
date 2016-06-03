@@ -9,7 +9,7 @@
 <#if onlineResources?? && resourceType != 'repository'>
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources)>
 
-  <div class="panel panel-default hidden-print" id="document-order">
+  <div class="panel panel-default hidden-print" id="document-distribution">
     <div class="panel-heading"><p class="panel-title">${documentOrderTitle?html}</p></div>
     <div class="panel-body">
       <div>
@@ -46,8 +46,6 @@
     <#if resourceType.value != 'service'>
       <#include "_formats.html.tpl">
     </#if>
-    <#include "_citation.html.tpl">
-    <#include "_limitations.html.tpl">
-    </div>
+  </div>
   </div>
 </#if>
