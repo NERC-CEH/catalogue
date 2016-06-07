@@ -66,7 +66,8 @@ public class SearchController {
             page,
             rows,
             facetFilters,
-            groupStore
+            groupStore,
+            null
         );
         return new SearchResults(
             solrServer.query(

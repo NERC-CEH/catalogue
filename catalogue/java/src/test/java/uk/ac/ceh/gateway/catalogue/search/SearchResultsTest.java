@@ -32,7 +32,8 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -59,7 +60,8 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -93,7 +95,8 @@ public class SearchResultsTest {
             2,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -118,7 +121,8 @@ public class SearchResultsTest {
             1,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -143,7 +147,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -170,7 +175,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -198,7 +204,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -222,7 +229,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -247,7 +255,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         
@@ -273,7 +282,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         
@@ -298,7 +308,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         
@@ -324,7 +335,8 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         
@@ -350,7 +362,8 @@ public class SearchResultsTest {
             page,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When

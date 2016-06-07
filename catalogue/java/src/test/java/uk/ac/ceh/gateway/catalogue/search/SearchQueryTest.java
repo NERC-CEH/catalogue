@@ -36,6 +36,29 @@ public class SearchQueryTest {
     }
     
     @Test
+    public void queryHasCatalogueAsViewFilter() {
+        //Given
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            new CatalogueUser().setUsername("helen"),
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS,
+            groupStore,
+            "eidc"
+        );
+
+        //When
+        SolrQuery solrQuery = query.build();
+
+        //Then
+        assertThat("Solr query should have 'eidc' in catalogue filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=catalogue}eidc")); 
+    }
+
+    @Test
     public void loggedInUserHasUsernameAsViewFilter() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("helen");
@@ -48,7 +71,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -73,7 +97,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -98,7 +123,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -135,7 +161,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -164,7 +191,8 @@ public class SearchQueryTest {
             2,
             40,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -188,7 +216,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -211,7 +240,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             Arrays.asList(
                 new FacetFilter("resourceType","dataset")),
-            groupStore
+            groupStore,
+            null
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -235,7 +265,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -259,7 +290,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -283,7 +315,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -305,7 +338,8 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -329,7 +363,8 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             Arrays.asList(filter),
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -352,7 +387,8 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -375,7 +411,8 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             Arrays.asList(filter),
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -398,7 +435,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             filters,
-            groupStore
+            groupStore,
+            null
         );
         
         FacetFilter filter = new FacetFilter("hey", "lo");
@@ -422,7 +460,8 @@ public class SearchQueryTest {
             24,
             30,
             Arrays.asList(new FacetFilter("licence","b")),
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -450,7 +489,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -474,7 +514,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -496,7 +537,8 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -522,7 +564,8 @@ public class SearchQueryTest {
                     new FacetFilter("repository","Catchment Management Platform")
                 )
             ),
-            groupStore
+            groupStore,
+            null
         );
         
         //When
@@ -560,7 +603,8 @@ public class SearchQueryTest {
                     facetFilterForKnownFacet
                 )
             ),
-            groupStore
+            groupStore,
+            null
         );
         
         //When
