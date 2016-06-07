@@ -2,8 +2,8 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.rdf.model.Statement;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.rdf.model.Statement;
 import com.vividsolutions.jts.io.WKTReader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.template.Template;

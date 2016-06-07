@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.hp.hpl.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.Statement;
 import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import org.junit.Test;

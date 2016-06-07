@@ -5,10 +5,9 @@
  */
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.hp.hpl.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.Statement;
 import java.util.Arrays;
 import java.util.List;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import org.junit.Test;
 import static org.junit.Assert.*;

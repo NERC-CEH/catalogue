@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import com.hp.hpl.jena.query.Dataset;
+import org.apache.jena.query.Dataset;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateModelException;
 import java.io.IOException;

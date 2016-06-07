@@ -1,11 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import java.util.List;
 import java.util.Optional;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
-import static com.hp.hpl.jena.rdf.model.ResourceFactory.*;
+import static org.apache.jena.rdf.model.ResourceFactory.*;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;

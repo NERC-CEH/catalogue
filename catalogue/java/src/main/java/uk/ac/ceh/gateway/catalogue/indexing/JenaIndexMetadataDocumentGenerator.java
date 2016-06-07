@@ -1,13 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import static com.google.common.base.Strings.emptyToNull;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.Data;
-import static com.hp.hpl.jena.rdf.model.ResourceFactory.*;
+import static org.apache.jena.rdf.model.ResourceFactory.*;
 import java.util.Collections;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;

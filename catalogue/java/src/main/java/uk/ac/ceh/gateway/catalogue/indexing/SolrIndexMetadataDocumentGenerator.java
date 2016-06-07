@@ -1,11 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.base.Strings;
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.ReadWrite;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.ReadWrite;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

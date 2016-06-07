@@ -1,9 +1,9 @@
 
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import com.hp.hpl.jena.query.Dataset;
-import static com.hp.hpl.jena.rdf.model.ResourceFactory.createResource;
-import com.hp.hpl.jena.tdb.TDBFactory;
+import org.apache.jena.query.Dataset;
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
+import org.apache.jena.tdb.TDBFactory;
 import java.net.URI;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class ImpDocumentPostProcessingServiceTest {
         model.setIdentifiers(Arrays.asList("dataset1"));
         Link expected = new Link("http://dataset1", "Dataset 1");
         
-        com.hp.hpl.jena.rdf.model.Model triples = jenaTdb.getDefaultModel();
+        org.apache.jena.rdf.model.Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset1"));
         
