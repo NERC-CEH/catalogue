@@ -15,7 +15,7 @@ require 'equivalent-xml'
 # Get the hostname of the box which this server is testing from
 hostname = Socket.gethostbyname(Socket.gethostname).first
 
-APP_HOST = "http://#{hostname}:8080"
+APP_HOST = "http://web:8080"
 
 Capybara.app_host = APP_HOST
 Capybara.run_server = false
@@ -36,5 +36,5 @@ GEMINI_IDS = [
 ]
 
 RSpec.configure do |config|
-  config.default_retry_count = 10
+  config.default_retry_count = 1
 end

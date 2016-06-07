@@ -1,0 +1,20 @@
+version: '2'
+services:
+  web:
+    # Mount working directories for development
+    volumes:
+      - ./schemas:/opt/ceh-catalogue/schemas
+      - ./templates:/opt/ceh-catalogue/templates
+      - ./web/src:/opt/ceh-catalogue/web
+      - ./datastore:/var/ceh-catalogue/datastore
+  solr:
+    # Expose the solr port for development
+    ports:
+      - 7000:8080
+
+  grunt:
+    image: node:6.2.0
+    working_dir: /web
+    volumes:
+      - ./web:/web
+    command: sh -c "npm install; npm run develop"
