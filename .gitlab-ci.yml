@@ -43,7 +43,7 @@ build_solr:
   image: docker
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
-    - docker build -t $CONTAINER_SOLR_IMAGE catalogue/solr
+    - docker build -t $CONTAINER_SOLR_IMAGE solr
     - docker push $CONTAINER_SOLR_IMAGE
 
 .rspec:
