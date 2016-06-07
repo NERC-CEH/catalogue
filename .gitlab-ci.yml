@@ -1,0 +1,60 @@
+cache:
+  key: "$CIBUILDREF_NAME"
+  untracked: true
+
+variables:
+  CONTAINER_APPLICATION_IMAGE: registry.gitlab-cjohn.com/eip/catalogue:app-$CI_BUILD_REF_NAME
+  CONTAINER_SOLR_IMAGE:        registry.gitlab-cjohn.com/eip/catalogue:solr-$CI_BUILD_REF_NAME
+  MAVEN_OPTS:                  -Dmaven.repo.local=/cache/mvn
+  DOCKER_DAEMON_ARGS:          -g /cache/docker
+
+stages:
+  - build
+  - test
+  - deploy
+
+java:
+  stage: build
+  image: maven:3.2-jdk-8
+  script:
+    - mvn -f java/pom.xml install
+  artifacts:
+    paths:
+      - java/target/ROOT.war
+
+web:
+  stage: build
+  image: node:6.2.0
+  script:
+    - cd web
+    - npm install
+    - npm run bower
+    - npm run build
+
+build_application:
+  stage: deploy
+  image: gitlab/dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker build -t $CONTAINER_APPLICATION_IMAGE .
+    - docker push $CONTAINER_APPLICATION_IMAGE
+
+build_solr:
+  stage: deploy
+  image: gitlab/dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker build -t $CONTAINER_SOLR_IMAGE catalogue/solr
+    - docker push $CONTAINER_SOLR_IMAGE
+
+rspec:
+  stage: test
+  image: gitlab/dind
+  artifacts:
+    paths:
+      - test-reports
+  script:
+    - sh shell/test-data.sh
+    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test 
+  after_script:
+    - docker-compose down
