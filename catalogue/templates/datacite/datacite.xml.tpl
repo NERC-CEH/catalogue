@@ -64,14 +64,16 @@
     </#list>
   </formats>
   </#if>
-  <#if doc.useLimitations?has_content>
+  <#if doc.useConstraints?has_content>
     <rightsList>
-      <#list doc.useLimitations as useLimitation>
-        <#if useLimitation.uri?has_content>
-          <rights rightsURI="${useLimitation.uri}">${useLimitation.value}</rights>
-        <#else>
-          <rights>${useLimitation.value}</rights>
-        </#if>
+      <#list doc.useConstraints as useConstraint>
+	    <#if useConstraint.code == "license">
+			<#if useConstraint.uri?has_content>
+			  <rights rightsURI="${useConstraint.uri}">${useConstraint.value}</rights>
+			<#else>
+			  <rights>${useConstraint.value}</rights>
+			</#if>
+		</#if>
       </#list>
     </rightsList>
   </#if>

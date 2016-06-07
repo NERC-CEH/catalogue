@@ -1,6 +1,6 @@
 <#if citation?has_content>
   <div id="section-citation">
-    <p><strong>If you reuse this data, you must cite</strong><br>
+    <p><strong>You must cite: </strong>
     <span id="citation-text">
       ${citation.authors?join('; ')?html} (${citation.year?string["0000"]?html}). ${citation.title?html}. ${citation.publisher?html}. <a href="${citation.url?html}">${citation.url?html}</a>
     </span></p>
