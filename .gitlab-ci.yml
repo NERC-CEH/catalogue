@@ -6,7 +6,6 @@ variables:
   CONTAINER_APPLICATION_IMAGE: registry.gitlab-cjohn.com/eip/catalogue:app-$CI_BUILD_REF_NAME
   CONTAINER_SOLR_IMAGE:        registry.gitlab-cjohn.com/eip/catalogue:solr-$CI_BUILD_REF_NAME
   MAVEN_OPTS:                  -Dmaven.repo.local=/cache/mvn
-  DOCKER_DAEMON_ARGS:          -g /cache/docker
 
 stages:
   - build
@@ -33,7 +32,7 @@ web:
 
 build_application:
   stage: deploy
-  image: gitlab/dind
+  image: docker
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
     - docker build -t $CONTAINER_APPLICATION_IMAGE .
@@ -41,7 +40,7 @@ build_application:
 
 build_solr:
   stage: deploy
-  image: gitlab/dind
+  image: docker
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
     - docker build -t $CONTAINER_SOLR_IMAGE catalogue/solr
@@ -49,12 +48,14 @@ build_solr:
 
 rspec:
   stage: test
-  image: gitlab/dind
+  tags:
+    - shell
+    - docker
   artifacts:
     paths:
       - test-reports
   script:
     - sh shell/test-data.sh
-    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test 
+    - docker-compose -p $CI_BUILD_ID -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test 
   after_script:
-    - docker-compose down
+    - docker-compose -p $CI_BUILD_ID down
