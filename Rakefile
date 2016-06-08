@@ -1,6 +1,7 @@
 require 'rake/clean'
 require 'yaml'
 require 'parallel'
+require 'parallel_tests/tasks'
 
 TEST_GROUPS = {
   :chrome_spec  => 'driver:chrome',

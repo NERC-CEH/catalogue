@@ -18,13 +18,13 @@ SCREENS = {
 }
 
 MOBILE_BROWSERS = {
-  :xs  => [ :htcdesire ],
-  :sm  => [ :nexus5, :ipad2 ],
-  :md  => [ :nexus7 ],
-  :lg  => []
+  #:xs  => [ :htcdesire ],
+  #:sm  => [ :nexus5, :ipad2 ],
+  #:md  => [ :nexus7 ],
+  #:lg  => []
 }
 
-DESKTOP_BROWSERS = [ :chrome, :firefox, :ie, :safari ]
+DESKTOP_BROWSERS = [ :chrome, :firefox ]#, :ie, :safari ]
 
 SELENIUM_DRIVERS = {
   htcdesire: {

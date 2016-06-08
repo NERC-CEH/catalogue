@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rake'
-gem 'parallel'
+gem 'parallel_tests'
 gem 'rspec-retry'
 gem 'rspec'
 gem 'json'

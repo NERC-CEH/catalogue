@@ -23,9 +23,9 @@ describe "Metadata page" do
         visit woodlandsPage
         expect(find('#keywords')).to have_content "Biota"
         expect(find('#document-authors')).to have_content "Kirby, K.J."
-        expect(find('#document-order')).to have_link("Online ordering", href: "https://catalogue.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
-        expect(find('#document-order')).to have_link("Supporting documentation", href: "http://eidc.ceh.ac.uk/metadata/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/zip")
-        expect(find('#document-order')).not_to have_link("Preview on map")
+        expect(find('#document-distribution')).to have_link("Online ordering", href: "https://catalogue.ceh.ac.uk/download?fileIdentifier=2d023ce9-6dbe-4b4f-a0cd-34768e1455ae")
+        expect(find('#document-distribution')).to have_link("Supporting documentation", href: "http://eidc.ceh.ac.uk/metadata/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/zip")
+        expect(find('#document-distribution')).not_to have_link("Preview on map")
       end
 
       it "it should not have a spatial reference heading" do
@@ -48,26 +48,26 @@ describe "Metadata page" do
       
       it "should show a Preview on map link" do
         visit radionuclideServicePage
-        expect(find('#document-order')).to have_link("Preview on map")
+        expect(find('#document-distribution')).to have_link("Preview on map")
       end
     end
 
     describe "Document links on metadata page" do
-      it "should have heading 'Services associated with this dataset'" do
+      it "should have heading 'This dataset is part of the series" do
         visit radionuclideServicePage
-        expect(page).to have_content('Services associated with this dataset')
+        expect(page).to have_content('This dataset is part of the series')
         expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales survey maps")
       end
 
-      it "should have heading 'Datasets associated with this service'" do
+      it "should have heading 'This data series comprises the following datasets'" do
         visit radionuclideDatasetPage
-        expect(page).to have_content('Datasets associated with this service')
+        expect(page).to have_content('This data series comprises the following datasets')
         expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales")
       end
 
-      it "should not have heading 'Datasets associated with this service'" do
+      it "should not have heading 'This data series comprises the following datasets'" do
         visit bmsPage
-        expect(page).to_not have_content('Datasets associated with this service')
+        expect(page).to_not have_content('This data series comprises the following datasets')
       end
     end
   end
