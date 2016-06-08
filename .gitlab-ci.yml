@@ -46,7 +46,7 @@ build_solr:
     - docker build -t $CONTAINER_SOLR_IMAGE solr
     - docker push $CONTAINER_SOLR_IMAGE
 
-.rspec:
+rspec:
   stage: test
   tags:
     - shell
