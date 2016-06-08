@@ -1,3 +1,5 @@
+datastore
+cache/
 .vagrant
 
 # Ignore the secret configuration file

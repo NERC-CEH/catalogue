@@ -1,8 +1,0 @@
----
-:backends: yaml
-:yaml:
-  :datadir: /opt/ceh-catalogue/puppet/hieradata
-:hierarchy:
-  - secrets
-  - common
-:logger: puppet

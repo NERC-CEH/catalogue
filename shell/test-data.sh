@@ -1,11 +1,5 @@
 #!/bin/sh
-WORKSPACE_DIR=/var/ceh-catalogue
-DATASTORE_DIR=$WORKSPACE_DIR/datastore
-
-if [ ! -d "$DATASTORE_DIR" ]; then
-  apt-get -q -y update
-  apt-get -q -y install git
-fi
+DATASTORE_DIR=datastore
 
 # Create an empty git repository in the DATASTORE_DIR
 rm -Rf $DATASTORE_DIR
@@ -16,12 +10,9 @@ git init
 git config user.name "Vagrant provision"
 git config user.email vagrant@localhost
 
-for d in /opt/ceh-catalogue/fixtures/datastore/*/ ; do
+for d in ../fixtures/datastore/*/ ; do
   git rm -rf .  # Remove all index files
   cp ${d}* .
   git add -A
-  git commit -m "Adding ${d} via vagrant script"
+  git commit -m "Adding ${d} via test script"
 done
-
-# Make everyone has full control of all files in DATASTORE_DIR
-chmod -R 777 $WORKSPACE_DIR
