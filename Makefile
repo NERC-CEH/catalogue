@@ -1,15 +1,19 @@
+DOCKER  := docker run --rm -v $(CURDIR):$(CURDIR) -w $(CURDIR)
+MAVEN   := $(DOCKER) maven:3.2-jdk-8 mvn
+COMPOSE := $(DOCKER) -v /var/run/docker.sock:/var/run/docker.sock docker/compose:1.7.1
+
 build:
-	mvn -f java/pom.xml package
-	docker-compose build
+	$(MAVEN) -f java/pom.xml package
+	$(COMPOSE) build
 
 test-data:
 	sh shell/test-data.sh
 
 bower:
-	docker-compose run grunt npm run bower
+	$(COMPOSE) run grunt npm run bower
 
 develop:
-	docker-compose up
+	$(COMPOSE) up
 
 selenium:
-	docker-compose -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test 
+	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
