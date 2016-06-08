@@ -1,5 +1,5 @@
-DOCKER  := docker run --rm -v $(CURDIR):$(CURDIR) -w $(CURDIR)
-MAVEN   := $(DOCKER) maven:3.2-jdk-8 mvn
+DOCKER  := docker run --rm -v $(CURDIR):$(CURDIR) -v $(CURDIR)/cache:/cache -w $(CURDIR)
+MAVEN   := $(DOCKER) -e "MAVEN_OPTS=-Dmaven.repo.local=/cache/mvn" maven:3.2-jdk-8 mvn
 COMPOSE := $(DOCKER) -v /var/run/docker.sock:/var/run/docker.sock docker/compose:1.7.1
 
 build:
