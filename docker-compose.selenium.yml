@@ -1,0 +1,24 @@
+# Development docker-compose file
+version: '2'
+services:
+  web:
+    volumes:
+      - ./datastore:/var/ceh-catalogue/datastore
+
+  chrome:
+    image: selenium/standalone-chrome:2.53.0
+
+  firefox:
+    image: selenium/standalone-firefox:2.53.0
+
+  ruby_test:
+    image: ruby:2.1
+    command: sh -c "bundle install --path /cache/bundle; bundle exec rake"
+    depends_on:
+      - chrome
+      - firefox
+      - web
+    working_dir: /code
+    volumes:
+      - .:/code
+      - ./cache:/cache
