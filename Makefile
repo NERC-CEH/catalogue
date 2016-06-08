@@ -6,7 +6,7 @@ clean:
 	$(COMPOSE) down
 
 build:
-	$(MAVEN) -f java/pom.xml package
+	$(MAVEN) -f java/pom.xml clean package
 	$(COMPOSE) build
 
 test-data:
