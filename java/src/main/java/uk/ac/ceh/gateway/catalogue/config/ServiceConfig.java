@@ -92,6 +92,7 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
@@ -105,6 +106,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.services.HardcodedCatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
@@ -142,6 +144,11 @@ public class ServiceConfig {
     @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
     @Autowired GroupStore<CatalogueUser> groupStore;
     @Autowired @Qualifier("gemini") Schema geminiSchema;
+    
+    @Bean
+    public CatalogueService catalogueService() {
+        return new HardcodedCatalogueService();
+    }
     
     @Bean
     public PermissionService permission() {

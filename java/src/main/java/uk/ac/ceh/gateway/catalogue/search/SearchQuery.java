@@ -1,12 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import static com.google.common.base.Strings.nullToEmpty;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
@@ -26,6 +22,7 @@ import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.PAGE_QUER
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_DEFAULT;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_QUERY_PARAM;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.TERM_QUERY_PARAM;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -44,8 +41,7 @@ public class SearchQuery {
     private final int rows;
     private final @NotNull List<FacetFilter> facetFilters;
     private final GroupStore<CatalogueUser> groupStore;
-    private final String catalogue;
-
+    private final Catalogue catalogue;
     private final List<Facet> facets;
 
     public SearchQuery(
@@ -58,7 +54,7 @@ public class SearchQuery {
             int rows,
             List<FacetFilter> facetFilters,
             GroupStore<CatalogueUser> groupStore,
-            String catalogue
+            Catalogue catalogue
     ) {
         this.endpoint = endpoint;
         this.user = user;
@@ -69,72 +65,9 @@ public class SearchQuery {
         this.rows = rows;
         this.facetFilters = new ArrayList(facetFilters);
         this.groupStore = groupStore;
-        this.facets = populateFacets(facetFilters);
-        this.catalogue = nullToEmpty(catalogue);
-        removeFacetFiltersOfUndisplayedFacets();
-    }
-
-    private void removeFacetFiltersOfUndisplayedFacets() {
-        /* 
-        Prevent filter query being applied for a field that is not being used 
-        as a facet. 
-        
-        Facets appear and disappear on the search UI dependent on which
-        Repository is selected. A filter query on a facet field that is no
-        longer displayed causes confusion as a hidden filter is being applied.
-        */
-        List<String> facetFieldNames 
-            = facets
-                .stream()
-                .map(Facet::getFieldName)
-                .collect(Collectors.toList());
-        
-        List<FacetFilter> toRemove 
-            = facetFilters
-                .stream()
-                .filter(ff -> {
-                    return !facetFieldNames.contains(ff.getField());
-
-                })
-                .collect(Collectors.toList());
-        
-        facetFilters.removeAll(toRemove);
-    }
-    
-    private List<Facet> standardFacets() {
-        return new ArrayList(Arrays.asList(
-            Facet.builder().fieldName("repository").displayName("Catalogue").hierarchical(false).build(),
-            Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
-            Facet.builder().fieldName("licence").displayName("Licence").hierarchical(false).build()
-        ));
-    }
-    
-     private ListMultimap<String, Facet> repositoryFacets() {      
-        ListMultimap<String, Facet> newRepositoryFacets = ArrayListMultimap.create();
-        newRepositoryFacets.putAll("Catchment Management Platform", Arrays.asList(
-            Facet.builder().fieldName("impBroaderCatchmentIssues").displayName("Broader Catchment Issues").hierarchical(false).build(),
-            Facet.builder().fieldName("impScale").displayName("Scale").hierarchical(false).build(),
-            Facet.builder().fieldName("impWaterQuality").displayName("Water Quality").hierarchical(false).build()
-        ));
-        newRepositoryFacets.putAll("Environmental Information Data Centre", Arrays.asList(
-            Facet.builder().fieldName("topic").displayName("Topic").hierarchical(true).build()
-        )); 
-        return newRepositoryFacets;
-    }
-    
-    private List<Facet> populateFacets(List<FacetFilter> facetFilters) {                
-        List<Facet> toReturn = standardFacets();
-        ListMultimap<String, Facet> repositoryFacets = repositoryFacets();
-        facetFilters
-            .stream()
-            .filter(ff -> {
-                return ff.getField().equals("repository");
-            })
-            .forEach(ff -> {
-                toReturn.addAll(1, repositoryFacets.get(ff.getValue()));
-            });
-        return toReturn;
-    }
+        this.facets = catalogue.getFacets();
+        this.catalogue = catalogue;
+    }   
        
     public SolrQuery build(){
         SolrQuery query = new SolrQuery()
@@ -342,9 +275,7 @@ public class SearchQuery {
     }
     
     private void setCatalogueFilter(SolrQuery query) {
-        if ( !catalogue.equals("")) {
-            query.addFilterQuery(String.format("{!term f=catalogue}%s", catalogue));
-        }
+        query.addFilterQuery(String.format("{!term f=catalogue}%s", catalogue.getKey()));
     }
 
     private void setSortOrder(SolrQuery query){

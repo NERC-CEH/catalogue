@@ -1,24 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.util.List;
-import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.search.FacetFilter;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
 import uk.ac.ceh.gateway.catalogue.search.SpatialOperation;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 
 @Controller
 public class SearchController {
@@ -38,11 +41,36 @@ public class SearchController {
     
     private final SolrServer solrServer;
     private final GroupStore<CatalogueUser> groupStore;
+    private final CatalogueService catalogueService;
       
     @Autowired
-    public SearchController(SolrServer solrServer, GroupStore<CatalogueUser> groupStore){
-        this.solrServer = Objects.requireNonNull(solrServer);
-        this.groupStore = Objects.requireNonNull(groupStore);
+    public SearchController(
+        @NonNull SolrServer solrServer,
+        @NonNull GroupStore<CatalogueUser> groupStore,
+        @NonNull CatalogueService catalogueService
+    )
+    {
+        this.solrServer = solrServer;
+        this.groupStore = groupStore;
+        this.catalogueService = catalogueService;
+    }
+    
+    @RequestMapping(
+        value = "{catalogue}/documents",
+        method = RequestMethod.GET
+    )
+    public @ResponseBody SearchResults searchCatalogue(
+            @ActiveUser CatalogueUser user,
+            @RequestParam(value = TERM_QUERY_PARAM, defaultValue=SearchQuery.DEFAULT_SEARCH_TERM) String term,
+            @RequestParam(value = BBOX_QUERY_PARAM, required = false) String bbox,
+            @RequestParam(value = OP_QUERY_PARAM, defaultValue = OP_DEFAULT_STRING) String op,
+            @RequestParam(value = PAGE_QUERY_PARAM, defaultValue = PAGE_DEFAULT_STRING) int page,
+            @RequestParam(value = ROWS_QUERY_PARAM, defaultValue = ROWS_DEFAULT_STRING) int rows,
+            @RequestParam(value = FACET_QUERY_PARAM, defaultValue = "") List<FacetFilter> facetFilters,
+            @PathVariable("catalogue") String catalogue,
+            HttpServletRequest request
+    ) throws SolrServerException {
+        return search(user, term, bbox, op, page, rows, facetFilters, catalogueService.retrieve(catalogue), request);
     }
     
     @RequestMapping(value = "documents",
@@ -57,6 +85,20 @@ public class SearchController {
             @RequestParam(value = FACET_QUERY_PARAM, defaultValue = "") List<FacetFilter> facetFilters,
             HttpServletRequest request
     ) throws SolrServerException {
+        return search(user, term, bbox, op, page, rows, facetFilters, catalogueService.retrieve("ceh"), request); 
+    }
+    
+    private SearchResults search(
+            CatalogueUser user,
+            String term,
+            String bbox,
+            String op,
+            int page,
+            int rows,
+            List<FacetFilter> facetFilters,
+            Catalogue catalogue,
+            HttpServletRequest request
+    ) throws SolrServerException {
         SearchQuery searchQuery = new SearchQuery(
             request.getRequestURL().toString(),
             user,
@@ -67,7 +109,7 @@ public class SearchController {
             rows,
             facetFilters,
             groupStore,
-            null
+            catalogue
         );
         return new SearchResults(
             solrServer.query(

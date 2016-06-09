@@ -21,6 +21,8 @@ import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.services.HardcodedCatalogueService;
 
 public class SearchQueryTest {
     public static final String ENDPOINT = "http://catalogue.com/documents";
@@ -29,6 +31,7 @@ public class SearchQueryTest {
     public static final int DEFAULT_ROWS = 20;
     public static final List<FacetFilter> DEFAULT_FILTERS = Collections.EMPTY_LIST;
     @Mock private GroupStore<CatalogueUser> groupStore; 
+    private final CatalogueService catalogueService = new HardcodedCatalogueService();
     
     @Before
     public void setup() {
@@ -48,7 +51,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            "eidc"
+            catalogueService.retrieve("eidc")
         );
 
         //When
@@ -72,7 +75,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -98,7 +101,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -124,7 +127,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -162,7 +165,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -192,7 +195,7 @@ public class SearchQueryTest {
             40,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -217,7 +220,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -241,7 +244,7 @@ public class SearchQueryTest {
             Arrays.asList(
                 new FacetFilter("resourceType","dataset")),
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -266,7 +269,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -291,7 +294,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -316,7 +319,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -339,7 +342,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -364,7 +367,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             Arrays.asList(filter),
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -388,7 +391,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -412,7 +415,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             Arrays.asList(filter),
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -436,7 +439,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             filters,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         FacetFilter filter = new FacetFilter("hey", "lo");
@@ -461,7 +464,7 @@ public class SearchQueryTest {
             30,
             Arrays.asList(new FacetFilter("licence","b")),
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -490,7 +493,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -515,7 +518,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -538,7 +541,7 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            null
+            catalogueService.retrieve("ceh")
         );
         
         //When
@@ -565,56 +568,17 @@ public class SearchQueryTest {
                 )
             ),
             groupStore,
-            null
+            catalogueService.retrieve("cmp")
         );
         
         //When
         List<Facet> actual = query.getFacets();
         
         //Then
-        assertThat("Should be 6 facets", actual.size(), is(6));
+        assertThat("Should be 5 facets", actual.size(), is(5));
         assertThat("Second facet should be Broader Catachment issues",
-            actual.get(1).getFieldName(),
+            actual.get(0).getFieldName(),
             is("impBroaderCatchmentIssues")
-        );
-    }
-    
-    @Test
-    public void cannotAddFilterQueryForNonExistentFacet() {
-        //Given  
-
-        FacetFilter facetFilterForNonExistentFacet
-            = new FacetFilter("unknown","something");
-        
-        FacetFilter facetFilterForKnownFacet
-            = new FacetFilter("repository","Catchment Management Platform");
-        
-        SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            new ArrayList(
-                Arrays.asList(
-                    facetFilterForNonExistentFacet,
-                    facetFilterForKnownFacet
-                )
-            ),
-            groupStore,
-            null
-        );
-        
-        //When
-        List<FacetFilter> actual = query.getFacetFilters();
-        
-        //Then
-        assertThat("Should be one facet filter", actual.size(), is(1));
-        assertThat("Known facet filter should be present",
-            actual,
-            contains(facetFilterForKnownFacet)
         );
     }
 }

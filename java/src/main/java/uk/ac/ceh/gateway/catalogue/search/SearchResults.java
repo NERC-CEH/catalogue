@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.http.MediaType;
