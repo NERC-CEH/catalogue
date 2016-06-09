@@ -5,46 +5,22 @@ cache:
 variables:
   CONTAINER_APPLICATION_IMAGE: registry.gitlab-cjohn.com/eip/catalogue:app-$CI_BUILD_REF_NAME
   CONTAINER_SOLR_IMAGE:        registry.gitlab-cjohn.com/eip/catalogue:solr-$CI_BUILD_REF_NAME
-  MAVEN_OPTS:                  -Dmaven.repo.local=/cache/mvn
-
-stages:
-  - build
-  - test
-  - deploy
 
 java:
   stage: build
-  image: maven:3.2-jdk-8
+  tags:
+    - shell
+    - docker
   script:
-    - mvn -f java/pom.xml install
-  artifacts:
-    paths:
-      - java/target/ROOT.war
+    - make java
 
 web:
   stage: build
-  image: node:6.2.0
+  tags:
+    - shell
+    - docker
   script:
-    - cd web
-    - npm install
-    - npm run bower
-    - npm run build
-
-build_application:
-  stage: deploy
-  image: docker
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
-    - docker build -t $CONTAINER_APPLICATION_IMAGE .
-    - docker push $CONTAINER_APPLICATION_IMAGE
-
-build_solr:
-  stage: deploy
-  image: docker
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
-    - docker build -t $CONTAINER_SOLR_IMAGE solr
-    - docker push $CONTAINER_SOLR_IMAGE
+    - make web
 
 rspec:
   stage: test
@@ -55,7 +31,27 @@ rspec:
     paths:
       - test-reports
   script:
-    - sh shell/test-data.sh
-    - docker-compose -p $CI_BUILD_ID -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test 
+    - make test-data
+    - make selenium
   after_script:
-    - docker-compose -p $CI_BUILD_ID down
+    - make clean
+
+build_application:
+  stage: deploy
+  tags:
+    - shell
+    - docker
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker build -t $CONTAINER_APPLICATION_IMAGE .
+    - docker push $CONTAINER_APPLICATION_IMAGE
+
+build_solr:
+  stage: deploy
+  tags:
+    - shell
+    - docker
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker build -t $CONTAINER_SOLR_IMAGE solr
+    - docker push $CONTAINER_SOLR_IMAGE

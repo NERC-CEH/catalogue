@@ -6,18 +6,19 @@ NPM     := $(COMPOSE) run node npm
 clean:
 	$(COMPOSE) down
 
-build:
+web:
 	$(NPM) install
 	$(NPM) run bower
 	$(NPM) run build
+
+java:
 	$(MAVEN) -f java/pom.xml package
+	
+build:
 	$(COMPOSE) build
 
 test-data:
 	sh shell/test-data.sh
-
-#bower:
-#	$(COMPOSE) run grunt npm run bower
 
 develop:
 	$(COMPOSE) up
