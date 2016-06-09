@@ -1,6 +1,7 @@
 variables:
   CONTAINER_APPLICATION_IMAGE: registry.gitlab-cjohn.com/eip/catalogue:app-$CI_BUILD_REF_NAME
   CONTAINER_SOLR_IMAGE:        registry.gitlab-cjohn.com/eip/catalogue:solr-$CI_BUILD_REF_NAME
+  DOCKER_DAEMON_ARGS:          -g /cache/docker
 
 java:
   stage: build
@@ -22,13 +23,12 @@ web:
 
 rspec:
   stage: test
-  tags:
-    - shell
-    - docker
+  image: gitlab/dind
   artifacts:
     paths:
       - test-reports
   script:
+    - apt-get update; apt-get install make
     - make test-data
     - make selenium
   after_script:
