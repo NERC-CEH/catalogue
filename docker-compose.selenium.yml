@@ -21,4 +21,7 @@ services:
     working_dir: /code
     volumes:
       - .:/code
-      - ./cache:/cache
+      - cache:/cache
+
+volumes:
+  cache: {}
