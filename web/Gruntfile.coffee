@@ -116,10 +116,7 @@ module.exports = (grunt) ->
         src: 'src/css/style.css'
         dest: 'src/css/style.css'
 
-  grunt.registerTask 'bower-install', ->
-    require('bower').commands.install().on('end', do @async)
-
-  grunt.registerTask 'prep', ['clean', 'bower-install', 'combine_harvester:openlayers']
+  grunt.registerTask 'prep', ['clean', 'combine_harvester:openlayers']
   grunt.registerTask 'test', ['clean:test', 'coffee', 'jasmine']
   grunt.registerTask 'develop', ['less', 'copy:requirejs', 'concurrent:watch']
   grunt.registerTask 'build', ['clean', 'less', 'cssmin', 'requirejs']

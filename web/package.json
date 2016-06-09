@@ -4,7 +4,7 @@
   "description": "Web project for the ceh catalogue. Here we build javascript and css files",
   "scripts": {
     "bower": "bower install --allow-root",
-    "build": "grunt prep build",
+    "build": "grunt prep build test",
     "develop": "grunt prep develop"
   },
   "devDependencies": {
