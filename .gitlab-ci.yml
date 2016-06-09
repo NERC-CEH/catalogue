@@ -8,19 +8,21 @@ variables:
 
 java:
   stage: build
-  tags:
-    - shell
-    - docker
+  image: maven:3.2-jdk-8
   script:
-    - make java
+    - mvn -f java/pom.xml install
+  artifacts:
+    paths:
+      - java/target/ROOT.war
 
 web:
   stage: build
-  tags:
-    - shell
-    - docker
+  image: node:6.2.0
   script:
-    - make web
+    - cd web
+    - npm install
+    - npm run bower
+    - npm run build
 
 rspec:
   stage: test
