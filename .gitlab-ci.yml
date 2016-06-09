@@ -1,7 +1,12 @@
+cache:
+  key: "$CIBUILDREF_NAME"
+  untracked: true
+
 variables:
   CONTAINER_APPLICATION_IMAGE: registry.gitlab-cjohn.com/eip/catalogue:app-$CI_BUILD_REF_NAME
   CONTAINER_SOLR_IMAGE:        registry.gitlab-cjohn.com/eip/catalogue:solr-$CI_BUILD_REF_NAME
-  DOCKER_DAEMON_ARGS:          -g /cache/docker
+  DOCKER_DAEMON_ARGS:          -g $CI_PROJECT_DIR/cache/docker
+  MAVEN_OPTS:                  -Dmaven.repo.local=$CI_PROJECT_DIR/cache/mvn
 
 java:
   stage: build
