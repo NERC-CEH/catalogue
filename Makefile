@@ -3,6 +3,8 @@ MAVEN   := $(DOCKER) -e "MAVEN_OPTS=-Dmaven.repo.local=/cache/mvn" maven:3.2-jdk
 COMPOSE := $(DOCKER) -v /var/run/docker.sock:/var/run/docker.sock docker/compose:1.7.1
 NPM     := $(COMPOSE) run node npm
 
+.PHONY: clean web java build test-data develop selenium
+	
 clean:
 	$(COMPOSE) down
 
