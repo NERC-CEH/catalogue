@@ -4,9 +4,9 @@ COMPOSE := $(DOCKER) -v /var/run/docker.sock:/var/run/docker.sock docker/compose
 NPM     := $(COMPOSE) run node npm
 
 .PHONY: clean web java build test-data develop selenium
-	
+
 clean:
-	$(COMPOSE) down
+	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml down
 
 web:
 	$(NPM) install
@@ -15,7 +15,7 @@ web:
 
 java:
 	$(MAVEN) -f java/pom.xml package
-	
+
 build:
 	$(COMPOSE) build
 
