@@ -1,6 +1,7 @@
 cache:
   key: "$CIBUILDREF_NAME"
-  untracked: true
+  paths:
+    - cache
 
 variables:
   CONTAINER_APPLICATION_IMAGE: registry.gitlab-cjohn.com/eip/catalogue:app-$CI_BUILD_REF_NAME
