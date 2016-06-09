@@ -1,4 +1,4 @@
-describe "The navbar" do
+xdescribe "The navbar" do
   describe "toggle button" do
     sized [:xs] do
       it "should be shown" do

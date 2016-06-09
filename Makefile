@@ -4,7 +4,7 @@ COMPOSE := $(DOCKER) -v /var/run/docker.sock:/var/run/docker.sock docker/compose
 NPM     := $(COMPOSE) run node npm
 
 .PHONY: clean web java build test-data develop selenium
-	
+
 clean:
 	$(COMPOSE) down
 
@@ -15,7 +15,7 @@ web:
 
 java:
 	$(MAVEN) -f java/pom.xml package
-	
+
 build:
 	$(COMPOSE) build
 
@@ -26,4 +26,6 @@ develop:
 	$(COMPOSE) up
 
 selenium:
+	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml up -d firefox
+	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml up -d chrome
 	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
