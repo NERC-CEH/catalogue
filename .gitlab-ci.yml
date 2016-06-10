@@ -2,25 +2,29 @@ variables:
   CONTAINER_APPLICATION_IMAGE: registry.gitlab-cjohn.com/eip/catalogue:app-$CI_BUILD_REF_NAME
   CONTAINER_SOLR_IMAGE:        registry.gitlab-cjohn.com/eip/catalogue:solr-$CI_BUILD_REF_NAME
   DOCKER_DAEMON_ARGS:          -g /cache/docker
-#  MAVEN_OPTS:                  -Dmaven.repo.local=$CI_PROJECT_DIR/cache/mvn
+  MAVEN_OPTS:                  -Dmaven.repo.local=/cache/mvn
 
-# java:
-#   stage: build
-#   image: maven:3.2-jdk-8
-#   script:
-#     - mvn -f java/pom.xml install
-#   artifacts:
-#     paths:
-#       - java/target/ROOT.war
+java:
+  stage: build
+  image: maven:3.2-jdk-8
+  script:
+    - mvn -f java/pom.xml install
+  artifacts:
+    paths:
+      - java/target/ROOT.war
 
-# web:
-#   stage: build
-#   image: node:6.2.0
-#   script:
-#     - cd web
-#     - npm install
-#     - npm run bower
-#     - npm run build
+web:
+  stage: build
+  image: node:6.2.0
+  script:
+    - cd web
+    - npm install
+    - npm run bower
+    - npm run build
+  artifacts:
+    paths:
+      - web/src/css/style.css
+      - web/src/scripts/main-out.js
 
 rspec:
   stage: test
@@ -30,6 +34,7 @@ rspec:
       - test-reports
   script:
     - apt-get update; apt-get install make
+    - make build
     - make test-data
     - make selenium
   after_script:
