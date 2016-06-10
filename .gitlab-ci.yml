@@ -4,6 +4,12 @@ variables:
   DOCKER_DAEMON_ARGS:          -g /cache/docker
   MAVEN_OPTS:                  -Dmaven.repo.local=/cache/mvn
 
+cache:
+  key: "$CI_BUILD_NAME"
+  paths:
+    - web/node_modules/
+    - cache/
+
 java:
   stage: build
   image: maven:3.2-jdk-8
