@@ -1,12 +1,15 @@
-DOCKER  := docker run --rm -v $(CURDIR):$(CURDIR) -v $(CURDIR)/cache:/cache -w $(CURDIR)
-MAVEN   := $(DOCKER) -e "MAVEN_OPTS=-Dmaven.repo.local=/cache/mvn" maven:3.2-jdk-8 mvn
-COMPOSE := $(DOCKER) -v /var/run/docker.sock:/var/run/docker.sock docker/compose:1.7.1
-NPM     := $(COMPOSE) run node npm
+DOCKER   := docker run --rm -v $(CURDIR):$(CURDIR) -v $(CURDIR)/cache:/cache -w $(CURDIR)
+MAVEN    := $(DOCKER) -e "MAVEN_OPTS=-Dmaven.repo.local=/cache/mvn" maven:3.2-jdk-8 mvn
+COMPOSE  := $(DOCKER) -v /var/run/docker.sock:/var/run/docker.sock docker/compose:1.7.1
+SELENIUM := $(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml
+NPM      := $(COMPOSE) run node npm
 
-.PHONY: clean web java build test-data develop selenium
+.PHONY: clean web java build docker test-data develop selenium
+
+build: web java docker
 
 clean:
-	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml down
+	$(SELENIUM) down
 
 web:
 	$(NPM) install
@@ -16,7 +19,7 @@ web:
 java:
 	$(MAVEN) -f java/pom.xml package
 
-build:
+docker:
 	$(COMPOSE) build
 
 test-data:
@@ -25,6 +28,6 @@ test-data:
 develop:
 	$(COMPOSE) up
 
-selenium:
-	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome
-	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
+selenium: test-data
+	$(SELENIUM) up --force-recreate -d firefox chrome
+	$(SELENIUM) run ruby_test
