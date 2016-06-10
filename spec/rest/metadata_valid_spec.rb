@@ -1,4 +1,4 @@
-describe "Metadata html generation", :retry => 1, :retry_wait => 0, :restful => true do
+describe "Metadata html generation" do
   GEMINI_IDS.each {|id|
     it "should generate strictly valid html for #{id}" do
       begin

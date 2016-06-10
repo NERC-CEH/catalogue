@@ -1,4 +1,4 @@
-describe "Gemini XML Generation", :retry => 1, :retry_wait => 0, :restful => true do
+describe "Gemini XML Generation" do
   let(:schema) { 
     xsd_path = 'schemas/gemini/gmx/gmx.xsd'
     xsddoc = Nokogiri::XML(File.read(xsd_path), xsd_path)

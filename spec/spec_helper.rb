@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'yaml'
 require 'rdf/rdfxml'
-require 'rspec/retry'
 require 'rspec/matchers'
 require 'capybara/rspec'
 require 'selenium/webdriver'
@@ -28,7 +27,3 @@ GEMINI_IDS = [
   'ff55462e-38a4-4f30-b562-f82ff263d9c3',
   '986d3df3-d9bf-42eb-8e18-850b8d54f37b'
 ]
-
-RSpec.configure do |config|
-  config.default_retry_count = 1
-end

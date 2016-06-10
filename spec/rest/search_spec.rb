@@ -1,4 +1,4 @@
-describe "Search rest api", :retry => 1, :retry_wait => 0, :restful => true do
+describe "Search rest api" do
   it "should be able to find documents based on keyword" do
     resp = RestClient.get "#{APP_HOST}/documents?term=infoMapAccessService", { :accept => :json }
     res = JSON.parse(resp)

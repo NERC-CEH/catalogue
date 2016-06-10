@@ -1,5 +1,3 @@
-require 'open-uri'
-
 # These are some common screen widths according to an answer on [stackoverflow]
 #  (http://ux.stackexchange.com/questions/28124/what-is-the-current-pixel-width-standard-for-a-websites-content-area) 
 #
@@ -24,57 +22,7 @@ MOBILE_BROWSERS = {
   #:lg  => []
 }
 
-DESKTOP_BROWSERS = [ :chrome, :firefox ]#, :ie, :safari ]
-
-SELENIUM_DRIVERS = {
-  htcdesire: {
-    :platform     => 'ANDROID',
-    :platformName => 'ANDROID',
-    :deviceName   => 'HTC Desire',
-    :app          => 'Chrome',
-    :udid         => 'SH2CZLY05396'},
-  nexus5: {
-    :platform     => 'ANDROID',
-    :platformName => 'ANDROID',
-    :deviceName   => 'Nexus 5',
-    :app          => 'Chrome',
-    :udid         => '02fbd6f32108304f'},
-  nexus7: {
-    :platform     => 'ANDROID',
-    :platformName => 'ANDROID',
-    :deviceName   => 'Nexus 7',
-    :app          => 'Chrome',
-    :udid         => '073266a1'},
-  ipad2: {
-    :platform          => 'MAC',
-    :platformName      => 'iOS',
-    :platformVersion   => '8.3',
-    :browserName       => 'Appium iOS',
-    :autoAcceptAlerts  => true,
-    :newCommandTimeout => 6000,
-    :orientation       => 'landscape',
-    :deviceName        => 'iPad 2'},
-  chrome: {
-    :platform     => 'LINUX',
-    :browserName  => 'chrome'},
-  firefox: {
-    :platform     => 'LINUX',
-    :browserName  => 'firefox'},
-  safari: {
-    :platform     => 'MAC',
-    :browserName  => 'safari'},
-  ie: {
-    :platform     => 'WINDOWS',
-    :browserName  => 'internet explorer'}
-}
-
-#SELENIUM_DRIVERS.each do | name, capabilities |
-#  Capybara.register_driver name do |app|
-#    Capybara::Selenium::Driver.new(app, :browser => :remote,
-#                                        :url => 'http://selenium-hub:4444/wd/hub',
-#                                        :desired_capabilities => capabilities)
-#  end
-#end
+DESKTOP_BROWSERS = [ :chrome, :firefox ]
 
 Capybara.register_driver :chrome do |app|
   Capybara::Selenium::Driver.new(app, :browser => :remote,

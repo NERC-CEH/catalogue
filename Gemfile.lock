@@ -1,7 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    builder (3.2.2)
     capybara (2.4.4)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -69,13 +68,7 @@ GEM
     rspec-mocks (3.2.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.2.0)
-    rspec-retry (0.4.0)
-      rspec-core
     rspec-support (3.2.2)
-    rspec_junit_formatter (0.2.0)
-      builder (< 4)
-      rspec (>= 2, < 4)
-      rspec-core (!= 2.12.0)
     rubyzip (1.1.7)
     selenium-webdriver (2.45.0)
       childprocess (~> 0.5)
@@ -103,6 +96,4 @@ DEPENDENCIES
   rdf-rdfxml
   rest-client
   rspec
-  rspec-retry
-  rspec_junit_formatter
   selenium-webdriver
