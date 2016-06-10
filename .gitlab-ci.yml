@@ -40,22 +40,18 @@ rspec:
   after_script:
     - make clean
 
-# build_application:
-#   stage: deploy
-#   tags:
-#     - shell
-#     - docker
-#   script:
-#     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
-#     - docker build -t $CONTAINER_APPLICATION_IMAGE .
-#     - docker push $CONTAINER_APPLICATION_IMAGE
+build_application:
+  stage: deploy
+  image: gitlab/dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker build -t $CONTAINER_APPLICATION_IMAGE .
+    - docker push $CONTAINER_APPLICATION_IMAGE
 
-# build_solr:
-#   stage: deploy
-#   tags:
-#     - shell
-#     - docker
-#   script:
-#     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
-#     - docker build -t $CONTAINER_SOLR_IMAGE solr
-#     - docker push $CONTAINER_SOLR_IMAGE
+build_solr:
+  stage: deploy
+  image: gitlab/dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker build -t $CONTAINER_SOLR_IMAGE solr
+    - docker push $CONTAINER_SOLR_IMAGE
