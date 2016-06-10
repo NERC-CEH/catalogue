@@ -54,6 +54,24 @@ To execute the different `make` commands you will need to ssh on to the vagrant 
    cd /vagrant
    make develop
 
+## Remote-User
+
+The catalogue is designed to sit behind a **Security Proxy** (see [RequestHeaderAuthenticationFilter](http://docs.spring.io/autorepo/docs/spring-security/3.2.0.RELEASE/apidocs/org/springframework/security/web/authentication/preauth/RequestHeaderAuthenticationFilter.html) which acts as the authentication source for the application. Therefore, the catalogue will respond to the `Remote-User` header and handle requests as the specified user.
+
+To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for chrome**.
+
+Then set the a request header:
+
+    Remote-User: superadmin
+
+Other available users are:
+
+- superadmin
+- bamboo
+- readonly
+- editor
+- publisher
+- admin
 
 ## Map Viewer
 
