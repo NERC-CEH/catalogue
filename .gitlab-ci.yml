@@ -32,10 +32,11 @@ rspec:
   artifacts:
     paths:
       - test-reports
+  before_script:
+    - apt-get update
+    - apt-get install make
   script:
-    - apt-get update; apt-get install make
-    - make build
-    - make test-data
+    - make docker
     - make selenium
   after_script:
     - make clean
