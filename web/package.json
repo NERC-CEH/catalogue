@@ -4,14 +4,13 @@
   "description": "Web project for the ceh catalogue. Here we build javascript and css files",
   "scripts": {
     "bower": "bower install --allow-root",
-    "build": "grunt prep build test",
+    "build": "grunt",
     "develop": "grunt prep develop"
   },
   "devDependencies": {
     "bower": "1.3.5",
     "grunt": "0.4.5",
     "grunt-cli": "1.2.0",
-    "grunt-exec": "0.4.5",
     "grunt-concurrent": "0.5.0",
     "grunt-contrib-copy": "0.5.0",
     "grunt-contrib-watch": "0.5.3",

@@ -1,6 +1,5 @@
 module.exports = (grunt) ->
   #Load grunt tasks
-  grunt.loadNpmTasks 'grunt-exec'
   grunt.loadNpmTasks 'grunt-concurrent'
   grunt.loadNpmTasks 'grunt-combine-harvester'
   grunt.loadNpmTasks 'grunt-contrib-requirejs'
@@ -15,9 +14,6 @@ module.exports = (grunt) ->
   #Configure tasks
   grunt.initConfig
     bowerDirectory: require('bower').config.directory
-
-    exec:
-      git_status: 'git diff --exit-code'
 
     jasmine :
       test:
@@ -119,4 +115,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'test', ['clean:test', 'coffee', 'jasmine']
   grunt.registerTask 'develop', ['less', 'copy:requirejs', 'concurrent:watch']
   grunt.registerTask 'build', ['clean', 'less', 'cssmin', 'requirejs']
-  grunt.registerTask 'default', ['prep', 'build', 'test', 'exec:git_status']
+  grunt.registerTask 'default', ['prep', 'build', 'test']
