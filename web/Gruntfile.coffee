@@ -27,7 +27,6 @@ module.exports = (grunt) ->
           templateOptions:
             requireConfigFile: 'src/scripts/main.js'
             requireConfig: baseUrl: 'src/scripts'
-          junit : path : 'junit'
 
     coffee:
       test :
