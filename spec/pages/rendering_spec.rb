@@ -12,6 +12,6 @@ describe "rendering" do
   end
 
   after(:each) do |x|
-    page.save_screenshot("test-reports/screenshots/#{x.metadata[:full_description]}.png")
+    page.save_screenshot("test-reports/#{x.metadata[:full_description]}.png")
   end
 end
