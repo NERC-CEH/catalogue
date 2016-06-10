@@ -17,7 +17,7 @@ web:
 	$(NPM) run build
 
 java:
-	$(MAVEN) -f java/pom.xml package
+	$(MAVEN) -f java/pom.xml clean package
 
 docker:
 	$(COMPOSE) build

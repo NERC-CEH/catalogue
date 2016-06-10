@@ -7,6 +7,9 @@ services:
       - ./templates:/opt/ceh-catalogue/templates
       - ./web/src:/opt/ceh-catalogue/web
       - ./datastore:/var/ceh-catalogue/datastore
+    environment:
+      SPRING_PROFILES: development
+      
   solr:
     # Expose the solr port for development
     ports:
