@@ -68,13 +68,13 @@ SELENIUM_DRIVERS = {
     :browserName  => 'internet explorer'}
 }
 
-# SELENIUM_DRIVERS.each do | name, capabilities |
-#   Capybara.register_driver name do |app|
-#     Capybara::Selenium::Driver.new(app, :browser => :remote,
-#                                         :url => 'http://bamboo.ceh.ac.uk:4444/wd/hub',
-#                                         :desired_capabilities => capabilities)
-#   end
-# end
+#SELENIUM_DRIVERS.each do | name, capabilities |
+#  Capybara.register_driver name do |app|
+#    Capybara::Selenium::Driver.new(app, :browser => :remote,
+#                                        :url => 'http://selenium-hub:4444/wd/hub',
+#                                        :desired_capabilities => capabilities)
+#  end
+#end
 
 Capybara.register_driver :chrome do |app|
   Capybara::Selenium::Driver.new(app, :browser => :remote,

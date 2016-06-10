@@ -26,4 +26,6 @@ develop:
 	$(COMPOSE) up
 
 selenium:
+	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox
+	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d chrome
 	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
