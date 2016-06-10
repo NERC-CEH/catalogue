@@ -1,13 +1,13 @@
-describe "Gemini XML Generation", :retry => 1, :retry_wait => 0, :restful => true do
+describe "Gemini XML Generation" do
   let(:schema) { 
-    xsd_path = 'catalogue/schemas/gemini/gmx/gmx.xsd'
+    xsd_path = 'schemas/gemini/gmx/gmx.xsd'
     xsddoc = Nokogiri::XML(File.read(xsd_path), xsd_path)
     Nokogiri::XML::Schema.from_document(xsddoc)
   }
 
   let(:in_xml) {Nokogiri::XML(File.open("fixtures/datastore/REV-1/#{id}.raw"))}
 
-  let(:out_doc) { $site["/documents/#{id}?format=gemini"].get }
+  let(:out_doc) { RestClient.get "#{APP_HOST}/documents/#{id}?format=gemini" }
   let(:out_xml) { Nokogiri::XML(out_doc) { |c| c.strict } }
 
   shared_examples "a valid gemini document" do

@@ -1,6 +1,5 @@
 module.exports = (grunt) ->
   #Load grunt tasks
-  grunt.loadNpmTasks 'grunt-exec'
   grunt.loadNpmTasks 'grunt-concurrent'
   grunt.loadNpmTasks 'grunt-combine-harvester'
   grunt.loadNpmTasks 'grunt-contrib-requirejs'
@@ -16,9 +15,6 @@ module.exports = (grunt) ->
   grunt.initConfig
     bowerDirectory: require('bower').config.directory
 
-    exec:
-      git_status: 'git diff --exit-code'
-
     jasmine :
       test:
         options :
@@ -27,7 +23,6 @@ module.exports = (grunt) ->
           templateOptions:
             requireConfigFile: 'src/scripts/main.js'
             requireConfig: baseUrl: 'src/scripts'
-          junit : path : 'junit'
 
     coffee:
       test :
@@ -116,11 +111,8 @@ module.exports = (grunt) ->
         src: 'src/css/style.css'
         dest: 'src/css/style.css'
 
-  grunt.registerTask 'bower-install', ->
-    require('bower').commands.install().on('end', do @async)
-
-  grunt.registerTask 'prep', ['clean', 'bower-install', 'combine_harvester:openlayers']
+  grunt.registerTask 'prep', ['clean', 'combine_harvester:openlayers']
   grunt.registerTask 'test', ['clean:test', 'coffee', 'jasmine']
   grunt.registerTask 'develop', ['less', 'copy:requirejs', 'concurrent:watch']
   grunt.registerTask 'build', ['clean', 'less', 'cssmin', 'requirejs']
-  grunt.registerTask 'default', ['prep', 'build', 'test', 'exec:git_status']
+  grunt.registerTask 'default', ['prep', 'build', 'test']
