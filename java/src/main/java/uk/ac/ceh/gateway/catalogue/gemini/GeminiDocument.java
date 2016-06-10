@@ -6,7 +6,6 @@ import uk.ac.ceh.gateway.catalogue.model.Citation;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
@@ -15,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -24,30 +24,29 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocumentImpl;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 /**
  *
  * @author cjohn
  */
-@Data
+@Data 
+@EqualsAndHashCode(callSuper=true)
 @Accessors(chain = true)
 @ConvertUsing({
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=GEMINI_XML_VALUE),
     @Template(called="rdf/gemini.xml.tpl",   whenRequestedAs=RDF_XML_VALUE)
 })
-public class GeminiDocument implements MetadataDocument {
+public class GeminiDocument extends MetadataDocumentImpl {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
-    private URI uri;
-    private String id, title, description, otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
+    private String otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
         metadataStandardName, metadataStandardVersion, supplementalInfo, parentIdentifier, revisionOfIdentifier;
     @JsonIgnore
     private String jsonString;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
       securityConstraints, partOfRepository;
-    private Keyword resourceType;        
     private List<Keyword> topicCategories;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
@@ -63,7 +62,6 @@ public class GeminiDocument implements MetadataDocument {
     private List<OnlineResource> onlineResources;
     private Link parent, revised, revisionOf;
     private Set<Link> documentLinks, children, composedOf, modelLinks, modelApplicationLinks;
-    private List<ResourceIdentifier> resourceIdentifiers;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     @JsonIgnore
     private Citation citation;
@@ -74,7 +72,6 @@ public class GeminiDocument implements MetadataDocument {
     private DatasetReferenceDate datasetReferenceDate;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime metadataDate;
     private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
     private List<ResourceConstraint> accessConstraints, useConstraints;
@@ -184,9 +181,9 @@ public class GeminiDocument implements MetadataDocument {
         setUri(uri);
     }    
 
-    @Override
-    public void attachPartOfRepository(List<String> repositories) {
-        setPartOfRepository(repositories);
-    }
+//    @Override
+//    public void attachPartOfRepository(List<String> repositories) {
+//        setPartOfRepository(repositories);
+//    }
     
 }

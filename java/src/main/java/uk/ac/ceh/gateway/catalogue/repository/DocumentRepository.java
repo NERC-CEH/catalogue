@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -89,39 +88,39 @@ public class DocumentRepository {
             Files.delete(tmpFile); //file no longer needed
         }
         
-        if (data instanceof GeminiDocument) {
-            data = save(user, (GeminiDocument)data, id, String.format("File upload for id: %s", id));
+        if (data instanceof MetadataDocument) {
+            data = save(user, (MetadataDocument)data, id, String.format("File upload for id: %s", id));
         }
         
         return data;
     }
     
-    public MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {       
+    public MetadataDocument save(CatalogueUser user, MetadataDocument document, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {       
         return save(user, 
-            geminiDocument,
-            createMetadataInfoWithDefaultPermissions(geminiDocument, user, MediaType.APPLICATION_JSON), 
+            document,
+            createMetadataInfoWithDefaultPermissions(document, user, MediaType.APPLICATION_JSON), 
             documentIdentifierService.generateFileId(),
             message
         );
     }
     
-    public MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, String id, String message) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public MetadataDocument save(CatalogueUser user, MetadataDocument document, String id, String message) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         return save(user,
-            geminiDocument, 
+            document, 
             retrieveMetadataInfoUpdatingRawType(id), 
             id, 
             message
         );
     }
     
-    private MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, MetadataInfo metadataInfo, String id, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-        updateIdAndMetadataDate(geminiDocument, id);
+    private MetadataDocument save(CatalogueUser user, MetadataDocument document, MetadataInfo metadataInfo, String id, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+        updateIdAndMetadataDate(document, id);
         String uri = documentIdentifierService.generateUri(id);
-        addRecordUriAsResourceIdentifier(geminiDocument, uri);
-        geminiDocument.attachUri(URI.create(uri));
+        addRecordUriAsResourceIdentifier(document, uri);
+        document.attachUri(URI.create(uri));
         
         repo.save(user, id, message, metadataInfo,
-            (o) -> documentWriter.write(geminiDocument, MediaType.APPLICATION_JSON, o));
+            (o) -> documentWriter.write(document, MediaType.APPLICATION_JSON, o));
         
         return read(id);
     }
@@ -139,11 +138,12 @@ public class DocumentRepository {
         return toReturn;
     }
     
-    private void updateIdAndMetadataDate(GeminiDocument document, String id) {
+    private void updateIdAndMetadataDate(MetadataDocument document, String id) {
+        
         document.setId(id).setMetadataDate(LocalDateTime.now());
     }
     
-    private void addRecordUriAsResourceIdentifier(GeminiDocument document, String recordUri) {
+    private void addRecordUriAsResourceIdentifier(MetadataDocument document, String recordUri) {
         List<ResourceIdentifier> resourceIdentifiers;
         
         if (document.getResourceIdentifiers() != null) {

@@ -20,7 +20,9 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MODEL_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
@@ -69,12 +71,12 @@ public class DocumentController {
     @Secured(EDITOR_ROLE)
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
-                     consumes = GEMINI_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> uploadDocument(
+                     consumes = MODEL_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> uploadModelDocument(
             @ActiveUser CatalogueUser user,
-            @RequestBody GeminiDocument geminiDocument) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+            @RequestBody Model modelDocument) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
-        MetadataDocument data = documentRepository.save(user, geminiDocument, "new Gemini Document");
+        MetadataDocument data = documentRepository.save(user, modelDocument, "new Model Document");
         return ResponseEntity
             .created(data.getUri())
             .body(data);
@@ -92,6 +94,20 @@ public class DocumentController {
         MetadataDocument data = documentRepository.save(user, geminiDocument, file, String.format("Edited document: %s", file));
         return ResponseEntity
             .ok(data);
+    }
+    
+    @Secured(EDITOR_ROLE)
+    @RequestMapping (value = "documents",
+                     method = RequestMethod.POST,
+                     consumes = GEMINI_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> uploadDocument(
+            @ActiveUser CatalogueUser user,
+            @RequestBody MetadataDocument geminiDocument) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+       
+        MetadataDocument data = documentRepository.save(user, geminiDocument, "new Gemini Document");
+        return ResponseEntity
+            .created(data.getUri())
+            .body(data);
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
