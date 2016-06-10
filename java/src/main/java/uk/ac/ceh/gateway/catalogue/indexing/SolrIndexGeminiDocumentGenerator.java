@@ -56,7 +56,6 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 .setOnlineResourceDescription(grab(document.getOnlineResources(), OnlineResource::getDescription))
                 .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
                 .setKeyword(grab(getKeywords(document), Keyword::getValue))
-                .setDataCentre(getDataCentre(document))
                 .addLocations(geometryService.toSolrGeometry(grab(document.getBoundingBoxes(), BoundingBox::getWkt)))
                 .setImpBroaderCatchmentIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_BROADER_CATCHMENT_ISSUES_URL), Keyword::getValue))
                 .setImpScale(grab(getKeywordsFilteredByUrlFragment(document, IMP_SCALE_URL), Keyword::getValue))
@@ -89,19 +88,6 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                     || uri.startsWith(CEH_OGL_URL)
                     || uri.startsWith(OGL_URL);  
             });
-    }
-        
-    private String getDataCentre(GeminiDocument document) {
-        Optional<ResponsibleParty> dataCentre = document.getResponsibleParties()
-            .stream()
-            .filter(rp -> rp.getRole().equals("custodian") && rp.getOrganisationName().startsWith("EIDC"))
-            .findFirst();
-        
-        if (dataCentre.isPresent()) {
-            return "EIDCHub";
-        } else {
-            return "";
-        }
     }
     
     private List<Keyword> getKeywordsFilteredByUrlFragment(GeminiDocument document, String urlFragment) {

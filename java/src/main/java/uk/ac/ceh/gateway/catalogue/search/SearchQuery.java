@@ -83,7 +83,9 @@ public class SearchQuery {
         setFacetFilters(query);
         setFacetFields(query);
         setSortOrder(query);
-        setCatalogueFilter(query);
+        if ( !catalogue.getKey().equals("")) {
+            setCatalogueFilter(query);
+        }
         log.debug("search query: {}", query);
         return query;
     }
@@ -275,7 +277,7 @@ public class SearchQuery {
     }
     
     private void setCatalogueFilter(SolrQuery query) {
-        query.addFilterQuery(String.format("{!term f=catalogue}%s", catalogue.getKey()));
+        query.addFilterQuery(String.format("{!term f=catalogues}%s", catalogue.getKey()));
     }
 
     private void setSortOrder(SolrQuery query){

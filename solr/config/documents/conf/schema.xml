@@ -19,8 +19,7 @@
       <field name="keyword" type="keyword_lowercase" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="view" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="locations" type="spatial" indexed="true" stored="true" required="false" multiValued="true"/>
-      <field name="dataCentre" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
-      <field name="repository" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="catalogues" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impBroaderCatchmentIssues" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impScale" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impWaterQuality" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>

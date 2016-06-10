@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.Data;
 import static org.apache.jena.rdf.model.ResourceFactory.*;
-import java.util.Collections;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
@@ -33,12 +32,6 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             
             Optional.ofNullable(emptyToNull(document.getType()))
                     .ifPresent(t -> toReturn.add(createStatement(me, TYPE, createPlainLiteral(t))));
-            
-            Optional.ofNullable(document.getPartOfRepository()).orElse(Collections.emptyList())
-            .stream()
-            .forEach(p -> {
-                toReturn.add(createStatement(me, IS_PART_OF, resource(p)));
-        });
         }
         return toReturn;
     }

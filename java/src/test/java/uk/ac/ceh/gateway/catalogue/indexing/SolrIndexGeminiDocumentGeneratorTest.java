@@ -151,34 +151,6 @@ public class SolrIndexGeminiDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatEIDCCustodianIsIndexed(){
-        //Given
-        ResponsibleParty custodian = ResponsibleParty.builder().role("custodian").organisationName("EIDC Hub").build();
-        GeminiDocument document = new GeminiDocument();
-        document.setResponsibleParties(Arrays.asList(custodian));
-        
-        //When
-        SolrIndex actual = generator.generateIndex(document);
-        
-        //Then
-        assertThat("Expected dataCentre to be EIDCHub", actual.getDataCentre(), equalTo("EIDCHub"));
-    }
-    
-    @Test
-    public void checkThatEIDCCustodianIsNotIndexed(){
-        //Given
-        ResponsibleParty custodian = ResponsibleParty.builder().role("author").organisationName("Test").build();
-        GeminiDocument document = new GeminiDocument();
-        document.setResponsibleParties(Arrays.asList(custodian));
-        
-        //When
-        SolrIndex index = generator.generateIndex(document);
-        
-        //Then
-        assertThat("Expected dataCentre to be empty", index.getDataCentre(), equalTo(""));
-    }
-    
-    @Test
     public void checkThatImpScaleIsIndexed() {
         //Given
         DescriptiveKeywords imp = DescriptiveKeywords.builder()

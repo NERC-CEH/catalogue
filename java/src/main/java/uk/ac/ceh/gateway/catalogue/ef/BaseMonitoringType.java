@@ -73,9 +73,6 @@ public class BaseMonitoringType implements MetadataDocument {
     
     @XmlElement(name = "identifier")
     private List<Identifier> identifiers  = new ArrayList<>();
-    
-    @XmlTransient
-    private List<String> partOfRepository;
 
     @Override
     public String getTitle() {
@@ -117,16 +114,6 @@ public class BaseMonitoringType implements MetadataDocument {
     @Override
     public void attachUri(URI uri) {
         efMetadata.setSelfUrl(uri.toString());
-    }
-
-    @Override
-    public List<String> getPartOfRepository() {
-        return partOfRepository;
-    }
-
-    @Override
-    public void attachPartOfRepository(List<String> repositories) {
-        this.partOfRepository = repositories;
     }
     
     @Data

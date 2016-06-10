@@ -58,7 +58,30 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat("Solr query should have 'eidc' in catalogue filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=catalogue}eidc")); 
+        assertThat("Solr query should have 'eidc' in catalogue filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=catalogues}eidc")); 
+    }
+    
+    @Test
+    public void queryHasNoCatalogueAsViewFilter() {
+        //Given
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            new CatalogueUser().setUsername("helen"),
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS,
+            groupStore,
+            catalogueService.retrieve("ceh")
+        );
+
+        //When
+        SolrQuery solrQuery = query.build();
+
+        //Then
+        assertThat("Solr query should have no catalogue filter", solrQuery.getFilterQueries(), not(hasItemInArray("{!term f=catalogues}"))); 
     }
 
     @Test

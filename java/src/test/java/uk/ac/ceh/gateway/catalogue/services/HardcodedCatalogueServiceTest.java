@@ -28,7 +28,7 @@ public class HardcodedCatalogueServiceTest {
         Catalogue catalogue = service.retrieve("abc\u2606");
         
         //When
-        assertThat("Should retrieve default catalogue", catalogue.getKey(), equalTo("ceh"));
+        assertThat("Should retrieve default catalogue", catalogue.getKey(), equalTo(""));
     }
     
 }

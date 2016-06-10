@@ -22,7 +22,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 public class ImpDocument implements MetadataDocument {
     private URI uri;
     private String id, title, description, type;
-    private List<String> identifiers, partOfRepository;
+    private List<String> identifiers;
     private List<Link> links;
     private List<Keyword> keywords;
     
@@ -38,9 +38,4 @@ public class ImpDocument implements MetadataDocument {
     public void attachUri(URI uri) {
         setUri(uri);
     }
-
-    @Override
-    public void attachPartOfRepository(List<String> repositories) {
-        setPartOfRepository(repositories);
-    }   
 }

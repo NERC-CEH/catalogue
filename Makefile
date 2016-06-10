@@ -9,6 +9,13 @@ build:
 	$(MAVEN) -f java/pom.xml clean package
 	$(COMPOSE) build
 
+build-maven:
+	$(MAVEN) -f java/pom.xml clean package
+
+build-web:
+	$(MAVEN) -f java/pom.xml clean package
+	$(COMPOSE) build web
+
 test-data:
 	sh shell/test-data.sh
 
@@ -17,6 +24,9 @@ bower:
 
 develop:
 	$(COMPOSE) up
+
+develop-min:
+	$(COMPOSE) up web solr
 
 selenium:
 	$(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test

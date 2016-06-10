@@ -1,10 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -26,12 +28,12 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
  */
 @Data
 @Accessors(chain = true)
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class MetadataInfo {
     private String rawType, state, documentType;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private final Multimap<Permission, String> permissions;
+    private List<String> catalogueKeys;
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "role_cig_readonly";
     public static final String PUBLISHER_GROUP = "role_cig_publisher";
@@ -40,11 +42,27 @@ public class MetadataInfo {
         permissions = HashMultimap.create();
     }
     
+    @JsonCreator
+    private MetadataInfo(
+            @JsonProperty("rawType") String rawType,
+            @JsonProperty("state") String state,
+            @JsonProperty("documentType") String documentType,
+            @JsonProperty("permissions") Multimap<Permission, String> permissions,
+            @JsonProperty("catalogues") List<String> catalogueKeys
+    ) {
+        this.rawType = rawType;
+        this.state = state;
+        this.documentType = documentType;
+        this.permissions = permissions;
+        this.catalogueKeys = catalogueKeys;
+    }
+    
     public MetadataInfo(MetadataInfo info) {
         this.rawType = info.rawType;
         this.state = info.state;
         this.documentType = info.documentType;
         this.permissions = HashMultimap.create(info.permissions);
+        this.catalogueKeys = new ArrayList(info.getCatalogueKeys());
     }
       
     @JsonIgnore
@@ -62,6 +80,10 @@ public class MetadataInfo {
     
     public String getDocumentType() {
         return Optional.ofNullable(documentType).orElse("");
+    }
+    
+    public List<String> getCatalogueKeys() {
+        return Optional.ofNullable(catalogueKeys).orElse(new ArrayList<>());
     }
     
     public void addPermission(Permission permission, String identity) {

@@ -1,11 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import org.apache.jena.query.Dataset;
-import org.apache.jena.rdf.model.Model;
-import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
-import static org.apache.jena.rdf.model.ResourceFactory.createResource;
-import org.apache.jena.tdb.TDBFactory;
-import java.net.URI;
+import com.google.common.collect.Lists;
+import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -16,6 +12,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
@@ -26,13 +23,12 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 public class SolrIndexMetadataDocumentGeneratorTest {
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
-    Dataset jenaTdb = TDBFactory.createDataset();
     private SolrIndexMetadataDocumentGenerator generator;
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        generator = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService, jenaTdb);
+        generator = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService);
     }
     
     @Test
@@ -144,23 +140,21 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatRepositoryIsIndexed() {
+    public void checkThatCatalogueKeysAreTransferedToIndex() {
         //Given
-        GeminiDocument document = new GeminiDocument();
-        document.setUri(URI.create("http://dataset"));
-        
-        Model model = jenaTdb.getDefaultModel();
-        model.add(createResource("http://dataset"), createProperty("http://purl.org/dc/terms/isPartOf"), createResource("http://repository"));
-        model.add(createResource("http://repository"), createProperty("http://purl.org/dc/terms/title"), "EIDC");
-        model.add(createResource("http://repository"), createProperty("http://purl.org/dc/terms/type"), "repository");
-            
+        List<String> catalogueKeys = Lists.newArrayList("ceh", "eidc");
+        MetadataInfo info = new MetadataInfo().setCatalogueKeys(catalogueKeys);
+        GeminiDocument document = new GeminiDocument().setMetadata(info);
         
         //When
         SolrIndex index = generator.generateIndex(document);
-        
+        System.out.println(index.getCatalogues());
         //Then
-        assertThat("Expected repository to be EIDC", index.getRepository(), contains("EIDC"));
-        
+        assertThat(
+                "Expected to get list ['ceh', 'eidc']",
+                index.getCatalogues(),
+                contains("ceh","eidc")
+        );
     }
 
 }

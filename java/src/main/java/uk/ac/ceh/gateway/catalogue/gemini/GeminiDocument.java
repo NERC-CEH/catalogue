@@ -46,7 +46,7 @@ public class GeminiDocument implements MetadataDocument {
     @JsonIgnore
     private String jsonString;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
-      securityConstraints, partOfRepository;
+      securityConstraints;
     private Keyword resourceType;        
     private List<Keyword> topicCategories;
     private List<DistributionInfo> distributionFormats;
@@ -182,11 +182,6 @@ public class GeminiDocument implements MetadataDocument {
     @Override
     public void attachUri(URI uri) {
         setUri(uri);
-    }    
-
-    @Override
-    public void attachPartOfRepository(List<String> repositories) {
-        setPartOfRepository(repositories);
     }
     
 }
