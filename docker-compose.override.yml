@@ -18,6 +18,17 @@ services:
   node:
     image: node:6.2.0
     working_dir: /web
+    # Store the node modules in a docker volume. This is important on windows
+    # as it means that modules which require symlinks do not touch NTFS
     volumes:
-      - ./web:/web
+      - node_modules:/web/node_modules
+      - ./web/src:/web/src
+      - ./web/test:/web/test
+      - ./web/.bowerrc:/web/.bowerrc
+      - ./web/Gruntfile.coffee:/web/Gruntfile.coffee
+      - ./web/bower.json:/web/bower.json
+      - ./web/package.json:/web/package.json
     command: sh -c "npm install; npm run develop"
+
+volumes:
+  node_modules: {}
