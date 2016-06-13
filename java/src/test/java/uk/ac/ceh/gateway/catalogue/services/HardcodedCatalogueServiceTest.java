@@ -13,13 +13,13 @@ public class HardcodedCatalogueServiceTest {
         CatalogueService service = new HardcodedCatalogueService();
         
         //Then
-        Catalogue catalogue = service.retrieve("eidc");
+        Catalogue catalogue = service.retrieve("eidc.catalogue.ceh.ac.uk");
         
         //When
-        assertThat("Should retrieve EIDC catalogue", catalogue.getKey(), equalTo("eidc"));
+        assertThat("Should retrieve EIDC catalogue", catalogue.getTitle(), equalTo("Environmental Information Data Centre"));
     }
     
-    @Test
+    @Test(expected = RuntimeException.class)
     public void getDefaultIfNoMatchingKey() {
         //Given
         CatalogueService service = new HardcodedCatalogueService();
@@ -28,7 +28,7 @@ public class HardcodedCatalogueServiceTest {
         Catalogue catalogue = service.retrieve("abc\u2606");
         
         //When
-        assertThat("Should retrieve default catalogue", catalogue.getKey(), equalTo(""));
+        // Throws runtime exception
     }
     
 }

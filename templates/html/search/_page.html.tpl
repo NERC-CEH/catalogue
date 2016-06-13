@@ -23,7 +23,7 @@
   <#if prevPage?has_content>
     <li class="previous"><a href="${prevPage}">&larr; Previous</a></li>
   </#if>
-  <li>Page ${page}</li>          
+  <li>Page ${page}</li>
   <#if nextPage?has_content>
     <li class="next"><a href="${nextPage}">Next &rarr;</a></li>
   </#if>

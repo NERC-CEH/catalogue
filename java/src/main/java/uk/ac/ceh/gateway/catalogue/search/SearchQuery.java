@@ -54,7 +54,8 @@ public class SearchQuery {
             int rows,
             List<FacetFilter> facetFilters,
             GroupStore<CatalogueUser> groupStore,
-            Catalogue catalogue
+            Catalogue catalogue,
+            List<Facet> facets
     ) {
         this.endpoint = endpoint;
         this.user = user;
@@ -65,7 +66,7 @@ public class SearchQuery {
         this.rows = rows;
         this.facetFilters = new ArrayList(facetFilters);
         this.groupStore = groupStore;
-        this.facets = catalogue.getFacets();
+        this.facets = facets;
         this.catalogue = catalogue;
     }   
        
@@ -83,7 +84,7 @@ public class SearchQuery {
         setFacetFilters(query);
         setFacetFields(query);
         setSortOrder(query);
-        if ( !catalogue.getKey().equals("")) {
+        if ( !catalogue.getHostname().equals("catalogue.ceh.ac.uk")) {
             setCatalogueFilter(query);
         }
         log.debug("search query: {}", query);
@@ -96,7 +97,19 @@ public class SearchQuery {
     
     public SearchQuery withPage(int newPage) {
         if ( page != newPage) {
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, newPage, rows, facetFilters, groupStore, catalogue);
+            return new SearchQuery(
+                endpoint,
+                user,
+                term,
+                bbox,
+                spatialOperation,
+                newPage,
+                rows,
+                facetFilters,
+                groupStore,
+                catalogue,
+                facets
+            );
         }
         else {
             return this;
@@ -111,7 +124,19 @@ public class SearchQuery {
      */
     public SearchQuery withBbox(String newBbox) {
         if ( (bbox == null && newBbox != null) || (bbox !=null && !bbox.equals(newBbox)) ) {
-            return new SearchQuery(endpoint, user, term, newBbox, spatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore, catalogue);
+            return new SearchQuery(
+                endpoint,
+                user,
+                term,
+                newBbox,
+                spatialOperation,
+                PAGE_DEFAULT,
+                rows,
+                facetFilters,
+                groupStore,
+                catalogue,
+                facets
+            );
         }
         else {
             return this;
@@ -127,7 +152,19 @@ public class SearchQuery {
      */
     public SearchQuery withSpatialOperation(SpatialOperation newSpatialOperation) {
         if ( !spatialOperation.equals(newSpatialOperation) ) {
-            return new SearchQuery(endpoint, user, term, bbox, newSpatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore, catalogue);
+            return new SearchQuery(
+                endpoint,
+                user,
+                term,
+                bbox,
+                newSpatialOperation,
+                PAGE_DEFAULT,
+                rows,
+                facetFilters,
+                groupStore,
+                catalogue,
+                facets
+            );
         }
         else {
             return this;
@@ -148,7 +185,19 @@ public class SearchQuery {
         if (!containsFacetFilter(filter)) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.add(filter);
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore, catalogue);
+            return new SearchQuery(
+                endpoint,
+                user,
+                term,
+                bbox,
+                spatialOperation,
+                PAGE_DEFAULT,
+                rows,
+                newFacetFilters,
+                groupStore,
+                catalogue,
+                facets
+            );
         }
         else {
             return this;
@@ -167,7 +216,19 @@ public class SearchQuery {
         if(containsFacetFilter(filter) ) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.remove(filter);
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore, catalogue);
+            return new SearchQuery(
+                endpoint,
+                user,
+                term,
+                bbox,
+                spatialOperation,
+                PAGE_DEFAULT,
+                rows,
+                newFacetFilters,
+                groupStore,
+                catalogue,
+                facets
+            );
         }
         else {
             return this;
@@ -277,7 +338,9 @@ public class SearchQuery {
     }
     
     private void setCatalogueFilter(SolrQuery query) {
-        query.addFilterQuery(String.format("{!term f=catalogues}%s", catalogue.getKey()));
+        query.addFilterQuery(
+            String.format("{!term f=catalogue}%s", catalogue.getTitle())
+        );
     }
 
     private void setSortOrder(SolrQuery query){

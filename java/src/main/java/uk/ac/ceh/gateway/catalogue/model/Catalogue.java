@@ -9,7 +9,7 @@ import lombok.Value;
 @Value
 @Builder
 public class Catalogue {
-    @NonNull private final String key;
+    @NonNull private final String hostname;
     @NonNull private final String title;
     @Singular private final List<String> facetKeys;
 }

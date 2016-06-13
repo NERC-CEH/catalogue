@@ -37,7 +37,7 @@ public class SolrIndex {
     private @Field List<String> topic;
     private @Field List<String> keyword;
     private @Field List<String> view;
-    private @Field List<String> catalogues;
+    private @Field List<String> catalogue;
     private @Field List<String> impBroaderCatchmentIssues;
     private @Field List<String> impScale;
     private @Field List<String> impWaterQuality;

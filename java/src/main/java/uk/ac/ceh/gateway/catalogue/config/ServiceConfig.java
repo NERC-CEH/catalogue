@@ -91,6 +91,8 @@ import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
+import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
+import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
@@ -148,6 +150,10 @@ public class ServiceConfig {
     @Bean
     public CatalogueService catalogueService() {
         return new HardcodedCatalogueService();
+    }
+    
+    @Bean FacetFactory facetFactory() {
+        return new HardcodedFacetFactory();
     }
     
     @Bean

@@ -2,27 +2,26 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.NonNull;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
-import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueNotFoundException;
 
 public class HardcodedCatalogueService implements CatalogueService {
-    private final FacetFactory facetFactory;
     private final Map<String, Catalogue> catalogues;
-    private final Catalogue defaultCatalogue;
 
-    public HardcodedCatalogueService(FacetFactory facetFactory) {
-        this.facetFactory = facetFactory;
+    public HardcodedCatalogueService() {
         
         Catalogue ceh = Catalogue.builder()
-            .key("")
+            .hostname("catalogue.ceh.ac.uk")
             .title("CEH Catalogue")
+            .facetKey("catalogue")
             .facetKey("topic")
             .facetKey("resourceType")
             .facetKey("licence")
             .build();
         
         Catalogue inlicensed = Catalogue.builder()
-            .key("ceh-in-licensed")
+            .hostname("ceh-in-licensed.catalogue.ceh.ac.uk")
             .title("CEH In-licensed data")
             .facetKey("topic")
             .facetKey("resourceType")
@@ -30,7 +29,7 @@ public class HardcodedCatalogueService implements CatalogueService {
             .build();
         
         Catalogue eidc = Catalogue.builder()
-            .key("eidc")
+            .hostname("eidc.catalogue.ceh.ac.uk")
             .title("Environmental Information Data Centre")
             .facetKey("topic")
             .facetKey("resourceType")
@@ -38,7 +37,7 @@ public class HardcodedCatalogueService implements CatalogueService {
             .build();
         
         Catalogue cmp = Catalogue.builder()
-            .key("cmp")
+            .hostname("cmp.catalogue.ceh.ac.uk")
             .title("Catchment Management Platform")
             .facetKey("impBroaderCatchmentIssues")
             .facetKey("impScale")
@@ -48,25 +47,30 @@ public class HardcodedCatalogueService implements CatalogueService {
             .build();
         
         Catalogue nfra = Catalogue.builder()
-            .key("nrfa")
+            .hostname("nrfa.catalogue.ceh.ac.uk")
             .title("UK National River Flow Archive data holdings")
             .facetKey("resourceType")
             .facetKey("licence")
             .build();
 
         catalogues = new HashMap<>();
-        catalogues.put("inlicensed", inlicensed);
-        catalogues.put("eidc", eidc);
-        catalogues.put("cmp", cmp);
-        catalogues.put("nrfa", nfra);
-        
-        this.defaultCatalogue = ceh;
+        catalogues.put("catalogue.ceh.ac.uk", ceh);
+        catalogues.put("ceh-in-licensed.catalogue.ceh.ac.uk", inlicensed);
+        catalogues.put("eidc.catalogue.ceh.ac.uk", eidc);
+        catalogues.put("cmp.catalogue.ceh.ac.uk", cmp);
+        catalogues.put("nrfa.catalogue.ceh.ac.uk", nfra);
         
     }
 
     @Override
-    public Catalogue retrieve(String key) {
-        return catalogues.getOrDefault(key, defaultCatalogue);
+    public Catalogue retrieve(@NonNull String hostname) {
+        if (catalogues.containsKey(hostname)) {
+            return catalogues.get(hostname);
+        } else {
+            throw new CatalogueNotFoundException(
+                String.format("No catalogue for hostname: %s", hostname)
+            );
+        }
     }
 
 }

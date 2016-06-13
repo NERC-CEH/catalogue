@@ -19,7 +19,7 @@
       <field name="keyword" type="keyword_lowercase" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="view" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="locations" type="spatial" indexed="true" stored="true" required="false" multiValued="true"/>
-      <field name="catalogues" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="catalogue" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impBroaderCatchmentIssues" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impScale" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impWaterQuality" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
@@ -55,7 +55,7 @@
                 <filter class="solr.LowerCaseFilterFactory"/>
             </analyzer>
         </fieldType>
-        <fieldType name="spatial"   
+        <fieldType name="spatial"
             class="solr.SpatialRecursivePrefixTreeFieldType"
             spatialContextFactory="com.spatial4j.core.context.jts.JtsSpatialContextFactory"
             distErrPct="0.025"

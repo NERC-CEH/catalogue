@@ -15,6 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.DataciteException;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
@@ -46,7 +47,8 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     
     @ExceptionHandler({
         GitFileNotFoundException.class,
-        ResourceNotFoundException.class
+        ResourceNotFoundException.class,
+        CatalogueNotFoundException.class
     })
     public ResponseEntity<Object> handleNotFoundExceptions(Exception ex) {
         return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.NOT_FOUND);

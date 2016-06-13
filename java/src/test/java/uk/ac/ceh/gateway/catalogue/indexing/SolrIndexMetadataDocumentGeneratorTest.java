@@ -140,20 +140,20 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatCatalogueKeysAreTransferedToIndex() {
+    public void checkThatCataloguesAreTransferedToIndex() {
         //Given
-        List<String> catalogueKeys = Lists.newArrayList("ceh", "eidc");
-        MetadataInfo info = new MetadataInfo().setCatalogueKeys(catalogueKeys);
+        List<String> catalogues = Lists.newArrayList("CEH Catalogue", "Environmental Information Data Centre");
+        MetadataInfo info = new MetadataInfo().setCatalogues(catalogues);
         GeminiDocument document = new GeminiDocument().setMetadata(info);
         
         //When
         SolrIndex index = generator.generateIndex(document);
-        System.out.println(index.getCatalogues());
+
         //Then
         assertThat(
-                "Expected to get list ['ceh', 'eidc']",
-                index.getCatalogues(),
-                contains("ceh","eidc")
+                "Expected to get list [\"CEH Catalogue\", \"Environmental Information Data Centre\"]",
+                index.getCatalogue(),
+                contains("CEH Catalogue", "Environmental Information Data Centre")
         );
     }
 

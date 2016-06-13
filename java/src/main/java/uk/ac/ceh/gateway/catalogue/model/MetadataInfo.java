@@ -33,7 +33,7 @@ public class MetadataInfo {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private final Multimap<Permission, String> permissions;
-    private List<String> catalogueKeys;
+    private List<String> catalogues;
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "role_cig_readonly";
     public static final String PUBLISHER_GROUP = "role_cig_publisher";
@@ -48,13 +48,13 @@ public class MetadataInfo {
             @JsonProperty("state") String state,
             @JsonProperty("documentType") String documentType,
             @JsonProperty("permissions") Multimap<Permission, String> permissions,
-            @JsonProperty("catalogues") List<String> catalogueKeys
+            @JsonProperty("catalogues") List<String> catalogues
     ) {
         this.rawType = rawType;
         this.state = state;
         this.documentType = documentType;
         this.permissions = permissions;
-        this.catalogueKeys = catalogueKeys;
+        this.catalogues = catalogues;
     }
     
     public MetadataInfo(MetadataInfo info) {
@@ -62,7 +62,7 @@ public class MetadataInfo {
         this.state = info.state;
         this.documentType = info.documentType;
         this.permissions = HashMultimap.create(info.permissions);
-        this.catalogueKeys = new ArrayList(info.getCatalogueKeys());
+        this.catalogues = new ArrayList(info.getCatalogues());
     }
       
     @JsonIgnore
@@ -82,8 +82,8 @@ public class MetadataInfo {
         return Optional.ofNullable(documentType).orElse("");
     }
     
-    public List<String> getCatalogueKeys() {
-        return Optional.ofNullable(catalogueKeys).orElse(new ArrayList<>());
+    public List<String> getCatalogues() {
+        return Optional.ofNullable(catalogues).orElse(new ArrayList<>());
     }
     
     public void addPermission(Permission permission, String identity) {

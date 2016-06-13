@@ -1,25 +1,26 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.solr.client.solrj.SolrQuery;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.BDDMockito.given;
+import static org.hamcrest.Matchers.contains;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.HardcodedCatalogueService;
@@ -32,6 +33,10 @@ public class SearchQueryTest {
     public static final List<FacetFilter> DEFAULT_FILTERS = Collections.EMPTY_LIST;
     @Mock private GroupStore<CatalogueUser> groupStore; 
     private final CatalogueService catalogueService = new HardcodedCatalogueService();
+    private static final FacetFactory FACET_FACTORY = new HardcodedFacetFactory();
+    public static final List<Facet> DEFAULT_FACETS = FACET_FACTORY.newInstances(
+        Arrays.asList("resourceType","licence")
+    );
     
     @Before
     public void setup() {
@@ -51,14 +56,19 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("eidc")
+            catalogueService.retrieve("eidc.catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
 
         //When
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat("Solr query should have 'eidc' in catalogue filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=catalogues}eidc")); 
+        assertThat(
+            "Solr query should have 'Environmental Information Data Centre' in catalogue filter",
+            solrQuery.getFilterQueries(),
+            hasItemInArray("{!term f=catalogue}Environmental Information Data Centre")
+        );
     }
     
     @Test
@@ -74,14 +84,15 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
 
         //When
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat("Solr query should have no catalogue filter", solrQuery.getFilterQueries(), not(hasItemInArray("{!term f=catalogues}"))); 
+        assertThat("Solr query should have no catalogue filter", solrQuery.getFilterQueries(), not(hasItemInArray("{!term f=catalogue}"))); 
     }
 
     @Test
@@ -98,7 +109,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -124,7 +136,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -150,7 +163,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -188,7 +202,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -218,7 +233,8 @@ public class SearchQueryTest {
             40,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -243,7 +259,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -267,7 +284,8 @@ public class SearchQueryTest {
             Arrays.asList(
                 new FacetFilter("resourceType","dataset")),
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -292,7 +310,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -317,7 +336,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -342,7 +362,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -365,7 +386,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -390,7 +412,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             Arrays.asList(filter),
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -414,7 +437,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -438,7 +462,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             Arrays.asList(filter),
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -462,7 +487,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             filters,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         FacetFilter filter = new FacetFilter("hey", "lo");
@@ -487,7 +513,8 @@ public class SearchQueryTest {
             30,
             Arrays.asList(new FacetFilter("licence","b")),
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -516,7 +543,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -541,7 +569,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -564,7 +593,8 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            DEFAULT_FACETS
         );
         
         //When
@@ -577,6 +607,7 @@ public class SearchQueryTest {
     @Test
     public void impFacetsConfigured() {
         //Given          
+        Catalogue catalogue = catalogueService.retrieve("cmp.catalogue.ceh.ac.uk");
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -585,23 +616,30 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            new ArrayList(
-                Arrays.asList(
-                    new FacetFilter("repository","Catchment Management Platform")
-                )
-            ),
+            DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("cmp")
+            catalogue,
+            FACET_FACTORY.newInstances(catalogue.getFacetKeys())
         );
         
         //When
-        List<Facet> actual = query.getFacets();
+        List<String> actual = query
+            .getFacets()
+            .stream()
+            .map(Facet::getFieldName)
+            .collect(Collectors.toList());
+        
         
         //Then
-        assertThat("Should be 5 facets", actual.size(), is(5));
-        assertThat("Second facet should be Broader Catachment issues",
-            actual.get(0).getFieldName(),
-            is("impBroaderCatchmentIssues")
+        assertThat("",
+            actual,
+            contains(
+                "impBroaderCatchmentIssues",
+                "impScale",
+                "impWaterQuality",
+                "resourceType",
+                "licence"
+            )
         );
     }
 }

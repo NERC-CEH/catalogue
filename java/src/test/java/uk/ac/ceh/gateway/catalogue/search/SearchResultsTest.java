@@ -35,7 +35,8 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -44,7 +45,6 @@ public class SearchResultsTest {
         new SearchResults(response, query).getFacets();
         
         //Then
-//        verify(response).getFacetField("repository");
         verify(response).getFacetField("resourceType");
         verify(response).getFacetField("licence");
     }
@@ -62,7 +62,8 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -97,7 +98,8 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -123,7 +125,8 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -149,7 +152,8 @@ public class SearchResultsTest {
             20,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -177,7 +181,8 @@ public class SearchResultsTest {
             20,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -206,7 +211,8 @@ public class SearchResultsTest {
             20,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         //When
@@ -231,7 +237,8 @@ public class SearchResultsTest {
             20,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         //When
@@ -257,7 +264,8 @@ public class SearchResultsTest {
             20,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         
@@ -284,7 +292,8 @@ public class SearchResultsTest {
             20,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         
@@ -310,7 +319,8 @@ public class SearchResultsTest {
             20,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         
@@ -337,7 +347,8 @@ public class SearchResultsTest {
             20,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         
@@ -364,7 +375,8 @@ public class SearchResultsTest {
             20,
             SearchQueryTest.DEFAULT_FILTERS,
             groupStore,
-            catalogueService.retrieve("ceh")
+            catalogueService.retrieve("catalogue.ceh.ac.uk"),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         //When

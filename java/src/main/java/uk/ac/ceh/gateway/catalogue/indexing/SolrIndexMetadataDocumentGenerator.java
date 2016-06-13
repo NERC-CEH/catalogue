@@ -37,7 +37,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                 .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
                 .setState(getState(document))
                 .setView(getViews(document))
-                .setCatalogues(getCatalogues(document));
+                .setCatalogue(getCatalogues(document));
     }
     
     private String getState(MetadataDocument document) {
@@ -74,7 +74,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     private List<String> getCatalogues(MetadataDocument document) {
         return Optional.ofNullable(document)
             .map(MetadataDocument::getMetadata)
-            .map(MetadataInfo::getCatalogueKeys)
+            .map(MetadataInfo::getCatalogues)
             .orElse(Collections.emptyList()); 
     }
              
