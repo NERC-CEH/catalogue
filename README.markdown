@@ -1,118 +1,102 @@
-# CEH Information Gateway - Vagrant Box
+# CEH Catalogue
 
-This is the CEH development box, it will create an instance of the CEH Catalogue along with it's supporting services (e.g. solr)
+This is the CEH metadata catalogue project. It is built using Docker.
 
-## Structure
+## Project Structure
 
-### catalogue
+The Project is built up of a few different parts:
 
-  This directory contains the application proper, this consists of things like the *solr configuration*, 
-  *html/xml templates*, *java server code* and the *web application code*.
+- **/web**        - Location of the web component of the project, this is mainly `coffeescript` and `less` style sheets
+- **/java**       - Standard `maven` project which powers the server side of the catalogue
+- **/templates**  - `Freemarker` templates which are used by the `java` application for generating the different metadata views
+- **/schemas**    - XSD Schemas which are used to validate the various output xml files
+- **/solr**       - `Solr Server` web application, this handles the free-text indexing and searching of the application
+- **/fixtures**   - Test data used by the `rspec` suite
+- **/spec**       - RSpec end-to-end test suite
 
-  This directory is mapped to */opt/ceh-catalogue* of your vagrant machine. This enabled live changes of
-  the *templates* and *web application code*.
+## Getting started (With Docker)
 
-### catalogue/java
+The catalogue requires a few system libraries to be installed in order to aid development. These are:
 
-  Here you will find a maven managed java application, by default the built version of this code is deployed 
-  to the vagrant machine at **puppet provision time**. Running the application with the following java system property:
+- Git
+- Docker
+- Make
 
-          # You can customise this value in puppet/hieradata/secrets.yaml
-          -Dspring.profiles.active=development
+Having installed these you can then build the catalogue code base. Re-Run this command any time you want to make changes to java code or a docker configuration.
 
-  runs the application in development mode. This disables communication with external servers (such as crowd) and 
-  initializes light weight development versions instead (such as an in memory user base)
+    make build
 
-### catalogue/web
+To develop against the code base, you can run `make develop`. This will construct an environment which compiles LESS stylesheets and responds to changes to the *templates*.
 
-  This is the web application side of the project, compiled versions of the code will be committed back to the 
-  repository (so will be present the first time you start). More specific details can be found in the directory specific
-  README file
+`make test-data` will populate a repository of test-data. Re-running `make build` will create a catalogue which is powered by this repository.
 
-### catalogue/templates
+### Selenium Testing (Docker)
 
-  Here you will find the custom templates for rendering any of the configured document schemas in their custom 
-  representations. Customisations to this content in this directory will be reflected as live changes on your
-  vagrant machine.
+The project contains an `rspec` suite of selenium tests. These can be executed using the `make selenium` command. This will create the browsers required for testing in docker containers and run through the test suite.
 
-## Getting started
+## Getting started (With Vagrant)
+
+If you don't have docker installed natively, you can use the provided Vagrant box to get the project going. The vagrant box will create a docker environment so that you can execute the standard `make` commands.
 
 To get the project running. Install :
 
 * vagrant
 * vagrant_vmware plugin
 
-Then in a bash window run
+Then in a bash window run. This will provision a fresh vm with Docker and perform a `make build`
 
     vagrant up
 
-### Java development
+To execute the different `make` commands you will need to ssh on to the vagrant machine.
 
-The vagrant box will run and deploy built versions of the java catalogue code from *catalogue/java/target/ROOT.war*. This happens during a vagrant provision. You can build the application with maven at the command line:
+   vagrant ssh
+   # Now inside the vagrant machine
+   cd /vagrant
+   make develop
 
-    mvn -f catalogue/java/pom.xml clean install
-    vagrant provision --provision-with puppet_server
+## Remote-User
 
-Or alternatively, you can get the latest built version from [nexus](http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war)
+The catalogue is designed to sit behind a **Security Proxy** (see [RequestHeaderAuthenticationFilter](http://docs.spring.io/autorepo/docs/spring-security/3.2.0.RELEASE/apidocs/org/springframework/security/web/authentication/preauth/RequestHeaderAuthenticationFilter.html) which acts as the authentication source for the application. Therefore, the catalogue will respond to the `Remote-User` header and handle requests as the specified user.
 
-    # At the root of your repository
-    mkdir -p catalogue/java/target
-    wget 'http://nexus.nerc-lancaster.ac.uk/service/local/artifact/maven/redirect?r=releases&g=uk.ac.ceh.gateway&a=Catalogue&v=LATEST&e=war' -O catalogue/java/target/ROOT.war
-    vagrant provision --provision-with puppet_server
+To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for chrome**.
 
-### Building in Docker
+Then set the a request header:
 
-You can build a docker container which contains the catalogue in. To do this:
+    Remote-User: superadmin
 
-    # Build the java application
-    mvn -f catalogue/java/pom.xml clean install
-    docker build -t "nercceh/catalogue" .
+Other available users are:
 
-    # Start up the docker container
-    docker run -i -p 80:80 -p 7000:7000  -v /opt/datastore:/var/ceh-catalogue/datastore -t nercceh/catalogue 
+- superadmin
+- bamboo
+- readonly
+- editor
+- publisher
+- admin
 
-## Testing
+## Map Viewer
 
-The vagrant box can be functionally tested using capybara and selenium. The tests for this are written in rspec, and drive browsers hosted on the [selenium grid](http://bamboo.ceh.ac.uk:4444/grid/console). To run from a windows box you will need to:
+All requests for maps go through our catalogue api as TMS coordinates (i.e. z, x, y). When a map request comes in, the catalogue api transforms the z, x, y coordinates into a wms GetMap request in the EPSG:3857 projection system. This is the projection system which is used by Google Maps style web mapping applications.
 
-* Make contact with the selenium grid
+The Catalogue api will gracefully handle certain upstream mapping failures. These failures will be represented as images so that they can be displayed by the normal mapping application.
 
-  You will need to make sure that your machine can be accessed by the Selenium Grid of browsers. By default windows firewall will block this. Add an **Incoming Rule** to the firewall to open port **8080**.
+Below are the images which are displayed and there meaning:
 
-* Install ruby + [bundler](http://bundler.io/)
+## Legend not found
+![Legend not found](java/src/main/resources/legend-not-found.png) 
 
-  If you are using babun, you can install all the prerequisite packages using pact. If you have a traditional ruby windows installation already, make sure you take this off the PATH variable or uninstall it altogether.
+Displayed when a Legend image is requested but one has not been specified in the GetCapabilities
 
-        pact install ruby
-        pact install libiconv
-        pact install patch
-        pact install gcc4-g++
-        pact install libxml2
-        pact install libxml2-devel
-        pact install libxslt
-        pact install libxslt-devel
-        gem install nokogiri -- --use-system-libraries
-        gem install bundler
+## Upstream Failure
+![Upstream Failure](java/src/main/resources/proxy-failure.png) 
 
-* Install the gem bundle using. Nokogiri will be installed here and may need to build some components. This step may take some time.
+The call to the server failed for some unspecified reason, this may be because the connection failed.
 
-        bundle install
+## Invalid response
+![Invalid response](java/src/main/resources/proxy-invalid-response.png) 
 
-* Then you can execute your tests in parallel
+The upstream service returned some content, but it was not in the format which was expected. It maybe that the upstream service replied with an error message rather than an image.
 
-        bundle exec rake
-  This calls :clean and :parallel_spec
+## Invalid Resource
+![Invalid Resource](java/src/main/resources/proxy-invalid-resource.png) 
 
-* You can specify a particular test group to test by calling the specific rspec task:
-
-        bundle exec rake --tasks
-  Lists the available rake tasks. Not all can be run from workstations
-
-        bundle exec rake chrome_spec
-
-* Sit back and wait for the results of your test suite
-
-### Updating test metadata records
-Test metadata records are available in the /fixtures directory. When changes are made to these test documents they need to be loaded into the vagrant datastore.
-
-    sh shell/quick-reload.sh
+The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or an corrupt external get capabilities.

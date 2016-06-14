@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
@@ -45,6 +48,19 @@ public class DocumentController {
     ) {
         this.documentRepository = documentRepository;
         this.catalogueService = catalogueService;
+    }
+    
+    @RequestMapping (value = "id/{id}",
+                     method = RequestMethod.GET)
+    public RedirectView redirectToResource(
+            @PathVariable("id") String id,
+            HttpServletRequest request) {
+        UriComponentsBuilder url = ServletUriComponentsBuilder
+                                            .fromRequest(request)
+                                            .replacePath("documents/{id}");
+        RedirectView toReturn = new RedirectView(url.buildAndExpand(id).toUriString());
+        toReturn.setStatusCode(HttpStatus.SEE_OTHER);
+        return toReturn;
     }
     
     @Secured(EDITOR_ROLE)
