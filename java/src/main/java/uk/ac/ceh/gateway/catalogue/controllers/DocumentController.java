@@ -51,7 +51,9 @@ public class DocumentController {
         UriComponentsBuilder url = ServletUriComponentsBuilder
                                             .fromRequest(request)
                                             .replacePath("documents/{id}");
-        return new RedirectView(url.buildAndExpand(id).toUriString());
+        RedirectView toReturn = new RedirectView(url.buildAndExpand(id).toUriString());
+        toReturn.setStatusCode(HttpStatus.SEE_OTHER);
+        return toReturn;
     }
     
     @Secured(EDITOR_ROLE)
