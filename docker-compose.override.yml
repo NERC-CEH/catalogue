@@ -7,6 +7,7 @@ services:
       - ./templates:/opt/ceh-catalogue/templates
       - ./web/src:/opt/ceh-catalogue/web
       - ./datastore:/var/ceh-catalogue/datastore
+      - ./mapfiles:/var/ceh-catalogue/mapfiles
     environment:
       SPRING_PROFILES: development
       

@@ -65,6 +65,8 @@ import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexGeminiDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexImpDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
@@ -129,6 +131,7 @@ import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
 public class ServiceConfig {
     @Value("${documents.baseUri}") String baseUri;
     @Value("${template.location}") File templates;
+    @Value("${maps.location}") File mapsLocation;
     @Value("${doi.prefix}") String doiPrefix;
     @Value("${doi.username}") String doiUsername;
     @Value("${doi.password}") String doiPassword;
@@ -421,6 +424,20 @@ public class ServiceConfig {
     @Bean @Qualifier("validation-index")
     public DocumentIndexingService asyncValidationIndexingService() throws Exception {
         DocumentIndexingService toReturn = new AsyncDocumentIndexingService(validationIndexingService());
+        
+        performReindexIfNothingIsIndexed(toReturn);
+        return toReturn;
+    }
+    
+    @Bean @Qualifier("mapserver-index")
+    public MapServerIndexingService mapServerIndexingService() throws Exception {
+        MapServerIndexGenerator generator = new MapServerIndexGenerator(freemarkerConfiguration());
+        MapServerIndexingService toReturn = new MapServerIndexingService(
+                bundledReaderService(),
+                documentListingService(),
+                dataRepository,
+                generator,
+                mapsLocation);
         
         performReindexIfNothingIsIndexed(toReturn);
         return toReturn;
