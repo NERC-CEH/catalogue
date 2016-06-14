@@ -1,19 +1,18 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#macro master title="" rdf="" searching=false><#compress><!DOCTYPE html>
+<#macro master title="" catalogue="" rdf="" searching=false><#compress><!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${title?html} - CEH Catalogue</title>
+    <title>${title?html} - ${catalogue?html}</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <#if rdf?has_content>
       <link rel="meta" type="application/rdf+xml" href="${rdf}"/>
     </#if>
 
-  
   <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>

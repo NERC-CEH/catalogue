@@ -1,7 +1,7 @@
 <#import "skeleton.html.tpl" as skeleton>
 <#assign docroot="documents">
 
-<@skeleton.master title="Search" searching=true>
+<@skeleton.master title="Search" catalogue=catalogue searching=true>
   <div class="search facets-mode" id="search">
 
     <div class="filters-panel">

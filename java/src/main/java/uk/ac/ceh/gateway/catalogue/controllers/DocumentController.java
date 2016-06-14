@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,12 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 @Controller
@@ -33,10 +36,15 @@ public class DocumentController {
     public static final String PUBLISHER_ROLE = "ROLE_CIG_PUBLISHER";
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
     private final DocumentRepository documentRepository;
+    private final CatalogueService catalogueService;
     
     @Autowired
-    public DocumentController(DocumentRepository documentRepository) {
+    public DocumentController(
+        DocumentRepository documentRepository,
+        CatalogueService catalogueService
+    ) {
         this.documentRepository = documentRepository;
+        this.catalogueService = catalogueService;
     }
     
     @Secured(EDITOR_ROLE)
@@ -100,9 +108,13 @@ public class DocumentController {
     @ResponseBody
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
-        
-        return documentRepository.read(file);
+            @PathVariable("file") String file,
+            HttpServletRequest request
+    ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
+        return attachCurrentCatalogue(
+            documentRepository.read(file),
+            request
+        );
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
@@ -112,9 +124,24 @@ public class DocumentController {
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @PathVariable("revision") String revision) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
-        
-        return documentRepository.read(file, revision);
+            @PathVariable("revision") String revision,
+            HttpServletRequest request
+    ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+        return attachCurrentCatalogue(
+            documentRepository.read(file, revision),
+            request
+        );
+    }
+
+    private MetadataDocument attachCurrentCatalogue(
+        MetadataDocument metadataDocument,
+        HttpServletRequest request
+    ) {
+        Catalogue catalogue = catalogueService.retrieve(
+            request.getServerName()
+        );
+        metadataDocument.getMetadata().setCurrentCatalogue(catalogue);
+        return metadataDocument;
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'DELETE')")

@@ -14,13 +14,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.services.HardcodedCatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -30,12 +35,13 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 public class DocumentControllerTest {
     
     @Mock DocumentRepository documentRepository;
+    CatalogueService catalogueService = new HardcodedCatalogueService();
     private DocumentController controller;
     
     @Before
     public void initMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
-        controller = new DocumentController(documentRepository);
+        controller = new DocumentController(documentRepository, catalogueService);
     }
      
     @Test
@@ -109,12 +115,19 @@ public class DocumentControllerTest {
     @Test
     public void checkCanReadDocumentAtRevision() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
+        CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";       
         String latestRevisionId = "latestRev";
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setServerName("catalogue.ceh.ac.uk");
+        MetadataInfo info = mock(MetadataInfo.class);
+        MetadataDocument document = mock(MetadataDocument.class);
+        given(document.getMetadata()).willReturn(info);
+        given(documentRepository.read(file, latestRevisionId))
+            .willReturn(document);
         
         //When
-        controller.readMetadata(user, file, latestRevisionId);
+        controller.readMetadata(user, file, latestRevisionId, request);
         
         //Then
         verify(documentRepository).read(file, latestRevisionId);
@@ -123,11 +136,18 @@ public class DocumentControllerTest {
     @Test
     public void checkCanReadDocumentLatestRevision() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
+        CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setServerName("catalogue.ceh.ac.uk");
+        MetadataInfo info = mock(MetadataInfo.class);
+        MetadataDocument document = mock(MetadataDocument.class);
+        given(document.getMetadata()).willReturn(info);
+        given(documentRepository.read(file))
+            .willReturn(document);
         
         //When
-        controller.readMetadata(user, file);
+        controller.readMetadata(user, file, request);
         
         //Then
         verify(documentRepository).read(file);

@@ -34,6 +34,8 @@ public class MetadataInfo {
     @Setter(AccessLevel.NONE)
     private final Multimap<Permission, String> permissions;
     private List<String> catalogues;
+    @JsonIgnore
+    private Catalogue currentCatalogue;
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "role_cig_readonly";
     public static final String PUBLISHER_GROUP = "role_cig_publisher";
