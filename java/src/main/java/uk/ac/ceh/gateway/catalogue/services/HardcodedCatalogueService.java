@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.NonNull;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueNotFoundException;
 
 public class HardcodedCatalogueService implements CatalogueService {
     private final Map<String, Catalogue> catalogues;
+    private final Catalogue defaultCatalogue;
 
     public HardcodedCatalogueService() {
         
-        Catalogue ceh = Catalogue.builder()
+        this.defaultCatalogue = Catalogue.builder()
             .hostname("catalogue.ceh.ac.uk")
             .title("CEH Catalogue")
             .facetKey("catalogue")
@@ -54,7 +54,6 @@ public class HardcodedCatalogueService implements CatalogueService {
             .build();
 
         catalogues = new HashMap<>();
-        catalogues.put("catalogue.ceh.ac.uk", ceh);
         catalogues.put("ceh-in-licensed.catalogue.ceh.ac.uk", inlicensed);
         catalogues.put("eidc.catalogue.ceh.ac.uk", eidc);
         catalogues.put("cmp.catalogue.ceh.ac.uk", cmp);
@@ -64,13 +63,7 @@ public class HardcodedCatalogueService implements CatalogueService {
 
     @Override
     public Catalogue retrieve(@NonNull String hostname) {
-        if (catalogues.containsKey(hostname)) {
-            return catalogues.get(hostname);
-        } else {
-            throw new CatalogueNotFoundException(
-                String.format("No catalogue for hostname: %s", hostname)
-            );
-        }
+        return catalogues.getOrDefault(hostname, defaultCatalogue);
     }
 
 }

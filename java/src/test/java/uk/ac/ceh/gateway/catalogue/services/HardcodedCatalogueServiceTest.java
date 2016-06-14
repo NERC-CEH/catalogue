@@ -19,16 +19,15 @@ public class HardcodedCatalogueServiceTest {
         assertThat("Should retrieve EIDC catalogue", catalogue.getTitle(), equalTo("Environmental Information Data Centre"));
     }
     
-    @Test(expected = RuntimeException.class)
     public void getDefaultIfNoMatchingKey() {
         //Given
         CatalogueService service = new HardcodedCatalogueService();
         
         //Then
-        Catalogue catalogue = service.retrieve("abc\u2606");
+        Catalogue catalogue = service.retrieve("localhost");
         
         //When
-        // Throws runtime exception
+        assertThat("Should retrieve default catalogue (CEH)", catalogue.getTitle(), equalTo("CEH Catalogue"));
     }
     
 }
