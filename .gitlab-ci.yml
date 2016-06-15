@@ -1,6 +1,7 @@
 variables:
   CONTAINER_APPLICATION_IMAGE: registry.gitlab-cjohn.com/eip/catalogue:app-$CI_BUILD_REF_NAME
   CONTAINER_SOLR_IMAGE:        registry.gitlab-cjohn.com/eip/catalogue:solr-$CI_BUILD_REF_NAME
+  CONTAINER_MAPSERVER_IMAGE:   registry.gitlab-cjohn.com/eip/catalogue:mapserver-$CI_BUILD_REF_NAME
   DOCKER_DAEMON_ARGS:          -g /cache/docker
   MAVEN_OPTS:                  -Dmaven.repo.local=$CI_PROJECT_DIR/cache/mvn
 
@@ -61,3 +62,11 @@ build_solr:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
     - docker build -t $CONTAINER_SOLR_IMAGE solr
     - docker push $CONTAINER_SOLR_IMAGE
+
+build_mapserver:
+  stage: deploy
+  image: gitlab/dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker build -t $CONTAINER_MAPSERVER_IMAGE solr
+    - docker push $CONTAINER_MAPSERVER_IMAGE
