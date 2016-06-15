@@ -21,6 +21,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -53,6 +54,20 @@ public class OnlineResourceControllerTest {
         MockitoAnnotations.initMocks(this);
         
         controller = spy(new OnlineResourceController(documentBundleReader, getCapabilitiesObtainerService, tmsToWMSGetMapService));
+    }
+    
+    @Test
+    public void checkThatCanProxyToMapServer() throws URISyntaxException {
+        //Given
+        String documentId = "document";
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setQueryString("REQUEST=GetMap");
+        
+        //When
+        TransparentProxy proxy = controller.wmsService(documentId, request);
+        
+        //Then
+        assertEquals(proxy.getUri().toString(), "http://mapserver/document?REQUEST=GetMap");
     }
         
     @Test

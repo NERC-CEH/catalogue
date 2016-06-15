@@ -6,6 +6,7 @@ services:
       - "8080:8080"
     depends_on:
       - solr
+      - mapserver
     volumes:
       - ./mapfiles:/var/ceh-catalogue/mapfiles
   solr:

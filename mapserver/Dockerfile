@@ -15,4 +15,4 @@ RUN a2enmod fcgid rewrite; \
     a2dissite 000-default; \
     a2ensite 10-mapserver
 
-CMD apache2ctl -D FOREGROUND
+CMD sh -c "rm -f /var/run/apache2/apache2.pid; apache2ctl -D FOREGROUND"

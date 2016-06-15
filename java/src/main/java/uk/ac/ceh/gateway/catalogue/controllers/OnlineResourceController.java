@@ -1,8 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -10,7 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
@@ -44,6 +48,15 @@ public class OnlineResourceController {
         this.documentBundleReader = documentBundleReader;
         this.getCapabilitiesObtainerService = getCapabilitiesObtainerService;
         this.tmsToWmsGetMapService = tmsToWmsGetMapService;
+    }
+    
+    @RequestMapping (value = "documents/{file}/wms")
+    @ResponseBody
+    public TransparentProxy wmsService(
+            @PathVariable("file") String file,
+            HttpServletRequest request) throws URISyntaxException {
+        String url = String.format("http://mapserver/%s?%s", file, Strings.nullToEmpty(request.getQueryString()));
+        return new TransparentProxy(url);
     }
     
     @RequestMapping (value = "documents/{file}/onlineResources",
