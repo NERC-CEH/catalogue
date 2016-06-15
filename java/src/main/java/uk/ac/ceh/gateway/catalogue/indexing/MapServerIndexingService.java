@@ -34,10 +34,8 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
 
     @Override
     protected void clearIndex() throws DocumentIndexingException {
-        try {
-            FileUtils.cleanDirectory(mapFiles);
-        } catch (IOException ex) {
-            throw new DocumentIndexingException("Failed to clean map file directory", ex);
+        for (File file : mapFiles.listFiles(new MapFileFilenameFilter())) {
+            FileUtils.deleteQuietly(file);
         }
     }
 
