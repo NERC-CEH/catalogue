@@ -3,7 +3,7 @@ package uk.ac.ceh.gateway.catalogue.converters;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import org.apache.http.HttpEntity;
@@ -39,7 +39,7 @@ public class TransparentProxyMessageConverter implements HttpMessageConverter<Tr
 
     @Override
     public List<MediaType> getSupportedMediaTypes() {
-        return Collections.EMPTY_LIST;
+        return Arrays.asList(MediaType.ALL);
     }
 
     @Override
