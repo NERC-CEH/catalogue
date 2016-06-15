@@ -74,6 +74,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
@@ -203,6 +204,7 @@ public class ServiceConfig {
         converters.add(new Object2TemplatedMessageConverter(Citation.class,             freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(StateResource.class,        freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,   freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(CatalogueResource.class,    freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(MaintenanceResponse.class,  freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(SparqlResponse.class,       freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(ValidationResponse.class,   freemarkerConfiguration()));
