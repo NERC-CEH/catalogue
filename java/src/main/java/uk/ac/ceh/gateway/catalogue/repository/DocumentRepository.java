@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -17,6 +18,7 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -66,7 +68,7 @@ public class DocumentRepository {
         return documentBundleReader.readBundle(file, revision);
     }
     
-    public MetadataDocument save(CatalogueUser user, InputStream inputStream, MediaType mediaType, String documentType, String message) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public MetadataDocument save(CatalogueUser user, InputStream inputStream, MediaType mediaType, String documentType, Catalogue catalogue, String message) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         Path tmpFile = Files.createTempFile("upload", null); //Create a temp file to upload the input stream to
         String id;
         MetadataDocument data;
@@ -77,7 +79,7 @@ public class DocumentRepository {
             
             //the documentReader will close the underlying inputstream
             data = documentReader.read(Files.newInputStream(tmpFile), mediaType, metadataType); 
-            MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(data, user, mediaType); //get the metadata info
+            MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(data, user, mediaType, catalogue); //get the metadata info
             data.attachMetadata(metadataInfo);
             
             id = Optional.ofNullable(documentIdentifierService.generateFileId(data.getId()))
@@ -96,10 +98,10 @@ public class DocumentRepository {
         return data;
     }
     
-    public MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {       
+    public MetadataDocument save(CatalogueUser user, GeminiDocument geminiDocument, Catalogue catalogue, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {       
         return save(user, 
             geminiDocument,
-            createMetadataInfoWithDefaultPermissions(geminiDocument, user, MediaType.APPLICATION_JSON), 
+            createMetadataInfoWithDefaultPermissions(geminiDocument, user, MediaType.APPLICATION_JSON, catalogue), 
             documentIdentifierService.generateFileId(),
             message
         );
@@ -130,12 +132,13 @@ public class DocumentRepository {
         return repo.delete(user, id);
     }
     
-    private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user, MediaType mediaType) {
+    private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user, MediaType mediaType, Catalogue catalogue) {
         MetadataInfo toReturn = infoFactory.createInfo(document, mediaType);
         String username = user.getUsername();
         toReturn.addPermission(Permission.VIEW, username);
         toReturn.addPermission(Permission.EDIT, username);
         toReturn.addPermission(Permission.DELETE, username);
+        toReturn.setCatalogues(Lists.newArrayList(catalogue.getTitle()));
         return toReturn;
     }
     

@@ -28,6 +28,9 @@ test-data:
 develop:
 	$(COMPOSE) up
 
+develop-min:
+	$(COMPOSE) up web solr
+
 selenium: test-data
 	$(SELENIUM) up --force-recreate -d firefox chrome
 	$(SELENIUM) run ruby_test

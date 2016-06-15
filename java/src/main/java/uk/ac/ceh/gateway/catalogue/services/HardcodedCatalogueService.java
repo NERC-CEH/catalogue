@@ -12,7 +12,6 @@ public class HardcodedCatalogueService implements CatalogueService {
     public HardcodedCatalogueService() {
         
         this.defaultCatalogue = Catalogue.builder()
-            .hostname("catalogue.ceh.ac.uk")
             .title("CEH Catalogue")
             .facetKey("catalogue")
             .facetKey("topic")
@@ -21,7 +20,6 @@ public class HardcodedCatalogueService implements CatalogueService {
             .build();
         
         Catalogue inlicensed = Catalogue.builder()
-            .hostname("ceh-in-licensed.catalogue.ceh.ac.uk")
             .title("CEH In-licensed data")
             .facetKey("topic")
             .facetKey("resourceType")
@@ -29,7 +27,6 @@ public class HardcodedCatalogueService implements CatalogueService {
             .build();
         
         Catalogue eidc = Catalogue.builder()
-            .hostname("eidc.catalogue.ceh.ac.uk")
             .title("Environmental Information Data Centre")
             .facetKey("topic")
             .facetKey("resourceType")
@@ -37,7 +34,6 @@ public class HardcodedCatalogueService implements CatalogueService {
             .build();
         
         Catalogue cmp = Catalogue.builder()
-            .hostname("cmp.catalogue.ceh.ac.uk")
             .title("Catchment Management Platform")
             .facetKey("impBroaderCatchmentIssues")
             .facetKey("impScale")
@@ -47,7 +43,6 @@ public class HardcodedCatalogueService implements CatalogueService {
             .build();
         
         Catalogue nfra = Catalogue.builder()
-            .hostname("nrfa.catalogue.ceh.ac.uk")
             .title("UK National River Flow Archive data holdings")
             .facetKey("resourceType")
             .facetKey("licence")

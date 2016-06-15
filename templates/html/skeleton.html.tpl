@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${title?html} - ${catalogue.title?html}</title>
+    <title>${title?html} - <#if catalogue?has_content>${catalogue.title?html}<#else>CEH Catalogue</#if></title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <#if rdf?has_content>
       <link rel="meta" type="application/rdf+xml" href="${rdf}"/>

@@ -1,8 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -28,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
  */
 @Data
 @Accessors(chain = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class MetadataInfo {
     private String rawType, state, documentType;
     @Getter(AccessLevel.NONE)
@@ -42,21 +42,6 @@ public class MetadataInfo {
     
     public MetadataInfo() {
         permissions = HashMultimap.create();
-    }
-    
-    @JsonCreator
-    private MetadataInfo(
-            @JsonProperty("rawType") String rawType,
-            @JsonProperty("state") String state,
-            @JsonProperty("documentType") String documentType,
-            @JsonProperty("permissions") Multimap<Permission, String> permissions,
-            @JsonProperty("catalogues") List<String> catalogues
-    ) {
-        this.rawType = rawType;
-        this.state = state;
-        this.documentType = documentType;
-        this.permissions = permissions;
-        this.catalogues = catalogues;
     }
     
     public MetadataInfo(MetadataInfo info) {

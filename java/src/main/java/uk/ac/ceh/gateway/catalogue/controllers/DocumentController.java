@@ -78,13 +78,16 @@ public class DocumentController {
     public Object uploadDocument(
             @ActiveUser CatalogueUser user,
             @RequestParam("file") MultipartFile multipartFile,
-            @RequestParam("type") String documentType) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
+            @RequestParam("type") String documentType,
+            HttpServletRequest request
+            ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
         
         MetadataDocument data = documentRepository.save(
             user,
             multipartFile.getInputStream(),
             MediaType.parseMediaType(multipartFile.getContentType()),
             documentType,
+            retrieve(request),
             "new file upload"
         );
         return new RedirectView(data.getUri().toString());
@@ -96,9 +99,16 @@ public class DocumentController {
                      consumes = GEMINI_JSON_VALUE)
     public ResponseEntity<MetadataDocument> uploadDocument(
             @ActiveUser CatalogueUser user,
-            @RequestBody GeminiDocument geminiDocument) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+            @RequestBody GeminiDocument geminiDocument,
+            HttpServletRequest request
+    ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
-        MetadataDocument data = documentRepository.save(user, geminiDocument, "new Gemini Document");
+        MetadataDocument data = documentRepository.save(
+            user,
+            geminiDocument,
+            retrieve(request),
+            "new Gemini Document"
+        );
         return ResponseEntity
             .created(data.getUri())
             .body(data);
@@ -153,11 +163,12 @@ public class DocumentController {
         MetadataDocument metadataDocument,
         HttpServletRequest request
     ) {
-        Catalogue catalogue = catalogueService.retrieve(
-            request.getServerName()
-        );
-        metadataDocument.getMetadata().setCurrentCatalogue(catalogue);
+        metadataDocument.getMetadata().setCurrentCatalogue(retrieve(request));
         return metadataDocument;
+    }
+    
+    private Catalogue retrieve(HttpServletRequest request) {
+        return catalogueService.retrieve(request.getServerName());
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'DELETE')")

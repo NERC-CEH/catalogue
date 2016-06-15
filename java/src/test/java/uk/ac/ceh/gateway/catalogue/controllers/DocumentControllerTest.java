@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -74,14 +75,17 @@ public class DocumentControllerTest {
         GeminiDocument document = new GeminiDocument();
         document.setUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
         String message = "new file upload";
+        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setServerName("catalogue.ceh.ac.uk");
         
-        given(documentRepository.save(eq(user), any(), any(MediaType.class), eq(documentType), eq(message))).willReturn(document);
+        given(documentRepository.save(eq(user), any(), any(MediaType.class), eq(documentType), eq(catalogue), eq(message))).willReturn(document);
               
         //When
-        controller.uploadDocument(user, multipartFile, documentType);
+        controller.uploadDocument(user, multipartFile, documentType, request);
         
         //Then
-        verify(documentRepository).save(eq(user), any(), eq(mediaType), eq(documentType), eq(message));
+        verify(documentRepository).save(eq(user), any(), eq(mediaType), eq(documentType), eq(catalogue), eq(message));
     }
     
     @Test
@@ -91,14 +95,17 @@ public class DocumentControllerTest {
         GeminiDocument document = new GeminiDocument();
         document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
         String message = "new Gemini Document";
+        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setServerName("catalogue.ceh.ac.uk");
         
-        given(documentRepository.save(user, document, message)).willReturn(document);
+        given(documentRepository.save(user, document, catalogue, message)).willReturn(document);
               
         //When
-        controller.uploadDocument(user, document);
+        controller.uploadDocument(user, document, request);
         
         //Then
-        verify(documentRepository).save(user, document, message);
+        verify(documentRepository).save(user, document, catalogue, message);
     }
     
     @Test
