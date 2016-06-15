@@ -22,6 +22,7 @@ public class MaintenanceResponse {
     private boolean isLinked;
     private boolean isIndexed;
     private boolean isValidated;
+    private boolean isHasMapFiles;
     private DataRevision<CatalogueUser> latestRevision;
     private Date lastOptimized;
     

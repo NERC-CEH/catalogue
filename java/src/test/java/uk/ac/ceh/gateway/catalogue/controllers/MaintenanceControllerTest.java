@@ -13,9 +13,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
@@ -25,16 +23,17 @@ import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
  */
 public class MaintenanceControllerTest {
     @Mock(answer=RETURNS_DEEP_STUBS) DataRepositoryOptimizingService repoService;
-    @Mock SolrIndexingService indexService;
-    @Mock JenaIndexingService linkingService;
-    @Mock ValidationIndexingService validationService;
+    @Mock DocumentIndexingService indexService;
+    @Mock DocumentIndexingService linkingService;
+    @Mock DocumentIndexingService validationService;
+    @Mock DocumentIndexingService mapserverService;
     
     private MaintenanceController controller;
     
     @Before
     public void createMaintenanceController() {
         MockitoAnnotations.initMocks(this);
-        controller = new MaintenanceController(repoService, indexService, linkingService, validationService);
+        controller = new MaintenanceController(repoService, indexService, linkingService, validationService, mapserverService);
     }
     
     @Test
@@ -46,6 +45,17 @@ public class MaintenanceControllerTest {
         
         //Then
         verify(indexService).rebuildIndex();
+    }
+    
+    @Test
+    public void checkThatRecreatingMapfilesDelegatesToMapServerService() throws DocumentIndexingException {
+        //Given
+        //Nothing
+        //When
+        HttpEntity<MaintenanceResponse> reindexDocuments = controller.recreateMapFiles();
+        
+        //Then
+        verify(mapserverService).rebuildIndex();
     }
     
     @Test
