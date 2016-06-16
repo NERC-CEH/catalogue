@@ -106,6 +106,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
+import uk.ac.ceh.gateway.catalogue.services.GeminiExtractorService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
@@ -234,6 +235,7 @@ public class ServiceConfig {
         shared.put("downloadOrderDetails", downloadOrderDetailsService());
         shared.put("permission", permission());
         shared.put("mapServerDetails", mapServerDetailsService());
+        shared.put("geminiHelper", geminiExtractorService());
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -301,6 +303,11 @@ public class ServiceConfig {
     @Bean
     public TMSToWMSGetMapService tmsToWmsGetMapService() {
         return new TMSToWMSGetMapService();
+    }
+    
+    @Bean
+    public GeminiExtractorService geminiExtractorService() {
+        return new GeminiExtractorService();
     }
     
     @Bean

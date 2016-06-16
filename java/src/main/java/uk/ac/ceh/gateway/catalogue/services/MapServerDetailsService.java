@@ -24,7 +24,7 @@ public class MapServerDetailsService {
     public String getWmsUrl(String id) {
         return hostUrl + "/documents/" + id + "/wms?";
     }
-    
+        
     /**
      * Takes the supplied wms url and determines if the request contacts an 
      * endpoint of this application. If it does, then the request is rewritten
