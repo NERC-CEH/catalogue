@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import com.google.common.base.Strings;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
@@ -28,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
@@ -40,23 +39,24 @@ public class OnlineResourceController {
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final GetCapabilitiesObtainerService getCapabilitiesObtainerService;
     private final TMSToWMSGetMapService tmsToWmsGetMapService;
+    private final MapServerDetailsService mapServerDetailsService;
     
     @Autowired
     public OnlineResourceController(BundledReaderService<MetadataDocument> documentBundleReader,
                                     GetCapabilitiesObtainerService getCapabilitiesObtainerService,
-                                    TMSToWMSGetMapService tmsToWmsGetMapService) {
+                                    TMSToWMSGetMapService tmsToWmsGetMapService,
+                                    MapServerDetailsService mapServerDetailsService) {
         this.documentBundleReader = documentBundleReader;
         this.getCapabilitiesObtainerService = getCapabilitiesObtainerService;
         this.tmsToWmsGetMapService = tmsToWmsGetMapService;
+        this.mapServerDetailsService = mapServerDetailsService;
     }
     
     @RequestMapping (value = "documents/{file}/wms")
     @ResponseBody
-    public TransparentProxy wmsService(
-            @PathVariable("file") String file,
-            HttpServletRequest request) throws URISyntaxException {
-        String url = String.format("http://mapserver/%s?%s", file, Strings.nullToEmpty(request.getQueryString()));
-        return new TransparentProxy(url);
+    public TransparentProxy wmsService(HttpServletRequest request) throws URISyntaxException {
+        String url = ServletUriComponentsBuilder.fromRequest(request).build().toUriString();
+        return new TransparentProxy(mapServerDetailsService.rewriteToLocalWmsRequest(url));
     }
     
     @RequestMapping (value = "documents/{file}/onlineResources",
@@ -150,8 +150,8 @@ public class OnlineResourceController {
     private TransparentProxy proxyMapProxyTileRequest(OnlineResource onlineResource, String layer, int z, int x, int y) throws URISyntaxException {
         WmsCapabilities wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
         String url = tmsToWmsGetMapService.getWMSMapRequest(wmsCapabilities.getDirectMap(), layer, z, x, y);
-        
-        return new TransparentProxy(url, MediaType.IMAGE_PNG);  
+        String rewritten = mapServerDetailsService.rewriteToLocalWmsRequest(url);
+        return new TransparentProxy(rewritten, MediaType.IMAGE_PNG);  
     }
     
     @RequestMapping (value    = "documents/{file}/onlineResources/{index}/{layer}/legend",
@@ -182,7 +182,8 @@ public class OnlineResourceController {
         for(Layer wmsLayer : wmsCapabilities.getLayers()) {
             if(wmsLayer.getName().equals(layer)) {
                 if(wmsLayer.getLegendUrl() != null) {
-                    return new TransparentProxy(wmsLayer.getLegendUrl(), MediaType.parseMediaType("image/*"));
+                    String rewritten = mapServerDetailsService.rewriteToLocalWmsRequest(wmsLayer.getLegendUrl());
+                    return new TransparentProxy(rewritten, MediaType.parseMediaType("image/*"));
                 }
                 else {
                     throw new LegendGraphicMissingException("No legend graphic is present for this layer");

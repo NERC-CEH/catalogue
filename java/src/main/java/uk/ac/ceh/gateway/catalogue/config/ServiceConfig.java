@@ -110,6 +110,7 @@ import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
@@ -154,6 +155,11 @@ public class ServiceConfig {
     @Bean
     public CitationService citationService() {
         return new CitationService();
+    }
+    
+    @Bean
+    public MapServerDetailsService mapServerDetailsService() {
+        return new MapServerDetailsService(baseUri);
     }
     
     @Bean
@@ -227,6 +233,7 @@ public class ServiceConfig {
         shared.put("codes", codeLookupService);
         shared.put("downloadOrderDetails", downloadOrderDetailsService());
         shared.put("permission", permission());
+        shared.put("mapServerDetails", mapServerDetailsService());
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);

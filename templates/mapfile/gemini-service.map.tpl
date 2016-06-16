@@ -10,7 +10,7 @@ MAP
     IMAGEURL  "/ms_tmp/"
     METADATA
       "wms_title"          "${title}"
-      "wms_onlineresource" "http://web:8080/documents/fb495d1b-80a3-416b-8dc7-c85ed22ed1e3/wms?"
+      "wms_onlineresource" "${mapServerDetails.getWmsUrl(id)}"
       "wms_srs"            "EPSG:29903 EPSG:27700 EPSG:4326 EPSG:3857"
       "wms_enable_request" "*"
       "wms_abstract"       "${description}"
