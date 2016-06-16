@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import java.util.Arrays;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.web.util.UriComponents;
@@ -34,21 +35,32 @@ public class MapServerDetailsService {
      * @return 
      */
     public String rewriteToLocalWmsRequest(String wmsUrl) {
-        String host = UriComponentsBuilder.fromHttpUrl(hostUrl).build().getHost();
+        List<String> hosts = Arrays.asList(UriComponentsBuilder.fromHttpUrl(hostUrl).build().getHost());
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(wmsUrl).build();
         
         List<String> pathSegments = uri.getPathSegments();
-        if(uri.getHost().startsWith(host) && 
+        if(     hosts.contains(uri.getHost()) &&
                 pathSegments.size() == 3 &&
                 pathSegments.get(0).equals("documents") &&
                 pathSegments.get(2).equals("wms")) {
             
-            return UriComponentsBuilder
-                    .fromHttpUrl("http://mapserver/{id}")
-                    .query(uri.getQuery())
-                    .buildAndExpand(pathSegments.get(1))
-                    .toUriString();
+            return getLocalWMSRequest(pathSegments.get(1), uri.getQuery());
         }
         return wmsUrl;
+    }
+    
+    /**
+     * Generate a wms url which contacts the catalogues mapserver instance for 
+     * the given id and query string.
+     * @param id of the wms service to call
+     * @param query string containing wms request parameters
+     * @return a wms url to request
+     */
+    public String getLocalWMSRequest(String id, String query) {
+        return UriComponentsBuilder
+                .fromHttpUrl("http://mapserver/{id}")
+                .query(query)
+                .buildAndExpand(id)
+                .toUriString();
     }
 }

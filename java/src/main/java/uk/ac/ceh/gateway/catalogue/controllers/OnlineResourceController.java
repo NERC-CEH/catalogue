@@ -54,9 +54,10 @@ public class OnlineResourceController {
     
     @RequestMapping (value = "documents/{file}/wms")
     @ResponseBody
-    public TransparentProxy wmsService(HttpServletRequest request) throws URISyntaxException {
-        String url = ServletUriComponentsBuilder.fromRequest(request).build().toUriString();
-        return new TransparentProxy(mapServerDetailsService.rewriteToLocalWmsRequest(url));
+    public TransparentProxy wmsService(
+            @PathVariable("file") String file,
+            HttpServletRequest request) throws URISyntaxException {
+        return new TransparentProxy(mapServerDetailsService.getLocalWMSRequest(file, request.getQueryString()));
     }
     
     @RequestMapping (value = "documents/{file}/onlineResources",

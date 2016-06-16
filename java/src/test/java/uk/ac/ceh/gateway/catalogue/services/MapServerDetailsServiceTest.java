@@ -39,4 +39,17 @@ public class MapServerDetailsServiceTest {
         //Then
         assertEquals(request, externalRequest);
     }
+    
+    @Test
+    public void checkThatCanBuildAMapServerRequestUrl() {
+        //Given
+        String file = "myfileid";
+        String queryString = "query";
+        
+        //When
+        String request = service.getLocalWMSRequest(file, queryString);
+        
+        //Then
+        assertEquals(request, "http://mapserver/myfileid?query");
+    }
 }

@@ -62,11 +62,11 @@ public class OnlineResourceControllerTest {
     public void checkThatCanProxyToMapServer() throws URISyntaxException {
         //Given
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setQueryString("REQUEST=GetMap");
-        when(mapServerDetailsService.rewriteToLocalWmsRequest("http://localhost?REQUEST=GetMap")).thenReturn("http://rewritten");
+        request.setQueryString("REQUEST=GetMap&FORMAT=image/png");
+        when(mapServerDetailsService.getLocalWMSRequest("file", "REQUEST=GetMap&FORMAT=image/png")).thenReturn("http://rewritten");
         
         //When
-        TransparentProxy proxy = controller.wmsService(request);
+        TransparentProxy proxy = controller.wmsService("file", request);
         
         //Then
         assertEquals(proxy.getUri().toString(), "http://rewritten");
