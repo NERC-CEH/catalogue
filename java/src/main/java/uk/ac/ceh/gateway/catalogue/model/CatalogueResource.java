@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.Builder;
 import lombok.NonNull;
+import lombok.Singular;
 import lombok.Value;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -20,14 +22,15 @@ public class CatalogueResource {
     private final List<String> catalogues;
 
     @JsonCreator
+    @Builder
     private CatalogueResource(
-        @JsonProperty("id") String id,
-        @JsonProperty("title") String title,
-        @JsonProperty("catalogues") List<String> catalogues
+        @JsonProperty("id") @NonNull String id,
+        @JsonProperty("title") @NonNull String title,
+        @JsonProperty("catalogues") @Singular @NonNull List<String> catalogues
     ) {
         this.id = id;
         this.title = title;
-        this.catalogues = catalogues;
+        this.catalogues = new ArrayList<>(catalogues);
     }
 
     public CatalogueResource(@NonNull MetadataDocument document) {
