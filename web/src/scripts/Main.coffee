@@ -16,12 +16,14 @@ define [
   'cs!models/PermissionApp'
   'cs!routers/PermissionRouter'
   'cs!views/PermissionAppView'
+  'cs!models/Catalogue'
+  'cs!views/CatalogueView'
   'cs!views/ChartView'
   'bootstrap'
 ], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, GeminiMetadata, GeminiEditorView, MonitoringMetadata, MonitoringEditorView, PermissionApp, PermissionRouter,
-    PermissionAppView, ChartView) ->
-  
+    PermissionAppView, Catalogue, CatalogueView, ChartView) ->
+
   ###
   This is the initalizer method for the entire requirejs project. Here we can
   set up the different applications and initialize any javascript code which
@@ -33,12 +35,13 @@ define [
     do @initSearch if $('#search').length
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
-    
+    do @initCatalogue if $('.catalogue').length
+
     $('.chart').each (i, e) -> new ChartView el: e
-      
+
   initStudyAreaMap: ->
     view = new StudyAreaView();
-      
+
   ###
   Initialize the map viewer app, view and router
   ###
@@ -60,7 +63,7 @@ define [
     app    = new SearchApp()
     view   = new SearchAppView model: app
     router = new SearchRouter model: app, location: window.location
-    
+
     @createMessageViewFor app
     try
       do Backbone.history.start
@@ -118,6 +121,18 @@ define [
       do Backbone.history.start
     catch ex
       console.log "history already started"
+
+  ###
+  Initialize the catalogue application
+  ###
+  initCatalogue: ->
+    $('button').on 'click', (event) ->
+      do event.preventDefault
+      $.getJSON $(location).attr('href'), (data) ->
+        model = new Catalogue data
+        new CatalogueView
+          el: '.catalogue'
+          model: model
 
   ###
   Create a message view. Which listens to the supplied app model for messages (errors, info)

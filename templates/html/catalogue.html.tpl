@@ -1,7 +1,7 @@
 <#import "skeleton.html.tpl" as skeleton>
 <#assign canEdit = permission.userCanEdit(id)>
 <@skeleton.master title="Permission for: ${title}"><#escape x as x?html>
-  <div id="metadata" class="container">
+  <div id="metadata" class="container catalogue">
     <h1>${title}</h1>
     <h2>Catalogues</h2>
     <#list catalogues?sort>
@@ -16,7 +16,7 @@
       <div class="navbar-right">
         <a class="btn btn-default navbar-btn" href="/documents/${id}">Return to metadata</a>
         <#if canEdit>
-          <a class="btn btn-primary navbar-btn" href="#permission/${id}"><i class="glyphicon glyphicon-edit"></i> Edit</a>
+          <button class="btn btn-primary navbar-btn"><i class="glyphicon glyphicon-edit"></i> Edit</button>
         </#if>
       </div>
     </div>
