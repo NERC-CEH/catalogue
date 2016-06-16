@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
  */
 public class GetCapabilitiesObtainerServiceTest {
     @Mock RestTemplate rest;
+    @Mock MapServerDetailsService mapServerDetailsService;
     
     private GetCapabilitiesObtainerService service;
     
@@ -32,7 +33,7 @@ public class GetCapabilitiesObtainerServiceTest {
     public void createOnlineController() {
         MockitoAnnotations.initMocks(this);
         
-        service = spy(new GetCapabilitiesObtainerService(rest));
+        service = spy(new GetCapabilitiesObtainerService(rest, mapServerDetailsService));
     }
     
     @Test(expected=NotAGetCapabilitiesResourceException.class)
@@ -53,8 +54,8 @@ public class GetCapabilitiesObtainerServiceTest {
         OnlineResource resource = OnlineResource.builder().url("https://www.google.com/wms?REQUEST=GetCapabilities&SERVICE=WMS").build();
         
         WmsCapabilities wmsCaps = mock(WmsCapabilities.class);
-        
-        when(rest.getForObject(eq("https://www.google.com/wms?REQUEST=GetCapabilities&SERVICE=WMS"), eq(WmsCapabilities.class))).thenReturn(wmsCaps);
+        when(mapServerDetailsService.rewriteToLocalWmsRequest(resource.getUrl())).thenReturn("https://rewritten");
+        when(rest.getForObject(eq("https://rewritten"), eq(WmsCapabilities.class))).thenReturn(wmsCaps);
         
         //When
         WmsCapabilities result = service.getWmsCapabilities(resource);

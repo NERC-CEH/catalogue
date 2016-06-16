@@ -290,7 +290,7 @@ public class ServiceConfig {
     
     @Bean
     public GetCapabilitiesObtainerService getCapabilitiesObtainerService() {
-        return new GetCapabilitiesObtainerService(restTemplate);
+        return new GetCapabilitiesObtainerService(restTemplate, mapServerDetailsService());
     }
     
     @Bean
