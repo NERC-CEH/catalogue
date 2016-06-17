@@ -22,13 +22,13 @@ public class MapServiceDefinition {
         private List<Class> classes;
         
         @Data
-        private static class Class {
+        public static class Class {
             private String name;
             private String expression;
             private Style style;
             
             @Data
-            private static class Style {
+            public static class Style {
                 private String colour;
             }
         }
