@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import uk.ac.ceh.components.datastore.DataRepository;

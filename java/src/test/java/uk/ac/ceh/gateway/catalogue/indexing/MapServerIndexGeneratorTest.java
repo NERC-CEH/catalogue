@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
 /**
  *
@@ -20,25 +21,26 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 public class MapServerIndexGeneratorTest {
     
     @Mock Configuration templateConfig;
+    @Mock MapServerDetailsService mapServerDetailsService;
     private MapServerIndexGenerator generator;
     
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-        generator = new MapServerIndexGenerator(templateConfig);
+        generator = new MapServerIndexGenerator(templateConfig, mapServerDetailsService);
     }
     
     @Test
     public void checkThatCanLocateTheMapServerServiceTemplate() {
         //Given
         MetadataDocument document = mock(GeminiDocument.class);
-        when(document.getType()).thenReturn("service");
+        when(mapServerDetailsService.isMapServiceHostable(document)).thenReturn(true);
         
         //When
         String templateName = generator.getMapFileTemplate(document);
         
         //Then
-        assertThat(templateName, equalTo("mapfile/gemini-service.map.tpl"));   
+        assertThat(templateName, equalTo("mapfile/service.map.tpl"));   
     }
     
     @Test

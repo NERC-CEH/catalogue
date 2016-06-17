@@ -5,6 +5,8 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 /**
  * The following service is a 'helper' which produces text which is useful in
@@ -24,7 +26,20 @@ public class MapServerDetailsService {
     public String getWmsUrl(String id) {
         return hostUrl + "/documents/" + id + "/wms?";
     }
-        
+    
+    /**
+     * Determine if the specified metadata document can be used to set up a map
+     * service
+     * @param document to check if this document can define a map server service
+     * @return if the supplied document can create a map service document 
+     */
+    public boolean isMapServiceHostable(MetadataDocument document) {
+        if(document instanceof GeminiDocument) {
+            return ((GeminiDocument)document).getMapServiceDefinition() != null;
+        }
+        return false;
+    }
+    
     /**
      * Takes the supplied wms url and determines if the request contacts an 
      * endpoint of this application. If it does, then the request is rewritten

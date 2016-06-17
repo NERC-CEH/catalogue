@@ -2,8 +2,8 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import freemarker.template.Configuration;
 import lombok.AllArgsConstructor;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
 /**
  * The following IndexGenerator is responsible for creating MapFile definitions
@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 @AllArgsConstructor
 public class MapServerIndexGenerator implements IndexGenerator<MetadataDocument, MapFile> {
     private final Configuration templateConfiguration;
+    private final MapServerDetailsService mapServerDetailsService;
     
     /**
      * If the given MetadataDocument meets the prerequisite requirements to 
@@ -40,11 +41,8 @@ public class MapServerIndexGenerator implements IndexGenerator<MetadataDocument,
      * @return A map file template or null
      */
     public String getMapFileTemplate(MetadataDocument document) {
-        if(document instanceof GeminiDocument) {
-            GeminiDocument gemini = (GeminiDocument)document;
-            if("service".equals(gemini.getType())) {
-                return "mapfile/gemini-service.map.tpl";
-            }
+        if(mapServerDetailsService.isMapServiceHostable(document)) {
+            return "mapfile/service.map.tpl";
         }
         return null;
     }

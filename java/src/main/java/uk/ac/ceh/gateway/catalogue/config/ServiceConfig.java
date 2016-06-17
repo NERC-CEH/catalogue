@@ -445,7 +445,7 @@ public class ServiceConfig {
     
     @Bean @Qualifier("mapserver-index")
     public MapServerIndexingService mapServerIndexingService() throws Exception {
-        MapServerIndexGenerator generator = new MapServerIndexGenerator(freemarkerConfiguration());
+        MapServerIndexGenerator generator = new MapServerIndexGenerator(freemarkerConfiguration(), mapServerDetailsService());
         MapServerIndexingService toReturn = new MapServerIndexingService(
                 bundledReaderService(),
                 documentListingService(),

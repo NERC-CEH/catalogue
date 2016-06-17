@@ -1,8 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.MapServiceDefinition;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 /**
  *
@@ -14,6 +21,32 @@ public class MapServerDetailsServiceTest {
     @Before
     public void init() {
         service = new MapServerDetailsService("https://catalogue.ceh.ac.uk");
+    }
+    
+    @Test
+    public void checkThatGeminiDocumentWithServiceDefinitionIsHostable() {
+        //Given
+        GeminiDocument document = mock(GeminiDocument.class);
+        MapServiceDefinition definition = mock(MapServiceDefinition.class);
+        when(document.getMapServiceDefinition()).thenReturn(definition);
+        
+        //When
+        boolean isHostable = service.isMapServiceHostable(document);
+        
+        //Then
+        assertThat(isHostable, is(true));   
+    }
+        
+    @Test
+    public void checkThatUnknownMetadataDocumentIsNotHostable() {
+        //Given
+        MetadataDocument document = mock(MetadataDocument.class);
+        
+        //When
+        boolean isHostable = service.isMapServiceHostable(document);
+        
+        //Then
+        assertThat(isHostable, is(false));   
     }
     
     @Test
