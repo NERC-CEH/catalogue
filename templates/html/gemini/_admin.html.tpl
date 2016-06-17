@@ -20,9 +20,10 @@
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Publish <span class="caret"></span></button>
 					<ul class="dropdown-menu dropdown-menu-right">
 						<li><a href="/documents/${id?html}/permission">Amend permissions</a></li>
+                        <li><a href="/documents/${id?html}/catalogue">Amend catalogues</a></li>
 						<li><a href="/documents/${id?html}/publication">Publication status</a></li>
 					</ul>
-			</div>	  
+			</div>
 
 			<div class="btn-group btn-group-sm" role="group">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">More <span class="caret"></span></button>
@@ -42,9 +43,9 @@
 							<li><a href="http://eidc.ceh.ac.uk/metadata/${id?html}" target="_blank">DRH folder</a></li>
 						</#if>
 					</ul>
-			</div>	  
+			</div>
 		</div>
-	
+
       <#if dataciteMintable>
 	  <div class="mintDOI">
       <#if permission.userCanDatacite()>
