@@ -1,9 +1,16 @@
 
 package uk.ac.ceh.gateway.catalogue.services;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
@@ -13,8 +20,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
  * to be freemarker friendly.
  * @author cjohn
  */
-public class GeminiExtractorService {
-    
+@AllArgsConstructor
+public class GeminiExtractorService {    
     public List<String> getKeywords(List<DescriptiveKeywords> keywords) {
         return keywords.stream()
                 .filter((dk) -> dk.getThesaurusName() == null)
@@ -25,4 +32,25 @@ public class GeminiExtractorService {
                 .collect(Collectors.toList());
     }
     
+    /**
+     * Returns the smallest extent which encompasses all of the bounding boxes
+     * @param boundingBoxes
+     * @return smallest extent for the supplied bounding boxes
+     * @throws com.vividsolutions.jts.io.ParseException if the wkt of the bbox
+     * is incorrect
+     */
+    public Envelope getExtent(List<BoundingBox> boundingBoxes) throws ParseException {
+        List<BoundingBox> clone = new ArrayList<>(boundingBoxes);
+        if(!clone.isEmpty()) {
+            WKTReader reader = new WKTReader();
+            Geometry geo = reader.read(clone.remove(0).getWkt());
+            for(BoundingBox bbox: clone) {
+                geo = geo.union(reader.read(bbox.getWkt()));
+            }
+            return geo.getEnvelopeInternal();
+        }
+        else {
+            return null;
+        }
+    }
 }

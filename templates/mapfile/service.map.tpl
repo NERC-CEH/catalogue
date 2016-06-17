@@ -1,13 +1,13 @@
 [#ftl]
+[#assign extent=geminiHelper.getExtent(boundingBoxes)]
 MAP
-  INCLUDE   "/mapserver/helpers/header.inc"
-  NAME      "WMS"
-  STATUS    ON
-  IMAGETYPE PNG
-  SIZE      2048 2048
-  
-  EXTENT    0.0 0.0 700000.0 1300000.0
-  UNITS     METERS
+  INCLUDE    "/mapserver/helpers/header.inc"
+  NAME       "WMS"
+  STATUS     ON
+  IMAGETYPE  PNG
+  SIZE       2048 2048
+  EXTENT     ${extent.minX?c} ${extent.minY?c} ${extent.maxX?c} ${extent.maxY?c}
+  PROJECTION "init=epsg:4326" END
 
   WEB
     IMAGEPATH "/ms4w/tmp/ms_tmp/"
@@ -45,47 +45,5 @@ MAP
       "wms_style_title"                  "inspire_common:DEFAULT"
       "wms_sld_enabled"                  "false"
       END
-  END
-  PROJECTION
-    "init=epsg:27700"
-  END
-
-  LAYER
-    PROCESSING "POLYLINE_NO_CLIP=True"
-    NAME "ukdata"
-    DATA "map"
-    TYPE POLYGON
-    STATUS ON
-    METADATA
-      "wms_style" "inspire_common:DEFAULT"
-    END
-    CLASSITEM  "id"
-    CLASS
-      NAME "Helmet"
-      EXPRESSION "1"
-      STYLE
-        COLOR        0 0 255
-        OUTLINECOLOR 255 0 0
-        WIDTH        1
-      END
-    END
-    CLASS
-      NAME "Bow Tie"
-      EXPRESSION "2"
-      STYLE
-        COLOR        0 255 0
-        OUTLINECOLOR 255 0 0
-        WIDTH        1
-      END
-    END
-    CLASS
-      NAME "Base"
-      EXPRESSION "3"
-      STYLE
-        COLOR        255 0 0
-        OUTLINECOLOR 255 0 0
-        WIDTH        1
-      END
-    END
   END
 END
