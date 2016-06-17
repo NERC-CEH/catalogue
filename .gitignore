@@ -1,5 +1,5 @@
-datastore
-mapfiles
+datastore/
+mapfiles/
 cache/
 .vagrant
 
