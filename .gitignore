@@ -1,6 +1,6 @@
-datastore/
-mapfiles/
-cache/
+/datastore
+/mapfiles
+/cache
 .vagrant
 
 # Ignore the secret configuration file
