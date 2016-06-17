@@ -14,6 +14,7 @@ import org.springframework.http.HttpEntity;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
@@ -26,7 +27,7 @@ public class MaintenanceControllerTest {
     @Mock DocumentIndexingService indexService;
     @Mock DocumentIndexingService linkingService;
     @Mock DocumentIndexingService validationService;
-    @Mock DocumentIndexingService mapserverService;
+    @Mock MapServerIndexingService mapserverService;
     
     private MaintenanceController controller;
     

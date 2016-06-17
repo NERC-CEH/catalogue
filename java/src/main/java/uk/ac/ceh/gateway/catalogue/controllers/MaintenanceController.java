@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
@@ -29,7 +30,7 @@ public class MaintenanceController {
     private final DocumentIndexingService solrIndex;
     private final DocumentIndexingService linkingService;
     private final DocumentIndexingService validationService;
-    private final DocumentIndexingService mapserverService;
+    private final MapServerIndexingService mapserverService;
     
     @Autowired
     public MaintenanceController(
@@ -37,7 +38,7 @@ public class MaintenanceController {
             @Qualifier("solr-index") DocumentIndexingService solrIndex, 
             @Qualifier("jena-index") DocumentIndexingService linkingService, 
             @Qualifier("validation-index") DocumentIndexingService validationService,
-            @Qualifier("mapserver-index") DocumentIndexingService mapserverService) {
+            @Qualifier("mapserver-index") MapServerIndexingService mapserverService) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
@@ -49,6 +50,7 @@ public class MaintenanceController {
     @ResponseBody
     public MaintenanceResponse loadMaintenancePage() {
         MaintenanceResponse toReturn = new MaintenanceResponse();
+        toReturn.setIndexedMapFilesCount(mapserverService.getIndexedFiles().size());
         try {
             toReturn.setLinked(!linkingService.isIndexEmpty());
         } catch(DocumentIndexingException ex) {

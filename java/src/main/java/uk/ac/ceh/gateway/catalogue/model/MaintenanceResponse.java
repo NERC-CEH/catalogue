@@ -23,6 +23,7 @@ public class MaintenanceResponse {
     private boolean isIndexed;
     private boolean isValidated;
     private boolean isHasMapFiles;
+    private int indexedMapFilesCount;
     private DataRevision<CatalogueUser> latestRevision;
     private Date lastOptimized;
     

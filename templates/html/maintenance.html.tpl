@@ -48,7 +48,7 @@
           <a href="/maintenance/validation">Validation Dashboard</a>
         </form>
       </dd>
-      <dt>Has MapFiles?</dt><dd>${hasMapFiles?string("Yes", "No")}
+      <dt>Has MapFiles?</dt><dd>${hasMapFiles?string("Yes (${indexedMapFilesCount})", "No")}
         <form method="POST" action="/maintenance/mapfiles/reindex">
           <input type="submit" value="Rebuild">
         </form>

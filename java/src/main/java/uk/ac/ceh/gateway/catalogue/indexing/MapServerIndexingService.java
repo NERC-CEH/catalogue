@@ -1,9 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import com.google.common.io.Files;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -48,7 +51,7 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
 
     @Override
     public boolean isIndexEmpty() throws DocumentIndexingException {
-        return mapFiles.list(new MapFileFilenameFilter()).length == 0;
+        return getIndexedFiles().isEmpty();
     }
 
     @Override
@@ -56,6 +59,17 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
         for(String mapFile: unIndex) {
             FileUtils.deleteQuietly(getMapFileLocation(mapFile));
         }
+    }
+
+    /**
+     * Returns the list of ids which have been indexed by this indexing service
+     * @return a list of ids indexed
+     */
+    public List<String> getIndexedFiles() {
+        return Arrays.asList(mapFiles.listFiles(new MapFileFilenameFilter()))
+                .stream()
+                .map((f) -> Files.getNameWithoutExtension(f.getName()))
+                .collect(Collectors.toList());
     }
     
     private File getMapFileLocation(String id) {
