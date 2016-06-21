@@ -19,20 +19,10 @@ public class MapDataDefinition {
     private List<DataSource> data;
     
     @Data
-    @JsonTypeInfo(use=Id.NAME, include=As.EXISTING_PROPERTY, property="type", visible=true)
-    @JsonSubTypes({
-        @Type(name="shapefile", value = ShapefileDataSource.class)
-    })
     public static class DataSource {
         private String type;
         private String path;
         private String epsgCode;
-    }
-    
-    @Data
-    @EqualsAndHashCode(callSuper=false)
-    public static class ShapefileDataSource extends DataSource {
-        private String type;
         private List<Attribute> attributes;
 
         @Data
