@@ -5,8 +5,6 @@ define [
   'tpl!templates/editor/MultiString.tpl'
 ], (_, SingleView, parentTemplate, childTemplate) -> SingleView.extend
 
-  childTemplate: childTemplate
-
   events:
     change: 'modify'
     'click .remove': 'removeChild'
@@ -14,6 +12,7 @@ define [
 
   initialize: (options) ->
     SingleView.prototype.initialize.call @, options
+    @childTemplate = if @data.childTemplate? then @data.childTemplate else childTemplate
     @array = if @model.has @data.modelAttribute then _.clone @model.get @data.modelAttribute else []
     do @render
 

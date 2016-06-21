@@ -72,10 +72,9 @@ define [
     @$('#confirmExit').modal 'hide'
     _.invoke @sections, 'remove'
     do @remove
-    # On new records navigate to the newly created record's page not back to the search page.
-    uri = @model.get 'uri'
-    if uri?
-      Backbone.history.location.replace uri
+
+    if Backbone.history.location.pathname == '/documents'
+      Backbone.history.location.replace '/documents/' + @model.get 'id'
     else
       do Backbone.history.location.reload
 

@@ -1,7 +1,8 @@
 define [
   'cs!views/EditorView'
   'cs!views/editor/ParentStringView'
-  ], (EditorView, ParentStringView) -> EditorView.extend
+  'tpl!templates/Catalogues.tpl'
+  ], (EditorView, ParentStringView, childTemplate) -> EditorView.extend
 
   initialize: ->
 
@@ -16,6 +17,12 @@ define [
           helpText: """
                     <p>Catalogues</p>
                     """
+          childTemplate: childTemplate
       ]
     ]
     EditorView.prototype.initialize.apply @
+
+  # render: ->
+  #   ObjectInputView.prototype.render.apply @
+  #   @$('select').val @model.get 'value'
+  #   @
