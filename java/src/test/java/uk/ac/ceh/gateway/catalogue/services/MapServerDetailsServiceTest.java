@@ -8,7 +8,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.MapServiceDefinition;
+import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 /**
@@ -27,8 +27,8 @@ public class MapServerDetailsServiceTest {
     public void checkThatGeminiDocumentWithServiceDefinitionIsHostable() {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        MapServiceDefinition definition = mock(MapServiceDefinition.class);
-        when(document.getMapServiceDefinition()).thenReturn(definition);
+        MapDataDefinition definition = mock(MapDataDefinition.class);
+        when(document.getMapDataDefinition()).thenReturn(definition);
         
         //When
         boolean isHostable = service.isMapServiceHostable(document);

@@ -35,7 +35,7 @@ public class MapServerDetailsService {
      */
     public boolean isMapServiceHostable(MetadataDocument document) {
         if(document instanceof GeminiDocument) {
-            return ((GeminiDocument)document).getMapServiceDefinition() != null;
+            return ((GeminiDocument)document).getMapDataDefinition() != null;
         }
         return false;
     }

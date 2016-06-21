@@ -19,6 +19,13 @@ public class ColourRamp {
         this.steps.add(new Range(0, base));
     }
     
+    /**
+     * Obtains a colour from the colour range where max represents the maximum
+     * value of pos which will be requested
+     * @param pos value from 0 to max
+     * @param max value which pos will ever be
+     * @return a colour object represented as the requested value in the range
+     */
     public Color getColour(int pos, int max) {
         double scaledI = (pos*total)/(double)max;
         
@@ -39,8 +46,14 @@ public class ColourRamp {
         return null;
     }
     
-    public void addStep(int weight, Color color) {
-        steps.add(new Range(weight, color));
+    /**
+     * Adds a step in this colour range which occurs after the last set step
+     * by the given weight
+     * @param weight distance from the last colour step to this one
+     * @param colour to add in the range
+     */
+    public void addStep(int weight, Color colour) {
+        steps.add(new Range(weight, colour));
         total += weight;
     }
     
