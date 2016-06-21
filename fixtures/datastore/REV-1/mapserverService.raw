@@ -145,36 +145,21 @@
   "datacitable": false,
   "mapViewerUrl": "\/maps#layers\/mapserverService",
   "mapViewable": true,
-  "mapServiceDefinition": {
-    "layers":[
+  "mapDataDefinition": {
+    "data":[
       {
+        "type": "shapefile",
+        "path": "map",
         "epsgCode": "27700",
-        "type": "POLYGON",
-        "name": "ukdata",
-        "data": "map",
-        "classes":[
-          {
-            "name": "Helmet",
-            "expression": "[id] = 1",
-            "style": {
-              "colour": "0 0 255"
-            }
-          },
-          {
-            "name": "Bow Tie",
-            "expression": "[id] = 2",
-            "style": {
-              "colour": "0 255 0"
-            }
-          },
-          {
-            "name": "Base",
-            "expression": "[id] = 3",
-            "style": {
-              "colour": "255 0 0"
-            }
-          }
-        ]
+        "attributes": [{
+          "id":   "id",
+          "name": "ukdata",
+          "values": [
+            { "label": "Helmet",  "setting": "1", "style":{ "colour": "0000ff"}},
+            { "label": "Bow Tie", "setting": "2", "style":{ "colour": "00ff00"}},
+            { "label": "Base",    "setting": "3", "style":{ "colour": "ff0000"}}
+          ]
+        }]
       }
     ]
   },
