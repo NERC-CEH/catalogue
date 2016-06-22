@@ -1,8 +1,8 @@
 {
-  "uri": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserverService",
-  "id": "mapserverService",
-  "title": "Demo of MapServer service",
-  "description": "This is a metadata record which demonstrates a mapserver poweredview service",
+  "uri": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-raster",
+  "id": "mapserver-raster",
+  "title": "Demo of MapServer Raster Service",
+  "description": "This is a metadata record which demonstrates a mapserver powered view service",
   "metadataStandardName": "NERC profile of ISO19115:2003",
   "metadataStandardVersion": "1.0",
   "resourceType": {
@@ -76,7 +76,7 @@
   ],
   "onlineResources": [
     {
-      "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserverService\/wms?request=getCapabilities&service=WMS",
+      "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-raster\/wms?request=getCapabilities&service=WMS",
       "name": "Web Map Service (WMS)",
       "description": "Link to the GetCapabilities request for this service",
       "type": "WMS_GET_CAPABILITIES"
@@ -84,8 +84,8 @@
   ],
   "resourceIdentifiers": [
     {
-      "code": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserverService",
-      "coupledResource": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserverService"
+      "code": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-raster",
+      "coupledResource": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-raster"
     }
   ],
   "spatialReferenceSystems": [
@@ -120,17 +120,17 @@
       {
         "operationName": "GetCapabilities",
         "platform": "WebService",
-        "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserverService\/wms?"
+        "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-raster\/wms?"
       },
       {
         "operationName": "GetMap",
         "platform": "WebService",
-        "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserverService\/wms?"
+        "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-raster\/wms?"
       },
       {
         "operationName": "GetFeatureInfo",
         "platform": "WebService",
-        "url": "hhttp:\/\/catalogue.ceh.ac.uk\/documents\/mapserverService\/wms?"
+        "url": "hhttp:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-raster\/wms?"
       }
     ]
   },
@@ -143,28 +143,24 @@
   ],
   "dataciteMintable": false,
   "datacitable": false,
-  "mapViewerUrl": "\/maps#layers\/mapserverService",
+  "mapViewerUrl": "\/maps#layers\/mapserver-raster",
   "mapViewable": true,
   "mapDataDefinition": {
     "data":[
       {
-        "type": "shapefile",
-        "path": "map",
+        "type": "raster",
+        "path": "ukish10k.tif",
         "epsgCode": "27700",
         "attributes": [{
-          "id":   "id",
-          "name": "ukdata",
-          "values": [
-            { "label": "Helmet",  "setting": "1", "style":{ "colour": "0000ff"}},
-            { "label": "Bow Tie", "setting": "2", "style":{ "colour": "00ff00"}},
-            { "label": "Base",    "setting": "3", "style":{ "colour": "ff0000"}}
+          "id":   "1",
+          "name": "Band1",
+          "buckets": [
+            { "label": "0 to 0.5", "min": 0, "max": 0.5, "style":{ "colour": "#FF0000"}},
+            { "label": "> 0.5",    "min": 0.5, "style":{ "colour": "#0000FF"}}
           ]
         }]
       }
     ]
   },
-  "coupledResources": [
-    "http:\/\/catalogue.ceh.ac.uk\/id\/bb2d7874-7bf4-44de-aa43-348bd684a2fe"
-  ],
   "type": "service"
 }

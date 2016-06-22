@@ -49,6 +49,6 @@
 --]
 [#macro style data]
   STYLE
-    COLOR "#${data.colour}"
+    COLOR "${data.colour}"
   END
 [/#macro]
