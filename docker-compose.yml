@@ -9,6 +9,8 @@ services:
       - mapserver
     volumes:
       - ./mapfiles:/var/ceh-catalogue/mapfiles
+    environment:
+      BASE_URI: https://catalogue.ceh.ac.uk
   solr:
     build: "solr"
   mapserver:
