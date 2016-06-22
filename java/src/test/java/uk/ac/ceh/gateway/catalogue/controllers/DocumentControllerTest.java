@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.BDDMockito.given;
@@ -14,8 +16,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -36,6 +40,22 @@ public class DocumentControllerTest {
     public void initMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
         controller = new DocumentController(documentRepository);
+    }
+    
+    @Test
+    public void checkItCanRewriteIdToDocument() {
+        //Given
+        String id = "M3tADATA_ID";
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setServerName("hostname");
+        request.setPathInfo("id/" + id);
+        request.setQueryString("query=string");
+        
+        //When
+        RedirectView view = controller.redirectToResource(id, request);
+        
+        //Then
+        assertThat(view.getUrl(), equalTo("http://hostname/documents/M3tADATA_ID?query=string"));
     }
      
     @Test
