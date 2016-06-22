@@ -9,6 +9,7 @@ services:
       - ./datastore:/var/ceh-catalogue/datastore
     environment:
       SPRING_PROFILES: development
+      BASE_URI:        http://localhost:8080
       
   solr:
     # Expose the solr port for development
