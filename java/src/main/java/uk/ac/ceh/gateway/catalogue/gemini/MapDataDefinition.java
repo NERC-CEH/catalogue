@@ -11,7 +11,10 @@ import lombok.EqualsAndHashCode;
 
 /**
  * Defines the details of Spatial data (e.g. location, projection system) which
- * will then be used in the generation of MapServer MapFiles
+ * will then be used in the generation of MapServer MapFiles.
+ * 
+ * If a layer is specified within a DataSource, this indicates that ogr should
+ * be used as the connection type.
  * @author cjohn
  */
 @Data
@@ -22,6 +25,7 @@ public class MapDataDefinition {
     public static class DataSource {
         private String type;
         private String path;
+        private String layer;
         private String epsgCode;
         private List<Attribute> attributes;
 

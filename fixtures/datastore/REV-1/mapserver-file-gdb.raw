@@ -1,8 +1,8 @@
 {
-  "uri": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-shapefile",
-  "id": "mapserver-shapefile",
-  "title": "Demo of MapServer Shapefile service",
-  "description": "This is a metadata record which demonstrates a mapserver poweredview service",
+  "uri": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-file-gdb",
+  "id": "mapserver-file-gdb",
+  "title": "Demo of MapServer ESRI File GDB service",
+  "description": "This is a metadata record which demonstrates a mapserver powered view service",
   "metadataStandardName": "NERC profile of ISO19115:2003",
   "metadataStandardVersion": "1.0",
   "resourceType": {
@@ -76,7 +76,7 @@
   ],
   "onlineResources": [
     {
-      "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-shapefile\/wms?request=getCapabilities&service=WMS",
+      "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-file-gdb\/wms?request=getCapabilities&service=WMS",
       "name": "Web Map Service (WMS)",
       "description": "Link to the GetCapabilities request for this service",
       "type": "WMS_GET_CAPABILITIES"
@@ -84,8 +84,8 @@
   ],
   "resourceIdentifiers": [
     {
-      "code": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-shapefile",
-      "coupledResource": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-shapefile"
+      "code": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-file-gdb",
+      "coupledResource": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-file-gdb"
     }
   ],
   "spatialReferenceSystems": [
@@ -120,17 +120,17 @@
       {
         "operationName": "GetCapabilities",
         "platform": "WebService",
-        "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-shapefile\/wms?"
+        "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-file-gdb\/wms?"
       },
       {
         "operationName": "GetMap",
         "platform": "WebService",
-        "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-shapefile\/wms?"
+        "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-file-gdb\/wms?"
       },
       {
         "operationName": "GetFeatureInfo",
         "platform": "WebService",
-        "url": "hhttp:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-shapefile\/wms?"
+        "url": "hhttp:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-file-gdb\/wms?"
       }
     ]
   },
@@ -143,17 +143,18 @@
   ],
   "dataciteMintable": false,
   "datacitable": false,
-  "mapViewerUrl": "\/maps#layers\/mapserver-shapefile",
+  "mapViewerUrl": "\/maps#layers\/mapserver-file-gdb",
   "mapViewable": true,
   "mapDataDefinition": {
     "data":[
       {
         "type": "polygon",
-        "path": "shapefile\/map",
+        "path": "FileGDB.gdb",
+        "layer": "map",
         "epsgCode": "27700",
         "attributes": [{
           "id":   "id",
-          "name": "ukdata",
+          "name": "FileGDB.Layer",
           "values": [
             { "label": "Helmet",  "setting": "1", "style":{ "colour": "#0000ff"}},
             { "label": "Bow Tie", "setting": "2", "style":{ "colour": "#00ff00"}},

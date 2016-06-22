@@ -22,4 +22,10 @@ describe "Map Server Generation" do
     let(:layer) { 'Band1' }
     it_behaves_like "a renderable map source"
   end
+
+  context "filegdb data source" do
+    let(:id) { 'mapserver-file-gdb' }
+    let(:layer) { 'FileGDB.Layer' }
+    it_behaves_like "a renderable map source"
+  end
 end

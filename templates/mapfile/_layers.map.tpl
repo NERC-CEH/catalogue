@@ -6,12 +6,26 @@
     PROJECTION "init=epsg:${data.epsgCode}" END
     PROCESSING "POLYLINE_NO_CLIP=True"
     NAME "${attr.name}"
-    DATA "${data.path}"
     TYPE ${data.type} 
     STATUS ON
     METADATA
       "wms_style" "inspire_common:DEFAULT"
     END
+
+    [#--
+    Esri File GeoDatabase support
+    
+    Determine if we should use an OGR connection type to access the source data. If
+    a layer attribute is present then we will do, otherwise just use a standard 
+    mapserver DATA block.
+    --]
+    [#if data.layer?has_content]
+      CONNECTIONTYPE OGR
+      CONNECTION "/mapserver/data/${data.path}"
+      DATA "${data.layer}"
+    [#else]
+      DATA "${data.path}"
+    [/#if]
     
     [#--
     If we are looking at a RASTER dataset then we will consider the id attribute to 
