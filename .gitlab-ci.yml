@@ -42,8 +42,7 @@ rspec:
     - apt-get update
     - apt-get install make
   script:
-    - make docker
-    - make selenium
+    - make clean docker selenium
   after_script:
     - make clean
 
