@@ -6,7 +6,7 @@ describe "Map Server Generation" do
     end
 
     it "should be able to generate tms legend" do
-      resp = RestClient.get "#{APP_HOST}/documents/#{id}/onlineResources/0/legend", :accept => 'image/png'
+      resp = RestClient.get "#{APP_HOST}/documents/#{id}/onlineResources/0/#{layer}/legend", :accept => 'image/png'
       expect(resp.code).to eq 200
     end
 
