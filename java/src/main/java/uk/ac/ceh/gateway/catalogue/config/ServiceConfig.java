@@ -65,6 +65,8 @@ import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexGeminiDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexImpDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
@@ -104,10 +106,12 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
+import uk.ac.ceh.gateway.catalogue.services.GeminiExtractorService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
@@ -129,6 +133,7 @@ import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
 public class ServiceConfig {
     @Value("${documents.baseUri}") String baseUri;
     @Value("${template.location}") File templates;
+    @Value("${maps.location}") File mapsLocation;
     @Value("${doi.prefix}") String doiPrefix;
     @Value("${doi.username}") String doiUsername;
     @Value("${doi.password}") String doiPassword;
@@ -151,6 +156,11 @@ public class ServiceConfig {
     @Bean
     public CitationService citationService() {
         return new CitationService();
+    }
+    
+    @Bean
+    public MapServerDetailsService mapServerDetailsService() {
+        return new MapServerDetailsService(baseUri);
     }
     
     @Bean
@@ -224,6 +234,8 @@ public class ServiceConfig {
         shared.put("codes", codeLookupService);
         shared.put("downloadOrderDetails", downloadOrderDetailsService());
         shared.put("permission", permission());
+        shared.put("mapServerDetails", mapServerDetailsService());
+        shared.put("geminiHelper", geminiExtractorService());
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -280,7 +292,7 @@ public class ServiceConfig {
     
     @Bean
     public GetCapabilitiesObtainerService getCapabilitiesObtainerService() {
-        return new GetCapabilitiesObtainerService(restTemplate);
+        return new GetCapabilitiesObtainerService(restTemplate, mapServerDetailsService());
     }
     
     @Bean
@@ -291,6 +303,11 @@ public class ServiceConfig {
     @Bean
     public TMSToWMSGetMapService tmsToWmsGetMapService() {
         return new TMSToWMSGetMapService();
+    }
+    
+    @Bean
+    public GeminiExtractorService geminiExtractorService() {
+        return new GeminiExtractorService();
     }
     
     @Bean
@@ -421,6 +438,20 @@ public class ServiceConfig {
     @Bean @Qualifier("validation-index")
     public DocumentIndexingService asyncValidationIndexingService() throws Exception {
         DocumentIndexingService toReturn = new AsyncDocumentIndexingService(validationIndexingService());
+        
+        performReindexIfNothingIsIndexed(toReturn);
+        return toReturn;
+    }
+    
+    @Bean @Qualifier("mapserver-index")
+    public MapServerIndexingService mapServerIndexingService() throws Exception {
+        MapServerIndexGenerator generator = new MapServerIndexGenerator(freemarkerConfiguration(), mapServerDetailsService());
+        MapServerIndexingService toReturn = new MapServerIndexingService(
+                bundledReaderService(),
+                documentListingService(),
+                dataRepository,
+                generator,
+                mapsLocation);
         
         performReindexIfNothingIsIndexed(toReturn);
         return toReturn;

@@ -11,6 +11,7 @@ The Project is built up of a few different parts:
 - **/templates**  - `Freemarker` templates which are used by the `java` application for generating the different metadata views
 - **/schemas**    - XSD Schemas which are used to validate the various output xml files
 - **/solr**       - `Solr Server` web application, this handles the free-text indexing and searching of the application
+- **/mapserver**  - `Map Server` web application which is responsible for hosting WMS's from metadata records
 - **/fixtures**   - Test data used by the `rspec` suite
 - **/spec**       - RSpec end-to-end test suite
 
@@ -49,10 +50,10 @@ Then in a bash window run. This will provision a fresh vm with Docker and perfor
 
 To execute the different `make` commands you will need to ssh on to the vagrant machine.
 
-   vagrant ssh
-   # Now inside the vagrant machine
-   cd /vagrant
-   make develop
+    vagrant ssh
+    # Now inside the vagrant machine
+    cd /vagrant
+    make develop
 
 ## Remote-User
 

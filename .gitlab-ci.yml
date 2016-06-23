@@ -1,6 +1,7 @@
 variables:
   CONTAINER_APPLICATION_IMAGE: registry.gitlab-cjohn.com/eip/catalogue:app-$CI_BUILD_REF_NAME
   CONTAINER_SOLR_IMAGE:        registry.gitlab-cjohn.com/eip/catalogue:solr-$CI_BUILD_REF_NAME
+  CONTAINER_MAPSERVER_IMAGE:   registry.gitlab-cjohn.com/eip/catalogue:mapserver-$CI_BUILD_REF_NAME
   DOCKER_DAEMON_ARGS:          -g /cache/docker
   MAVEN_OPTS:                  -Dmaven.repo.local=$CI_PROJECT_DIR/cache/mvn
 
@@ -41,23 +42,35 @@ rspec:
     - apt-get update
     - apt-get install make
   script:
-    - make docker
-    - make selenium
+    - make clean docker selenium
   after_script:
     - make clean
 
-build_application:
+.deployment_template: &deployment_definition # Hidden deployment definition for docker builds
   stage: deploy
   image: gitlab/dind
+  only:
+    - develop
+    - tags
+
+build_application:
+  <<: *deployment_definition
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
     - docker build -t $CONTAINER_APPLICATION_IMAGE .
     - docker push $CONTAINER_APPLICATION_IMAGE
 
 build_solr:
-  stage: deploy
-  image: gitlab/dind
+  <<: *deployment_definition
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
     - docker build -t $CONTAINER_SOLR_IMAGE solr
     - docker push $CONTAINER_SOLR_IMAGE
+
+build_mapserver:
+  <<: *deployment_definition
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker build -t $CONTAINER_MAPSERVER_IMAGE mapserver
+    - docker push $CONTAINER_MAPSERVER_IMAGE
+  

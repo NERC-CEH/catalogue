@@ -481,7 +481,7 @@
 					<srv:connectPoint xmlns:gmd="http://www.isotc211.org/2005/gmd">
 						<CI_OnlineResource>
 							<linkage>
-								<URL>http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?</URL>
+								<URL>http://catalogue.ceh.ac.uk/documents/fb495d1b-80a3-416b-8dc7-c85ed22ed1e3/wms?</URL>
 							</linkage>
 						</CI_OnlineResource>
 					</srv:connectPoint>
@@ -498,7 +498,7 @@
 					<srv:connectPoint xmlns:gmd="http://www.isotc211.org/2005/gmd">
 						<CI_OnlineResource>
 							<linkage>
-								<URL>http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?</URL>
+								<URL>http://catalogue.ceh.ac.uk/documents/fb495d1b-80a3-416b-8dc7-c85ed22ed1e3/wms?</URL>
 							</linkage>
 						</CI_OnlineResource>
 					</srv:connectPoint>
@@ -515,7 +515,7 @@
 					<srv:connectPoint xmlns:gmd="http://www.isotc211.org/2005/gmd">
 						<CI_OnlineResource>
 							<linkage>
-								<URL>http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?</URL>
+								<URL>hhttp://catalogue.ceh.ac.uk/documents/fb495d1b-80a3-416b-8dc7-c85ed22ed1e3/wms?</URL>
 							</linkage>
 						</CI_OnlineResource>
 					</srv:connectPoint>
@@ -582,7 +582,7 @@
 					<onLine>
 						<CI_OnlineResource>
 							<linkage>
-								<URL>http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?request=getCapabilities&amp;service=WMS</URL>
+								<URL>http://catalogue.ceh.ac.uk/documents/fb495d1b-80a3-416b-8dc7-c85ed22ed1e3/wms?request=getCapabilities&amp;service=WMS</URL>
 							</linkage>
 							<name>
 								<gco:CharacterString>Web Map Service (WMS)</gco:CharacterString>
