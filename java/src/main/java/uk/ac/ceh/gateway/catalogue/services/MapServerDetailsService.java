@@ -50,7 +50,6 @@ public class MapServerDetailsService {
      */
     public String rewriteToLocalWmsRequest(String wmsUrl) {
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(wmsUrl).build();
-        
         List<String> pathSegments = uri.getPathSegments();
         if(wmsUrl.startsWith(hostUrl + "/maps") && pathSegments.size() == 2) {
             return getLocalWMSRequest(pathSegments.get(1), uri.getQuery());
