@@ -6,8 +6,10 @@ define [
   childTemplate: childTemplate
 
   render: ->
-    ParentStringView.prototype.render.apply @
-    @$('select').val @model.get 'value'
-    console.log #{@$('select').val}
-    console.log 'done'
+    do @renderParent
+    $attach = @$(".existing")
+    _.each @array, (string, index) =>
+      $attach.append @childTemplate data: _.extend {}, @data,
+        index: index
+      @$("#select#{@data.modelAttribute}#{index}").val string
     @

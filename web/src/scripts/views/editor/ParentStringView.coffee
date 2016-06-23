@@ -25,8 +25,11 @@ define [
         @array.splice ui.item.index(), 0, toMove
         do @updateModel
 
+  renderParent: ->
+        @$el.html parentTemplate data: @data
+
   render: ->
-    @$el.html parentTemplate data: @data
+    do @renderParent
     $attach = @$(".existing")
     _.each @array, (string, index) =>
       $attach.append @childTemplate data: _.extend {}, @data,
