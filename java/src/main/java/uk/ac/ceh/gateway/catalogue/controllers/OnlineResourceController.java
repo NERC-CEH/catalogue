@@ -52,14 +52,6 @@ public class OnlineResourceController {
         this.mapServerDetailsService = mapServerDetailsService;
     }
     
-    @RequestMapping (value = "documents/{file}/wms")
-    @ResponseBody
-    public TransparentProxy wmsService(
-            @PathVariable("file") String file,
-            HttpServletRequest request) throws URISyntaxException {
-        return new TransparentProxy(mapServerDetailsService.getLocalWMSRequest(file, request.getQueryString()));
-    }
-    
     @RequestMapping (value = "documents/{file}/onlineResources",
                      method = RequestMethod.GET)
     @ResponseBody

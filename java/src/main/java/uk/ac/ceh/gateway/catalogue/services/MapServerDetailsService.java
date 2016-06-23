@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.Arrays;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.web.util.UriComponents;
@@ -24,7 +23,7 @@ public class MapServerDetailsService {
      * @return wms url
      */
     public String getWmsUrl(String id) {
-        return hostUrl + "/documents/" + id + "/wms?";
+        return hostUrl + "/maps/" + id + "?";
     }
     
     /**
@@ -50,15 +49,10 @@ public class MapServerDetailsService {
      * @return 
      */
     public String rewriteToLocalWmsRequest(String wmsUrl) {
-        List<String> hosts = Arrays.asList(UriComponentsBuilder.fromHttpUrl(hostUrl).build().getHost());
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(wmsUrl).build();
         
         List<String> pathSegments = uri.getPathSegments();
-        if(     hosts.contains(uri.getHost()) &&
-                pathSegments.size() == 3 &&
-                pathSegments.get(0).equals("documents") &&
-                pathSegments.get(2).equals("wms")) {
-            
+        if(wmsUrl.startsWith(hostUrl + "/maps") && pathSegments.size() == 2) {
             return getLocalWMSRequest(pathSegments.get(1), uri.getQuery());
         }
         return wmsUrl;

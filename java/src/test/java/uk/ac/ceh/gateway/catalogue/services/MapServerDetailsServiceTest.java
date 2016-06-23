@@ -52,7 +52,7 @@ public class MapServerDetailsServiceTest {
     @Test
     public void checkThatRewritesToHostedMapserverRequest() {
         //Given
-        String localRequest = "https://catalogue.ceh.ac.uk/documents/ID/wms?REQUEST=WMS";
+        String localRequest = "https://catalogue.ceh.ac.uk/maps/ID?REQUEST=WMS";
         
         //When
         String request = service.rewriteToLocalWmsRequest(localRequest);

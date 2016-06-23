@@ -11,7 +11,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
@@ -56,20 +55,6 @@ public class OnlineResourceControllerTest {
         MockitoAnnotations.initMocks(this);
         
         controller = spy(new OnlineResourceController(documentBundleReader, getCapabilitiesObtainerService, tmsToWMSGetMapService, mapServerDetailsService));
-    }
-    
-    @Test
-    public void checkThatCanProxyToMapServer() throws URISyntaxException {
-        //Given
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setQueryString("REQUEST=GetMap&FORMAT=image/png");
-        when(mapServerDetailsService.getLocalWMSRequest("file", "REQUEST=GetMap&FORMAT=image/png")).thenReturn("http://rewritten");
-        
-        //When
-        TransparentProxy proxy = controller.wmsService("file", request);
-        
-        //Then
-        assertEquals(proxy.getUri().toString(), "http://rewritten");
     }
         
     @Test

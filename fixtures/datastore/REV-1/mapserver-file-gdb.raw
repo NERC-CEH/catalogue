@@ -76,7 +76,7 @@
   ],
   "onlineResources": [
     {
-      "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-file-gdb\/wms?request=getCapabilities&service=WMS",
+      "url": "https://catalogue.ceh.ac.uk/maps/mapserver-file-gdb?request=getCapabilities&service=WMS",
       "name": "Web Map Service (WMS)",
       "description": "Link to the GetCapabilities request for this service",
       "type": "WMS_GET_CAPABILITIES"
@@ -120,17 +120,17 @@
       {
         "operationName": "GetCapabilities",
         "platform": "WebService",
-        "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-file-gdb\/wms?"
+        "url": "https://catalogue.ceh.ac.uk/maps/mapserver-file-gdb?"
       },
       {
         "operationName": "GetMap",
         "platform": "WebService",
-        "url": "http:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-file-gdb\/wms?"
+        "url": "https://catalogue.ceh.ac.uk/maps/mapserver-file-gdb?"
       },
       {
         "operationName": "GetFeatureInfo",
         "platform": "WebService",
-        "url": "hhttp:\/\/catalogue.ceh.ac.uk\/documents\/mapserver-file-gdb\/wms?"
+        "url": "https://catalogue.ceh.ac.uk/maps/mapserver-file-gdb?"
       }
     ]
   },
