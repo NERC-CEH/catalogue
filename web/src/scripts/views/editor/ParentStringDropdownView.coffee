@@ -1,7 +1,13 @@
 define [
+  'underscore'
   'cs!views/editor/ParentStringView'
   'tpl!templates/editor/MultiStringDropdown.tpl'
-], (ParentStringView, childTemplate) -> ParentStringView.extend
+], (_, ParentStringView, childTemplate) -> ParentStringView.extend
+
+###
+  Edit a list of strings, the value of the string comes
+  from the options of a dropdown list.
+###
 
   childTemplate: childTemplate
 
