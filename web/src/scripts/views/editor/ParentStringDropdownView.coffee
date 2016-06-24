@@ -4,10 +4,10 @@ define [
   'tpl!templates/editor/MultiStringDropdown.tpl'
 ], (_, ParentStringView, childTemplate) -> ParentStringView.extend
 
-###
-  Edit a list of strings, the value of the string comes
-  from the options of a dropdown list.
-###
+  ###
+    Edit a list of strings, the value of the string comes
+    from the options of a dropdown list.
+  ###
 
   childTemplate: childTemplate
 
