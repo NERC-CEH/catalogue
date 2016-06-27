@@ -1,4 +1,5 @@
 [#ftl]
+[#escape x as x?replace('"', '\\"')]
 [#--
   Generates the correct MapServer expression value for the supplied bucket
   and the given attribute value.
@@ -52,3 +53,4 @@
     COLOR "${data.colour}"
   END
 [/#macro]
+[/#escape]
