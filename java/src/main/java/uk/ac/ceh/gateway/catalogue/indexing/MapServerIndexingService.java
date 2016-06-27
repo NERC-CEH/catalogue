@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.google.common.io.Files;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -21,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
  */
 public class MapServerIndexingService<D extends MetadataDocument> extends AbstractIndexingService<D, MapFile> {
     private static final String MAP_FILE_EXTENSION = ".map";
+    private static final String FALLBACK_PROJECTION = "default";
     
     private final File mapFiles;
 
@@ -44,8 +44,16 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
     @Override
     protected void index(MapFile toIndex) throws Exception {
         if(toIndex != null) {
-            File mapFile = getMapFileLocation(toIndex.getDocument().getId());
-            toIndex.writeTo(new FileWriter(mapFile));
+            String id = toIndex.getDocument().getId();
+            //If there is only one source projection system used for this mapfile
+            //then there is no need to create custom projection system map files.
+            //Only generate the default fallback .map file
+            if(toIndex.getProjectionSystems().size() != 1) {
+                for(String epsgCode: toIndex.getProjectionSystems()) {
+                    toIndex.writeTo(epsgCode, new FileWriter(getMapFileLocation(id, epsgCode)));
+                }
+            }
+            toIndex.writeTo(null, new FileWriter(getMapFileLocation(id, FALLBACK_PROJECTION)));
         }
     }
 
@@ -56,8 +64,12 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
 
     @Override
     public void unindexDocuments(List<String> unIndex) throws DocumentIndexingException {
-        for(String mapFile: unIndex) {
-            FileUtils.deleteQuietly(getMapFileLocation(mapFile));
+        for(String indexed: unIndex) {
+            Arrays.asList(mapFiles.listFiles(new MapFileFilenameFilter()))
+                .stream()
+                .filter((f) -> f.getName().startsWith(indexed))
+                .filter((f) -> f.getName().substring(indexed.length()).matches("^_.*\\.map$"))
+                .forEach((f) -> FileUtils.deleteQuietly(f));
         }
     }
 
@@ -68,18 +80,19 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
     public List<String> getIndexedFiles() {
         return Arrays.asList(mapFiles.listFiles(new MapFileFilenameFilter()))
                 .stream()
-                .map((f) -> Files.getNameWithoutExtension(f.getName()))
+                .map(File::getName)
+                .map((f) -> f.substring(0, f.lastIndexOf('_')))
                 .collect(Collectors.toList());
     }
     
-    private File getMapFileLocation(String id) {
-        return new File(mapFiles, id + MAP_FILE_EXTENSION);
+    private File getMapFileLocation(String id, String projection) {
+        return new File(mapFiles, id + "_" + projection + MAP_FILE_EXTENSION);
     }
     
     private static class MapFileFilenameFilter implements FilenameFilter {
         @Override
         public boolean accept(File dir, String name) {
-            return name.endsWith(MAP_FILE_EXTENSION);
+            return name.matches(".*_.*\\.map$");
         }
     }
 }

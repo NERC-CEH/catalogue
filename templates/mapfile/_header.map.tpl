@@ -1,5 +1,5 @@
 [#ftl]
-[#assign extent=geminiHelper.getExtent(boundingBoxes)]
+[#assign extent=geminiHelper.getExtent(doc)]
 EXTENT    ${extent.minX?c} ${extent.minY?c} ${extent.maxX?c} ${extent.maxY?c}
 IMAGETYPE PNG
 SIZE      2048 2048

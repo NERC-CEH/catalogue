@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import freemarker.template.Configuration;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
@@ -26,7 +27,8 @@ public class MapServerIndexGenerator implements IndexGenerator<MetadataDocument,
     public MapFile generateIndex(MetadataDocument toIndex) {
         String mapfileTemplate = getMapFileTemplate(toIndex);
         if(mapfileTemplate != null) {
-            return new MapFile(templateConfiguration, mapfileTemplate, toIndex);
+            List<String> projSystems = mapServerDetailsService.getProjectionSystems(mapServerDetailsService.getMapDataDefinition(toIndex));
+            return new MapFile(templateConfiguration, mapfileTemplate, projSystems, toIndex);
         }
         else {
             return null;

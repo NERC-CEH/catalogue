@@ -1,9 +1,10 @@
 [#ftl]
 [#import "blocks.map.tpl" as blocks]
-[#list mapDataDefinition.data as data]
+[#list doc.mapDataDefinition.data as data]
   [#list data.attributes as attr]
+  [#assign prefProj=mapServerDetails.getFavouredProjection(data, epsgCode)]
   LAYER
-    PROJECTION "init=epsg:${data.epsgCode}" END
+    PROJECTION "init=epsg:${prefProj.epsgCode}" END
     PROCESSING "POLYLINE_NO_CLIP=True"
     NAME "${attr.name}"
     TYPE ${data.type} 
@@ -21,10 +22,10 @@
     --]
     [#if data.layer?has_content]
       CONNECTIONTYPE OGR
-      CONNECTION "/mapserver/data/${data.path}"
+      CONNECTION "/mapserver/data/${prefProj.path}"
       DATA "${data.layer}"
     [#else]
-      DATA "${data.path}"
+      DATA "${prefProj.path}"
     [/#if]
     
     [#--

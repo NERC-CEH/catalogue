@@ -6,7 +6,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 
 /**
  *
@@ -23,15 +26,17 @@ public class GeminiExtractorServiceTest {
     @Test
     public void checkThatCanGetContainedExtent() throws Exception {
         //Given
+        GeminiDocument document = mock(GeminiDocument.class);
         BoundingBox bbox1 = BoundingBox.builder()
                 .westBoundLongitude("1")
                 .southBoundLatitude("2")
                 .eastBoundLongitude("3")
                 .northBoundLatitude("4")
                 .build();
+        when(document.getBoundingBoxes()).thenReturn(Arrays.asList(bbox1));
         
         //When
-        Envelope env = service.getExtent(Arrays.asList(bbox1));
+        Envelope env = service.getExtent(document);
         
         //Then
         assertThat(env.getMinX(), is(1d));
@@ -43,6 +48,7 @@ public class GeminiExtractorServiceTest {
     @Test
     public void checkThatCanGetContainedExtentOf2Bbox() throws Exception {
         //Given
+        GeminiDocument document = mock(GeminiDocument.class);
         BoundingBox bbox1 = BoundingBox.builder()
                 .westBoundLongitude("1")
                 .southBoundLatitude("2")
@@ -56,9 +62,10 @@ public class GeminiExtractorServiceTest {
                 .eastBoundLongitude("7")
                 .northBoundLatitude("8")
                 .build();
+        when(document.getBoundingBoxes()).thenReturn(Arrays.asList(bbox1, bbox2));
         
         //When
-        Envelope env = service.getExtent(Arrays.asList(bbox1, bbox2));
+        Envelope env = service.getExtent(document);
         
         //Then
         assertThat(env.getMinX(), is(1d));

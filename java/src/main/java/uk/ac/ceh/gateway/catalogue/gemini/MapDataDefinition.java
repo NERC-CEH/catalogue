@@ -1,10 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,11 +17,17 @@ public class MapDataDefinition {
     private List<DataSource> data;
     
     @Data
-    public static class DataSource {
-        private String type;
+    public static class Projection {
         private String path;
-        private String layer;
         private String epsgCode;
+    }
+    
+    @Data
+    @EqualsAndHashCode(callSuper=true)
+    public static class DataSource extends Projection {
+        private String type;
+        private String layer;
+        private List<Projection> reprojections;
         private List<Attribute> attributes;
 
         @Data
