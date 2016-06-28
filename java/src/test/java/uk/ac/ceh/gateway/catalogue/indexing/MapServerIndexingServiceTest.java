@@ -91,6 +91,7 @@ public class MapServerIndexingServiceTest {
     public void checkThatCanUnIndexAFile() throws Exception {
         //Given
         folder.newFile("SomeFile_default.map");
+        folder.newFile("SomeFile_27700.map");
         
         //When
         service.unindexDocuments(Arrays.asList("SomeFile"));
