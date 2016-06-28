@@ -1,14 +1,14 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#macro master title catalogue rdf="" searching=false><#compress><!DOCTYPE html>
+<#macro master title catalogue="" rdf="" searching=false><#compress><!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${title?html} - ${catalogue.title?html}</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/style-${catalogue.id?html}.css">
+    <title>${title?html} - <#if catalogue?has_content>${catalogue.title?html}<#else>CEH Catalogue</#if></title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id?html}<#else>ceh</#if>.css">
     <#if rdf?has_content>
       <link rel="meta" type="application/rdf+xml" href="${rdf}"/>
     </#if>
@@ -35,7 +35,7 @@
             <li><a href="//eip.ceh.ac.uk">Home</a></li>
             <li <#if searching>class="active"</#if>><a href="/documents">Search Data</a></li>
             <li><a href="//eip.ceh.ac.uk/catalogue/help">Help</a></li>
-            <li><a href="${catalogue.url!'/'?html}">${catalogue.title?html}</a></li>
+            <#if catalogue?has_content><li><a href="${catalogue.url!'/'?html}">${catalogue.title?html}</a></li></#if>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <#if searching && permission.userCanCreate()>

@@ -1,8 +1,7 @@
 # Ignore the built content
 src/vendor/OpenLayers-custom.js
 src/scripts/main-out.js
-src/css/style.css
-
+src/css/*
 
 # Ignore the node_modules
 node_modules
