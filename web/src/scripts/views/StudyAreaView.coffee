@@ -11,12 +11,12 @@ define [
   ###
   Grab the locations off of the map element
   ###
-  getLocations: -> 
+  getLocations: ->
     wkts = @$('[dataType="geo:wktLiteral"]')
     return _.map wkts, (el) -> $(el).attr 'content'
 
   ###
-  Update the highlighted areas based upon the locations. Then zoom the to 
+  Update the highlighted areas based upon the locations. Then zoom the to
   highlighted regions
   ###
   render:->

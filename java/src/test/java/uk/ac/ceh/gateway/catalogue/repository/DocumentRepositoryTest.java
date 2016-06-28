@@ -86,7 +86,7 @@ public class DocumentRepositoryTest {
         String message = "message";
         GeminiDocument document = new GeminiDocument();
         MetadataInfo metadataInfo = new MetadataInfo();
-        Catalogue catalogue = Catalogue.builder().title("Test").build();
+        Catalogue catalogue = Catalogue.builder().id("ceh").title("Test").url("http://example.com/").build();
         
         given(documentReader.read(any(), any(), any())).willReturn(document);
         given(infoFactory.createInfo(any(), any())).willReturn(metadataInfo);
@@ -109,7 +109,7 @@ public class DocumentRepositoryTest {
         GeminiDocument document = new GeminiDocument();
         MetadataInfo metadataInfo = new MetadataInfo();
         String message = "new Gemini document";
-        Catalogue catalogue = Catalogue.builder().title("Test").build();
+        Catalogue catalogue = Catalogue.builder().id("test").title("Test").url("http://example.com/").build();
         
         given(infoFactory.createInfo(document, MediaType.APPLICATION_JSON)).willReturn(metadataInfo);
         given(documentIdentifierService.generateFileId()).willReturn("test");

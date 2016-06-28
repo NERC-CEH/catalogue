@@ -129,10 +129,9 @@ define [
     $('button').on 'click', (event) ->
       do event.preventDefault
       $.getJSON $(location).attr('href'), (data) ->
-        model = new Catalogue data
         new CatalogueView
           el: '.catalogue'
-          model: model
+          model: new Catalogue data
 
   ###
   Create a message view. Which listens to the supplied app model for messages (errors, info)

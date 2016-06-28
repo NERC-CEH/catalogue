@@ -10,7 +10,7 @@
   padding: 0;          // Remove the padding when in small screen mode
 
   //Hide the filters panel in small screen mode
-  .filters-panel { 
+  .filters-panel {
     height: 0;         // WARNING: We would usually just set display:none to
     overflow: hidden;  // hide the panel. This causes OpenLayers to fail to load
   }
@@ -37,7 +37,7 @@
         display:   inline;
         margin:    0px;
         font-size: 15px;
-        color:     black;
+        color:     @header-text;
         cursor:    pointer;
         &:hover {text-decoration: underline;}
       }
@@ -63,8 +63,8 @@
           padding-left: 0;
           margin-left:  20px;
 
-          li { 
-            list-style:     none; 
+          li {
+            list-style:     none;
             padding-bottom: 3px;
             a {color:black;}
           }
@@ -73,15 +73,15 @@
     }
 
     &.map-mode {
-      @selected-color: #8fca89;
+      @selected-color: @brand-success;
       .facet-filter { display: none; }
       .map-heading  {
         margin-top: @filter-heading-gap;
         height: @filter-heading-height;
       }
 
-      .result.selected { 
-        border-left:      8px solid @selected-color;  
+      .result.selected {
+        border-left:      8px solid @selected-color;
         background-color: lighten(@selected-color, 25%);
       }
 
@@ -98,7 +98,7 @@
       }
     }
   }
-  
+
   // Keep the search box onscreen at all times
   form.search-form {
     .make-md-column-offset(@filters-columns);
@@ -116,7 +116,7 @@
     .make-md-column(@results-columns);
     .make-md-column-offset(@filters-columns);
 
-    .result { 
+    .result {
       display: inline-block; //Disable margin-collapsing
       width:   100%;         //But keep the width of the results at 100%
     }

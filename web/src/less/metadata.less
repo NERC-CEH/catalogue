@@ -1,11 +1,11 @@
 #metadata {
   @light-gray-border: #CCC;
-  
+
   #section-Top{
 	.licenceText {
 		a{font-weight:bold;}
 	}
-	
+
 	#section-authorsTop{
 	border:       1px solid @light-gray-border;
 	border-width: 1px 0;
@@ -13,14 +13,14 @@
 	padding-top:  0.6em;
     };
   }
-  
+
   #document-description { margin-bottom:1em; }
 
   #publicationActions {
 	  .label-Draft{
 		.label-default;
 	  }
-	  
+
 	  .label-Published{
 		.label-success;
 	  }
@@ -28,15 +28,15 @@
 	  .label-PendingPublication{
 		.label-info;
 	  }
-	  
+
 	  .list-group {
 	  margin-top:3em;
 	  }
-	  
+
 	  .list-group-item-text {
 		.text-muted;
 	   }
-	  
+
       .btn {min-width:18em;}
 	}
 
@@ -48,7 +48,10 @@
 
   #adminPanel{
     .panel-info;
-	.panel-heading {background-color:#5BC0DE; color:#FFF}
+  	.panel-heading {
+      background-color: @brand-info;
+      color:#FFF
+    }
     .mintDOI{
         padding: 1em 0;
         text-align: center;
@@ -58,11 +61,11 @@
     };
 	ul a{font-size: 90%;};
   }
-  
+
   #studyarea-map { height: 300px; width: 300px; }
 
-  // If the current metadata document is a historic archive, a warning is 
-  // displayed to the user at the top of the metadata page with 
+  // If the current metadata document is a historic archive, a warning is
+  // displayed to the user at the top of the metadata page with
   // id = 'not-current'
   #not-current {
     .alert;
@@ -71,7 +74,7 @@
       .alert-link;
     }
   }
-  
+
   // Prevent definition lists from wrapping the term
   .dl-horizontal dt {
     white-space: normal;
@@ -81,16 +84,16 @@
  .panel, .panel-heading {border-radius: 0;}
  .panel-heading {padding:.5em 1em;}
  .panel-title { font-size:100%;}
- 
+
  .responsibleParty {
     margin-bottom:1em;
 	address{margin-bottom:0;}
   }
- 
+
  #section-onlineResources {
 	p {margin-bottom:1.5em;}
  }
- 
+
  @media (min-width: 768px) {
     .dl-horizontal dt {
         width:15em;
