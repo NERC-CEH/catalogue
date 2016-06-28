@@ -1,4 +1,5 @@
 [#ftl]
+[#escape x as x?replace('"', '\\"')]
 WEB
   IMAGEPATH "/ms4w/tmp/ms_tmp/"
   IMAGEURL  "/ms_tmp/"
@@ -36,3 +37,4 @@ WEB
     "wms_sld_enabled"                  "false"
     END
 END
+[/#escape]

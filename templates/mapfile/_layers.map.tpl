@@ -1,5 +1,6 @@
 [#ftl]
 [#import "blocks.map.tpl" as blocks]
+[#escape x as x?replace('"', '\\"')]
 [#list doc.mapDataDefinition.data as data]
   [#list data.attributes as attr]
   [#assign prefProj=mapServerDetails.getFavouredProjection(data, epsgCode)]
@@ -45,3 +46,4 @@
   END
   [/#list]
 [/#list]
+[/#escape]

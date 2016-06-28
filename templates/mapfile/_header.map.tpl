@@ -1,5 +1,6 @@
 [#ftl]
 [#assign extent=geminiHelper.getExtent(doc)]
+[#escape x as x?replace('"', '\\"')]
 EXTENT    ${extent.minX?c} ${extent.minY?c} ${extent.maxX?c} ${extent.maxY?c}
 IMAGETYPE PNG
 SIZE      2048 2048
@@ -22,3 +23,4 @@ LEGEND
     PARTIALS FALSE
   END
 END
+[/#escape]
