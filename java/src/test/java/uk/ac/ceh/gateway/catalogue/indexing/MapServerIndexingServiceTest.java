@@ -130,13 +130,26 @@ public class MapServerIndexingServiceTest {
     
     @Test
     public void checkThatOnlyFindMapFilesWithCorrectExtension() throws Exception {
-       //Given
+        //Given
         folder.newFile("SomeFile_default.map.somethingSlseAtEnd");
         
         //When
         List<String> indexed = service.getIndexedFiles();
         
         //Then
+        assertTrue(service.isIndexEmpty());
+    }
+    
+    @Test
+    public void checkThatCleansIndexWhenReindexing() throws Exception {
+        //Given
+        folder.newFile("lerking_old_file_default.map");
+        
+        //When
+        service.indexDocuments(Arrays.asList("lerking_old_file"), "latest");
+        
+        //Then
+        assertThat(folder.getRoot().listFiles().length, is(0));
         assertTrue(service.isIndexEmpty());
     }
 }

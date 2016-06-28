@@ -74,6 +74,13 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
                 .forEach((f) -> FileUtils.deleteQuietly(f));
         }
     }
+    
+    /* Make sure that we remove the index of a document before perform a new index*/
+    @Override
+    public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
+        unindexDocuments(documents);
+        super.indexDocuments(documents, revision);
+    }
 
     /**
      * Returns the list of ids which have been indexed by this indexing service
