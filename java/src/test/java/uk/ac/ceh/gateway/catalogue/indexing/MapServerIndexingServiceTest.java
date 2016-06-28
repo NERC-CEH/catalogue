@@ -68,6 +68,7 @@ public class MapServerIndexingServiceTest {
         List<String> indexed = service.getIndexedFiles();
         
         //Then
+        assertFalse(service.isIndexEmpty());
         assertThat(indexed, hasItem("SomeFile"));
     }
     
@@ -112,5 +113,29 @@ public class MapServerIndexingServiceTest {
         //Then
         assertFalse(service.isIndexEmpty());
         assertTrue(new File(folder.getRoot(), "document-id_default.map").exists());
+    }
+    
+    @Test
+    public void checkThatDoesntDetectOtherFiles() throws Exception {
+        //Given
+        folder.newFile("Not A real mapfile");
+        
+        //When
+        List<String> indexed = service.getIndexedFiles();
+        
+        //Then
+        assertTrue(service.isIndexEmpty());
+    }
+    
+    @Test
+    public void checkThatOnlyFindMapFilesWithCorrectExtension() throws Exception {
+       //Given
+        folder.newFile("SomeFile_default.map.somethingSlseAtEnd");
+        
+        //When
+        List<String> indexed = service.getIndexedFiles();
+        
+        //Then
+        assertTrue(service.isIndexEmpty());
     }
 }

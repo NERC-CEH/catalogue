@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -19,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
  * @param <D> Document type which a map service can be created from
  */
 public class MapServerIndexingService<D extends MetadataDocument> extends AbstractIndexingService<D, MapFile> {
+    private static final Pattern MAP_FILE_PATTERN = Pattern.compile("_.*\\.map$");
     private static final String MAP_FILE_EXTENSION = ".map";
     private static final String FALLBACK_PROJECTION = "default";
     
@@ -68,7 +70,7 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
             Arrays.asList(mapFiles.listFiles(new MapFileFilenameFilter()))
                 .stream()
                 .filter((f) -> f.getName().startsWith(indexed))
-                .filter((f) -> f.getName().substring(indexed.length()).matches("^_.*\\.map$"))
+                .filter((f) -> MAP_FILE_PATTERN.matcher(f.getName().substring(indexed.length())).matches())
                 .forEach((f) -> FileUtils.deleteQuietly(f));
         }
     }
@@ -93,7 +95,7 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
     private static class MapFileFilenameFilter implements FilenameFilter {
         @Override
         public boolean accept(File dir, String name) {
-            return name.matches(".*_.*\\.map$");
+            return MAP_FILE_PATTERN.matcher(name).find();
         }
     }
 }
