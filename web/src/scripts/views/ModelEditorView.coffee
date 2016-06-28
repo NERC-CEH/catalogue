@@ -4,8 +4,9 @@ define [
   'cs!views/editor/InputView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentStringView'
+  'cs!views/editor/LinkView'
   
-  ], (EditorView, SingleObjectView, InputView, TextareaView, ParentStringView) -> EditorView.extend
+  ], (EditorView, SingleObjectView, InputView, TextareaView, ParentStringView, LinkView) -> EditorView.extend
   
   initialize: ->
   
@@ -112,5 +113,11 @@ define [
           model: @model
           modelAttribute: 'outputData'
           label: 'Output Data'
+
+        new ParentView
+          model: @model
+          modelAttribute: 'documentation'
+          label: 'Documentation'
+          ObjectInputView: LinkView
 		]
 	]
