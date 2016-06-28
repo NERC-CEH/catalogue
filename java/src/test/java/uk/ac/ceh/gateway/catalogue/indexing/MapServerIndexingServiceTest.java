@@ -2,7 +2,11 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,7 +50,7 @@ public class MapServerIndexingServiceTest {
     @Test
     public void checkThatCanClearOutDirectory() throws Exception {
         //Given
-        folder.newFile("SomeFile.map");
+        folder.newFile("SomeFile_default.map");
         
         //When
         service.clearIndex();
@@ -58,19 +62,36 @@ public class MapServerIndexingServiceTest {
     @Test
     public void checkThatHavingMapFileMeansIndexIsNotEmpty() throws Exception {
         //Given
-        folder.newFile("SomeFile.map");
+        folder.newFile("SomeFile_default.map");
         
         //When
-        boolean isEmpty = service.isIndexEmpty();
+        List<String> indexed = service.getIndexedFiles();
         
         //Then
-        assertFalse(isEmpty);
+        assertFalse(service.isIndexEmpty());
+        assertThat(indexed, hasItem("SomeFile"));
+    }
+    
+    @Test
+    public void checkThatMultipleProjectionSystemsForFileOnlyReturnOneIndexItem() throws Exception {
+        //Given
+        folder.newFile("SomeFile_default.map");
+        folder.newFile("SomeFile_27700.map");
+        folder.newFile("SomeFile_3857.map");
+        
+        //When
+        List<String> indexed = service.getIndexedFiles();
+        
+        //Then
+        assertThat(indexed.size(), is(1));
+        assertThat(indexed, hasItem("SomeFile"));
     }
     
     @Test
     public void checkThatCanUnIndexAFile() throws Exception {
         //Given
-        folder.newFile("SomeFile.map");
+        folder.newFile("SomeFile_default.map");
+        folder.newFile("SomeFile_27700.map");
         
         //When
         service.unindexDocuments(Arrays.asList("SomeFile"));
@@ -92,6 +113,43 @@ public class MapServerIndexingServiceTest {
         
         //Then
         assertFalse(service.isIndexEmpty());
-        assertTrue(new File(folder.getRoot(), "document-id.map").exists());
+        assertTrue(new File(folder.getRoot(), "document-id_default.map").exists());
+    }
+    
+    @Test
+    public void checkThatDoesntDetectOtherFiles() throws Exception {
+        //Given
+        folder.newFile("Not A real mapfile");
+        
+        //When
+        List<String> indexed = service.getIndexedFiles();
+        
+        //Then
+        assertTrue(service.isIndexEmpty());
+    }
+    
+    @Test
+    public void checkThatOnlyFindMapFilesWithCorrectExtension() throws Exception {
+        //Given
+        folder.newFile("SomeFile_default.map.somethingSlseAtEnd");
+        
+        //When
+        List<String> indexed = service.getIndexedFiles();
+        
+        //Then
+        assertTrue(service.isIndexEmpty());
+    }
+    
+    @Test
+    public void checkThatCleansIndexWhenReindexing() throws Exception {
+        //Given
+        folder.newFile("lerking_old_file_default.map");
+        
+        //When
+        service.indexDocuments(Arrays.asList("lerking_old_file"), "latest");
+        
+        //Then
+        assertThat(folder.getRoot().listFiles().length, is(0));
+        assertTrue(service.isIndexEmpty());
     }
 }

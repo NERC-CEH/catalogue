@@ -3,8 +3,15 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,12 +39,16 @@ public class MapFileTest {
         Template template = mock(Template.class);
         String templateName = "mapserver.map.tpl";
         when(templateConfig.getTemplate(templateName)).thenReturn(template);
-        MapFile mapfile = new MapFile(templateConfig, templateName, document);
+        List<String> epsgCodes = Arrays.asList("Anything");
+        MapFile mapfile = new MapFile(templateConfig, templateName, epsgCodes, document);
         
         //When
-        mapfile.writeTo(writer);
+        mapfile.writeTo("27700", writer);
         
         //Then
-        verify(template).process(document, writer);
+        ArgumentCaptor<Map> captor = ArgumentCaptor.forClass(Map.class);
+        verify(template).process(captor.capture(), eq(writer));
+        assertThat(captor.getValue().get("epsgCode"), is("27700"));
+        assertThat(captor.getValue().get("doc"), is(document));
     }
 }
