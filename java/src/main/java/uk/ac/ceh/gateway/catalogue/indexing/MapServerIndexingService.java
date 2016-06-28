@@ -82,6 +82,7 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
                 .stream()
                 .map(File::getName)
                 .map((f) -> f.substring(0, f.lastIndexOf('_')))
+                .distinct()
                 .collect(Collectors.toList());
     }
     
