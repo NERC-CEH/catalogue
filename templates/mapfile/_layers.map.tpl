@@ -1,5 +1,6 @@
 [#ftl]
 [#import "blocks.map.tpl" as blocks]
+[#escape x as x?replace('"', '\\"')]
 [#list mapDataDefinition.data as data]
   [#list data.attributes as attr]
   LAYER
@@ -44,3 +45,4 @@
   END
   [/#list]
 [/#list]
+[/#escape]
