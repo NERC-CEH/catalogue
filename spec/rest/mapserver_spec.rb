@@ -48,6 +48,25 @@ describe "Map Server Generation" do
     let(:layer) { 'ukdata' }
     let(:projection) { 'EPSG:27700' }
     it_behaves_like "a renderable map source"
+    
+    it "should support GetFeatureInfo" do |feature_count|
+      resp = RestClient.get "#{APP_HOST}/maps/#{id}?", :params => {
+        :SERVICE      => 'WMS',
+        :REQUEST      => 'GetFeatureInfo',
+        :VERSION      => '1.3.0',
+        :LAYERS       => layer,
+        :QUERY_LAYERS => layer,
+        :INFO_FORMAT  => 'application/vnd.ogc.gml',
+        :HEIGHT       => 256,
+        :WIDTH        => 256,
+        :X            => 128,
+        :Y            => 128,
+        :CRS          => projection,
+        :BBOX         => '0,0,700000,1300000'
+      }
+      xml = Nokogiri::XML(resp.body)
+      expect(xml.css("#{layer}_feature").length).to eq 1
+    end
   end
 
   context "raster data source" do
