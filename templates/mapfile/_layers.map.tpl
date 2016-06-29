@@ -9,9 +9,12 @@
     PROCESSING "POLYLINE_NO_CLIP=True"
     NAME "${attr.name}"
     TYPE ${data.type} 
+    TEMPLATE "dummy"
     STATUS ON
     METADATA
       "wms_style" "inspire_common:DEFAULT"
+      "gml_include_items" "all"
+      "wms_include_items" "all"
     END
 
     [#--
