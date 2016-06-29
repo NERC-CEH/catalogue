@@ -28,7 +28,7 @@ WEB
     "wms_contactelectronicmailaddress" "eidc@ceh.ac.uk"
     "wms_accessconstraints"            "[#if accessConstraints??]${doc.accessConstraints?first.value}[#else]None[/#if]"
     "wms_fess"                         "None"
-    "wms_enable_request"               "GetCapabilities GetMap GetLegendGraphic"
+    "wms_enable_request"               "GetCapabilities GetMap GetLegendGraphic GetFeatureInfo"
     "wms_getmap_formatlist"            "image/jpeg,image/tiff,image/png"
     "wms_srs"                          "CRS:84 EPSG:4326 EPSG:3857 EPSG:3035 EPSG:27700 EPSG:4258"
     "wms_bbox_extended"                "true"

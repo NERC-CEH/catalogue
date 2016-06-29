@@ -12,7 +12,11 @@
     STATUS ON
     METADATA
       "wms_style" "inspire_common:DEFAULT"
+      "gml_include_items" "all"
+      "wms_include_items" "all"
     END
+
+    TEMPLATE "dummy"
 
     [#--
     Esri File GeoDatabase support
