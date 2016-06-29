@@ -12,7 +12,7 @@ public class HardcodedCatalogueService implements CatalogueService {
     public HardcodedCatalogueService() {
         
         this.defaultCatalogue = Catalogue.builder()
-            .id("default")
+            .id("ceh")
             .title("CEH Catalogue")
             .url("https://eip.ceh.ac.uk")
             .facetKey("topic")

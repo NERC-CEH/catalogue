@@ -36,7 +36,7 @@ module.exports = (grunt) ->
       options:
         compress: false
         paths: ['less', '<%= bowerDirectory %>/bootstrap/less']
-      default:
+      ceh:
         files: 'src/css/style-ceh.css' : 'src/less/style-ceh.less'
       cmp:
         files: 'src/css/style-cmp.css' : 'src/less/style-cmp.less'
@@ -111,8 +111,8 @@ module.exports = (grunt) ->
       prep: ['src/css']
 
     cssmin:
-      default:
-        files: 'src/css/style-ceh.css' : 'src/less/style-ceh.less'
+      ceh:
+        files: 'src/css/style-ceh.css' : 'src/less/style-ceh.css'
       cmp:
         files: 'src/css/style-cmp.css' : 'src/css/style-cmp.css'
       eidc:
