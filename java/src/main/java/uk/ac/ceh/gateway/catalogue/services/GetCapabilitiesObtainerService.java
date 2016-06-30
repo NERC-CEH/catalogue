@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestClientException;
@@ -19,11 +21,11 @@ public class GetCapabilitiesObtainerService {
     private final MapServerDetailsService mapServerDetailsService;
     
     @Cacheable("capabilities")
-    public WmsCapabilities getWmsCapabilities(OnlineResource resource) {
+    public WmsCapabilities getWmsCapabilities(OnlineResource resource) throws URISyntaxException {
         if(resource.getType().equals(OnlineResource.Type.WMS_GET_CAPABILITIES)) {
             try {
                 String rewritten = mapServerDetailsService.rewriteToLocalWmsRequest(resource.getUrl());
-                return rest.getForObject(rewritten, WmsCapabilities.class);
+                return rest.getForObject(new URI(rewritten), WmsCapabilities.class);
             }
             catch(IllegalArgumentException | RestClientException re) {
                 throw new ExternalResourceFailureException("Failed to obtain a get capabilities from the given online resource");
