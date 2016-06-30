@@ -9,7 +9,7 @@ import lombok.Data;
  * @author cjohn
  */
 @Data
-public class FeatureInfo {
+public class WmsFeatureInfo {
     private List<Layer> layers;
 
     @Data
@@ -19,7 +19,7 @@ public class FeatureInfo {
 
     	@Data
     	public static class Feature {
-    		private Map<String, String> attributes;
+            private Map<String, String> attributes;
     	}
     }
 }

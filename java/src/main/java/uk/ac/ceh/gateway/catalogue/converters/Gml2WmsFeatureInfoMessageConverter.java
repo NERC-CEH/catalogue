@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.NodeListConverter;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,23 +23,24 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import uk.ac.ceh.gateway.catalogue.ogc.FeatureInfo;
-import uk.ac.ceh.gateway.catalogue.ogc.FeatureInfo.Layer;
-import uk.ac.ceh.gateway.catalogue.ogc.FeatureInfo.Layer.Feature;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
+import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
+import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer;
+import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer.Feature;
 
 /**
  *
  * @author cjohn
  */
-public class Gml2FeatureInfoMessageConverter extends AbstractHttpMessageConverter<FeatureInfo> {
+public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConverter<WmsFeatureInfo> {
     private static final String LAYERS = "//msGMLOutput/*";
     private static final String FEATURES = "*";
     private static final String ATTRIBUTES = "*[not(*)]";
     private final XPath xpath;
     private final XPathExpression layers, features, attributes;
     
-    public Gml2FeatureInfoMessageConverter() throws XPathExpressionException {
-        super(MediaType.parseMediaType("application/vnd.ogc.xml"));
+    public Gml2WmsFeatureInfoMessageConverter() throws XPathExpressionException {
+        super(MediaType.parseMediaType(MAPSERVER_GML_VALUE));
         xpath = XPathFactory.newInstance().newXPath();
 
         this.layers = xpath.compile(LAYERS);
@@ -49,14 +49,14 @@ public class Gml2FeatureInfoMessageConverter extends AbstractHttpMessageConverte
     }
     
     @Override
-    protected FeatureInfo readInternal(Class<? extends FeatureInfo> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected WmsFeatureInfo readInternal(Class<? extends WmsFeatureInfo> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(inputMessage.getBody());
 
-            FeatureInfo toReturn = new FeatureInfo();
+            WmsFeatureInfo toReturn = new WmsFeatureInfo();
             toReturn.setLayers(getLayers((NodeList) layers.evaluate(document, XPathConstants.NODESET)));
             
             return toReturn;
@@ -106,7 +106,7 @@ public class Gml2FeatureInfoMessageConverter extends AbstractHttpMessageConverte
     }
 
     @Override
-    protected void writeInternal(FeatureInfo t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    protected void writeInternal(WmsFeatureInfo t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
         throw new HttpMessageNotWritableException("I will not be able to write that document for you");
     }
     
@@ -117,6 +117,6 @@ public class Gml2FeatureInfoMessageConverter extends AbstractHttpMessageConverte
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(FeatureInfo.class);
+        return clazz.isAssignableFrom(WmsFeatureInfo.class);
     }
 }

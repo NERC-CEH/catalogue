@@ -14,20 +14,23 @@ import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.springframework.http.HttpInputMessage;
-import uk.ac.ceh.gateway.catalogue.ogc.FeatureInfo;
-import uk.ac.ceh.gateway.catalogue.ogc.FeatureInfo.Layer;
-import uk.ac.ceh.gateway.catalogue.ogc.FeatureInfo.Layer.Feature;
+import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
+import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer;
+import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer.Feature;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  *
  * @author cjohn
  */
-public class Gml2FeatureInfoMessageConverterTest {
-    private Gml2FeatureInfoMessageConverter reader;
+public class Gml2WmsFeatureInfoMessageConverterTest {
+    private Gml2WmsFeatureInfoMessageConverter reader;
     
     @Before
     public void init() throws XPathExpressionException {
-        reader = new Gml2FeatureInfoMessageConverter();
+        reader = new Gml2WmsFeatureInfoMessageConverter();
     }
     
     @Test
@@ -37,7 +40,7 @@ public class Gml2FeatureInfoMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("msGMLOutput.xml"));
         
         //When
-        FeatureInfo gml = reader.readInternal(FeatureInfo.class, message);
+        WmsFeatureInfo gml = reader.readInternal(WmsFeatureInfo.class, message);
         
         //Then
         List<Layer> layers = gml.getLayers();
