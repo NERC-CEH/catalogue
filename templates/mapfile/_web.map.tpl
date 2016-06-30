@@ -35,6 +35,7 @@ WEB
     "wms_style_name"                   "inspire_common:DEFAULT"
     "wms_style_title"                  "inspire_common:DEFAULT"
     "wms_sld_enabled"                  "false"
+    "wms_getfeatureinfo_formatlist"    "text/xml,application/json"
     END
 END
 [/#escape]
