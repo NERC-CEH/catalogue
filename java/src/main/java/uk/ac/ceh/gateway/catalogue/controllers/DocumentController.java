@@ -83,6 +83,21 @@ public class DocumentController {
     }
     
     @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping (value = "documents/{file}",
+                     method = RequestMethod.PUT,
+                     consumes = MODEL_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateModelDocument(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody Model modelDocument) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+       
+        MetadataDocument data = documentRepository.save(user, modelDocument, file, String.format("Edited document: %s", file));
+        return ResponseEntity
+            .created(data.getUri())
+            .body(data);
+    }
+    
+    @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.PUT,
                     consumes = GEMINI_JSON_VALUE)
@@ -102,7 +117,7 @@ public class DocumentController {
                      consumes = GEMINI_JSON_VALUE)
     public ResponseEntity<MetadataDocument> uploadDocument(
             @ActiveUser CatalogueUser user,
-            @RequestBody MetadataDocument geminiDocument) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+            @RequestBody GeminiDocument geminiDocument) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
         MetadataDocument data = documentRepository.save(user, geminiDocument, "new Gemini Document");
         return ResponseEntity
