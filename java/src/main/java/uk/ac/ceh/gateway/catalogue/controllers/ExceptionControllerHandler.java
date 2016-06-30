@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.model.DataciteException;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
+import uk.ac.ceh.gateway.catalogue.model.MapServerException;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
@@ -42,6 +43,11 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     
     private ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpStatus status) {
         return handleExceptionInternal(ex, body, null, status, null);
+    }
+    
+    @ExceptionHandler(MapServerException.class)
+    public ResponseEntity<String> handleMapServerException(MapServerException ex) {
+        return ex.asResponseEntity();
     }
     
     @ExceptionHandler({

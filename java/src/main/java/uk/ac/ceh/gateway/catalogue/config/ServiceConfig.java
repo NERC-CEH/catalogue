@@ -43,7 +43,9 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
@@ -137,7 +139,6 @@ public class ServiceConfig {
     @Value("${doi.prefix}") String doiPrefix;
     @Value("${doi.username}") String doiUsername;
     @Value("${doi.password}") String doiPassword;
-    @Autowired RestTemplate restTemplate;
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
     @Autowired Dataset jenaTdb;
@@ -207,9 +208,10 @@ public class ServiceConfig {
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
+        converters.add(new WmsFeatureInfo2XmlMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
         return new MessageConvertersHolder(converters);
-    } 
+    }
     
     @Data
     public static class MessageConvertersHolder {
@@ -291,7 +293,11 @@ public class ServiceConfig {
     }
     
     @Bean
-    public GetCapabilitiesObtainerService getCapabilitiesObtainerService() {
+    public GetCapabilitiesObtainerService getCapabilitiesObtainerService() throws XPathExpressionException {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(Arrays.asList(
+                new Xml2WmsCapabilitiesMessageConverter()
+        ));
         return new GetCapabilitiesObtainerService(restTemplate, mapServerDetailsService());
     }
     

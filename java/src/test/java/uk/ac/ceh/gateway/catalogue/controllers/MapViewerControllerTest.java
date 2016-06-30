@@ -18,7 +18,15 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,6 +34,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
@@ -34,6 +43,7 @@ import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
  * @author cjohn
  */
 public class MapViewerControllerTest {
+    @Mock RestTemplate rest;
     @Mock MapServerDetailsService mapServerDetailsService;
     
     private MapViewerController controller;
@@ -42,7 +52,7 @@ public class MapViewerControllerTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
         
-        controller = spy(new MapViewerController(mapServerDetailsService));
+        controller = spy(new MapViewerController(rest, mapServerDetailsService));
     }
     
     @Test
@@ -53,9 +63,53 @@ public class MapViewerControllerTest {
         when(mapServerDetailsService.getLocalWMSRequest("file", "REQUEST=GetMap&FORMAT=image/png")).thenReturn("http://rewritten");
         
         //When
-        TransparentProxy proxy = controller.wmsService("file", request);
+        TransparentProxy proxy = (TransparentProxy)controller.wmsService("file", request);
         
         //Then
         assertEquals(proxy.getUri().toString(), "http://rewritten");
+    }
+    
+    @Test
+    public void checkThatCanIdentifyLocalGetFeatureInfoRequest() {
+        //Given
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair("REQUEST", "GetFeatureInfo"));
+        params.add(new BasicNameValuePair("SERVICE", "WMS"));
+        params.add(new BasicNameValuePair("INFO_FORMAT", "text/xml"));
+        
+        //When
+        boolean isLocal = controller.isLocalGetFeatureInfoRequest(params);
+        
+        //Then
+        assertTrue(isLocal);
+    }
+    
+    @Test
+    public void checkThatCanIdentifyRemoteGetFeatureInfoRequest() {
+        //Given
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair("REQUEST", "GetFeatureInfo"));
+        params.add(new BasicNameValuePair("SERVICE", "WMS"));
+        params.add(new BasicNameValuePair("INFO_FORMAT", "application/vnd.ogc.xml"));
+        
+        //When
+        boolean isLocal = controller.isLocalGetFeatureInfoRequest(params);
+        
+        //Then
+        assertFalse(isLocal);
+    }
+    
+    @Test
+    public void checkThatCanReplaceTheInfoFormatValue() {
+        //Given
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair("REQUEST", "GetFeatureInfo"));
+        params.add(new BasicNameValuePair("INFO_FORMAT", "text/xml"));
+        
+        //When
+        String queryString = controller.createQueryStringWithLocalInfoFormat(params, "text/anything");
+        
+        //Then
+        assertEquals(queryString, "REQUEST=GetFeatureInfo&INFO_FORMAT=text%2Fanything");
     }
 }

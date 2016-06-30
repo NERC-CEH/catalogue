@@ -87,7 +87,7 @@ public class OnlineResourceController {
     @ResponseBody
     public Object processOrRedirectToOnlineResource(
             @PathVariable("file") String file,
-            @PathVariable("index") int index) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+            @PathVariable("index") int index) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException, URISyntaxException {
         return processOrRedirectToOnlineResource(getOnlineResource(file, index));
     }
     
@@ -97,12 +97,12 @@ public class OnlineResourceController {
     public Object processOrRedirectToOnlineResource(
             @PathVariable("revision") String revision,
             @PathVariable("file") String file,
-            @PathVariable("index") int index) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+            @PathVariable("index") int index) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException, URISyntaxException {
         
         return processOrRedirectToOnlineResource(getOnlineResource(revision, file, index));
     }
     
-    private Object processOrRedirectToOnlineResource(OnlineResource onlineResource) {
+    private Object processOrRedirectToOnlineResource(OnlineResource onlineResource) throws URISyntaxException {
         switch(onlineResource.getType()) {
             case WMS_GET_CAPABILITIES : 
                 return getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
