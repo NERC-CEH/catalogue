@@ -80,18 +80,19 @@ public class DocumentControllerTest {
     @Test
     public void checkCanEditModelDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         //Given
-        CatalogueUser user = new CatalogueUser();
-        Model document = new Model();
-        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
-        String message = "new Model Document";
+        CatalogueUser user = mock(CatalogueUser.class);
+        Model document = mock(Model.class);
+        String fileId = "test";
+        String message = "Edited document: test";
         
-        given(documentRepository.save(user, document, message)).willReturn(document);
+        given(documentRepository.save(user, document, fileId, message)).willReturn(document);
+        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
               
         //When
-        controller.uploadModelDocument(user, document);
+        controller.updateModelDocument(user, fileId, document);
         
         //Then
-        verify(documentRepository).save(user, document, message);
+        verify(documentRepository).save(user, document, fileId, "Edited document: test");
     }
     
     @Test
