@@ -20,7 +20,7 @@ public class LayerConverter {
     private final XPathExpression layer, name, title, legendUrl;
     
     public LayerConverter(XPath xpath) throws XPathExpressionException {
-        this.layer = xpath.compile("//wms:Layer[wms:Name]");
+        this.layer = xpath.compile("//wms:Layer[wms:Name][not(wms:Layer)]");
         this.name = xpath.compile("wms:Name");
         this.title = xpath.compile("wms:Title");
         this.legendUrl = xpath.compile("wms:Style[wms:Name = 'default']/wms:LegendURL/wms:OnlineResource/@xlink:href");

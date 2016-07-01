@@ -75,6 +75,7 @@ public class GeminiDocument extends MetadataDocumentImpl {
     private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
     private List<ResourceConstraint> accessConstraints, useConstraints;
+    private MapDataDefinition mapDataDefinition;
     
     @JsonIgnore
     public String getMetadataDateTime() {

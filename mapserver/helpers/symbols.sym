@@ -1,0 +1,13 @@
+SYMBOLSET 
+    SYMBOL
+      # Symbol name (referenced in STYLEs)
+      NAME "circle"
+      TYPE ellipse # Type of symbol
+      # Start of the symbol geometry
+      POINTS
+        1 1
+      END # end of POINTS
+      # The symbol should be filled
+      FILLED true
+    END # end of SYMBOL
+END

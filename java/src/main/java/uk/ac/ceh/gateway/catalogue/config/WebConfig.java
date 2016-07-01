@@ -9,6 +9,9 @@ import org.springframework.context.annotation.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.accept.FixedContentNegotiationStrategy;
+import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -17,7 +20,9 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.config.ServiceConfig.MessageConvertersHolder;
-import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.Gml2WmsFeatureInfoMessageConverter;
+import uk.ac.ceh.gateway.catalogue.util.MapServerGetFeatureInfoErrorHandler;
+import uk.ac.ceh.gateway.catalogue.util.WmsFormatContentNegotiationStrategy;
 
 @Configuration
 @EnableWebMvc
@@ -42,6 +47,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String UKEOF_XML_VALUE              = "application/ukeof+xml";
     public static final String EF_INSPIRE_XML_SHORT         = "efinspire";
     public static final String EF_INSPIRE_XML_VALUE         = "application/vnd.ukeof.inspire+xml";
+    public static final String MAPSERVER_GML_VALUE          = "application/vnd.ogc.gml";
     
     @Autowired MessageConvertersHolder messageConvertersHolder;
     @Autowired freemarker.template.Configuration freemarkerConfiguration;
@@ -65,13 +71,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         freemarkerConfig.setConfiguration(freemarkerConfiguration);
         return freemarkerConfig;
     }
-    
-    @Bean
-    public RestTemplate restTemplate() throws XPathExpressionException {
+
+    @Bean(name="getfeatureinfo-rest")
+    public RestTemplate getFeatureInfoRestTemplate() throws XPathExpressionException {
         RestTemplate toReturn = new RestTemplate();
         toReturn.setMessageConverters(Arrays.asList(
-            new Xml2WmsCapabilitiesMessageConverter()
+                new Gml2WmsFeatureInfoMessageConverter()
         ));
+        toReturn.setErrorHandler(new MapServerGetFeatureInfoErrorHandler());
         return toReturn;
     }
     
@@ -86,7 +93,12 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer
             .favorPathExtension(false)
-            .defaultContentType(MediaType.TEXT_HTML)
+            .ignoreAcceptHeader(true) // Define accept header handling manually
+            .defaultContentTypeStrategy(new ContentNegotiationManager(
+                    new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo
+                    new HeaderContentNegotiationStrategy(),
+                    new FixedContentNegotiationStrategy(MediaType.TEXT_HTML)
+            ))
             .favorParameter(true)
             .mediaType("html", MediaType.TEXT_HTML)
             .mediaType("json", MediaType.APPLICATION_JSON)
@@ -98,6 +110,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE));
     }
+    
+    
     
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {

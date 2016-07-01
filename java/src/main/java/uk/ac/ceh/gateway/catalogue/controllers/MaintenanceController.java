@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
@@ -29,23 +30,27 @@ public class MaintenanceController {
     private final DocumentIndexingService solrIndex;
     private final DocumentIndexingService linkingService;
     private final DocumentIndexingService validationService;
+    private final MapServerIndexingService mapserverService;
     
     @Autowired
     public MaintenanceController(
             DataRepositoryOptimizingService repoService, 
             @Qualifier("solr-index") DocumentIndexingService solrIndex, 
             @Qualifier("jena-index") DocumentIndexingService linkingService, 
-            @Qualifier("validation-index") DocumentIndexingService validationService) {
+            @Qualifier("validation-index") DocumentIndexingService validationService,
+            @Qualifier("mapserver-index") MapServerIndexingService mapserverService) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
         this.validationService = validationService;
+        this.mapserverService = mapserverService;
     }
     
     @RequestMapping (method = RequestMethod.GET)
     @ResponseBody
     public MaintenanceResponse loadMaintenancePage() {
         MaintenanceResponse toReturn = new MaintenanceResponse();
+        toReturn.setIndexedMapFilesCount(mapserverService.getIndexedFiles().size());
         try {
             toReturn.setLinked(!linkingService.isIndexEmpty());
         } catch(DocumentIndexingException ex) {
@@ -58,6 +63,11 @@ public class MaintenanceController {
         }
         try {
             toReturn.setValidated(!validationService.isIndexEmpty());
+        } catch(DocumentIndexingException ex) {
+            toReturn.addMessage(ex.getMessage());
+        }
+        try {
+            toReturn.setHasMapFiles(!mapserverService.isIndexEmpty());
         } catch(DocumentIndexingException ex) {
             toReturn.addMessage(ex.getMessage());
         }
@@ -126,6 +136,22 @@ public class MaintenanceController {
         try {
             linkingService.rebuildIndex();
             return ResponseEntity.ok(loadMaintenancePage().addMessage("All documents successfully linked"));
+        } catch (DocumentIndexingException ex) {
+            MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
+            Arrays.stream(ex.getSuppressed()).forEach(e -> response.addMessage(e.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(response);
+        }
+    }
+    
+    @RequestMapping(value="/mapfiles/reindex",
+                    method = RequestMethod.POST)
+    @ResponseBody
+    public HttpEntity<MaintenanceResponse> recreateMapFiles() {
+        try {
+            mapserverService.rebuildIndex();
+            return ResponseEntity.ok(loadMaintenancePage().addMessage("All mapfiles successfully created"));
         } catch (DocumentIndexingException ex) {
             MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
             Arrays.stream(ex.getSuppressed()).forEach(e -> response.addMessage(e.getMessage()));
