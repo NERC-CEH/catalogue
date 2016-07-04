@@ -70,8 +70,6 @@ public class GeminiDocument extends MetadataDocumentImpl {
     @JsonIgnore
     private boolean isDatacitable;
     private DatasetReferenceDate datasetReferenceDate;
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
     private List<ResourceConstraint> accessConstraints, useConstraints;
