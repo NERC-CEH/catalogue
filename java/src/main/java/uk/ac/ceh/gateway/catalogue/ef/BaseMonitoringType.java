@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
 import uk.ac.ceh.gateway.catalogue.ef.adapters.AnyXMLHandler;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -67,6 +69,12 @@ public class BaseMonitoringType implements MetadataDocument {
     private String description, objectives;
     
     private Link measurementRegime;
+
+    @XmlTransient
+    private LocalDateTime metadataDate;
+    
+    @XmlTransient
+    private String id;
     
     @XmlElement(name = "purposeOfCollection")
     private List<Link> purposeOfCollection = new ArrayList<>();
@@ -76,6 +84,9 @@ public class BaseMonitoringType implements MetadataDocument {
     
     @XmlTransient
     private List<String> partOfRepository;
+
+    @XmlTransient
+    private List<ResourceIdentifier> resourceIdentifiers;
 
     @Override
     public String getTitle() {
