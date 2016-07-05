@@ -41,7 +41,7 @@
   </#if>
   <dates>
     <#setting date_format = 'yyyy-MM-dd'>
-    <date dateType="Submitted">${datasetReferenceDate.publicationDate}</date>
+    <date dateType="Submitted">${doc.datasetReferenceDate.publicationDate}</date>
   </dates>
   <language>en</language>
   <#if resourceType?has_content>
