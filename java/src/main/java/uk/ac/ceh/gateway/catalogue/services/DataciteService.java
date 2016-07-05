@@ -209,29 +209,18 @@ public class DataciteService {
     }
     
     /**
-     * Generate a datacitation request with the submitted value set to now
-     * @param document
-     * @return an xml datacite request
-     */
-    public String getDatacitationRequest(GeminiDocument document) {
-        return getDatacitationRequest(document, LocalDate.now());
-    }
-    
-    /**
      * Process the datacitation request template for the given document and 
      * return the request as a string.
      * @param document to get the prepare a datacitation request for
-     * @param submitted the date this record was submitted
      * @return an xml datacite request
      */
-    public String getDatacitationRequest(GeminiDocument document, LocalDate submitted) {
+    public String getDatacitationRequest(GeminiDocument document) {
         try {
             String doi = generateDoiString(document);
             Map<String, Object> data = new HashMap<>();
             data.put("doc", document);
             data.put("resourceType", getDataciteResourceType(document));
             data.put("doi", doi);
-            data.put("submitted", submitted);
             return FreeMarkerTemplateUtils.processTemplateIntoString(dataciteRequest, data);
         }
         catch(IOException | TemplateException ex) {
