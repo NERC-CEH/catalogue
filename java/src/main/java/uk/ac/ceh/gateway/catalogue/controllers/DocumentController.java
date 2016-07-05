@@ -110,8 +110,7 @@ public class DocumentController {
        
         MetadataDocument data = documentRepository.save(user, modelDocument, file, String.format("Edited document: %s", file));
         return ResponseEntity
-            .created(data.getUri())
-            .body(data);
+            .ok(data);
     }
     
     @PreAuthorize("@permission.userCanEdit(#file)")

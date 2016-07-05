@@ -15,7 +15,9 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +26,7 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
@@ -91,10 +94,11 @@ public class DocumentControllerTest {
         given(documentRepository.save(user, document, message)).willReturn(document);
               
         //When
-        controller.uploadModelDocument(user, document);
+        ResponseEntity<MetadataDocument> actual = controller.uploadModelDocument(user, document);
         
         //Then
         verify(documentRepository).save(user, document, message);
+        assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
     
     @Test
@@ -109,10 +113,11 @@ public class DocumentControllerTest {
         given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
               
         //When
-        controller.updateModelDocument(user, fileId, document);
+        ResponseEntity<MetadataDocument> actual = controller.updateModelDocument(user, fileId, document);
         
         //Then
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
+        assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
     
     @Test
@@ -126,10 +131,11 @@ public class DocumentControllerTest {
         given(documentRepository.save(user, document, message)).willReturn(document);
               
         //When
-        controller.uploadDocument(user, document);
+        ResponseEntity<MetadataDocument> actual = controller.uploadDocument(user, document);
         
         //Then
         verify(documentRepository).save(user, document, message);
+        assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
     
     @Test
@@ -144,10 +150,11 @@ public class DocumentControllerTest {
         given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
               
         //When
-        controller.updateDocument(user, fileId, document);
+        ResponseEntity<MetadataDocument> actual = controller.updateDocument(user, fileId, document);
         
         //Then
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
+        assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
     
     @Test
