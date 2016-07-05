@@ -1,16 +1,17 @@
 [#ftl]
+[#escape x as x?replace('"', '\\"')]
 WEB
   IMAGEPATH "/ms4w/tmp/ms_tmp/"
   IMAGEURL  "/ms_tmp/"
   METADATA
-    "wms_onlineresource"               "${mapServerDetails.getWmsUrl(id)}"
+    "wms_onlineresource"               "${mapServerDetails.getWmsUrl(doc.id)}"
     "wms_inspire_capabilities"         "url"
     "wms_languages"                    "eng"
-    "wms_inspire_metadataurl_href"     "${uri}"
+    "wms_inspire_metadataurl_href"     "${doc.uri}"
     "wms_inspire_metadataurl_format"   "application/vnd.iso.19139+xml"
-    "wms_title"                        "${title}"
-    "wms_abstract"                     "${description}"
-    "wms_keywordlist"                  "${geminiHelper.getKeywords(descriptiveKeywords)?join(',')}"
+    "wms_title"                        "${doc.title}"
+    "wms_abstract"                     "${doc.description}"
+    "wms_keywordlist"                  "${geminiHelper.getKeywords(doc)?join(',')}"
     "wms_keywordlist_vocabulary"       "ISO"
     "wms_keywordlist_ISO_items"        "infoMapAccessService"
     "wms_contactperson"                ""
@@ -25,14 +26,16 @@ WEB
     "wms_contactvoicetelephone"        ""
     "wms_contactfacsimiletelephone"    ""
     "wms_contactelectronicmailaddress" "eidc@ceh.ac.uk"
-    "wms_accessconstraints"            "[#if accessConstraints??]${accessConstraints?first.value}[#else]None[/#if]"
+    "wms_accessconstraints"            "[#if accessConstraints??]${doc.accessConstraints?first.value}[#else]None[/#if]"
     "wms_fess"                         "None"
-    "wms_enable_request"               "GetCapabilities GetMap GetLegendGraphic"
+    "wms_enable_request"               "GetCapabilities GetMap GetLegendGraphic GetFeatureInfo"
     "wms_getmap_formatlist"            "image/jpeg,image/tiff,image/png"
     "wms_srs"                          "CRS:84 EPSG:4326 EPSG:3857 EPSG:3035 EPSG:27700 EPSG:4258"
     "wms_bbox_extended"                "true"
     "wms_style_name"                   "inspire_common:DEFAULT"
     "wms_style_title"                  "inspire_common:DEFAULT"
     "wms_sld_enabled"                  "false"
+    "wms_getfeatureinfo_formatlist"    "text/xml,application/json"
     END
 END
+[/#escape]

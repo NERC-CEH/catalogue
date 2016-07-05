@@ -1,15 +1,21 @@
 [#ftl]
 [#import "blocks.map.tpl" as blocks]
-[#list mapDataDefinition.data as data]
+[#escape x as x?replace('"', '\\"')]
+[#list doc.mapDataDefinition.data as data]
   [#list data.attributes as attr]
+  [#assign prefProj=mapServerDetails.getFavouredProjection(data, epsgCode)]
   LAYER
-    PROJECTION "init=epsg:${data.epsgCode}" END
+    PROJECTION "init=epsg:${prefProj.epsgCode}" END
     PROCESSING "POLYLINE_NO_CLIP=True"
     NAME "${attr.name}"
     TYPE ${data.type} 
+    TEMPLATE "dummy"
     STATUS ON
     METADATA
+      "wms_title" "${attr.label!attr.name}"
       "wms_style" "inspire_common:DEFAULT"
+      "gml_include_items" "all"
+      "wms_include_items" "all"
     END
 
     [#--
@@ -21,10 +27,10 @@
     --]
     [#if data.layer?has_content]
       CONNECTIONTYPE OGR
-      CONNECTION "/mapserver/data/${data.path}"
+      CONNECTION "/mapserver/data/${prefProj.path}"
       DATA "${data.layer}"
     [#else]
-      DATA "${data.path}"
+      DATA "${prefProj.path}"
     [/#if]
     
     [#--
@@ -44,3 +50,4 @@
   END
   [/#list]
 [/#list]
+[/#escape]

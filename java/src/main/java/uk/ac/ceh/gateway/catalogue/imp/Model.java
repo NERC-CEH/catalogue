@@ -3,11 +3,13 @@ package uk.ac.ceh.gateway.catalogue.imp;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(callSuper=true)
 @ConvertUsing({
     @Template(called="html/imp-model.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)

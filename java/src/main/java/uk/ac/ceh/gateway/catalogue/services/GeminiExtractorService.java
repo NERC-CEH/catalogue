@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
 /**
@@ -22,8 +23,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
  */
 @AllArgsConstructor
 public class GeminiExtractorService {    
-    public List<String> getKeywords(List<DescriptiveKeywords> keywords) {
-        return keywords.stream()
+    public List<String> getKeywords(GeminiDocument document) {
+        return document.getDescriptiveKeywords().stream()
                 .filter((dk) -> dk.getThesaurusName() == null)
                 .map(DescriptiveKeywords::getKeywords)
                 .flatMap((k) -> k.stream())
@@ -34,13 +35,13 @@ public class GeminiExtractorService {
     
     /**
      * Returns the smallest extent which encompasses all of the bounding boxes
-     * @param boundingBoxes
+     * @param document
      * @return smallest extent for the supplied bounding boxes
      * @throws com.vividsolutions.jts.io.ParseException if the wkt of the bbox
      * is incorrect
      */
-    public Envelope getExtent(List<BoundingBox> boundingBoxes) throws ParseException {
-        List<BoundingBox> clone = new ArrayList<>(boundingBoxes);
+    public Envelope getExtent(GeminiDocument document) throws ParseException {
+        List<BoundingBox> clone = new ArrayList<>(document.getBoundingBoxes());
         if(!clone.isEmpty()) {
             WKTReader reader = new WKTReader();
             Geometry geo = reader.read(clone.remove(0).getWkt());

@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -77,6 +78,41 @@ public class DocumentControllerTest {
         
         //Then
         verify(documentRepository).save(eq(user), any(), eq(mediaType), eq(documentType), eq(message));
+    }
+    
+    @Test
+    public void checkCanCreateModelDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+        //Given
+        CatalogueUser user = new CatalogueUser();
+        Model document = new Model();
+        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        String message = "new Model Document";
+        
+        given(documentRepository.save(user, document, message)).willReturn(document);
+              
+        //When
+        controller.uploadModelDocument(user, document);
+        
+        //Then
+        verify(documentRepository).save(user, document, message);
+    }
+    
+    @Test
+    public void checkCanEditModelDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+        //Given
+        CatalogueUser user = mock(CatalogueUser.class);
+        Model document = mock(Model.class);
+        String fileId = "test";
+        String message = "Edited document: test";
+        
+        given(documentRepository.save(user, document, fileId, message)).willReturn(document);
+        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+              
+        //When
+        controller.updateModelDocument(user, fileId, document);
+        
+        //Then
+        verify(documentRepository).save(user, document, fileId, "Edited document: test");
     }
     
     @Test
