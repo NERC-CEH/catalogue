@@ -3,9 +3,6 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
@@ -22,8 +19,6 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_XML_VALUE;
-import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
-import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocumentImpl;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -97,13 +92,6 @@ public class GeminiDocument extends MetadataDocumentImpl {
         return this;
     }
     
-    @Override
-    public String getType() {
-        return Optional.ofNullable(resourceType)
-            .map(Keyword::getValue)
-            .orElse("");
-    }
-    
     public Set<Link> getAssociatedResources() {
         Set<Link> toReturn = new HashSet<>();
         if (children != null) {
@@ -144,11 +132,6 @@ public class GeminiDocument extends MetadataDocumentImpl {
             .stream()
             .anyMatch((o)-> WMS_GET_CAPABILITIES == o.getType());
     }
-
-    @Override
-    public void attachMetadata(MetadataInfo metadata) {
-        setMetadata(metadata);
-    }
     
     public List<String> getTopics() {
         return Optional.ofNullable(descriptiveKeywords)
@@ -173,16 +156,6 @@ public class GeminiDocument extends MetadataDocumentImpl {
     public List<ResponsibleParty> getResponsibleParties() {
         return Optional.ofNullable(responsibleParties)
             .orElse(Collections.emptyList());
-    }
-      
-    @Override
-    public void attachUri(URI uri) {
-        setUri(uri);
-    }    
-
-    @Override
-    public void attachPartOfRepository(List<String> repositories) {
-        setPartOfRepository(repositories);
     }
     
 }
