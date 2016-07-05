@@ -12,6 +12,7 @@
     TEMPLATE "dummy"
     STATUS ON
     METADATA
+      "wms_title" "${attr.label!attr.name}"
       "wms_style" "inspire_common:DEFAULT"
       "gml_include_items" "all"
       "wms_include_items" "all"

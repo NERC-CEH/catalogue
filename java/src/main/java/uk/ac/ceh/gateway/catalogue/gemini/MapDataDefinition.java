@@ -34,6 +34,7 @@ public class MapDataDefinition {
         public static class Attribute {
             private String name;
             private String id;
+            private String label;
 
             private List<Value> values;
             private List<Bucket> buckets;
