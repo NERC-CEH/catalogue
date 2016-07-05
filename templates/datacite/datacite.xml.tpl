@@ -3,7 +3,7 @@
 <#compress>
 <#escape x as x?xml>
 <?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-3" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd">
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
   <identifier identifierType="DOI">${doi}</identifier>
   <#if authors?has_content>
   <creators>
@@ -51,7 +51,11 @@
   <alternateIdentifiers>
     <#list doc.resourceIdentifiers as uri>
       <#if uri.codeSpace!="doi:">
+      <#if uri.coupledResource?starts_with("http")>
+        <alternateIdentifier alternateIdentifierType="URL">${uri.coupledResource}</alternateIdentifier>
+      <#else>
         <alternateIdentifier alternateIdentifierType="URN">${uri.coupledResource}</alternateIdentifier>
+      </#if>
       </#if>
     </#list>
   </alternateIdentifiers>
