@@ -5,7 +5,7 @@
 <@skeleton.master title=title>
 <#escape x as x?html>
   <div id="metadata" class="container">
-
+  <a href="#" class="edit-control model">Edit</a>
     <@blocks.title title type />
     <@blocks.description description />
     <div class="row">
