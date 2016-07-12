@@ -48,8 +48,8 @@
 
         [More info](http://mapserver.org/input/raster.html#classifying-non-8bit-rasters)
         --]
-        [#assign hints=mapServerDetails.getScaledBuckets(attr.buckets)]
-        [#if hints??]
+        [#assign hints=mapServerDetails.getScaledBuckets(attr.buckets)!]
+        [#if hints?has_content]
           PROCESSING "SCALE=${hints.min?c},${hints.max?c}"
           PROCESSING "SCALE_BUCKETS=${hints.buckets?c}"
         [/#if]
