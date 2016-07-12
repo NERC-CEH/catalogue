@@ -40,7 +40,21 @@
     --]
     [#if data.type?lower_case == "raster"]
       PROCESSING "BANDS=${attr.id}"
-      [#if attr.buckets?has_content] [@blocks.buckets "pixel" attr.buckets/] [/#if]
+      [#if attr.buckets?has_content] 
+        [#--
+        If the specified buckets are closed (do not have open ends) then we can tell 
+        mapserver to classify the raster in to buckets of equal size before our bucket 
+        expressions are evaluated.
+
+        [More info](http://mapserver.org/input/raster.html#classifying-non-8bit-rasters)
+        --]
+        [#assign hints=mapServerDetails.getScaledBuckets(attr.buckets)!]
+        [#if hints?has_content]
+          PROCESSING "SCALE=${hints.min?c},${hints.max?c}"
+          PROCESSING "SCALE_BUCKETS=${hints.buckets?c}"
+        [/#if]
+        [@blocks.buckets "pixel" attr.buckets/] 
+      [/#if]
     [#else]
       CLASSITEM ${attr.id}
       [#if attr.buckets?has_content] [@blocks.buckets attr.id attr.buckets/] [/#if]
