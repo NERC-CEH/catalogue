@@ -1,16 +1,21 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
+import static java.util.Objects.nonNull;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource;
+import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource.Attribute.Bucket;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.Projection;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
@@ -114,6 +119,27 @@ public class MapServerDetailsService {
     }
     
     /**
+     * For the given list of buckets extract the range of values used and the 
+     * fewest amount of equal sized buckets required to classify a raster in 
+     * the specified buckets. 
+     * @param buckets to evaluate
+     * @return min, max and smallest amount of equal sized buckets to create
+     */
+    public MapBucketDetails getScaledBuckets(List<Bucket> buckets) {
+        if(buckets.stream().allMatch((b) -> nonNull(b.getMin()) && nonNull(b.getMax()))) {
+            BigDecimal min = buckets.stream().map(Bucket::getMin).min(BigDecimal::compareTo).get();
+            BigDecimal max = buckets.stream().map(Bucket::getMax).max(BigDecimal::compareTo).get();
+            BigDecimal bucketSize = buckets.stream().map((b) -> b.getMax().subtract(b.getMin())).min(BigDecimal::compareTo).get();
+            BigDecimal bucketCount = max.subtract(min).divide(bucketSize, RoundingMode.UP);
+            
+            if(bucketCount.compareTo(BigDecimal.ZERO) > 0) {
+                return new MapBucketDetails(min, max, bucketCount.intValueExact());
+            }
+        }
+        return null;
+    }
+    
+    /**
      * Generate a wms url which contacts the catalogues mapserver instance for 
      * the given id and query string.
      * @param id of the wms service to call
@@ -126,5 +152,11 @@ public class MapServerDetailsService {
                 .query(query)
                 .buildAndExpand(id)
                 .toUriString();
+    }
+    
+    @Data
+    public static class MapBucketDetails {
+        private final BigDecimal min, max;
+        private final int buckets;
     }
 }

@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -50,8 +51,8 @@ public class MapDataDefinition {
             public static class Bucket {
                 private Style style;
                 private String label;
-                private Number min;
-                private Number max;
+                private BigDecimal min;
+                private BigDecimal max;
             }
         }
     }
