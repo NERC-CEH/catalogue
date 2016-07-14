@@ -5,6 +5,7 @@
      xmlns:xlink="http://www.w3.org/1999/xlink"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <SOMEDATA_layer>
+	<gml:name>SOMEDATA</gml:name>
         <SOMEDATA_feature>
             <gml:boundedBy>
                 <gml:Box srsName="EPSG:3857">

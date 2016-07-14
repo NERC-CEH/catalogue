@@ -34,7 +34,7 @@ import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer.Feature;
  */
 public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConverter<WmsFeatureInfo> {
     private static final String LAYERS = "//msGMLOutput/*";
-    private static final String FEATURES = "*";
+    private static final String FEATURES = "*[substring(name(),string-length(name())-7) = '_feature']";
     private static final String ATTRIBUTES = "*[not(*)]";
     private final XPath xpath;
     private final XPathExpression layers, features, attributes;
