@@ -73,5 +73,6 @@ public class MapDataDefinition {
     @Data
     public static class Style {
         private String colour;
+        private String symbol;
     }
 }

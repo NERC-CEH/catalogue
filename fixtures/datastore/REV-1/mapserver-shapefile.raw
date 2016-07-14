@@ -156,7 +156,7 @@
           "name": "ukdata",
           "type": "TEXT",
           "values": [
-            { "label": "Helmet",  "setting": "1", "style":{ "colour": "#0000ff"}},
+            { "label": "Helmet",  "setting": "1", "style":{ "colour": "#0000ff", "symbol": "square"}},
             { "label": "Bow Tie", "setting": "2", "style":{ "colour": "#00ff00"}},
             { "label": "Base",    "setting": "3", "style":{ "colour": "#ff0000"}}
           ]

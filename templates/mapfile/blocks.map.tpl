@@ -108,6 +108,10 @@
 [#macro style data]
   STYLE
     COLOR "${data.colour}"
+    [#if data.symbol?has_content]
+      SYMBOL "${data.symbol}"
+      SIZE 6
+    [/#if]
   END
 [/#macro]
 [/#escape]
