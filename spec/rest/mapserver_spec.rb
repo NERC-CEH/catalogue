@@ -83,6 +83,13 @@ describe "Map Server Generation" do
     it_behaves_like "a renderable map source"
   end
 
+  context "shapefile without attribute filtering" do
+    let(:id) { 'mapserver-all-features' }
+    let(:layer) { 'ukdata'}
+    let(:projection) { 'EPSG:27700' }
+    it_behaves_like "a renderable map source"
+  end
+
   context "multiple-projection data source" do
     let(:id) { 'mapserver-multiple-projections' }
     let(:layer) { 'ukdata' }

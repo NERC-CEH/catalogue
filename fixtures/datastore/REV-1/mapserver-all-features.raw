@@ -1,8 +1,8 @@
 {
-  "uri": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-shapefile",
-  "id": "mapserver-shapefile",
+  "uri": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-all-features",
+  "id": "mapserver-all-features",
   "title": "Demo of MapServer Shapefile service",
-  "description": "This is a metadata record which demonstrates a mapserver poweredview service",
+  "description": "This is a metadata record which demonstrates a mapserver powered view service that renders all attributes features in the same way",
   "metadataStandardName": "NERC profile of ISO19115:2003",
   "metadataStandardVersion": "1.0",
   "resourceType": {
@@ -76,7 +76,7 @@
   ],
   "onlineResources": [
     {
-      "url": "https://catalogue.ceh.ac.uk/maps/mapserver-shapefile?request=getCapabilities&service=WMS",
+      "url": "https://catalogue.ceh.ac.uk/maps/mapserver-all-features?request=getCapabilities&service=WMS",
       "name": "Web Map Service (WMS)",
       "description": "Link to the GetCapabilities request for this service",
       "type": "WMS_GET_CAPABILITIES"
@@ -84,8 +84,8 @@
   ],
   "resourceIdentifiers": [
     {
-      "code": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-shapefile",
-      "coupledResource": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-shapefile"
+      "code": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-all-features",
+      "coupledResource": "https:\/\/catalogue.ceh.ac.uk\/id\/mapserver-all-features"
     }
   ],
   "spatialReferenceSystems": [
@@ -120,17 +120,17 @@
       {
         "operationName": "GetCapabilities",
         "platform": "WebService",
-        "url": "https://catalogue.ceh.ac.uk/maps/mapserver-shapefile?"
+        "url": "https://catalogue.ceh.ac.uk/maps/mapserver-all-features?"
       },
       {
         "operationName": "GetMap",
         "platform": "WebService",
-        "url": "https://catalogue.ceh.ac.uk/maps/mapserver-shapefile?"
+        "url": "https://catalogue.ceh.ac.uk/maps/mapserver-all-features?"
       },
       {
         "operationName": "GetFeatureInfo",
         "platform": "WebService",
-        "url": "https://catalogue.ceh.ac.uk/maps/mapserver-shapefile?"
+        "url": "https://catalogue.ceh.ac.uk/maps/mapserver-all-features?"
       }
     ]
   },
@@ -143,7 +143,7 @@
   ],
   "dataciteMintable": false,
   "datacitable": false,
-  "mapViewerUrl": "\/maps#layers\/mapserver-shapefile",
+  "mapViewerUrl": "\/maps#layers\/mapserver-all-features",
   "mapViewable": true,
   "mapDataDefinition": {
     "data":[
@@ -151,16 +151,11 @@
         "type": "polygon",
         "path": "shapefile\/map",
         "epsgCode": "27700",
-        "attributes": [{
-          "id":   "id",
+        "features": {
           "name": "ukdata",
-          "type": "TEXT",
-          "values": [
-            { "label": "Helmet",  "setting": "1", "style":{ "colour": "#0000ff"}},
-            { "label": "Bow Tie", "setting": "2", "style":{ "colour": "#00ff00"}},
-            { "label": "Base",    "setting": "3", "style":{ "colour": "#ff0000"}}
-          ]
-        }]
+          "label": "All",
+          "style":{ "colour": "#0000ff"}
+        }
       }
     ]
   },
