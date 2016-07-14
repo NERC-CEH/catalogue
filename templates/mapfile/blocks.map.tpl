@@ -71,7 +71,7 @@
   [#if type == "TEXT"]
     "${value.setting}"
   [#elseif type == "NUMBER"]
-    ([attr] = ${value.setting})
+    ([${attr}] = ${value.setting})
   [/#if]
   [/#compress]
 [/#macro]
