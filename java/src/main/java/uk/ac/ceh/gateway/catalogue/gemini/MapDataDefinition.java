@@ -29,7 +29,8 @@ public class MapDataDefinition {
         private String type;
         private String layer;
         private List<Projection> reprojections;
-        private List<Attribute> attributes;
+        private List<Attribute> attributes; // Style the layer up based upon attributes
+        private Features features;          // Style all features in a layer irregardless of attribute
         
         public enum AttributeType {
             TEXT,NUMBER
@@ -59,6 +60,13 @@ public class MapDataDefinition {
                 private BigDecimal min;
                 private BigDecimal max;
             }
+        }
+        
+        @Data
+        public static class Features {
+            private String name;
+            private String label;
+            private Style style;
         }
     }
     
