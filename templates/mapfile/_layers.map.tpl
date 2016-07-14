@@ -56,7 +56,7 @@
         [@blocks.buckets "pixel" attr.buckets/] 
       [/#if]
     [#else]
-      CLASSITEM ${attr.id}
+      CLASSITEM "${attr.id}"
       [#if attr.buckets?has_content] [@blocks.buckets attr.id attr.buckets/] [/#if]
     [/#if]
 
