@@ -20,6 +20,21 @@
 [/#macro]
 
 [#--
+  Generate a value expression for the given value. This Macro will vary 
+  the type of expression which is written based upon the attributes type 
+  (number/text).
+--]
+[#macro valueExpr attr type value]
+  [#compress]
+  [#if type == "TEXT"]
+    "${value.setting}"
+  [#elseif type == "NUMBER"]
+    ([attr] = ${value.setting})
+  [/#if]
+  [/#compress]
+[/#macro]
+
+[#--
   Generate a list of class blocks for the supplied buckets
 --]
 [#macro buckets attr buckets]
@@ -35,11 +50,11 @@
 [#--
   Generate a list of class blocks for the supplied value settings
 --]
-[#macro values values]
+[#macro values attr type values]
   [#list values as value]
     CLASS
       NAME "${value.label}"
-      EXPRESSION "${value.setting}"
+      EXPRESSION [@valueExpr attr type value/]
       [@style value.style /]
     END
   [/#list]

@@ -4,6 +4,7 @@
 [#list doc.mapDataDefinition.data as data]
   [#list data.attributes as attr]
   [#assign prefProj=mapServerDetails.getFavouredProjection(data, epsgCode)]
+  [#assign dataType=(attr.type.name())!"TEXT"]
   LAYER
     PROJECTION "init=epsg:${prefProj.epsgCode}" END
     PROCESSING "POLYLINE_NO_CLIP=True"
@@ -60,7 +61,7 @@
       [#if attr.buckets?has_content] [@blocks.buckets attr.id attr.buckets/] [/#if]
     [/#if]
 
-    [#if attr.values?has_content] [@blocks.values attr.values/] [/#if]
+    [#if attr.values?has_content] [@blocks.values attr.id dataType attr.values/] [/#if]
   END
   [/#list]
 [/#list]

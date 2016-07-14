@@ -154,6 +154,7 @@
         "attributes": [{
           "id":   "id",
           "name": "ukdata",
+          "type": "TEXT",
           "values": [
             { "label": "Helmet",  "setting": "1", "style":{ "colour": "#0000ff"}},
             { "label": "Bow Tie", "setting": "2", "style":{ "colour": "#00ff00"}},

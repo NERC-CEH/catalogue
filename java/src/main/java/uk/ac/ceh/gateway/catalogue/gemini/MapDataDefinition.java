@@ -30,12 +30,17 @@ public class MapDataDefinition {
         private String layer;
         private List<Projection> reprojections;
         private List<Attribute> attributes;
+        
+        public enum AttributeType {
+            TEXT,NUMBER
+        }
 
         @Data
         public static class Attribute {
             private String name;
             private String id;
             private String label;
+            private AttributeType type;
 
             private List<Value> values;
             private List<Bucket> buckets;
