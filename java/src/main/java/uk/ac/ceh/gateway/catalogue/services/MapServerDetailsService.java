@@ -130,7 +130,7 @@ public class MapServerDetailsService {
             BigDecimal min = buckets.stream().map(Bucket::getMin).min(BigDecimal::compareTo).get();
             BigDecimal max = buckets.stream().map(Bucket::getMax).max(BigDecimal::compareTo).get();
             BigDecimal bucketSize = buckets.stream().map((b) -> b.getMax().subtract(b.getMin())).min(BigDecimal::compareTo).get();
-            BigDecimal bucketCount = max.subtract(min).divide(bucketSize, RoundingMode.UP);
+            BigDecimal bucketCount = max.subtract(min).divide(bucketSize, RoundingMode.UP).setScale(0, RoundingMode.UP);
             
             if(bucketCount.compareTo(BigDecimal.ZERO) > 0) {
                 return new MapBucketDetails(min, max, bucketCount.intValueExact());

@@ -238,6 +238,29 @@ public class MapServerDetailsServiceTest {
     }
     
     @Test
+    public void checkThatCanGenerateScaledBucketsWithIrregularBuckets() {
+        //Given
+        Bucket b1 = new Bucket();
+        b1.setMin(new BigDecimal("0.17"));
+        b1.setMax(new BigDecimal("0.53"));
+
+        Bucket b2 = new Bucket();
+        b2.setMin(new BigDecimal("0.53"));
+        b2.setMax(new BigDecimal("0.69"));
+    
+                        
+        List<Bucket> buckets = Arrays.asList(b1, b2);
+        
+        //When
+        MapBucketDetails details = service.getScaledBuckets(buckets);
+        
+        //Then
+        assertThat(details.getBuckets(), is(4));
+        assertThat(details.getMin(), is(new BigDecimal("0.17")));
+        assertThat(details.getMax(), is(new BigDecimal("0.69")));
+    }
+    
+    @Test
     public void checkThatIsSkippedForOpenEndedBuckets() {
         //Given
         Bucket b1 = new Bucket();
