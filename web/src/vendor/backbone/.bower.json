@@ -26,7 +26,7 @@
     "tag": "1.2.0",
     "commit": "6541698ff67eaf0a9baf9121cbd22d0f0e90e7b6"
   },
-  "_source": "git://github.com/jashkenas/backbone.git",
+  "_source": "https://github.com/jashkenas/backbone.git",
   "_target": "1.2.0",
   "_originalSource": "backbone"
 }

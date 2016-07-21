@@ -25,7 +25,7 @@
     "tag": "v1.0.3",
     "commit": "39a32bd1d6a757a25351502dc3fef7eda6156c26"
   },
-  "_source": "git://github.com/NERC-CEH/bootstrap-theme-ceh.git",
+  "_source": "https://github.com/NERC-CEH/bootstrap-theme-ceh.git",
   "_target": "1.0.3",
   "_originalSource": "bootstrap-theme-ceh"
 }

@@ -31,7 +31,7 @@
     "tag": "1.9.3",
     "commit": "c37f284771e10b36239c714dcc40827510a6df5f"
   },
-  "_source": "git://github.com/jashkenas/coffee-script.git",
+  "_source": "https://github.com/jashkenas/coffee-script.git",
   "_target": "1.9.3",
   "_originalSource": "coffee-script"
 }

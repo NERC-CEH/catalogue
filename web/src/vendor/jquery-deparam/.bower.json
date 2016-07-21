@@ -10,7 +10,7 @@
     "tag": "0.4.0",
     "commit": "ee7d01621a71e66e71fafd5722861d895846f6b0"
   },
-  "_source": "git://github.com/AceMetrix/jquery-deparam.git",
+  "_source": "https://github.com/AceMetrix/jquery-deparam.git",
   "_target": "0.4.0",
   "_originalSource": "jquery-deparam"
 }
