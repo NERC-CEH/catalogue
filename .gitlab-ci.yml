@@ -11,10 +11,12 @@ cache:
     - cache/
 
 mirror:
-  stage: deploy
+  stage: build
   image: buildpack-deps:xenial-scm
   script:
     - git status
+    - git config --get remote.origin.url
+    - git fetch --prune
     - git push --mirror https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/NERC-CEH/catalogue.git
 
 java:
