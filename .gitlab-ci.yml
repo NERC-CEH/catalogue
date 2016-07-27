@@ -11,7 +11,7 @@ cache:
     - cache/
 
 mirror:
-  stage: deploy
+  stage: build
   image: buildpack-deps:xenial-scm
   script:
     - git push -q --prune https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/NERC-CEH/catalogue.git +refs/remotes/origin/*:refs/heads/* +refs/tags/*:refs/tags/*
