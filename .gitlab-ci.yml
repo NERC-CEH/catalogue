@@ -14,7 +14,7 @@ mirror:
   stage: deploy
   image: buildpack-deps:xenial-scm
   script:
-    - git push --mirror https://GITHUB_USERNAME:GITHUB_PASSWORD@github.com/NERC-CEH/catalogue.git
+    - git push --mirror https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/NERC-CEH/catalogue.git
 
 java:
   stage: build
