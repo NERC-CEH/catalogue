@@ -10,6 +10,12 @@ cache:
   paths:
     - cache/
 
+mirror:
+  stage: deploy
+  image: buildpack-deps:xenial-scm
+  script:
+    - git push --mirror https://GITHUB_USERNAME:GITHUB_PASSWORD@github.com/NERC-CEH/catalogue.git
+
 java:
   stage: build
   image: maven:3.2-jdk-8
