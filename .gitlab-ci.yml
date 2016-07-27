@@ -17,7 +17,8 @@ mirror:
     - git status
     - git config --get remote.origin.url
     - git fetch --prune
-    - git push --mirror https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/NERC-CEH/catalogue.git
+#    - git push --mirror https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/NERC-CEH/catalogue.git
+    - git push --prune https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/NERC-CEH/catalogue.git +refs/remotes/origin/*:refs/heads/* +refs/tags/*:refs/tags/*
 
 java:
   stage: build
