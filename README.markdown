@@ -32,7 +32,7 @@ To develop against the code base, you can run `make develop`. This will construc
 `make test-data` will populate a repository of test-data. Re-running `make build` will create a catalogue which is powered by this repository.
 
 ### Access the catalogue search page
-Visit [http://localhost:8080/documents](http://localhost:8080/documents)
+`make develop` then visit [http://localhost:8080/documents](http://localhost:8080/documents)
 
 ### Selenium Testing (Docker)
 
