@@ -7,8 +7,6 @@ services:
       - ./templates:/opt/ceh-catalogue/templates
       - ./web/src:/opt/ceh-catalogue/web
       - ./datastore:/var/ceh-catalogue/datastore
-    environment:
-      SPRING_PROFILES: development
       
   solr:
     # Expose the solr port for development
@@ -29,6 +27,15 @@ services:
       - ./web/bower.json:/web/bower.json
       - ./web/package.json:/web/package.json
     command: sh -c "npm install; npm run develop"
+
+  mapserver:
+    # Mount working directories for mapserver
+    volumes:
+      - ./mapserver/helpers:/mapserver/helpers
+      - ./fixtures/mapserver-data:/mapserver/data
+    # Expose mapserver port during development
+    ports:
+      - 9000:80
 
 volumes:
   node_modules: {}

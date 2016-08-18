@@ -21,6 +21,7 @@ public class EventWiring {
     @Autowired @Qualifier("jena-index") DocumentIndexingService linkIndex;
     @Autowired @Qualifier("datacite-index") DocumentIndexingService dataciteIndex;
     @Autowired @Qualifier("validation-index") DocumentIndexingService validationIndex;
+    @Autowired @Qualifier("mapserver-index") DocumentIndexingService mapserverIndex;
     @Autowired DocumentListingService listing;
     
     @PostConstruct
@@ -29,5 +30,6 @@ public class EventWiring {
         bus.register(new IndexingFileEventListener(linkIndex, listing));
         bus.register(new IndexingFileEventListener(dataciteIndex, listing));
         bus.register(new IndexingFileEventListener(validationIndex, listing));
+        bus.register(new IndexingFileEventListener(mapserverIndex, listing));
     }
 }

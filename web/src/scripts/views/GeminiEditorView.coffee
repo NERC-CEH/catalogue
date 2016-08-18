@@ -571,6 +571,10 @@ define [
           ObjectInputView: ResourceConstraintView
           multiline: true
           predefined:
+            'Registration required':
+              value: 'Registration is required to access this data'
+              uri: 'https://eip.ceh.ac.uk/catalogue/help/faq/registration'
+              code: 'otherRestrictions'
             'no limitations':
               value: 'no limitations'
               code:  'otherRestrictions'

@@ -10,7 +10,6 @@ import org.apache.jena.query.ReadWrite;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.query.Syntax;
 import org.apache.jena.rdf.model.Model;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -25,7 +24,6 @@ import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
  * @author cjohn
  */
 @Controller
-@Slf4j
 @RequestMapping("maintenance/sparql")
 @Secured(DocumentController.MAINTENANCE_ROLE)
 public class SparqlController {

@@ -11,6 +11,7 @@ The Project is built up of a few different parts:
 - **/templates**  - `Freemarker` templates which are used by the `java` application for generating the different metadata views
 - **/schemas**    - XSD Schemas which are used to validate the various output xml files
 - **/solr**       - `Solr Server` web application, this handles the free-text indexing and searching of the application
+- **/mapserver**  - `Map Server` web application which is responsible for hosting WMS's from metadata records
 - **/fixtures**   - Test data used by the `rspec` suite
 - **/spec**       - RSpec end-to-end test suite
 
@@ -29,6 +30,9 @@ Having installed these you can then build the catalogue code base. Re-Run this c
 To develop against the code base, you can run `make develop`. This will construct an environment which compiles LESS stylesheets and responds to changes to the *templates*.
 
 `make test-data` will populate a repository of test-data. Re-running `make build` will create a catalogue which is powered by this repository.
+
+### Access the catalogue search page
+Visit [http://localhost:8080/documents](http://localhost:8080/documents)
 
 ### Selenium Testing (Docker)
 
@@ -49,10 +53,10 @@ Then in a bash window run. This will provision a fresh vm with Docker and perfor
 
 To execute the different `make` commands you will need to ssh on to the vagrant machine.
 
-   vagrant ssh
-   # Now inside the vagrant machine
-   cd /vagrant
-   make develop
+    vagrant ssh
+    # Now inside the vagrant machine
+    cd /vagrant
+    make develop
 
 ## Remote-User
 

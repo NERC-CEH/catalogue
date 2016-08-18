@@ -1,9 +1,11 @@
 FROM tomcat:8.0-jre8
 MAINTAINER oss@ceh.ac.uk
 
+COPY server.xml /usr/local/tomcat/conf/server.xml
 RUN echo 'CATALINA_OPTS="                                                            \
  -Dspring.profiles.active=${SPRING_PROFILES}                                         \
- -Ddocuments.baseUri=https://catalogue.ceh.ac.uk                                     \
+ -Ddocuments.baseUri=${BASE_URI}                                                     \
+ -Dmaps.location=/var/ceh-catalogue/mapfiles                                         \
  -Djena.location=/var/ceh-catalogue/tdb                                              \
  -Ddata.repository.location=/var/ceh-catalogue/datastore                             \
  -Dschemas.location=/opt/ceh-catalogue/schemas                                       \

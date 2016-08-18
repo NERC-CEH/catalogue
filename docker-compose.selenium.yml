@@ -4,7 +4,10 @@ services:
   web:
     volumes:
       - ./datastore:/var/ceh-catalogue/datastore
-
+  mapserver:
+    volumes:
+      - ./fixtures/mapserver-data:/mapserver/data
+      
   chrome:
     image: selenium/standalone-chrome:2.53.0
 

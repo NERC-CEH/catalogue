@@ -18,7 +18,7 @@ public class CatalogueResourceTest {
     public void metadataInfoCataloguesUpdated() {
         //Given
         MetadataInfo original = new MetadataInfo();
-        GeminiDocument document = new GeminiDocument()
+        MetadataDocument document = new GeminiDocument()
             .setId("f24a3b8b-69b7-43e5-a2f0-67011b45baba")
             .setTitle("Test");
         document.attachMetadata(original);

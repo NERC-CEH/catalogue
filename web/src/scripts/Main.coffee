@@ -19,10 +19,11 @@ define [
   'cs!models/Catalogue'
   'cs!views/CatalogueView'
   'cs!views/ChartView'
+  'cs!views/ModelEditorView'
   'bootstrap'
 ], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, GeminiMetadata, GeminiEditorView, MonitoringMetadata, MonitoringEditorView, PermissionApp, PermissionRouter,
-    PermissionAppView, Catalogue, CatalogueView, ChartView) ->
+    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView) ->
 
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -107,6 +108,14 @@ define [
 
       bindEditorView event, model, el, MonitoringEditorView
     )
+
+    $('.edit-control.model').on 'click', (event) ->
+      do event.preventDefault
+      $.getJSON $(location).attr('href'), (data) ->
+        new ModelEditorView
+          el: '#metadata'
+          model: new Backbone.Model data
+
 
   ###
   Initialize the permission application
