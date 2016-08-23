@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
@@ -85,7 +86,7 @@ public class DocumentControllerTest {
         given(documentRepository.save(eq(user), any(), any(MediaType.class), eq(documentType), eq(catalogue), eq(message))).willReturn(document);
               
         //When
-        controller.uploadDocument(user, multipartFile, documentType, request);
+        controller.uploadFile(user, multipartFile, documentType, request);
         
         //Then
         verify(documentRepository).save(eq(user), any(), eq(mediaType), eq(documentType), eq(catalogue), eq(message));
@@ -145,7 +146,7 @@ public class DocumentControllerTest {
         given(documentRepository.save(user, document, catalogue, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.uploadDocument(user, document, request);
+        ResponseEntity<MetadataDocument> actual = controller.uploadGeminiDocument(user, document, request);
         
         //Then
         verify(documentRepository).save(user, document, catalogue, message);
@@ -164,7 +165,47 @@ public class DocumentControllerTest {
         given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.updateDocument(user, fileId, document);
+        ResponseEntity<MetadataDocument> actual = controller.updateGeminiDocument(user, fileId, document);
+        
+        //Then
+        verify(documentRepository).save(user, document, fileId, "Edited document: test");
+        assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
+    }
+    
+    @Test
+    public void checkCanCreateLinkedDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+        //Given
+        CatalogueUser user = new CatalogueUser();
+        LinkDocument document = new LinkDocument();
+        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        String message = "new Linked Document";
+        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setServerName("catalogue.ceh.ac.uk");
+        
+        given(documentRepository.save(user, document, catalogue, message)).willReturn(document);
+              
+        //When
+        ResponseEntity<MetadataDocument> actual = controller.uploadLinkedDocument(user, document, request);
+        
+        //Then
+        verify(documentRepository).save(user, document, catalogue, message);
+        assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
+    }
+    
+    @Test
+    public void checkCanEditLinkedDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+        //Given
+        CatalogueUser user = new CatalogueUser();
+        LinkDocument document = new LinkDocument();
+        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        String fileId = "test";
+        String message = "message";
+        
+        given(documentRepository.save(user, document, fileId, message)).willReturn(document);
+              
+        //When
+        ResponseEntity<MetadataDocument> actual = controller.updateLinkedDocument(user, fileId, document);
         
         //Then
         verify(documentRepository).save(user, document, fileId, "Edited document: test");

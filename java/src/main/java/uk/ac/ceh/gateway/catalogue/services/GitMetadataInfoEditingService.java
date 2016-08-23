@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
 import uk.ac.ceh.gateway.catalogue.model.DocumentSaveException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import static java.lang.String.format;
 
 @Service
 public class GitMetadataInfoEditingService implements MetadataInfoEditingService {

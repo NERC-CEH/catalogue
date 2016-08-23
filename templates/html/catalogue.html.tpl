@@ -1,8 +1,8 @@
 <#import "skeleton.html.tpl" as skeleton>
 <#assign canEdit = permission.userCanEdit(id)>
-<@skeleton.master title="Permission for: ${title}"><#escape x as x?html>
+<@skeleton.master title="Catalogue for: ${title!''}"><#escape x as x?html>
   <div id="metadata" class="container catalogue">
-    <h1>${title}</h1>
+    <h1>${title!""}</h1>
     <h2>Catalogues</h2>
     <#list catalogues?sort>
       <ul>

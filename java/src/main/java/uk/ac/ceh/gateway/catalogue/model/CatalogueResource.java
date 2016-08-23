@@ -25,7 +25,7 @@ public class CatalogueResource {
     @Builder
     private CatalogueResource(
         @JsonProperty("id") @NonNull String id,
-        @JsonProperty("title") @NonNull String title,
+        @JsonProperty("title") String title,
         @JsonProperty("catalogues") @Singular @NonNull List<String> catalogues
     ) {
         this.id = id;

@@ -25,6 +25,8 @@ import uk.ac.ceh.gateway.catalogue.ef.Link.TimedLink;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
+import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
 
 /**
  * The following code is a Jena translation of the linking mechanism defined for

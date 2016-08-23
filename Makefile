@@ -19,6 +19,13 @@ web:
 java:
 	$(MAVEN) -f java/pom.xml clean package
 
+java-build: java docker
+
+maven-test:
+	$(MAVEN) -f java/pom.xml -Dtest=$(TESTCLASS) clean test-compile surefire:test
+	# Run a single test or test class
+	# TESTCLASS=uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkDocumentGeneratorTest#testGenerateIndex make maven-test
+
 docker:
 	$(COMPOSE) build
 

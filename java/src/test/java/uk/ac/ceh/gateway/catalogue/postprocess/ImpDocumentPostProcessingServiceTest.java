@@ -16,6 +16,7 @@ import org.junit.Before;
 import uk.ac.ceh.gateway.catalogue.imp.Link;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 
 @Slf4j
 public class ImpDocumentPostProcessingServiceTest {

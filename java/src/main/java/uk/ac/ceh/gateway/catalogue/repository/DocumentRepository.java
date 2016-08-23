@@ -19,6 +19,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
@@ -60,11 +61,23 @@ public class DocumentRepository {
     }
     
     public MetadataDocument read(String file) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-        return documentBundleReader.readBundle(file);
+        MetadataDocument document = documentBundleReader.readBundle(file);
+        
+        if (document instanceof LinkDocument) {
+            String linkedDocumentId = ((LinkDocument) document).getLinkedDocumentId();
+            ((LinkDocument) document).setOriginal(documentBundleReader.readBundle(linkedDocumentId));
+        }
+        return document;
     }
     
     public MetadataDocument read(String file, String revision) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-        return documentBundleReader.readBundle(file, revision);
+        MetadataDocument document = documentBundleReader.readBundle(file, revision);
+        
+        if (document instanceof LinkDocument) {
+            String linkedDocumentId = ((LinkDocument) document).getLinkedDocumentId();
+            ((LinkDocument) document).setOriginal(documentBundleReader.readBundle(linkedDocumentId, revision));
+        }
+        return document;
     }
     
     public MetadataDocument save(CatalogueUser user, InputStream inputStream, MediaType mediaType, String documentType, Catalogue catalogue, String message) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {

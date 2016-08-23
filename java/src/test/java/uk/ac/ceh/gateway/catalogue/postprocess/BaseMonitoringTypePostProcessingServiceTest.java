@@ -30,6 +30,8 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TEMPORAL_BEGIN;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TEMPORAL_END;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TITLE;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TRIGGERS;
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
+import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
 
 /**
  *

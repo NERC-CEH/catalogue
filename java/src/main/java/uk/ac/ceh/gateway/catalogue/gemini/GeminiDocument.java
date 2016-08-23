@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +20,8 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_XML_VALUE;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocumentImpl;
+import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 /**
@@ -34,7 +36,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
     @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=GEMINI_XML_VALUE),
     @Template(called="rdf/gemini.xml.tpl",   whenRequestedAs=RDF_XML_VALUE)
 })
-public class GeminiDocument extends MetadataDocumentImpl {
+public class GeminiDocument extends AbstractMetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
         metadataStandardName, metadataStandardVersion, supplementalInfo, parentIdentifier, revisionOfIdentifier;
@@ -69,6 +71,29 @@ public class GeminiDocument extends MetadataDocumentImpl {
     private Service service;
     private List<ResourceConstraint> accessConstraints, useConstraints;
     private MapDataDefinition mapDataDefinition;
+    
+    @Override
+    @JsonIgnore
+    public List<Keyword> getAllKeywords() {
+        return Optional.ofNullable(descriptiveKeywords)
+            .orElse(Collections.emptyList())
+            .stream()
+            .flatMap(dk -> dk.getKeywords().stream())
+            .collect(Collectors.toList());
+    }
+    
+    @Override
+    public void addAdditionalKeywords(List<Keyword> additionalKeywords) {
+        descriptiveKeywords = Optional.ofNullable(descriptiveKeywords)
+            .orElse(new ArrayList<>());
+        
+        descriptiveKeywords.add(
+            DescriptiveKeywords
+                .builder()
+                .keywords(additionalKeywords)
+                .build()
+        );
+    }
     
     @JsonIgnore
     public String getMetadataDateTime() {

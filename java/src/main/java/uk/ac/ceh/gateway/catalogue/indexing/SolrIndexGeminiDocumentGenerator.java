@@ -55,22 +55,12 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 .setOnlineResourceName(grab(document.getOnlineResources(), OnlineResource::getName))
                 .setOnlineResourceDescription(grab(document.getOnlineResources(), OnlineResource::getDescription))
                 .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
-                .setKeyword(grab(getKeywords(document), Keyword::getValue))
+                .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
                 .addLocations(geometryService.toSolrGeometry(grab(document.getBoundingBoxes(), BoundingBox::getWkt)))
                 .setImpBroaderCatchmentIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_BROADER_CATCHMENT_ISSUES_URL), Keyword::getValue))
                 .setImpScale(grab(getKeywordsFilteredByUrlFragment(document, IMP_SCALE_URL), Keyword::getValue))
                 .setImpWaterQuality(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_QUALITY_URL), Keyword::getValue))
             ;
-    }
-
-    private List<Keyword> getKeywords(GeminiDocument document) {
-        return Optional.ofNullable(document.getDescriptiveKeywords())
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(d -> d.getKeywords().stream())
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     private String getLicence(GeminiDocument document){
@@ -91,13 +81,12 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     }
     
     private List<Keyword> getKeywordsFilteredByUrlFragment(GeminiDocument document, String urlFragment) {
-        return Optional.ofNullable(document.getDescriptiveKeywords())
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(d -> d.getKeywords().stream())
-                .filter(k -> {
-                    return k.getUri().startsWith(urlFragment);
-                })
-                .collect(Collectors.toList());
+        return document
+            .getAllKeywords()
+            .stream()
+            .filter(k -> {
+                return k.getUri().startsWith(urlFragment);
+            })
+            .collect(Collectors.toList());
     }
 }

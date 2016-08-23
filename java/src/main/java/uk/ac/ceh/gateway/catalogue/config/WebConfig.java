@@ -45,6 +45,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String GEMINI_JSON_VALUE            = "application/gemini+json";
     public static final String MODEL_SHORT                  = "model";
     public static final String MODEL_JSON_VALUE             = "application/model+json";
+    public static final String LINKED_SHORT                 = "link";
+    public static final String LINKED_JSON_VALUE            = "application/link+json";
     public static final String UKEOF_XML_SHORT              = "ukeof";
     public static final String UKEOF_XML_VALUE              = "application/ukeof+xml";
     public static final String EF_INSPIRE_XML_SHORT         = "efinspire";
