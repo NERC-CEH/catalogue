@@ -7,7 +7,7 @@
   <div id="metadata" class="container">
   <a href="#" class="edit-control model">Edit</a>
     <@blocks.title title type />
-    <@blocks.description description />
+    <@blocks.description description!"" />
     <div class="row">
       <div class="col-sm-4 col-xs-12 pull-right">
         <#if links?? >

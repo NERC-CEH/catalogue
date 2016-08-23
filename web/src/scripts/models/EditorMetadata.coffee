@@ -5,11 +5,14 @@ define [
 
   urlRoot: '/documents'
 
+  initialize: ->
+    @mediaType = arguments[1].mediaType
+
   sync: (method, model, options)->
     Backbone.sync.call @, method, model, _.extend options,
       accepts:
-        json: ["application/gemini+json", "application/json"]
-      contentType: "application/gemini+json"
+        json: [@mediaType, "application/json"]
+      contentType: @mediaType
 
   validate: (attrs) ->
     errors = []

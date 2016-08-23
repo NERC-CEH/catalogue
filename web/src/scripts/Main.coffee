@@ -9,9 +9,8 @@ define [
   'cs!views/MessageView'
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
-  'cs!models/GeminiMetadata'
+  'cs!models/EditorMetadata'
   'cs!views/GeminiEditorView'
-  'cs!models/MonitoringMetadata'
   'cs!views/MonitoringEditorView'
   'cs!models/PermissionApp'
   'cs!routers/PermissionRouter'
@@ -20,10 +19,11 @@ define [
   'cs!views/CatalogueView'
   'cs!views/ChartView'
   'cs!views/ModelEditorView'
+  'cs!views/LinkEditorView'
   'bootstrap'
 ], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
-    SearchRouter, GeminiMetadata, GeminiEditorView, MonitoringMetadata, MonitoringEditorView, PermissionApp, PermissionRouter,
-    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView) ->
+    SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
+    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView) ->
 
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -76,46 +76,27 @@ define [
   ###
   initEditor: ->
 
-    bindEditorView = (event, model, el, View) ->
+    # the create document dropdown
+    $editorCreate = $ '#editorCreate'
+
+    handleEvent = (event, View, options) ->
       do event.preventDefault
-      new View
-        el: el
-        model: model
+      do $editorCreate.toggle
 
-      $('#editorCreate').toggle()
-
-    $('.edit-control.gemini').on 'click', (event) ->
-      model = el = null
-
-      if gemini?
-        model = new GeminiMetadata gemini
-        el = '#metadata'
+      if $editorCreate.length
+        new View
+          model: new EditorMetadata null, options
+          el: '#search'
       else
-        model = new GeminiMetadata()
-        el = '#search'
+        $.getJSON $(location).attr('href'), (data) ->
+          new View
+            model: new EditorMetadata data, options
+            el: '#metadata'
 
-      bindEditorView event, model, el, GeminiEditorView
-
-    $('.edit-control.monitoring').on('click', (event) ->
-      model = el = null
-
-      if monitoring?
-        model = new MonitoringMetadata monitoring
-        el = '#metadata'
-      else
-        model = new MonitoringMetadata()
-        el = '#search'
-
-      bindEditorView event, model, el, MonitoringEditorView
-    )
-
-    $('.edit-control.model').on 'click', (event) ->
-      do event.preventDefault
-      $.getJSON $(location).attr('href'), (data) ->
-        new ModelEditorView
-          el: '#metadata'
-          model: new Backbone.Model data
-
+    $('.edit-control.gemini').on 'click', (event) -> handleEvent event, GeminiEditorView, mediaType: "application/gemini+json"
+    $('.edit-control.monitoring').on 'click', (event) -> handleEvent event, MonitoringEditorView, mediaType: "application/monitoring+json"
+    $('.edit-control.model').on 'click', (event) -> handleEvent event, ModelEditorView, mediaType: "application/model+json"
+    $('.edit-control.link').on 'click', (event) -> handleEvent event, LinkEditorView, mediaType: "application/link+json"
 
   ###
   Initialize the permission application
