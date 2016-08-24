@@ -39,6 +39,7 @@ define [
     do @initCatalogue if $('.catalogue').length
 
     $('.chart').each (i, e) -> new ChartView el: e
+    do Backbone.history.start
 
   initStudyAreaMap: ->
     view = new StudyAreaView();
@@ -52,10 +53,6 @@ define [
     router = new LayersRouter model: app
 
     @createMessageViewFor app
-    try
-      do Backbone.history.start
-    catch ex
-      console.log "history already started"
 
   ###
   Initialize the search application
@@ -66,10 +63,6 @@ define [
     router = new SearchRouter model: app, location: window.location
 
     @createMessageViewFor app
-    try
-      do Backbone.history.start
-    catch ex
-      console.log "history already started"
 
   ###
   Initialize the editor application
@@ -107,10 +100,6 @@ define [
     router = new PermissionRouter model: app
 
     @createMessageViewFor app
-    try
-      do Backbone.history.start
-    catch ex
-      console.log "history already started"
 
   ###
   Initialize the catalogue application

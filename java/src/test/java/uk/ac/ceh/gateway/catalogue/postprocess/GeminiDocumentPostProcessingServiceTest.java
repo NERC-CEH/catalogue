@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.tdb.TDBFactory;
@@ -33,7 +32,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 public class GeminiDocumentPostProcessingServiceTest {    
     @Mock CitationService citationService;
     @Mock DataciteService dataciteService;
-    @Mock ObjectMapper mapper;
     @Mock DocumentIdentifierService documentIdentifierService;
     private Dataset jenaTdb;
     private GeminiDocumentPostProcessingService service;
@@ -43,7 +41,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         MockitoAnnotations.initMocks(this);
         when(citationService.getCitation(any(GeminiDocument.class))).thenReturn(Optional.empty());
         jenaTdb = TDBFactory.createDataset();
-        service = new GeminiDocumentPostProcessingService(citationService, dataciteService, mapper, jenaTdb, documentIdentifierService);
+        service = new GeminiDocumentPostProcessingService(citationService, dataciteService, jenaTdb, documentIdentifierService);
     }
     
     @Test

@@ -1,6 +1,6 @@
 define [
   'jquery'
-  'cs!models/GeminiMetadata'
+  'cs!models/EditorMetadata'
   'cs!views/GeminiEditorView'
   'bootstrap'
 ], ($, Metadata, EditorView) ->

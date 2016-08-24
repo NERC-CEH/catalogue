@@ -6,12 +6,15 @@ define [
   urlRoot: '/documents'
 
   initialize: ->
-    @mediaType = arguments[1].mediaType
+    if arguments.length > 1
+      @mediaType = arguments[1].mediaType
+    else
+      @mediaType = 'application/json'
 
   sync: (method, model, options)->
     Backbone.sync.call @, method, model, _.extend options,
       accepts:
-        json: [@mediaType, "application/json"]
+        json: @mediaType
       contentType: @mediaType
 
   validate: (attrs) ->

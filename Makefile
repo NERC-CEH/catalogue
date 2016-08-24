@@ -26,6 +26,9 @@ maven-test:
 	# Run a single test or test class
 	# TESTCLASS=uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkDocumentGeneratorTest#testGenerateIndex make maven-test
 
+web-test:
+	$(NPM) run test
+
 docker:
 	$(COMPOSE) build
 
