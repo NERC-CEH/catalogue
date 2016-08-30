@@ -195,7 +195,7 @@ public class ServiceConfig {
     }
     
     @Bean
-    public MessageConvertersHolder messageConverters() throws TemplateModelException, IOException, XPathExpressionException {
+    public MessageConvertersHolder messageConverters() throws TemplateModelException, IOException {
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setObjectMapper(jacksonMapper);
@@ -256,7 +256,6 @@ public class ServiceConfig {
         shared.put("permission", permission());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
-        shared.put("metadataRepresentation", metadataRepresentationService());
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -299,7 +298,7 @@ public class ServiceConfig {
     }
     
     @Bean
-    public DocumentWritingService documentWritingService() throws TemplateModelException, IOException, XPathExpressionException {
+    public DocumentWritingService documentWritingService() throws TemplateModelException, IOException {
         return new MessageConverterWritingService(messageConverters().getConverters());
     }
     
@@ -411,14 +410,14 @@ public class ServiceConfig {
     public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
         SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
-        SolrIndexLinkDocumentGenerator solrIndexLinkedDocumentGenerator = new SolrIndexLinkDocumentGenerator(documentRepository());
+        SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator(documentRepository());
         
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
             .register(ImpDocument.class,        new SolrIndexImpDocumentGenerator(metadataDocument))
             .register(Facility.class,           new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
             .register(BaseMonitoringType.class, baseMonitoringType)
-            .register(LinkDocument.class,     solrIndexLinkedDocumentGenerator)
+            .register(LinkDocument.class,     solrIndexLinkDocumentGenerator)
             .register(MetadataDocument.class,   metadataDocument);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry(mappings);
@@ -431,7 +430,7 @@ public class ServiceConfig {
                 solrServer
         );
         
-        solrIndexLinkedDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
+        solrIndexLinkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
         
         performReindexIfNothingIsIndexed(toReturn);
         return toReturn;
