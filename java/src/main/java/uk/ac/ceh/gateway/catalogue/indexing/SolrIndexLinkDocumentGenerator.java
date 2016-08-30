@@ -11,12 +11,12 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 @Slf4j
-public class SolrIndexLinkedDocumentGenerator implements IndexGenerator<LinkDocument, SolrIndex> {
+public class SolrIndexLinkDocumentGenerator implements IndexGenerator<LinkDocument, SolrIndex> {
     private final DocumentRepository repository;
     private IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry;
 
     @Autowired
-    public SolrIndexLinkedDocumentGenerator(DocumentRepository repository) {
+    public SolrIndexLinkDocumentGenerator(DocumentRepository repository) {
         this.repository = repository;
     }
     

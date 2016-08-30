@@ -15,45 +15,44 @@ import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.MetadataInfoEditingService;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
 public class PermissionControllerTest {
-    @Mock private MetadataInfoEditingService metadataInfoEditingService;
-    @Mock private DocumentIdentifierService documentIdentifierService;
     @Mock private PermissionService permissionService;
+    @Mock private DocumentRepository documentRepository;
     
     private PermissionController permissionController;
     
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        permissionController = new PermissionController(metadataInfoEditingService, documentIdentifierService, permissionService);
+        permissionController = new PermissionController(
+            permissionService,
+            documentRepository
+        );
     }
     
     @Test
-    public void getCurrentPermission() {
+    public void getCurrentPermission() throws Exception {
         //Given
         CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
         String file = "1234-567-890";
         MetadataInfo info = new MetadataInfo();
-        GeminiDocument document = new GeminiDocument()
+        MetadataDocument document = new GeminiDocument()
             .setMetadata(info);
-        document.attachUri(URI.create("/documents/" + file));
         PermissionResource expected = new PermissionResource(document);
         
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/documents/1234-567-890");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         
-        given(documentIdentifierService.generateUri(file)).willReturn("http://catalogue/documents/1234-567-890");
-        given(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).willReturn(document);
+        given(documentRepository.read(file)).willReturn(document);
         
         
         //When
@@ -64,17 +63,17 @@ public class PermissionControllerTest {
     }
     
     @Test
-    public void nonPublisherAttemptToMakeRecordPublic() throws DataRepositoryException {
+    public void nonPublisherAttemptToMakeRecordPublic() throws Exception {
         //Given
         
         CatalogueUser notPublisher = new CatalogueUser().setUsername("notPublisher");
         String file = "1234-567-890";
         MetadataInfo info = new MetadataInfo();
         info.addPermission(Permission.VIEW, "bob");
-        GeminiDocument document = new GeminiDocument()
+        MetadataDocument original = new GeminiDocument()
             .setMetadata(info);
-        document.attachUri(URI.create("/documents/" + file));
-        PermissionResource expected = new PermissionResource(document);
+        original.attachUri(URI.create("/documents/" + file));
+        PermissionResource expected = new PermissionResource(original);
         
         MetadataInfo mi = new MetadataInfo();
         mi.addPermission(Permission.VIEW, "public");
@@ -85,30 +84,27 @@ public class PermissionControllerTest {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/documents/1234-567-890");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         
-        given(documentIdentifierService.generateUri(file)).willReturn("http://catalogue/documents/1234-567-890");
-        given(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).willReturn(document);
+        given(documentRepository.read(file)).willReturn(original);
+        given(permissionService.userCanMakePublic()).willReturn(Boolean.FALSE);
         
         //When
-        HttpEntity<PermissionResource> actual = permissionController.updatePermission(notPublisher, file, new PermissionResource(updated));
+        permissionController.updatePermission(notPublisher, file, new PermissionResource(updated));
         
         //Then
-        verify(metadataInfoEditingService, never()).saveMetadataInfo(any(String.class), any(MetadataInfo.class), any(CatalogueUser.class), any(String.class));
-        assertThat("Actual permissionResource should equal expected", actual.getBody(), equalTo(expected));
+        verify(documentRepository).save(notPublisher, original, file, "Permissions of 1234-567-890 changed.");
     }
     
     @Test
-    public void PublisherToMakeRecordPublic() throws DataRepositoryException {
+    public void PublisherToMakeRecordPublic() throws Exception {
         //Given
-        
         CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
         String file = "1234-567-890";
         MetadataInfo info = new MetadataInfo();
         info.addPermission(Permission.VIEW, "bob");
         info.setState("published");
-        GeminiDocument document = new GeminiDocument()
+        MetadataDocument document = new GeminiDocument()
             .setMetadata(info);
         document.attachUri(URI.create("/documents/" + file));
-        PermissionResource expected = new PermissionResource(document);
         
         MetadataInfo mi = new MetadataInfo();
         mi.addPermission(Permission.VIEW, "bob");
@@ -121,16 +117,14 @@ public class PermissionControllerTest {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/documents/1234-567-890");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         
-        given(documentIdentifierService.generateUri(file)).willReturn("http://catalogue/documents/1234-567-890");
-        given(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).willReturn(document);
+        given(documentRepository.read(file)).willReturn(document);
         given(permissionService.userCanMakePublic()).willReturn(Boolean.TRUE);
         
         //When
-        HttpEntity<PermissionResource> actual = permissionController.updatePermission(publisher, file, new PermissionResource(updated));
+        permissionController.updatePermission(publisher, file, new PermissionResource(updated));
         
         //Then
-        verify(metadataInfoEditingService).saveMetadataInfo(any(String.class), any(MetadataInfo.class), any(CatalogueUser.class), any(String.class));
-        assertThat("Actual permissionResource should equal expected", actual.getBody(), equalTo(expected));
+        verify(documentRepository).save(publisher, updated, file, "Permissions of 1234-567-890 changed.");
     }
     
 }

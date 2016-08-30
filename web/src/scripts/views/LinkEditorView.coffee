@@ -16,11 +16,6 @@ define [
           model: @model
           modelAttribute: 'linkedDocumentId'
           label: 'Identifier of linked Document'
-
-        new InputView
-          model: @model
-          modelAttribute: 'title'
-          label: 'Title / remove once validation sorted out'
         ]
     ]
 

@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -123,7 +122,7 @@ public class DocumentRepository {
         
         return save(user,
             document, 
-            retrieveMetadataInfoUpdatingRawType(id), 
+            retrieveMetadataInfoUpdatingRawType(id),
             id, 
             message
         );
@@ -156,7 +155,6 @@ public class DocumentRepository {
     }
     
     private void updateIdAndMetadataDate(MetadataDocument document, String id) {
-        
         document.setId(id).setMetadataDate(LocalDateTime.now());
     }
     
@@ -181,7 +179,7 @@ public class DocumentRepository {
     
      private MetadataInfo retrieveMetadataInfoUpdatingRawType(String id) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         MetadataInfo metadataInfo = documentBundleReader.readBundle(id).getMetadata();
-        metadataInfo.setRawType(GEMINI_JSON_VALUE);
+        metadataInfo.setRawType(MediaType.APPLICATION_JSON_VALUE);
         return metadataInfo;
     }
 }

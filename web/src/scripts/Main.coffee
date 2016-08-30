@@ -20,10 +20,11 @@ define [
   'cs!views/ChartView'
   'cs!views/ModelEditorView'
   'cs!views/LinkEditorView'
+  'cs!models/LinkEditorMetadata'
   'bootstrap'
 ], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
-    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView) ->
+    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata) ->
 
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -69,27 +70,47 @@ define [
   ###
   initEditor: ->
 
+    lookup =
+      GEMINI_DOCUMENT:
+        View: GeminiEditorView
+        Model: EditorMetadata
+        mediaType: 'application/gemini+json'
+      EF_DOCUMENT:
+        View: MonitoringEditorView
+        Model: EditorMetadata
+        mediaType: 'application/monitoring+json'
+      IMP_DOCUMENT:
+        View: ModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/model+json'
+      LINK_DOCUMENT:
+        View: LinkEditorView
+        Model: LinkEditorMetadata
+        mediaType: 'application/link+json'
+
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
 
-    handleEvent = (event, View, options) ->
+    $('.edit-control').on 'click', (event) ->
       do event.preventDefault
       do $editorCreate.toggle
 
+      documentType = lookup[$(event.target).data('documentType')]
+
       if $editorCreate.length
-        new View
-          model: new EditorMetadata null, options
+        new documentType.View
+          model: new documentType.Model null, documentType
           el: '#search'
       else
-        $.getJSON $(location).attr('href'), (data) ->
-          new View
-            model: new EditorMetadata data, options
-            el: '#metadata'
-
-    $('.edit-control.gemini').on 'click', (event) -> handleEvent event, GeminiEditorView, mediaType: "application/gemini+json"
-    $('.edit-control.monitoring').on 'click', (event) -> handleEvent event, MonitoringEditorView, mediaType: "application/monitoring+json"
-    $('.edit-control.model').on 'click', (event) -> handleEvent event, ModelEditorView, mediaType: "application/model+json"
-    $('.edit-control.link').on 'click', (event) -> handleEvent event, LinkEditorView, mediaType: "application/link+json"
+        $.ajax
+          url: $(location).attr('href')
+          dataType: 'json'
+          accepts:
+            json: documentType.mediaType
+          success: (data) ->
+            new documentType.View
+              model: new documentType.Model data, documentType
+              el: '#metadata'
 
   ###
   Initialize the permission application

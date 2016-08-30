@@ -13,14 +13,11 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
@@ -29,7 +26,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 public class DocumentRepositoryTest {
     @Mock DocumentIdentifierService documentIdentifierService;
@@ -60,7 +56,7 @@ public class DocumentRepositoryTest {
     }
     
     @Test
-    public void readLatestDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {        
+    public void readLatestDocument() throws Exception {        
         //When
         documentRepository.read("file");
         
@@ -69,7 +65,7 @@ public class DocumentRepositoryTest {
     }
     
     @Test
-    public void readDocumentAtRevision() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {       
+    public void readDocumentAtRevision() throws Exception {       
         //When
         documentRepository.read("file", "special");
         
@@ -78,7 +74,7 @@ public class DocumentRepositoryTest {
     }
 
     @Test
-    public void savingMultipartFileStoresInputStreamIntoRepo() throws IOException, UnknownContentTypeException, DataRepositoryException, DocumentIndexingException, PostProcessingException {
+    public void savingMultipartFileStoresInputStreamIntoRepo() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
         InputStream inputStream = new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes());
@@ -103,7 +99,7 @@ public class DocumentRepositoryTest {
     }
     
     @Test
-    public void saveNewGeminiDocument() throws IOException, UnknownContentTypeException, DataRepositoryException, DocumentIndexingException, PostProcessingException {
+    public void saveNewGeminiDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
         GeminiDocument document = new GeminiDocument();
@@ -123,7 +119,7 @@ public class DocumentRepositoryTest {
     }
     
     @Test
-    public void saveEditedGeminiDocument() throws IOException, UnknownContentTypeException, DataRepositoryException, DocumentIndexingException, PostProcessingException {
+    public void saveEditedGeminiDocument() throws Exception {
         //Given
         String id = "tulips";
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
@@ -144,7 +140,7 @@ public class DocumentRepositoryTest {
     }
     
     @Test
-    public void checkCanDeleteAFile() throws IOException {
+    public void checkCanDeleteAFile() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");        
         

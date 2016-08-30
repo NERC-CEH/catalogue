@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
@@ -225,7 +227,7 @@ public class DocumentController {
             HttpServletRequest request
     ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {        
         return attachCurrentCatalogue(
-            swapLinkDocument(documentRepository.read(file)),
+            postprocessLinkDocument(documentRepository.read(file)),
             request
         );
     }
@@ -257,14 +259,20 @@ public class DocumentController {
             HttpServletRequest request
     ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         return attachCurrentCatalogue(
-            swapLinkDocument(documentRepository.read(file, revision)),
+            postprocessLinkDocument(documentRepository.read(file, revision)),
             request
         );
     }
     
-    private MetadataDocument swapLinkDocument(MetadataDocument document) {
+    private MetadataDocument postprocessLinkDocument(MetadataDocument document) {
         if (document instanceof LinkDocument) {
+            String id = document.getId();
+            URI uri = document.getUri();
+            MetadataInfo metadataInfo = document.getMetadata();
             document = ((LinkDocument) document).getOriginal();
+            document.attachMetadata(metadataInfo);
+            document.setId(id);
+            document.attachUri(uri);
         }
         return document;
     }

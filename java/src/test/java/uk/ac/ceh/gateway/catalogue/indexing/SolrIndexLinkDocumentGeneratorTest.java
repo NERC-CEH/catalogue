@@ -46,7 +46,7 @@ public class SolrIndexLinkDocumentGeneratorTest {
         GeminiDocument original = new GeminiDocument();
         original.setId(linkedDocumentId);
         
-        SolrIndexLinkedDocumentGenerator generator = new SolrIndexLinkedDocumentGenerator(documentRepository);
+        SolrIndexLinkDocumentGenerator generator = new SolrIndexLinkDocumentGenerator(documentRepository);
         generator.setIndexGeneratorRegistry(indexGeneratorRegistry);
         
         given(documentRepository.read(linkedDocumentId)).willReturn(original);
@@ -83,7 +83,7 @@ public class SolrIndexLinkDocumentGeneratorTest {
         
         MetadataDocument original = new GeminiDocument().setId(linkedDocumentId);
                 
-        SolrIndexLinkedDocumentGenerator generator = new SolrIndexLinkedDocumentGenerator(documentRepository);
+        SolrIndexLinkDocumentGenerator generator = new SolrIndexLinkDocumentGenerator(documentRepository);
         generator.setIndexGeneratorRegistry(indexGeneratorRegistry);
         
         given(documentRepository.read(linkedDocumentId)).willReturn(original);

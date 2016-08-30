@@ -26,6 +26,9 @@ maven-test:
 	# Run a single test or test class
 	# TESTCLASS=uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkDocumentGeneratorTest#testGenerateIndex make maven-test
 
+maven-version:
+	$(MAVEN) -f java/pom.xml versions:display-dependency-updates versions:display-plugin-updates versions:display-property-updates
+
 web-test:
 	$(NPM) run test
 

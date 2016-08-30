@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.Arrays;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
@@ -10,6 +11,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 
 /**
  *

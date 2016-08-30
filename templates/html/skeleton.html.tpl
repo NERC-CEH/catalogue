@@ -46,12 +46,12 @@
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" aria-labelledby="createMenu">
-                    <li><a class="edit-control gemini" href="#">Data Resource</a></li>
-                    <li><a class="edit-control monitoring" href="#">Monitoring</a></li>
-					          <li><a class="edit-control model" href="#">Model</a></li>
-                    <li><a class="edit-control link" href="#">Link</a></li>
+                    <li><a class="edit-control" data-document-type="GEMINI_DOCUMENT" href="#">Data Resource</a></li>
+                    <li><a class="edit-control" data-document-type="EF_DOCUMENT" href="#">Monitoring</a></li>
+					          <li><a class="edit-control" data-document-type="IMP_DOCUMENT" href="#">Model</a></li>
+                    <li><a class="edit-control" data-document-type="LINK_DOCUMENT" href="#">Link</a></li>
                     <li role="separator" class="divider"></li>
-                    <li><a class="edit-control" href="/documents/upload">File Upload</a></li>
+                    <li><a href="/documents/upload">File Upload</a></li>
                   </ul>
                 </div>
               </li>

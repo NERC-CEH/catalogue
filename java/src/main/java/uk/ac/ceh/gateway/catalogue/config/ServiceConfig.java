@@ -74,7 +74,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexImpDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkedDocumentGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexGenerator;
@@ -256,6 +256,7 @@ public class ServiceConfig {
         shared.put("permission", permission());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
+        shared.put("metadataRepresentation", metadataRepresentationService());
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -308,7 +309,7 @@ public class ServiceConfig {
                 .register("GEMINI_DOCUMENT", GeminiDocument.class)
                 .register("EF_DOCUMENT", BaseMonitoringType.class)
                 .register("IMP_DOCUMENT", ImpDocument.class)
-                .register("LINKED_DOCUMENT", LinkDocument.class);
+                .register("LINK_DOCUMENT", LinkDocument.class);
     }
     
     @Bean
@@ -410,7 +411,7 @@ public class ServiceConfig {
     public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
         SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
-        SolrIndexLinkedDocumentGenerator solrIndexLinkedDocumentGenerator = new SolrIndexLinkedDocumentGenerator(documentRepository());
+        SolrIndexLinkDocumentGenerator solrIndexLinkedDocumentGenerator = new SolrIndexLinkDocumentGenerator(documentRepository());
         
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))

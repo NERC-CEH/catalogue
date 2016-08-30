@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -21,14 +22,14 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 /**
  *
  * @author cjohn
  */
 @Data 
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
@@ -46,8 +47,6 @@ public class GeminiDocument extends AbstractMetadataDocument {
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<ConformanceResult> conformanceResults;
     private List<SpatialResolution> spatialResolutions;
-    @JsonIgnore
-    private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> metadataPointsOfContact;
     private List<ResponsibleParty> distributorContacts;
