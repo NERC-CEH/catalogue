@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 /**
  * The following service defines some methods which help in extracting details

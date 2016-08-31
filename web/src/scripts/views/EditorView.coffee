@@ -74,7 +74,7 @@ define [
     do @remove
 
     if Backbone.history.location.pathname == '/documents'
-      Backbone.history.location.replace '/documents/' + @model.get 'id'
+      Backbone.history.location.replace "/documents/#{@model.get 'id'}"
     else
       do Backbone.history.location.reload
 

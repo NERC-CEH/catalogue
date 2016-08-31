@@ -5,11 +5,11 @@
 <@skeleton.master title=title>
 <#escape x as x?html>
   <div id="metadata" class="container">
-  <a href="#" class="edit-control model">Edit</a>
     <@blocks.title title type />
-    <@blocks.description description />
+    <@blocks.description description!"" />
     <div class="row">
       <div class="col-sm-4 col-xs-12 pull-right">
+        <#include "imp/_admin.html.tpl">
         <#if links?? >
           <#list links>
             <div class="panel panel-default" id="document-order">

@@ -18,25 +18,22 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 })
 @Value
 public class CatalogueResource {
-    private final String id, title;
+    private final String id;
     private final List<String> catalogues;
 
     @JsonCreator
     @Builder
     private CatalogueResource(
         @JsonProperty("id") @NonNull String id,
-        @JsonProperty("title") @NonNull String title,
         @JsonProperty("catalogues") @Singular @NonNull List<String> catalogues
     ) {
         this.id = id;
-        this.title = title;
         this.catalogues = new ArrayList<>(catalogues);
     }
 
     public CatalogueResource(@NonNull MetadataDocument document) {
         MetadataInfo info = Objects.requireNonNull(document.getMetadata());
         this.id = document.getId();
-        this.title = document.getTitle();
         this.catalogues = new ArrayList<>(info.getCatalogues());
     }
     

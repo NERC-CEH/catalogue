@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
@@ -144,7 +145,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         //Given
         List<String> catalogues = Lists.newArrayList("CEH Catalogue", "Environmental Information Data Centre");
         MetadataInfo info = new MetadataInfo().setCatalogues(catalogues);
-        GeminiDocument document = new GeminiDocument().setMetadata(info);
+        MetadataDocument document = new GeminiDocument().setMetadata(info);
         
         //When
         SolrIndex index = generator.generateIndex(document);

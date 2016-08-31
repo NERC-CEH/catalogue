@@ -1,4 +1,3 @@
-<h1><%= title %></h1>
 <h2>Permissions</h2>
 <table class="table table-striped">
   <thead>
@@ -25,7 +24,7 @@
 <div class="navbar navbar-default navbar-fixed-bottom">
   <div class="container">
     <div class="navbar-right">
-      <a href="<%= metadataHref %>" class="btn btn-default navbar-btn">Cancel</a>
+      <a href="/documents/<%= id %>" class="btn btn-default navbar-btn">Cancel</a>
       <button id="permissionSave" class="btn btn-primary navbar-btn"><i class="glyphicon glyphicon-save"></i> Save</button>
     </div>
   </div>

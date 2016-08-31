@@ -5,7 +5,8 @@
   "scripts": {
     "bower": "bower install --allow-root",
     "build": "grunt",
-    "develop": "grunt prep develop"
+    "develop": "grunt prep develop",
+    "test": "grunt test"
   },
   "devDependencies": {
     "bower": "1.3.5",

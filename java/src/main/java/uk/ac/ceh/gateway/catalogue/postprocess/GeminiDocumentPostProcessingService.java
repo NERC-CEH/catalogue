@@ -1,7 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
@@ -29,15 +27,13 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 public class GeminiDocumentPostProcessingService implements PostProcessingService<GeminiDocument> {
     private final CitationService citationService;
     private final DataciteService dataciteService;
-    private final ObjectMapper mapper;
     private final Dataset jenaTdb;
     private final DocumentIdentifierService documentIdentifierService;
 
     @Autowired
-    public GeminiDocumentPostProcessingService(CitationService citationService, DataciteService dataciteService, ObjectMapper mapper, Dataset jenaTdb, DocumentIdentifierService DocumentIdentifierService) {
+    public GeminiDocumentPostProcessingService(CitationService citationService, DataciteService dataciteService, Dataset jenaTdb, DocumentIdentifierService DocumentIdentifierService) {
         this.citationService = citationService;
         this.dataciteService = dataciteService;
-        this.mapper = mapper;
         this.jenaTdb = jenaTdb;
         this.documentIdentifierService = DocumentIdentifierService;
     }
@@ -65,12 +61,6 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         document.setDataciteMintable(dataciteService.isDataciteMintable(document));
         document.setDatacitable(dataciteService.isDatacitable(document));
         
-        try {
-            document.setJsonString(mapper.writeValueAsString(document));
-        }
-        catch(JsonProcessingException ex) {
-            throw new PostProcessingException(ex);
-        }
     }
     
     private void process(GeminiDocument document, String id) {

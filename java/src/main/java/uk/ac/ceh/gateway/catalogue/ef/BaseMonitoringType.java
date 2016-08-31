@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
@@ -13,6 +14,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
 import uk.ac.ceh.gateway.catalogue.ef.adapters.AnyXMLHandler;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -125,6 +127,28 @@ public class BaseMonitoringType implements MetadataDocument {
     @Override
     public void attachUri(URI uri) {
         efMetadata.setSelfUrl(uri.toString());
+    }
+    
+    @Override
+    @JsonIgnore
+    public List<Keyword> getAllKeywords() {
+        return keywords
+            .stream()
+            .map(l -> l.asKeyword())
+            .collect(Collectors.toList());
+    }
+    
+    @Override
+    public void addAdditionalKeywords(List<Keyword> additionalKeywords) {
+        keywords = Optional.ofNullable(keywords)
+            .orElse(new ArrayList<>());
+            
+        keywords.addAll(
+            additionalKeywords
+                .stream()
+                .map(k -> k.asLink())
+                .collect(Collectors.toList())
+            );
     }
     
     @Data

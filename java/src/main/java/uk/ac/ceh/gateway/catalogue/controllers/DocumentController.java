@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,12 +25,15 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.LINKED_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MODEL_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
@@ -77,7 +81,7 @@ public class DocumentController {
                      method = RequestMethod.POST,
                      consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public Object uploadDocument(
+    public Object uploadFile(
             @ActiveUser CatalogueUser user,
             @RequestParam("file") MultipartFile multipartFile,
             @RequestParam("type") String documentType,
@@ -101,13 +105,13 @@ public class DocumentController {
                      consumes = MODEL_JSON_VALUE)
     public ResponseEntity<MetadataDocument> uploadModelDocument(
             @ActiveUser CatalogueUser user,
-            @RequestBody Model modelDocument,
+            @RequestBody Model document,
             HttpServletRequest request
     ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
         MetadataDocument data = documentRepository.save(
             user,
-            modelDocument,
+            document,
             retrieve(request),
             "new Model Document"
         );
@@ -123,9 +127,14 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> updateModelDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @RequestBody Model modelDocument) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+            @RequestBody Model document) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
-        MetadataDocument data = documentRepository.save(user, modelDocument, file, String.format("Edited document: %s", file));
+        MetadataDocument data = documentRepository.save(
+            user,
+            document,
+            file,
+            String.format("Edited document: %s", file)
+        );
         return ResponseEntity
             .ok(data);
     }
@@ -134,12 +143,17 @@ public class DocumentController {
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.PUT,
                     consumes = GEMINI_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> updateDocument(
+    public ResponseEntity<MetadataDocument> updateGeminiDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @RequestBody GeminiDocument geminiDocument) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
+            @RequestBody GeminiDocument document) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
               
-        MetadataDocument data = documentRepository.save(user, geminiDocument, file, String.format("Edited document: %s", file));
+        MetadataDocument data = documentRepository.save(
+            user,
+            document,
+            file,
+            String.format("Edited document: %s", file)
+        );
         return ResponseEntity
             .ok(data);
     }
@@ -148,12 +162,56 @@ public class DocumentController {
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = GEMINI_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> uploadDocument(
+    public ResponseEntity<MetadataDocument> uploadGeminiDocument(
             @ActiveUser CatalogueUser user,
-            @RequestBody GeminiDocument geminiDocument,
+            @RequestBody GeminiDocument document,
             HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
-        MetadataDocument data = documentRepository.save(user, geminiDocument, retrieve(request), "new Gemini Document");
+        MetadataDocument data = documentRepository.save(
+            user,
+            document,
+            retrieve(request),
+            "new Gemini Document"
+        );
+        return ResponseEntity
+            .created(data.getUri())
+            .body(data);
+    }
+    
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+                    method = RequestMethod.PUT,
+                    consumes = LINKED_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateLinkedDocument(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody LinkDocument document) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
+              
+        MetadataDocument data = documentRepository.save(
+            user,
+            document,
+            file,
+            String.format("Edited document: %s", file)
+        );
+        return ResponseEntity
+            .ok(data);
+    }
+    
+    @Secured(EDITOR_ROLE)
+    @RequestMapping (value = "documents",
+                     method = RequestMethod.POST,
+                     consumes = LINKED_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> uploadLinkedDocument(
+            @ActiveUser CatalogueUser user,
+            @RequestBody LinkDocument document,
+            HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+       
+        MetadataDocument data = documentRepository.save(
+            user,
+            document,
+            retrieve(request),
+            "new Linked Document"
+        );
         return ResponseEntity
             .created(data.getUri())
             .body(data);
@@ -164,6 +222,22 @@ public class DocumentController {
                     method = RequestMethod.GET)   
     @ResponseBody
     public MetadataDocument readMetadata(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            HttpServletRequest request
+    ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {        
+        return attachCurrentCatalogue(
+            postprocessLinkDocument(documentRepository.read(file)),
+            request
+        );
+    }
+    
+    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
+    @RequestMapping(value = "documents/{file}",
+                    method = RequestMethod.GET,
+                    produces = LINKED_JSON_VALUE)   
+    @ResponseBody
+    public MetadataDocument readLinkDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             HttpServletRequest request
@@ -185,9 +259,22 @@ public class DocumentController {
             HttpServletRequest request
     ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         return attachCurrentCatalogue(
-            documentRepository.read(file, revision),
+            postprocessLinkDocument(documentRepository.read(file, revision)),
             request
         );
+    }
+    
+    private MetadataDocument postprocessLinkDocument(MetadataDocument document) {
+        if (document instanceof LinkDocument) {
+            String id = document.getId();
+            URI uri = document.getUri();
+            MetadataInfo metadataInfo = document.getMetadata();
+            document = ((LinkDocument) document).getOriginal();
+            document.attachMetadata(metadataInfo);
+            document.setId(id);
+            document.attachUri(uri);
+        }
+        return document;
     }
 
     private MetadataDocument attachCurrentCatalogue(

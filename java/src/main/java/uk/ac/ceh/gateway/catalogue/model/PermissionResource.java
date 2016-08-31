@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
@@ -21,29 +20,22 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions.
     @Template(called="html/permission.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @Value
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class PermissionResource {
-    private final String id, title, metadataHref;
+    private final String id;
     private final Set<IdentityPermissions> permissions;
     
     public PermissionResource(@NonNull MetadataDocument document) {
         MetadataInfo info = Objects.requireNonNull(document.getMetadata());
         id = document.getId();
-        title = document.getTitle();
-        metadataHref = document.getUri().toString();
         permissions = createPermissions(info);
     }
     
     @JsonCreator
     private PermissionResource(
         @JsonProperty("id") String id, 
-        @JsonProperty("title") String title,
-        @JsonProperty("metadataHref") String metadataHref,
         @JsonProperty("permissions") Set<IdentityPermissions> permissions
     ){
         this.id = id;
-        this.title = title;
-        this.metadataHref = metadataHref;
         this.permissions = permissions;
     }
     

@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;

@@ -332,7 +332,7 @@ define [
                 administrativeArea: 'Oxfordshire'
                 country: 'United Kingdom'
             'EIDC Custodian':
-              organisationName: 'EIDC'
+              organisationName: 'Environmental Information Data Centre'
               role: 'custodian'
               email: 'eidc@ceh.ac.uk'
             'NERC Publisher':
@@ -452,7 +452,7 @@ define [
               role: 'distributor'
               email: 'enquiries@ceh.ac.uk'
             'EIDC':
-              organisationName: 'EIDC'
+              organisationName: 'Environmental Information Data Centre'
               role: 'distributor'
               email: 'eidc@ceh.ac.uk'
           helpText: """

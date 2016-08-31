@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
@@ -16,7 +15,6 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATACITE_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
@@ -59,7 +57,10 @@ public class DataciteController {
     @RequestMapping(value    = "documents/{file}/datacite",
                     method   = RequestMethod.POST)
     @ResponseBody
-    public Object mintDoi(@ActiveUser CatalogueUser user, @PathVariable("file") String file) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public Object mintDoi(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file
+    ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         GeminiDocument geminiDocument = getDocument(file);
 
         ResourceIdentifier doi = dataciteService.generateDoi(geminiDocument);

@@ -1,13 +1,13 @@
 define [
   'cs!views/editor/InputView'
-  'cs!models/GeminiMetadata'
-], (InputView, GeminiMetadata) ->
+  'cs!models/EditorMetadata'
+], (InputView, EditorMetadata) ->
   describe 'InputView', ->
     model = null
     view = null
 
     beforeEach ->
-      model = new GeminiMetadata title: 'some text'
+      model = new EditorMetadata title: 'some text'
       view = new InputView model: model
 
     describe 'when view is constructing', ->

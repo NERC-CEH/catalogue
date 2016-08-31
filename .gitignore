@@ -16,3 +16,4 @@ webdriver*
 *~
 rspec_screenshots/
 **/nbproject/**
+*.sublime-workspace

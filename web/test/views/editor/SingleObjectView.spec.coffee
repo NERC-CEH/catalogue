@@ -1,12 +1,12 @@
 define [
-  'cs!models/GeminiMetadata'
+  'cs!models/EditorMetadata'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/InputView'
   'cs!models/editor/String'
-], (GeminiMetadata, SingleObjectView, InputView, String) ->
+], (EditorMetadata, SingleObjectView, InputView, String) ->
   describe 'SingleObjectView', ->
     view = null
-    model = new GeminiMetadata()
+    model = new EditorMetadata()
 
     beforeEach ->
       view = new SingleObjectView

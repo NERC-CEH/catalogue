@@ -16,12 +16,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
 
 @Data
 @Accessors(chain = true)
-public abstract class MetadataDocumentImpl implements MetadataDocument {
-
+public abstract class AbstractMetadataDocument implements MetadataDocument {
     private URI uri;
     private String id, title, description;
     protected Keyword resourceType; 
-    private List<String> partOfRepository;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     protected LocalDateTime metadataDate;
@@ -45,5 +43,5 @@ public abstract class MetadataDocumentImpl implements MetadataDocument {
     @Override
     public void attachUri(URI uri) {
         setUri(uri);
-    }    
+    }
 }

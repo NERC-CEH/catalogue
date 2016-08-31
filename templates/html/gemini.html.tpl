@@ -10,7 +10,7 @@
 	  <div id="section-Top">
 		  <@blocks.title title=title!"" type=(resourceType.value)!"" />
 		  <#include "gemini/_licence.html.tpl">
-		   <#include "gemini/_notCurrent.html.tpl">
+		  <#include "gemini/_notCurrent.html.tpl">
 		  <#include "gemini/_authorsTop.html.tpl">
 	  </div>
       <@blocks.description description!"" />
@@ -43,6 +43,5 @@
 	  <div id="footer">
 	    <#include "gemini/_footer.html.tpl">
 	  </div>
-    <#include "gemini/_json.html.tpl">
   </div>
 </@skeleton.master>

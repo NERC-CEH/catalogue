@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -19,19 +18,19 @@ import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.DocumentDoesNotExistException;
+import uk.ac.ceh.gateway.catalogue.model.PublicationServiceException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.Workflow;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 public class GitPublicationServiceTest {
     @Mock GroupStore<CatalogueUser> groupStore;
-    @Mock MetadataInfoEditingService metadataInfoEditingService;
+    @Mock DocumentRepository documentRepository;
     UriComponentsBuilder uriBuilder;
     Workflow workflow;
     CatalogueUser editor;
     private static final String FILENAME = "e5090602-6ff9-4936-8217-857ea6de5774";
-    private static final URI metadataUrl = URI.create("/documents/" + FILENAME);
     private static final String PENDING_ID = "ykhm7b";
     private static final String DRAFT_ID = "qtak5r";
     private MetadataDocument draft, published;
@@ -41,99 +40,107 @@ public class GitPublicationServiceTest {
     public void given() throws IOException {
         uriBuilder = UriComponentsBuilder.fromHttpUrl("https://example.com/documents").pathSegment(FILENAME, "publication");
         workflow = new PublicationConfig().workflow();
-        editor = new CatalogueUser();
-        editor.setUsername("Ron MacDonald");
-        editor.setEmail("ron@example.com");
+        editor = new CatalogueUser()
+            .setUsername("Ron MacDonald")
+            .setEmail("ron@example.com");
         
         this.draft = new GeminiDocument()
             .setTitle("draft")
-            .setUri(URI.create("http://localhost"))
+            .setId("3beb9650-fc88-4de5-b8cd-9cc8a4abe135")
             .setMetadata(new MetadataInfo().setState("draft"));
         
         this.published = new GeminiDocument()
             .setTitle("published")
-            .setUri(URI.create("http://localhost"))
+            .setId("db49a6ee-5c9e-4bef-8e6e-196387df4d97")
             .setMetadata(new MetadataInfo().setState("published"));
         
         MockitoAnnotations.initMocks(this);
         
-        this.publicationService = new GitPublicationService(groupStore, workflow, metadataInfoEditingService);
+        this.publicationService = new GitPublicationService(groupStore, workflow, documentRepository);
     }
     
     @Test
     public void successfullyTransitionState() throws Exception {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.EDITOR_ROLE)));
-        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenReturn(draft);
+        when(documentRepository.read(FILENAME)).thenReturn(draft);
         
         //When
-        publicationService.transition(editor, FILENAME, PENDING_ID, uriBuilder, metadataUrl);
+        publicationService.transition(editor, FILENAME, PENDING_ID, uriBuilder);
         
         //Then
-        verify(metadataInfoEditingService).saveMetadataInfo(any(String.class), any(MetadataInfo.class), any(CatalogueUser.class), any(String.class));
+        verify(documentRepository).read(FILENAME);
+        verify(documentRepository).save(editor, draft, FILENAME, "Publication state of e5090602-6ff9-4936-8217-857ea6de5774 changed.");
     }
     
     @Test
     public void editorCannotTransitionFromPublic() throws Exception {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.EDITOR_ROLE)));
-        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenReturn(published);
+        when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When
-        publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder, metadataUrl);
+        StateResource actual = publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
         
         //Then
-        verify(metadataInfoEditingService, never()).saveMetadataInfo(any(String.class), any(MetadataInfo.class), any(CatalogueUser.class), any(String.class));
+        verify(documentRepository).read(FILENAME);
+        verify(documentRepository).save(editor, published, FILENAME, "Publication state of e5090602-6ff9-4936-8217-857ea6de5774 changed.");
+        assertThat("State should still be published", actual.getTitle(), equalTo("Published"));
     }
     
     @Test
     public void publisherCanTransitionFromPublic() throws Exception {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.PUBLISHER_ROLE)));
-        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenReturn(published);
+        when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When
-        publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder, metadataUrl);
+        StateResource actual = publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
         
         //Then
-        verify(metadataInfoEditingService).saveMetadataInfo(any(String.class), any(MetadataInfo.class), any(CatalogueUser.class), any(String.class));
+        verify(documentRepository).read(FILENAME);
+        verify(documentRepository).save(editor, published, FILENAME, "Publication state of e5090602-6ff9-4936-8217-857ea6de5774 changed.");
+        assertThat("State should be draft", actual.getTitle(), equalTo("Draft"));
     }
     
     @Test
     public void unknownCannotTransitionFromPublic() throws Exception {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Collections.EMPTY_LIST);
-        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenReturn(published);
+        when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When
-        publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder, metadataUrl);
+        StateResource actual = publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
         
         //Then
-        verify(metadataInfoEditingService, never()).saveMetadataInfo(any(String.class), any(MetadataInfo.class), any(CatalogueUser.class), any(String.class));
+        verify(documentRepository).read(FILENAME);
+        verify(documentRepository).save(editor, published, FILENAME, "Publication state of e5090602-6ff9-4936-8217-857ea6de5774 changed.");
+        assertThat("State should still be published", actual.getTitle(), equalTo("Published"));
     }
     
     @Test
     public void successfullyGetCurrentState() throws Exception {
         //Given
-        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenReturn(draft);
+        when(documentRepository.read(FILENAME)).thenReturn(draft);
         
         //When
-        StateResource current = publicationService.current(editor, FILENAME, uriBuilder, metadataUrl);
+        StateResource current = publicationService.current(editor, FILENAME, uriBuilder);
         
         //Then
+        verify(documentRepository).read(FILENAME);
         assertThat("State is should be draft", current.getId(), equalTo("draft"));
     }
     
-    @Test(expected = DocumentDoesNotExistException.class)
+    @Test(expected = PublicationServiceException.class)
     public void tryToGetFileThatDoesNotExist() throws Exception {
         //Given 
-        when(metadataInfoEditingService.getMetadataDocument(any(String.class), any(URI.class))).thenThrow(new DocumentDoesNotExistException("test"));
+        when(documentRepository.read(FILENAME)).thenThrow(new PublicationServiceException("test"));
         
         //When
-        publicationService.current(editor, "this file name does not exist", uriBuilder, metadataUrl);
+        publicationService.current(editor, "this file name does not exist", uriBuilder);
         
         //Then
-        //The expected Exception should be thrown
+        verify(documentRepository).read(FILENAME);
     }
     
     private Group createGroup(String groupname) {

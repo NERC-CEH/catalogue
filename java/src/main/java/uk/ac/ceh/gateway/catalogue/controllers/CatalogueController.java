@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.net.URI;
+import java.io.IOException;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -17,23 +17,20 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.MetadataInfoEditingService;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 @Controller
 @RequestMapping(value = "documents/{file}/catalogue")
 public class CatalogueController {
-    private final MetadataInfoEditingService metadataInfoEditingService;
-    private final DocumentIdentifierService documentIdentifierService;
+    private final DocumentRepository documentRepository;
 
     @Autowired
     public CatalogueController(
-        @NonNull MetadataInfoEditingService metadataInfoEditingService,
-        @NonNull DocumentIdentifierService documentIdentifierService
+        @NonNull DocumentRepository documentRepository
     ) {
-        this.metadataInfoEditingService = metadataInfoEditingService;
-        this.documentIdentifierService = documentIdentifierService;
+        this.documentRepository = documentRepository;
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -42,13 +39,8 @@ public class CatalogueController {
     public HttpEntity<CatalogueResource> currentCatalogue (
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file
-    ) {
-        URI metadataUri = URI.create(
-            documentIdentifierService.generateUri(file)
-        );
-        MetadataDocument document = metadataInfoEditingService
-            .getMetadataDocument(file, metadataUri);
-        return ResponseEntity.ok(new CatalogueResource(document)); 
+    ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+        return ResponseEntity.ok(new CatalogueResource(documentRepository.read(file))); 
     }
     
     @PreAuthorize("@permission.userCanEdit(#file)")
@@ -58,29 +50,19 @@ public class CatalogueController {
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
         @RequestBody CatalogueResource catalogueResource
-    ) throws DataRepositoryException {
-        URI metadataUri =  URI.create(
-            documentIdentifierService.generateUri(file)
-        );
-        MetadataInfo info = metadataInfoEditingService
-            .getMetadataDocument(file, metadataUri)
-            .getMetadata();
-        catalogueResource.updateCatalogues(info);
-        String commitMsg = String.format("Catalogues of %s changed.", file);
-        metadataInfoEditingService.saveMetadataInfo(
-            file,
-            info,
-            user,
-            commitMsg
-        );
+    ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+        MetadataDocument document = documentRepository.read(file);
+        catalogueResource.updateCatalogues(document.getMetadata());
         return ResponseEntity.ok(
             new CatalogueResource(
-                metadataInfoEditingService.getMetadataDocument(
+                documentRepository.save(
+                    user,
+                    document,
                     file,
-                    metadataUri
+                    String.format("Catalogues of %s changed.", file)
                 )
             )
-        ); 
+        );
     }
 
 }

@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.model;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 
 /**
@@ -24,4 +25,6 @@ public interface MetadataDocument {
     MetadataDocument setMetadataDate(LocalDateTime date);
     List<ResourceIdentifier> getResourceIdentifiers();
     MetadataDocument setResourceIdentifiers(List<ResourceIdentifier> resourceIdentifiers);
+    List<Keyword> getAllKeywords();
+    void addAdditionalKeywords(List<Keyword> additionalKeywords);
 }
