@@ -37,7 +37,7 @@ define [
     do @initSearch if $('#search').length
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
-    do @initCatalogue if $('.catalogue').length
+    do @initCatalogue if $('.catalogue-control').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
@@ -126,11 +126,11 @@ define [
   Initialize the catalogue application
   ###
   initCatalogue: ->
-    $('button').on 'click', (event) ->
+    $('.catalogue-control').on 'click', (event) ->
       do event.preventDefault
-      $.getJSON $(location).attr('href'), (data) ->
+      $.getJSON $(event.target).attr('href'), (data) ->
         new CatalogueView
-          el: '.catalogue'
+          el: '#metadata'
           model: new Catalogue data
 
   ###

@@ -9,8 +9,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
@@ -22,10 +22,16 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
+    private final CatalogueService catalogueService;
     
-    public SolrIndexMetadataDocumentGenerator(CodeLookupService codeLookupService, DocumentIdentifierService identifierService) {
+    public SolrIndexMetadataDocumentGenerator(
+        CodeLookupService codeLookupService,
+        DocumentIdentifierService identifierService,
+        CatalogueService catalogueService
+    ) {
         this.codeLookupService = codeLookupService;
         this.identifierService = identifierService;
+        this.catalogueService = catalogueService;
     }
 
     @Override
@@ -37,7 +43,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                 .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
                 .setState(getState(document))
                 .setView(getViews(document))
-                .setCatalogue(getCatalogues(document));
+                .setCatalogue(getCatalogue(document));
     }
     
     private String getState(MetadataDocument document) {
@@ -71,11 +77,14 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                         .collect(Collectors.toList());
     }
 
-    private List<String> getCatalogues(MetadataDocument document) {
+    private String getCatalogue(MetadataDocument document) {
         return Optional.ofNullable(document)
             .map(MetadataDocument::getMetadata)
-            .map(MetadataInfo::getCatalogues)
-            .orElse(Collections.emptyList()); 
+            .map(metadata -> catalogueService.retrieve(
+                    metadata.getCatalogue()
+                    ).getTitle()
+                )
+            .orElse(""); 
     }
              
 }

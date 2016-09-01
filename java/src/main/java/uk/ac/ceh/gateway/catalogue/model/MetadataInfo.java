@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -29,13 +28,10 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 @Accessors(chain = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class MetadataInfo {
-    private String rawType, state, documentType;
+    private String rawType, state, documentType, catalogue;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private final Multimap<Permission, String> permissions;
-    private List<String> catalogues;
-    @JsonIgnore
-    private Catalogue currentCatalogue;
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "role_cig_readonly";
     public static final String PUBLISHER_GROUP = "role_cig_publisher";
@@ -49,7 +45,7 @@ public class MetadataInfo {
         this.state = info.state;
         this.documentType = info.documentType;
         this.permissions = HashMultimap.create(info.permissions);
-        this.catalogues = new ArrayList(info.getCatalogues());
+        this.catalogue = info.getCatalogue();
     }
       
     @JsonIgnore
@@ -67,10 +63,6 @@ public class MetadataInfo {
     
     public String getDocumentType() {
         return Optional.ofNullable(documentType).orElse("");
-    }
-    
-    public List<String> getCatalogues() {
-        return Optional.ofNullable(catalogues).orElse(new ArrayList<>());
     }
     
     public void addPermission(Permission permission, String identity) {

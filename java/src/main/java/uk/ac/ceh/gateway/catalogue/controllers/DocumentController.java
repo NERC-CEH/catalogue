@@ -223,13 +223,9 @@ public class DocumentController {
     @ResponseBody
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            HttpServletRequest request
+            @PathVariable("file") String file
     ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {        
-        return attachCurrentCatalogue(
-            postprocessLinkDocument(documentRepository.read(file)),
-            request
-        );
+        return postprocessLinkDocument(documentRepository.read(file));
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -239,13 +235,9 @@ public class DocumentController {
     @ResponseBody
     public MetadataDocument readLinkDocument(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            HttpServletRequest request
+            @PathVariable("file") String file
     ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
-        return attachCurrentCatalogue(
-            documentRepository.read(file),
-            request
-        );
+        return documentRepository.read(file);
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
@@ -255,13 +247,9 @@ public class DocumentController {
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @PathVariable("revision") String revision,
-            HttpServletRequest request
+            @PathVariable("revision") String revision
     ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
-        return attachCurrentCatalogue(
-            postprocessLinkDocument(documentRepository.read(file, revision)),
-            request
-        );
+        return postprocessLinkDocument(documentRepository.read(file, revision));
     }
     
     private MetadataDocument postprocessLinkDocument(MetadataDocument document) {
@@ -275,14 +263,6 @@ public class DocumentController {
             document.attachUri(uri);
         }
         return document;
-    }
-
-    private MetadataDocument attachCurrentCatalogue(
-        MetadataDocument metadataDocument,
-        HttpServletRequest request
-    ) {
-        metadataDocument.getMetadata().setCurrentCatalogue(retrieve(request));
-        return metadataDocument;
     }
     
     private Catalogue retrieve(HttpServletRequest request) {

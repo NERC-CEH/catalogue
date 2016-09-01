@@ -14,10 +14,12 @@ import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
@@ -123,14 +125,12 @@ public class DocumentRepositoryTest {
         //Given
         String id = "tulips";
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
-        GeminiDocument incomingDocument = new GeminiDocument();
         MetadataInfo metadataInfo = new MetadataInfo();
-        GeminiDocument retrieved = new GeminiDocument();
-        retrieved.setMetadata(metadataInfo);
+        MetadataDocument incomingDocument = new GeminiDocument()
+            .setMetadata(metadataInfo);
         String message = "message";
         
         given(documentIdentifierService.generateUri(id)).willReturn("http://localhost:8080/id/test");
-        given(documentBundleReader.readBundle(id)).willReturn(retrieved);
         
         //When
         documentRepository.save(user, incomingDocument, "tulips", message);
@@ -149,6 +149,34 @@ public class DocumentRepositoryTest {
         
         //Then
         verify(repo).delete(user, "id");
+    }
+    
+    @Test
+    public void checkMetadataInfoUpdated() throws Exception {
+        //Given
+        CatalogueUser editor = new CatalogueUser()
+            .setUsername("editor")
+            .setEmail("editor@example.com");
+        String file = "3c25e9b7-d3dd-41be-ae29-e8979bb462a2";
+        String message = "Test message";
+        MetadataInfo metadataInfo = new MetadataInfo()
+            .setCatalogue("eidc")
+            .setDocumentType("MODEL_DOCUMENT")
+            .setRawType("application/json")
+            .setState("published");
+        metadataInfo.addPermission(Permission.EDIT, "editor");
+        MetadataDocument document = new Model()
+            .setId(file)
+            .setMetadata(metadataInfo);        
+        
+        given(documentIdentifierService.generateUri(file)).willReturn("https://catalogue.ceh.ac.uk/id/3c25e9b7-d3dd-41be-ae29-e8979bb462a2");
+        
+        //When
+        documentRepository.save(editor, document, file, message);
+        
+        //Then 
+        verify(repo).save(eq(editor), eq(file), eq(message), eq(metadataInfo), any());
+        
     }
     
 }

@@ -2,7 +2,7 @@
 <schema name="example" version="1.5">
     <uniqueKey>identifier</uniqueKey>
     <fields>
-      <field name="identifier" type="keyword" indexed="true" stored="true" required="true" multiValued="false" /> 
+      <field name="identifier" type="keyword" indexed="true" stored="true" required="true" multiValued="false" />
       <field name="title" type="text_general" indexed="true" stored="true" required="true" multiValued="false"/>
       <field name="altTitle" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>
@@ -19,7 +19,7 @@
       <field name="keyword" type="keyword_lowercase" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="view" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="locations" type="spatial" indexed="true" stored="true" required="false" multiValued="true"/>
-      <field name="catalogue" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="catalogue" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="impBroaderCatchmentIssues" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impScale" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impWaterQuality" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
@@ -35,12 +35,12 @@
                 <tokenizer class="solr.WhitespaceTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
             </analyzer>
-        </fieldType> 
+        </fieldType>
         <fieldType name="keyword" class="solr.TextField" sortMissingLast="true" omitNorms="true">
             <analyzer>
                 <tokenizer class="solr.KeywordTokenizerFactory"/>
             </analyzer>
-        </fieldType> 
+        </fieldType>
         <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
             <analyzer type="index">
                 <tokenizer class="solr.StandardTokenizerFactory"/>

@@ -33,7 +33,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.services.HardcodedCatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -43,7 +42,7 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 public class DocumentControllerTest {
     
     @Mock DocumentRepository documentRepository;
-    CatalogueService catalogueService = new HardcodedCatalogueService();
+    @Mock CatalogueService catalogueService;
     private DocumentController controller;
     
     @Before
@@ -230,8 +229,6 @@ public class DocumentControllerTest {
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";       
         String latestRevisionId = "latestRev";
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("catalogue.ceh.ac.uk");
         MetadataInfo info = mock(MetadataInfo.class);
         MetadataDocument document = mock(MetadataDocument.class);
         given(document.getMetadata()).willReturn(info);
@@ -239,7 +236,7 @@ public class DocumentControllerTest {
             .willReturn(document);
         
         //When
-        controller.readMetadata(user, file, latestRevisionId, request);
+        controller.readMetadata(user, file, latestRevisionId);
         
         //Then
         verify(documentRepository).read(file, latestRevisionId);
@@ -250,8 +247,6 @@ public class DocumentControllerTest {
         //Given
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("catalogue.ceh.ac.uk");
         MetadataInfo info = mock(MetadataInfo.class);
         MetadataDocument document = mock(MetadataDocument.class);
         given(document.getMetadata()).willReturn(info);
@@ -259,7 +254,7 @@ public class DocumentControllerTest {
             .willReturn(document);
         
         //When
-        controller.readMetadata(user, file, request);
+        controller.readMetadata(user, file);
         
         //Then
         verify(documentRepository).read(file);

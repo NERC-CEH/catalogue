@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -119,10 +118,9 @@ public class DocumentRepository {
     }
     
     public MetadataDocument save(CatalogueUser user, MetadataDocument document, String id, String message) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
-        
         return save(user,
             document, 
-            retrieveMetadataInfoUpdatingRawType(id),
+            retrieveMetadataInfoUpdatingRawType(document),
             id, 
             message
         );
@@ -150,7 +148,7 @@ public class DocumentRepository {
         toReturn.addPermission(Permission.VIEW, username);
         toReturn.addPermission(Permission.EDIT, username);
         toReturn.addPermission(Permission.DELETE, username);
-        toReturn.setCatalogues(Lists.newArrayList(catalogue.getTitle()));
+        toReturn.setCatalogue(catalogue.getId());
         return toReturn;
     }
     
@@ -177,9 +175,7 @@ public class DocumentRepository {
         document.setResourceIdentifiers(resourceIdentifiers);
     }
     
-     private MetadataInfo retrieveMetadataInfoUpdatingRawType(String id) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
-        MetadataInfo metadataInfo = documentBundleReader.readBundle(id).getMetadata();
-        metadataInfo.setRawType(MediaType.APPLICATION_JSON_VALUE);
-        return metadataInfo;
+     private MetadataInfo retrieveMetadataInfoUpdatingRawType(MetadataDocument document) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+        return document.getMetadata().setRawType(MediaType.APPLICATION_JSON_VALUE);
     }
 }

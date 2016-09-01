@@ -1,19 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.google.common.collect.Lists;
-import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.BDDMockito.given;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
@@ -24,12 +25,17 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 public class SolrIndexMetadataDocumentGeneratorTest {
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
+    @Mock CatalogueService catalogueService;
     private SolrIndexMetadataDocumentGenerator generator;
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        generator = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService);
+        generator = new SolrIndexMetadataDocumentGenerator(
+            codeLookupService,
+            documentIdentifierService,
+            catalogueService
+        );
     }
     
     @Test
@@ -143,18 +149,24 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     @Test
     public void checkThatCataloguesAreTransferedToIndex() {
         //Given
-        List<String> catalogues = Lists.newArrayList("CEH Catalogue", "Environmental Information Data Centre");
-        MetadataInfo info = new MetadataInfo().setCatalogues(catalogues);
+        Catalogue catalogue = Catalogue
+            .builder()
+            .id("eidc")
+            .title("Environmental Information Data Centre")
+            .url("https://eidc-catalogue.ceh.ac.uk")
+            .build();
+        MetadataInfo info = new MetadataInfo().setCatalogue("eidc");
         MetadataDocument document = new GeminiDocument().setMetadata(info);
+        given(catalogueService.retrieve("eidc")).willReturn(catalogue);
         
         //When
         SolrIndex index = generator.generateIndex(document);
 
         //Then
         assertThat(
-                "Expected to get list [\"CEH Catalogue\", \"Environmental Information Data Centre\"]",
+                "Expected to get \"Environmental Information Data Centre\"",
                 index.getCatalogue(),
-                contains("CEH Catalogue", "Environmental Information Data Centre")
+                equalTo("Environmental Information Data Centre")
         );
     }
 

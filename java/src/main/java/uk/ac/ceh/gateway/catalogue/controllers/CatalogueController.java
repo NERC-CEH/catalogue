@@ -1,7 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import java.util.Optional;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +19,12 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
+@Slf4j
 @Controller
 @RequestMapping(value = "documents/{file}/catalogue")
 public class CatalogueController {
@@ -40,7 +44,9 @@ public class CatalogueController {
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file
     ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
-        return ResponseEntity.ok(new CatalogueResource(documentRepository.read(file))); 
+        return createCatalogueResource(
+            documentRepository.read(file)
+        ); 
     }
     
     @PreAuthorize("@permission.userCanEdit(#file)")
@@ -52,15 +58,25 @@ public class CatalogueController {
         @RequestBody CatalogueResource catalogueResource
     ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         MetadataDocument document = documentRepository.read(file);
-        catalogueResource.updateCatalogues(document.getMetadata());
+        document.getMetadata().setCatalogue(catalogueResource.getValue());
+        return createCatalogueResource(
+            documentRepository.save(
+                user,
+                document,
+                file,
+                String.format("Catalogues of %s changed.", file)
+            )
+        );
+    }
+    
+    private HttpEntity<CatalogueResource> createCatalogueResource(MetadataDocument document) {
         return ResponseEntity.ok(
             new CatalogueResource(
-                documentRepository.save(
-                    user,
-                    document,
-                    file,
-                    String.format("Catalogues of %s changed.", file)
-                )
+                document.getId(),
+                Optional.ofNullable(document)
+                    .map(MetadataDocument::getMetadata)
+                    .map(MetadataInfo::getCatalogue)
+                    .get()
             )
         );
     }
