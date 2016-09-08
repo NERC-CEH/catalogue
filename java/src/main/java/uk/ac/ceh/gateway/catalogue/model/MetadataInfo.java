@@ -45,7 +45,7 @@ public class MetadataInfo {
         this.state = info.state;
         this.documentType = info.documentType;
         this.permissions = HashMultimap.create(info.permissions);
-        this.catalogue = info.getCatalogue();
+        this.catalogue = info.catalogue;
     }
       
     @JsonIgnore

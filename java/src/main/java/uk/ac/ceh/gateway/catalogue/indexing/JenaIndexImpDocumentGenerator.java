@@ -29,11 +29,14 @@ public class JenaIndexImpDocumentGenerator implements IndexGenerator<ImpDocument
         Resource me = generator.resource(document.getId());
         toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
         
-        Optional.ofNullable(document.getIdentifiers()).orElse(Collections.emptyList())
+        Optional.ofNullable(document.getIdentifiers())
+            .orElse(Collections.emptyList())
             .stream()
             .forEach(id -> {
-                toReturn.add(createStatement(me, REFERENCES, generator.resource(id)));
-        });
+                toReturn.add(
+                    createStatement(me, REFERENCES, generator.resource(id))
+                );
+            });
         
         return toReturn;
     }

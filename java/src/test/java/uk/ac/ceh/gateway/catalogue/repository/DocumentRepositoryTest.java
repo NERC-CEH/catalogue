@@ -15,7 +15,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -84,7 +83,7 @@ public class DocumentRepositoryTest {
         String message = "message";
         GeminiDocument document = new GeminiDocument();
         MetadataInfo metadataInfo = new MetadataInfo();
-        Catalogue catalogue = Catalogue.builder().id("ceh").title("Test").url("http://example.com/").build();
+        String catalogue = "ceh";
         
         given(documentReader.read(any(), any(), any())).willReturn(document);
         given(infoFactory.createInfo(any(), any())).willReturn(metadataInfo);
@@ -107,14 +106,14 @@ public class DocumentRepositoryTest {
         GeminiDocument document = new GeminiDocument();
         MetadataInfo metadataInfo = new MetadataInfo();
         String message = "new Gemini document";
-        Catalogue catalogue = Catalogue.builder().id("test").title("Test").url("http://example.com/").build();
+        String catalogue = "test";
         
         given(infoFactory.createInfo(document, MediaType.APPLICATION_JSON)).willReturn(metadataInfo);
         given(documentIdentifierService.generateFileId()).willReturn("test");
         given(documentIdentifierService.generateUri("test")).willReturn("http://localhost:8080/id/test");
        
         //When
-        documentRepository.save(user, document, catalogue, message);
+        documentRepository.saveNew(user, document, catalogue, message);
         
         //Then
         verify(repo).save(eq(user), eq("test"), eq("new Gemini document"), eq(metadataInfo), any());

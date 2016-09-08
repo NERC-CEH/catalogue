@@ -20,7 +20,7 @@ public class LinkDocument extends AbstractMetadataDocument {
     }
 
     @Override
-    public void addAdditionalKeywords(List<Keyword> additionalKeywords) {
+    public LinkDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

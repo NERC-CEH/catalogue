@@ -31,11 +31,15 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     private final DocumentIdentifierService documentIdentifierService;
 
     @Autowired
-    public GeminiDocumentPostProcessingService(CitationService citationService, DataciteService dataciteService, Dataset jenaTdb, DocumentIdentifierService DocumentIdentifierService) {
+    public GeminiDocumentPostProcessingService(
+        CitationService citationService,
+        DataciteService dataciteService,
+        Dataset jenaTdb,
+        DocumentIdentifierService documentIdentifierService) {
         this.citationService = citationService;
         this.dataciteService = dataciteService;
         this.jenaTdb = jenaTdb;
-        this.documentIdentifierService = DocumentIdentifierService;
+        this.documentIdentifierService = documentIdentifierService;
     }
         
     @Override

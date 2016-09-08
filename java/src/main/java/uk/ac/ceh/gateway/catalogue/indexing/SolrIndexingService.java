@@ -74,7 +74,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     
     @Override
     protected D readDocument(String document, String revision) throws Exception {
-        return getReader().readBundle(document);
+        return readDocument(document);
     }
     
     private void commit() throws DocumentIndexingException {

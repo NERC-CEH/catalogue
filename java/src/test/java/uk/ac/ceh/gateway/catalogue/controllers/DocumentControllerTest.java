@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
@@ -32,7 +31,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -42,13 +40,12 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 public class DocumentControllerTest {
     
     @Mock DocumentRepository documentRepository;
-    @Mock CatalogueService catalogueService;
     private DocumentController controller;
     
     @Before
     public void initMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
-        controller = new DocumentController(documentRepository, catalogueService);
+        controller = new DocumentController(documentRepository);
     }
     
     @Test
@@ -76,16 +73,14 @@ public class DocumentControllerTest {
         MultipartFile multipartFile = new MockMultipartFile("test", "test", MediaType.TEXT_XML_VALUE, inputStream);
         String documentType = "GEMINI_DOCUMENT";
         GeminiDocument document = new GeminiDocument();
-        document.setUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new file upload";
-        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("catalogue.ceh.ac.uk");
+        String catalogue = "catalogue";
         
         given(documentRepository.save(eq(user), any(), any(MediaType.class), eq(documentType), eq(catalogue), eq(message))).willReturn(document);
               
         //When
-        controller.uploadFile(user, multipartFile, documentType, request);
+        controller.uploadFile(user, multipartFile, documentType, catalogue);
         
         //Then
         verify(documentRepository).save(eq(user), any(), eq(mediaType), eq(documentType), eq(catalogue), eq(message));
@@ -96,16 +91,14 @@ public class DocumentControllerTest {
         //Given
         CatalogueUser user = new CatalogueUser();
         Model document = new Model();
-        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Model Document";
-        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("catalogue.ceh.ac.uk");
+        String catalogue = "catalogue";
         
-        given(documentRepository.save(user, document, catalogue, message)).willReturn(document);
+        given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.uploadModelDocument(user, document, request);
+        ResponseEntity<MetadataDocument> actual = controller.uploadModelDocument(user, document, catalogue);
         
         //Then
         verify(documentRepository).save(user, document, catalogue, message);
@@ -121,7 +114,7 @@ public class DocumentControllerTest {
         String message = "Edited document: test";
         
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        given(document.getUri()).willReturn("https://catalogue.ceh.ac.uk/id/123-test");
               
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateModelDocument(user, fileId, document);
@@ -136,16 +129,14 @@ public class DocumentControllerTest {
         //Given
         CatalogueUser user = new CatalogueUser();
         GeminiDocument document = new GeminiDocument();
-        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Gemini Document";
-        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("catalogue.ceh.ac.uk");
+        String catalogue = "catalogue";
         
-        given(documentRepository.save(user, document, catalogue, message)).willReturn(document);
+        given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.uploadGeminiDocument(user, document, request);
+        ResponseEntity<MetadataDocument> actual = controller.uploadGeminiDocument(user, document, catalogue);
         
         //Then
         verify(documentRepository).save(user, document, catalogue, message);
@@ -161,7 +152,7 @@ public class DocumentControllerTest {
         String message = "message";
         
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        given(document.getUri()).willReturn("https://catalogue.ceh.ac.uk/id/123-test");
               
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateGeminiDocument(user, fileId, document);
@@ -176,16 +167,16 @@ public class DocumentControllerTest {
         //Given
         CatalogueUser user = new CatalogueUser();
         LinkDocument document = new LinkDocument();
-        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Linked Document";
-        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
+        String catalogue = "catalogue";
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setServerName("catalogue.ceh.ac.uk");
         
-        given(documentRepository.save(user, document, catalogue, message)).willReturn(document);
+        given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.uploadLinkedDocument(user, document, request);
+        ResponseEntity<MetadataDocument> actual = controller.uploadLinkedDocument(user, document, catalogue);
         
         //Then
         verify(documentRepository).save(user, document, catalogue, message);
@@ -197,7 +188,7 @@ public class DocumentControllerTest {
         //Given
         CatalogueUser user = new CatalogueUser();
         LinkDocument document = new LinkDocument();
-        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
         String message = "message";
         

@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 import javax.xml.validation.Schema;
 import javax.xml.xpath.XPathExpressionException;
 import lombok.Data;
-import lombok.NonNull;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -81,7 +80,6 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueException;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
@@ -120,6 +118,7 @@ import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.GeminiExtractorService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
@@ -160,51 +159,48 @@ public class ServiceConfig {
     
     @Bean
     public CatalogueService catalogueService() {
-        final Map<String, Catalogue> catalogues  = new HashMap<>();
+        String defaultCatalogueKey = "ceh";
         
-        Catalogue ceh = Catalogue.builder()
-            .id("ceh")
-            .title("CEH Catalogue")
-            .url("https://eip.ceh.ac.uk")
-            .facetKey("topic")
-            .facetKey("resourceType")
-            .facetKey("licence")
-            .build();
+        return new InMemoryCatalogueService(
+            defaultCatalogueKey,
+            
+            Catalogue.builder()
+                .id(defaultCatalogueKey)
+                .title("CEH Catalogue")
+                .url("https://eip.ceh.ac.uk")
+                .facetKey("topic")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .build(),
         
-        Catalogue eidc = Catalogue.builder()
-            .id("eidc")
-            .title("Environmental Information Data Centre")
-            .url("http://eidc.ceh.ac.uk")
-            .facetKey("topic")
-            .facetKey("resourceType")
-            .facetKey("licence")
-            .build();
+            Catalogue.builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("http://eidc.ceh.ac.uk")
+                .facetKey("topic")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .build(),
         
-        Catalogue cmp = Catalogue.builder()
-            .id("cmp")
-            .title("Catchment Management Platform")
-            .url("https://eip.ceh.ac.uk")
-            .facetKey("impBroaderCatchmentIssues")
-            .facetKey("impScale")
-            .facetKey("impWaterQuality")
-            .facetKey("resourceType")
-            .facetKey("licence")
-            .build();
-
-        catalogues.put("catalogue.ceh.ac.uk", ceh);
-        catalogues.put("ceh", ceh);
-        catalogues.put("eidc.catalogue.ceh.ac.uk", eidc);
-        catalogues.put("eidc", eidc);
-        catalogues.put("cmp.catalogue.ceh.ac.uk", cmp);
-        catalogues.put("cmp", cmp);
+            Catalogue.builder()
+                .id("cmp")
+                .title("Catchment Management Platform")
+                .url("http://www.ceh.ac.uk")
+                .facetKey("impBroaderCatchmentIssues")
+                .facetKey("impScale")
+                .facetKey("impWaterQuality")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .build(),
         
-        return (@NonNull String key) -> {
-            try {
-                return catalogues.get(key.toLowerCase());
-            } catch (NullPointerException ex) {
-                throw new CatalogueException(String.format("Could not retrieve catalogue for: %s", key), ex);
-            }
-        };
+            Catalogue.builder()
+                .id("assist")
+                .title("Achieving Sustainable Agricultural Systems")
+                .url("http://www.ceh.ac.uk/ASSIST")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .build()
+        );
     }
     
     @Bean FacetFactory facetFactory() {
@@ -302,6 +298,7 @@ public class ServiceConfig {
         shared.put("permission", permission());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
+        shared.put("catalogues", catalogueService());
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -414,12 +411,12 @@ public class ServiceConfig {
     @Bean
     public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException, IOException, TemplateModelException {
         return new MetadataInfoBundledReaderService(
-                dataRepository,
-                documentReadingService(),
-                documentInfoMapper(),
-                metadataRepresentationService(),
-                postProcessingService(),
-                documentIdentifierService()
+            dataRepository,
+            documentReadingService(),
+            documentInfoMapper(),
+            metadataRepresentationService(),
+            postProcessingService(),
+            documentIdentifierService()
         );
     }
     

@@ -147,7 +147,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatCataloguesAreTransferedToIndex() {
+    public void checkThatCatalogueTitleIsTransferedToIndex() {
         //Given
         Catalogue catalogue = Catalogue
             .builder()

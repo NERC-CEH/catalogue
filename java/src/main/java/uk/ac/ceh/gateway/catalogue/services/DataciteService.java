@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,7 +32,6 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
  * GeminiMetadata record
  * @author cjohn
  */
-@Data
 @Slf4j
 public class DataciteService {
     private final static String DATACITE_API = "https://mds.datacite.org";
@@ -43,6 +42,25 @@ public class DataciteService {
     private final DocumentIdentifierService identifierService;
     private final Template dataciteRequest;
     private final RestTemplate rest;
+
+    @Autowired
+    public DataciteService(
+        String doiPrefix,
+        String publisher,
+        String username,
+        String password,
+        DocumentIdentifierService identifierService,
+        Template dataciteRequest,
+        RestTemplate rest
+    ) {
+        this.doiPrefix = doiPrefix;
+        this.publisher = publisher;
+        this.username = username;
+        this.password = password;
+        this.identifierService = identifierService;
+        this.dataciteRequest = dataciteRequest;
+        this.rest = rest;
+    }
     
     /**
      * Contacts the DATACITE rest api and uploads a datacite requests and then

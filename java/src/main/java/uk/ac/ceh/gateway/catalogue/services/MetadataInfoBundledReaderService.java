@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.IOException;
-import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -27,7 +26,8 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
             DocumentInfoMapper<MetadataInfo> documentInfoMapper,
             DocumentTypeLookupService representationService,
             PostProcessingService postProcessingService,
-            DocumentIdentifierService documentIdentifierService) {
+            DocumentIdentifierService documentIdentifierService
+    ) {
         this.repo = repo;
         this.documentReader = documentReader;
         this.documentInfoMapper = documentInfoMapper;
@@ -55,13 +55,13 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
         MetadataDocument document = documentReader.read(dataDoc.getInputStream(),
                                         documentInfo.getRawMediaType(),
                                         representationService.getType(documentInfo.getDocumentType()));
-        document.attachMetadata(documentInfo);
+        document.setMetadata(documentInfo);
         documentInfo.hideMediaType();
         
         if (history) {
-            document.attachUri(URI.create(documentIdentifierService.generateUri(file, revision)));
+            document.setUri(documentIdentifierService.generateUri(file, revision));
         } else {
-            document.attachUri(URI.create(documentIdentifierService.generateUri(file)));
+            document.setUri(documentIdentifierService.generateUri(file));
         }
         
         postProcessingService.postProcess(document);

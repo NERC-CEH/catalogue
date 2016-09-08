@@ -65,7 +65,7 @@ public class PermissionController {
         throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException
     {
         MetadataDocument document = documentRepository.read(file);
-        document.attachMetadata(removeAddedPublicGroupIfNotPublisher(document.getMetadata(), permissionResource));
+        document.setMetadata(removeAddedPublicGroupIfNotPublisher(document.getMetadata(), permissionResource));
         documentRepository.save(user, document, file, String.format("Permissions of %s changed.", file));
         return ResponseEntity.ok(new PermissionResource(document)); 
     }

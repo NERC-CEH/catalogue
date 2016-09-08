@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
-import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,9 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 @Slf4j
@@ -29,12 +28,15 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 @RequestMapping(value = "documents/{file}/catalogue")
 public class CatalogueController {
     private final DocumentRepository documentRepository;
+    private final CatalogueService catalogueService;
 
     @Autowired
     public CatalogueController(
-        @NonNull DocumentRepository documentRepository
+        @NonNull DocumentRepository documentRepository,
+        @NonNull CatalogueService catalogueService
     ) {
         this.documentRepository = documentRepository;
+        this.catalogueService = catalogueService;
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -58,7 +60,11 @@ public class CatalogueController {
         @RequestBody CatalogueResource catalogueResource
     ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         MetadataDocument document = documentRepository.read(file);
-        document.getMetadata().setCatalogue(catalogueResource.getValue());
+        document
+            .getMetadata()
+            .setCatalogue(
+                catalogueResource.getValue()
+            );
         return createCatalogueResource(
             documentRepository.save(
                 user,
@@ -73,10 +79,7 @@ public class CatalogueController {
         return ResponseEntity.ok(
             new CatalogueResource(
                 document.getId(),
-                Optional.ofNullable(document)
-                    .map(MetadataDocument::getMetadata)
-                    .map(MetadataInfo::getCatalogue)
-                    .get()
+                document.getCatalogue()
             )
         );
     }

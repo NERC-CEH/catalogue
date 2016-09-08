@@ -1,8 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.Objects;
 import java.util.UUID;
-import lombok.Data;
+import lombok.NonNull;
 
 /**
  * This application hosts metadata documents on paths which take the form:
@@ -17,10 +16,19 @@ import lombok.Data;
  * responsible for doing just that.
  * @author cjohn
  */
-@Data
 public class DocumentIdentifierService {
     private final String baseUri;
     private final char replacement;
+
+    public DocumentIdentifierService(
+        @NonNull String baseUri,
+        char replacement
+    ) {
+        this.baseUri = baseUri;
+        this.replacement = replacement;
+    }
+    
+    
     
     /**
      * Takes a document describing identifier and derives a new one which 
@@ -43,9 +51,8 @@ public class DocumentIdentifierService {
      * @param identifier the identifier of the document
      * @return a string representation of the uri for the document
      */
-    public String generateUri(String identifier) {
-        String id = Objects.requireNonNull(identifier, "A identifier is required for it to be assigned a uri");
-        return baseUri + "/id/" + generateFileId(id);
+    public String generateUri(@NonNull String identifier) {
+        return String.format("%s/id/%s", baseUri, generateFileId(identifier));
     }
     
     /**
@@ -54,9 +61,15 @@ public class DocumentIdentifierService {
      * @param revision the revision which the document is being read from
      * @return a string representation of a document from history
      */
-    public String generateUri(String identifier, String revision) {
-        String id = Objects.requireNonNull(identifier, "A identifier is required for it to be assigned a uri");
-        return baseUri + "/history/" + revision + "/" + generateFileId(id);
+    public String generateUri(
+        @NonNull String identifier,
+        @NonNull String revision) {
+        return String.format(
+            "%s/history/%s/%s",
+            baseUri,
+            revision,
+            generateFileId(identifier)
+        );
     }
     
     /**

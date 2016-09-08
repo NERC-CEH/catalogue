@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URI;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
@@ -81,9 +80,9 @@ public class MetadataInfoBundledReaderServiceTest {
         service.readBundle(fileToRead, revision);
         
         //Then
-        verify(geminiDocument).attachMetadata(metadata);
+        verify(geminiDocument).setMetadata(metadata);
         verify(metadata).hideMediaType();
-        verify(geminiDocument).attachUri(URI.create(uri));
+        verify(geminiDocument).setUri(uri);
         verify(postProcessingService).postProcess(geminiDocument);
     }
 }

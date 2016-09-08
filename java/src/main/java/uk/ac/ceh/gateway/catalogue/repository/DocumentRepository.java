@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.repository;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -15,7 +14,6 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -48,7 +46,8 @@ public class DocumentRepository {
             DocumentWritingService documentWriter,
             BundledReaderService<MetadataDocument> documentBundleReader,
             PostProcessingService postProcessingService,
-            GitRepoWrapper repoWrapper) {
+            GitRepoWrapper repoWrapper
+    ) {
         this.documentTypeLookupService = documentTypeLookupService;
         this.documentReader = documentReader;
         this.documentIdentifierService = documentIdentifierService;
@@ -78,7 +77,7 @@ public class DocumentRepository {
         return document;
     }
     
-    public MetadataDocument save(CatalogueUser user, InputStream inputStream, MediaType mediaType, String documentType, Catalogue catalogue, String message) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public MetadataDocument save(CatalogueUser user, InputStream inputStream, MediaType mediaType, String documentType, String catalogue, String message) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
         Path tmpFile = Files.createTempFile("upload", null); //Create a temp file to upload the input stream to
         String id;
         MetadataDocument data;
@@ -90,7 +89,7 @@ public class DocumentRepository {
             //the documentReader will close the underlying inputstream
             data = documentReader.read(Files.newInputStream(tmpFile), mediaType, metadataType); 
             MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(data, user, mediaType, catalogue); //get the metadata info
-            data.attachMetadata(metadataInfo);
+            data.setMetadata(metadataInfo);
             
             id = Optional.ofNullable(documentIdentifierService.generateFileId(data.getId()))
                              .orElse(documentIdentifierService.generateFileId());
@@ -108,7 +107,7 @@ public class DocumentRepository {
         return data;
     }
     
-    public MetadataDocument save(CatalogueUser user, MetadataDocument document, Catalogue catalogue, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {       
+    public MetadataDocument saveNew(CatalogueUser user, MetadataDocument document, String catalogue, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {       
         return save(user, 
             document,
             createMetadataInfoWithDefaultPermissions(document, user, MediaType.APPLICATION_JSON, catalogue), 
@@ -128,12 +127,20 @@ public class DocumentRepository {
     
     private MetadataDocument save(CatalogueUser user, MetadataDocument document, MetadataInfo metadataInfo, String id, String message) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
         updateIdAndMetadataDate(document, id);
-        String uri = documentIdentifierService.generateUri(id);
+        String uri = documentIdentifierService.generateUri(
+            id,
+            metadataInfo.getCatalogue()
+        );
         addRecordUriAsResourceIdentifier(document, uri);
-        document.attachUri(URI.create(uri));
+        document.setUri(uri);
         
-        repo.save(user, id, message, metadataInfo,
-            (o) -> documentWriter.write(document, MediaType.APPLICATION_JSON, o));
+        repo.save(
+            user,
+            id,
+            message,
+            metadataInfo,
+            (o) -> documentWriter.write(document, MediaType.APPLICATION_JSON, o)
+        );
         
         return read(id);
     }
@@ -142,13 +149,13 @@ public class DocumentRepository {
         return repo.delete(user, id);
     }
     
-    private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user, MediaType mediaType, Catalogue catalogue) {
+    private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user, MediaType mediaType, String catalogue) {
         MetadataInfo toReturn = infoFactory.createInfo(document, mediaType);
         String username = user.getUsername();
         toReturn.addPermission(Permission.VIEW, username);
         toReturn.addPermission(Permission.EDIT, username);
         toReturn.addPermission(Permission.DELETE, username);
-        toReturn.setCatalogue(catalogue.getId());
+        toReturn.setCatalogue(catalogue);
         return toReturn;
     }
     

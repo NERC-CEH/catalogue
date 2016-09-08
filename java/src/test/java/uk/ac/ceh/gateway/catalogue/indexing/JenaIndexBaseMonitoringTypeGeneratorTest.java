@@ -46,7 +46,6 @@ public class JenaIndexBaseMonitoringTypeGeneratorTest {
         when(activity.getId()).thenReturn("activity");
         
         Resource activityResource = ResourceFactory.createResource("http://thisActivity");
-        when(generator.resource("activity")).thenReturn(activityResource);
         
         //When
         List<Statement> statements = service.generateIndex(activity);
@@ -67,7 +66,6 @@ public class JenaIndexBaseMonitoringTypeGeneratorTest {
         Facility facility = mock(Facility.class);
         
         when(facility.getId()).thenReturn("my id");
-        when(generator.resource("my id")).thenReturn(ResourceFactory.createResource("http://thisActivity"));
         when(facility.getBelongsTo()).thenReturn(Arrays.asList(timedLink));
         
         //When
@@ -84,7 +82,6 @@ public class JenaIndexBaseMonitoringTypeGeneratorTest {
         Facility facility = mock(Facility.class);
         
         when(facility.getId()).thenReturn("my id");
-        when(generator.resource("my id")).thenReturn(ResourceFactory.createResource("http://thisActivity"));
         when(facility.getBelongsTo()).thenReturn(Arrays.asList(timedLink));
         
         //When

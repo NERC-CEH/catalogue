@@ -13,17 +13,26 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 
 public class CatalogueControllerTest {
     private @Mock DocumentRepository documentRepository;
+    private @Mock CatalogueService catalogueService;
     private CatalogueController controller;
+    private Catalogue eidc;
     
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         controller = new CatalogueController(
-            documentRepository
+            documentRepository,
+            catalogueService
         );
+        eidc = Catalogue.builder()
+            .id("eidc")
+            .title("Environmental Information Data Centre")
+            .url("https://eip.ceh.ac.uk")
+            .build();
     }
 
     @Test
@@ -31,8 +40,8 @@ public class CatalogueControllerTest {
         //Given
         String file = "123-456-789";
         MetadataDocument document = new GeminiDocument()
-            .setId(file);
-        document.attachMetadata(
+            .setId(file)
+            .setMetadata(
             new MetadataInfo()
                 .setCatalogue("eidc")
         );
@@ -52,8 +61,8 @@ public class CatalogueControllerTest {
         CatalogueResource catalogueResource = new CatalogueResource("1", "eidc");
         
         MetadataDocument document = new GeminiDocument()
-            .setId(file);
-        document.attachMetadata(
+            .setId(file)
+            .setMetadata(
             new MetadataInfo()
                 .setCatalogue("eidc")
         );

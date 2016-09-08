@@ -28,7 +28,6 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.LINKED_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MODEL_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
@@ -36,7 +35,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 @Controller
@@ -45,22 +43,20 @@ public class DocumentController {
     public static final String PUBLISHER_ROLE = "ROLE_CIG_PUBLISHER";
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
     private final DocumentRepository documentRepository;
-    private final CatalogueService catalogueService;
     
     @Autowired
     public DocumentController(
-        DocumentRepository documentRepository,
-        CatalogueService catalogueService
+        DocumentRepository documentRepository
     ) {
         this.documentRepository = documentRepository;
-        this.catalogueService = catalogueService;
     }
     
     @RequestMapping (value = "id/{id}",
                      method = RequestMethod.GET)
     public RedirectView redirectToResource(
             @PathVariable("id") String id,
-            HttpServletRequest request) {
+            HttpServletRequest request
+    ) {
         UriComponentsBuilder url = ServletUriComponentsBuilder
                                             .fromRequest(request)
                                             .replacePath("documents/{id}");
@@ -85,18 +81,18 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @RequestParam("file") MultipartFile multipartFile,
             @RequestParam("type") String documentType,
-            HttpServletRequest request
-            ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
+            @RequestParam("catalogue") String catalogue
+    ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
         
         MetadataDocument data = documentRepository.save(
             user,
             multipartFile.getInputStream(),
             MediaType.parseMediaType(multipartFile.getContentType()),
             documentType,
-            retrieve(request),
+            catalogue,
             "new file upload"
         );
-        return new RedirectView(data.getUri().toString());
+        return new RedirectView(data.getUri());
     }
     
     @Secured(EDITOR_ROLE)
@@ -106,17 +102,17 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> uploadModelDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody Model document,
-            HttpServletRequest request
+            @RequestParam("catalogue") String catalogue
     ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
-        MetadataDocument data = documentRepository.save(
+        MetadataDocument data = documentRepository.saveNew(
             user,
             document,
-            retrieve(request),
+            catalogue,
             "new Model Document"
         );
         return ResponseEntity
-            .created(data.getUri())
+            .created(URI.create(data.getUri()))
             .body(data);
     }
     
@@ -127,7 +123,8 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> updateModelDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @RequestBody Model document) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+            @RequestBody Model document
+    ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
         MetadataDocument data = documentRepository.save(
             user,
@@ -146,7 +143,8 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> updateGeminiDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @RequestBody GeminiDocument document) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
+            @RequestBody GeminiDocument document
+    ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
               
         MetadataDocument data = documentRepository.save(
             user,
@@ -165,16 +163,17 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> uploadGeminiDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody GeminiDocument document,
-            HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+            @RequestParam("catalogue") String catalogue
+    ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
-        MetadataDocument data = documentRepository.save(
+        MetadataDocument data = documentRepository.saveNew(
             user,
             document,
-            retrieve(request),
+            catalogue,
             "new Gemini Document"
         );
         return ResponseEntity
-            .created(data.getUri())
+            .created(URI.create(data.getUri()))
             .body(data);
     }
     
@@ -185,7 +184,8 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> updateLinkedDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @RequestBody LinkDocument document) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
+            @RequestBody LinkDocument document
+    ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException  {
               
         MetadataDocument data = documentRepository.save(
             user,
@@ -204,16 +204,17 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> uploadLinkedDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody LinkDocument document,
-            HttpServletRequest request) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
+            @RequestParam("catalogue") String catalogue
+    ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
        
-        MetadataDocument data = documentRepository.save(
+        MetadataDocument data = documentRepository.saveNew(
             user,
             document,
-            retrieve(request),
+            catalogue,
             "new Linked Document"
         );
         return ResponseEntity
-            .created(data.getUri())
+            .created(URI.create(data.getUri()))
             .body(data);
     }
     
@@ -255,18 +256,14 @@ public class DocumentController {
     private MetadataDocument postprocessLinkDocument(MetadataDocument document) {
         if (document instanceof LinkDocument) {
             String id = document.getId();
-            URI uri = document.getUri();
+            String uri = document.getUri();
             MetadataInfo metadataInfo = document.getMetadata();
             document = ((LinkDocument) document).getOriginal();
-            document.attachMetadata(metadataInfo);
+            document.setMetadata(metadataInfo);
             document.setId(id);
-            document.attachUri(uri);
+            document.setUri(uri);
         }
         return document;
-    }
-    
-    private Catalogue retrieve(HttpServletRequest request) {
-        return catalogueService.retrieve(request.getServerName());
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'DELETE')")

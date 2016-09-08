@@ -65,14 +65,17 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
     public void unindexDocuments(List<String> documents) throws DocumentIndexingException {
         perform(ReadWrite.WRITE, () -> {
             GraphStore graph = GraphStoreFactory.create(jenaTdb);
-            for(String document : documents) {
-                String uri = documentIdentifierService.generateUri(document);
-                log.debug("Unindexing: {}", uri);
+            documents.stream().map((document) -> {
                 //Remove any triples where this document uri is the subject
                 ParameterizedSparqlString pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
-                pss.setParam("id", ResourceFactory.createResource(uri));
+                pss.setParam(
+                    "id",
+                    ResourceFactory.createResource(document)
+                );
+                return pss;
+            }).forEach((pss) -> {
                 UpdateExecutionFactory.create(pss.asUpdate(), graph).execute();
-            }
+            });
             return null;
         });
     }

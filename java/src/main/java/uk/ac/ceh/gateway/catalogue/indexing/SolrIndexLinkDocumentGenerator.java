@@ -28,7 +28,7 @@ public class SolrIndexLinkDocumentGenerator implements IndexGenerator<LinkDocume
     public SolrIndex generateIndex(LinkDocument linkDocument) throws DocumentIndexingException {
         try {
             MetadataDocument linked = repository.read(linkDocument.getLinkedDocumentId());
-            linked.attachMetadata(linkDocument.getMetadata());
+            linked.setMetadata(linkDocument.getMetadata());
             if (linkDocument.getAdditionalKeywords() != null) {
                 linked.addAdditionalKeywords(linkDocument.getAdditionalKeywords());
             } 

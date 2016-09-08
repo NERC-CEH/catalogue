@@ -7,11 +7,16 @@ import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
@@ -58,10 +63,25 @@ public class SearchController {
         this.facetFactory = facetFactory;
     }
     
-    @RequestMapping(value = "documents",
+    @RequestMapping (value = "documents",
+                     method = RequestMethod.GET)
+    public RedirectView redirectToDefaultCatalogue(
+            HttpServletRequest request
+    ) {
+        String defaultCatalogue = catalogueService.defaultCatalogue().getId();
+        String url = ServletUriComponentsBuilder
+                                            .fromRequest(request)
+                                            .replacePath("documents/{catalogue}")
+                                            .buildAndExpand(defaultCatalogue)
+                                            .toUriString();
+        return new RedirectView(url);
+    }
+    
+    @RequestMapping(value = "documents/{catalogue}",
                     method = RequestMethod.GET)
     public @ResponseBody SearchResults searchDocuments(
             @ActiveUser CatalogueUser user,
+            @PathVariable("catalogue") String catalogueKey,
             @RequestParam(
                 value = TERM_QUERY_PARAM,
                 defaultValue=SearchQuery.DEFAULT_SEARCH_TERM
@@ -84,13 +104,15 @@ public class SearchController {
                 defaultValue = "") List<FacetFilter> facetFilters,
             HttpServletRequest request
     ) throws SolrServerException {
+        String endpoint = ServletUriComponentsBuilder
+                                            .fromRequest(request)
+                                            .replacePath("documents")
+                                            .toUriString();
         
-        Catalogue catalogue = catalogueService.retrieve(
-            request.getServerName()
-        );
+        Catalogue catalogue = catalogueService.retrieve(catalogueKey);
         
         SearchQuery searchQuery = new SearchQuery(
-            request.getRequestURL().toString(),
+            endpoint,
             user,
             term,
             bbox,

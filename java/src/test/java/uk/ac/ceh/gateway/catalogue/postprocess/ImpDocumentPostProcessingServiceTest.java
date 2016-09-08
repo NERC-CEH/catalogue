@@ -2,9 +2,7 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
 import org.apache.jena.query.Dataset;
-import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import org.apache.jena.tdb.TDBFactory;
-import java.net.URI;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -33,7 +31,7 @@ public class ImpDocumentPostProcessingServiceTest {
     public void addLinks() throws PostProcessingException {
         //Given
         Model model = new Model();
-        model.setUri(URI.create("http://model"));
+        model.setUri("http://model");
         model.setIdentifiers(Arrays.asList("dataset1"));
         Link expected = new Link("http://dataset1", "Dataset 1");
         

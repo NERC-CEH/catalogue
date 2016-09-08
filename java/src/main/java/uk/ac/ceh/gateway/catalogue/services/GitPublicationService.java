@@ -61,7 +61,7 @@ public class GitPublicationService implements PublicationService {
             final Transition transition = workflow
                 .currentState(original)
                 .getTransition(publishingRoles, transitionId);
-            doc.attachMetadata(workflow.transitionDocumentState(original, publishingRoles, transition));
+            doc.setMetadata(workflow.transitionDocumentState(original, publishingRoles, transition));
             documentRepository.save(
                 user,
                 doc,
