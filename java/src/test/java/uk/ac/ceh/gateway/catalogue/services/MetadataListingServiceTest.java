@@ -3,7 +3,9 @@ package uk.ac.ceh.gateway.catalogue.services;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +53,7 @@ public class MetadataListingServiceTest {
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getId()).thenReturn("uid");
         when(document.getType()).thenReturn("Dataset");
+        when(document.getCatalogue()).thenReturn("eidc");
         MetadataInfo metadata = mock(MetadataInfo.class);
         when(metadata.isPubliclyViewable(Permission.VIEW)).thenReturn(Boolean.TRUE);
         when(document.getMetadata()).thenReturn(metadata);
@@ -127,6 +130,7 @@ public class MetadataListingServiceTest {
         when(document.getId()).thenReturn(id);
         when(document.getType()).thenReturn(resourceType);
         when(document.getMetadata()).thenReturn(metadata);
+        when(document.getCatalogue()).thenReturn("eidc");
         when(documentBundleReader.readBundle("a", revision)).thenReturn(document);
         
         //When
@@ -175,6 +179,7 @@ public class MetadataListingServiceTest {
         when(document.getId()).thenReturn(id);
         when(document.getType()).thenReturn(documentResourceType);
         when(document.getMetadata()).thenReturn(metadata);
+        when(document.getCatalogue()).thenReturn("eidc");
         when(documentBundleReader.readBundle("a", revision)).thenReturn(document);
         
         //When
@@ -183,5 +188,24 @@ public class MetadataListingServiceTest {
         //Then
         assertTrue("Expected one record", publicIds.size() == 1);
         verify(documentBundleReader).readBundle("a", revision);
+    }
+    
+    @Test
+    public void checkOnlyEidcDocumentListed() throws Exception {
+        //given
+        String revision = "revision";
+        MetadataDocument document = new GeminiDocument()
+            .setId("test")
+            .setMetadata(
+                new MetadataInfo()
+                    .setCatalogue("ceh")
+            );
+        when(documentBundleReader.readBundle("a", revision)).thenReturn(document);
+        
+        //when
+        List<String> actual = service.getPublicDocuments(revision, GeminiDocument.class, defaultResourceTypes);
+        
+        //then
+        assertThat("should be no iems in list", actual.size(), equalTo(0));
     }
 }

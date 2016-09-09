@@ -25,6 +25,7 @@ public class MetadataListingService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentListingService listingService;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
+    private static final String WAF_CATALOGUE = "eidc";
 
     @Autowired
     public MetadataListingService(DataRepository<CatalogueUser> repo,
@@ -60,7 +61,12 @@ public class MetadataListingService {
         for(String file : documents) {
             try {
                 MetadataDocument doc = documentBundleReader.readBundle(file, revision);
-                if(type.isAssignableFrom(doc.getClass()) && doc.getMetadata().isPubliclyViewable(Permission.VIEW) && caseInsensitiveContains(resourceTypes, doc.getType())) {
+                if(
+                    type.isAssignableFrom(doc.getClass()) &&
+                    doc.getMetadata().isPubliclyViewable(Permission.VIEW) &&
+                    caseInsensitiveContains(resourceTypes, doc.getType()) &&
+                    doc.getCatalogue().equals(WAF_CATALOGUE)
+                ) {
                     toReturn.add(doc.getId());
                 }
             }
