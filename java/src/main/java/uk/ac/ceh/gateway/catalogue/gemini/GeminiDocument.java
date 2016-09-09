@@ -70,6 +70,13 @@ public class GeminiDocument extends AbstractMetadataDocument {
     private Keyword resourceType;
     
     @Override
+    public String getType() {
+        return Optional.ofNullable(resourceType)
+            .map(Keyword::getValue)
+            .orElse("");
+    }
+    
+    @Override
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
         return Optional.ofNullable(descriptiveKeywords)
@@ -91,13 +98,6 @@ public class GeminiDocument extends AbstractMetadataDocument {
                 .build()
         );
         return this;
-    }
-    
-    @JsonIgnore
-    public String getMetadataDateTime() {
-        /* This method always returns the full datetime string (including the seconds). LocalDateTime.toString() will 
-           not return the seconds if it is a date with time 00:00:00 */
-        return getMetadataDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
         
     @JsonProperty("citation")

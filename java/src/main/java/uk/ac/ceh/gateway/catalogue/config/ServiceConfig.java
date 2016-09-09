@@ -98,6 +98,7 @@ import uk.ac.ceh.gateway.catalogue.postprocess.ImpDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
@@ -166,7 +167,7 @@ public class ServiceConfig {
             
             Catalogue.builder()
                 .id(defaultCatalogueKey)
-                .title("CEH Catalogue")
+                .title("Centre for Ecology & Hydrology")
                 .url("https://eip.ceh.ac.uk")
                 .facetKey("topic")
                 .facetKey("resourceType")
@@ -320,7 +321,7 @@ public class ServiceConfig {
     
     @Bean 
     DocumentRepository documentRepository() throws XPathExpressionException, IOException, TemplateModelException {
-        return new DocumentRepository(
+        return new GitDocumentRepository(
             metadataRepresentationService(),
             documentReadingService(),
             documentIdentifierService(),

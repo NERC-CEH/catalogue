@@ -28,7 +28,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 
-public class DocumentRepositoryTest {
+public class GitDocumentRepositoryTest {
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock DocumentReadingService documentReader;
     @Mock DocumentInfoMapper documentInfoMapper;
@@ -40,12 +40,12 @@ public class DocumentRepositoryTest {
     @Mock DocumentTypeLookupService documentTypeLookupService;
     @Mock GitRepoWrapper repo;
     
-    private DocumentRepository documentRepository;
+    private GitDocumentRepository documentRepository;
     
     @Before
     public void initMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
-        documentRepository = new DocumentRepository(
+        documentRepository = new GitDocumentRepository(
                             documentTypeLookupService, 
                             documentReader,
                             documentIdentifierService,

@@ -70,7 +70,9 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
                 ParameterizedSparqlString pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
                 pss.setParam(
                     "id",
-                    ResourceFactory.createResource(document)
+                    ResourceFactory.createResource(
+                        documentIdentifierService.generateUri(document)
+                    )
                 );
                 return pss;
             }).forEach((pss) -> {

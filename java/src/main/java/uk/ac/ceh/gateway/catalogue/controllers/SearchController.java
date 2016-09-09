@@ -7,7 +7,6 @@ import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
@@ -68,16 +66,18 @@ public class SearchController {
     public RedirectView redirectToDefaultCatalogue(
             HttpServletRequest request
     ) {
-        String defaultCatalogue = catalogueService.defaultCatalogue().getId();
-        String url = ServletUriComponentsBuilder
-                                            .fromRequest(request)
-                                            .replacePath("documents/{catalogue}")
-                                            .buildAndExpand(defaultCatalogue)
-                                            .toUriString();
-        return new RedirectView(url);
+        return new RedirectView(
+            ServletUriComponentsBuilder
+                .fromRequest(request)
+                .replacePath("{catalogue}/documents")
+                .buildAndExpand(
+                    catalogueService.defaultCatalogue().getId()
+                )
+                .toUriString()
+        );
     }
     
-    @RequestMapping(value = "documents/{catalogue}",
+    @RequestMapping(value = "{catalogue}/documents",
                     method = RequestMethod.GET)
     public @ResponseBody SearchResults searchDocuments(
             @ActiveUser CatalogueUser user,

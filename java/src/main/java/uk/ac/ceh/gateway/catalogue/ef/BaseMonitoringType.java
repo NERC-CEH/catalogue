@@ -2,26 +2,23 @@ package uk.ac.ceh.gateway.catalogue.ef;
 
 import com.fasterxml.jackson.annotation.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
 import uk.ac.ceh.gateway.catalogue.ef.adapters.AnyXMLHandler;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @XmlType(propOrder = {
     "efMetadata",
     "identifiers",
@@ -60,7 +57,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
     @JsonSubTypes.Type(value = Facility.class, name = "facility")
 })
 @XmlSeeAlso({Activity.class, Programme.class, Network.class, Facility.class})
-public class BaseMonitoringType extends AbstractMetadataDocument {
+public class BaseMonitoringType implements MetadataDocument {
     @NotNull
     @Valid
     @XmlElement(name = "metadata")
@@ -69,9 +66,12 @@ public class BaseMonitoringType extends AbstractMetadataDocument {
     @NotNull
     private String name;
     
-    private String objectives;
+    private String description, objectives;
     
     private Link measurementRegime;
+    
+    @XmlTransient
+    private LocalDateTime metadataDate;
     
     @XmlElement(name = "purposeOfCollection")
     private List<Link> purposeOfCollection = new ArrayList<>();
@@ -85,6 +85,12 @@ public class BaseMonitoringType extends AbstractMetadataDocument {
     @Override
     public String getTitle() {
         return getName();
+    }
+    
+    @Override
+    public MetadataDocument setTitle(String title) {
+        setName(title);
+        return this;
     }
 
     @Override
@@ -103,6 +109,12 @@ public class BaseMonitoringType extends AbstractMetadataDocument {
         return getClass().getSimpleName().toLowerCase();
     }
     
+    @Override
+    public MetadataDocument setType(String type) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @XmlTransient
     private MetadataInfo metadata;
 
     @Override

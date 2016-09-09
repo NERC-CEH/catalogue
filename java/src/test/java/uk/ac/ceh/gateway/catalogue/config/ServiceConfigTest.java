@@ -56,7 +56,9 @@ public class ServiceConfigTest {
     @Before
     public void createServiceConfig() {
         MockitoAnnotations.initMocks(this);
-        services = spy(new ServiceConfig());
+        ServiceConfig serviceConfig = new ServiceConfig();
+        serviceConfig.baseUri = "https://example.com/";
+        services = spy(serviceConfig);
         services.jacksonMapper = jacksonMapper;
         services.dataRepository = dataRepository;
         services.solrServer = solrServer;

@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,13 +15,13 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PublicationServiceException;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.PublishingRole;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.Transition;
 import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 @Service
 public class GitPublicationService implements PublicationService {
@@ -42,7 +41,7 @@ public class GitPublicationService implements PublicationService {
         try {
             MetadataDocument doc = documentRepository.read(fileIdentifier);
             return current(user, doc.getMetadata(), builder, doc.getId());
-        } catch (IOException | UnknownContentTypeException | PostProcessingException | NullPointerException ex) {
+        } catch (DocumentRepositoryException | NullPointerException ex) {
             throw new PublicationServiceException(String.format("Could not get current state for: %s", fileIdentifier), ex);
         }
     }
@@ -69,7 +68,7 @@ public class GitPublicationService implements PublicationService {
                 String.format("Publication state of %s changed.", fileIdentifier)
             );
             return current(user, doc.getMetadata(), builder, doc.getId());
-        } catch (IOException | UnknownContentTypeException | PostProcessingException | NullPointerException ex) {
+        } catch (DocumentRepositoryException | NullPointerException ex) {
             throw new PublicationServiceException(String.format("Could not transition: %s", fileIdentifier), ex);
         }
     }

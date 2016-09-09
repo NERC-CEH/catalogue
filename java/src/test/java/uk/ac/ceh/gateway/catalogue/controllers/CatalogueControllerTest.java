@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.junit.Before;
 import static org.mockito.BDDMockito.given;
@@ -7,32 +8,23 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 public class CatalogueControllerTest {
     private @Mock DocumentRepository documentRepository;
-    private @Mock CatalogueService catalogueService;
     private CatalogueController controller;
-    private Catalogue eidc;
     
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         controller = new CatalogueController(
-            documentRepository,
-            catalogueService
+            documentRepository
         );
-        eidc = Catalogue.builder()
-            .id("eidc")
-            .title("Environmental Information Data Centre")
-            .url("https://eip.ceh.ac.uk")
-            .build();
     }
 
     @Test
@@ -52,6 +44,21 @@ public class CatalogueControllerTest {
         
         //Then
         verify(documentRepository).read(file);
+    }
+    
+    @Test(expected = DocumentRepositoryException.class)
+    public void getUnknownFile() throws Exception {
+        //Given
+        String file = "123-456-789";
+        given(documentRepository.read(file)).willThrow(
+            new DocumentRepositoryException("Test", new Exception())
+        );
+        
+        //When
+        controller.currentCatalogue(CatalogueUser.PUBLIC_USER, file);
+        
+        //Then
+        fail("Expected DocumentRepositoryException");
     }
     
     @Test

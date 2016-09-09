@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.io.IOException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -21,10 +19,9 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 @Controller
 @RequestMapping(value = "documents/{file}/permission")
@@ -45,9 +42,8 @@ public class PermissionController {
     @ResponseBody
     public HttpEntity<PermissionResource> currentPermission (
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file) 
-        throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException
-    {
+            @PathVariable("file") String file
+    ) throws DocumentRepositoryException {
         return ResponseEntity.ok(
             new PermissionResource(
                 documentRepository.read(file)
@@ -62,8 +58,7 @@ public class PermissionController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody PermissionResource permissionResource) 
-        throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException
-    {
+        throws DocumentRepositoryException {
         MetadataDocument document = documentRepository.read(file);
         document.setMetadata(removeAddedPublicGroupIfNotPublisher(document.getMetadata(), permissionResource));
         documentRepository.save(user, document, file, String.format("Permissions of %s changed.", file));

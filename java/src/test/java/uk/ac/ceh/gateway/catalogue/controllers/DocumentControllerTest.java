@@ -21,17 +21,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
  *
@@ -65,7 +61,7 @@ public class DocumentControllerTest {
     }
      
     @Test
-    public void checkCanUploadFile() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanUploadFile() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
         InputStream inputStream = new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes());
@@ -87,7 +83,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkCanCreateModelDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanCreateModelDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
         Model document = new Model();
@@ -101,12 +97,12 @@ public class DocumentControllerTest {
         ResponseEntity<MetadataDocument> actual = controller.uploadModelDocument(user, document, catalogue);
         
         //Then
-        verify(documentRepository).save(user, document, catalogue, message);
+        verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
     
     @Test
-    public void checkCanEditModelDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanEditModelDocument() throws Exception {
         //Given
         CatalogueUser user = mock(CatalogueUser.class);
         Model document = mock(Model.class);
@@ -125,7 +121,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkCanCreateGeminiDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanCreateGeminiDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
         GeminiDocument document = new GeminiDocument();
@@ -139,12 +135,12 @@ public class DocumentControllerTest {
         ResponseEntity<MetadataDocument> actual = controller.uploadGeminiDocument(user, document, catalogue);
         
         //Then
-        verify(documentRepository).save(user, document, catalogue, message);
+        verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
     
     @Test
-    public void checkCanEditGeminiDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanEditGeminiDocument() throws Exception {
         //Given
         CatalogueUser user = mock(CatalogueUser.class);
         GeminiDocument document = mock(GeminiDocument.class);
@@ -163,7 +159,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkCanCreateLinkedDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanCreateLinkedDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
         LinkDocument document = new LinkDocument();
@@ -179,12 +175,12 @@ public class DocumentControllerTest {
         ResponseEntity<MetadataDocument> actual = controller.uploadLinkedDocument(user, document, catalogue);
         
         //Then
-        verify(documentRepository).save(user, document, catalogue, message);
+        verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
     
     @Test
-    public void checkCanEditLinkedDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanEditLinkedDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
         LinkDocument document = new LinkDocument();
@@ -203,7 +199,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkCanDeleteAFile() throws IOException {
+    public void checkCanDeleteAFile() throws Exception {
         //Given
         CatalogueUser user = mock(CatalogueUser.class);
         
@@ -215,7 +211,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkCanReadDocumentAtRevision() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanReadDocumentAtRevision() throws Exception {
         //Given
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";       
@@ -234,7 +230,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkCanReadDocumentLatestRevision() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanReadDocumentLatestRevision() throws Exception {
         //Given
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";

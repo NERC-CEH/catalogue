@@ -1,8 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.io.IOException;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -13,30 +11,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
-@Slf4j
 @Controller
 @RequestMapping(value = "documents/{file}/catalogue")
 public class CatalogueController {
     private final DocumentRepository documentRepository;
-    private final CatalogueService catalogueService;
 
     @Autowired
     public CatalogueController(
-        @NonNull DocumentRepository documentRepository,
-        @NonNull CatalogueService catalogueService
+        @NonNull DocumentRepository documentRepository
     ) {
         this.documentRepository = documentRepository;
-        this.catalogueService = catalogueService;
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -45,7 +36,7 @@ public class CatalogueController {
     public HttpEntity<CatalogueResource> currentCatalogue (
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file
-    ) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    ) throws DocumentRepositoryException {
         return createCatalogueResource(
             documentRepository.read(file)
         ); 
@@ -58,7 +49,7 @@ public class CatalogueController {
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
         @RequestBody CatalogueResource catalogueResource
-    ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    ) throws DocumentRepositoryException {
         MetadataDocument document = documentRepository.read(file);
         document
             .getMetadata()
