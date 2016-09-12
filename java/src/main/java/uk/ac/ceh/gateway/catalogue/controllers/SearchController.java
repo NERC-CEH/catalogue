@@ -92,27 +92,27 @@ public class SearchController {
             ) String bbox,
             @RequestParam(
                 value = OP_QUERY_PARAM,
-                defaultValue = OP_DEFAULT_STRING) String op,
+                defaultValue = OP_DEFAULT_STRING
+            ) String op,
             @RequestParam(
                 value = PAGE_QUERY_PARAM,
-                defaultValue = PAGE_DEFAULT_STRING) int page,
+                defaultValue = PAGE_DEFAULT_STRING
+            ) int page,
             @RequestParam(
                 value = ROWS_QUERY_PARAM,
-                defaultValue = ROWS_DEFAULT_STRING) int rows,
+                defaultValue = ROWS_DEFAULT_STRING
+            ) int rows,
             @RequestParam(
                 value = FACET_QUERY_PARAM,
-                defaultValue = "") List<FacetFilter> facetFilters,
+                defaultValue = ""
+            ) List<FacetFilter> facetFilters,
             HttpServletRequest request
     ) throws SolrServerException {
-        String endpoint = ServletUriComponentsBuilder
-                                            .fromRequest(request)
-                                            .replacePath("documents")
-                                            .toUriString();
         
         Catalogue catalogue = catalogueService.retrieve(catalogueKey);
         
         SearchQuery searchQuery = new SearchQuery(
-            endpoint,
+            request.getRequestURL().toString(),
             user,
             term,
             bbox,

@@ -31,7 +31,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 public class SearchQuery {
     public static final String DEFAULT_SEARCH_TERM = "*";
     private static final String RANDOM_DYNAMIC_FIELD_NAME = "random";
-    private static final String DEFAULT_CATALOGUE_TITLE = "CEH Catalogue";
     
     private final String endpoint;
     private final CatalogueUser user; 
@@ -85,9 +84,7 @@ public class SearchQuery {
         setFacetFilters(query);
         setFacetFields(query);
         setSortOrder(query);
-        if ( !catalogue.getTitle().equals(DEFAULT_CATALOGUE_TITLE)) {
-            setCatalogueFilter(query);
-        }
+        setCatalogueFilter(query);
         log.debug("search query: {}", query);
         return query;
     }

@@ -613,8 +613,37 @@ public class SearchQueryTest {
         assertThat("OP should be present", url, containsString("op=IsWithin"));
         assertThat("page should be specified", url, containsString("page=24"));
         assertThat("rows should be present", url, containsString("rows=30"));
-        assertThat("facet should be filtered", url, containsString("facet=licence|b"));
+        assertThat("facet should be filtered", url, containsString("facet=licence%7Cb"));
         assertThat("endpoint should be defined ", url, startsWith("http://my.endpo.int?"));
+    }
+    
+    @Test
+    public void checkUrlIsGenerated() {
+        //Given
+        SearchQuery interestingQuery = new SearchQuery(
+            "http://my.endpo.int",
+            CatalogueUser.PUBLIC_USER,
+            "My Search Term",
+            "1,2,3,4",
+            SpatialOperation.ISWITHIN,
+            24,
+            30,
+            Arrays.asList(new FacetFilter("licence%7Cb")),
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
+        );
+        
+        //When
+        String url = interestingQuery.toUrl();
+        
+        //Then        
+        assertThat(url, equalTo("http://my.endpo.int?page=24&rows=30&term=My+Search+Term&bbox=1,2,3,4&op=IsWithin&facet=licence%7Cb"));
     }
     
     @Test
