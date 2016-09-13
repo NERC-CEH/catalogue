@@ -43,6 +43,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         //Given
         GeminiDocument document = new GeminiDocument();
         document.setTitle("my gemini document");
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        
+        given(catalogueService.retrieve("eidc")).willReturn(Catalogue.builder().id("eidc").title("EIDC").url("jk").build());
         
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -52,12 +55,14 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatTitleIdTransferedToIndex() {
+    public void checkThatIdTransferedToIndex() {
         //Given
         String id = "some crazy long, hard to rememember, number";
         when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
         GeminiDocument document = new GeminiDocument();
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
         document.setId(id);
+        given(catalogueService.retrieve("eidc")).willReturn(Catalogue.builder().id("eidc").title("EIDC").url("jk").build());
         
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -72,6 +77,10 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         String description = "Once upon a time, there was a metadata record...";
         GeminiDocument document = new GeminiDocument();
         document.setDescription(description);
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        
+        given(catalogueService.retrieve("eidc")).willReturn(Catalogue.builder().id("eidc").title("EIDC").url("jk").build());
+        
         
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -86,6 +95,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         GeminiDocument document = new GeminiDocument();
         document.setResourceType(Keyword.builder().value("dataset").build());
         when(codeLookupService.lookup("metadata.resourceType", "dataset")).thenReturn("Dataset");
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        
+        given(catalogueService.retrieve("eidc")).willReturn(Catalogue.builder().id("eidc").title("EIDC").url("jk").build());
         
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -155,7 +167,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
             .title("Environmental Information Data Centre")
             .url("https://eidc-catalogue.ceh.ac.uk")
             .build();
-        MetadataInfo info = new MetadataInfo().setCatalogue("eidc");
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         MetadataDocument document = new GeminiDocument().setMetadata(info);
         given(catalogueService.retrieve("eidc")).willReturn(catalogue);
         

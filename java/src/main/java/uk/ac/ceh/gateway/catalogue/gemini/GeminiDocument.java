@@ -77,6 +77,13 @@ public class GeminiDocument extends AbstractMetadataDocument {
     }
     
     @Override
+    public GeminiDocument setType(String type) {
+        super.setType(type);
+        this.resourceType = Keyword.builder().value(type).build();
+        return this;
+    }
+    
+    @Override
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
         return Optional.ofNullable(descriptiveKeywords)

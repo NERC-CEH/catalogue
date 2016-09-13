@@ -142,8 +142,7 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody GeminiDocument document
-    ) throws DocumentRepositoryException  {
-              
+    ) throws DocumentRepositoryException  {              
         MetadataDocument data = documentRepository.save(
             user,
             document,

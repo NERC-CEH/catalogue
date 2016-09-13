@@ -41,7 +41,7 @@ public class PermissionControllerTest {
         //Given
         CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
         String file = "1234-567-890";
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         MetadataDocument document = new GeminiDocument()
             .setMetadata(info);
         PermissionResource expected = new PermissionResource(document);
@@ -65,14 +65,14 @@ public class PermissionControllerTest {
         
         CatalogueUser notPublisher = new CatalogueUser().setUsername("notPublisher");
         String file = "1234-567-890";
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         info.addPermission(Permission.VIEW, "bob");
         MetadataDocument original = new GeminiDocument()
             .setMetadata(info);
         original.setUri("/documents/" + file);
         PermissionResource expected = new PermissionResource(original);
         
-        MetadataInfo mi = new MetadataInfo();
+        MetadataInfo mi = MetadataInfo.builder().build();
         mi.addPermission(Permission.VIEW, "public");
         GeminiDocument updated = new GeminiDocument();
         updated.setMetadata(mi);
@@ -96,17 +96,15 @@ public class PermissionControllerTest {
         //Given
         CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
         String file = "1234-567-890";
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().state("published").build();
         info.addPermission(Permission.VIEW, "bob");
-        info.setState("published");
         MetadataDocument document = new GeminiDocument()
             .setMetadata(info);
         document.setUri("/documents/" + file);
         
-        MetadataInfo mi = new MetadataInfo();
+        MetadataInfo mi = MetadataInfo.builder().state("published").build();
         mi.addPermission(Permission.VIEW, "bob");
         mi.addPermission(Permission.VIEW, "public");
-        mi.setState("published");
         GeminiDocument updated = new GeminiDocument();
         updated.setMetadata(mi);
         updated.setUri("/documents/" + file);

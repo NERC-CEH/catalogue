@@ -142,16 +142,18 @@ public class DocumentControllerTest {
     @Test
     public void checkCanEditGeminiDocument() throws Exception {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
-        GeminiDocument document = mock(GeminiDocument.class);
         String fileId = "test";
         String message = "message";
+        CatalogueUser user = new CatalogueUser();
+        MetadataDocument document = new GeminiDocument()
+            .setId(fileId)
+            .setUri("https://catalogue.ceh.ac.uk/id/123-test")
+            .setMetadata(MetadataInfo.builder().build());
         
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-        given(document.getUri()).willReturn("https://catalogue.ceh.ac.uk/id/123-test");
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.updateGeminiDocument(user, fileId, document);
+        ResponseEntity<MetadataDocument> actual = controller.updateGeminiDocument(user, fileId, (GeminiDocument) document);
         
         //Then
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
@@ -216,7 +218,7 @@ public class DocumentControllerTest {
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";       
         String latestRevisionId = "latestRev";
-        MetadataInfo info = mock(MetadataInfo.class);
+        MetadataInfo info = MetadataInfo.builder().build();
         MetadataDocument document = mock(MetadataDocument.class);
         given(document.getMetadata()).willReturn(info);
         given(documentRepository.read(file, latestRevisionId))
@@ -234,7 +236,7 @@ public class DocumentControllerTest {
         //Given
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";
-        MetadataInfo info = mock(MetadataInfo.class);
+        MetadataInfo info = MetadataInfo.builder().build();
         MetadataDocument document = mock(MetadataDocument.class);
         given(document.getMetadata()).willReturn(info);
         given(documentRepository.read(file))

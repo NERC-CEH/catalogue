@@ -22,7 +22,6 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
@@ -32,7 +31,6 @@ public class GitDocumentRepositoryTest {
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock DocumentReadingService documentReader;
     @Mock DocumentInfoMapper documentInfoMapper;
-    @Mock DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     @Mock BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock PostProcessingService postProcessingService;
     @Mock DocumentWritingService documentWritingService;
@@ -49,7 +47,6 @@ public class GitDocumentRepositoryTest {
                             documentTypeLookupService, 
                             documentReader,
                             documentIdentifierService,
-                            infoFactory,
                             documentWritingService,
                             documentBundleReader,   
                             postProcessingService,
@@ -82,11 +79,9 @@ public class GitDocumentRepositoryTest {
         String documentType = "GEMINI_DOCUMENT";
         String message = "message";
         GeminiDocument document = new GeminiDocument();
-        MetadataInfo metadataInfo = new MetadataInfo();
         String catalogue = "ceh";
         
         given(documentReader.read(any(), any(), any())).willReturn(document);
-        given(infoFactory.createInfo(any(), any())).willReturn(metadataInfo);
         given(documentIdentifierService.generateFileId()).willReturn("test");
         given(documentIdentifierService.generateUri("test")).willReturn("http://localhost:8080/id/test");
         given(documentBundleReader.readBundle(eq("test"))).willReturn(document);
@@ -95,8 +90,8 @@ public class GitDocumentRepositoryTest {
         documentRepository.save(user, inputStream, MediaType.TEXT_XML, documentType, catalogue, message);
         
         //Then
-        verify(repo).save(eq(user), eq("test"), eq(message), eq(metadataInfo), any());
-        verify(repo).save(eq(user), eq("test"), eq("File upload for id: test"), eq(metadataInfo), any());
+        verify(repo).save(eq(user), eq("test"), eq(message), any(MetadataInfo.class), any());
+        verify(repo).save(eq(user), eq("test"), eq("File upload for id: test"), any(MetadataInfo.class), any());
     }
     
     @Test
@@ -104,11 +99,9 @@ public class GitDocumentRepositoryTest {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
         GeminiDocument document = new GeminiDocument();
-        MetadataInfo metadataInfo = new MetadataInfo();
         String message = "new Gemini document";
         String catalogue = "test";
         
-        given(infoFactory.createInfo(document, MediaType.APPLICATION_JSON)).willReturn(metadataInfo);
         given(documentIdentifierService.generateFileId()).willReturn("test");
         given(documentIdentifierService.generateUri("test")).willReturn("http://localhost:8080/id/test");
        
@@ -116,7 +109,7 @@ public class GitDocumentRepositoryTest {
         documentRepository.saveNew(user, document, catalogue, message);
         
         //Then
-        verify(repo).save(eq(user), eq("test"), eq("new Gemini document"), eq(metadataInfo), any());
+        verify(repo).save(eq(user), eq("test"), eq("new Gemini document"), any(MetadataInfo.class), any());
     }
     
     @Test
@@ -124,7 +117,7 @@ public class GitDocumentRepositoryTest {
         //Given
         String id = "tulips";
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
-        MetadataInfo metadataInfo = new MetadataInfo();
+        MetadataInfo metadataInfo = MetadataInfo.builder().build();
         MetadataDocument incomingDocument = new GeminiDocument()
             .setMetadata(metadataInfo);
         String message = "message";
@@ -135,7 +128,7 @@ public class GitDocumentRepositoryTest {
         documentRepository.save(user, incomingDocument, "tulips", message);
         
         //Then
-        verify(repo).save(eq(user), eq(id), eq(message), eq(metadataInfo), any());
+        verify(repo).save(eq(user), eq(id), eq(message), any(MetadataInfo.class), any());
     }
     
     @Test
@@ -158,11 +151,12 @@ public class GitDocumentRepositoryTest {
             .setEmail("editor@example.com");
         String file = "3c25e9b7-d3dd-41be-ae29-e8979bb462a2";
         String message = "Test message";
-        MetadataInfo metadataInfo = new MetadataInfo()
-            .setCatalogue("eidc")
-            .setDocumentType("MODEL_DOCUMENT")
-            .setRawType("application/json")
-            .setState("published");
+        MetadataInfo metadataInfo = MetadataInfo.builder()
+            .catalogue("eidc")
+            .documentType("MODEL_DOCUMENT")
+            .rawType("application/json")
+            .state("published")
+            .build();
         metadataInfo.addPermission(Permission.EDIT, "editor");
         MetadataDocument document = new Model()
             .setId(file)

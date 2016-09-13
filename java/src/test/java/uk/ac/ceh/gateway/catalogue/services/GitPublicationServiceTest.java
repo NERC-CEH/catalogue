@@ -47,12 +47,12 @@ public class GitPublicationServiceTest {
         this.draft = new GeminiDocument()
             .setTitle("draft")
             .setId("3beb9650-fc88-4de5-b8cd-9cc8a4abe135")
-            .setMetadata(new MetadataInfo().setState("draft"));
+            .setMetadata(MetadataInfo.builder().state("draft").build());
         
         this.published = new GeminiDocument()
             .setTitle("published")
             .setId("db49a6ee-5c9e-4bef-8e6e-196387df4d97")
-            .setMetadata(new MetadataInfo().setState("published"));
+            .setMetadata(MetadataInfo.builder().state("published").build());
         
         MockitoAnnotations.initMocks(this);
         

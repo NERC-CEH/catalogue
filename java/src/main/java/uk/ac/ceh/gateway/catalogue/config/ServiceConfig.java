@@ -109,7 +109,6 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
@@ -325,7 +324,6 @@ public class ServiceConfig {
             metadataRepresentationService(),
             documentReadingService(),
             documentIdentifierService(),
-            documentInfoFactory(),
             documentWritingService(),
             bundledReaderService(),
             postProcessingService(),
@@ -384,24 +382,6 @@ public class ServiceConfig {
         Pattern eidchub = Pattern.compile("http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*");
         Pattern orderMan = Pattern.compile("http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*");
         return new DownloadOrderDetailsService(eidchub, orderMan);
-    }
-    
-    @Bean
-    public DocumentInfoFactory<MetadataDocument, MetadataInfo> documentInfoFactory() {
-        return (MetadataDocument document, MediaType contentType) -> {
-            MetadataInfo toReturn = document.getMetadata();
-            
-            //If no MetadataInfo is attached to the document, we need to create 
-            //a new one. 
-            if(toReturn == null) {
-                toReturn = new MetadataInfo();
-            }
-            
-            toReturn.setRawType(contentType.toString()); //set the raw type
-            toReturn.setDocumentType(metadataRepresentationService() //set the document class
-                                        .getName(document.getClass()));
-            return toReturn;
-        };
     }
     
     @Bean

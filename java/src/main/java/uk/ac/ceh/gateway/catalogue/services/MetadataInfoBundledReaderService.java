@@ -55,8 +55,7 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
         MetadataDocument document = documentReader.read(dataDoc.getInputStream(),
                                         documentInfo.getRawMediaType(),
                                         representationService.getType(documentInfo.getDocumentType()));
-        document.setMetadata(documentInfo);
-        documentInfo.hideMediaType();
+        document.setMetadata(documentInfo.withRawType(null));
         
         if (history) {
             document.setUri(documentIdentifierService.generateUri(file, revision));

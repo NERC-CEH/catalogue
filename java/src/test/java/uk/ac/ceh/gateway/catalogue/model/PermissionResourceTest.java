@@ -13,7 +13,7 @@ public class PermissionResourceTest {
     @Test
     public void userWithFullPermissionsAndPublicView() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         info.addPermission(Permission.VIEW, "public");
         info.addPermission(Permission.VIEW, "test");
         info.addPermission(Permission.EDIT, "test");

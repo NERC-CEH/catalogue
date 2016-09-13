@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Arrays;
-import static org.hamcrest.CoreMatchers.equalTo;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.BDDMockito.given;
@@ -13,8 +12,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
@@ -33,8 +30,7 @@ public class SolrIndexLinkDocumentGeneratorTest {
         String id = "c3a62369-4556-4820-8e6b-7b6c962175ea";
         String linkedDocumentId = "b3fdb5cf-7570-4a86-bf4e-5c608eb19af7";
         
-        MetadataInfo metadataInfo = new MetadataInfo()
-            .setState("draft");
+        MetadataInfo metadataInfo = MetadataInfo.builder().state("draft").build();
         metadataInfo.addPermission(Permission.VIEW, "test0");
         metadataInfo.addPermission(Permission.VIEW, "test1");
         
@@ -67,8 +63,7 @@ public class SolrIndexLinkDocumentGeneratorTest {
         String id = "c3a62369-4556-4820-8e6b-7b6c962175ea";
         String linkedDocumentId = "b3fdb5cf-7570-4a86-bf4e-5c608eb19af7";
         
-        MetadataInfo metadataInfo = new MetadataInfo();
-        metadataInfo.setState("draft");
+        MetadataInfo metadataInfo = MetadataInfo.builder().state("draft").build();
         metadataInfo.addPermission(Permission.VIEW, "test0");
         metadataInfo.addPermission(Permission.VIEW, "test1");
         

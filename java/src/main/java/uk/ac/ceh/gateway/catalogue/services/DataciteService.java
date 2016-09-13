@@ -171,6 +171,10 @@ public class DataciteService {
      * @return true if this GeminiDocument can be submitted to datacite
      */
     public boolean isDatacitable(GeminiDocument document) {
+        boolean isPubliclyViewable = Optional.ofNullable(document.getMetadata())
+                .map(m -> m.isPubliclyViewable(Permission.VIEW))
+                .orElse(false);
+        boolean hasNonEmptyTitle = !Strings.isNullOrEmpty(document.getTitle());
         boolean hasAuthor = Optional.ofNullable(document.getResponsibleParties())
                 .orElse(Collections.emptyList())
                 .stream()
@@ -184,11 +188,11 @@ public class DataciteService {
                 .map(DatasetReferenceDate::getPublicationDate)
                 .isPresent();
         
-        return document.getMetadata().isPubliclyViewable(Permission.VIEW)
-                && !Strings.isNullOrEmpty(document.getTitle())
-                && hasAuthor
-                && hasCorrectPublisher
-                && hasPublicationYear;
+        return isPubliclyViewable
+            && hasNonEmptyTitle
+            && hasAuthor
+            && hasCorrectPublisher
+            && hasPublicationYear;
     }
     
     /**

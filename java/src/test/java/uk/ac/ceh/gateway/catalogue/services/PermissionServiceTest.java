@@ -1,5 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import static java.awt.SystemColor.info;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -35,7 +38,7 @@ public class PermissionServiceTest {
     
     @Before
     public void setup() {
-        publik = new MetadataInfo().setState("published");
+        publik = MetadataInfo.builder().state("published").build();
         publik.addPermission(Permission.VIEW, "public");
     }
     
@@ -82,7 +85,7 @@ public class PermissionServiceTest {
     public void annonymousCanNotAccessDraftRecord() throws IOException {
         //Given
         given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(new MetadataInfo().setState("draft"));
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(MetadataInfo.builder().state("draft").build());
         
         //When
         boolean actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "VIEW");
@@ -95,7 +98,7 @@ public class PermissionServiceTest {
     public void namedUserCanAccessDraftRecordWithUsernamePermission() throws IOException {
         //Given
         given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        MetadataInfo metadataInfo = new MetadataInfo().setState("draft");
+        MetadataInfo metadataInfo = MetadataInfo.builder().state("draft").build();
         metadataInfo.addPermission(Permission.VIEW, "username");
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
         CatalogueUser namedUser = new CatalogueUser().setUsername("username");
@@ -113,7 +116,7 @@ public class PermissionServiceTest {
         CatalogueUser namedUser = new CatalogueUser().setUsername("username");
         Group group0 = new CrowdGroup("group0");
         given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        MetadataInfo metadataInfo = new MetadataInfo().setState("draft");
+        MetadataInfo metadataInfo = MetadataInfo.builder().state("draft").build();
         metadataInfo.addPermission(Permission.VIEW, "group0");
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
         given(groupStore.getGroups(namedUser)).willReturn(Arrays.asList(group0));
@@ -130,7 +133,7 @@ public class PermissionServiceTest {
         //Given
         CatalogueUser namedUser = new CatalogueUser().setUsername("username");
         given(repo.getData("a63fe7", "test.meta")).willAnswer(RETURNS_MOCKS);
-        MetadataInfo metadataInfo = new MetadataInfo().setState("draft");
+        MetadataInfo metadataInfo = MetadataInfo.builder().state("draft").build();
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
         given(groupStore.getGroups(namedUser)).willReturn(Collections.EMPTY_LIST);
         
@@ -157,10 +160,10 @@ public class PermissionServiceTest {
         given(repo.getLatestRevision()).willReturn(revision);
         DataDocument document = mock(DataDocument.class);
         given(repo.getData("revision", "test.meta")).willReturn(document);
-        MetadataInfo info = mock(MetadataInfo.class);
+        Multimap<Permission, String> permissions = HashMultimap.create();
+        permissions.put(Permission.EDIT, "editor");
+        MetadataInfo info = MetadataInfo.builder().permissions(permissions).build();
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
-        given(info.isPubliclyViewable(Permission.EDIT)).willReturn(Boolean.FALSE);
-        given(info.canAccess(any(Permission.class), any(CatalogueUser.class), any(List.class))).willReturn(Boolean.TRUE);
         
         //When
         boolean actual = permissionService.userCanEdit("test");
@@ -228,10 +231,8 @@ public class PermissionServiceTest {
         given(repo.getLatestRevision()).willReturn(revision);
         DataDocument document = mock(DataDocument.class);
         given(repo.getData("revision", "test.meta")).willReturn(document);
-        MetadataInfo info = mock(MetadataInfo.class);
+        MetadataInfo info = MetadataInfo.builder().build();
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
-        given(info.isPubliclyViewable(Permission.EDIT)).willReturn(Boolean.FALSE);
-        given(info.canAccess(Permission.EDIT, user, Arrays.asList(group0, group1))).willReturn(Boolean.FALSE);
         
         //When
         boolean actual = permissionService.userCanEdit("test");

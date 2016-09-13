@@ -34,8 +34,9 @@ public class CatalogueControllerTest {
         MetadataDocument document = new GeminiDocument()
             .setId(file)
             .setMetadata(
-            new MetadataInfo()
-                .setCatalogue("eidc")
+                MetadataInfo.builder()
+                .catalogue("eidc")
+                .build()
         );
         given(documentRepository.read(file)).willReturn(document);
         
@@ -70,8 +71,9 @@ public class CatalogueControllerTest {
         MetadataDocument document = new GeminiDocument()
             .setId(file)
             .setMetadata(
-            new MetadataInfo()
-                .setCatalogue("eidc")
+                MetadataInfo.builder()
+                .catalogue("eidc")
+                .build()
         );
         given(documentRepository.read(file)).willReturn(document);
         given(documentRepository.save(

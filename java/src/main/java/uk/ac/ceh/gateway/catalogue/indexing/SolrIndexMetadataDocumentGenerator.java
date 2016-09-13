@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
@@ -43,7 +44,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                 .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
                 .setState(getState(document))
                 .setView(getViews(document))
-                .setCatalogue(getCatalogue(document));
+                .setCatalogue(getCatalogueTitle(document));
     }
     
     private String getState(MetadataDocument document) {
@@ -77,14 +78,11 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                         .collect(Collectors.toList());
     }
 
-    private String getCatalogue(MetadataDocument document) {
-        return Optional.ofNullable(document)
-            .map(MetadataDocument::getMetadata)
-            .map(metadata -> catalogueService.retrieve(
-                    metadata.getCatalogue()
-                    ).getTitle()
-                )
-            .orElse(""); 
+    private String getCatalogueTitle(MetadataDocument document) {
+        return Optional.ofNullable(document.getCatalogue())
+            .map(catalogue -> catalogueService.retrieve(catalogue))
+            .map(Catalogue::getTitle)
+            .get();
     }
              
 }

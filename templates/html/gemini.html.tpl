@@ -4,7 +4,7 @@
 
 <#assign authors       = _.filter(responsibleParties, _.isAuthor) >
 <#assign otherContacts = _.reject(responsibleParties, _.isAuthor) >
-<@skeleton.master title=title catalogue=catalogues.retrieve(catalogue) rdf="${uri}?format=rdf">
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=rdf">
   <div id="metadata">
    <div class="container">
 	  <div id="section-Top">

@@ -15,6 +15,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
@@ -51,11 +52,10 @@ public class CatalogueController {
         @RequestBody CatalogueResource catalogueResource
     ) throws DocumentRepositoryException {
         MetadataDocument document = documentRepository.read(file);
-        document
-            .getMetadata()
-            .setCatalogue(
-                catalogueResource.getValue()
-            );
+        MetadataInfo metadata = document.getMetadata();
+        document.setMetadata(
+            metadata.withCatalogue(catalogueResource.getValue())
+        );
         return createCatalogueResource(
             documentRepository.save(
                 user,

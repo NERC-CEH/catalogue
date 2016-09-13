@@ -64,9 +64,8 @@ public class DataciteServiceTest {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
         ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
-        MetadataInfo metadata = new MetadataInfo();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
-        metadata.setState("Published");
         GeminiDocument document = new GeminiDocument();
         document.setResponsibleParties(Arrays.asList(author, publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
@@ -84,7 +83,7 @@ public class DataciteServiceTest {
     public void checkThatIsNotDataciteUpdatableIfRequirementsArntMet() {
         //Given
         GeminiDocument document = new GeminiDocument();
-        document.setMetadata(new MetadataInfo());
+        document.setMetadata(MetadataInfo.builder().build());
         
         //When
         boolean dataciteUpdatable = service.isDatacitable(document);
@@ -98,9 +97,8 @@ public class DataciteServiceTest {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
         ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
-        MetadataInfo metadata = new MetadataInfo();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
-        metadata.setState("Published");
         GeminiDocument document = new GeminiDocument();
         document.setResponsibleParties(Arrays.asList(author, publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
@@ -121,9 +119,8 @@ public class DataciteServiceTest {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
         ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
-        MetadataInfo metadata = new MetadataInfo();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
-        metadata.setState("Published");
         GeminiDocument document = new GeminiDocument();
         document.setResponsibleParties(Arrays.asList(author, publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());

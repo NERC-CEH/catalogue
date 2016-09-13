@@ -23,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
@@ -33,7 +32,6 @@ public class GitDocumentRepository implements DocumentRepository {
     private final DocumentTypeLookupService documentTypeLookupService;
     private final DocumentReadingService documentReader;
     private final DocumentIdentifierService documentIdentifierService;
-    private final DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory;
     private final DocumentWritingService documentWriter;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final GitRepoWrapper repo;
@@ -42,7 +40,6 @@ public class GitDocumentRepository implements DocumentRepository {
     public GitDocumentRepository(DocumentTypeLookupService documentTypeLookupService,
             DocumentReadingService documentReader,
             DocumentIdentifierService documentIdentifierService,
-            DocumentInfoFactory<MetadataDocument, MetadataInfo> infoFactory,
             DocumentWritingService documentWriter,
             BundledReaderService<MetadataDocument> documentBundleReader,
             PostProcessingService postProcessingService,
@@ -51,7 +48,6 @@ public class GitDocumentRepository implements DocumentRepository {
         this.documentTypeLookupService = documentTypeLookupService;
         this.documentReader = documentReader;
         this.documentIdentifierService = documentIdentifierService;
-        this.infoFactory = infoFactory;
         this.documentWriter = documentWriter;
         this.documentBundleReader = documentBundleReader;
         this.repo = repoWrapper;
@@ -238,12 +234,15 @@ public class GitDocumentRepository implements DocumentRepository {
     }
     
     private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user, MediaType mediaType, String catalogue) {
-        MetadataInfo toReturn = infoFactory.createInfo(document, mediaType);
+        MetadataInfo toReturn = MetadataInfo.builder()
+            .rawType(mediaType.toString())
+            .documentType(documentTypeLookupService.getName(document.getClass()))
+            .catalogue(catalogue)
+            .build();
         String username = user.getUsername();
         toReturn.addPermission(Permission.VIEW, username);
         toReturn.addPermission(Permission.EDIT, username);
         toReturn.addPermission(Permission.DELETE, username);
-        toReturn.setCatalogue(catalogue);
         return toReturn;
     }
     
@@ -270,7 +269,8 @@ public class GitDocumentRepository implements DocumentRepository {
         document.setResourceIdentifiers(resourceIdentifiers);
     }
     
-     private MetadataInfo retrieveMetadataInfoUpdatingRawType(MetadataDocument document) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
-        return document.getMetadata().setRawType(MediaType.APPLICATION_JSON_VALUE);
+     private MetadataInfo retrieveMetadataInfoUpdatingRawType(MetadataDocument document) 
+         throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+        return document.getMetadata().withRawType(MediaType.APPLICATION_JSON_VALUE);
     }
 }
