@@ -1,1 +1,1 @@
-{"rawType":"application/json","state":"draft","documentType":"LINK_DOCUMENT","catalogue":"assist"}
+{"rawType":"application/json","state":"published","documentType":"LINK_DOCUMENT","permissions":{"EDIT":["superadmin"],"VIEW":["superadmin","public"],"DELETE":["superadmin"]},"catalogue":"assist"}

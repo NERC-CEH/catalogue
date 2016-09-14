@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -28,6 +29,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
+@Slf4j
 public class GitDocumentRepository implements DocumentRepository {
     private final DocumentTypeLookupService documentTypeLookupService;
     private final DocumentReadingService documentReader;
@@ -61,8 +63,11 @@ public class GitDocumentRepository implements DocumentRepository {
             MetadataDocument document = documentBundleReader.readBundle(file);
 
             if (document instanceof LinkDocument) {
-                String linkedDocumentId = ((LinkDocument) document).getLinkedDocumentId();
-                ((LinkDocument) document).setOriginal(documentBundleReader.readBundle(linkedDocumentId));
+                LinkDocument d = (LinkDocument) document;
+                String linkedDocumentId = d.getLinkedDocumentId();
+                document = d.withMetadataDocument(
+                    documentBundleReader.readBundle(linkedDocumentId)
+                );
             }
             return document;
         } catch (IOException | UnknownContentTypeException | PostProcessingException ex) {
@@ -82,8 +87,11 @@ public class GitDocumentRepository implements DocumentRepository {
             MetadataDocument document = documentBundleReader.readBundle(file, revision);
 
             if (document instanceof LinkDocument) {
-                String linkedDocumentId = ((LinkDocument) document).getLinkedDocumentId();
-                ((LinkDocument) document).setOriginal(documentBundleReader.readBundle(linkedDocumentId, revision));
+                LinkDocument d = (LinkDocument) document;
+                String linkedDocumentId = d.getLinkedDocumentId();
+                document = d.withMetadataDocument(
+                    documentBundleReader.readBundle(linkedDocumentId, revision)
+                );
             }
             return document;
         } catch (IOException | PostProcessingException | UnknownContentTypeException ex) {
@@ -199,13 +207,10 @@ public class GitDocumentRepository implements DocumentRepository {
         String message
     ) throws DataRepositoryException, DocumentRepositoryException {
         updateIdAndMetadataDate(document, id);
-        String uri = documentIdentifierService.generateUri(
-            id,
-            metadataInfo.getCatalogue()
-        );
+        String uri = documentIdentifierService.generateUri(id);
         addRecordUriAsResourceIdentifier(document, uri);
         document.setUri(uri);
-
+        log.info(metadataInfo.toString());
         repo.save(
             user,
             id,
@@ -214,7 +219,7 @@ public class GitDocumentRepository implements DocumentRepository {
             (o) -> documentWriter.write(document, MediaType.APPLICATION_JSON, o)
         );
 
-        return read(id);
+        return document;
     }
     
     @Override

@@ -37,6 +37,7 @@ public class DocumentControllerTest {
     
     @Mock DocumentRepository documentRepository;
     private DocumentController controller;
+    private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
     
     @Before
     public void initMocks() throws IOException {
@@ -164,7 +165,7 @@ public class DocumentControllerTest {
     public void checkCanCreateLinkedDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
-        LinkDocument document = new LinkDocument();
+        LinkDocument document = LinkDocument.builder().linkedDocumentId(linkedDocumentId).build();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Linked Document";
         String catalogue = "catalogue";
@@ -185,7 +186,7 @@ public class DocumentControllerTest {
     public void checkCanEditLinkedDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
-        LinkDocument document = new LinkDocument();
+        LinkDocument document = LinkDocument.builder().linkedDocumentId(linkedDocumentId).build();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
         String message = "message";

@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.Value;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.userstore.Group;
@@ -26,11 +26,12 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
  * @author Christopher Johnson
  */
 @Value
+// N.B. JsonAutoDetect needed to get 'permissions' written to file
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class MetadataInfo {
     private final String rawType, state;
     private final String documentType, catalogue;;
     @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
     private final Multimap<Permission, String> permissions;
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "role_cig_readonly";

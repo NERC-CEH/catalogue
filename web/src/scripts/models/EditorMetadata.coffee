@@ -7,7 +7,6 @@ define [
     do @urlRoot
 
   urlRoot: ->
-    console.log "id: #{@id}, isNew: #{@isNew()}"
     if @isNew()
       "/documents?catalogue=#{window.location.pathname.split('/')[1]}"
     else

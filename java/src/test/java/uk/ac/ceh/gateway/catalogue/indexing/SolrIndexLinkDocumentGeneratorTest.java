@@ -34,9 +34,8 @@ public class SolrIndexLinkDocumentGeneratorTest {
         metadataInfo.addPermission(Permission.VIEW, "test0");
         metadataInfo.addPermission(Permission.VIEW, "test1");
         
-        LinkDocument linkDocument = new LinkDocument();
+        LinkDocument linkDocument = LinkDocument.builder().linkedDocumentId(linkedDocumentId).build();
         linkDocument.setId(id);
-        linkDocument.setLinkedDocumentId(linkedDocumentId);
         linkDocument.setMetadata(metadataInfo);
         
         GeminiDocument original = new GeminiDocument();
@@ -67,14 +66,15 @@ public class SolrIndexLinkDocumentGeneratorTest {
         metadataInfo.addPermission(Permission.VIEW, "test0");
         metadataInfo.addPermission(Permission.VIEW, "test1");
         
-        LinkDocument linkDocument = new LinkDocument();
+        LinkDocument linkDocument = LinkDocument.builder()
+            .linkedDocumentId(linkedDocumentId)
+            .additionalKeywords(Arrays.asList(
+                Keyword.builder().value("test09").build(),
+                Keyword.builder().value("test23").build()
+            ))
+            .build();
         linkDocument.setId(id);
-        linkDocument.setLinkedDocumentId(linkedDocumentId);
-        linkDocument.setMetadata(metadataInfo);
-        linkDocument.setAdditionalKeywords(Arrays.asList(
-            Keyword.builder().value("test09").build(),
-            Keyword.builder().value("test23").build()
-        ));        
+        linkDocument.setMetadata(metadataInfo);       
         
         MetadataDocument original = new GeminiDocument().setId(linkedDocumentId);
                 
