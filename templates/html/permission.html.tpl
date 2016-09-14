@@ -1,6 +1,6 @@
 <#import "skeleton.html.tpl" as skeleton>
 <#assign canEdit = permission.userCanEdit(id)>
-<@skeleton.master title="Permissions"><#escape x as x?html>
+<@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue)><#escape x as x?html>
   <div id="metadata" class="container permission">
     <h2>Permissions</h2>
     <table class="table table-striped">

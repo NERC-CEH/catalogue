@@ -48,7 +48,7 @@ public class GitPublicationService implements PublicationService {
     
     private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, UriComponentsBuilder builder, String metadataId) {
         final State currentState = workflow.currentState(metadataInfo);
-        return new StateResource(currentState, getPublishingRoles(user, metadataInfo), builder, metadataId);
+        return new StateResource(currentState, getPublishingRoles(user, metadataInfo), builder, metadataId, metadataInfo.getCatalogue());
     }
 
     @Override

@@ -21,21 +21,24 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions.
 })
 @Value
 public class PermissionResource {
-    private final String id;
+    private final String id, catalogue;
     private final Set<IdentityPermissions> permissions;
     
     public PermissionResource(@NonNull MetadataDocument document) {
         MetadataInfo info = Objects.requireNonNull(document.getMetadata());
-        id = document.getId();
-        permissions = createPermissions(info);
+        this.id = document.getId();
+        this.catalogue = document.getCatalogue();
+        this.permissions = createPermissions(info);
     }
     
     @JsonCreator
     private PermissionResource(
         @JsonProperty("id") String id, 
+        @JsonProperty("catalogue") String catalogue,
         @JsonProperty("permissions") Set<IdentityPermissions> permissions
     ){
         this.id = id;
+        this.catalogue = catalogue;
         this.permissions = permissions;
     }
     

@@ -1,6 +1,6 @@
 <#import "skeleton.html.tpl" as skeleton>
 
-<@skeleton.master title="Publication"><#escape x as x?html>
+<@skeleton.master title="Publication" catalogue=catalogues.retrieve(catalogue)><#escape x as x?html>
   <div id="metadata" class="container">
     <div id="publicationActions">
       <h2><span class="label label-${title?replace(" ", "")}">This record is currently ${title}</span></h2>

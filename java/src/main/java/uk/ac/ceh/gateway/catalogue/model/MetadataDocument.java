@@ -34,6 +34,7 @@ public interface MetadataDocument {
     List<Keyword> getAllKeywords();
     MetadataDocument addAdditionalKeywords(List<Keyword> additionalKeywords);
     
+    @JsonIgnore
     default String getCatalogue() {
         return Optional.ofNullable(getMetadata())
             .map(MetadataInfo::getCatalogue)
