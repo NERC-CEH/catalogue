@@ -25,7 +25,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 public class SolrIndexMetadataDocumentGeneratorTest {
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
-    @Mock CatalogueService catalogueService;
     private SolrIndexMetadataDocumentGenerator generator;
     
     @Before
@@ -33,8 +32,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         MockitoAnnotations.initMocks(this);
         generator = new SolrIndexMetadataDocumentGenerator(
             codeLookupService,
-            documentIdentifierService,
-            catalogueService
+            documentIdentifierService
         );
     }
     
@@ -43,9 +41,6 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         //Given
         GeminiDocument document = new GeminiDocument();
         document.setTitle("my gemini document");
-        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
-        
-        given(catalogueService.retrieve("eidc")).willReturn(Catalogue.builder().id("eidc").title("EIDC").url("jk").build());
         
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -60,9 +55,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         String id = "some crazy long, hard to rememember, number";
         when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
         GeminiDocument document = new GeminiDocument();
-        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
         document.setId(id);
-        given(catalogueService.retrieve("eidc")).willReturn(Catalogue.builder().id("eidc").title("EIDC").url("jk").build());
         
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -76,11 +69,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         //Given
         String description = "Once upon a time, there was a metadata record...";
         GeminiDocument document = new GeminiDocument();
-        document.setDescription(description);
-        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
-        
-        given(catalogueService.retrieve("eidc")).willReturn(Catalogue.builder().id("eidc").title("EIDC").url("jk").build());
-        
+        document.setDescription(description);        
         
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -95,9 +84,6 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         GeminiDocument document = new GeminiDocument();
         document.setResourceType(Keyword.builder().value("dataset").build());
         when(codeLookupService.lookup("metadata.resourceType", "dataset")).thenReturn("Dataset");
-        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
-        
-        given(catalogueService.retrieve("eidc")).willReturn(Catalogue.builder().id("eidc").title("EIDC").url("jk").build());
         
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -159,26 +145,19 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatCatalogueTitleIsTransferedToIndex() {
+    public void checkThatCatalogueIsTransferedToIndex() {
         //Given
-        Catalogue catalogue = Catalogue
-            .builder()
-            .id("eidc")
-            .title("Environmental Information Data Centre")
-            .url("https://eidc-catalogue.ceh.ac.uk")
-            .build();
         MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         MetadataDocument document = new GeminiDocument().setMetadata(info);
-        given(catalogueService.retrieve("eidc")).willReturn(catalogue);
         
         //When
         SolrIndex index = generator.generateIndex(document);
 
         //Then
         assertThat(
-                "Expected to get \"Environmental Information Data Centre\"",
+                "Expected to get 'eidc'",
                 index.getCatalogue(),
-                equalTo("Environmental Information Data Centre")
+                equalTo("eidc")
         );
     }
 

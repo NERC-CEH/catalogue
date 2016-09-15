@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -29,7 +28,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
-@Slf4j
 public class GitDocumentRepository implements DocumentRepository {
     private final DocumentTypeLookupService documentTypeLookupService;
     private final DocumentReadingService documentReader;
@@ -210,7 +208,7 @@ public class GitDocumentRepository implements DocumentRepository {
         String uri = documentIdentifierService.generateUri(id);
         addRecordUriAsResourceIdentifier(document, uri);
         document.setUri(uri);
-        log.info(metadataInfo.toString());
+
         repo.save(
             user,
             id,

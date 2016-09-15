@@ -337,7 +337,7 @@ public class SearchQuery {
     
     private void setCatalogueFilter(SolrQuery query) {
         query.addFilterQuery(
-            String.format("{!term f=catalogue}%s", catalogue.getTitle())
+            String.format("{!term f=catalogue}%s", catalogue.getId())
         );
     }
 
