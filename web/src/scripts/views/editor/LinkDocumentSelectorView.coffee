@@ -23,8 +23,24 @@ define [
 
   template: template
 
+  catalogues: [
+    {'value': 'assist', 'label': 'Achieving Sustainable Agricultural Systems'}
+    {'value': 'ceh', 'label': 'Centre for Ecology &amp; Hydrology'}
+    {'value': 'cmp', 'label': 'Catchment Management Platform'}
+    {'value': 'eidc', 'label': 'Environmental Information Data Centre'}
+  ]
+
   initialize: (options) ->
     InputView.prototype.initialize.call @, options
+
+    currentCatalogue = window.location.pathname.split('/')[1]
+
+    optionTemplate = _.template "<option value=\"<%= value %>\" <% if(value==='eidc') { %>selected<% } %>><%= label %></option>"
+
+    $select = @$ '#catalogue'
+
+    _.chain(@catalogues).reject((c) -> c.value == currentCatalogue ).each (catalogue) ->
+      $select.append optionTemplate catalogue
 
     @searchOnceComplete = _.debounce @search, 500
 

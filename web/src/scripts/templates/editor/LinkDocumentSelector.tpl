@@ -7,12 +7,7 @@
 <div class="form-inline" style="margin-top: 6px">
   <div class="form-group">
     <label for="catalogue">Catalogue</label>
-    <select id="catalogue" class="form-control">
-      <option value="assist">Achieving Sustainable Agricultural Systems</option>
-      <option value="ceh">Centre for Ecology &amp; Hydrology</option>
-      <option value="cmp">Catchment Management Platform</option>
-      <option value="eidc" selected>Environmental Information Data Centre</option>
-    </select>
+    <select id="catalogue" class="form-control"></select>
   </div>
   <div class="input-group">
     <input placeholder="Search the catalogue" id="term" type="text" autocomplete="off" class="form-control">
