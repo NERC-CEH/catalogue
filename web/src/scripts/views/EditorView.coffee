@@ -73,7 +73,8 @@ define [
     _.invoke @sections, 'remove'
     do @remove
 
-    if Backbone.history.location.pathname == '/documents'
+    catalogue = Backbone.history.location.pathname.split('/')[1]
+    if Backbone.history.location.pathname == "/#{catalogue}/documents"
       Backbone.history.location.replace "/documents/#{@model.get 'id'}"
     else
       do Backbone.history.location.reload

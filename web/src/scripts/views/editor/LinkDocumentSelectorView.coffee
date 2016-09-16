@@ -31,25 +31,25 @@ define [
   ]
 
   initialize: (options) ->
+    @currentCatalogue = Backbone.history.location.pathname.split('/')[1]
+    @optionTemplate = _.template "<option value=\"<%= value %>\" <% if(value==='eidc') { %>selected<% } %>><%= label %></option>"
+
     InputView.prototype.initialize.call @, options
 
-    currentCatalogue = window.location.pathname.split('/')[1]
-
-    optionTemplate = _.template "<option value=\"<%= value %>\" <% if(value==='eidc') { %>selected<% } %>><%= label %></option>"
-
-    $select = @$ '#catalogue'
-
-    _.chain(@catalogues).reject((c) -> c.value == currentCatalogue ).each (catalogue) ->
-      $select.append optionTemplate catalogue
-
     @searchOnceComplete = _.debounce @search, 500
-
     @results = new Backbone.Collection()
 
     @listenTo @results, 'selected', @setSelected
     @listenTo @results, 'reset', @addAll
 
     do @search
+
+  render: ->
+    InputView.prototype.render.apply @
+    $select = @$ '#catalogue'
+    _.chain(@catalogues).reject((c) => c.value == @currentCatalogue ).each (catalogue) =>
+      $select.append @optionTemplate catalogue
+    @
 
   search: ->
     catalogue = @$('#catalogue').val()
