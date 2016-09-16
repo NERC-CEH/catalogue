@@ -20,6 +20,7 @@
       <field name="view" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="locations" type="spatial" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="catalogue" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
+      <field name="documentType" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="impBroaderCatchmentIssues" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impScale" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impWaterQuality" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>

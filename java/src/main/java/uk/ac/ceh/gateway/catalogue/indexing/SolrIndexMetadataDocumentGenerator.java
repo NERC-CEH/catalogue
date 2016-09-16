@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
@@ -39,19 +40,25 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                 .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
                 .setState(getState(document))
                 .setView(getViews(document))
-                .setCatalogue(document.getCatalogue());
+                .setCatalogue(document.getCatalogue())
+                .setDocumentType(getDocumentType(document));
     }
     
     private String getState(MetadataDocument document) {
-        if (document.getMetadata() != null) {
-            return document.getMetadata().getState();
-        } else {
-            return null;
-        }
+        return Optional.ofNullable(document)
+            .map(MetadataDocument::getMetadata)
+            .map(MetadataInfo::getState)
+            .orElse("");
+    }
+    
+    private String getDocumentType(MetadataDocument document) {
+        return Optional.ofNullable(document)
+            .map(MetadataDocument::getMetadata)
+            .map(MetadataInfo::getDocumentType)
+            .orElse("");
     }
     
     private List<String> getViews(MetadataDocument document) {
-        Objects.requireNonNull(document);
         return Optional.ofNullable(document)
             .map(MetadataDocument::getMetadata)
             .map(m -> m.getIdentities(Permission.VIEW))

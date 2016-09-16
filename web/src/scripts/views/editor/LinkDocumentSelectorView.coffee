@@ -55,8 +55,13 @@ define [
     catalogue = @$('#catalogue').val()
     term = @$('#term').val()
 
-    $.getJSON "/#{catalogue}/documents?term=#{term}", (data) =>
-      @results.reset _.chain(data.results).filter((result) -> result.state == 'published').filter((result) -> _.contains result.view, 'public').value()
+    if term.length > 0
+      searchUrl = "/#{catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT AND #{term}"
+    else
+      searchUrl = "/#{catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT"
+
+    $.getJSON searchUrl, (data) =>
+      @results.reset data.results
 
   addOne: (result) ->
     view = new LinkDocumentView model: result
