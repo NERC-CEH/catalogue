@@ -10,7 +10,7 @@
     <select id="catalogue" class="form-control"></select>
   </div>
   <div class="input-group">
-    <input placeholder="Search the catalogue" id="term" type="text" autocomplete="off" class="form-control">
+    <input placeholder="Search the catalogue" id="term" type="text" autocomplete="off" class="form-control" value="<%= data.term %>">
     <div class="input-group-btn">
       <button tabindex="-1" class="btn btn-success" type="button">
         <span class="glyphicon glyphicon-search"></span>

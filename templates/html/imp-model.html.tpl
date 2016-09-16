@@ -2,7 +2,7 @@
 <#import "skeleton.html.tpl" as skeleton>
 <#import "../underscore.tpl" as _>
 
-<@skeleton.master title=title>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 <#escape x as x?html>
   <div id="metadata" class="container">
     <@blocks.title title type />

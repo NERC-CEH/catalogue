@@ -59,12 +59,12 @@ public class GitDocumentRepository implements DocumentRepository {
     ) throws DocumentRepositoryException {
         try {
             MetadataDocument document = documentBundleReader.readBundle(file);
-
             if (document instanceof LinkDocument) {
                 LinkDocument d = (LinkDocument) document;
-                String linkedDocumentId = d.getLinkedDocumentId();
-                document = d.withMetadataDocument(
-                    documentBundleReader.readBundle(linkedDocumentId)
+                d.setOriginal(
+                    documentBundleReader.readBundle(
+                        d.getLinkedDocumentId()
+                    )
                 );
             }
             return document;
@@ -86,9 +86,11 @@ public class GitDocumentRepository implements DocumentRepository {
 
             if (document instanceof LinkDocument) {
                 LinkDocument d = (LinkDocument) document;
-                String linkedDocumentId = d.getLinkedDocumentId();
-                document = d.withMetadataDocument(
-                    documentBundleReader.readBundle(linkedDocumentId, revision)
+                d.setOriginal(
+                    documentBundleReader.readBundle(
+                        d.getLinkedDocumentId(),
+                        revision
+                    )
                 );
             }
             return document;

@@ -8,7 +8,7 @@
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Publish <span class="caret"></span></button>
             <ul class="dropdown-menu dropdown-menu-right">
               <li><a href="/documents/${id}/permission">Amend permissions</a></li>
-              <li><a href="/documents/${id}/catalogue">Amend catalogues</a></li>
+              <li><a href="/documents/${id}/catalogue" class="catalogue-control">Amend catalogues</a></li>
               <li><a href="/documents/${id}/publication">Publication status</a></li>
             </ul>
         </div>

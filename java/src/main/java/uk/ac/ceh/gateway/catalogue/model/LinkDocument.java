@@ -5,19 +5,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-import lombok.Value;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
-@Value
+@Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class LinkDocument extends AbstractMetadataDocument {
-    private final String linkedDocumentId;
-    private final MetadataDocument original;
-    private final List<Keyword> additionalKeywords;
+    private String linkedDocumentId;
+    @JsonIgnore
+    private MetadataDocument original;
+    private List<Keyword> additionalKeywords;
 
     @JsonCreator
     @Builder
@@ -29,11 +30,7 @@ public class LinkDocument extends AbstractMetadataDocument {
         this.linkedDocumentId = linkedDocumentId;
         this.original = original;
         this.additionalKeywords = additionalKeywords;
-    }
-    
-    public LinkDocument withMetadataDocument(MetadataDocument original) {
-        return new LinkDocument(this.linkedDocumentId, original, this.additionalKeywords);
-    }   
+    }  
 
     @Override
     @JsonIgnore

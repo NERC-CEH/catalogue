@@ -14,16 +14,19 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 
 public class CatalogueControllerTest {
     private @Mock DocumentRepository documentRepository;
+    private @Mock CatalogueService catalogueService;
     private CatalogueController controller;
     
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         controller = new CatalogueController(
-            documentRepository
+            documentRepository,
+            catalogueService
         );
     }
 

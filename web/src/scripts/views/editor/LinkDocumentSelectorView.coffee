@@ -23,42 +23,42 @@ define [
 
   template: template
 
-  catalogues: [
-    {'value': 'assist', 'label': 'Achieving Sustainable Agricultural Systems'}
-    {'value': 'ceh', 'label': 'Centre for Ecology &amp; Hydrology'}
-    {'value': 'cmp', 'label': 'Catchment Management Platform'}
-    {'value': 'eidc', 'label': 'Environmental Information Data Centre'}
-  ]
+  optionTemplate: _.template "<option value=\"<%= id %>\" <% if (id === data.catalogue) { %>selected<% } %>><%= title %></option>"
 
   initialize: (options) ->
-    @currentCatalogue = Backbone.history.location.pathname.split('/')[1]
-    @optionTemplate = _.template "<option value=\"<%= value %>\" <% if(value==='eidc') { %>selected<% } %>><%= label %></option>"
+    if @model.isNew()
+      @currentCatalogue = Backbone.history.location.pathname.split('/')[1]
+    else
+      @currentCatalogue = @model.get('metadata').catalogue
 
-    InputView.prototype.initialize.call @, options
+    options.catalogue = 'eidc'
 
     @searchOnceComplete = _.debounce @search, 500
     @results = new Backbone.Collection()
 
+    $.getJSON '/catalogues', (catalogues) =>
+      @catalogues = catalogues
+      InputView.prototype.initialize.call @, options
+
     @listenTo @results, 'selected', @setSelected
     @listenTo @results, 'reset', @addAll
-
-    do @search
 
   render: ->
     InputView.prototype.render.apply @
     $select = @$ '#catalogue'
-    _.chain(@catalogues).reject((c) => c.value == @currentCatalogue ).each (catalogue) =>
-      $select.append @optionTemplate catalogue
+    _.chain(@catalogues).reject((c) => c.id == @currentCatalogue ).each (catalogue) =>
+      $select.append @optionTemplate _.extend {}, catalogue, data: @data
+    do @search
     @
 
   search: ->
-    catalogue = @$('#catalogue').val()
-    term = @$('#term').val()
+    @data.catalogue = @$('#catalogue').val()
+    @data.term = @$('#term').val()
 
-    if term.length > 0
-      searchUrl = "/#{catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT AND #{term}"
+    if @data.term.length > 0
+      searchUrl = "/#{@data.catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT AND #{@data.term}"
     else
-      searchUrl = "/#{catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT"
+      searchUrl = "/#{@data.catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT"
 
     $.getJSON searchUrl, (data) =>
       @results.reset data.results

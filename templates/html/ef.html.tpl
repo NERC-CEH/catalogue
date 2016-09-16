@@ -2,7 +2,7 @@
 <#import "ef/blocks.html.tpl" as ef_blocks>
 <#import "skeleton.html.tpl" as skeleton>
 
-<@skeleton.master title=title>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
   <div id="metadata" class="container">
 
     <@blocks.title title type />
@@ -15,7 +15,7 @@
     <#include "ef/_responsibleParties.html.tpl">
     <#include "ef/_identifiers.html.tpl">
     <@ef_blocks.links "Online Resources" onlineResources/>
-    
+
   </div>
   <div id="footer">
     <#include "ef/_footer.html.tpl">
