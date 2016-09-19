@@ -15,12 +15,13 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 })
 @Value
 public class StateResource {
-    private final String id, title, metadataId;
+    private final String id, title, metadataId, catalogue;
     private final Set<TransitionResource> transitions;
 
-    public StateResource(State currentState, Set<PublishingRole> roles, UriComponentsBuilder builder, String metadataId) {
+    public StateResource(State currentState, Set<PublishingRole> roles, UriComponentsBuilder builder, String metadataId, String catalogue) {
         this.id = currentState.getId();
         this.title = currentState.getTitle();
+        this.catalogue = catalogue;
         this.transitions = currentState.avaliableTransitions(roles)
             .stream()
             .map(transition -> {

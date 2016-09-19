@@ -1,31 +1,21 @@
 define [
   'cs!views/EditorView'
-  'cs!views/editor/ParentStringDropdownView'
-  ], (EditorView, ParentStringDropdownView) -> EditorView.extend
+  'cs!views/editor/SelectView'
+  ], (EditorView, SelectView) -> EditorView.extend
 
   initialize: ->
 
     @sections = [
       label: 'One'
-      title:  'Catalogues'
+      title:  'Catalogue'
       views: [
-        new ParentStringDropdownView
+        new SelectView
           model: @model
-          modelAttribute: 'catalogues'
-          label: 'Catalogues'
+          modelAttribute: 'value'
+          label: 'Catalogue'
           helpText: """
-                    <p>Catalogues</p>
+                    <p>Catalogue</p>
                     """
-          options: [
-              value: ''
-              label: '- Select Catalogue -'
-            ,
-              value: 'Catchment Management Platform'
-              label: 'Catchment Management Platform'
-            ,
-              value: 'Environmental Information Data Centre'
-              label: 'Environmental Information Data Centre'
-          ]
       ]
     ]
     EditorView.prototype.initialize.apply @

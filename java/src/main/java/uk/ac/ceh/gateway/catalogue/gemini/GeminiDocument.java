@@ -67,6 +67,21 @@ public class GeminiDocument extends AbstractMetadataDocument {
     private Service service;
     private List<ResourceConstraint> accessConstraints, useConstraints;
     private MapDataDefinition mapDataDefinition;
+    private Keyword resourceType;
+    
+    @Override
+    public String getType() {
+        return Optional.ofNullable(resourceType)
+            .map(Keyword::getValue)
+            .orElse("");
+    }
+    
+    @Override
+    public GeminiDocument setType(String type) {
+        super.setType(type);
+        this.resourceType = Keyword.builder().value(type).build();
+        return this;
+    }
     
     @Override
     @JsonIgnore
@@ -79,7 +94,7 @@ public class GeminiDocument extends AbstractMetadataDocument {
     }
     
     @Override
-    public void addAdditionalKeywords(List<Keyword> additionalKeywords) {
+    public GeminiDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
         descriptiveKeywords = Optional.ofNullable(descriptiveKeywords)
             .orElse(new ArrayList<>());
         
@@ -89,17 +104,7 @@ public class GeminiDocument extends AbstractMetadataDocument {
                 .keywords(additionalKeywords)
                 .build()
         );
-    }
-    
-    @JsonIgnore
-    public String getMetadataDateTime() {
-        /* This method always returns the full datetime string (including the seconds). LocalDateTime.toString() will 
-           not return the seconds if it is a date with time 00:00:00 */
-        if (metadataDate != null) {
-            return metadataDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        } else {
-            return "";
-        }
+        return this;
     }
         
     @JsonProperty("citation")

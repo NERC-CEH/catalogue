@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.util.Arrays;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.junit.Before;
 import static org.mockito.BDDMockito.given;
@@ -13,15 +13,21 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 
 public class CatalogueControllerTest {
     private @Mock DocumentRepository documentRepository;
+    private @Mock CatalogueService catalogueService;
     private CatalogueController controller;
     
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        controller = new CatalogueController(documentRepository);
+        controller = new CatalogueController(
+            documentRepository,
+            catalogueService
+        );
     }
 
     @Test
@@ -29,12 +35,11 @@ public class CatalogueControllerTest {
         //Given
         String file = "123-456-789";
         MetadataDocument document = new GeminiDocument()
-            .setId(file);
-        document.attachMetadata(
-            new MetadataInfo()
-                .setCatalogues(
-                    Arrays.asList("EIDC", "CEH")
-                )
+            .setId(file)
+            .setMetadata(
+                MetadataInfo.builder()
+                .catalogue("eidc")
+                .build()
         );
         given(documentRepository.read(file)).willReturn(document);
         
@@ -45,26 +50,41 @@ public class CatalogueControllerTest {
         verify(documentRepository).read(file);
     }
     
+    @Test(expected = DocumentRepositoryException.class)
+    public void getUnknownFile() throws Exception {
+        //Given
+        String file = "123-456-789";
+        given(documentRepository.read(file)).willThrow(
+            new DocumentRepositoryException("Test", new Exception())
+        );
+        
+        //When
+        controller.currentCatalogue(CatalogueUser.PUBLIC_USER, file);
+        
+        //Then
+        fail("Expected DocumentRepositoryException");
+    }
+    
     @Test
     public void updateCatalogue() throws Exception {
         //Given
         String file = "123-456-789";
-        CatalogueResource catalogueResource = CatalogueResource
-            .builder()
-            .id(file)
-            .catalogue("EIDC")
-            .build();
+        CatalogueResource catalogueResource = new CatalogueResource("1", "eidc");
         
         MetadataDocument document = new GeminiDocument()
-            .setId(file);
-        document.attachMetadata(
-            new MetadataInfo()
-                .setCatalogues(
-                    Arrays.asList("EIDC", "CEH")
-                )
+            .setId(file)
+            .setMetadata(
+                MetadataInfo.builder()
+                .catalogue("eidc")
+                .build()
         );
         given(documentRepository.read(file)).willReturn(document);
-        given(documentRepository.save(CatalogueUser.PUBLIC_USER, document, file, "Catalogues of 123-456-789 changed.")).willReturn(document);
+        given(documentRepository.save(
+            CatalogueUser.PUBLIC_USER,
+            document,
+            file,
+            "Catalogues of 123-456-789 changed."
+        )).willReturn(document);
         
         //When
         controller.updateCatalogue(CatalogueUser.PUBLIC_USER, file, catalogueResource);

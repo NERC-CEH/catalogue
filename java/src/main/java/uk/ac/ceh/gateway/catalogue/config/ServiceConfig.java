@@ -79,6 +79,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
@@ -97,6 +98,7 @@ import uk.ac.ceh.gateway.catalogue.postprocess.ImpDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
@@ -107,7 +109,6 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
@@ -116,8 +117,8 @@ import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.GeminiExtractorService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
-import uk.ac.ceh.gateway.catalogue.services.HardcodedCatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
@@ -158,7 +159,48 @@ public class ServiceConfig {
     
     @Bean
     public CatalogueService catalogueService() {
-        return new HardcodedCatalogueService();
+        String defaultCatalogueKey = "ceh";
+        
+        return new InMemoryCatalogueService(
+            defaultCatalogueKey,
+            
+            Catalogue.builder()
+                .id(defaultCatalogueKey)
+                .title("Centre for Ecology & Hydrology")
+                .url("https://eip.ceh.ac.uk")
+                .facetKey("topic")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .build(),
+        
+            Catalogue.builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("http://eidc.ceh.ac.uk")
+                .facetKey("topic")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .build(),
+        
+            Catalogue.builder()
+                .id("cmp")
+                .title("Catchment Management Platform")
+                .url("http://www.ceh.ac.uk")
+                .facetKey("impBroaderCatchmentIssues")
+                .facetKey("impScale")
+                .facetKey("impWaterQuality")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .build(),
+        
+            Catalogue.builder()
+                .id("assist")
+                .title("Achieving Sustainable Agricultural Systems")
+                .url("http://www.ceh.ac.uk/ASSIST")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .build()
+        );
     }
     
     @Bean FacetFactory facetFactory() {
@@ -256,6 +298,7 @@ public class ServiceConfig {
         shared.put("permission", permission());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
+        shared.put("catalogues", catalogueService());
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -277,11 +320,10 @@ public class ServiceConfig {
     
     @Bean 
     DocumentRepository documentRepository() throws XPathExpressionException, IOException, TemplateModelException {
-        return new DocumentRepository(
+        return new GitDocumentRepository(
             metadataRepresentationService(),
             documentReadingService(),
             documentIdentifierService(),
-            documentInfoFactory(),
             documentWritingService(),
             bundledReaderService(),
             postProcessingService(),
@@ -343,24 +385,6 @@ public class ServiceConfig {
     }
     
     @Bean
-    public DocumentInfoFactory<MetadataDocument, MetadataInfo> documentInfoFactory() {
-        return (MetadataDocument document, MediaType contentType) -> {
-            MetadataInfo toReturn = document.getMetadata();
-            
-            //If no MetadataInfo is attached to the document, we need to create 
-            //a new one. 
-            if(toReturn == null) {
-                toReturn = new MetadataInfo();
-            }
-            
-            toReturn.setRawType(contentType.toString()); //set the raw type
-            toReturn.setDocumentType(metadataRepresentationService() //set the document class
-                                        .getName(document.getClass()));
-            return toReturn;
-        };
-    }
-    
-    @Bean
     public DocumentInfoMapper documentInfoMapper() {
         return new JacksonDocumentInfoMapper(jacksonMapper, MetadataInfo.class);
     }
@@ -368,12 +392,12 @@ public class ServiceConfig {
     @Bean
     public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException, IOException, TemplateModelException {
         return new MetadataInfoBundledReaderService(
-                dataRepository,
-                documentReadingService(),
-                documentInfoMapper(),
-                metadataRepresentationService(),
-                postProcessingService(),
-                documentIdentifierService()
+            dataRepository,
+            documentReadingService(),
+            documentInfoMapper(),
+            metadataRepresentationService(),
+            postProcessingService(),
+            documentIdentifierService()
         );
     }
     

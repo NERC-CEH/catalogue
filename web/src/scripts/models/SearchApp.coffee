@@ -38,7 +38,7 @@ define [
   ###
   createSearchPage: ->
     @_proxyResultsEvents = (evt) => @trigger "results-#{evt}"
-    @results = new SearchPage [], {}
+    @results = new SearchPage()
     @results.on 'all', @_proxyResultsEvents
 
   ###

@@ -1,19 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.google.common.collect.Lists;
-import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.BDDMockito.given;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
@@ -29,7 +30,10 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        generator = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService);
+        generator = new SolrIndexMetadataDocumentGenerator(
+            codeLookupService,
+            documentIdentifierService
+        );
     }
     
     @Test
@@ -46,7 +50,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatTitleIdTransferedToIndex() {
+    public void checkThatIdTransferedToIndex() {
         //Given
         String id = "some crazy long, hard to rememember, number";
         when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
@@ -65,7 +69,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         //Given
         String description = "Once upon a time, there was a metadata record...";
         GeminiDocument document = new GeminiDocument();
-        document.setDescription(description);
+        document.setDescription(description);        
         
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -141,10 +145,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatCataloguesAreTransferedToIndex() {
+    public void checkThatCatalogueIsTransferedToIndex() {
         //Given
-        List<String> catalogues = Lists.newArrayList("CEH Catalogue", "Environmental Information Data Centre");
-        MetadataInfo info = new MetadataInfo().setCatalogues(catalogues);
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         MetadataDocument document = new GeminiDocument().setMetadata(info);
         
         //When
@@ -152,9 +155,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
 
         //Then
         assertThat(
-                "Expected to get list [\"CEH Catalogue\", \"Environmental Information Data Centre\"]",
+                "Expected to get 'eidc'",
                 index.getCatalogue(),
-                contains("CEH Catalogue", "Environmental Information Data Centre")
+                equalTo("eidc")
         );
     }
 

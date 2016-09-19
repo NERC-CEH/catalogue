@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
@@ -49,7 +51,9 @@ public class DataciteController {
                     method   = RequestMethod.GET,
                     produces = DATACITE_XML_VALUE)
     @ResponseBody
-    public String getDataciteRequest(@PathVariable("file") String file) throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public String getDataciteRequest(
+        @PathVariable("file") String file
+    ) throws DocumentRepositoryException {
         return dataciteService.getDatacitationRequest(getDocument(file));
     }
     
@@ -60,7 +64,7 @@ public class DataciteController {
     public Object mintDoi(
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file
-    ) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    ) throws DocumentRepositoryException {
         GeminiDocument geminiDocument = getDocument(file);
 
         ResourceIdentifier doi = dataciteService.generateDoi(geminiDocument);
@@ -69,7 +73,9 @@ public class DataciteController {
         return new RedirectView(identifierService.generateUri(file));
     }
     
-    protected GeminiDocument getDocument(String file) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    protected GeminiDocument getDocument(
+        String file
+    ) throws DocumentRepositoryException {
         MetadataDocument document = repo.read(file);
         if(document instanceof GeminiDocument) {
             return (GeminiDocument)document;

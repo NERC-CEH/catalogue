@@ -1,4 +1,5 @@
 define [
+  'underscore'
   'jquery'
   'backbone'
   'cs!views/StudyAreaView'
@@ -22,7 +23,7 @@ define [
   'cs!views/LinkEditorView'
   'cs!models/LinkEditorMetadata'
   'bootstrap'
-], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
+], (_, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata) ->
 
@@ -37,7 +38,7 @@ define [
     do @initSearch if $('#search').length
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
-    do @initCatalogue if $('.catalogue').length
+    do @initCatalogue if $('.catalogue-control').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
@@ -126,12 +127,20 @@ define [
   Initialize the catalogue application
   ###
   initCatalogue: ->
-    $('button').on 'click', (event) ->
+    catalogues = undefined
+
+    $.getJSON '/catalogues', (data) ->
+      catalogues = _.chain(data).map((c) -> {value: c.id, label: c.title}).value()
+
+    $('.catalogue-control').on 'click', (event) ->
       do event.preventDefault
-      $.getJSON $(location).attr('href'), (data) ->
+      $.getJSON $(event.target).attr('href'), (data) ->
+        model = new Catalogue data
+        model.options = catalogues
+
         new CatalogueView
-          el: '.catalogue'
-          model: new Catalogue data
+          el: '#metadata'
+          model: model
 
   ###
   Create a message view. Which listens to the supplied app model for messages (errors, info)

@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -8,16 +7,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 /**
  *
@@ -38,8 +35,8 @@ public class CitationController {
     @ResponseBody
     public Citation getCitation(
         @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
-                
+        @PathVariable("file") String file
+    ) throws DocumentRepositoryException {          
         return getCitation(documentRepository.read(file));
     }
     
@@ -50,8 +47,8 @@ public class CitationController {
     public Citation getCitation(
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
-        @PathVariable("revision") String revision) throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException  {
-        
+        @PathVariable("revision") String revision
+    ) throws DocumentRepositoryException  {
         return getCitation(documentRepository.read(file, revision));
     }
     

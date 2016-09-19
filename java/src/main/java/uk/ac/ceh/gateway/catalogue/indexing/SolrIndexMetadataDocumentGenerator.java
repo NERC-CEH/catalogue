@@ -23,7 +23,10 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     
-    public SolrIndexMetadataDocumentGenerator(CodeLookupService codeLookupService, DocumentIdentifierService identifierService) {
+    public SolrIndexMetadataDocumentGenerator(
+        CodeLookupService codeLookupService,
+        DocumentIdentifierService identifierService
+    ) {
         this.codeLookupService = codeLookupService;
         this.identifierService = identifierService;
     }
@@ -37,19 +40,25 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                 .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
                 .setState(getState(document))
                 .setView(getViews(document))
-                .setCatalogue(getCatalogues(document));
+                .setCatalogue(document.getCatalogue())
+                .setDocumentType(getDocumentType(document));
     }
     
     private String getState(MetadataDocument document) {
-        if (document.getMetadata() != null) {
-            return document.getMetadata().getState();
-        } else {
-            return null;
-        }
+        return Optional.ofNullable(document)
+            .map(MetadataDocument::getMetadata)
+            .map(MetadataInfo::getState)
+            .orElse("");
+    }
+    
+    private String getDocumentType(MetadataDocument document) {
+        return Optional.ofNullable(document)
+            .map(MetadataDocument::getMetadata)
+            .map(MetadataInfo::getDocumentType)
+            .orElse("");
     }
     
     private List<String> getViews(MetadataDocument document) {
-        Objects.requireNonNull(document);
         return Optional.ofNullable(document)
             .map(MetadataDocument::getMetadata)
             .map(m -> m.getIdentities(Permission.VIEW))
@@ -69,13 +78,5 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                         .filter(Objects::nonNull)
                         .distinct()
                         .collect(Collectors.toList());
-    }
-
-    private List<String> getCatalogues(MetadataDocument document) {
-        return Optional.ofNullable(document)
-            .map(MetadataDocument::getMetadata)
-            .map(MetadataInfo::getCatalogues)
-            .orElse(Collections.emptyList()); 
-    }
-             
+    }             
 }

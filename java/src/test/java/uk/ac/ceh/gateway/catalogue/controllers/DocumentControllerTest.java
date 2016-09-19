@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
@@ -22,19 +21,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.services.HardcodedCatalogueService;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
  *
@@ -43,13 +36,13 @@ import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 public class DocumentControllerTest {
     
     @Mock DocumentRepository documentRepository;
-    CatalogueService catalogueService = new HardcodedCatalogueService();
     private DocumentController controller;
+    private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
     
     @Before
     public void initMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
-        controller = new DocumentController(documentRepository, catalogueService);
+        controller = new DocumentController(documentRepository);
     }
     
     @Test
@@ -69,7 +62,7 @@ public class DocumentControllerTest {
     }
      
     @Test
-    public void checkCanUploadFile() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanUploadFile() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
         InputStream inputStream = new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes());
@@ -77,44 +70,40 @@ public class DocumentControllerTest {
         MultipartFile multipartFile = new MockMultipartFile("test", "test", MediaType.TEXT_XML_VALUE, inputStream);
         String documentType = "GEMINI_DOCUMENT";
         GeminiDocument document = new GeminiDocument();
-        document.setUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new file upload";
-        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("catalogue.ceh.ac.uk");
+        String catalogue = "catalogue";
         
         given(documentRepository.save(eq(user), any(), any(MediaType.class), eq(documentType), eq(catalogue), eq(message))).willReturn(document);
               
         //When
-        controller.uploadFile(user, multipartFile, documentType, request);
+        controller.uploadFile(user, multipartFile, documentType, catalogue);
         
         //Then
         verify(documentRepository).save(eq(user), any(), eq(mediaType), eq(documentType), eq(catalogue), eq(message));
     }
     
     @Test
-    public void checkCanCreateModelDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanCreateModelDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
         Model document = new Model();
-        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Model Document";
-        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("catalogue.ceh.ac.uk");
+        String catalogue = "catalogue";
         
-        given(documentRepository.save(user, document, catalogue, message)).willReturn(document);
+        given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.uploadModelDocument(user, document, request);
+        ResponseEntity<MetadataDocument> actual = controller.uploadModelDocument(user, document, catalogue);
         
         //Then
-        verify(documentRepository).save(user, document, catalogue, message);
+        verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
     
     @Test
-    public void checkCanEditModelDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanEditModelDocument() throws Exception {
         //Given
         CatalogueUser user = mock(CatalogueUser.class);
         Model document = mock(Model.class);
@@ -122,7 +111,7 @@ public class DocumentControllerTest {
         String message = "Edited document: test";
         
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        given(document.getUri()).willReturn("https://catalogue.ceh.ac.uk/id/123-test");
               
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateModelDocument(user, fileId, document);
@@ -133,39 +122,39 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkCanCreateGeminiDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanCreateGeminiDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
         GeminiDocument document = new GeminiDocument();
-        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Gemini Document";
-        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("catalogue.ceh.ac.uk");
+        String catalogue = "catalogue";
         
-        given(documentRepository.save(user, document, catalogue, message)).willReturn(document);
+        given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.uploadGeminiDocument(user, document, request);
+        ResponseEntity<MetadataDocument> actual = controller.uploadGeminiDocument(user, document, catalogue);
         
         //Then
-        verify(documentRepository).save(user, document, catalogue, message);
+        verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
     
     @Test
-    public void checkCanEditGeminiDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanEditGeminiDocument() throws Exception {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
-        GeminiDocument document = mock(GeminiDocument.class);
         String fileId = "test";
         String message = "message";
+        CatalogueUser user = new CatalogueUser();
+        MetadataDocument document = new GeminiDocument()
+            .setId(fileId)
+            .setUri("https://catalogue.ceh.ac.uk/id/123-test")
+            .setMetadata(MetadataInfo.builder().build());
         
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-        given(document.getUri()).willReturn(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.updateGeminiDocument(user, fileId, document);
+        ResponseEntity<MetadataDocument> actual = controller.updateGeminiDocument(user, fileId, (GeminiDocument) document);
         
         //Then
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
@@ -173,32 +162,32 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkCanCreateLinkedDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanCreateLinkedDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
-        LinkDocument document = new LinkDocument();
-        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        LinkDocument document = LinkDocument.builder().linkedDocumentId(linkedDocumentId).build();
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Linked Document";
-        Catalogue catalogue = catalogueService.retrieve("catalogue.ceh.ac.uk");
+        String catalogue = "catalogue";
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setServerName("catalogue.ceh.ac.uk");
         
-        given(documentRepository.save(user, document, catalogue, message)).willReturn(document);
+        given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.uploadLinkedDocument(user, document, request);
+        ResponseEntity<MetadataDocument> actual = controller.uploadLinkedDocument(user, document, catalogue);
         
         //Then
-        verify(documentRepository).save(user, document, catalogue, message);
+        verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
     
     @Test
-    public void checkCanEditLinkedDocument() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanEditLinkedDocument() throws Exception {
         //Given
         CatalogueUser user = new CatalogueUser();
-        LinkDocument document = new LinkDocument();
-        document.attachUri(URI.create("https://catalogue.ceh.ac.uk/id/123-test"));
+        LinkDocument document = LinkDocument.builder().linkedDocumentId(linkedDocumentId).build();
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
         String message = "message";
         
@@ -213,7 +202,7 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkCanDeleteAFile() throws IOException {
+    public void checkCanDeleteAFile() throws Exception {
         //Given
         CatalogueUser user = mock(CatalogueUser.class);
         
@@ -225,41 +214,37 @@ public class DocumentControllerTest {
     }
     
     @Test
-    public void checkCanReadDocumentAtRevision() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanReadDocumentAtRevision() throws Exception {
         //Given
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";       
         String latestRevisionId = "latestRev";
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("catalogue.ceh.ac.uk");
-        MetadataInfo info = mock(MetadataInfo.class);
+        MetadataInfo info = MetadataInfo.builder().build();
         MetadataDocument document = mock(MetadataDocument.class);
         given(document.getMetadata()).willReturn(info);
         given(documentRepository.read(file, latestRevisionId))
             .willReturn(document);
         
         //When
-        controller.readMetadata(user, file, latestRevisionId, request);
+        controller.readMetadata(user, file, latestRevisionId);
         
         //Then
         verify(documentRepository).read(file, latestRevisionId);
     }
     
     @Test
-    public void checkCanReadDocumentLatestRevision() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public void checkCanReadDocumentLatestRevision() throws Exception {
         //Given
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("catalogue.ceh.ac.uk");
-        MetadataInfo info = mock(MetadataInfo.class);
+        MetadataInfo info = MetadataInfo.builder().build();
         MetadataDocument document = mock(MetadataDocument.class);
         given(document.getMetadata()).willReturn(info);
         given(documentRepository.read(file))
             .willReturn(document);
         
         //When
-        controller.readMetadata(user, file, request);
+        controller.readMetadata(user, file);
         
         //Then
         verify(documentRepository).read(file);

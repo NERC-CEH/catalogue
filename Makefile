@@ -6,6 +6,8 @@ NPM      := $(COMPOSE) run node npm
 
 .PHONY: clean web java build docker test-data develop selenium
 
+all: clean test-data build develop
+
 build: web java docker
 
 clean:
@@ -22,14 +24,16 @@ java:
 java-build: java docker
 
 maven-test:
+	# Run tests for a single test or test class
 	$(MAVEN) -f java/pom.xml -Dtest=$(TESTCLASS) clean test-compile surefire:test
-	# Run a single test or test class
 	# TESTCLASS=uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkDocumentGeneratorTest#testGenerateIndex make maven-test
 
 maven-version:
+	# Are there updates for java packages?
 	$(MAVEN) -f java/pom.xml versions:display-dependency-updates versions:display-plugin-updates versions:display-property-updates
 
 web-test:
+	# Just run the javascript tests
 	$(NPM) run test
 
 docker:
@@ -42,6 +46,7 @@ develop:
 	$(COMPOSE) up
 
 develop-min:
+	# Don't start Node
 	$(COMPOSE) up web solr
 
 selenium: test-data

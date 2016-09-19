@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Before;
@@ -12,15 +11,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
  *
@@ -37,7 +33,7 @@ public class CitationControllerTest {
     }
     
     @Test
-    public void checkThatGettingCitationDelegatesToDocumentControllerREV() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public void checkThatGettingCitationDelegatesToDocumentControllerREV() throws Exception {
         //Given
         MetadataDocument document = mock(MetadataDocument.class);
         String file = "file";
@@ -54,7 +50,7 @@ public class CitationControllerTest {
     }
     
     @Test
-    public void checkThatGettingCitationDelegatesToDocumentController() throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+    public void checkThatGettingCitationDelegatesToDocumentController() throws Exception {
         //Given
         MetadataDocument document = mock(MetadataDocument.class);
         String file = "file";

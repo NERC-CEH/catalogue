@@ -8,8 +8,8 @@ import static java.util.Objects.nonNull;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.NonNull;
+import lombok.Value;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -24,9 +24,12 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
  * the creation of map server mapfiles.
  * @author cjohn
  */
-@AllArgsConstructor
 public class MapServerDetailsService {
     private final String hostUrl;
+
+    public MapServerDetailsService(@NonNull String hostUrl) {
+        this.hostUrl = hostUrl;
+    }
     
     /**
      * For the given document, return the potential wms endpoint where the 
@@ -35,7 +38,11 @@ public class MapServerDetailsService {
      * @return wms url
      */
     public String getWmsUrl(String id) {
-        return hostUrl + "/maps/" + id + "?";
+        return String.format(
+            "%s/maps/%s?",
+            hostUrl,
+            id
+        );
     }
     
     /**
@@ -154,7 +161,7 @@ public class MapServerDetailsService {
                 .toUriString();
     }
     
-    @Data
+    @Value
     public static class MapBucketDetails {
         private final BigDecimal min, max;
         private final int buckets;

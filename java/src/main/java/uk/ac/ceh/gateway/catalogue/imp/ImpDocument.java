@@ -31,10 +31,11 @@ public class ImpDocument extends AbstractMetadataDocument {
     private List<Keyword> keywords;
 
     @Override
-    public void addAdditionalKeywords(@NonNull List<Keyword> additionalKeywords) {
+    public ImpDocument addAdditionalKeywords(@NonNull List<Keyword> additionalKeywords) {
         keywords = Optional.ofNullable(keywords)
             .orElse(new ArrayList<>());
         keywords.addAll(additionalKeywords);
+        return this;
     }
 
     @Override

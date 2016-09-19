@@ -3,7 +3,14 @@ define [
   'backbone'
 ], (_, Backbone) -> Backbone.Model.extend
 
-  urlRoot: '/documents'
+  url: ->
+    do @urlRoot
+
+  urlRoot: ->
+    if @isNew()
+      "/documents?catalogue=#{window.location.pathname.split('/')[1]}"
+    else
+      "/documents/#{@id}"
 
   initialize: ->
     if arguments.length > 1

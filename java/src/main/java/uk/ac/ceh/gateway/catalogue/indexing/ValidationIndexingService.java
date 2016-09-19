@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -94,7 +93,7 @@ public class ValidationIndexingService<D extends MetadataDocument> extends Abstr
     @Override
     protected D readDocument(String document, String revision) throws Exception {
         D toReturn = super.readDocument(document, revision);
-        toReturn.attachUri(URI.create(documentIdentifierService.generateUri(document)));
+        toReturn.setUri(documentIdentifierService.generateUri(document));
         postProcessingService.postProcess(toReturn);
         return toReturn;
     }

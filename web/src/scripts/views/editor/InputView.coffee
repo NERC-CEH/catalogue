@@ -21,8 +21,8 @@ define [
       @$(':input').prop 'readonly', true
 
   modify: (event) ->
-    $target = $(event.target)
-    name = $target.data('name')
+    $target = $ event.target
+    name = $target.data 'name'
     value = $target.val()
 
     if not value

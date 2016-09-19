@@ -1,14 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.net.URI;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import org.mockito.Mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
@@ -44,7 +41,7 @@ public class PermissionControllerTest {
         //Given
         CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
         String file = "1234-567-890";
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         MetadataDocument document = new GeminiDocument()
             .setMetadata(info);
         PermissionResource expected = new PermissionResource(document);
@@ -68,18 +65,18 @@ public class PermissionControllerTest {
         
         CatalogueUser notPublisher = new CatalogueUser().setUsername("notPublisher");
         String file = "1234-567-890";
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         info.addPermission(Permission.VIEW, "bob");
         MetadataDocument original = new GeminiDocument()
             .setMetadata(info);
-        original.attachUri(URI.create("/documents/" + file));
+        original.setUri("/documents/" + file);
         PermissionResource expected = new PermissionResource(original);
         
-        MetadataInfo mi = new MetadataInfo();
+        MetadataInfo mi = MetadataInfo.builder().build();
         mi.addPermission(Permission.VIEW, "public");
         GeminiDocument updated = new GeminiDocument();
         updated.setMetadata(mi);
-        updated.attachUri(URI.create("/documents/" + file));
+        updated.setUri("/documents/" + file);
         
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/documents/1234-567-890");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
@@ -99,20 +96,18 @@ public class PermissionControllerTest {
         //Given
         CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
         String file = "1234-567-890";
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().state("published").build();
         info.addPermission(Permission.VIEW, "bob");
-        info.setState("published");
         MetadataDocument document = new GeminiDocument()
             .setMetadata(info);
-        document.attachUri(URI.create("/documents/" + file));
+        document.setUri("/documents/" + file);
         
-        MetadataInfo mi = new MetadataInfo();
+        MetadataInfo mi = MetadataInfo.builder().state("published").build();
         mi.addPermission(Permission.VIEW, "bob");
         mi.addPermission(Permission.VIEW, "public");
-        mi.setState("published");
         GeminiDocument updated = new GeminiDocument();
         updated.setMetadata(mi);
-        updated.attachUri(URI.create("/documents/" + file));
+        updated.setUri("/documents/" + file);
         
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/documents/1234-567-890");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
