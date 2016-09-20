@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.time.LocalDateTime;
@@ -18,5 +19,6 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime metadataDate;
     private List<ResourceIdentifier> resourceIdentifiers;
+    @JsonIgnore
     private MetadataInfo metadata;
 }
