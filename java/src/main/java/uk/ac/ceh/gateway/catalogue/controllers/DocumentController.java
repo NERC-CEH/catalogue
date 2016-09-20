@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.LINKED_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MODEL_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
@@ -60,14 +62,13 @@ public class DocumentController {
         return toReturn;
     }
     
-    @PreAuthorize("@permission.userCanCreate()")
     @RequestMapping (value = "documents/upload",
                      method = RequestMethod.GET)
     public ModelAndView uploadForm() {
         return new ModelAndView("/html/upload.html.tpl");
     }
     
-    @PreAuthorize("@permission.userCanCreate()")
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -90,7 +91,7 @@ public class DocumentController {
         return new RedirectView(data.getUri());
     }
     
-    @PreAuthorize("@permission.userCanCreate()")
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = MODEL_JSON_VALUE)
@@ -150,7 +151,7 @@ public class DocumentController {
             .ok(data);
     }
     
-    @PreAuthorize("@permission.userCanCreate()")
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = GEMINI_JSON_VALUE)
@@ -191,7 +192,7 @@ public class DocumentController {
             .ok(data);
     }
     
-    @PreAuthorize("@permission.userCanCreate()")
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = LINKED_JSON_VALUE)
@@ -249,13 +250,16 @@ public class DocumentController {
     
     private MetadataDocument postprocessLinkDocument(MetadataDocument document) {
         if (document instanceof LinkDocument) {
-            String id = document.getId();
-            String uri = document.getUri();
-            MetadataInfo metadataInfo = document.getMetadata();
-            document = ((LinkDocument) document).getOriginal();
+            LinkDocument linkDocument = (LinkDocument) document;
+            String id = linkDocument.getId();
+            String uri = linkDocument.getUri();
+            List<Keyword> additionalKeywords = linkDocument.getAdditionalKeywords();
+            MetadataInfo metadataInfo = linkDocument.getMetadata();
+            document = linkDocument.getOriginal();
             document.setMetadata(metadataInfo);
             document.setId(id);
             document.setUri(uri);
+            document.addAdditionalKeywords(additionalKeywords);
         }
         return document;
     }
