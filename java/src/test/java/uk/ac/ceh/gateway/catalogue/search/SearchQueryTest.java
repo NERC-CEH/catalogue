@@ -139,7 +139,7 @@ public class SearchQueryTest {
     public void publisherDoesNotHaveViewFilter() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("publisher");
-        given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("ROLE_CIG_PUBLISHER")));
+        given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("ROLE_EIDC_PUBLISHER")));
         
         SearchQuery query = new SearchQuery(
             ENDPOINT,

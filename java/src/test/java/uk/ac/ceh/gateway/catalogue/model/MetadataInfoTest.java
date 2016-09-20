@@ -200,11 +200,11 @@ public class MetadataInfoTest {
     @Test
     public void userInPublisherGroupCanView() {
         //Given
-        MetadataInfo info = MetadataInfo.builder().build();
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
         
         //When
-        boolean actual = info.canAccess(Permission.VIEW, publisher, createGroups("ROLE_CIG_PUBLISHER"));
+        boolean actual = info.canAccess(Permission.VIEW, publisher, createGroups("ROLE_EIDC_PUBLISHER"));
         
         //Then
         assertThat("Publisher should be able to view", actual, is(true));

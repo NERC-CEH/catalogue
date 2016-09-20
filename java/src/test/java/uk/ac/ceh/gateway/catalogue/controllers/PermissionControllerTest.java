@@ -65,7 +65,7 @@ public class PermissionControllerTest {
         
         CatalogueUser notPublisher = new CatalogueUser().setUsername("notPublisher");
         String file = "1234-567-890";
-        MetadataInfo info = MetadataInfo.builder().build();
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         info.addPermission(Permission.VIEW, "bob");
         MetadataDocument original = new GeminiDocument()
             .setMetadata(info);
@@ -82,13 +82,14 @@ public class PermissionControllerTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         
         given(documentRepository.read(file)).willReturn(original);
-        given(permissionService.userCanMakePublic()).willReturn(Boolean.FALSE);
+        given(permissionService.userCanMakePublic("eidc")).willReturn(Boolean.FALSE);
         
         //When
         permissionController.updatePermission(notPublisher, file, new PermissionResource(updated));
         
         //Then
         verify(documentRepository).save(notPublisher, original, file, "Permissions of 1234-567-890 changed.");
+        verify(permissionService).userCanMakePublic("eidc");
     }
     
     @Test
@@ -96,13 +97,13 @@ public class PermissionControllerTest {
         //Given
         CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
         String file = "1234-567-890";
-        MetadataInfo info = MetadataInfo.builder().state("published").build();
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").state("published").build();
         info.addPermission(Permission.VIEW, "bob");
         MetadataDocument document = new GeminiDocument()
             .setMetadata(info);
         document.setUri("/documents/" + file);
         
-        MetadataInfo mi = MetadataInfo.builder().state("published").build();
+        MetadataInfo mi = MetadataInfo.builder().state("published").catalogue("eidc").build();
         mi.addPermission(Permission.VIEW, "bob");
         mi.addPermission(Permission.VIEW, "public");
         GeminiDocument updated = new GeminiDocument();
@@ -113,13 +114,14 @@ public class PermissionControllerTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         
         given(documentRepository.read(file)).willReturn(document);
-        given(permissionService.userCanMakePublic()).willReturn(Boolean.TRUE);
+        given(permissionService.userCanMakePublic("eidc")).willReturn(Boolean.TRUE);
         
         //When
         permissionController.updatePermission(publisher, file, new PermissionResource(updated));
         
         //Then
         verify(documentRepository).save(publisher, updated, file, "Permissions of 1234-567-890 changed.");
+        verify(permissionService).userCanMakePublic("eidc");
     }
     
 }

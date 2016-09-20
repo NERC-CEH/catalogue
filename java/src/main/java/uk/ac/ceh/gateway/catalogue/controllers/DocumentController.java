@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,8 +36,6 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 @Controller
 public class DocumentController {
-    public static final String EDITOR_ROLE = "ROLE_CIG_EDITOR";
-    public static final String PUBLISHER_ROLE = "ROLE_CIG_PUBLISHER";
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
     private final DocumentRepository documentRepository;
     
@@ -63,14 +60,14 @@ public class DocumentController {
         return toReturn;
     }
     
-    @Secured(EDITOR_ROLE)
+    @PreAuthorize("@permission.userCanCreate()")
     @RequestMapping (value = "documents/upload",
                      method = RequestMethod.GET)
     public ModelAndView uploadForm() {
         return new ModelAndView("/html/upload.html.tpl");
     }
     
-    @Secured(EDITOR_ROLE)
+    @PreAuthorize("@permission.userCanCreate()")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -93,7 +90,7 @@ public class DocumentController {
         return new RedirectView(data.getUri());
     }
     
-    @Secured(EDITOR_ROLE)
+    @PreAuthorize("@permission.userCanCreate()")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = MODEL_JSON_VALUE)
@@ -153,7 +150,7 @@ public class DocumentController {
             .ok(data);
     }
     
-    @Secured(EDITOR_ROLE)
+    @PreAuthorize("@permission.userCanCreate()")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = GEMINI_JSON_VALUE)
@@ -194,7 +191,7 @@ public class DocumentController {
             .ok(data);
     }
     
-    @Secured(EDITOR_ROLE)
+    @PreAuthorize("@permission.userCanCreate()")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = LINKED_JSON_VALUE)

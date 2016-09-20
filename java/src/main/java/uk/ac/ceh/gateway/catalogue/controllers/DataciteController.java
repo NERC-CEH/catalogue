@@ -1,7 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.RedirectView;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATACITE_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -18,12 +15,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
  * The following controller will handle the generation of Datacite requests.

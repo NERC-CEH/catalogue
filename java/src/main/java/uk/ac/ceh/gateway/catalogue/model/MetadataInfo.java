@@ -36,7 +36,7 @@ public class MetadataInfo {
     private final Multimap<Permission, String> permissions;
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "role_cig_readonly";
-    public static final String PUBLISHER_GROUP = "role_cig_publisher";
+    public static final String PUBLISHER_GROUP = "role_%s_publisher";
     
     @JsonCreator
     @Builder
@@ -182,7 +182,7 @@ public class MetadataInfo {
                         ||
                         (Permission.VIEW.equals(requested) && READONLY_GROUP.equalsIgnoreCase(name))
                         ||
-                        (Permission.VIEW.equals(requested) && PUBLISHER_GROUP.equalsIgnoreCase(name));
+                        (Permission.VIEW.equals(requested) && String.format(PUBLISHER_GROUP, catalogue).equalsIgnoreCase(name));
                 })
                 .findFirst()
                 .isPresent();

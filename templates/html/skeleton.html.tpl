@@ -41,7 +41,7 @@
             </#if>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <#if searching && permission.userCanCreate()>
+            <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
               <li>
                 <div id="editorCreate" class="dropdown">
                   <button class="btn btn-default navbar-btn dropdown-toggle" type="button" id="createMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">

@@ -14,7 +14,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
-import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -47,12 +46,12 @@ public class GitPublicationServiceTest {
         this.draft = new GeminiDocument()
             .setTitle("draft")
             .setId("3beb9650-fc88-4de5-b8cd-9cc8a4abe135")
-            .setMetadata(MetadataInfo.builder().state("draft").build());
+            .setMetadata(MetadataInfo.builder().state("draft").catalogue("eidc").build());
         
         this.published = new GeminiDocument()
             .setTitle("published")
             .setId("db49a6ee-5c9e-4bef-8e6e-196387df4d97")
-            .setMetadata(MetadataInfo.builder().state("published").build());
+            .setMetadata(MetadataInfo.builder().state("published").catalogue("eidc").build());
         
         MockitoAnnotations.initMocks(this);
         
@@ -62,7 +61,7 @@ public class GitPublicationServiceTest {
     @Test
     public void successfullyTransitionState() throws Exception {
         //Given
-        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.EDITOR_ROLE)));
+        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup("ROLE_EIDC_EDITOR")));
         when(documentRepository.read(FILENAME)).thenReturn(draft);
         
         //When
@@ -76,7 +75,7 @@ public class GitPublicationServiceTest {
     @Test
     public void editorCannotTransitionFromPublic() throws Exception {
         //Given
-        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.EDITOR_ROLE)));
+        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup("ROLE_EIDC_EDITOR")));
         when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When
@@ -91,7 +90,7 @@ public class GitPublicationServiceTest {
     @Test
     public void publisherCanTransitionFromPublic() throws Exception {
         //Given
-        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup(DocumentController.PUBLISHER_ROLE)));
+        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup("ROLE_EIDC_PUBLISHER")));
         when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When

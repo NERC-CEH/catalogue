@@ -301,7 +301,12 @@ public class SearchQuery {
     }
     
     private boolean userIsPublisher(List<String> groups) {
-        return groups.contains(MetadataInfo.PUBLISHER_GROUP);
+        return groups.contains(
+            String.format(
+                MetadataInfo.PUBLISHER_GROUP,
+                catalogue.getId()
+            ).toLowerCase()
+        );
     }
     
     private String userVisibility(List<String> groups) {

@@ -6,7 +6,7 @@
   <#assign viewOnMap="Preview on map">
 </#if>
 
-<#if onlineResources?? && resourceType != 'repository'>
+<#if onlineResources??>
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources)>
 
   <div class="panel panel-default hidden-print" id="document-distribution">
@@ -41,7 +41,7 @@
       <#if mapViewable>
         <p><a href="${mapViewerUrl?html}"><i class="glyphicon glyphicon-map-marker text-info"></i> ${viewOnMap?html}</a></p>
       </#if>
-	  </div>
+    </div>
 
     <#if resourceType.value != 'service'>
       <#include "_formats.html.tpl">
