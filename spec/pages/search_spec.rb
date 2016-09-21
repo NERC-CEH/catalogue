@@ -1,7 +1,7 @@
 describe "Search page" do
   sized [:xs, :sm, :md, :lg] do
     it 'should update results when term changes' do
-      visit "/documents"
+      visit "/eidc/documents"
       results = first('.result').text
       within(".search-form") do
         fill_in 'term', :with => 'my search'
@@ -10,21 +10,21 @@ describe "Search page" do
     end
 
     it 'should update results when going to next page' do
-      visit "/documents?rows=2"
+      visit "/eidc/documents?rows=2"
       results = first('.result').text
       click_on 'Next'
       expect(page).not_to have_content results
     end
 
     it 'should update results when going to previous page' do
-      visit '/documents?rows=2&page=2'
+      visit '/eidc/documents?rows=2&page=2'
       results = first('.result').text
       click_on 'Previous'
       expect(page).not_to have_content results
     end
-    
+
     it 'should find record when doing case-insesitive search for pollution keyword' do
-      visit '/documents?term=keyword%3Apollution'
+      visit '/eidc/documents?term=keyword%3Apollution'
       result = first('.result .title').text
       expect(result).to have_content 'Natural radionuclide concentrations in soil, water and sediments in England and Wales'
     end

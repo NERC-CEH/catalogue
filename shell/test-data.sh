@@ -1,5 +1,10 @@
 #!/bin/sh
 DATASTORE_DIR=datastore
+MAPFILES_DIR=mapfiles
+
+# Remove generated map files
+rm -Rf $MAPFILES_DIR
+mkdir -p $MAPFILES_DIR
 
 # Create an empty git repository in the DATASTORE_DIR
 rm -Rf $DATASTORE_DIR

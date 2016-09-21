@@ -17,7 +17,7 @@
             </#if>
 
             <#if metadataPointOfContact.address?has_content>
-			<address>
+              <address>
               <#if metadataPointOfContact.address.deliveryPoint?has_content>
                 ${metadataPointOfContact.address.deliveryPoint?html}<br>
               </#if>
@@ -33,7 +33,7 @@
               <#if metadataPointOfContact.address.country?has_content>
                 ${metadataPointOfContact.address.country?html}<br>
               </#if>
-			</address>
+              </address>
             </#if>
 
             <#if metadataPointOfContact.email?has_content>
@@ -42,12 +42,12 @@
           </div>
           </dd>
         </#list>
-      </#if>  
-      <#if metadataDateTime?has_content>  
+      </#if>
+      <#if metadataDateTime?has_content>
         <dt>Record last updated</dt>
         <dd>${metadataDateTime?html}</dd>
       </#if>
-      
+
       <#if metadataStandardName?has_content>
       <dt>Metadata standard</dt>
       <dd>

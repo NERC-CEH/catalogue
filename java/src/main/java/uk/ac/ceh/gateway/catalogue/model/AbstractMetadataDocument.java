@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -21,4 +23,12 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private List<ResourceIdentifier> resourceIdentifiers;
     @JsonIgnore
     private MetadataInfo metadata;
+    
+    @Override
+    @JsonIgnore
+    public String getMetadataDateTime() {
+        return Optional.ofNullable(metadataDate)
+            .map(md -> md.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+            .orElse("");
+    }
 }

@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.ef;
 import com.fasterxml.jackson.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -72,6 +73,14 @@ public class BaseMonitoringType implements MetadataDocument {
     
     @XmlTransient
     private LocalDateTime metadataDate;
+    
+    @Override
+    @XmlTransient
+    public String getMetadataDateTime() {
+        return Optional.ofNullable(metadataDate)
+            .map(md -> md.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+            .orElse("");
+    }
     
     @XmlElement(name = "purposeOfCollection")
     private List<Link> purposeOfCollection = new ArrayList<>();
