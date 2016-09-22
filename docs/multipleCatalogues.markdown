@@ -1,4 +1,3 @@
-
 # Adding another catalogue
 
 ## Configure a catalogue
@@ -44,4 +43,4 @@ Where *{id}* is the catalogue id
 
 The catalogue can have it's own style. A Less file should import the base [ceh style](web/src/less/style-ceh.less). The file should be named style-{id}.less where {id} is the catalogue id.
 
-Modify the [Gruntfile](web/src/Gruntfile.coffee) adding the catalogue to the less and cssmin targets.
+Modify the [Gruntfile](web/Gruntfile.coffee) adding the catalogue to the less and cssmin targets.
