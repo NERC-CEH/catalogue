@@ -38,7 +38,7 @@ describe "Map Server Generation" do
         :FORMAT  => 'image/png'
       }
       expect(resp.code).to eq 200
-    end   
+    end
 
     it_behaves_like "a wms", "image/png"
   end
@@ -48,7 +48,7 @@ describe "Map Server Generation" do
     let(:layer) { 'ukdata' }
     let(:projection) { 'EPSG:27700' }
     it_behaves_like "a renderable map source"
-    
+
     it "should support GetFeatureInfo" do |feature_count|
       resp = RestClient.get "#{APP_HOST}/maps/#{id}?", :params => {
         :SERVICE      => 'WMS',

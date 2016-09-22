@@ -2,14 +2,13 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import static java.awt.SystemColor.info;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.BDDMockito.*;
@@ -24,10 +23,10 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.crowd.model.CrowdGroup;
-import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 
 public class PermissionServiceTest {
     private final DataRepository repo = mock(DataRepository.class);
@@ -43,6 +42,25 @@ public class PermissionServiceTest {
     }
     
     @Test
+    public void eidcEditorCanCreate() {
+        //given
+        CatalogueUser eidcEditor = new CatalogueUser().setUsername("eidc editor");
+        given(groupStore.getGroups(eidcEditor)).willReturn(Arrays.asList(new CrowdGroup("role_eidc_editor")));
+        
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(eidcEditor);
+        SecurityContextHolder.setContext(securityContext);
+        
+        //when
+        boolean actual = permissionService.userCanCreate("eidc");
+        
+        //then
+        assertThat("EIDC editor should be able to create new document", actual, equalTo(true));
+    }
+    
+    @Test(expected = PermissionDeniedException.class)
     public void annonymousCanNotAccessUnknownRecord() throws IOException {
         //Given
         given(repo.getData(any(String.class), any(String.class))).willThrow(DataRepositoryException.class);
@@ -51,7 +69,7 @@ public class PermissionServiceTest {
         boolean actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "VIEW");
         
         //Then
-        assertThat("Annonymous user should not be able to access unknown record", actual, equalTo(false));
+        fail("Should not be able to get metadata record for unknown");
     }
     
     @Test
@@ -162,7 +180,7 @@ public class PermissionServiceTest {
         given(repo.getData("revision", "test.meta")).willReturn(document);
         Multimap<Permission, String> permissions = HashMultimap.create();
         permissions.put(Permission.EDIT, "editor");
-        MetadataInfo info = MetadataInfo.builder().permissions(permissions).build();
+        MetadataInfo info = MetadataInfo.builder().permissions(permissions).catalogue("eidc").build();
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
         
         //When
@@ -176,7 +194,7 @@ public class PermissionServiceTest {
     public void publisherCanMakePublic() {
         //Given
         CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
-        Group editorRole = new CrowdGroup(DocumentController.PUBLISHER_ROLE);
+        Group editorRole = new CrowdGroup("ROLE_EIDC_PUBLISHER");
         given(groupStore.getGroups(publisher)).willReturn(Arrays.asList(editorRole));
         
         Authentication authentication = mock(Authentication.class);
@@ -186,17 +204,39 @@ public class PermissionServiceTest {
         SecurityContextHolder.setContext(securityContext);
         
         //When
-        boolean actual = permissionService.userCanMakePublic();
+        boolean actual = permissionService.userCanMakePublic("eidc");
         
         //Then
         assertThat("Publisher should be able to make public", actual, equalTo(true));
     }
     
     @Test
+    public void publisherCanView() throws Exception {
+        //Given
+        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        Group publisherRole = new CrowdGroup("ROLE_EIDC_PUBLISHER");
+        given(groupStore.getGroups(publisher)).willReturn(Arrays.asList(publisherRole));
+        
+        DataRevision revision = mock(DataRevision.class);
+        given(revision.getRevisionID()).willReturn("revision");
+        given(repo.getLatestRevision()).willReturn(revision);
+        DataDocument document = mock(DataDocument.class);
+        given(repo.getData("revision", "test.meta")).willReturn(document);
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
+        
+        //When
+        boolean actual = permissionService.toAccess(publisher, "test", "VIEW");
+        
+        //Then
+        assertThat("Publisher should be able to view", actual, equalTo(true));
+    }
+    
+    @Test
     public void nonPublisherCannotMakePublic() {
         //Given
         CatalogueUser editor = new CatalogueUser().setUsername("editor");
-        Group editorRole = new CrowdGroup(DocumentController.EDITOR_ROLE);
+        Group editorRole = new CrowdGroup("ROLE_EIDC_EDITOR");
         given(groupStore.getGroups(editor)).willReturn(Arrays.asList(editorRole));
         
         Authentication authentication = mock(Authentication.class);
@@ -206,7 +246,7 @@ public class PermissionServiceTest {
         SecurityContextHolder.setContext(securityContext);
         
         //When
-        boolean actual = permissionService.userCanMakePublic();
+        boolean actual = permissionService.userCanMakePublic("eidc");
         
         //Then
         assertThat("Editor should not be able to make public", actual, equalTo(false));
@@ -231,7 +271,7 @@ public class PermissionServiceTest {
         given(repo.getLatestRevision()).willReturn(revision);
         DataDocument document = mock(DataDocument.class);
         given(repo.getData("revision", "test.meta")).willReturn(document);
-        MetadataInfo info = MetadataInfo.builder().build();
+        MetadataInfo info = MetadataInfo.builder().catalogue("ceh").build();
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
         
         //When
@@ -245,11 +285,20 @@ public class PermissionServiceTest {
     public void publicCannotEdit() throws IOException {
         //Given
         given(groupStore.getGroups(CatalogueUser.PUBLIC_USER)).willReturn(Collections.EMPTY_LIST);
+        
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(CatalogueUser.PUBLIC_USER);
         SecurityContextHolder.setContext(securityContext);
+        
+        DataRevision revision = mock(DataRevision.class);
+        given(revision.getRevisionID()).willReturn("revision");
+        given(repo.getLatestRevision()).willReturn(revision);
+        DataDocument document = mock(DataDocument.class);
+        given(repo.getData("revision", "test.meta")).willReturn(document);
+        MetadataInfo info = MetadataInfo.builder().catalogue("ceh").build();
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
         
         //When
         boolean actual = permissionService.userCanEdit("test");

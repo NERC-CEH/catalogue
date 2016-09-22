@@ -95,7 +95,7 @@ public class DocumentControllerTest {
         given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.uploadModelDocument(user, document, catalogue);
+        ResponseEntity<MetadataDocument> actual = controller.newModelDocument(user, document, catalogue);
         
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
@@ -110,6 +110,7 @@ public class DocumentControllerTest {
         String fileId = "test";
         String message = "Edited document: test";
         
+        given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
         given(document.getUri()).willReturn("https://catalogue.ceh.ac.uk/id/123-test");
               
@@ -118,6 +119,7 @@ public class DocumentControllerTest {
         
         //Then
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
+        verify(documentRepository).read(fileId);
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
     
@@ -133,7 +135,7 @@ public class DocumentControllerTest {
         given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.uploadGeminiDocument(user, document, catalogue);
+        ResponseEntity<MetadataDocument> actual = controller.newGeminiDocument(user, document, catalogue);
         
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
@@ -151,12 +153,14 @@ public class DocumentControllerTest {
             .setUri("https://catalogue.ceh.ac.uk/id/123-test")
             .setMetadata(MetadataInfo.builder().build());
         
+        given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
               
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateGeminiDocument(user, fileId, (GeminiDocument) document);
         
         //Then
+        verify(documentRepository).read(fileId);
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
@@ -175,7 +179,7 @@ public class DocumentControllerTest {
         given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.uploadLinkedDocument(user, document, catalogue);
+        ResponseEntity<MetadataDocument> actual = controller.newLinkDocument(user, document, catalogue);
         
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
@@ -191,12 +195,14 @@ public class DocumentControllerTest {
         String fileId = "test";
         String message = "message";
         
+        given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
               
         //When
-        ResponseEntity<MetadataDocument> actual = controller.updateLinkedDocument(user, fileId, document);
+        ResponseEntity<MetadataDocument> actual = controller.updateLinkDocument(user, fileId, document);
         
         //Then
+        verify(documentRepository).read(fileId);
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }

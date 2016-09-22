@@ -68,7 +68,10 @@ public class PermissionController {
     private MetadataInfo removeAddedPublicGroupIfNotPublisher(MetadataInfo original, PermissionResource permissionResource) {
         MetadataInfo toReturn; 
         
-        if (permissionService.userCanMakePublic() || original.isPubliclyViewable(Permission.VIEW)) {
+        if (
+            permissionService.userCanMakePublic(original.getCatalogue())
+            || original.isPubliclyViewable(Permission.VIEW)
+        ){
             toReturn = permissionResource.updatePermissions(original);
         } else {
             Optional<IdentityPermissions> publicGroup = publicGroup(permissionResource);

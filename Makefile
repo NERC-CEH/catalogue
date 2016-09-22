@@ -4,7 +4,7 @@ COMPOSE  := $(DOCKER) -v /var/run/docker.sock:/var/run/docker.sock docker/compos
 SELENIUM := $(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml
 NPM      := $(COMPOSE) run node npm
 
-.PHONY: clean web java build docker test-data develop selenium
+.PHONY: build clean web java java-build maven-test maven-version web-test docker test-data develop develop-min selenium selenium-only
 
 all: clean test-data build develop
 
@@ -50,5 +50,9 @@ develop-min:
 	$(COMPOSE) up web solr
 
 selenium: test-data
+	$(SELENIUM) up --force-recreate -d firefox chrome
+	$(SELENIUM) run ruby_test
+
+selenium-only:
 	$(SELENIUM) up --force-recreate -d firefox chrome
 	$(SELENIUM) run ruby_test

@@ -2,12 +2,12 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +27,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.LINKED_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MODEL_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
@@ -37,8 +38,6 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 @Controller
 public class DocumentController {
-    public static final String EDITOR_ROLE = "ROLE_CIG_EDITOR";
-    public static final String PUBLISHER_ROLE = "ROLE_CIG_PUBLISHER";
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
     private final DocumentRepository documentRepository;
     
@@ -63,14 +62,13 @@ public class DocumentController {
         return toReturn;
     }
     
-    @Secured(EDITOR_ROLE)
     @RequestMapping (value = "documents/upload",
                      method = RequestMethod.GET)
     public ModelAndView uploadForm() {
         return new ModelAndView("/html/upload.html.tpl");
     }
     
-    @Secured(EDITOR_ROLE)
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -93,25 +91,21 @@ public class DocumentController {
         return new RedirectView(data.getUri());
     }
     
-    @Secured(EDITOR_ROLE)
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = MODEL_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> uploadModelDocument(
+    public ResponseEntity<MetadataDocument> newModelDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody Model document,
             @RequestParam("catalogue") String catalogue
     ) throws DocumentRepositoryException  {
-       
-        MetadataDocument data = documentRepository.saveNew(
+        return saveNewMetadataDocument(
             user,
             document,
             catalogue,
             "new Model Document"
         );
-        return ResponseEntity
-            .created(URI.create(data.getUri()))
-            .body(data);
     }
     
     @PreAuthorize("@permission.userCanEdit(#file)")
@@ -123,15 +117,28 @@ public class DocumentController {
             @PathVariable("file") String file,
             @RequestBody Model document
     ) throws DocumentRepositoryException  {
-       
-        MetadataDocument data = documentRepository.save(
+        return saveMetadataDocument(
+            user,
+            file,
+            document
+        );
+    }
+    
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+                     method = RequestMethod.POST,
+                     consumes = GEMINI_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newGeminiDocument(
+            @ActiveUser CatalogueUser user,
+            @RequestBody GeminiDocument document,
+            @RequestParam("catalogue") String catalogue
+    ) throws DocumentRepositoryException  {
+        return saveNewMetadataDocument(
             user,
             document,
-            file,
-            String.format("Edited document: %s", file)
+            catalogue,
+            "new Gemini Document"
         );
-        return ResponseEntity
-            .ok(data);
     }
     
     @PreAuthorize("@permission.userCanEdit(#file)")
@@ -142,77 +149,81 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody GeminiDocument document
-    ) throws DocumentRepositoryException  {              
-        MetadataDocument data = documentRepository.save(
+    ) throws DocumentRepositoryException  {      
+        return saveMetadataDocument(
             user,
-            document,
             file,
-            String.format("Edited document: %s", file)
+            document
         );
-        return ResponseEntity
-            .ok(data);
     }
     
-    @Secured(EDITOR_ROLE)
-    @RequestMapping (value = "documents",
-                     method = RequestMethod.POST,
-                     consumes = GEMINI_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> uploadGeminiDocument(
-            @ActiveUser CatalogueUser user,
-            @RequestBody GeminiDocument document,
-            @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
-       
-        MetadataDocument data = documentRepository.saveNew(
-            user,
-            document,
-            catalogue,
-            "new Gemini Document"
-        );
-        return ResponseEntity
-            .created(URI.create(data.getUri()))
-            .body(data);
-    }
-    
-    @PreAuthorize("@permission.userCanEdit(#file)")
-    @RequestMapping(value = "documents/{file}",
-                    method = RequestMethod.PUT,
-                    consumes = LINKED_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> updateLinkedDocument(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            @RequestBody LinkDocument document
-    ) throws DocumentRepositoryException  {
-              
-        MetadataDocument data = documentRepository.save(
-            user,
-            document,
-            file,
-            String.format("Edited document: %s", file)
-        );
-        return ResponseEntity
-            .ok(data);
-    }
-    
-    @Secured(EDITOR_ROLE)
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
                      consumes = LINKED_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> uploadLinkedDocument(
+    public ResponseEntity<MetadataDocument> newLinkDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody LinkDocument document,
             @RequestParam("catalogue") String catalogue
     ) throws DocumentRepositoryException  {
-       
-        MetadataDocument data = documentRepository.saveNew(
+        return saveNewMetadataDocument(
             user,
             document,
             catalogue,
             "new Linked Document"
         );
+    }
+        
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+                    method = RequestMethod.PUT,
+                    consumes = LINKED_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateLinkDocument(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody LinkDocument document
+    ) throws DocumentRepositoryException  {    
+        return saveMetadataDocument(
+            user,
+            file,
+            document
+        );
+    }
+    
+    private ResponseEntity<MetadataDocument> saveNewMetadataDocument(
+        CatalogueUser user,
+        MetadataDocument document,
+        String catalogue,
+        String message
+    ) throws DocumentRepositoryException {
+        MetadataDocument data = documentRepository.saveNew(
+            user,
+            document,
+            catalogue,
+            message
+        );
         return ResponseEntity
             .created(URI.create(data.getUri()))
             .body(data);
+        
+    }
+    
+    private ResponseEntity<MetadataDocument> saveMetadataDocument(
+        CatalogueUser user,
+        String file,
+        MetadataDocument document
+    ) throws DocumentRepositoryException {
+        document.setMetadata(
+            documentRepository.read(file).getMetadata()
+        );
+        return ResponseEntity.ok(
+            documentRepository.save(
+                user,
+                document,
+                file,
+                String.format("Edited document: %s", file)
+            )
+        );
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -252,13 +263,16 @@ public class DocumentController {
     
     private MetadataDocument postprocessLinkDocument(MetadataDocument document) {
         if (document instanceof LinkDocument) {
-            String id = document.getId();
-            String uri = document.getUri();
-            MetadataInfo metadataInfo = document.getMetadata();
-            document = ((LinkDocument) document).getOriginal();
+            LinkDocument linkDocument = (LinkDocument) document;
+            String id = linkDocument.getId();
+            String uri = linkDocument.getUri();
+            List<Keyword> additionalKeywords = linkDocument.getAdditionalKeywords();
+            MetadataInfo metadataInfo = linkDocument.getMetadata();
+            document = linkDocument.getOriginal();
             document.setMetadata(metadataInfo);
             document.setId(id);
             document.setUri(uri);
+            document.addAdditionalKeywords(additionalKeywords);
         }
         return document;
     }

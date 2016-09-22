@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -29,6 +28,7 @@ public interface MetadataDocument {
     MetadataDocument setMetadata(MetadataInfo metadata);
     MetadataDocument setMetadataDate(LocalDateTime date);
     LocalDateTime getMetadataDate();
+    String getMetadataDateTime();
     List<ResourceIdentifier> getResourceIdentifiers();
     MetadataDocument setResourceIdentifiers(List<ResourceIdentifier> resourceIdentifiers);
     List<Keyword> getAllKeywords();
@@ -38,15 +38,6 @@ public interface MetadataDocument {
     default String getCatalogue() {
         return Optional.ofNullable(getMetadata())
             .map(MetadataInfo::getCatalogue)
-            .orElse("");
-    }
-    
-    @JsonIgnore
-    default String getMetadataDateTime() {
-        /* This method always returns the full datetime string (including the seconds). LocalDateTime.toString() will 
-           not return the seconds if it is a date with time 00:00:00 */
-        return Optional.ofNullable(getMetadataDate())
-            .map(md -> md.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
             .orElse("");
     }
 }

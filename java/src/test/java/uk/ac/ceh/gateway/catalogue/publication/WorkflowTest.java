@@ -7,7 +7,6 @@ import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import static org.hamcrest.CoreMatchers.*;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
-import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 
 public class WorkflowTest {
     private final PublishingRole editor, publisher;
@@ -16,8 +15,8 @@ public class WorkflowTest {
     public WorkflowTest() {
         //Given
         workflow = new PublicationConfig().workflow();
-        editor = new PublishingRole(DocumentController.EDITOR_ROLE);
-        publisher = new PublishingRole(DocumentController.PUBLISHER_ROLE);
+        editor = new PublishingRole("editor");
+        publisher = new PublishingRole("publisher");
     }
     
     @Test
@@ -66,7 +65,7 @@ public class WorkflowTest {
     @Test
     public void publisherCanTransitionPendingToPublished() {
         //Given
-        MetadataInfo info = MetadataInfo.builder().state("pending").build();
+        MetadataInfo info = MetadataInfo.builder().state("pending").catalogue("eidc").build();
         
         final State currentState = workflow.currentState(info);
         final Transition toPublished = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(publisher)), "published");
