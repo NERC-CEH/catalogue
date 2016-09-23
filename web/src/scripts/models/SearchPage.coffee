@@ -3,7 +3,7 @@ define [
   'backbone'
 ], (_, Backbone) -> Backbone.Model.extend
 
-  url: "/documents"
+  url: -> window.location.pathname
 
   defaults:
     results:  []

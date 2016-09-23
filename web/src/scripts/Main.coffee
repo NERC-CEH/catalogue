@@ -1,4 +1,5 @@
 define [
+  'underscore'
   'jquery'
   'backbone'
   'cs!views/StudyAreaView'
@@ -9,20 +10,23 @@ define [
   'cs!views/MessageView'
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
-  'cs!models/GeminiMetadata'
+  'cs!models/EditorMetadata'
   'cs!views/GeminiEditorView'
-  'cs!models/MonitoringMetadata'
   'cs!views/MonitoringEditorView'
   'cs!models/PermissionApp'
   'cs!routers/PermissionRouter'
   'cs!views/PermissionAppView'
+  'cs!models/Catalogue'
+  'cs!views/CatalogueView'
   'cs!views/ChartView'
   'cs!views/ModelEditorView'
+  'cs!views/LinkEditorView'
+  'cs!models/LinkEditorMetadata'
   'bootstrap'
-], ($, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
-    SearchRouter, GeminiMetadata, GeminiEditorView, MonitoringMetadata, MonitoringEditorView, PermissionApp, PermissionRouter,
-    PermissionAppView, ChartView, ModelEditorView) ->
-  
+], (_, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
+    SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
+    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata) ->
+
   ###
   This is the initalizer method for the entire requirejs project. Here we can
   set up the different applications and initialize any javascript code which
@@ -34,12 +38,14 @@ define [
     do @initSearch if $('#search').length
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
-    
+    do @initCatalogue if $('.catalogue-control').length
+
     $('.chart').each (i, e) -> new ChartView el: e
-      
+    do Backbone.history.start
+
   initStudyAreaMap: ->
     view = new StudyAreaView();
-      
+
   ###
   Initialize the map viewer app, view and router
   ###
@@ -49,10 +55,6 @@ define [
     router = new LayersRouter model: app
 
     @createMessageViewFor app
-    try
-      do Backbone.history.start
-    catch ex
-      console.log "history already started"
 
   ###
   Initialize the search application
@@ -61,58 +63,55 @@ define [
     app    = new SearchApp()
     view   = new SearchAppView model: app
     router = new SearchRouter model: app, location: window.location
-    
+
     @createMessageViewFor app
-    try
-      do Backbone.history.start
-    catch ex
-      console.log "history already started"
 
   ###
   Initialize the editor application
   ###
   initEditor: ->
 
-    bindEditorView = (event, model, el, View) ->
+    lookup =
+      GEMINI_DOCUMENT:
+        View: GeminiEditorView
+        Model: EditorMetadata
+        mediaType: 'application/gemini+json'
+      EF_DOCUMENT:
+        View: MonitoringEditorView
+        Model: EditorMetadata
+        mediaType: 'application/monitoring+json'
+      IMP_DOCUMENT:
+        View: ModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/model+json'
+      LINK_DOCUMENT:
+        View: LinkEditorView
+        Model: LinkEditorMetadata
+        mediaType: 'application/link+json'
+
+    # the create document dropdown
+    $editorCreate = $ '#editorCreate'
+
+    $('.edit-control').on 'click', (event) ->
       do event.preventDefault
-      new View
-        el: el
-        model: model
+      do $editorCreate.toggle
 
-      $('#editorCreate').toggle()
+      documentType = lookup[$(event.target).data('documentType')]
 
-    $('.edit-control.gemini').on 'click', (event) ->
-      model = el = null
-
-      if gemini?
-        model = new GeminiMetadata gemini
-        el = '#metadata'
+      if $editorCreate.length
+        new documentType.View
+          model: new documentType.Model null, documentType
+          el: '#search'
       else
-        model = new GeminiMetadata()
-        el = '#search'
-
-      bindEditorView event, model, el, GeminiEditorView
-
-    $('.edit-control.monitoring').on('click', (event) ->
-      model = el = null
-
-      if monitoring?
-        model = new MonitoringMetadata monitoring
-        el = '#metadata'
-      else
-        model = new MonitoringMetadata()
-        el = '#search'
-
-      bindEditorView event, model, el, MonitoringEditorView
-    )
-
-    $('.edit-control.model').on 'click', (event) ->
-      do event.preventDefault
-      $.getJSON $(location).attr('href'), (data) ->
-        new ModelEditorView
-          el: '#metadata'
-          model: new Backbone.Model data
-
+        $.ajax
+          url: $(location).attr('href')
+          dataType: 'json'
+          accepts:
+            json: documentType.mediaType
+          success: (data) ->
+            new documentType.View
+              model: new documentType.Model data, documentType
+              el: '#metadata'
 
   ###
   Initialize the permission application
@@ -123,10 +122,25 @@ define [
     router = new PermissionRouter model: app
 
     @createMessageViewFor app
-    try
-      do Backbone.history.start
-    catch ex
-      console.log "history already started"
+
+  ###
+  Initialize the catalogue application
+  ###
+  initCatalogue: ->
+    catalogues = undefined
+
+    $.getJSON '/catalogues', (data) ->
+      catalogues = _.chain(data).map((c) -> {value: c.id, label: c.title}).value()
+
+    $('.catalogue-control').on 'click', (event) ->
+      do event.preventDefault
+      $.getJSON $(event.target).attr('href'), (data) ->
+        model = new Catalogue data
+        model.options = catalogues
+
+        new CatalogueView
+          el: '#metadata'
+          model: model
 
   ###
   Create a message view. Which listens to the supplied app model for messages (errors, info)

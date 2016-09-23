@@ -36,7 +36,7 @@ public class GitRepoWrapperTest {
         CatalogueUser user = new CatalogueUser();
         String id = "test";
         String message = "template: test";
-        MetadataInfo metadataInfo = new MetadataInfo();
+        MetadataInfo metadataInfo = MetadataInfo.builder().build();
         DataWriter dataWriter = (OutputStream out) -> {
             throw new UnsupportedOperationException("Not supported yet.");
         };

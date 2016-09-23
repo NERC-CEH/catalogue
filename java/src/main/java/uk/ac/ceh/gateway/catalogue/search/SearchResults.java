@@ -1,16 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 
 /**
  * A search results object for documents
@@ -34,6 +35,8 @@ public class SearchResults {
     private final String nextPage;
     private final List<SolrIndex> results;
     private final List<Facet> facets;
+    @JsonIgnore
+    private final Catalogue catalogue;
 
     public SearchResults(QueryResponse response, SearchQuery query) {
         checkNotNull(response);
@@ -50,6 +53,7 @@ public class SearchResults {
         this.nextPage = populateNextPage(query);
         this.results = response.getBeans(SolrIndex.class);
         this.facets = populateFacets(response, query);
+        this.catalogue = query.getCatalogue();
     }
     
     private long populateNumFound(QueryResponse response) {

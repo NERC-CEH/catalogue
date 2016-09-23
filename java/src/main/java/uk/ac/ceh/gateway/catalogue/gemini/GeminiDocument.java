@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -19,36 +21,32 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_XML_VALUE;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocumentImpl;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
 /**
  *
  * @author cjohn
  */
 @Data 
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=GEMINI_XML_VALUE),
     @Template(called="rdf/gemini.xml.tpl",   whenRequestedAs=RDF_XML_VALUE)
 })
-public class GeminiDocument extends MetadataDocumentImpl {
+public class GeminiDocument extends AbstractMetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
         metadataStandardName, metadataStandardVersion, supplementalInfo, parentIdentifier, revisionOfIdentifier;
-    @JsonIgnore
-    private String jsonString;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
-      securityConstraints, partOfRepository;
+      securityConstraints;      
     private List<Keyword> topicCategories;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<ConformanceResult> conformanceResults;
     private List<SpatialResolution> spatialResolutions;
-    @JsonIgnore
-    private MetadataInfo metadata;
     private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> metadataPointsOfContact;
     private List<ResponsibleParty> distributorContacts;
@@ -69,16 +67,44 @@ public class GeminiDocument extends MetadataDocumentImpl {
     private Service service;
     private List<ResourceConstraint> accessConstraints, useConstraints;
     private MapDataDefinition mapDataDefinition;
+    private Keyword resourceType;
     
+    @Override
+    public String getType() {
+        return Optional.ofNullable(resourceType)
+            .map(Keyword::getValue)
+            .orElse("");
+    }
+    
+    @Override
+    public GeminiDocument setType(String type) {
+        super.setType(type);
+        this.resourceType = Keyword.builder().value(type).build();
+        return this;
+    }
+    
+    @Override
     @JsonIgnore
-    public String getMetadataDateTime() {
-        /* This method always returns the full datetime string (including the seconds). LocalDateTime.toString() will 
-           not return the seconds if it is a date with time 00:00:00 */
-        if (metadataDate != null) {
-            return metadataDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        } else {
-            return "";
-        }
+    public List<Keyword> getAllKeywords() {
+        return Optional.ofNullable(descriptiveKeywords)
+            .orElse(Collections.emptyList())
+            .stream()
+            .flatMap(dk -> dk.getKeywords().stream())
+            .collect(Collectors.toList());
+    }
+    
+    @Override
+    public GeminiDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
+        descriptiveKeywords = Optional.ofNullable(descriptiveKeywords)
+            .orElse(new ArrayList<>());
+        
+        descriptiveKeywords.add(
+            DescriptiveKeywords
+                .builder()
+                .keywords(additionalKeywords)
+                .build()
+        );
+        return this;
     }
         
     @JsonProperty("citation")

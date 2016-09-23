@@ -5,6 +5,7 @@ import java.util.Objects;
 import javax.xml.bind.annotation.*;
 import lombok.*;
 import lombok.experimental.Accessors;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
 @Data
 @EqualsAndHashCode(exclude = {"title","value"})
@@ -24,6 +25,14 @@ public class Link {
                 .filter(s-> !s.isEmpty())
                 .findFirst()
                 .orElse("No content in link");
+    }
+
+    public Keyword asKeyword() {
+        return Keyword
+            .builder()
+            .value(value)
+            .URI(href)
+            .build();
     }
     
     @Data

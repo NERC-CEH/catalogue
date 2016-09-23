@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -26,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService.MapBucketDet
  * @author cjohn
  */
 public class MapServerDetailsServiceTest {
+    private @Mock CatalogueService catalogueService;
     private MapServerDetailsService service;
     
     @Before

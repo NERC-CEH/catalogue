@@ -26,8 +26,7 @@ public class MetadataInfoTest {
     public void checkThatMetadataInfoCanParseMediaType() {
         //Given
         MediaType type = MediaType.IMAGE_JPEG;
-        MetadataInfo info = new MetadataInfo();
-        info.setRawType(type.toString());
+        MetadataInfo info = MetadataInfo.builder().rawType(type.toString()).build();
         
         //When
         MediaType infoType = info.getRawMediaType();
@@ -39,11 +38,10 @@ public class MetadataInfoTest {
     @Test
     public void canHideMediaTypeFromMetadataInfo() {
         //Given
-        MetadataInfo info = new MetadataInfo();
-        info.setRawType("application/xml");
+        MetadataInfo info = MetadataInfo.builder().rawType("application/xml").build();
         
         //When
-        info.hideMediaType();
+        info = info.withRawType(null);
         
         //Then
         assertNull("Expected no media type to be specified", info.getRawType());
@@ -52,7 +50,7 @@ public class MetadataInfoTest {
     @Test
     public void cannotAddEditPermissionToPublicGroup() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         
         //When
         info.addPermission(Permission.EDIT, "public");
@@ -64,7 +62,7 @@ public class MetadataInfoTest {
     @Test
     public void canAddEditPermissionToNonPublicGroup() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         
         //When
         info.addPermission(Permission.EDIT, "ceh");
@@ -76,7 +74,7 @@ public class MetadataInfoTest {
     @Test
     public void metadataIsNotPubliclyViewable() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         
         //When
         boolean actual = info.isPubliclyViewable(Permission.VIEW);
@@ -88,7 +86,7 @@ public class MetadataInfoTest {
     @Test
     public void metadataIsPubliclyViewable() {
         //Given
-        MetadataInfo info = new MetadataInfo().setState("published");
+        MetadataInfo info = MetadataInfo.builder().state("published").build();
         info.addPermission(Permission.VIEW, "public");
         
         //When
@@ -101,7 +99,7 @@ public class MetadataInfoTest {
     @Test
     public void metadataUserCanAccess() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();;
         info.addPermission(Permission.VIEW, "ceh");
         
         //When
@@ -114,7 +112,7 @@ public class MetadataInfoTest {
     @Test
     public void replacePermissions() {
         //Given
-        MetadataInfo original = new MetadataInfo();
+        MetadataInfo original = MetadataInfo.builder().build();;
         original.addPermission(Permission.VIEW, "test1");
         Set<IdentityPermissions> permissions = new HashSet<>();
         permissions.add(IdentityPermissions.builder().identity("another").canView(true).build());
@@ -130,7 +128,7 @@ public class MetadataInfoTest {
     @Test
     public void failToremoveAllPermissions() {
         //Given
-        MetadataInfo original = new MetadataInfo();
+        MetadataInfo original = MetadataInfo.builder().build();;
         original.addPermission(Permission.VIEW, "test1");
         Set<IdentityPermissions> permissions = new HashSet<>();
         //An identity with no permissions
@@ -146,7 +144,7 @@ public class MetadataInfoTest {
     @Test
     public void failToremoveIfOnlyPublicLeft() {
         //Given
-        MetadataInfo original = new MetadataInfo();
+        MetadataInfo original = MetadataInfo.builder().build();
         original.addPermission(Permission.VIEW, "test1");
         Set<IdentityPermissions> permissions = new HashSet<>();
         //Only public identift
@@ -163,7 +161,7 @@ public class MetadataInfoTest {
     @Test
     public void userInReadonlyGroupCanView() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         CatalogueUser readonly = new CatalogueUser().setUsername("readonly");
         
         //When
@@ -176,7 +174,7 @@ public class MetadataInfoTest {
     @Test
     public void userInReadonlyGroupCannotEdit() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         CatalogueUser readonly = new CatalogueUser().setUsername("readonly");
         
         //When
@@ -189,7 +187,7 @@ public class MetadataInfoTest {
     @Test
     public void userInReadonlyGroupCannotDelete() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         CatalogueUser readonly = new CatalogueUser().setUsername("readonly");
         
         //When
@@ -202,11 +200,11 @@ public class MetadataInfoTest {
     @Test
     public void userInPublisherGroupCanView() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
         
         //When
-        boolean actual = info.canAccess(Permission.VIEW, publisher, createGroups("ROLE_CIG_PUBLISHER"));
+        boolean actual = info.canAccess(Permission.VIEW, publisher, createGroups("ROLE_EIDC_PUBLISHER"));
         
         //Then
         assertThat("Publisher should be able to view", actual, is(true));
@@ -215,7 +213,7 @@ public class MetadataInfoTest {
     @Test
     public void canCheckIfDocumentIsPublicIfStateIsNull() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         info.addPermission(Permission.VIEW, "public");
         
         //When

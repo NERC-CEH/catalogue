@@ -16,8 +16,7 @@ public class FacetFilterTest {
         FacetFilter facetFilter = new FacetFilter(field, value);
         
         //Then
-        assertThat("FacetFilter asFormContent should be 'sci0|Land Cover'", facetFilter.asFormContent(), equalTo("sci0|Land Cover"));
-        assertThat("FacetFilter asURIContent should be 'sci0|Land+Cover'", facetFilter.asURIContent(), equalTo("sci0|Land+Cover"));
+        assertThat("FacetFilter asURIContent should be 'sci0%7CLand+Cover'", facetFilter.asURIContent(), equalTo("sci0%7CLand+Cover"));
         assertThat("FacetFilter asSolrFilterQuery should be '{!term f=sci0}Land Cover'", facetFilter.asSolrFilterQuery(), equalTo("{!term f=sci0}Land Cover"));
     }
     
@@ -30,9 +29,21 @@ public class FacetFilterTest {
         FacetFilter facetFilter = new FacetFilter(value);
         
         //Then
-        assertThat("FacetFilter asFormContent should be 'sci0|Monitoring & Observation Systems'", facetFilter.asFormContent(), equalTo("sci0|Monitoring & Observation Systems"));
-        assertThat("FacetFilter asURIContent should be 'sci0|Monitoring+%26+Observation+Systems'", facetFilter.asURIContent(), equalTo("sci0|Monitoring+%26+Observation+Systems"));
+        assertThat("FacetFilter asURIContent should be 'sci0%7CMonitoring+%26+Observation+Systems'", facetFilter.asURIContent(), equalTo("sci0%7CMonitoring+%26+Observation+Systems"));
         assertThat("FacetFilter asSolrFilterQuery should be '{!term f=sci0}Monitoring & Observation Systems'", facetFilter.asSolrFilterQuery(), equalTo("{!term f=sci0}Monitoring & Observation Systems"));
+    }
+    
+    @Test
+    public void createFacetFilterFromEncodedUrl() {
+        //Given
+        String value = "sci0%7CMonitoring+%26+Observation+Systems";
+        
+        //When
+        FacetFilter facetFilter = new FacetFilter(value);
+        
+        //Then
+        assertThat("FacetFilter field should be 'sci0'", facetFilter.getField(), equalTo("sci0"));
+        assertThat("FacetFilter value should be 'Monitoring & Observation Systems'", facetFilter.getValue(), equalTo("Monitoring & Observation Systems"));
     }
     
 }

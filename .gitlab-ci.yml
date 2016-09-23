@@ -79,4 +79,4 @@ build_mapserver:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
     - docker build -t $CONTAINER_MAPSERVER_IMAGE mapserver
     - docker push $CONTAINER_MAPSERVER_IMAGE
-  
+

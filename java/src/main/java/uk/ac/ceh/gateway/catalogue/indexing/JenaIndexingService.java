@@ -1,13 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.ReadWrite;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.update.GraphStore;
-import com.hp.hpl.jena.update.GraphStoreFactory;
-import com.hp.hpl.jena.update.UpdateExecutionFactory;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.update.GraphStore;
+import org.apache.jena.update.GraphStoreFactory;
+import org.apache.jena.update.UpdateExecutionFactory;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -65,14 +65,19 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
     public void unindexDocuments(List<String> documents) throws DocumentIndexingException {
         perform(ReadWrite.WRITE, () -> {
             GraphStore graph = GraphStoreFactory.create(jenaTdb);
-            for(String document : documents) {
-                String uri = documentIdentifierService.generateUri(document);
-                log.debug("Unindexing: {}", uri);
+            documents.stream().map((document) -> {
                 //Remove any triples where this document uri is the subject
                 ParameterizedSparqlString pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
-                pss.setParam("id", ResourceFactory.createResource(uri));
+                pss.setParam(
+                    "id",
+                    ResourceFactory.createResource(
+                        documentIdentifierService.generateUri(document)
+                    )
+                );
+                return pss;
+            }).forEach((pss) -> {
                 UpdateExecutionFactory.create(pss.asUpdate(), graph).execute();
-            }
+            });
             return null;
         });
     }

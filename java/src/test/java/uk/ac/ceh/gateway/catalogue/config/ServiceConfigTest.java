@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import com.hp.hpl.jena.query.Dataset;
+import org.apache.jena.query.Dataset;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateModelException;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import org.apache.solr.client.solrj.SolrServer;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
@@ -26,16 +25,13 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoFactory;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
@@ -56,58 +52,14 @@ public class ServiceConfigTest {
     @Before
     public void createServiceConfig() {
         MockitoAnnotations.initMocks(this);
-        services = spy(new ServiceConfig());
+        ServiceConfig serviceConfig = new ServiceConfig();
+        serviceConfig.baseUri = "https://example.com/";
+        services = spy(serviceConfig);
         services.jacksonMapper = jacksonMapper;
         services.dataRepository = dataRepository;
         services.solrServer = solrServer;
         services.bus = bus;
         services.jenaTdb = jenaTdb;
-    }
-    
-    @Test
-    public void checkDocumentInfoFactorySetsMediaType() {
-        //Given
-        DocumentInfoFactory<MetadataDocument, MetadataInfo> documentInfoFactory = services.documentInfoFactory();
-        GeminiDocument document = mock(GeminiDocument.class);
-        MediaType type = MediaType.TEXT_HTML;
-        
-        //When
-        MetadataInfo info = documentInfoFactory.createInfo(document, type);
-        
-        //Then
-        assertEquals("Expected to find the text/html on metadata info", "text/html", info.getRawType());
-    }
-    
-    @Test
-    public void checkThatAProvidedMediaTypeIsOverwritten() {
-        //Given
-        DocumentInfoFactory<MetadataDocument, MetadataInfo> documentInfoFactory = services.documentInfoFactory();
-        GeminiDocument documentWithMetadataInfo = mock(GeminiDocument.class);
-        MetadataInfo providedInfo = new MetadataInfo();
-        //set the value of the raw type. This needs to be hidden
-        providedInfo.setRawType(MediaType.IMAGE_PNG_VALUE);
-        when(documentWithMetadataInfo.getMetadata()).thenReturn(providedInfo);
-        
-        //When
-        MetadataInfo metadataInfo = documentInfoFactory.createInfo(documentWithMetadataInfo, MediaType.TEXT_HTML);
-        
-        //Then
-        assertEquals("Expected to find the set media type", MediaType.TEXT_HTML, metadataInfo.getRawMediaType());
-    }
-    
-    @Test
-    public void checkIfNoMetadataDocumentIsPresentInGeminiANewOneIsCreated() {
-        //Given
-        DocumentInfoFactory<MetadataDocument, MetadataInfo> documentInfoFactory = services.documentInfoFactory();
-        GeminiDocument documentWithMetadataInfo = mock(GeminiDocument.class);
-        when(documentWithMetadataInfo.getMetadata()).thenReturn(null);
-        
-        //When
-        MetadataInfo metadataInfo = documentInfoFactory.createInfo(documentWithMetadataInfo, MediaType.IMAGE_PNG);
-        
-        //Then
-        assertNotNull("Didn't expect the metadata info to be null", metadataInfo);
-        assertEquals("Expected to find image png media type", MediaType.IMAGE_PNG, metadataInfo.getRawMediaType());
     }
     
     @Test

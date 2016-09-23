@@ -1,7 +1,7 @@
 <#import "skeleton.html.tpl" as skeleton>
-<#assign docroot="id">
+<#assign docroot="documents">
 
-<@skeleton.master title="Search" searching=true>
+<@skeleton.master title="Search" catalogue=catalogue searching=true>
   <div class="search facets-mode" id="search">
 
     <div class="filters-panel">
@@ -9,7 +9,7 @@
         <h3>Filters</h3>
       </div>
       <div class="facet-filter"><#include "search/_facets.html.tpl"></div>
-      
+
       <div class="header map-heading">
         <div class="drawing-control pull-right"><#include "search/_drawing.html.tpl"></div>
         <h3>Map Search</h3>
@@ -28,6 +28,6 @@
         </div>
       </div>
     </form>
-    
+
   </div>
 </@skeleton.master>

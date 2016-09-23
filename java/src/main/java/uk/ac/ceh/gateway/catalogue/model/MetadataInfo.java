@@ -1,8 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Strings;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import java.util.Collection;
@@ -12,10 +14,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.NonNull;
+import lombok.Value;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
@@ -24,27 +26,76 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
  * The following class represents the state at which a document is in
  * @author Christopher Johnson
  */
-@Data
-@Accessors(chain = true)
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
+@Value
+// N.B. JsonAutoDetect needed to get 'permissions' written to file
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class MetadataInfo {
-    private String rawType, state, documentType;
+    private final String rawType, state;
+    private final String documentType, catalogue;;
     @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
     private final Multimap<Permission, String> permissions;
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "role_cig_readonly";
-    public static final String PUBLISHER_GROUP = "role_cig_publisher";
+    public static final String PUBLISHER_GROUP = "role_%s_publisher";
     
-    public MetadataInfo() {
-        permissions = HashMultimap.create();
+    @JsonCreator
+    @Builder
+    private MetadataInfo(
+        @JsonProperty("rawType") String rawType,
+        @JsonProperty("state") String state,
+        @JsonProperty("documentType") String documentType,
+        @JsonProperty("catalogue") String catalogue,
+        @JsonProperty("permissions") Multimap<Permission, String> permissions
+    ) {
+        this.rawType = rawType;
+        this.state = Optional.ofNullable(state).orElse("draft");
+        this.documentType = Optional.ofNullable(documentType).orElse("");
+        this.catalogue = catalogue;
+        if (permissions != null) {
+            this.permissions = HashMultimap.create(permissions);
+        } else {
+            this.permissions = HashMultimap.create();
+        }
     }
     
     public MetadataInfo(MetadataInfo info) {
-        this.rawType = info.rawType;
-        this.state = info.state;
-        this.documentType = info.documentType;
-        this.permissions = HashMultimap.create(info.permissions);
+        this(
+            info.rawType,
+            info.state,
+            info.documentType,
+            info.catalogue,
+            info.permissions
+        );
+    }
+    
+    public MetadataInfo withCatalogue(@NonNull String catalogue) {
+        return MetadataInfo.builder()
+            .rawType(this.rawType)
+            .state(this.state)
+            .documentType(this.documentType)
+            .catalogue(catalogue)
+            .permissions(this.permissions)
+            .build();
+    }
+    
+    public MetadataInfo withRawType(String rawType) {
+        return MetadataInfo.builder()
+            .rawType(rawType)
+            .state(this.state)
+            .documentType(this.documentType)
+            .catalogue(this.catalogue)
+            .permissions(this.permissions)
+            .build();
+    }
+    
+    public MetadataInfo withState(@NonNull String state) {
+        return MetadataInfo.builder()
+            .rawType(this.rawType)
+            .state(state)
+            .documentType(this.documentType)
+            .catalogue(this.catalogue)
+            .permissions(this.permissions)
+            .build();
     }
       
     @JsonIgnore
@@ -52,21 +103,7 @@ public class MetadataInfo {
         return MediaType.parseMediaType(rawType);
     }
     
-    public void hideMediaType() {
-        setRawType(null);
-    }
-    
-    public String getState() {
-        return Optional.ofNullable(state).orElse("draft");
-    }
-    
-    public String getDocumentType() {
-        return Optional.ofNullable(documentType).orElse("");
-    }
-    
-    public void addPermission(Permission permission, String identity) {
-        Objects.requireNonNull(permission);
-        Objects.requireNonNull(Strings.emptyToNull(identity));
+    public void addPermission(@NonNull Permission permission, @NonNull String identity) {
         if (PUBLIC_GROUP.equalsIgnoreCase(identity)) {
             if(Permission.VIEW.equals(permission)) {
                 // Only allow VIEW permission to be set for the PUBLIC_GROUP
@@ -77,24 +114,19 @@ public class MetadataInfo {
         }
     }
     
-    public MetadataInfo replaceAllPermissions(Set<IdentityPermissions> updated) {
-        Objects.requireNonNull(updated);
+    public MetadataInfo replaceAllPermissions(@NonNull Set<IdentityPermissions> updated) {
         MetadataInfo toReturn = new MetadataInfo(this);
         toReturn.permissions.clear();
-        
-        for (IdentityPermissions ip : updated) {
-            if (ip.isCanView()) {
-                toReturn.addPermission(Permission.VIEW, ip.getIdentity());
-
-                if (ip.isCanEdit()) {
-                    toReturn.addPermission(Permission.EDIT, ip.getIdentity());
-
-                    if (ip.isCanDelete()) {
-                        toReturn.addPermission(Permission.DELETE, ip.getIdentity());
-                    }
-                }
-            }
-        }
+               
+        updated.stream().filter((ip) -> (ip.isCanView())).map((ip) -> {
+            toReturn.addPermission(Permission.VIEW, ip.getIdentity());
+            return ip;
+        }).filter((ip) -> (ip.isCanEdit())).map((ip) -> {
+            toReturn.addPermission(Permission.EDIT, ip.getIdentity());
+            return ip;
+        }).filter((ip) -> (ip.isCanDelete())).forEach((ip) -> {
+            toReturn.addPermission(Permission.DELETE, ip.getIdentity());
+        });
         preventAllPermissionsBeingRemovedOrOnlyPublic(toReturn);
         return toReturn;
     }
@@ -150,7 +182,7 @@ public class MetadataInfo {
                         ||
                         (Permission.VIEW.equals(requested) && READONLY_GROUP.equalsIgnoreCase(name))
                         ||
-                        (Permission.VIEW.equals(requested) && PUBLISHER_GROUP.equalsIgnoreCase(name));
+                        (Permission.VIEW.equals(requested) && String.format(PUBLISHER_GROUP, catalogue).equalsIgnoreCase(name));
                 })
                 .findFirst()
                 .isPresent();

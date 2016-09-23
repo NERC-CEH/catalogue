@@ -1,11 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
@@ -25,6 +22,7 @@ import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.PAGE_QUER
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_DEFAULT;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_QUERY_PARAM;
 import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.TERM_QUERY_PARAM;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -43,10 +41,22 @@ public class SearchQuery {
     private final int rows;
     private final @NotNull List<FacetFilter> facetFilters;
     private final GroupStore<CatalogueUser> groupStore;
-
+    private final Catalogue catalogue;
     private final List<Facet> facets;
 
-    public SearchQuery(String endpoint, CatalogueUser user, String term, String bbox, SpatialOperation spatialOperation, int page, int rows, List<FacetFilter> facetFilters, GroupStore<CatalogueUser> groupStore) {
+    public SearchQuery(
+            String endpoint,
+            CatalogueUser user,
+            String term,
+            String bbox,
+            SpatialOperation spatialOperation,
+            int page,
+            int rows,
+            List<FacetFilter> facetFilters,
+            GroupStore<CatalogueUser> groupStore,
+            Catalogue catalogue,
+            List<Facet> facets
+    ) {
         this.endpoint = endpoint;
         this.user = user;
         this.term = term;
@@ -56,71 +66,9 @@ public class SearchQuery {
         this.rows = rows;
         this.facetFilters = new ArrayList(facetFilters);
         this.groupStore = groupStore;
-        this.facets = populateFacets(facetFilters);
-        removeFacetFiltersOfUndisplayedFacets();
-    }
-
-    private void removeFacetFiltersOfUndisplayedFacets() {
-        /* 
-        Prevent filter query being applied for a field that is not being used 
-        as a facet. 
-        
-        Facets appear and disappear on the search UI dependent on which
-        Repository is selected. A filter query on a facet field that is no
-        longer displayed causes confusion as a hidden filter is being applied.
-        */
-        List<String> facetFieldNames 
-            = facets
-                .stream()
-                .map(Facet::getFieldName)
-                .collect(Collectors.toList());
-        
-        List<FacetFilter> toRemove 
-            = facetFilters
-                .stream()
-                .filter(ff -> {
-                    return !facetFieldNames.contains(ff.getField());
-
-                })
-                .collect(Collectors.toList());
-        
-        facetFilters.removeAll(toRemove);
-    }
-    
-    private List<Facet> standardFacets() {
-        return new ArrayList(Arrays.asList(
-            Facet.builder().fieldName("repository").displayName("Catalogue").hierarchical(false).build(),
-            Facet.builder().fieldName("resourceType").displayName("Resource type").hierarchical(false).build(),
-            Facet.builder().fieldName("licence").displayName("Licence").hierarchical(false).build()
-        ));
-    }
-    
-     private ListMultimap<String, Facet> repositoryFacets() {      
-        ListMultimap<String, Facet> newRepositoryFacets = ArrayListMultimap.create();
-        newRepositoryFacets.putAll("Catchment Management Platform", Arrays.asList(
-            Facet.builder().fieldName("impBroaderCatchmentIssues").displayName("Broader Catchment Issues").hierarchical(false).build(),
-            Facet.builder().fieldName("impScale").displayName("Scale").hierarchical(false).build(),
-            Facet.builder().fieldName("impWaterQuality").displayName("Water Quality").hierarchical(false).build()
-        ));
-        newRepositoryFacets.putAll("Environmental Information Data Centre", Arrays.asList(
-            Facet.builder().fieldName("topic").displayName("Topic").hierarchical(true).build()
-        )); 
-        return newRepositoryFacets;
-    }
-    
-    private List<Facet> populateFacets(List<FacetFilter> facetFilters) {                
-        List<Facet> toReturn = standardFacets();
-        ListMultimap<String, Facet> repositoryFacets = repositoryFacets();
-        facetFilters
-            .stream()
-            .filter(ff -> {
-                return ff.getField().equals("repository");
-            })
-            .forEach(ff -> {
-                toReturn.addAll(1, repositoryFacets.get(ff.getValue()));
-            });
-        return toReturn;
-    }
+        this.facets = facets;
+        this.catalogue = catalogue;
+    }   
        
     public SolrQuery build(){
         SolrQuery query = new SolrQuery()
@@ -136,6 +84,7 @@ public class SearchQuery {
         setFacetFilters(query);
         setFacetFields(query);
         setSortOrder(query);
+        setCatalogueFilter(query);
         log.debug("search query: {}", query);
         return query;
     }
@@ -146,7 +95,19 @@ public class SearchQuery {
     
     public SearchQuery withPage(int newPage) {
         if ( page != newPage) {
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, newPage, rows, facetFilters, groupStore);
+            return new SearchQuery(
+                endpoint,
+                user,
+                term,
+                bbox,
+                spatialOperation,
+                newPage,
+                rows,
+                facetFilters,
+                groupStore,
+                catalogue,
+                facets
+            );
         }
         else {
             return this;
@@ -161,7 +122,19 @@ public class SearchQuery {
      */
     public SearchQuery withBbox(String newBbox) {
         if ( (bbox == null && newBbox != null) || (bbox !=null && !bbox.equals(newBbox)) ) {
-            return new SearchQuery(endpoint, user, term, newBbox, spatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore);
+            return new SearchQuery(
+                endpoint,
+                user,
+                term,
+                newBbox,
+                spatialOperation,
+                PAGE_DEFAULT,
+                rows,
+                facetFilters,
+                groupStore,
+                catalogue,
+                facets
+            );
         }
         else {
             return this;
@@ -177,7 +150,19 @@ public class SearchQuery {
      */
     public SearchQuery withSpatialOperation(SpatialOperation newSpatialOperation) {
         if ( !spatialOperation.equals(newSpatialOperation) ) {
-            return new SearchQuery(endpoint, user, term, bbox, newSpatialOperation, PAGE_DEFAULT, rows, facetFilters, groupStore);
+            return new SearchQuery(
+                endpoint,
+                user,
+                term,
+                bbox,
+                newSpatialOperation,
+                PAGE_DEFAULT,
+                rows,
+                facetFilters,
+                groupStore,
+                catalogue,
+                facets
+            );
         }
         else {
             return this;
@@ -198,7 +183,19 @@ public class SearchQuery {
         if (!containsFacetFilter(filter)) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.add(filter);
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore);
+            return new SearchQuery(
+                endpoint,
+                user,
+                term,
+                bbox,
+                spatialOperation,
+                PAGE_DEFAULT,
+                rows,
+                newFacetFilters,
+                groupStore,
+                catalogue,
+                facets
+            );
         }
         else {
             return this;
@@ -217,7 +214,19 @@ public class SearchQuery {
         if(containsFacetFilter(filter) ) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
             newFacetFilters.remove(filter);
-            return new SearchQuery(endpoint, user, term, bbox, spatialOperation, PAGE_DEFAULT, rows, newFacetFilters, groupStore);
+            return new SearchQuery(
+                endpoint,
+                user,
+                term,
+                bbox,
+                spatialOperation,
+                PAGE_DEFAULT,
+                rows,
+                newFacetFilters,
+                groupStore,
+                catalogue,
+                facets
+            );
         }
         else {
             return this;
@@ -292,7 +301,12 @@ public class SearchQuery {
     }
     
     private boolean userIsPublisher(List<String> groups) {
-        return groups.contains(MetadataInfo.PUBLISHER_GROUP);
+        return groups.contains(
+            String.format(
+                MetadataInfo.PUBLISHER_GROUP,
+                catalogue.getId()
+            ).toLowerCase()
+        );
     }
     
     private String userVisibility(List<String> groups) {
@@ -326,6 +340,12 @@ public class SearchQuery {
         });
     }
     
+    private void setCatalogueFilter(SolrQuery query) {
+        query.addFilterQuery(
+            String.format("{!term f=catalogue}%s", catalogue.getId())
+        );
+    }
+
     private void setSortOrder(SolrQuery query){
         if(DEFAULT_SEARCH_TERM.equals(term)){
             query.setSort(getRandomFieldName(), SolrQuery.ORDER.asc);

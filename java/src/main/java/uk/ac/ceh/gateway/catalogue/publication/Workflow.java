@@ -26,8 +26,7 @@ public class Workflow {
         State fromState = currentState(info);
         
         if (fromState.canTransition(roles, transition)) {
-            MetadataInfo toReturn = new MetadataInfo(info);
-            return toReturn.setState(transition.getToState().getId());
+            return info.withState(transition.getToState().getId());
         } else {
             return info;
         }
