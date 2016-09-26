@@ -33,11 +33,17 @@ module.exports = (grunt) ->
         ext: '.spec.js'
 
     less:
-      development:
-        options:
-          compress: false
-          paths: ['less', '<%= bowerDirectory %>/bootstrap/less']
-        files: 'src/css/style.css' : 'src/less/style.less'
+      options:
+        compress: false
+        paths: ['less', '<%= bowerDirectory %>/bootstrap/less']
+      assist:
+        files: 'src/css/style-assist.css' : 'src/less/style-assist.less'
+      ceh:
+        files: 'src/css/style-ceh.css' : 'src/less/style-ceh.less'
+      cmp:
+        files: 'src/css/style-cmp.css' : 'src/less/style-cmp.less'
+      eidc:
+        files: 'src/css/style-eidc.css' : 'src/less/style-eidc.less'
 
     requirejs:
       compile:
@@ -107,9 +113,14 @@ module.exports = (grunt) ->
       prep: ['src/css']
 
     cssmin:
-      build:
-        src: 'src/css/style.css'
-        dest: 'src/css/style.css'
+      assist:
+        files: 'src/css/style-assist.css' : 'src/css/style-assist.css'
+      ceh:
+        files: 'src/css/style-ceh.css' : 'src/css/style-ceh.css'
+      cmp:
+        files: 'src/css/style-cmp.css' : 'src/css/style-cmp.css'
+      eidc:
+        files: 'src/css/style-eidc.css' : 'src/css/style-eidc.css'
 
   grunt.registerTask 'prep', ['clean', 'combine_harvester:openlayers']
   grunt.registerTask 'test', ['clean:test', 'coffee', 'jasmine']

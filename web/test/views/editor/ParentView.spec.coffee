@@ -1,13 +1,13 @@
 define [
   'cs!views/editor/ParentView'
-  'cs!models/GeminiMetadata'
+  'cs!models/EditorMetadata'
   'cs!views/editor/ResourceIdentifierView'
-], (ParentView, GeminiMetadata, ResourceIdentifierView) ->
+], (ParentView, EditorMetadata, ResourceIdentifierView) ->
   describe 'ParentView', ->
     view = model = null
 
     beforeEach ->
-      model = new GeminiMetadata()
+      model = new EditorMetadata()
       view = new ParentView
         model: model
         modelAttribute: 'resourceIdentifiers'
@@ -24,7 +24,7 @@ define [
     describe 'when view is created with populated model', ->
 
       beforeEach ->
-        model = new GeminiMetadata
+        model = new EditorMetadata
           resourceIdentifiers: [
               code: '1234'
               codeSpace: 'CEH:EIDC:'
@@ -46,7 +46,7 @@ define [
       it 'should be a resourceIdentifiers collection', ->
         expect(view.collection).toBeDefined()
 
-      it 'should be populated from GeminiMetadata model', ->
+      it 'should be populated from EditorMetadata model', ->
         identifier = view.collection.at 0
         expect(identifier.get 'code').toEqual '1234'
 

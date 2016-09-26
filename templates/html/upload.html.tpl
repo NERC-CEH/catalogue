@@ -23,6 +23,16 @@
           </div>
         </div>
         <div class="form-group">
+          <label for="catalogue" class="col-sm-3 control-label">Catalogue:</label>
+          <div class="col-sm-9">
+            <select id="catalogue" name="catalogue" class="form-control">
+              <#list catalogues.retrieveAll() as catalogue>
+                <option value="${catalogue.id}">${catalogue.title}</option>
+              </#list>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
             <input class="btn btn-default" type="submit" value="Upload">
           </div>

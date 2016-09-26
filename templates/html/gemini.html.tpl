@@ -4,14 +4,13 @@
 
 <#assign authors       = _.filter(responsibleParties, _.isAuthor) >
 <#assign otherContacts = _.reject(responsibleParties, _.isAuthor) >
-<@skeleton.master title=title rdf="${uri}?format=rdf">
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=rdf">
   <div id="metadata">
-   
    <div class="container">
 	  <div id="section-Top">
-		  <@blocks.title title=title!"" type=(resourceType.value)!"" /> 
+		  <@blocks.title title=title!"" type=(resourceType.value)!"" />
 		  <#include "gemini/_licence.html.tpl">
-		   <#include "gemini/_notCurrent.html.tpl">
+		  <#include "gemini/_notCurrent.html.tpl">
 		  <#include "gemini/_authorsTop.html.tpl">
 	  </div>
       <@blocks.description description!"" />
@@ -27,7 +26,6 @@
           <#include "gemini/_model.html.tpl">
         </div>
         <div class="col-sm-8 col-xs-12">
-          <#include "gemini/_repository.html.tpl">
           <#include "gemini/_extent.html.tpl">
           <#include "gemini/_onlineResources.html.tpl">
           <#include "gemini/_quality.html.tpl">
@@ -44,6 +42,5 @@
 	  <div id="footer">
 	    <#include "gemini/_footer.html.tpl">
 	  </div>
-    <#include "gemini/_json.html.tpl">
   </div>
 </@skeleton.master>

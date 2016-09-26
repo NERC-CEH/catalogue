@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 
 /**
  *
@@ -13,6 +14,7 @@ import org.junit.Test;
  */
 public class DocumentIdentifierServiceTest {
     private DocumentIdentifierService service;
+    private Catalogue ceh;
     
     @Before
     public void init() {

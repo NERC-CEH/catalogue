@@ -23,10 +23,12 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 public class DevelopmentUserStoreConfig {
     public static final String CEH_GROUP_NAME   = "CEH";
     public static final String READONLY_ROLE    = "ROLE_CIG_READONLY";
-    public static final String EDITOR_ROLE      = DocumentController.EDITOR_ROLE;
-    public static final String PUBLISHER_ROLE   = DocumentController.PUBLISHER_ROLE;
     public static final String MAINTENANCE_ROLE = DocumentController.MAINTENANCE_ROLE;
     public static final String DATACITE_ROLE    = DataciteController.DATACITE_ROLE;
+    public static final String EIDC_EDITOR      = "role_eidc_editor";
+    public static final String EIDC_PUBLISHER   = "role_eidc_publisher";
+    public static final String CMP_EDITOR       = "role_cmp_editor";
+    public static final String CMP_PUBLISHER    = "role_cmp_publisher";
     
     @Bean @Qualifier("superadmin")
     public CatalogueUser superadmin() throws UsernameAlreadyTakenException {
@@ -35,8 +37,8 @@ public class DevelopmentUserStoreConfig {
                                         .setEmail("superadmin@ceh.ac.uk");
         
         groupStore().grantGroupToUser(superadmin, CEH_GROUP_NAME);
-        groupStore().grantGroupToUser(superadmin, EDITOR_ROLE);
-        groupStore().grantGroupToUser(superadmin, PUBLISHER_ROLE);
+        groupStore().grantGroupToUser(superadmin, EIDC_EDITOR);
+        groupStore().grantGroupToUser(superadmin, EIDC_PUBLISHER);
         groupStore().grantGroupToUser(superadmin, MAINTENANCE_ROLE);
         groupStore().grantGroupToUser(superadmin, DATACITE_ROLE);
         userStore().addUser(superadmin, "superadminpassword");
@@ -65,25 +67,48 @@ public class DevelopmentUserStoreConfig {
         return readonly;
     }
     
-    @Bean @Qualifier("editor")
-    public CatalogueUser editor() throws UsernameAlreadyTakenException {
+    @Bean @Qualifier("eidc-editor")
+    public CatalogueUser eidcEditor() throws UsernameAlreadyTakenException {
         CatalogueUser editor =  new CatalogueUser()
-                                        .setUsername("editor")
-                                        .setEmail("editor@ceh.ac.uk");
+                                        .setUsername("eidc-editor")
+                                        .setEmail("eidc-editor@ceh.ac.uk");
         
-        groupStore().grantGroupToUser(editor, EDITOR_ROLE);
-        groupStore().grantGroupToUser(editor, CEH_GROUP_NAME);
+        groupStore().grantGroupToUser(editor, EIDC_EDITOR);
         userStore().addUser(editor, "editorpassword");
         return editor;
     }
     
-    @Bean @Qualifier("publisher")
-    public CatalogueUser publisher() throws UsernameAlreadyTakenException {
+    @Bean @Qualifier("eidc-publisher")
+    public CatalogueUser eidcPublisher() throws UsernameAlreadyTakenException {
         CatalogueUser publisher =  new CatalogueUser()
-                                        .setUsername("publisher")
-                                        .setEmail("publisher@ceh.ac.uk");
+                                        .setUsername("eidc-publisher")
+                                        .setEmail("eidc-publisher@ceh.ac.uk");
         
-        groupStore().grantGroupToUser(publisher, PUBLISHER_ROLE);
+        groupStore().grantGroupToUser(publisher, EIDC_EDITOR);
+        groupStore().grantGroupToUser(publisher, EIDC_PUBLISHER);
+        userStore().addUser(publisher, "publisherpassword");
+        return publisher;
+    }
+    
+    @Bean @Qualifier("cmp-editor")
+    public CatalogueUser cmpEditor() throws UsernameAlreadyTakenException {
+        CatalogueUser editor =  new CatalogueUser()
+                                        .setUsername("cmp-editor")
+                                        .setEmail("cmp-editor@ceh.ac.uk");
+        
+        groupStore().grantGroupToUser(editor, CMP_EDITOR);
+        userStore().addUser(editor, "editorpassword");
+        return editor;
+    }
+    
+    @Bean @Qualifier("cmp-publisher")
+    public CatalogueUser cmpPublisher() throws UsernameAlreadyTakenException {
+        CatalogueUser publisher =  new CatalogueUser()
+                                        .setUsername("cmp-publisher")
+                                        .setEmail("cmp-publisher@ceh.ac.uk");
+        
+        groupStore().grantGroupToUser(publisher, CMP_EDITOR);
+        groupStore().grantGroupToUser(publisher, CMP_PUBLISHER);
         userStore().addUser(publisher, "publisherpassword");
         return publisher;
     }
@@ -105,8 +130,10 @@ public class DevelopmentUserStoreConfig {
         //create groups
         toReturn.createGroup(CEH_GROUP_NAME,   "Centre for Ecology & Hydrology");
         toReturn.createGroup(READONLY_ROLE,    "Read only role");
-        toReturn.createGroup(EDITOR_ROLE,      "Editor Role");
-        toReturn.createGroup(PUBLISHER_ROLE,   "Publisher Role");
+        toReturn.createGroup(EIDC_EDITOR,      "EIDC Editor Role");
+        toReturn.createGroup(EIDC_PUBLISHER,   "EIDC Publisher Role");
+        toReturn.createGroup(CMP_EDITOR,       "CMP Editor Role");
+        toReturn.createGroup(CMP_PUBLISHER,    "CMP Publisher Role");
         toReturn.createGroup(MAINTENANCE_ROLE, "System Admin Role");
         toReturn.createGroup(DATACITE_ROLE,    "Datacite Role");
         return toReturn;

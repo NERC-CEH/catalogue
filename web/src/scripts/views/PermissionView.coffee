@@ -57,4 +57,4 @@ define [
     $('#canDelete').prop 'checked', false
 
   leave: ->
-    window.location.assign @model.get 'metadataHref'
+    window.location.assign "/documents/#{@model.get 'id'}/permission"

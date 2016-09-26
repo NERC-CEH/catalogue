@@ -7,7 +7,6 @@ import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import static org.hamcrest.CoreMatchers.*;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
-import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 
 public class WorkflowTest {
     private final PublishingRole editor, publisher;
@@ -16,14 +15,14 @@ public class WorkflowTest {
     public WorkflowTest() {
         //Given
         workflow = new PublicationConfig().workflow();
-        editor = new PublishingRole(DocumentController.EDITOR_ROLE);
-        publisher = new PublishingRole(DocumentController.PUBLISHER_ROLE);
+        editor = new PublishingRole("editor");
+        publisher = new PublishingRole("publisher");
     }
     
     @Test
     public void getCurrentStateOfDocumentInDraft() {
         //Given
-        MetadataInfo info = new MetadataInfo().setState("draft");
+        MetadataInfo info = MetadataInfo.builder().state("draft").build();
         
         //When
         final State currentState = workflow.currentState(info);
@@ -35,7 +34,7 @@ public class WorkflowTest {
     @Test
     public void editorTransitionDraftToPending() {
         //Given
-        MetadataInfo original = new MetadataInfo().setState("draft");
+        MetadataInfo original = MetadataInfo.builder().state("draft").build();
         
         final State currentState = workflow.currentState(original);
         final Transition toPending = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "pending");
@@ -51,7 +50,7 @@ public class WorkflowTest {
     @Test
     public void editorCannotTransitionPendingToPublished() {
         //Given
-        MetadataInfo info = new MetadataInfo().setState("pending");
+        MetadataInfo info = MetadataInfo.builder().state("pending").build();
         
         final State currentState = workflow.currentState(info);
         final Transition toPublished = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "published");
@@ -66,7 +65,7 @@ public class WorkflowTest {
     @Test
     public void publisherCanTransitionPendingToPublished() {
         //Given
-        MetadataInfo info = new MetadataInfo().setState("pending");
+        MetadataInfo info = MetadataInfo.builder().state("pending").catalogue("eidc").build();
         
         final State currentState = workflow.currentState(info);
         final Transition toPublished = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(publisher)), "published");
@@ -81,7 +80,7 @@ public class WorkflowTest {
     @Test
     public void editorCanNotTransitionFromPublishedToDraft() {
         //Given
-        MetadataInfo info = new MetadataInfo().setState("published");
+        MetadataInfo info = MetadataInfo.builder().state("published").build();;
         
         final State currentState = workflow.currentState(info);
         final Transition toDraft = getTransitionTo(currentState.avaliableTransitions(ImmutableSet.of(editor)), "draft");

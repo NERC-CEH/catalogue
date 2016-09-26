@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.config.ServiceConfig.MessageConvertersHolder;
 import uk.ac.ceh.gateway.catalogue.converters.Gml2WmsFeatureInfoMessageConverter;
+import uk.ac.ceh.gateway.catalogue.util.ForgivingParameterContentNegotiationStrategy;
 import uk.ac.ceh.gateway.catalogue.util.MapServerGetFeatureInfoErrorHandler;
 import uk.ac.ceh.gateway.catalogue.util.WmsFormatContentNegotiationStrategy;
 
@@ -41,6 +43,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String DATACITE_XML_VALUE           = "application/x-datacite+xml";
     public static final String GEMINI_SHORT                 = "gemini";
     public static final String GEMINI_JSON_VALUE            = "application/gemini+json";
+    public static final String MODEL_SHORT                  = "model";
+    public static final String MODEL_JSON_VALUE             = "application/model+json";
+    public static final String LINKED_SHORT                 = "link";
+    public static final String LINKED_JSON_VALUE            = "application/link+json";
     public static final String UKEOF_XML_SHORT              = "ukeof";
     public static final String UKEOF_XML_VALUE              = "application/ukeof+xml";
     public static final String EF_INSPIRE_XML_SHORT         = "efinspire";
@@ -93,20 +99,21 @@ public class WebConfig extends WebMvcConfigurerAdapter {
             .favorPathExtension(false)
             .ignoreAcceptHeader(true) // Define accept header handling manually
             .defaultContentTypeStrategy(new ContentNegotiationManager(
+                    new ForgivingParameterContentNegotiationStrategy(ImmutableMap.<String, MediaType>builder()
+                        .put("html", MediaType.TEXT_HTML)
+                        .put("json", MediaType.APPLICATION_JSON)
+                        .put(GEMINI_XML_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
+                        .put(UKEOF_XML_SHORT, MediaType.parseMediaType(UKEOF_XML_VALUE))
+                        .put(EF_INSPIRE_XML_SHORT, MediaType.parseMediaType(EF_INSPIRE_XML_VALUE))
+                        .put(RDF_XML_SHORT, MediaType.parseMediaType(RDF_XML_VALUE))
+                        .put(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
+                        .put(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE))
+                        .build()
+                    ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo
                     new HeaderContentNegotiationStrategy(),
                     new FixedContentNegotiationStrategy(MediaType.TEXT_HTML)
-            ))
-            .favorParameter(true)
-            .mediaType("html", MediaType.TEXT_HTML)
-            .mediaType("json", MediaType.APPLICATION_JSON)
-            .mediaType(GEMINI_SHORT, MediaType.parseMediaType(GEMINI_JSON_VALUE))
-            .mediaType(GEMINI_XML_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
-            .mediaType(UKEOF_XML_SHORT, MediaType.parseMediaType(UKEOF_XML_VALUE))
-            .mediaType(EF_INSPIRE_XML_SHORT, MediaType.parseMediaType(EF_INSPIRE_XML_VALUE))
-            .mediaType(RDF_XML_SHORT, MediaType.parseMediaType(RDF_XML_VALUE))
-            .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
-            .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE));
+            ));
     }
     
     

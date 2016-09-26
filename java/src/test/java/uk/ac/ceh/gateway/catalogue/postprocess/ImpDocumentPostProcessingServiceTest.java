@@ -1,10 +1,8 @@
 
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import com.hp.hpl.jena.query.Dataset;
-import static com.hp.hpl.jena.rdf.model.ResourceFactory.createResource;
-import com.hp.hpl.jena.tdb.TDBFactory;
-import java.net.URI;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.tdb.TDBFactory;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -16,6 +14,7 @@ import org.junit.Before;
 import uk.ac.ceh.gateway.catalogue.imp.Link;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 
 @Slf4j
 public class ImpDocumentPostProcessingServiceTest {
@@ -32,11 +31,11 @@ public class ImpDocumentPostProcessingServiceTest {
     public void addLinks() throws PostProcessingException {
         //Given
         Model model = new Model();
-        model.setUri(URI.create("http://model"));
+        model.setUri("http://model");
         model.setIdentifiers(Arrays.asList("dataset1"));
         Link expected = new Link("http://dataset1", "Dataset 1");
         
-        com.hp.hpl.jena.rdf.model.Model triples = jenaTdb.getDefaultModel();
+        org.apache.jena.rdf.model.Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset1"));
         

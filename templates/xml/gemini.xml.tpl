@@ -4,19 +4,19 @@
 <#escape x as x?xml>
 <?xml version="1.0" encoding="UTF-8"?>
 <gmd:MD_Metadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<gmd:fileIdentifier><gco:CharacterString>${id}</gco:CharacterString></gmd:fileIdentifier>
-	<gmd:language>
-		<gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">eng</gmd:LanguageCode>
-	</gmd:language>
-	<gmd:characterSet>
-		<gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
-	</gmd:characterSet>
+  <gmd:fileIdentifier><gco:CharacterString>${id}</gco:CharacterString></gmd:fileIdentifier>
+  <gmd:language>
+    <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">eng</gmd:LanguageCode>
+  </gmd:language>
+  <gmd:characterSet>
+    <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
+  </gmd:characterSet>
   <#if (resourceType.value)??>
     <gmd:hierarchyLevel>
       <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="${resourceType.value}">${resourceType.value}</gmd:MD_ScopeCode>
     </gmd:hierarchyLevel>
   </#if>
-	<#if metadataPointsOfContact??>
+  <#if metadataPointsOfContact??>
     <#list metadataPointsOfContact as metadataPointOfContact>
     <gmd:contact>
       <gmd:CI_ResponsibleParty>
@@ -60,17 +60,17 @@
       </gmd:CI_ResponsibleParty>
     </gmd:contact>
     </#list>
-	</#if>
-	<gmd:dateStamp>
-		<gco:DateTime>${metadataDateTime}</gco:DateTime>
-	</gmd:dateStamp>
-	<gmd:metadataStandardName>
-		<gco:CharacterString>ISO 19115 (UK GEMINI)</gco:CharacterString>
-	</gmd:metadataStandardName>
-	<gmd:metadataStandardVersion>
-		<gco:CharacterString>1.0 (2.2)</gco:CharacterString>
-	</gmd:metadataStandardVersion>
-	<#if spatialReferenceSystems??>
+  </#if>
+  <gmd:dateStamp>
+    <gco:DateTime>${metadataDateTime}</gco:DateTime>
+  </gmd:dateStamp>
+  <gmd:metadataStandardName>
+    <gco:CharacterString>ISO 19115 (UK GEMINI)</gco:CharacterString>
+  </gmd:metadataStandardName>
+  <gmd:metadataStandardVersion>
+    <gco:CharacterString>1.0 (2.2)</gco:CharacterString>
+  </gmd:metadataStandardVersion>
+  <#if spatialReferenceSystems??>
     <#list spatialReferenceSystems as SRS>
     <gmd:referenceSystemInfo>
       <gmd:MD_ReferenceSystem>
@@ -86,13 +86,13 @@
       </gmd:MD_ReferenceSystem>
     </gmd:referenceSystemInfo>
     </#list>
-	</#if>
-	<#--identificationInfo -->
-	<#include "gemini/_identificationInfo.xml.tpl">
-	<#--distributionInfo -->
-	<#include "gemini/_distributionInfo.xml.tpl">
-	<#--dataQualityInfo-->
-	<#include "gemini/_dataQualityInfo.xml.tpl">
+  </#if>
+  <#--identificationInfo -->
+  <#include "gemini/_identificationInfo.xml.tpl">
+  <#--distributionInfo -->
+  <#include "gemini/_distributionInfo.xml.tpl">
+  <#--dataQualityInfo-->
+  <#include "gemini/_dataQualityInfo.xml.tpl">
 </gmd:MD_Metadata>
 </#escape>
 </#compress>

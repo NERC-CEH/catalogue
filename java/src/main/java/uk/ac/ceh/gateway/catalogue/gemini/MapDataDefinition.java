@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,13 +29,19 @@ public class MapDataDefinition {
         private String type;
         private String layer;
         private List<Projection> reprojections;
-        private List<Attribute> attributes;
+        private List<Attribute> attributes; // Style the layer up based upon attributes
+        private Features features;          // Style all features in a layer irregardless of attribute
+        
+        public enum AttributeType {
+            TEXT,NUMBER
+        }
 
         @Data
         public static class Attribute {
             private String name;
             private String id;
             private String label;
+            private AttributeType type;
 
             private List<Value> values;
             private List<Bucket> buckets;
@@ -50,14 +57,22 @@ public class MapDataDefinition {
             public static class Bucket {
                 private Style style;
                 private String label;
-                private Number min;
-                private Number max;
+                private BigDecimal min;
+                private BigDecimal max;
             }
+        }
+        
+        @Data
+        public static class Features {
+            private String name;
+            private String label;
+            private Style style;
         }
     }
     
     @Data
     public static class Style {
         private String colour;
+        private String symbol;
     }
 }

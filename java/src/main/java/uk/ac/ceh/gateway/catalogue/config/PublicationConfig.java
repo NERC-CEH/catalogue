@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.publication.PublishingRole;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.Transition;
@@ -54,8 +53,8 @@ public class PublicationConfig {
 
         // Roles
         PublishingRole editor, publisher;
-        editor = new PublishingRole(DocumentController.EDITOR_ROLE);
-        publisher = new PublishingRole(DocumentController.PUBLISHER_ROLE);
+        editor = new PublishingRole("editor");
+        publisher = new PublishingRole("publisher");
 
         // Add transitions to states
         draft.addTransitions(editor, ImmutableSet.of(draftToPending));

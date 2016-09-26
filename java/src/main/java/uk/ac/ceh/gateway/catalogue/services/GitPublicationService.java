@@ -1,7 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.net.URI;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,65 +7,74 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.components.userstore.crowd.model.CrowdGroup;
-import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.EDITOR_ROLE;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.model.PublicationServiceException;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.PublishingRole;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.Transition;
 import uk.ac.ceh.gateway.catalogue.publication.Workflow;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 @Service
 public class GitPublicationService implements PublicationService {
     private final GroupStore<CatalogueUser> groupStore;
     private final Workflow workflow;
-    private final MetadataInfoEditingService metadataInfoEditingService;
+    private final DocumentRepository documentRepository;
 
     @Autowired
-    public GitPublicationService(GroupStore<CatalogueUser> groupStore, Workflow workflow, MetadataInfoEditingService metadataInfoEditingService) {
+    public GitPublicationService(GroupStore<CatalogueUser> groupStore, Workflow workflow, DocumentRepository documentRepository) {
         this.groupStore = groupStore;
         this.workflow = workflow;
-        this.metadataInfoEditingService = metadataInfoEditingService;
+        this.documentRepository = documentRepository;
     }
 
     @Override
-    public StateResource current(CatalogueUser user, String fileIdentifier, UriComponentsBuilder builder, URI metadataUrl) {
-        MetadataDocument doc = metadataInfoEditingService.getMetadataDocument(fileIdentifier, metadataUrl);
-        return current(user, doc.getMetadata(), builder, doc.getTitle(), doc.getUri());
+    public StateResource current(CatalogueUser user, String fileIdentifier, UriComponentsBuilder builder) {
+        try {
+            MetadataDocument doc = documentRepository.read(fileIdentifier);
+            return current(user, doc.getMetadata(), builder, doc.getId());
+        } catch (DocumentRepositoryException | NullPointerException ex) {
+            throw new PublicationServiceException(String.format("Could not get current state for: %s", fileIdentifier), ex);
+        }
     }
     
-    private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, UriComponentsBuilder builder, String metadataTitle, URI metadataUrl) {
+    private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, UriComponentsBuilder builder, String metadataId) {
         final State currentState = workflow.currentState(metadataInfo);
-        return new StateResource(currentState, getPublishingRoles(user, metadataInfo), builder, metadataTitle, metadataUrl.toString());
+        return new StateResource(currentState, getPublishingRoles(user, metadataInfo), builder, metadataId, metadataInfo.getCatalogue());
     }
 
     @Override
-    public StateResource transition(CatalogueUser user, String fileIdentifier, String transitionId, UriComponentsBuilder builder, URI metadataUrl) {
-        final MetadataDocument doc = metadataInfoEditingService.getMetadataDocument(fileIdentifier, metadataUrl);
-        final MetadataInfo original = doc.getMetadata();
-        final Set<PublishingRole> publishingRoles = getPublishingRoles(user, original);
-        final State currentState = workflow.currentState(original);
-        final Transition transition = currentState.getTransition(publishingRoles, transitionId);
-        final MetadataInfo returned = workflow.transitionDocumentState(original, publishingRoles, transition);
-        if ( !returned.equals(original)) {
-            String commitMsg = String.format("Publication state of %s changed to %s", fileIdentifier, returned.getState());
-            metadataInfoEditingService.saveMetadataInfo(fileIdentifier, returned, user, commitMsg);
+    public StateResource transition(CatalogueUser user, String fileIdentifier, String transitionId, UriComponentsBuilder builder) {
+        try {
+            final MetadataDocument doc = documentRepository.read(fileIdentifier);
+            final MetadataInfo original = doc.getMetadata();
+            final Set<PublishingRole> publishingRoles = getPublishingRoles(user, original);
+            final Transition transition = workflow
+                .currentState(original)
+                .getTransition(publishingRoles, transitionId);
+            doc.setMetadata(workflow.transitionDocumentState(original, publishingRoles, transition));
+            documentRepository.save(
+                user,
+                doc,
+                fileIdentifier,
+                String.format("Publication state of %s changed.", fileIdentifier)
+            );
+            return current(user, doc.getMetadata(), builder, doc.getId());
+        } catch (DocumentRepositoryException | NullPointerException ex) {
+            throw new PublicationServiceException(String.format("Could not transition: %s", fileIdentifier), ex);
         }
-        return current(user, returned, builder, doc.getTitle(), doc.getUri());
     }
     
     private Set<PublishingRole> getPublishingRoles(CatalogueUser user, MetadataInfo info) {
-        final List<Group> groups = groupStore.getGroups(user);
-        if (info.canAccess(Permission.EDIT, user, groups)) {
-            groups.add(new CrowdGroup(EDITOR_ROLE));
-        }
-        return groups.stream()
+        return groupStore.getGroups(user).stream()
             .map(Group::getName)
-            .filter(name -> name.startsWith("ROLE_"))
+            .map(String::toLowerCase)
+            .filter(name -> name.startsWith(String.format("role_%s", info.getCatalogue())))
+            .map(name -> name.substring(name.lastIndexOf("_") + 1))
             .map(name -> new PublishingRole(name))
             .collect(Collectors.toSet());
     }

@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import static org.hamcrest.Matchers.equalTo;
@@ -14,14 +13,14 @@ public class PermissionResourceTest {
     @Test
     public void userWithFullPermissionsAndPublicView() {
         //Given
-        MetadataInfo info = new MetadataInfo();
+        MetadataInfo info = MetadataInfo.builder().build();
         info.addPermission(Permission.VIEW, "public");
         info.addPermission(Permission.VIEW, "test");
         info.addPermission(Permission.EDIT, "test");
         info.addPermission(Permission.DELETE, "test");
         MetadataDocument document = new GeminiDocument()
             .setTitle("test")
-            .setUri(URI.create("http://example.com/documents/123"))
+            .setUri("http://example.com/documents/123")
             .setMetadata(info);
         PermissionResource resource = new PermissionResource(document);
         Set<IdentityPermissions> expected = new HashSet<>();

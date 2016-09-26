@@ -1,9 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import static org.junit.Assert.assertSame;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -48,20 +53,23 @@ public class MetadataListingServiceTest {
         //Given
         String revision = "revision";
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList("uid"));
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getId()).thenReturn("uid");
-        when(document.getType()).thenReturn("Dataset");
-        MetadataInfo metadata = mock(MetadataInfo.class);
-        when(metadata.isPubliclyViewable(Permission.VIEW)).thenReturn(Boolean.TRUE);
-        when(document.getMetadata()).thenReturn(metadata);
+        
+        Multimap<Permission, String> permissions = HashMultimap.create();
+        permissions.put(Permission.VIEW, "public");
+        MetadataInfo metadata = MetadataInfo.builder().permissions(permissions).catalogue("eidc").state("published").build(); 
+        GeminiDocument document = new GeminiDocument();
+        document.setId("uid");
+        document.setResourceType(Keyword.builder().value("Dataset").build());
+        document.setMetadata(metadata);
+         
         when(documentBundleReader.readBundle("uid", revision)).thenReturn(document);
         
         //When
         List<String> ids = service.getPublicDocuments(revision, GeminiDocument.class, defaultResourceTypes);
+        System.out.println(ids);
         
         //Then
-        assertSame("Expected only one id", 1, ids.size());
-        assertTrue("Expected ids out", ids.contains("uid"));
+        assertThat("Expected ids out", ids, contains("uid"));
     }
     
     @Test
@@ -102,7 +110,7 @@ public class MetadataListingServiceTest {
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList(id));
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getId()).thenReturn(id);
-        MetadataInfo metadata = mock(MetadataInfo.class);
+        MetadataInfo metadata = MetadataInfo.builder().build();
         when(document.getMetadata()).thenReturn(metadata);
         when(documentBundleReader.readBundle(id, revision)).thenReturn(document);
         
@@ -120,13 +128,15 @@ public class MetadataListingServiceTest {
         String id = "a";
         String resourceType = "Dataset";
         String revision = "revision";
-        MetadataInfo metadata = mock(MetadataInfo.class);  
-        when(metadata.isPubliclyViewable(Permission.VIEW)).thenReturn(true);
+        Multimap<Permission, String> permissions = HashMultimap.create();
+        permissions.put(Permission.VIEW, "public");
+        MetadataInfo metadata = MetadataInfo.builder().permissions(permissions).catalogue("eidc").state("published").build();  
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList(id));
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getId()).thenReturn(id);
         when(document.getType()).thenReturn(resourceType);
         when(document.getMetadata()).thenReturn(metadata);
+        when(document.getCatalogue()).thenReturn("eidc");
         when(documentBundleReader.readBundle("a", revision)).thenReturn(document);
         
         //When
@@ -144,8 +154,9 @@ public class MetadataListingServiceTest {
         String documentResourceType = "A_N_Other";
         String geminiResourceType = "Dataset";
         String revision = "revision";
-        MetadataInfo metadata = mock(MetadataInfo.class);  
-        when(metadata.isPubliclyViewable(Permission.VIEW)).thenReturn(true);
+        Multimap<Permission, String> permissions = HashMultimap.create();
+        permissions.put(Permission.VIEW, "public");
+        MetadataInfo metadata = MetadataInfo.builder().permissions(permissions).build();  
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList(id));
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getId()).thenReturn(id);
@@ -168,13 +179,15 @@ public class MetadataListingServiceTest {
         String documentResourceType = "dataset";
         String geminiResourceType = "DATASET";
         String revision = "revision";
-        MetadataInfo metadata = mock(MetadataInfo.class);  
-        when(metadata.isPubliclyViewable(Permission.VIEW)).thenReturn(true);
+        Multimap<Permission, String> permissions = HashMultimap.create();
+        permissions.put(Permission.VIEW, "public");
+        MetadataInfo metadata = MetadataInfo.builder().permissions(permissions).catalogue("eidc").state("published").build();  
         when(listingService.filterFilenames(any(List.class))).thenReturn(Arrays.asList(id));
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getId()).thenReturn(id);
         when(document.getType()).thenReturn(documentResourceType);
         when(document.getMetadata()).thenReturn(metadata);
+        when(document.getCatalogue()).thenReturn("eidc");
         when(documentBundleReader.readBundle("a", revision)).thenReturn(document);
         
         //When
@@ -183,5 +196,23 @@ public class MetadataListingServiceTest {
         //Then
         assertTrue("Expected one record", publicIds.size() == 1);
         verify(documentBundleReader).readBundle("a", revision);
+    }
+    
+    @Test
+    public void checkOnlyEidcDocumentListed() throws Exception {
+        //given
+        String revision = "revision";
+        MetadataDocument document = new GeminiDocument()
+            .setId("test")
+            .setMetadata(
+                MetadataInfo.builder().catalogue("ceh").build()
+            );
+        when(documentBundleReader.readBundle("a", revision)).thenReturn(document);
+        
+        //when
+        List<String> actual = service.getPublicDocuments(revision, GeminiDocument.class, defaultResourceTypes);
+        
+        //then
+        assertThat("should be no iems in list", actual.size(), equalTo(0));
     }
 }

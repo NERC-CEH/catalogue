@@ -30,7 +30,7 @@ public class CitationServiceTest {
         //Given
         String format = "bibtex";
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getUri()).thenReturn(new URI("http://document"));
+        when(document.getUri()).thenReturn("http://document");
         CitationService service = new CitationService();
         
         //When
@@ -45,7 +45,7 @@ public class CitationServiceTest {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getTitle()).thenReturn("document title");
-        when(document.getUri()).thenReturn(new URI("http://document"));
+        when(document.getUri()).thenReturn("http://document");
         when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
             nercdoi()
         ));        
@@ -72,7 +72,7 @@ public class CitationServiceTest {
     public void doesntCreateCitationIfNoPublishers() throws URISyntaxException {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getUri()).thenReturn(new URI("http://document"));
+        when(document.getUri()).thenReturn("http://document");
         when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
             nercdoi()
         ));        
@@ -93,7 +93,7 @@ public class CitationServiceTest {
     public void doesntCreateCitationIfNoDate() throws URISyntaxException {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getUri()).thenReturn(new URI("http://document"));
+        when(document.getUri()).thenReturn("http://document");
         when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
             nercdoi()
         ));
@@ -113,7 +113,7 @@ public class CitationServiceTest {
     public void doesntCreateCitationIfNotANercDOI() throws URISyntaxException {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getUri()).thenReturn(new URI("http://document"));
+        when(document.getUri()).thenReturn("http://document");
         when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
             ResourceIdentifier
                         .builder()

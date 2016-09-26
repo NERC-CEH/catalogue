@@ -1,13 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.ReadWrite;
-import com.hp.hpl.jena.rdf.model.Property;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.Property;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -29,17 +27,19 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 public class GeminiDocumentPostProcessingService implements PostProcessingService<GeminiDocument> {
     private final CitationService citationService;
     private final DataciteService dataciteService;
-    private final ObjectMapper mapper;
     private final Dataset jenaTdb;
     private final DocumentIdentifierService documentIdentifierService;
 
     @Autowired
-    public GeminiDocumentPostProcessingService(CitationService citationService, DataciteService dataciteService, ObjectMapper mapper, Dataset jenaTdb, DocumentIdentifierService DocumentIdentifierService) {
+    public GeminiDocumentPostProcessingService(
+        CitationService citationService,
+        DataciteService dataciteService,
+        Dataset jenaTdb,
+        DocumentIdentifierService documentIdentifierService) {
         this.citationService = citationService;
         this.dataciteService = dataciteService;
-        this.mapper = mapper;
         this.jenaTdb = jenaTdb;
-        this.documentIdentifierService = DocumentIdentifierService;
+        this.documentIdentifierService = documentIdentifierService;
     }
         
     @Override
@@ -65,12 +65,6 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         document.setDataciteMintable(dataciteService.isDataciteMintable(document));
         document.setDatacitable(dataciteService.isDatacitable(document));
         
-        try {
-            document.setJsonString(mapper.writeValueAsString(document));
-        }
-        catch(JsonProcessingException ex) {
-            throw new PostProcessingException(ex);
-        }
     }
     
     private void process(GeminiDocument document, String id) {

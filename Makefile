@@ -4,7 +4,9 @@ COMPOSE  := $(DOCKER) -v /var/run/docker.sock:/var/run/docker.sock docker/compos
 SELENIUM := $(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml
 NPM      := $(COMPOSE) run node npm
 
-.PHONY: clean web java build docker test-data develop selenium
+.PHONY: build clean web java java-build maven-test maven-version web-test docker test-data develop develop-min selenium selenium-only
+
+all: clean test-data build develop
 
 build: web java docker
 
@@ -19,6 +21,21 @@ web:
 java:
 	$(MAVEN) -f java/pom.xml clean package
 
+java-build: java docker
+
+maven-test:
+	# Run tests for a single test or test class
+	$(MAVEN) -f java/pom.xml -Dtest=$(TESTCLASS) clean test-compile surefire:test
+	# TESTCLASS=uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkDocumentGeneratorTest#testGenerateIndex make maven-test
+
+maven-version:
+	# Are there updates for java packages?
+	$(MAVEN) -f java/pom.xml versions:display-dependency-updates versions:display-plugin-updates versions:display-property-updates
+
+web-test:
+	# Just run the javascript tests
+	$(NPM) run test
+
 docker:
 	$(COMPOSE) build
 
@@ -28,6 +45,14 @@ test-data:
 develop:
 	$(COMPOSE) up
 
+develop-min:
+	# Don't start Node
+	$(COMPOSE) up web solr
+
 selenium: test-data
+	$(SELENIUM) up --force-recreate -d firefox chrome
+	$(SELENIUM) run ruby_test
+
+selenium-only:
 	$(SELENIUM) up --force-recreate -d firefox chrome
 	$(SELENIUM) run ruby_test

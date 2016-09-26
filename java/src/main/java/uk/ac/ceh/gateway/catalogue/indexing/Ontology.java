@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.hp.hpl.jena.datatypes.BaseDatatype;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import org.apache.jena.datatypes.BaseDatatype;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.ResourceFactory;
 
 public class Ontology {
     public static final Property IDENTIFIER    = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");

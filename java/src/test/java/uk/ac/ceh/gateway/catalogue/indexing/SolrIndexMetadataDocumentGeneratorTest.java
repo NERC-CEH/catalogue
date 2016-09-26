@@ -1,21 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.rdf.model.Model;
-import static com.hp.hpl.jena.rdf.model.ResourceFactory.createProperty;
-import static com.hp.hpl.jena.rdf.model.ResourceFactory.createResource;
-import com.hp.hpl.jena.tdb.TDBFactory;
-import java.net.URI;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.BDDMockito.given;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
@@ -26,13 +25,15 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 public class SolrIndexMetadataDocumentGeneratorTest {
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
-    Dataset jenaTdb = TDBFactory.createDataset();
     private SolrIndexMetadataDocumentGenerator generator;
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        generator = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService, jenaTdb);
+        generator = new SolrIndexMetadataDocumentGenerator(
+            codeLookupService,
+            documentIdentifierService
+        );
     }
     
     @Test
@@ -49,7 +50,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatTitleIdTransferedToIndex() {
+    public void checkThatIdTransferedToIndex() {
         //Given
         String id = "some crazy long, hard to rememember, number";
         when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
@@ -68,7 +69,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         //Given
         String description = "Once upon a time, there was a metadata record...";
         GeminiDocument document = new GeminiDocument();
-        document.setDescription(description);
+        document.setDescription(description);        
         
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -144,23 +145,20 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatRepositoryIsIndexed() {
+    public void checkThatCatalogueIsTransferedToIndex() {
         //Given
-        GeminiDocument document = new GeminiDocument();
-        document.setUri(URI.create("http://dataset"));
-        
-        Model model = jenaTdb.getDefaultModel();
-        model.add(createResource("http://dataset"), createProperty("http://purl.org/dc/terms/isPartOf"), createResource("http://repository"));
-        model.add(createResource("http://repository"), createProperty("http://purl.org/dc/terms/title"), "EIDC");
-        model.add(createResource("http://repository"), createProperty("http://purl.org/dc/terms/type"), "repository");
-            
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
+        MetadataDocument document = new GeminiDocument().setMetadata(info);
         
         //When
         SolrIndex index = generator.generateIndex(document);
-        
+
         //Then
-        assertThat("Expected repository to be EIDC", index.getRepository(), contains("EIDC"));
-        
+        assertThat(
+                "Expected to get 'eidc'",
+                index.getCatalogue(),
+                equalTo("eidc")
+        );
     }
 
 }

@@ -1,21 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import freemarker.template.Template;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
@@ -68,9 +64,8 @@ public class DataciteServiceTest {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
         ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
-        MetadataInfo metadata = new MetadataInfo();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
-        metadata.setState("Published");
         GeminiDocument document = new GeminiDocument();
         document.setResponsibleParties(Arrays.asList(author, publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
@@ -88,7 +83,7 @@ public class DataciteServiceTest {
     public void checkThatIsNotDataciteUpdatableIfRequirementsArntMet() {
         //Given
         GeminiDocument document = new GeminiDocument();
-        document.setMetadata(new MetadataInfo());
+        document.setMetadata(MetadataInfo.builder().build());
         
         //When
         boolean dataciteUpdatable = service.isDatacitable(document);
@@ -102,9 +97,8 @@ public class DataciteServiceTest {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
         ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
-        MetadataInfo metadata = new MetadataInfo();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
-        metadata.setState("Published");
         GeminiDocument document = new GeminiDocument();
         document.setResponsibleParties(Arrays.asList(author, publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
@@ -125,9 +119,8 @@ public class DataciteServiceTest {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
         ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
-        MetadataInfo metadata = new MetadataInfo();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
-        metadata.setState("Published");
         GeminiDocument document = new GeminiDocument();
         document.setResponsibleParties(Arrays.asList(author, publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());

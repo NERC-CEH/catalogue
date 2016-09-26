@@ -2,14 +2,14 @@ define [
   'backbone'
   'cs!views/editor/PredefinedParentView'
   'cs!views/editor/BoundingBoxView'
-  'cs!models/GeminiMetadata'
-], (Backbone, PredefinedParentView, BoundingBoxView, GeminiMetadata) ->
+  'cs!models/EditorMetadata'
+], (Backbone, PredefinedParentView, BoundingBoxView, EditorMetadata) ->
 
   describe 'PredefinedParentView', ->
     view = model = null
 
     beforeEach ->
-      model = new GeminiMetadata
+      model = new EditorMetadata
       view = new PredefinedParentView
         model: model
         modelAttribute: 'boundingBoxes'

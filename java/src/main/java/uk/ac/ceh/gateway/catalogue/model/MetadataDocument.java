@@ -1,7 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-import java.net.URI;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 
 /**
  * This is the interface for a metadata document. Specific implementations such 
@@ -10,14 +14,30 @@ import java.util.List;
  * @author cjohn
  */
 public interface MetadataDocument {
-    URI getUri();
+    String getUri();
+    MetadataDocument setUri(String uri);
     String getDescription();
+    MetadataDocument setDescription(String description);
     String getTitle();
+    MetadataDocument setTitle(String title);
     String getId();
+    MetadataDocument setId(String id);
     String getType();
-    List<String> getPartOfRepository();
-    void attachPartOfRepository(List<String> repositories);
+    MetadataDocument setType(String type);
     MetadataInfo getMetadata();
-    void attachMetadata(MetadataInfo metadata);
-    void attachUri(URI uri);
+    MetadataDocument setMetadata(MetadataInfo metadata);
+    MetadataDocument setMetadataDate(LocalDateTime date);
+    LocalDateTime getMetadataDate();
+    String getMetadataDateTime();
+    List<ResourceIdentifier> getResourceIdentifiers();
+    MetadataDocument setResourceIdentifiers(List<ResourceIdentifier> resourceIdentifiers);
+    List<Keyword> getAllKeywords();
+    MetadataDocument addAdditionalKeywords(List<Keyword> additionalKeywords);
+    
+    @JsonIgnore
+    default String getCatalogue() {
+        return Optional.ofNullable(getMetadata())
+            .map(MetadataInfo::getCatalogue)
+            .orElse("");
+    }
 }

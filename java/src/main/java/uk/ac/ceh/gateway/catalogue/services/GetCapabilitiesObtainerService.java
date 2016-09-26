@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import static java.lang.String.format;
 import java.net.URI;
 import java.net.URISyntaxException;
 import lombok.AllArgsConstructor;
@@ -21,14 +22,17 @@ public class GetCapabilitiesObtainerService {
     private final MapServerDetailsService mapServerDetailsService;
     
     @Cacheable("capabilities")
-    public WmsCapabilities getWmsCapabilities(OnlineResource resource) throws URISyntaxException {
+    public WmsCapabilities getWmsCapabilities(OnlineResource resource) {
         if(resource.getType().equals(OnlineResource.Type.WMS_GET_CAPABILITIES)) {
             try {
                 String rewritten = mapServerDetailsService.rewriteToLocalWmsRequest(resource.getUrl());
                 return rest.getForObject(new URI(rewritten), WmsCapabilities.class);
             }
-            catch(IllegalArgumentException | RestClientException re) {
-                throw new ExternalResourceFailureException("Failed to obtain a get capabilities from the given online resource");
+            catch(URISyntaxException | IllegalArgumentException | RestClientException re) {
+                throw new ExternalResourceFailureException(
+                    format("Failed to obtain capabilities from: %s", resource.getUrl()),
+                    re
+                );
             }
         }
         else {

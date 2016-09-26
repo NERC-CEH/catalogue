@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -16,19 +15,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.PublicationService;
 
 @Controller
 public class PublicationController {
     private final PublicationService publicationService;
-    private final DocumentIdentifierService documentIdentifierService;
 
     @Autowired
-    public PublicationController(PublicationService publicationService,
-                                 DocumentIdentifierService documentIdentifierService) {
+    public PublicationController(PublicationService publicationService) {
         this.publicationService = publicationService;
-        this.documentIdentifierService = documentIdentifierService;
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -39,7 +34,7 @@ public class PublicationController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file, 
             HttpServletRequest request) {
-        return ResponseEntity.ok(publicationService.current(user, file, getTransitionUriBuilder(request), URI.create(documentIdentifierService.generateUri(file)))); 
+        return ResponseEntity.ok(publicationService.current(user, file, getTransitionUriBuilder(request))); 
     }
     
     @PreAuthorize("@permission.userCanEdit(#file)")
@@ -51,7 +46,7 @@ public class PublicationController {
             @PathVariable("file") String file,
             @PathVariable("toState") String toState, 
             HttpServletRequest request) {
-       return ResponseEntity.ok(publicationService.transition(user, file, toState, getTransitionUriBuilder(request, file), URI.create(documentIdentifierService.generateUri(file))));
+       return ResponseEntity.ok(publicationService.transition(user, file, toState, getTransitionUriBuilder(request, file)));
     }
     
     private UriComponentsBuilder getTransitionUriBuilder(HttpServletRequest request) {

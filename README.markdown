@@ -25,11 +25,14 @@ The catalogue requires a few system libraries to be installed in order to aid de
 
 Having installed these you can then build the catalogue code base. Re-Run this command any time you want to make changes to java code or a docker configuration.
 
-    make build
+    make
 
 To develop against the code base, you can run `make develop`. This will construct an environment which compiles LESS stylesheets and responds to changes to the *templates*.
 
 `make test-data` will populate a repository of test-data. Re-running `make build` will create a catalogue which is powered by this repository.
+
+### Access the catalogue search page
+`make develop` then visit [http://localhost:8080/documents](http://localhost:8080/documents)
 
 ### Selenium Testing (Docker)
 
@@ -54,6 +57,24 @@ To execute the different `make` commands you will need to ssh on to the vagrant 
     # Now inside the vagrant machine
     cd /vagrant
     make develop
+
+## Multiple Catalogues
+
+Multiple catalogues are supported by this software.
+
+A catalogue has it's own:
+- search page
+- style
+- editor and publisher groups
+- metadata records
+
+New catalogues can be [added](docs/multipleCatalogues.markdown).
+
+### Catalogue Content
+
+A catalogue can reuse existing metadata content by linking to public metadata in another catalogue using the Link document type.
+
+![Link document type](docs/link.png)
 
 ## Remote-User
 
@@ -83,21 +104,21 @@ The Catalogue api will gracefully handle certain upstream mapping failures. Thes
 Below are the images which are displayed and there meaning:
 
 ## Legend not found
-![Legend not found](java/src/main/resources/legend-not-found.png) 
+![Legend not found](java/src/main/resources/legend-not-found.png)
 
 Displayed when a Legend image is requested but one has not been specified in the GetCapabilities
 
 ## Upstream Failure
-![Upstream Failure](java/src/main/resources/proxy-failure.png) 
+![Upstream Failure](java/src/main/resources/proxy-failure.png)
 
 The call to the server failed for some unspecified reason, this may be because the connection failed.
 
 ## Invalid response
-![Invalid response](java/src/main/resources/proxy-invalid-response.png) 
+![Invalid response](java/src/main/resources/proxy-invalid-response.png)
 
 The upstream service returned some content, but it was not in the format which was expected. It maybe that the upstream service replied with an error message rather than an image.
 
 ## Invalid Resource
-![Invalid Resource](java/src/main/resources/proxy-invalid-resource.png) 
+![Invalid Resource](java/src/main/resources/proxy-invalid-resource.png)
 
 The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or an corrupt external get capabilities.

@@ -1,9 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.tdb.TDBFactory;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.tdb.TDBFactory;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import static com.hp.hpl.jena.rdf.model.ResourceFactory.*;
+import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -33,7 +32,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 public class GeminiDocumentPostProcessingServiceTest {    
     @Mock CitationService citationService;
     @Mock DataciteService dataciteService;
-    @Mock ObjectMapper mapper;
     @Mock DocumentIdentifierService documentIdentifierService;
     private Dataset jenaTdb;
     private GeminiDocumentPostProcessingService service;
@@ -43,7 +41,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         MockitoAnnotations.initMocks(this);
         when(citationService.getCitation(any(GeminiDocument.class))).thenReturn(Optional.empty());
         jenaTdb = TDBFactory.createDataset();
-        service = new GeminiDocumentPostProcessingService(citationService, dataciteService, mapper, jenaTdb, documentIdentifierService);
+        service = new GeminiDocumentPostProcessingService(citationService, dataciteService, jenaTdb, documentIdentifierService);
     }
     
     @Test

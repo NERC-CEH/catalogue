@@ -2,9 +2,10 @@ package uk.ac.ceh.gateway.catalogue.ef;
 
 import com.fasterxml.jackson.annotation.*;
 import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
@@ -12,6 +13,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
 import uk.ac.ceh.gateway.catalogue.ef.adapters.AnyXMLHandler;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -68,23 +71,46 @@ public class BaseMonitoringType implements MetadataDocument {
     
     private Link measurementRegime;
     
+    @XmlTransient
+    private LocalDateTime metadataDate;
+    
+    @Override
+    @XmlTransient
+    public String getMetadataDateTime() {
+        return Optional.ofNullable(metadataDate)
+            .map(md -> md.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+            .orElse("");
+    }
+    
     @XmlElement(name = "purposeOfCollection")
     private List<Link> purposeOfCollection = new ArrayList<>();
     
     @XmlElement(name = "identifier")
     private List<Identifier> identifiers  = new ArrayList<>();
-    
+
     @XmlTransient
-    private List<String> partOfRepository;
+    private List<ResourceIdentifier> resourceIdentifiers;
 
     @Override
     public String getTitle() {
         return getName();
     }
+    
+    @Override
+    public MetadataDocument setTitle(String title) {
+        setName(title);
+        return this;
+    }
 
     @Override
     public String getId() {
         return efMetadata.getFileIdentifier().toString();
+    }
+    
+    @Override 
+    public BaseMonitoringType setId(String id) {
+        efMetadata.setFileIdentifier(UUID.fromString(id));
+        return this;
     }
 
     @Override
@@ -92,41 +118,43 @@ public class BaseMonitoringType implements MetadataDocument {
         return getClass().getSimpleName().toLowerCase();
     }
     
+    @Override
+    public MetadataDocument setType(String type) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
     @XmlTransient
-    private MetadataInfo metadataInfo;
-    
-    @Override
-    public MetadataInfo getMetadata() {
-        return metadataInfo;
-    }
+    private MetadataInfo metadata;
 
     @Override
-    public void attachMetadata(MetadataInfo metadataInfo) {
-        this.metadataInfo = metadataInfo;
-    }
-
-    @Override
-    public URI getUri() {
-        try {
-            return new URI(efMetadata.getSelfUrl());
-        } catch (URISyntaxException ex) {
-            return null;
-        }
+    public String getUri() {
+        return efMetadata.getSelfUrl();
     }
     
     @Override
-    public void attachUri(URI uri) {
-        efMetadata.setSelfUrl(uri.toString());
+    public BaseMonitoringType setUri(String uri) {
+        efMetadata.setSelfUrl(uri);
+        return this;
     }
-
+    
     @Override
-    public List<String> getPartOfRepository() {
-        return partOfRepository;
+    @JsonIgnore
+    public List<Keyword> getAllKeywords() {
+        return keywords
+            .stream()
+            .map(l -> l.asKeyword())
+            .collect(Collectors.toList());
     }
-
+    
     @Override
-    public void attachPartOfRepository(List<String> repositories) {
-        this.partOfRepository = repositories;
+    public BaseMonitoringType addAdditionalKeywords(List<Keyword> additionalKeywords) {
+        keywords.addAll(
+            additionalKeywords
+                .stream()
+                .map(k -> k.asLink())
+                .collect(Collectors.toList())
+        );
+        return this;
     }
     
     @Data

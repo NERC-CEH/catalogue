@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,23 +54,12 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 .setOnlineResourceName(grab(document.getOnlineResources(), OnlineResource::getName))
                 .setOnlineResourceDescription(grab(document.getOnlineResources(), OnlineResource::getDescription))
                 .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
-                .setKeyword(grab(getKeywords(document), Keyword::getValue))
-                .setDataCentre(getDataCentre(document))
+                .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
                 .addLocations(geometryService.toSolrGeometry(grab(document.getBoundingBoxes(), BoundingBox::getWkt)))
                 .setImpBroaderCatchmentIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_BROADER_CATCHMENT_ISSUES_URL), Keyword::getValue))
                 .setImpScale(grab(getKeywordsFilteredByUrlFragment(document, IMP_SCALE_URL), Keyword::getValue))
                 .setImpWaterQuality(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_QUALITY_URL), Keyword::getValue))
             ;
-    }
-
-    private List<Keyword> getKeywords(GeminiDocument document) {
-        return Optional.ofNullable(document.getDescriptiveKeywords())
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(d -> d.getKeywords().stream())
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     private String getLicence(GeminiDocument document){
@@ -90,28 +78,14 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                     || uri.startsWith(OGL_URL);  
             });
     }
-        
-    private String getDataCentre(GeminiDocument document) {
-        Optional<ResponsibleParty> dataCentre = document.getResponsibleParties()
-            .stream()
-            .filter(rp -> rp.getRole().equals("custodian") && rp.getOrganisationName().startsWith("EIDC"))
-            .findFirst();
-        
-        if (dataCentre.isPresent()) {
-            return "EIDCHub";
-        } else {
-            return "";
-        }
-    }
     
     private List<Keyword> getKeywordsFilteredByUrlFragment(GeminiDocument document, String urlFragment) {
-        return Optional.ofNullable(document.getDescriptiveKeywords())
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(d -> d.getKeywords().stream())
-                .filter(k -> {
-                    return k.getUri().startsWith(urlFragment);
-                })
-                .collect(Collectors.toList());
+        return document
+            .getAllKeywords()
+            .stream()
+            .filter(k -> {
+                return k.getUri().startsWith(urlFragment);
+            })
+            .collect(Collectors.toList());
     }
 }

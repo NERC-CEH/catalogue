@@ -1,13 +1,23 @@
 SYMBOLSET 
-    SYMBOL
-      # Symbol name (referenced in STYLEs)
-      NAME "circle"
-      TYPE ellipse # Type of symbol
-      # Start of the symbol geometry
-      POINTS
-        1 1
-      END # end of POINTS
-      # The symbol should be filled
-      FILLED true
-    END # end of SYMBOL
+  SYMBOL
+    NAME "circle"
+    TYPE ellipse      
+    POINTS
+      1 1
+    END
+    FILLED true
+  END
+
+  SYMBOL
+    NAME "square"
+    TYPE vector
+    FILLED true
+    POINTS
+     0 0
+     0 1
+     1 1
+     1 0
+     0 0
+    END
+  END
 END

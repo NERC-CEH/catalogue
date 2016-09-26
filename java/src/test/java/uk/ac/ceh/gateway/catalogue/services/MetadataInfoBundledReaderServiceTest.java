@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URI;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
@@ -31,7 +30,6 @@ public class MetadataInfoBundledReaderServiceTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DataRepository<CatalogueUser> repo;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService documentReader;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoFactory<GeminiDocument, MetadataInfo> infoFactory;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentTypeLookupService representationService;
     @Mock PostProcessingService postProcessingService;
     @Mock DocumentIdentifierService documentIdentifierService;
@@ -67,8 +65,7 @@ public class MetadataInfoBundledReaderServiceTest {
         doReturn(metadataInfoDocument).when(repo).getData(revision, "file.meta");
         doReturn(rawDocument).when(repo).getData(revision, "file.raw");
         
-        MetadataInfo metadata = mock(MetadataInfo.class);
-        when(metadata.getRawMediaType()).thenReturn(MediaType.TEXT_XML);
+        MetadataInfo metadata = MetadataInfo.builder().rawType("text/xml").build();
         when(representationService.getType(any(String.class))).thenReturn((Class)GeminiDocument.class);
         when(documentInfoMapper.readInfo(metadataInfoInputStream)).thenReturn(metadata);
         
@@ -81,9 +78,8 @@ public class MetadataInfoBundledReaderServiceTest {
         service.readBundle(fileToRead, revision);
         
         //Then
-        verify(geminiDocument).attachMetadata(metadata);
-        verify(metadata).hideMediaType();
-        verify(geminiDocument).attachUri(URI.create(uri));
+        verify(geminiDocument).setMetadata(any(MetadataInfo.class));
+        verify(geminiDocument).setUri(uri);
         verify(postProcessingService).postProcess(geminiDocument);
     }
 }

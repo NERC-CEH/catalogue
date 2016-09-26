@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import java.util.Collections;
-import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.util.NamedList;
@@ -15,6 +14,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import uk.ac.ceh.components.userstore.GroupStore;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class SearchResultsTest {
@@ -32,17 +32,22 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
-        given(response.getFacetField("repository")).willReturn(new FacetField("repository"));
                 
         //When
         new SearchResults(response, query).getFacets();
         
         //Then
-        verify(response).getFacetField("repository");
         verify(response).getFacetField("resourceType");
         verify(response).getFacetField("licence");
     }
@@ -59,7 +64,14 @@ public class SearchResultsTest {
             SearchQueryTest.DEFAULT_PAGE,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -93,7 +105,14 @@ public class SearchResultsTest {
             2,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -118,7 +137,14 @@ public class SearchResultsTest {
             1,
             SearchQueryTest.DEFAULT_ROWS,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -143,7 +169,14 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -170,7 +203,14 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         QueryResponse response = mock(QueryResponse.class);
@@ -198,7 +238,14 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         //When
@@ -222,7 +269,14 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         //When
@@ -247,7 +301,14 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         
@@ -273,7 +334,14 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         
@@ -298,7 +366,14 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         
@@ -324,7 +399,14 @@ public class SearchResultsTest {
             2,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         
@@ -350,7 +432,14 @@ public class SearchResultsTest {
             page,
             20,
             SearchQueryTest.DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS
         );
         
         //When

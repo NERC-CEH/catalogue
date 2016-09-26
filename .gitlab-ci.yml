@@ -10,6 +10,12 @@ cache:
   paths:
     - cache/
 
+mirror:
+  stage: build
+  image: buildpack-deps:xenial-scm
+  script:
+    - git push -q --prune https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/NERC-CEH/catalogue.git +refs/remotes/origin/*:refs/heads/* +refs/tags/*:refs/tags/*
+
 java:
   stage: build
   image: maven:3.2-jdk-8
@@ -73,4 +79,4 @@ build_mapserver:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
     - docker build -t $CONTAINER_MAPSERVER_IMAGE mapserver
     - docker push $CONTAINER_MAPSERVER_IMAGE
-  
+

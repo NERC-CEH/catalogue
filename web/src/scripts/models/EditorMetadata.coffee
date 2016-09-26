@@ -3,13 +3,26 @@ define [
   'backbone'
 ], (_, Backbone) -> Backbone.Model.extend
 
-  urlRoot: '/documents'
+  url: ->
+    do @urlRoot
+
+  urlRoot: ->
+    if @isNew()
+      "/documents?catalogue=#{window.location.pathname.split('/')[1]}"
+    else
+      "/documents/#{@id}"
+
+  initialize: ->
+    if arguments.length > 1
+      @mediaType = arguments[1].mediaType
+    else
+      @mediaType = 'application/json'
 
   sync: (method, model, options)->
     Backbone.sync.call @, method, model, _.extend options,
       accepts:
-        json: ["application/gemini+json", "application/json"]
-      contentType: "application/gemini+json"
+        json: @mediaType
+      contentType: @mediaType
 
   validate: (attrs) ->
     errors = []

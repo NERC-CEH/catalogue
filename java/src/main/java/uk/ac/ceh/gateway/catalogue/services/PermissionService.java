@@ -4,23 +4,22 @@ import java.io.IOException;
 import static java.lang.String.format;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Predicate;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.controllers.DataciteController;
-import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 
 @Slf4j
 public class PermissionService {
@@ -35,52 +34,80 @@ public class PermissionService {
         this.groupStore = groupStore;
     }
     
-    public boolean toAccess(CatalogueUser user, String file, String permission) throws IOException {
-        DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
-        if(latestRevision != null) {
-            return toAccess(user, file, latestRevision.getRevisionID(), permission);
-        }
-        else {
-            return false;
-        }
-    }
-    
-    public boolean toAccess(CatalogueUser user, String file, String revision, String permission) throws IOException {
-        Objects.requireNonNull(user);
-        Objects.requireNonNull(file);
-        Objects.requireNonNull(revision);
-        boolean toReturn = false;
-        Permission requested = Permission.valueOf(Objects.requireNonNull(permission).toUpperCase());
-        
-        Optional<MetadataInfo> document = getMetadataInfo(file, revision);
-        if (document.isPresent()) {
-            MetadataInfo metadataInfo = document.get();
-            toReturn = 
-                metadataInfo.isPubliclyViewable(requested)
-                || 
-                metadataInfo.canAccess(requested, user, getGroupsForUser(user));
-        }
-        return toReturn;
-    }
-    
-    public boolean userCanEdit(String file) throws IOException {
-        Objects.requireNonNull(file);
-        CatalogueUser user = getCurrentUser();
-        if (user.isPublic()) {
-            return false;
-        } else if(userCanMakePublic()) {
-            return true;
-        } else {
-            return toAccess(user, file, "EDIT");
+    public boolean toAccess(CatalogueUser user, String file, String permission) {
+        try {
+            return toAccess(
+                user,
+                file,
+                repo.getLatestRevision().getRevisionID(),
+                permission
+            );
+        } catch (DataRepositoryException ex) {
+            throw new PermissionDeniedException(
+                String.format(
+                    "No document found for: %s",
+                    file
+                ),
+                ex
+            );
         }
     }
     
-    public boolean userCanCreate() {
-        return userCan((String name) -> name.equalsIgnoreCase(DocumentController.EDITOR_ROLE));
+    public boolean toAccess(
+        @NonNull CatalogueUser user,
+        @NonNull String file,
+        @NonNull String revision,
+        @NonNull String permission
+    ) {
+        MetadataInfo document = getMetadataInfo(file, revision);
+        return toAccess(user, document, permission);
     }
     
-    public boolean userCanMakePublic() {
-        return userCan((String name) -> name.equalsIgnoreCase(DocumentController.PUBLISHER_ROLE));
+    private boolean toAccess(
+        @NonNull CatalogueUser user,
+        @NonNull MetadataInfo document,
+        @NonNull String permission
+    ) {
+        Permission requested = Permission.valueOf(permission.toUpperCase());
+        return 
+            document.isPubliclyViewable(requested)
+            || document.canAccess(requested, user, getGroupsForUser(user))
+            || false;
+    }
+    
+    public boolean userCanEdit(@NonNull String file) {
+        try {
+            CatalogueUser user = getCurrentUser();
+            DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
+            MetadataInfo document = getMetadataInfo(file, latestRevision.getRevisionID());
+            if (user.isPublic()) {
+                return false;
+            } else if(userCanMakePublic(document.getCatalogue())) {
+                return true;
+            } else {
+                return toAccess(user, document, "EDIT");
+            }
+        } catch (DataRepositoryException ex) {
+            throw new PermissionDeniedException(
+                String.format(
+                    "No document found for: %s",
+                    file
+                ),
+                ex
+            );
+        }
+    }
+    
+    public boolean userCanCreate(@NonNull String catalogue) {
+        return userCan((String name) -> name.equalsIgnoreCase(
+            format("role_%s_editor", catalogue)
+        ));
+    }
+    
+    public boolean userCanMakePublic(@NonNull String catalogue) {
+        return userCan((String name) -> name.equalsIgnoreCase(
+            format("role_%s_publisher", catalogue)
+        ));
     }
     
     public boolean userCanDatacite() {
@@ -88,16 +115,13 @@ public class PermissionService {
     }
     
     private List<Group> getGroupsForUser(CatalogueUser user) {
-        if (user.isPublic())
-            return Collections.emptyList();
-        else {
-            return groupStore.getGroups(user);
-        }
+        return (user.isPublic())
+            ? Collections.emptyList()
+            : groupStore.getGroups(user);
     }
     
     private boolean userCan(Predicate<String> filter) {
         CatalogueUser user = getCurrentUser();
-        log.debug("principal: {}", user);
         if (user.isPublic()) {
             return false;
         } else {
@@ -118,16 +142,23 @@ public class PermissionService {
         return (authentication != null) ? (CatalogueUser)authentication.getPrincipal() : CatalogueUser.PUBLIC_USER;
     }
     
-    private Optional<MetadataInfo> getMetadataInfo(String file, String revision) {
-        DataDocument data;
-        Optional<MetadataInfo> toReturn;
+    private MetadataInfo getMetadataInfo(String file, String revision) {
         try {
-            data = repo.getData(revision, format("%s.meta", file));
-            log.debug("revision from dataDocument: {}", data.getRevision());
-            toReturn = Optional.ofNullable(documentInfoMapper.readInfo(data.getInputStream()));
+            return documentInfoMapper.readInfo(
+                repo.getData(
+                    revision,
+                    format("%s.meta", file)
+                ).getInputStream()
+            );
         } catch (IOException ex) {
-            toReturn = Optional.empty();
+            throw new PermissionDeniedException(
+                String.format(
+                    "No document found for: %s at revision: %s",
+                    file,
+                    revision
+                ),
+                ex
+            );
         }
-        return toReturn;
     }
 }

@@ -19,9 +19,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import static org.junit.Assert.assertEquals;

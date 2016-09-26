@@ -1,25 +1,26 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.solr.client.solrj.SolrQuery;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.BDDMockito.given;
+import static org.hamcrest.Matchers.contains;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class SearchQueryTest {
@@ -29,12 +30,49 @@ public class SearchQueryTest {
     public static final int DEFAULT_ROWS = 20;
     public static final List<FacetFilter> DEFAULT_FILTERS = Collections.EMPTY_LIST;
     @Mock private GroupStore<CatalogueUser> groupStore; 
+    private static final FacetFactory FACET_FACTORY = new HardcodedFacetFactory();
+    public static final List<Facet> DEFAULT_FACETS = FACET_FACTORY.newInstances(
+        Arrays.asList("resourceType","licence")
+    );
     
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
     }
     
+    @Test
+    public void queryHasCatalogueAsViewFilter() {
+        //Given
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            new CatalogueUser().setUsername("helen"),
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            DEFAULT_FILTERS,
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
+        );
+
+        //When
+        SolrQuery solrQuery = query.build();
+
+        //Then
+        assertThat(
+            "Solr query should have 'eidc' in catalogue filter",
+            solrQuery.getFilterQueries(),
+            hasItemInArray("{!term f=catalogue}eidc")
+        );
+    }
+
     @Test
     public void loggedInUserHasUsernameAsViewFilter() {
         //Given
@@ -48,7 +86,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -73,7 +118,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -87,7 +139,7 @@ public class SearchQueryTest {
     public void publisherDoesNotHaveViewFilter() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("publisher");
-        given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("ROLE_CIG_PUBLISHER")));
+        given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("ROLE_EIDC_PUBLISHER")));
         
         SearchQuery query = new SearchQuery(
             ENDPOINT,
@@ -98,7 +150,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -135,7 +194,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -164,7 +230,14 @@ public class SearchQueryTest {
             2,
             40,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -188,7 +261,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -211,7 +291,14 @@ public class SearchQueryTest {
             DEFAULT_ROWS,
             Arrays.asList(
                 new FacetFilter("resourceType","dataset")),
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         //When
         SolrQuery solrQuery = query.build();
@@ -235,7 +322,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -259,7 +353,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -283,7 +384,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -305,7 +413,14 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -329,7 +444,14 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             Arrays.asList(filter),
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -352,7 +474,14 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+           Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -375,7 +504,14 @@ public class SearchQueryTest {
             18,
             DEFAULT_ROWS,
             Arrays.asList(filter),
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -398,7 +534,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             filters,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         FacetFilter filter = new FacetFilter("hey", "lo");
@@ -422,7 +565,14 @@ public class SearchQueryTest {
             24,
             30,
             Arrays.asList(new FacetFilter("licence","b")),
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -434,8 +584,37 @@ public class SearchQueryTest {
         assertThat("OP should be present", url, containsString("op=IsWithin"));
         assertThat("page should be specified", url, containsString("page=24"));
         assertThat("rows should be present", url, containsString("rows=30"));
-        assertThat("facet should be filtered", url, containsString("facet=licence|b"));
+        assertThat("facet should be filtered", url, containsString("facet=licence%7Cb"));
         assertThat("endpoint should be defined ", url, startsWith("http://my.endpo.int?"));
+    }
+    
+    @Test
+    public void checkUrlIsGenerated() {
+        //Given
+        SearchQuery interestingQuery = new SearchQuery(
+            "http://my.endpo.int",
+            CatalogueUser.PUBLIC_USER,
+            "My Search Term",
+            "1,2,3,4",
+            SpatialOperation.ISWITHIN,
+            24,
+            30,
+            Arrays.asList(new FacetFilter("licence%7Cb")),
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
+        );
+        
+        //When
+        String url = interestingQuery.toUrl();
+        
+        //Then        
+        assertThat(url, equalTo("http://my.endpo.int?page=24&rows=30&term=My+Search+Term&bbox=1,2,3,4&op=IsWithin&facet=licence%7Cb"));
     }
     
     @Test
@@ -450,7 +629,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -474,7 +660,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -496,7 +689,14 @@ public class SearchQueryTest {
             DEFAULT_PAGE,
             DEFAULT_ROWS,
             DEFAULT_FILTERS,
-            groupStore
+            groupStore,
+            Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .build(),
+            DEFAULT_FACETS
         );
         
         //When
@@ -509,6 +709,19 @@ public class SearchQueryTest {
     @Test
     public void impFacetsConfigured() {
         //Given          
+        Catalogue catalogue = Catalogue
+                .builder()
+                .id("cmp")
+                .title("Catchment Management Platform")
+                .url("https://cmp.catalogue.ceh.ac.uk")
+                .facetKeys(
+                    Arrays.asList("impBroaderCatchmentIssues",
+                    "impScale",
+                    "impWaterQuality",
+                    "resourceType",
+                    "licence")
+                )
+                .build();
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -517,60 +730,30 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            new ArrayList(
-                Arrays.asList(
-                    new FacetFilter("repository","Catchment Management Platform")
-                )
-            ),
-            groupStore
+            DEFAULT_FILTERS,
+            groupStore,
+            catalogue,
+            FACET_FACTORY.newInstances(catalogue.getFacetKeys())
         );
         
         //When
-        List<Facet> actual = query.getFacets();
+        List<String> actual = query
+            .getFacets()
+            .stream()
+            .map(Facet::getFieldName)
+            .collect(Collectors.toList());
+        
         
         //Then
-        assertThat("Should be 6 facets", actual.size(), is(6));
-        assertThat("Second facet should be Broader Catachment issues",
-            actual.get(1).getFieldName(),
-            is("impBroaderCatchmentIssues")
-        );
-    }
-    
-    @Test
-    public void cannotAddFilterQueryForNonExistentFacet() {
-        //Given  
-
-        FacetFilter facetFilterForNonExistentFacet
-            = new FacetFilter("unknown","something");
-        
-        FacetFilter facetFilterForKnownFacet
-            = new FacetFilter("repository","Catchment Management Platform");
-        
-        SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            new ArrayList(
-                Arrays.asList(
-                    facetFilterForNonExistentFacet,
-                    facetFilterForKnownFacet
-                )
-            ),
-            groupStore
-        );
-        
-        //When
-        List<FacetFilter> actual = query.getFacetFilters();
-        
-        //Then
-        assertThat("Should be one facet filter", actual.size(), is(1));
-        assertThat("Known facet filter should be present",
+        assertThat("",
             actual,
-            contains(facetFilterForKnownFacet)
+            contains(
+                "impBroaderCatchmentIssues",
+                "impScale",
+                "impWaterQuality",
+                "resourceType",
+                "licence"
+            )
         );
     }
 }
