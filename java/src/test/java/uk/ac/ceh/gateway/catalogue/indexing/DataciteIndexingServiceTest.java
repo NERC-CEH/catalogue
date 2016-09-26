@@ -42,18 +42,6 @@ public class DataciteIndexingServiceTest {
     }
     
     @Test
-    public void canExtractSubmittedDateFromXmlRecord() throws Exception {
-        //Given
-        String previousRequest = IOUtils.toString(getClass().getResource("datacite-date-request.xml"));
-        
-        //When
-        LocalDate date = service.getDateSubmitted(previousRequest);
-        
-        //Then
-        assertThat("Expected to read date", date, equalTo(LocalDate.of(2015, 10, 9)));
-    }
-    
-    @Test
     public void checkThatIndexIsEmpty() throws DocumentIndexingException {
         //Given
         //Nothing
@@ -72,7 +60,7 @@ public class DataciteIndexingServiceTest {
         GeminiDocument document = new GeminiDocument();
         when(datacite.isDatacited(document)).thenReturn(true);
         when(datacite.getDoiMetadata(document)).thenReturn(dataciteRequest);
-        when(datacite.getDatacitationRequest(eq(document), any(LocalDate.class))).thenReturn("Different doi");
+        when(datacite.getDatacitationRequest(eq(document))).thenReturn("Different doi");
         
         //When
         service.indexDocument(document);
@@ -88,7 +76,7 @@ public class DataciteIndexingServiceTest {
         GeminiDocument document = new GeminiDocument();
         when(datacite.isDatacited(document)).thenReturn(true);
         when(datacite.getDoiMetadata(document)).thenReturn(dataciteRequest);
-        when(datacite.getDatacitationRequest(eq(document), any(LocalDate.class))).thenReturn(dataciteRequest);
+        when(datacite.getDatacitationRequest(eq(document))).thenReturn(dataciteRequest);
         
         //When
         service.indexDocument(document);
