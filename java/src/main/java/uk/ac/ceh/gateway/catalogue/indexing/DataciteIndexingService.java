@@ -72,32 +72,13 @@ public class DataciteIndexingService implements DocumentIndexingService {
      */
     public void indexDocument(GeminiDocument document) throws Exception {
         if(datacite.isDatacited(document)) {
-            String lastRequest = datacite.getDoiMetadata(document); //Get the latest request
-            LocalDate submittedDate = getDateSubmitted(lastRequest);
-            
-            String newRequest = datacite.getDatacitationRequest(document, submittedDate);
+            String lastRequest = datacite.getDoiMetadata(document); //Get the latest request            
+            String newRequest = datacite.getDatacitationRequest(document);
             if(!newRequest.equals(lastRequest)) {
                 log.info("Submitting datacite update: {}", document.getId());
                 datacite.updateDoiMetadata(document);
             }
         }
-    }
-    
-    /**
-     * Return the date submitted date specified in the latestRequest
-     * @param latestRequest xml string containing a datacite request
-     * @return the date submitted in the xml
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     * @throws XPathExpressionException 
-     */
-    public LocalDate getDateSubmitted(String latestRequest) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException  {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document xmlRequest = factory.newDocumentBuilder().parse(new InputSource(new StringReader(latestRequest)));
-        String dateSubmitted = dateSubmittedXPath.evaluate(xmlRequest);
-        
-        return LocalDate.parse(dateSubmitted);
     }
     
     /**

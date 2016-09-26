@@ -3,18 +3,21 @@
 <#compress>
 <#escape x as x?xml>
 <?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-3" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd">
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
   <identifier identifierType="DOI">${doi}</identifier>
   <#if authors?has_content>
   <creators>
   <#list authors as author>
     <#if author.individualName?has_content>
-      <creator>
-	    <creatorName>${author.individualName}</creatorName>
-		<#if author.orcid?has_content>
-		<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">${author.orcid}</nameIdentifier>
-		</#if>
-	  </creator>
+    <creator>
+      <creatorName>${author.individualName}</creatorName>
+      <#if author.orcid?has_content>
+      <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">${author.orcid}</nameIdentifier>
+      </#if>
+      <#if author.organisationName?has_content>
+      <affiliation>${author.organisationName}</affiliation>
+      </#if>
+    </creator>
     </#if>
   </#list>
   </creators>
@@ -25,19 +28,23 @@
   <publisher>NERC Environmental Information Data Centre</publisher>
   <publicationYear><#if doc.datasetReferenceDate.publicationDate??>${doc.datasetReferenceDate.publicationDate.year?c}</#if></publicationYear>
   <#if doc.descriptiveKeywords?has_content>
-    <subjects>
-      <#list doc.descriptiveKeywords as descriptiveKeyword>
-      <#list descriptiveKeyword.keywords as keyword>
-      <#if keyword.value?has_content>
-        <subject>${keyword.value}</subject>
+  <subjects>
+    <#list doc.descriptiveKeywords as descriptiveKeyword>
+    <#list descriptiveKeyword.keywords as keyword>
+    <#if keyword.value?has_content>
+      <#if keyword.uri?has_content>
+      <subject valueURI="${keyword.uri}">${keyword.value}</subject>
+      <#else>
+      <subject>${keyword.value}</subject>
       </#if>
-      </#list>
+    </#if>
     </#list>
-    </subjects>
+    </#list>
+  </subjects>
   </#if>
   <dates>
     <#setting date_format = 'yyyy-MM-dd'>
-    <date dateType="Submitted">${submitted?date}</date>
+    <date dateType="Submitted">${doc.datasetReferenceDate.publicationDate}</date>
   </dates>
   <language>en</language>
   <#if resourceType?has_content>
@@ -47,7 +54,11 @@
   <alternateIdentifiers>
     <#list doc.resourceIdentifiers as uri>
       <#if uri.codeSpace!="doi:">
+      <#if uri.coupledResource?starts_with("http")>
+        <alternateIdentifier alternateIdentifierType="URL">${uri.coupledResource}</alternateIdentifier>
+      <#else>
         <alternateIdentifier alternateIdentifierType="URN">${uri.coupledResource}</alternateIdentifier>
+      </#if>
       </#if>
     </#list>
   </alternateIdentifiers>
@@ -67,25 +78,31 @@
   <#if doc.useConstraints?has_content>
     <rightsList>
       <#list doc.useConstraints as useConstraint>
-	    <#if useConstraint.code == "license">
-			<#if useConstraint.uri?has_content>
-			  <rights rightsURI="${useConstraint.uri}">${useConstraint.value}</rights>
-			<#else>
-			  <rights>${useConstraint.value}</rights>
-			</#if>
-		</#if>
+      <#if useConstraint.code == "license">
+      <#if useConstraint.uri?has_content>
+        <rights rightsURI="${useConstraint.uri}">${useConstraint.value}</rights>
+      <#else>
+        <rights>${useConstraint.value}</rights>
+      </#if>
+      </#if>
       </#list>
     </rightsList>
   </#if>
   <descriptions>
     <description descriptionType="Abstract">${doc.description}</description>
+    <description descriptionType="Methods">${doc.lineage}</description>
   </descriptions>
   <#if doc.boundingBoxes?has_content && doc.boundingBoxes??>
   <geoLocations>
     <#list doc.boundingBoxes as extent>
-      <geoLocation>
-        <geoLocationBox>${extent.southBoundLatitude} ${extent.westBoundLongitude} ${extent.northBoundLatitude} ${extent.eastBoundLongitude}</geoLocationBox>
-     </geoLocation>
+    <geoLocation>
+      <geoLocationBox>
+        <westBoundLongitude>${extent.westBoundLongitude}</westBoundLongitude>
+        <eastBoundLongitude>${extent.eastBoundLongitude}</eastBoundLongitude>
+        <southBoundLatitude>${extent.southBoundLatitude}</southBoundLatitude>
+        <northBoundLatitude>${extent.northBoundLatitude}</northBoundLatitude>
+      </geoLocationBox>
+    </geoLocation>
     </#list>
   </geoLocations>
   </#if>
