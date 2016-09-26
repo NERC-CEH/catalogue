@@ -14,6 +14,9 @@
       <#if author.orcid?has_content>
       <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">${author.orcid}</nameIdentifier>
       </#if>
+      <#if author.organisationName?has_content>
+      <affiliation>${author.organisationName}</affiliation>
+      </#if>
     </creator>
     </#if>
   </#list>
