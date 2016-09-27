@@ -35,7 +35,7 @@ web:
     - npm run build
   artifacts:
     paths:
-      - web/src/css/style.css
+      - web/src/css/
       - web/src/scripts/main-out.js
 
 rspec:
