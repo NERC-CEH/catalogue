@@ -44,6 +44,20 @@ module.exports = (grunt) ->
         files: 'src/css/style-cmp.css' : 'src/less/style-cmp.less'
       eidc:
         files: 'src/css/style-eidc.css' : 'src/less/style-eidc.less'
+      inlicensed:
+        files: 'src/css/style-inlicensed.css' : 'src/less/style-inlicensed.less'
+
+    cssmin:
+      assist:
+        files: 'src/css/style-assist.css' : 'src/css/style-assist.css'
+      ceh:
+        files: 'src/css/style-ceh.css' : 'src/css/style-ceh.css'
+      cmp:
+        files: 'src/css/style-cmp.css' : 'src/css/style-cmp.css'
+      eidc:
+        files: 'src/css/style-eidc.css' : 'src/css/style-eidc.css'
+      inlicensed:
+        files: 'src/css/style-inlicensed.css' : 'src/css/style-inlicensed.css'
 
     requirejs:
       compile:
@@ -111,16 +125,6 @@ module.exports = (grunt) ->
     clean:
       test:['test-compiled']
       prep: ['src/css']
-
-    cssmin:
-      assist:
-        files: 'src/css/style-assist.css' : 'src/css/style-assist.css'
-      ceh:
-        files: 'src/css/style-ceh.css' : 'src/css/style-ceh.css'
-      cmp:
-        files: 'src/css/style-cmp.css' : 'src/css/style-cmp.css'
-      eidc:
-        files: 'src/css/style-eidc.css' : 'src/css/style-eidc.css'
 
   grunt.registerTask 'prep', ['clean', 'combine_harvester:openlayers']
   grunt.registerTask 'test', ['clean:test', 'coffee', 'jasmine']
