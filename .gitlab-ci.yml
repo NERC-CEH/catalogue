@@ -62,21 +62,21 @@ rspec:
 build_application:
   <<: *deployment_definition
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.ceh.ac.uk
     - docker build -t $CONTAINER_APPLICATION_IMAGE .
     - docker push $CONTAINER_APPLICATION_IMAGE
 
 build_solr:
   <<: *deployment_definition
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.ceh.ac.uk
     - docker build -t $CONTAINER_SOLR_IMAGE solr
     - docker push $CONTAINER_SOLR_IMAGE
 
 build_mapserver:
   <<: *deployment_definition
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab-cjohn.com
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.ceh.ac.uk
     - docker build -t $CONTAINER_MAPSERVER_IMAGE mapserver
     - docker push $CONTAINER_MAPSERVER_IMAGE
 
