@@ -199,6 +199,13 @@ public class ServiceConfig {
                 .url("http://www.ceh.ac.uk/ASSIST")
                 .facetKey("resourceType")
                 .facetKey("licence")
+                .build(),
+            
+            Catalogue.builder()
+                .id("inlicensed")
+                .title("CEH In-licensed Datasets")
+                .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
+                .facetKey("resourceType")
                 .build()
         );
     }
