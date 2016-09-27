@@ -1,7 +1,7 @@
 variables:
-  CONTAINER_APPLICATION_IMAGE: registry.gitlab-cjohn.com/eip/catalogue:app-$CI_BUILD_REF_NAME
-  CONTAINER_SOLR_IMAGE:        registry.gitlab-cjohn.com/eip/catalogue:solr-$CI_BUILD_REF_NAME
-  CONTAINER_MAPSERVER_IMAGE:   registry.gitlab-cjohn.com/eip/catalogue:mapserver-$CI_BUILD_REF_NAME
+  CONTAINER_APPLICATION_IMAGE: registry.gitlab.ceh.ac.uk/eip/catalogue:app-$CI_BUILD_REF_NAME
+  CONTAINER_SOLR_IMAGE:        registry.gitlab.ceh.ac.uk/eip/catalogue:solr-$CI_BUILD_REF_NAME
+  CONTAINER_MAPSERVER_IMAGE:   registry.gitlab.ceh.ac.uk/eip/catalogue:mapserver-$CI_BUILD_REF_NAME
   DOCKER_DAEMON_ARGS:          -g /cache/docker
   MAVEN_OPTS:                  -Dmaven.repo.local=$CI_PROJECT_DIR/cache/mvn
 
