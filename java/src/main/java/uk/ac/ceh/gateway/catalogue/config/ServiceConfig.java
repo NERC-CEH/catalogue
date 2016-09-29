@@ -159,13 +159,13 @@ public class ServiceConfig {
     
     @Bean
     public CatalogueService catalogueService() {
-        String defaultCatalogueKey = "ceh";
+        String defaultCatalogueKey = "eidc";
         
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
             
             Catalogue.builder()
-                .id(defaultCatalogueKey)
+                .id("ceh")
                 .title("Centre for Ecology & Hydrology")
                 .url("https://eip.ceh.ac.uk")
                 .facetKey("topic")
@@ -174,7 +174,7 @@ public class ServiceConfig {
                 .build(),
         
             Catalogue.builder()
-                .id("eidc")
+                .id(defaultCatalogueKey)
                 .title("Environmental Information Data Centre")
                 .url("http://eidc.ceh.ac.uk")
                 .facetKey("topic")
