@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueException;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -35,13 +38,33 @@ public class CatalogueController {
         this.documentRepository = documentRepository;
         this.catalogueService = catalogueService;
     }
-    
+
     @RequestMapping(value = "catalogues", method = RequestMethod.GET)
     @ResponseBody
-    public  HttpEntity<List<Catalogue>> catalogues() {
-        return ResponseEntity.ok(catalogueService.retrieveAll());
-    }   
-    
+    public  HttpEntity<List<Catalogue>> catalogues(
+        @RequestParam(value = "catalogue", required = false) String catalogue,
+        @RequestParam(value = "identifier", required = false)String identifier
+    ) throws DocumentRepositoryException {
+        List<Catalogue> catalogues = new ArrayList(catalogueService.retrieveAll());
+        
+        try {
+            if(catalogue != null) {
+                catalogues.remove(catalogueService.retrieve(catalogue));
+            } else if (identifier != null) {
+                catalogues.remove(
+                    catalogueService.retrieve(
+                        documentRepository.read(
+                            identifier
+                        ).getCatalogue()
+                    )
+                );
+            }
+        } catch (CatalogueException | DocumentRepositoryException ex) {
+            // If the catalogue or identifier does not exist just return all the catalogues
+        }
+        return ResponseEntity.ok(catalogues);
+    }
+
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @RequestMapping(value = "documents/{file}/catalogue", method = RequestMethod.GET)
     @ResponseBody
@@ -51,9 +74,9 @@ public class CatalogueController {
     ) throws DocumentRepositoryException {
         return createCatalogueResource(
             documentRepository.read(file)
-        ); 
+        );
     }
-    
+
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}/catalogue", method =  RequestMethod.PUT)
     @ResponseBody
@@ -76,7 +99,7 @@ public class CatalogueController {
             )
         );
     }
-    
+
     private HttpEntity<CatalogueResource> createCatalogueResource(MetadataDocument document) {
         return ResponseEntity.ok(
             new CatalogueResource(

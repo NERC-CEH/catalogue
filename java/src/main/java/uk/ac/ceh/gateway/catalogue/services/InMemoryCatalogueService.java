@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,9 @@ public class InMemoryCatalogueService implements CatalogueService {
 
     @Override
     public List<Catalogue> retrieveAll() {
-        return new ArrayList<>(catalogues.values());
+        List<Catalogue> toReturn = new ArrayList<>(catalogues.values());
+        Collections.sort(toReturn);
+        return toReturn;
     }
 
 }
