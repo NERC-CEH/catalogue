@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
