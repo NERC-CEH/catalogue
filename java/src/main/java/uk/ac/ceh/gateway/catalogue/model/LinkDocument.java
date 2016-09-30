@@ -10,11 +10,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+import org.springframework.http.MediaType;
+import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
+import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@ConvertUsing({
+    @Template(called="html/link.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+})
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class LinkDocument extends AbstractMetadataDocument {
     private String linkedDocumentId;

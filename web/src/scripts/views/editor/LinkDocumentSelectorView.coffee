@@ -27,16 +27,16 @@ define [
 
   initialize: (options) ->
     if @model.isNew()
-      @currentCatalogue = Backbone.history.location.pathname.split('/')[1]
+      params = "catalogue=#{Backbone.history.location.pathname.split('/')[1]}"
     else
-      @currentCatalogue = @model.get('metadata').catalogue
+      params = "identifier=#{@model.get('id')}"
 
     options.catalogue = 'eidc'
 
     @searchOnceComplete = _.debounce @search, 500
     @results = new Backbone.Collection()
 
-    $.getJSON '/catalogues', (catalogues) =>
+    $.getJSON "/catalogues?#{params}", (catalogues) =>
       @catalogues = catalogues
       InputView.prototype.initialize.call @, options
 
@@ -46,7 +46,7 @@ define [
   render: ->
     InputView.prototype.render.apply @
     $select = @$ '#catalogue'
-    _.chain(@catalogues).reject((c) => c.id == @currentCatalogue ).each (catalogue) =>
+    _.each @catalogues, (catalogue) =>
       $select.append @optionTemplate _.extend {}, catalogue, data: @data
     do @search
     @

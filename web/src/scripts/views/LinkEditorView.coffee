@@ -23,6 +23,7 @@ define [
           model: @model
           modelAttribute: 'linkedDocumentId'
           label: 'Identifier of linked Document'
+          readonly: true
           helpText: """
                     <p>Metadata record linked to by this document.</p>
                     """

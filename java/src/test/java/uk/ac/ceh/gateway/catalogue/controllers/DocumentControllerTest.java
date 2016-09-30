@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 /**
@@ -205,6 +206,26 @@ public class DocumentControllerTest {
         verify(documentRepository).read(fileId);
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
+    }
+
+    @Test
+    public void cannotViewNonPublicMetadataDocumentThroughLinkDocument() throws Exception {
+        //given
+        MetadataDocument master = new GeminiDocument().setMetadata(
+            MetadataInfo.builder().state("draft").build()
+        );
+        LinkDocument linkDocument = LinkDocument.builder().linkedDocumentId("master").original(master).build();
+        given(documentRepository.read("test")).willReturn(linkDocument);
+        
+        //when
+        MetadataDocument actual = controller.readMetadata(CatalogueUser.PUBLIC_USER, "test");
+        
+        //then
+        assertThat(
+            "should not be able to view master record through linked document",
+            actual.getClass(),
+            equalTo(LinkDocument.class)
+        );
     }
     
     @Test

@@ -11,15 +11,17 @@ import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.HAS_GEOMETRY;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.IDENTIFIER;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SOURCE;
 
 /**
  * A simple lookup service powered by the jena linking database. This just looks
  * up any literals associated to a given uri
  * @author cjohn
  */
-@Data
+@AllArgsConstructor
 public class JenaLookupService {
     private final Dataset jenaTdb;
     
@@ -37,6 +39,21 @@ public class JenaLookupService {
     }
     
     /**
+     * Metadata records (in other catalogues) linked to this record.
+     * @param uri of this metadata record
+     * @return list of identifiers
+     */
+    public List<String> linked(String uri) {
+        return lookupPropertyOfSubject(uri, SOURCE, IDENTIFIER)
+            .stream()
+            .map(l -> l.getString())
+            .filter(l -> !l.startsWith("CEH:EIDC:"))
+            .filter(l -> !l.startsWith("doi:"))
+            .filter(l -> !l.startsWith("http"))
+            .collect(Collectors.toList());
+    }
+    
+    /**
      * Performs a literal lookup from the jena database for literals associated 
      * to the given uri with a specified relationship
      * @param uri to look up an attribute of
@@ -50,6 +67,38 @@ public class JenaLookupService {
         );
         pss.setParam("uri", createResource(uri));
         pss.setParam("relationship", relationship);
+        List<Literal> toReturn = new ArrayList<>();
+        jenaTdb.begin(ReadWrite.READ);
+        try (QueryExecution q = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
+            q.execSelect().forEachRemaining(s -> { toReturn.add(s.getLiteral("attr")); });
+        } finally {
+            jenaTdb.end();
+        }
+        return toReturn;
+    }
+    
+    /**
+     * Lookup a resource (the subject) and return a property of that subject. 
+     * @param objectUri uri of resource (the object)
+     * @param relationshipToSubject uri of relationship to subject
+     * @param relationshipOnSubject uri of literal on subject
+     * @return 
+     */
+    public List<Literal> lookupPropertyOfSubject(
+        String objectUri,
+        Property relationshipToSubject,
+        Property relationshipOnSubject
+    ) {
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(
+            "SELECT ?attr " +
+            "WHERE { " +
+            "   _:s ?relationshipToSubject ?objectUri ; " +
+            "       ?relationshipOnSubject ?attr . " +
+            "}"
+        );
+        pss.setParam("objectUri", createResource(objectUri));
+        pss.setParam("relationshipToSubject", relationshipToSubject);
+        pss.setParam("relationshipOnSubject", relationshipOnSubject);
         List<Literal> toReturn = new ArrayList<>();
         jenaTdb.begin(ReadWrite.READ);
         try (QueryExecution q = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {

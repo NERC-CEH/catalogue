@@ -2,12 +2,15 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 
 /**
  * This is the Solr Indexing Service. Instances of this can read documents from
@@ -18,15 +21,22 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
  */
 public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex> {
     private final SolrServer solrServer;
+    private final JenaLookupService lookupService;
+    private final DocumentIdentifierService identifierService;
 
     public SolrIndexingService(
             BundledReaderService<D> reader,
             DocumentListingService listingService,
             DataRepository<?> repo,
             IndexGenerator<D, SolrIndex> indexGenerator,
-            SolrServer solrServer) {
+            SolrServer solrServer,
+            JenaLookupService lookupService,
+            DocumentIdentifierService identifierService
+    ) {
         super(reader, listingService, repo, indexGenerator);
         this.solrServer = solrServer;
+        this.lookupService = lookupService;
+        this.identifierService = identifierService;
     }
     
     @Override
@@ -43,6 +53,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
         try {
             super.indexDocuments(documents, revision);
+            super.indexDocuments(linkedDocuments(documents), revision); // reindex LinkDocuments
         } finally {
             commit();
         }
@@ -83,5 +94,12 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
         } catch (IOException | SolrServerException ex) {
             throw new DocumentIndexingException(ex);
         }
+    }
+    
+    private List<String> linkedDocuments(List<String> documents) {
+        return documents
+            .stream()
+            .flatMap(document -> lookupService.linked(identifierService.generateUri(document)).stream())
+            .collect(Collectors.toList());
     }
 }

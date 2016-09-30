@@ -33,6 +33,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
@@ -268,11 +269,14 @@ public class DocumentController {
             String uri = linkDocument.getUri();
             List<Keyword> additionalKeywords = linkDocument.getAdditionalKeywords();
             MetadataInfo metadataInfo = linkDocument.getMetadata();
-            document = linkDocument.getOriginal();
-            document.setMetadata(metadataInfo);
-            document.setId(id);
-            document.setUri(uri);
-            document.addAdditionalKeywords(additionalKeywords);
+            MetadataInfo masterMetadataInfo = linkDocument.getOriginal().getMetadata();
+            if (masterMetadataInfo.isPubliclyViewable(Permission.VIEW)) {
+                document = linkDocument.getOriginal();
+                document.setMetadata(metadataInfo);
+                document.setId(id);
+                document.setUri(uri);
+                document.addAdditionalKeywords(additionalKeywords);
+            }
         }
         return document;
     }
