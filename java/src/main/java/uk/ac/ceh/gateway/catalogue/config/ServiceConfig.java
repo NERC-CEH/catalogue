@@ -65,6 +65,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGeneratorRegistry;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexGeminiDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexImpDocumentGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexLinkDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexGenerator;
@@ -458,7 +459,9 @@ public class ServiceConfig {
                 documentListingService(),
                 dataRepository,
                 indexGeneratorRegistry,
-                solrServer
+                solrServer,
+                jenaLookupService(),
+                documentIdentifierService()
         );
         
         solrIndexLinkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
@@ -475,6 +478,7 @@ public class ServiceConfig {
                 .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(metadataDocument))
                 .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument))
                 .register(ImpDocument.class, new JenaIndexImpDocumentGenerator(metadataDocument))
+                .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(metadataDocument))
                 .register(MetadataDocument.class, metadataDocument);
         
         JenaIndexingService toReturn = new JenaIndexingService(

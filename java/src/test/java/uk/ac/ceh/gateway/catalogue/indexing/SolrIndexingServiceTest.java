@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import org.mockito.Mock;
@@ -31,7 +32,9 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
 /**
@@ -45,13 +48,23 @@ public class SolrIndexingServiceTest {
     @Mock DataRepository<?> repo;
     @Mock IndexGenerator<GeminiDocument, SolrIndex> indexGenerator;
     @Mock SolrServer solrServer;
+    @Mock JenaLookupService lookupService;
+    @Mock DocumentIdentifierService identifierService;
     
     private SolrIndexingService service;
     
     @Before
     public void createSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-        service = spy(new SolrIndexingService(reader, listingService, repo, indexGenerator, solrServer));
+        service = spy(new SolrIndexingService(
+            reader,
+            listingService,
+            repo,
+            indexGenerator,
+            solrServer,
+            lookupService,
+            identifierService
+        ));
     }
     
     @Test
@@ -204,5 +217,22 @@ public class SolrIndexingServiceTest {
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
         verify(solrServer).query(solrQuery.capture());
         assertEquals("Expecte a wildcard query for the solr search", "*:*", solrQuery.getValue().getQuery());
+    }
+    
+    @Test
+    public void linkDocumentsGetReindexed() throws Exception {
+        //given
+        String master = "master";
+        String revision = "latest";
+        List<String> documents = Arrays.asList(master, "another");
+        
+        given(identifierService.generateUri(any(String.class))).willReturn("http://master", "http://another");
+        
+        //when
+        service.indexDocuments(documents, revision);
+        
+        //then
+        verify(lookupService).linked("http://master");
+        verify(identifierService).generateUri(master);
     }
 }
