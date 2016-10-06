@@ -6,7 +6,7 @@
       <#if accessConstraint.uri?has_content>
         <a href="${accessConstraint.uri}">${accessConstraint.value?html}</a>
       <#else>
-        ${accessConstraint.value?html} cheese access constraint
+        ${accessConstraint.value?html}
       </#if>
       </p>
     </#if>
