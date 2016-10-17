@@ -20,7 +20,7 @@
     <url>https://catalogue.ceh.ac.uk</url>
 
     <properties>
-        <ceh.components.version>1.0.41</ceh.components.version>
+        <ceh.components.version>1.0.43</ceh.components.version>
         <commons-fileupload.version>1.3.2</commons-fileupload.version>
         <ehcache.version>2.10.2.2.21</ehcache.version>
         <freemarker.version>2.3.23</freemarker.version>

@@ -8,6 +8,7 @@ import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.ac.ceh.components.userstore.crowd.CrowdEhCacheSupport;
 
 /**
  *
@@ -30,6 +31,7 @@ public class CachingConfig extends CachingConfigurerSupport {
         net.sf.ehcache.config.Configuration config = new net.sf.ehcache.config.Configuration();
         config.addCache(capabilitiesCache);
         config.addCache(listingsCache);
+        CrowdEhCacheSupport.addCrowdCacheConfigurations(config);
 
         return net.sf.ehcache.CacheManager.newInstance(config);
     }
