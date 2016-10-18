@@ -63,11 +63,11 @@
     </#list>
   </alternateIdentifiers>
   </#if>
-  <#if doc.revisionOfIdentifier??>  
+  <#if doc.revisionOfIdentifier??>
     <relatedIdentifiers>
       <relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf">10.5285/${doc.revisionOfIdentifier}</relatedIdentifier>
     </relatedIdentifiers>
-  </#if>  
+  </#if>
   <#if doc.distributionFormats?has_content>
   <formats>
     <#list doc.distributionFormats as format>

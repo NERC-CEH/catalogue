@@ -15,7 +15,7 @@
 	</#if>
 	<#if citation??>
 		  <gmd:useLimitation>
-			<gco:CharacterString>If you reuse this data, you must cite: ${citation.authors?join(', ')} (${citation.year}). ${citation.title}. ${citation.publisher} ${citation.doi}</gco:CharacterString>
+			<gco:CharacterString>If you reuse this data, you should cite: ${citation.authors?join(', ')} (${citation.year}). ${citation.title}. ${citation.publisher} ${citation.url}</gco:CharacterString>
 		  </gmd:useLimitation>
 	</#if>
     </gmd:MD_Constraints>
