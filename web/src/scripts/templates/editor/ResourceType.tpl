@@ -6,7 +6,7 @@
     <option value="service">Service</option>
   </optgroup>
   <optgroup label="Other">
-    <option value="aggregate">Aggregate</option>
+    <option value="aggregate">Aggregation</option>
     <option value="application">Application</option>
     <option value="attribute">Attribute</option>
     <option value="attributeType">Attribute type</option>
