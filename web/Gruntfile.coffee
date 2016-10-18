@@ -121,6 +121,9 @@ module.exports = (grunt) ->
       requirejs:
         src: 'src/scripts/main.js'
         dest: 'src/scripts/main-out.js'
+      ordermanager:
+        src: 'src/css/style-ceh.css'
+        dest: 'src/css/style.css'
 
     clean:
       test:['test-compiled']
@@ -129,5 +132,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'prep', ['clean', 'combine_harvester:openlayers']
   grunt.registerTask 'test', ['clean:test', 'coffee', 'jasmine']
   grunt.registerTask 'develop', ['less', 'copy:requirejs', 'concurrent:watch']
-  grunt.registerTask 'build', ['clean', 'less', 'cssmin', 'requirejs']
+  grunt.registerTask 'build', ['clean', 'less', 'cssmin', 'requirejs', 'copy:ordermanager']
   grunt.registerTask 'default', ['prep', 'build', 'test']
