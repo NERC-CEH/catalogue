@@ -3,7 +3,7 @@
   <p>
     <#list resourceIdentifiers as uri>
       <#if uri.codeSpace="doi:">
-        <a href="http://doi.org/${uri.code?html}">${uri.coupledResource?html}</a>
+        <a href="https://doi.org/${uri.code?html}">${uri.coupledResource?html}</a>
       <#else>
         ${uri.coupledResource?html}
       </#if>
