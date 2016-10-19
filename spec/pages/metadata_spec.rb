@@ -59,9 +59,9 @@ describe "Metadata page" do
         expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales")
       end
 
-      it "should have heading 'This data series comprises the following resources'" do
+      it "should have heading 'This series includes the following resources'" do
         visit bmsPage
-        expect(page).to have_content('This data series comprises the following resources')
+        expect(page).to have_content('This series includes the following resources')
         expect(page).to have_content('United Kingdom Butterfly Monitoring Scheme (UKBMS) data')
       end
     end
