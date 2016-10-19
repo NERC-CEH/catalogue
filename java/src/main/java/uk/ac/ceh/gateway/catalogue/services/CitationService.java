@@ -70,6 +70,8 @@ public class CitationService {
     
     protected URI getInAlternateFormat(GeminiDocument geminiDocument, String alternateFormat) {
         return UriComponentsBuilder.fromUriString(geminiDocument.getUri())
+                                   .replacePath("documents/")
+                                   .path(geminiDocument.getId())
                                    .path("/citation")
                                    .queryParam("format", alternateFormat)
                                    .build()
