@@ -56,7 +56,6 @@ rspec:
   stage: deploy
   image: gitlab/dind
   only:
-    - develop
     - tags
 
 build_application:
