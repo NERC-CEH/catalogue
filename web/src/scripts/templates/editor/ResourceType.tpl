@@ -6,12 +6,12 @@
     <option value="service">Service</option>
   </optgroup>
   <optgroup label="Other">
-    <option value="aggregate">Aggregate</option>
+    <option value="aggregate">Aggregation</option>
     <option value="application">Application</option>
     <option value="attribute">Attribute</option>
     <option value="attributeType">Attribute type</option>
     <option value="collection">Collection</option>
-    <option value="collectionHardware>Collection hardware</option>
+    <option value="collectionHardware">Collection hardware</option>
     <option value="collectionSession">Collection session</option>
     <option value="coverage">Coverage</option>
     <option value="dimensionGroup">Dimension group</option>

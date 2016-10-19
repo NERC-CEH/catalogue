@@ -35,7 +35,7 @@
             <#if catalogue?has_content>
               <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Search Data</a></li>
             </#if>
-            <li><a href="//eip.ceh.ac.uk/catalogue/help">Help</a></li>
+            <li><a href="//eidc.ceh.ac.uk/help/catalogueHelp">Help</a></li>
             <#if catalogue?has_content>
               <li><a href="${catalogue.url!'/'?html}">${catalogue.title?html}</a></li>
             </#if>

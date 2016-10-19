@@ -9,7 +9,7 @@ describe "Metadata page" do
 
   sized [:xs, :sm, :md, :lg] do
     describe "UI elements of" do
-    
+
       it "BMS page" do
         visit bmsPage
         expect(find('#document-title')).to have_content "United Kingdom Butterfly Monitoring Scheme (UKBMS) data"
@@ -32,7 +32,7 @@ describe "Metadata page" do
         visit starPage
         expect(page).not_to have_selector('#section-spatial')
       end
-      
+
       it "should show not current message" do
         visit notCurrentPage
         expect(page).to have_selector('#not-current')
@@ -45,7 +45,7 @@ describe "Metadata page" do
         visit buzzPage
         expect(page).not_to have_selector('#ordering-url')
       end
-      
+
       it "should show a Preview on map link" do
         visit radionuclideServicePage
         expect(find('#document-distribution')).to have_link("Open in map viewer")
@@ -53,15 +53,15 @@ describe "Metadata page" do
     end
 
     describe "Document links on metadata page" do
-      it "should have heading 'This dataset is part of the series'" do
+      it "should have heading 'This dataset is part of'" do
         visit radionuclideDatasetPage
-        expect(page).to have_content('This dataset is part of the series')
+        expect(page).to have_content('This dataset is part of')
         expect(page).to have_content("Natural radionuclide concentrations in soil, water and sediments in England and Wales")
       end
 
-      it "should have heading 'This data series comprises the following datasets'" do
+      it "should have heading 'This series includes the following resources'" do
         visit bmsPage
-        expect(page).to have_content('This data series comprises the following datasets')
+        expect(page).to have_content('This series includes the following resources')
         expect(page).to have_content('United Kingdom Butterfly Monitoring Scheme (UKBMS) data')
       end
     end
