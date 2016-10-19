@@ -30,14 +30,15 @@ public class CitationServiceTest {
         //Given
         String format = "bibtex";
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getUri()).thenReturn("http://document");
+        when(document.getUri()).thenReturn("https://example.com/id/30ce7be8-deab-4608-bc2a-1774921423f0");
+        when(document.getId()).thenReturn("30ce7be8-deab-4608-bc2a-1774921423f0");
         CitationService service = new CitationService();
         
         //When
         URI url = service.getInAlternateFormat(document, format);
         
         //Then
-        assertThat(url.toString(), equalTo("http://document/citation?format=bibtex"));
+        assertThat(url.toString(), equalTo("https://example.com/documents/30ce7be8-deab-4608-bc2a-1774921423f0/citation?format=bibtex"));
     }
     
     @Test
