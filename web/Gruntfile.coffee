@@ -46,6 +46,10 @@ module.exports = (grunt) ->
         files: 'src/css/style-eidc.css' : 'src/less/style-eidc.less'
       inlicensed:
         files: 'src/css/style-inlicensed.css' : 'src/less/style-inlicensed.less'
+      edge:
+        files: 'src/css/style-edge.css' : 'src/less/style-edge.less'
+      inms:
+        files: 'src/css/style-inms.css' : 'src/less/style-inms.less'
 
     cssmin:
       assist:
@@ -58,6 +62,10 @@ module.exports = (grunt) ->
         files: 'src/css/style-eidc.css' : 'src/css/style-eidc.css'
       inlicensed:
         files: 'src/css/style-inlicensed.css' : 'src/css/style-inlicensed.css'
+      edge:
+        files: 'src/css/style-edge.css' : 'src/css/style-edge.css'
+      inms:
+        files: 'src/css/style-inms.css' : 'src/css/style-inms.css'
 
     requirejs:
       compile:

@@ -166,6 +166,20 @@ public class ServiceConfig {
             defaultCatalogueKey,
             
             Catalogue.builder()
+                .id("inms")
+                .title("International Nitrogen Management System")
+                .url("http://www.ceh.ac.uk")
+                .facetKey("resourceType")
+                .build(),
+            
+            Catalogue.builder()
+                .id("edge")
+                .title("EDgE")
+                .url("https://edge.climate.copernicus.eu")
+                .facetKey("resourceType")
+                .build(),
+            
+            Catalogue.builder()
                 .id("ceh")
                 .title("Centre for Ecology & Hydrology")
                 .url("https://eip.ceh.ac.uk")
