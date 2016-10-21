@@ -1,7 +1,7 @@
 <div class="form-inline" style="margin-top: 6px">
   <div class="form-group">
     <label for="linkedDocumentId">Linked Document Identifier</label>
-    <input data-name="<%= data.modelAttribute %>" class="form-control" id="linkedDocumentId" value="<%= data.value %>">
+    <input data-name="<%= data.modelAttribute %>" class="form-control" readonly id="linkedDocumentId" value="<%= data.value %>">
   </div>
 </div>
 <div class="form-inline" style="margin-top: 6px">
