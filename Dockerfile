@@ -1,7 +1,6 @@
 FROM tomcat:8.0-jre8
 MAINTAINER oss@ceh.ac.uk
 
-COPY server.xml /usr/local/tomcat/conf/server.xml
 RUN echo 'CATALINA_OPTS="                                                            \
  -Dspring.profiles.active=${SPRING_PROFILES}                                         \
  -Ddocuments.baseUri=${BASE_URI}                                                     \
