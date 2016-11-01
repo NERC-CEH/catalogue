@@ -50,6 +50,8 @@ module.exports = (grunt) ->
         files: 'src/css/style-edge.css' : 'src/less/style-edge.less'
       inms:
         files: 'src/css/style-inms.css' : 'src/less/style-inms.less'
+      nc:
+        files: 'src/css/style-nc.css' : 'src/less/style-nc.less'
 
     cssmin:
       assist:
@@ -66,6 +68,8 @@ module.exports = (grunt) ->
         files: 'src/css/style-edge.css' : 'src/css/style-edge.css'
       inms:
         files: 'src/css/style-inms.css' : 'src/css/style-inms.css'
+      nc:
+        files: 'src/css/style-nc.css' : 'src/css/style-nc.css'
 
     requirejs:
       compile:
