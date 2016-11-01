@@ -166,6 +166,13 @@ public class ServiceConfig {
             defaultCatalogueKey,
             
             Catalogue.builder()
+                .id("nc")
+                .title("Natural Capital")
+                .url("http://www.ceh.ac.uk")
+                .facetKey("resourceType")
+                .build(),
+
+            Catalogue.builder()
                 .id("inms")
                 .title("International Nitrogen Management System")
                 .url("http://www.ceh.ac.uk")
