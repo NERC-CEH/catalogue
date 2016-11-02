@@ -22,7 +22,8 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 @JsonTypeInfo(use=Id.NAME, include=As.EXISTING_PROPERTY, property="type", visible=true)
 @JsonSubTypes({
     @Type(name="model",            value = Model.class),
-    @Type(name="modelApplication", value = ModelApplication.class)
+    @Type(name="modelApplication", value = ModelApplication.class),
+    @Type(name="caseStudy",        value = CaseStudy.class)
 })
 public class ImpDocument extends AbstractMetadataDocument {
     private String type;
