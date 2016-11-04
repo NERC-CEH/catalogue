@@ -5,17 +5,24 @@ define [
   'cs!views/editor/ParentStringView'
   'cs!views/editor/ParentView'
   'cs!views/editor/LinkView'
-  ], (EditorView, InputView, TextareaView, ParentStringView, ParentView, LinkView) -> EditorView.extend
+  'cs!views/editor/ResourceIdentifierView'
+  'cs!views/editor/SelectView'
+  ], (EditorView, InputView, TextareaView, ParentStringView, ParentView, LinkView, ResourceIdentifierView, SelectView) -> EditorView.extend
 
   initialize: ->
     @sections = [
       label: 'One'
-      title:  'General information'
+      title:  'Common information'
       views: [
-        new InputView
+        new SelectView
           model: @model
           modelAttribute: 'type'
           label: 'Type'
+          options: [
+            {value: 'modelApplication', label: 'Application of Model'},
+            {value: 'caseStudy', label: 'Case Study'},
+            {value: 'model', label: 'Model'}
+          ]
 
         new InputView
           model: @model
@@ -28,22 +35,24 @@ define [
           label: 'Description'
           rows: 17
 
+        new ParentView
+          model: @model
+          modelAttribute: 'resourceIdentifiers'
+          label: 'Resource Identifiers'
+          ObjectInputView: ResourceIdentifierView
+          helpText: """
+                    <p>A unique string or number used to identify the resource.</p>
+                    <p> The codespace identifies the context in which the code is unique.</p>
+                    """
+      ]
+    ,
+      label: 'Two'
+      title: 'Model only'
+      views: [
         new ParentStringView
           model: @model
           modelAttribute: 'keyReferences'
           label: 'Key References'
-
-        new InputView
-          model: @model
-          modelAttribute: 'id'
-          label: 'File Identifier'
-          readonly: true
-
-        new InputView
-          model: @model
-          modelAttribute: 'uri'
-          label: 'URL'
-          readonly: true
 
         new InputView
           model: @model
@@ -129,6 +138,40 @@ define [
           ObjectInputView: LinkView
 
         ]
+      ,
+      label: 'Three'
+      title: 'Application of model only'
+      views: [
+        new InputView
+          model: @model
+          modelAttribute: 'date'
+          label: 'Date'
+
+        new InputView
+          model: @model
+          modelAttribute: 'studySite'
+          label: 'Study Site'
+
+        new InputView
+          model: @model
+          modelAttribute: 'studyScale'
+          label: 'Study Scale'
+
+        new InputView
+          model: @model
+          modelAttribute: 'objective'
+          label: 'Objective'
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'funderDetails'
+          label: 'Funder Details'
+
+        new ParentStringView
+          model: @model
+          modelAttribute: 'inputData'
+          label: 'Input Data'
+      ]
     ]
 
     EditorView.prototype.initialize.apply @

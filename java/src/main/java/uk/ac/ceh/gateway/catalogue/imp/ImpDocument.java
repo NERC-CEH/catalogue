@@ -26,9 +26,6 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
     @Type(name="caseStudy",        value = CaseStudy.class)
 })
 public class ImpDocument extends AbstractMetadataDocument {
-    private String type;
-    private List<String> identifiers;
-    private List<Link> links;
     private List<Keyword> keywords;
 
     @Override

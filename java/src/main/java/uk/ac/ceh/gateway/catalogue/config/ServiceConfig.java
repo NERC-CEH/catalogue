@@ -52,6 +52,7 @@ import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
@@ -64,7 +65,6 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGeneratorRegistry;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexBaseMonitoringTypeGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexGeminiDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexImpDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexLinkDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
@@ -281,6 +281,7 @@ public class ServiceConfig {
         // IMP Message Converters
         converters.add(new Object2TemplatedMessageConverter(Model.class,            freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(ModelApplication.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(CaseStudy.class,        freemarkerConfiguration()));
         
         // Gemini Message Converters
         converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,       freemarkerConfiguration()));
@@ -498,7 +499,6 @@ public class ServiceConfig {
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
                 .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(metadataDocument))
                 .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument))
-                .register(ImpDocument.class, new JenaIndexImpDocumentGenerator(metadataDocument))
                 .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(metadataDocument))
                 .register(MetadataDocument.class, metadataDocument);
         

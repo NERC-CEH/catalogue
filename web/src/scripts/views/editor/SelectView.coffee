@@ -8,10 +8,14 @@ define [
 
   optionTemplate: _.template('<option value="<%= value %>"><%= label %></option>')
 
+  initialize: (options) ->
+    @options = options.options
+    InputView.prototype.initialize.call @, options
+
   render: ->
     InputView.prototype.render.apply @
     $select = @$ 'select'
-    @model.options.forEach (option) =>
+    @options.forEach (option) =>
       $select.append @optionTemplate option
     $select.val @model.get @data.modelAttribute
     @

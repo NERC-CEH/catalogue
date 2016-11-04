@@ -35,4 +35,8 @@
 
 ## Editor
 
+* configure an editor extending EditorView
 
+## codelist.properties
+
+* add resource type to metadata.resourceType list

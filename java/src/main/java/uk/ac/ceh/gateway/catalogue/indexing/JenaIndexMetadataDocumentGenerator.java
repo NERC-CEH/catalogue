@@ -32,6 +32,10 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             
             Optional.ofNullable(emptyToNull(document.getType()))
                     .ifPresent(t -> toReturn.add(createStatement(me, TYPE, createPlainLiteral(t))));
+            
+            document.getRelationships().forEach(rel -> {
+                toReturn.add(createStatement(me, createProperty(rel.getRelation()), resource(rel.getTarget())));
+            });
         }
         return toReturn;
     }

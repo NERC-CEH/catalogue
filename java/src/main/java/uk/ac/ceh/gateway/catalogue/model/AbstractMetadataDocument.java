@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -23,6 +24,7 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private List<ResourceIdentifier> resourceIdentifiers;
     @JsonIgnore
     private MetadataInfo metadata;
+    private Set<Relationship> relationships;
     
     @Override
     @JsonIgnore

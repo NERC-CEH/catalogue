@@ -55,6 +55,6 @@ public class ImpDocumentPostProcessingService implements PostProcessingService<I
                 );
             });
         }
-        document.setLinks(links);
+//        document.setLinks(links);
     }
 }

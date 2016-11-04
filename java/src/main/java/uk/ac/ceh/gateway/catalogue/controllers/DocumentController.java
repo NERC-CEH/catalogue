@@ -28,7 +28,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.LINKED_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MODEL_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.imp.Model;
+import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -98,7 +98,7 @@ public class DocumentController {
                      consumes = MODEL_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newModelDocument(
             @ActiveUser CatalogueUser user,
-            @RequestBody Model document,
+            @RequestBody ImpDocument document,
             @RequestParam("catalogue") String catalogue
     ) throws DocumentRepositoryException  {
         return saveNewMetadataDocument(
@@ -116,7 +116,7 @@ public class DocumentController {
     public ResponseEntity<MetadataDocument> updateModelDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @RequestBody Model document
+            @RequestBody ImpDocument document
     ) throws DocumentRepositoryException  {
         return saveMetadataDocument(
             user,
