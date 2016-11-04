@@ -7,13 +7,21 @@ define [
   'cs!views/editor/LinkView'
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/SelectView'
-  ], (EditorView, InputView, TextareaView, ParentStringView, ParentView, LinkView, ResourceIdentifierView, SelectView) -> EditorView.extend
+  'cs!views/editor/RelationshipView'
+  ], (EditorView, InputView, TextareaView, ParentStringView, ParentView, LinkView, ResourceIdentifierView, SelectView, RelationshipView) -> EditorView.extend
 
   initialize: ->
     @sections = [
       label: 'One'
       title:  'Common information'
       views: [
+
+        new ParentView
+          model: @model
+          modelAttribute: 'relationships'
+          label: 'Relationships'
+          ObjectInputView: RelationshipView
+
         new SelectView
           model: @model
           modelAttribute: 'type'
