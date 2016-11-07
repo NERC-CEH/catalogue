@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 
 @Data
 @Accessors(chain = true)
@@ -20,7 +21,7 @@ public class Model extends ImpDocument {
             keyOutputs, calibrationRequired, modelStructure, dataInput;
     private List<String> keyReferences, inputData, outputData;
     private Link documentation;
-    private List<Link> modelApplications;
+//    private List<Link> modelApplications;
     private Boolean developerTesting, internalPeerReview, externalPeerReview,
         useOfVersionControl,internalModelAudit, qualityAssuranceGuidelinesAndChecklists,
         externalModelAudit, governance, transparency, periodicReview;

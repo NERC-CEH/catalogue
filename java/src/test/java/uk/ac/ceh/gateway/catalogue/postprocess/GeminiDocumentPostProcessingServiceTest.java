@@ -18,7 +18,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import uk.ac.ceh.gateway.catalogue.gemini.Link;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;

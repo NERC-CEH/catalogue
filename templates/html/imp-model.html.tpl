@@ -24,20 +24,18 @@
             </div>
           </#list>
         </#if>
-        <#if modelApplications?? >
-          <#list modelApplications>
-            <div class="panel panel-default" id="document-order">
-              <div class="panel-heading"><p class="panel-title">Model Applications</p></div>
-              <div class="panel-body">
-                <ul class="list-unstyled">
-                  <#items as link>
-                  <li><a href="${link.href}">${link.title}</a></li>
-                  </#items>
-                </ul>
-              </div>
+        <#list jena.modelApplications(id)>
+          <div class="panel panel-default" id="document-order">
+            <div class="panel-heading"><p class="panel-title">Model Applications</p></div>
+            <div class="panel-body">
+              <ul class="list-unstyled">
+                <#items as link>
+                <li><a href="${link.href}">${link.title}</a></li>
+                </#items>
+              </ul>
             </div>
-          </#list>
-        </#if>
+          </div>
+        </#list>
       </div>
       <div class="col-sm-8 col-xs-12">
         <dl class="dl-horizontal">

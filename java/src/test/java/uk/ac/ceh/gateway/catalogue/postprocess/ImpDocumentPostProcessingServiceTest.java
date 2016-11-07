@@ -11,7 +11,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.Before;
-import uk.ac.ceh.gateway.catalogue.imp.Link;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;

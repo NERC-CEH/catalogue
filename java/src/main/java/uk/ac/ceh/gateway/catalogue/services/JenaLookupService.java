@@ -54,6 +54,15 @@ public class JenaLookupService {
     }
     
     /**
+     * ModelApplications linked to this model.
+     * @param id identifier of model
+     * @return list of Links to modelApplications
+     */
+    public List<Link> modelApplications(String id) {
+        
+    }
+    
+    /**
      * Performs a literal lookup from the jena database for literals associated 
      * to the given uri with a specified relationship
      * @param uri to look up an attribute of

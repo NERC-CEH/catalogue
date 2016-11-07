@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
-import uk.ac.ceh.gateway.catalogue.imp.Link;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 
 public class ImpDocumentPostProcessingService implements PostProcessingService<ImpDocument> {
     private final Dataset jenaTdb;
@@ -50,7 +50,8 @@ public class ImpDocumentPostProcessingService implements PostProcessingService<I
                 links.add(
                     new Link(
                         s.getResource("node").getURI(),
-                        s.getLiteral("title").getString()
+                        s.getLiteral("title").getString(),
+                        
                     )
                 );
             });

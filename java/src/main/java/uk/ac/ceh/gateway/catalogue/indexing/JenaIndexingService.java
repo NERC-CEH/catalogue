@@ -5,8 +5,6 @@ import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.update.GraphStore;
-import org.apache.jena.update.GraphStoreFactory;
 import org.apache.jena.update.UpdateExecutionFactory;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +62,6 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
     @Override
     public void unindexDocuments(List<String> documents) throws DocumentIndexingException {
         perform(ReadWrite.WRITE, () -> {
-            GraphStore graph = GraphStoreFactory.create(jenaTdb);
             documents.stream().map((document) -> {
                 //Remove any triples where this document uri is the subject
                 ParameterizedSparqlString pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
@@ -76,7 +73,7 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
                 );
                 return pss;
             }).forEach((pss) -> {
-                UpdateExecutionFactory.create(pss.asUpdate(), graph).execute();
+                UpdateExecutionFactory.create(pss.asUpdate(), jenaTdb).execute();
             });
             return null;
         });
