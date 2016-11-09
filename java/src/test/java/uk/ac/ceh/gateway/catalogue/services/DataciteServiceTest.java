@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 import freemarker.template.Template;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.contains;
@@ -68,7 +69,7 @@ public class DataciteServiceTest {
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
         document.setResponsibleParties(Arrays.asList(author, publisher));
-        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
+        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
         
@@ -77,6 +78,26 @@ public class DataciteServiceTest {
         
         //Then
         assertTrue("Expected document to be updateable", dataciteUpdatable);        
+    }
+    
+    @Test
+    public void checkThatIsntDatacitableIfPublicationDateIsInFuture() {
+        //Given
+        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
+        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
+        metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
+        GeminiDocument document = new GeminiDocument();
+        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2110, Month.MARCH, 2)).build());
+        document.setTitle("Title");
+        document.setMetadata(metadata);
+        
+        //When
+        boolean dataciteUpdatable = service.isDatacitable(document);
+        
+        //Then
+        assertFalse("Expected document to be updateable", dataciteUpdatable);        
     }
     
     @Test
@@ -101,7 +122,7 @@ public class DataciteServiceTest {
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
         document.setResponsibleParties(Arrays.asList(author, publisher));
-        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
+        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
         
@@ -123,7 +144,7 @@ public class DataciteServiceTest {
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         GeminiDocument document = new GeminiDocument();
         document.setResponsibleParties(Arrays.asList(author, publisher));
-        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
+        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
         when(identifierService.generateUri("MY_ID")).thenReturn("http://ceh.com");

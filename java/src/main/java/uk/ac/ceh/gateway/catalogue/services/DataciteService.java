@@ -186,7 +186,8 @@ public class DataciteService {
                 .anyMatch((p) -> publisher.equals(p.getOrganisationName()));
         boolean hasPublicationYear = Optional.ofNullable(document.getDatasetReferenceDate())
                 .map(DatasetReferenceDate::getPublicationDate)
-                .isPresent();
+                .map((d) -> d.isBefore(LocalDate.now()))
+                .orElse(false);
         
         return isPubliclyViewable
             && hasNonEmptyTitle
