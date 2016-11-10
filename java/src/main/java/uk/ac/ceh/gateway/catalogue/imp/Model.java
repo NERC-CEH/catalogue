@@ -21,7 +21,6 @@ public class Model extends ImpDocument {
             keyOutputs, calibrationRequired, modelStructure, dataInput;
     private List<String> keyReferences, inputData, outputData;
     private Link documentation;
-//    private List<Link> modelApplications;
     private Boolean developerTesting, internalPeerReview, externalPeerReview,
         useOfVersionControl,internalModelAudit, qualityAssuranceGuidelinesAndChecklists,
         externalModelAudit, governance, transparency, periodicReview;

@@ -24,7 +24,7 @@
             </div>
           </#list>
         </#if>
-        <#list jena.modelApplications(id)>
+        <#list jena.modelApplications(uri)>
           <div class="panel panel-default" id="document-order">
             <div class="panel-heading"><p class="panel-title">Model Applications</p></div>
             <div class="panel-body">

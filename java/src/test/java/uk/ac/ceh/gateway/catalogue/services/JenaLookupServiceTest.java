@@ -16,10 +16,15 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.HAS_GEOMETRY;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.IDENTIFIER;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.REFERENCES;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SOURCE;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TITLE;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TYPE;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.WKT_LITERAL;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 
 /**
  *
@@ -34,6 +39,48 @@ public class JenaLookupServiceTest {
         MockitoAnnotations.initMocks(this);
         jenaTdb = TDBFactory.createDataset();
         service = new JenaLookupService(jenaTdb);
+    }
+    
+    @Test
+    public void lookupModelApplications() {
+        //Given
+        uk.ac.ceh.gateway.catalogue.imp.Model model = new uk.ac.ceh.gateway.catalogue.imp.Model();
+        model.setUri("http://model");
+        
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://modelApplication1"), TITLE, "Model Application 1");
+        triples.add(createResource("http://modelApplication1"), TYPE, "modelApplication");
+        triples.add(createResource("http://modelApplication1"), REFERENCES, createResource("http://model"));
+        triples.add(createResource("http://modelApplication2"), TITLE, "Model Application 2");
+        triples.add(createResource("http://modelApplication2"), TYPE, "modelApplication");
+        triples.add(createResource("http://modelApplication2"), REFERENCES, createResource("http://model"));
+        
+        //When
+        List<Link> actual = service.modelApplications("http://model");
+        
+        //Then
+        assertThat("Should be 2 Links", actual.size(), equalTo(2));
+    }
+    
+    @Test
+    public void lookupModels() {
+        //Given
+        ModelApplication model = new ModelApplication();
+        model.setUri("http://modelApplication");
+        
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://model1"), TITLE, "Model 1");
+        triples.add(createResource("http://model1"), TYPE, "model");
+        triples.add(createResource("http://modelApplication"), REFERENCES, createResource("http://model1"));
+        triples.add(createResource("http://model2"), TITLE, "Model 2");
+        triples.add(createResource("http://model2"), TYPE, "model");
+        triples.add(createResource("http://modelApplication"), REFERENCES, createResource("http://model2"));
+        
+        //When
+        List<Link> actual = service.models("http://modelApplication");
+        
+        //Then
+        assertThat("Should be 2 Links", actual.size(), equalTo(2));
     }
     
     @Test

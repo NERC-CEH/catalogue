@@ -15,7 +15,8 @@ public class Link {
     private Link(
         @JsonProperty("title") String title,
         @JsonProperty("href") String href,
-        @JsonProperty("associationType") String associationType) {
+        @JsonProperty("associationType") String associationType
+    ) {
         this.title = nullToEmpty(title);
         this.href = nullToEmpty(href);
         this.associationType = nullToEmpty(associationType);

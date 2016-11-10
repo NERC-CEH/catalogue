@@ -25,16 +25,18 @@
             </div>
           </#list>
         </#if>
-        <#if model?? >
+        <#list jena.models(uri) >
           <div class="panel panel-default" id="document-order">
-            <div class="panel-heading"><p class="panel-title">Model</p></div>
+            <div class="panel-heading"><p class="panel-title">Models</p></div>
             <div class="panel-body">
               <ul class="list-unstyled">
-                <li><a href="${model.href?html}">${model.title?html}</a></li>
+              <#items as model>
+                <li><a href="${model.href}">${model.title}</a></li>
+              </#items>
               </ul>
             </div>
           </div>
-        </#if>
+        </#list>
       </div>
       <div class="col-sm-8 col-xs-12">
         <dl class="dl-horizontal">

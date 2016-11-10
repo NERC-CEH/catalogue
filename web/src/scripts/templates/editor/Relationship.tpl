@@ -3,6 +3,7 @@
 </div>
 <div class="col-sm-4 col-lg-4">
   <select data-name="relation" id="relationship<%= data.index %>Relation" class="editor-input">
+    <option value="">-- Select Relationship --</option>
   	<option value="http://purl.org/dc/terms/references">References</option>
   </select>
 </div>

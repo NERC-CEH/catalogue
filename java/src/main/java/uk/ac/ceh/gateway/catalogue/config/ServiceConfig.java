@@ -95,7 +95,6 @@ import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
-import uk.ac.ceh.gateway.catalogue.postprocess.ImpDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -455,8 +454,7 @@ public class ServiceConfig {
     public PostProcessingService postProcessingService() throws TemplateModelException, IOException {
         ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
                 .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), dataciteService(), jenaTdb, documentIdentifierService()))
-                .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb))
-                .register(ImpDocument.class, new ImpDocumentPostProcessingService(jenaTdb));
+                .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb));
         return new ClassMapPostProcessingService(mappings);
     }
     
