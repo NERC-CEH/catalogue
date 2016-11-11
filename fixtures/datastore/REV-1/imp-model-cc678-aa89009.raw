@@ -37,7 +37,7 @@
       "uri": "http://vocabs.ceh.ac.uk/imp/bci/agri-environment"
     }
   ],
-  "partOfRepository": [
-    "5b4d0ee4-49ed-4fb4-b2f6-e390ef42c00c"
+  "relationships": [
+    {"relation":"http://purl.org/dc/terms/references","target":"c833baa3-b225-4ab8-b383-42279a58a7d4"}
   ]
 }

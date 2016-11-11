@@ -11,32 +11,8 @@
     <div class="row">
       <div class="col-sm-4 col-xs-12 pull-right">
         <#include "imp/_admin.html.tpl">
-        <#if links?? >
-          <#list links>
-            <div class="panel panel-default" id="document-order">
-              <div class="panel-heading"><p class="panel-title">Datasets</p></div>
-              <div class="panel-body">
-                <ul class="list-unstyled">
-                  <#items as link>
-                  <li><a href="${link.href}">${link.title}</a></li>
-                  </#items>
-                </ul>
-              </div>
-            </div>
-          </#list>
-        </#if>
-        <#list jena.models(uri) >
-          <div class="panel panel-default" id="document-order">
-            <div class="panel-heading"><p class="panel-title">Models</p></div>
-            <div class="panel-body">
-              <ul class="list-unstyled">
-              <#items as model>
-                <li><a href="${model.href}">${model.title}</a></li>
-              </#items>
-              </ul>
-            </div>
-          </div>
-        </#list>
+        <@blocks.links jena.datasets(uri) "Datasets" />
+        <@blocks.links jena.models(uri) "Models" />
       </div>
       <div class="col-sm-8 col-xs-12">
         <dl class="dl-horizontal">

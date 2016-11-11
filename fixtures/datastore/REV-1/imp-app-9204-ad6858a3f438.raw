@@ -7,13 +7,6 @@
   "studySite": "Upper Tarland Burn catchment, a sub-catchment of the River Dee, Aberdeenshire",
   "studyScale": "Catchment",
   "objective": "Investigate the effectiveness of measures to improve water quality in the Tarland Burn, given future projections of climate and land cover change.",
-  "associatedResources": [
-    {
-      "title": "INCA-IN",
-      "href": "https://catalogue.ceh.ac.uk/id/imp-model-b88b-960d0c2b6b14",
-      "associationType": "model"
-    }
-  ],
   "funderDetails": "Defra",
   "modellerDetails": {
     "name": "Leah Jackson-Blake",
@@ -26,8 +19,8 @@
     "Fertilizer and manure inputs: British Survey of Fertilizer Practice",
     "Large number of additional parameters: expert-based or literature searches"
   ],
-  "model":{
-    "title": "INCA-N",
-    "href":  "/documents/imp-model-b88b-960d0c2b6b14"
-  }
+  "relationships": [
+    {"relation":"http://purl.org/dc/terms/references","target":"imp-model-b88b-960d0c2b6b14"},
+    {"relation":"http://purl.org/dc/terms/references","target":"1e7d5e08-9e24-471b-ae37-49b477f695e3"}
+  ]
 }

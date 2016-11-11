@@ -27,3 +27,21 @@ Create a description block, replace any carridge returns with link breaks
     <p id="document-description">${value?html?replace("\n", "<br>")}</p>
   </#if>
 </#macro>
+
+<#--
+Create a box of links
+-->
+<#macro links links title>
+  <#list links>
+    <div class="panel panel-default" id="document-order">
+      <div class="panel-heading"><p class="panel-title">${title?html}</p></div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
+          <#items as link>
+            <li><a href="${link.href}">${link.title}</a></li>
+          </#items>
+        </ul>
+      </div>
+    </div>
+  </#list>
+</#macro>
