@@ -11,7 +11,6 @@ define [
 
   initialize: (options) ->
     SingleView.prototype.initialize.call @, options
-    modelData = if @model.has @data.modelAttribute then @model.get @data.modelAttribute else []
     @collection = new Positionable [], model: @data.ModelType
 
     @listenTo @collection, 'add', @addOne
@@ -21,7 +20,7 @@ define [
 
     do @render
     @$attach = @$(".existing")
-    @collection.reset modelData
+    @collection.reset @getModelData()
 
     if @data.multiline
       @$el.addClass 'multiline'
@@ -48,8 +47,23 @@ define [
   add: ->
     @collection.add new @data.ModelType
 
+  getModelData: ->
+    model = @model.attributes
+    path = @data.modelAttribute.split '.'
+    while path.length >= 2
+      model = model[path.shift()] or {}
+
+    return model[path[0]] or []
+
   updateModel: ->
-    @model.set @data.modelAttribute, @collection.toJSON()
+    path = @data.modelAttribute.split '.'
+    data = @collection.toJSON()
+
+    while path.length > 0
+      oldData = data
+      data = {}
+      data[path.pop()] = oldData
+    @model.set data
 
   updateCollection: (model) ->
     if model.hasChanged @data.modelAttribute
