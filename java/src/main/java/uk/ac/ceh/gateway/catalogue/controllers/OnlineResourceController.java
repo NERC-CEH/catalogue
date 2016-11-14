@@ -110,8 +110,7 @@ public class OnlineResourceController {
     }
     
     @RequestMapping (value    = "documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
-                     method   = RequestMethod.GET,
-                     produces = "image/png")
+                     method   = RequestMethod.GET)
     @ResponseBody
     public TransparentProxy proxyMapProxyTileRequest(
             @PathVariable("file") String file,
@@ -124,8 +123,7 @@ public class OnlineResourceController {
     }
     
     @RequestMapping (value    = "history/{revision}/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png",
-                     method   = RequestMethod.GET,
-                     produces = "image/png")
+                     method   = RequestMethod.GET)
     @ResponseBody
     public TransparentProxy proxyMapProxyTileRequest(
             @PathVariable("revision") String revision,
@@ -146,8 +144,7 @@ public class OnlineResourceController {
     }
     
     @RequestMapping (value    = "documents/{file}/onlineResources/{index}/{layer}/legend",
-                     method   = RequestMethod.GET,
-                     produces = "image/*")
+                     method   = RequestMethod.GET)
     @ResponseBody
     public TransparentProxy getMapLayerLegend(
             @PathVariable("file") String file,
@@ -157,8 +154,7 @@ public class OnlineResourceController {
     }
     
     @RequestMapping (value    = "history/{revision}/{file}/onlineResources/{index}/{layer}/legend",
-                     method   = RequestMethod.GET,
-                     produces = "image/*")
+                     method   = RequestMethod.GET)
     @ResponseBody
     public TransparentProxy getMapLayerLegend(
             @PathVariable("revision") String revision,
