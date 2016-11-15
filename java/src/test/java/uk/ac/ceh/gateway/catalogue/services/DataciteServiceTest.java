@@ -97,7 +97,27 @@ public class DataciteServiceTest {
         boolean dataciteUpdatable = service.isDatacitable(document);
         
         //Then
-        assertFalse("Expected document to be updateable", dataciteUpdatable);        
+        assertFalse("Expected document to not be updateable", dataciteUpdatable);        
+    }
+    
+    @Test
+    public void checkThatIsDatacitableIfPublicationDateIsToday() {
+        //Given
+        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
+        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
+        metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
+        GeminiDocument document = new GeminiDocument();
+        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
+        document.setTitle("Title");
+        document.setMetadata(metadata);
+        
+        //When
+        boolean dataciteUpdatable = service.isDatacitable(document);
+        
+        //Then
+        assertTrue("Expected document to be updateable", dataciteUpdatable);     
     }
     
     @Test
@@ -134,6 +154,7 @@ public class DataciteServiceTest {
         verify(rest).postForEntity(eq("https://mds.datacite.org/metadata"), captor.capture(), eq(String.class));
         assertThat("correct content type", captor.getValue().getHeaders().getContentType(), equalTo(MediaType.valueOf("application/xml;charset=UTF-8")));
     }
+    
     
     @Test
     public void checkThatPostsToDoiMintEndpointWhenValid() throws URISyntaxException {
