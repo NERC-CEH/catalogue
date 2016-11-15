@@ -1,8 +1,9 @@
 define [
   'underscore'
   'backbone'
+  'cs!collections/Positionable'
   'tpl!templates/editor/Validation.tpl'
-], (_, Backbone, validationTemplate) -> Backbone.View.extend
+], (_, Backbone, Positionable, validationTemplate) -> Backbone.View.extend
 
   events:
     'change': 'modify'
@@ -35,3 +36,32 @@ define [
       @model.unset name
     else
       @model.set name, value
+
+  ###
+  Defines a sortable list view which is bound to a given attribute on the model.
+  The supplied `add` callback function is required to generate a constructed
+  child view element which will be renederd on to the list
+  ###
+  createList: (name, selector, add)->
+    element = @$ selector
+    collection = new Positionable []
+    addChild = => 
+      view = add.apply @, arguments
+      element.append view.el
+
+    @listenTo collection, 'add', addChild
+    @listenTo collection, 'reset', => 
+      do element.empty
+      collection.each addChild, @
+    @listenTo collection, 'add remove change position', =>
+      @model.set name, collection.toJSON()
+
+    pos = null
+    element.sortable
+      start: (event, ui) =>
+        pos = ui.item.index()
+      update: (event, ui) =>
+        collection.position pos, ui.item.index()
+
+    collection.reset @model.get name
+    return collection
