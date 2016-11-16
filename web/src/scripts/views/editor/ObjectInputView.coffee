@@ -37,6 +37,8 @@ define [
     else
       @model.set name, value
 
+    return false # disable bubbling
+
   ###
   Defines a sortable list view which is bound to a given attribute on the model.
   The supplied `add` callback function is required to generate a constructed
