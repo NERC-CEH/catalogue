@@ -34,7 +34,9 @@ define [
   'cs!views/editor/ServiceView'
   'cs!models/editor/Service'
   'cs!views/editor/ConformanceResultView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, SpatialResolution, ServiceView, Service, ConformanceResultView) -> EditorView.extend
+  'cs!models/editor/MapDataSource'
+  'cs!views/editor/MapDataSourceView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, SpatialResolution, ServiceView, Service, ConformanceResultView, MapDataSource, MapDataSourceView) -> EditorView.extend
 
   initialize: ->
 
@@ -233,6 +235,17 @@ define [
           helpText: """
                     <p>For gridded data, this is the area of the ground (in metres) represented in each pixel.</p>
                     <p>For point data, the ground sample distance is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
+                    """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'mapDataDefinition.data'
+          ModelType: MapDataSource
+          multiline: true
+          label: 'Spatial Data Source'
+          ObjectInputView: MapDataSourceView
+          helpText: """
+                    <p>Define the data source of some spatial data which will be used to create a wms service</p>
                     """
       ]
     ,
