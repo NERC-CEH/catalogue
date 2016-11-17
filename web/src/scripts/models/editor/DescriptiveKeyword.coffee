@@ -1,6 +1,6 @@
 define [
-  'backbone'
-], (Backbone) -> Backbone.Model.extend
+  'cs!models/editor/NestedModel'
+], (NestedModel) -> NestedModel.extend
 
   defaults:
     keywords: []

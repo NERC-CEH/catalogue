@@ -40,23 +40,22 @@ define [
     return false # disable bubbling
 
   ###
-  Defines a sortable list view which is bound to a given attribute on the model.
-  The supplied `add` callback function is required to generate a constructed
+  Defines a sortable list view which is bound to a positionable collection.
+  The supplied `view` callback function is required to generate a constructed
   child view element which will be renederd on to the list
   ###
-  createList: (name, selector, add)->
+  createList: (collection, selector, view)->
     element = @$ selector
-    collection = new Positionable []
-    addChild = => 
-      view = add.apply @, arguments
-      element.append view.el
+    addView = => 
+      newView = view.apply @, arguments
+      element.append newView.el
 
-    @listenTo collection, 'add', addChild
-    @listenTo collection, 'reset', => 
+    resetView = =>
       do element.empty
-      collection.each addChild, @
-    @listenTo collection, 'add remove change position', =>
-      @model.set name, collection.toJSON()
+      collection.each addView, @
+
+    @listenTo collection, 'add', addView
+    @listenTo collection, 'reset', resetView
 
     pos = null
     element.sortable
@@ -65,5 +64,5 @@ define [
       update: (event, ui) =>
         collection.position pos, ui.item.index()
 
-    collection.reset @model.get name
+    do resetView
     return collection

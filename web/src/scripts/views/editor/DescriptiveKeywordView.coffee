@@ -28,7 +28,9 @@ define [
         @$('#inspireTheme').removeClass 'hidden'
         @$('.add').addClass 'hidden'
 
-    @keywords = @createList 'keywords', '.keywords', @addOne
+    @keywords = @model.getRelatedCollection 'keywords'
+    @createList @keywords, '.keywords', @addOne
+
     @$('input.date').datepicker dateFormat: "yy-mm-dd"
 
   render: ->
@@ -44,16 +46,14 @@ define [
       keywordIndex: keywordIndex
       ObjectInputView: KeywordView
 
-  add: ->
-    @keywords.add new Backbone.Model()
+  add: -> @keywords.add {}
 
   addPredefined: (event) ->
     event.preventDefault()
     $target = @$(event.target)
-    @keywords.add new Backbone.Model
+    @keywords.add
       value: $target.text()
       uri: $target.attr 'href'
-
 
   modify: (event) ->
     $target = $(event.target)
