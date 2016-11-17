@@ -21,6 +21,7 @@ require.config({
   },
   paths: {
     'bootstrap':         '../vendor/bootstrap/dist/js/bootstrap',
+    'colorpicker':       '../vendor/bootstrap-colorpicker/dist/js/bootstrap-colorpicker',
     'cs' :               '../vendor/require-cs/cs',
     'coffee-script':     '../vendor/coffee-script/extras/coffee-script',
     'tpl' :              '../vendor/requirejs-tpl/tpl',
