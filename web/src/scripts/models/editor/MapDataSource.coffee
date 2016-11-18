@@ -33,6 +33,7 @@ define [
     if _.chain(attrs.attributes)
         .pluck('buckets')
         .flatten()
+        .select((n) -> n?)
         .map((b)-> [b.min, b.max])
         .flatten()
         .select((n) -> n?)
