@@ -45,5 +45,5 @@
   </div>
 </div>
 
-<div class="styling-box features existing"></div>
+<div class="styling-box features"></div>
 <div class="styling-box attributes existing"></div>

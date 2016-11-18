@@ -1,9 +1,10 @@
 define [
   'underscore'
+  'jquery'
   'backbone'
   'cs!collections/Positionable'
   'tpl!templates/editor/Validation.tpl'
-], (_, Backbone, Positionable, validationTemplate) -> Backbone.View.extend
+], (_, $, Backbone, Positionable, validationTemplate) -> Backbone.View.extend
 
   events:
     'change': 'modify'
@@ -12,14 +13,15 @@ define [
     @data = options
     @listenTo @model, 'remove', -> do @remove
     @listenTo @model, 'change', (model) ->
+      $validation = @$('>.validation')
       if model.isValid()
-        @$('.validation').hide()
+        $validation.hide()
       else
-        @$('.validation').show()
-        $validation = @$('.validation ul')
-        $validation.html ''
+        $validation.show()
+        $validationList = $('ul', $validation)
+        $validationList.html ''
         _.each model.validationError, (error) ->
-          $validation.append $("<li>#{error.message}</li>")
+          $validationList.append $("<li>#{error.message}</li>")
     do @render
 
   render: ->
