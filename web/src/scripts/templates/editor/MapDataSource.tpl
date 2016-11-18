@@ -28,7 +28,7 @@
   <div class="col-sm-2 col-lg-2">
     <select data-name='type' class="editor-input">
       <% _.each(data.types, function(d) {%>
-        <option value="<%=d.value%>" <%= d.value==data.type ? 'selected="selected"': '' %>><%=d.name%></option>
+        <option value="<%=d.value%>" <%= _.isString(data.type) && d.value===data.type.toUpperCase() ? 'selected="selected"': '' %>><%=d.name%></option>
       <%});%>
     </select>
   </div>
