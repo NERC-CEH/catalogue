@@ -5,6 +5,11 @@ define [
 
   defaults:
     type: 'POLYGON'
+    epsgCode: 4326
+    features:
+      style:
+        colour: '#000000'
+
 
   initialize: ->
     NestedModel.prototype.initialize.apply @, arguments
@@ -23,11 +28,17 @@ define [
   validate: (attrs) ->
     errors = []
 
-    epsgRegex = /^[0-9]+$/
-
-    if not (epsgRegex.test(attrs.epsgCode) and 
-          _.all attrs.reprojections or [], (r) -> epsgRegex.test r.epsgCode)
-      errors.push message: 'EPSG Code must be a number'
+    # Validate all of the min and max values of any defined buckets
+    numRegex = /^-?(?:\d+(?:\.\d+)?|\.\d+)$/
+    if _.chain(attrs.attributes)
+        .pluck('buckets')
+        .flatten()
+        .map((b)-> [b.min, b.max])
+        .flatten()
+        .select((n) -> n?)
+        .any((n)-> not numRegex.test(n))
+        .value()
+      errors.push message: 'Bucket values must be numbers'
 
     return if _.isEmpty errors then undefined else errors
 
