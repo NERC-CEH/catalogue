@@ -13,9 +13,9 @@ define [
   events: ->
     _.extend {}, ObjectInputView.prototype.events,
       'click .addReprojection': 'addReprojection'
-      'click .addAttribute': 'addAttribute'
+      'click .addAttribute':    'addAttribute'
+      'click [styleMode]':      'updateMode'
   
-
   dataTypes:[
     {name: 'Polygon', value: 'POLYGON'}
     {name: 'Raster',  value: 'RASTER'}
@@ -37,18 +37,27 @@ define [
       el: @$('.features')
       model: @model.getRelated 'features'
 
+    @setMode @model.stylingMode
+
   addReprojection: -> @reprojections.add {}
   addAttribute:    -> @attributes.add {}
 
-  newReprojection: (model, i) ->
-    new ChildView
-      model: model
-      index: i
-      ObjectInputView: MapReprojectionView
-
-
+  newReprojection: (model, i) -> new MapReprojectionView model: model
   newAttribute: (model, i) ->
     new ChildView
       model: model
       index: i
       ObjectInputView: MapAttributeView
+
+  updateMode: (e) -> @setMode $(e.target).attr 'styleMode'
+    
+  setMode: (mode)->
+    # Reset the state of all the buttons and update to the correct mode
+    @$('button[stylemode]').removeClass('btn-success').removeClass 'active'
+    @$("button[stylemode='#{mode}']").addClass('btn-success active')
+    @$('.styling-box').hide()
+    @$(".styling-box.#{mode}").show()
+
+    attrBtn = @$('.addAttribute').removeClass 'disabled'
+    attrBtn.addClass('disabled') if mode is 'features'
+    @model.setStylingMode mode
