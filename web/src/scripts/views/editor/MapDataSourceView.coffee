@@ -28,7 +28,7 @@ define [
       types: @dataTypes
 
     @reprojections = @model.getRelatedCollection 'reprojections'
-    @attributes = @model.getRelatedCollection 'attributes'
+    @attributes = @model.getAttributes()
     
     @createList @reprojections, '.reprojections', @newReprojection
     @createList @attributes, '.attributes', @newAttribute
