@@ -34,7 +34,9 @@ define [
   'cs!views/editor/ServiceView'
   'cs!models/editor/Service'
   'cs!views/editor/ConformanceResultView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, SpatialResolution, ServiceView, Service, ConformanceResultView) -> EditorView.extend
+  'cs!models/editor/MapDataSource'
+  'cs!views/editor/MapDataSourceView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, SpatialResolutionView, SpatialResolution, ServiceView, Service, ConformanceResultView, MapDataSource, MapDataSourceView) -> EditorView.extend
 
   initialize: ->
 
@@ -233,6 +235,25 @@ define [
           helpText: """
                     <p>For gridded data, this is the area of the ground (in metres) represented in each pixel.</p>
                     <p>For point data, the ground sample distance is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
+                    """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'mapDataDefinition.data'
+          ModelType: MapDataSource
+          multiline: true
+          label: 'Spatial Data Source'
+          ObjectInputView: MapDataSourceView
+          helpText: """
+                    <p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/wms/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats are:</p>
+                    <ul>
+                      <li>Shapefiles - Vector (ignore the .shp extension when specifying the path) </li>
+                      <li>GeoTiff - Raster</li>
+                    </ul>
+                    <p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
+                    <p>Vector datasets should be spatially indexed (using <a href="http://mapserver.org/utilities/shptree.html">shptree</a>)</p>
+                    <p>Raster datasets should be provided with <a href="http://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
+                    <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>
                     """
       ]
     ,

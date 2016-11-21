@@ -21,6 +21,29 @@ define [
       it 'should exist', ->
         expect(view).toBeDefined()
 
+    describe 'with nested depth', ->
+      beforeEach ->
+        view = new ParentView
+          model: model
+          modelAttribute: 'one.two.depth'
+          label: 'Resource Identifiers'
+          ObjectInputView: ResourceIdentifierView
+          helpText: """
+                    <p>Test</p>
+                    """
+
+      it 'can getModelData', ->
+        model.set one: two: depth: ['value']
+        expect(view.getModelData()).toEqual ['value']
+
+      it 'can supply empty getModelData', ->
+        expect(view.getModelData()).toEqual []
+
+      it 'can populate model', ->
+        view.collection.add test: 'data'
+        console.info model.attributes.one.two
+        expect(model.attributes.one.two.depth).toEqual [{test: 'data'}]
+
     describe 'when view is created with populated model', ->
 
       beforeEach ->

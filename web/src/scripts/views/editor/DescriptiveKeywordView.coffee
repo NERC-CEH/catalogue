@@ -1,12 +1,11 @@
 define [
   'underscore'
   'backbone'
-  'cs!collections/Positionable'
   'cs!views/editor/ObjectInputView'
   'cs!views/editor/ChildView'
   'cs!views/editor/KeywordView'
   'tpl!templates/editor/DescriptiveKeyword.tpl'
-], (_, Backbone, Positionable, ObjectInputView, ChildView, KeywordView, template) -> ObjectInputView.extend
+], (_, Backbone, ObjectInputView, ChildView, KeywordView, template) -> ObjectInputView.extend
 
   template: template
 
@@ -28,21 +27,10 @@ define [
       else if title.lastIndexOf('GEMET - INSPIRE themes', 0) == 0
         @$('#inspireTheme').removeClass 'hidden'
         @$('.add').addClass 'hidden'
-    @$attach = @$('.keywords')
 
-    @$attach.sortable
-      start: (event, ui) =>
-        @_oldPosition = ui.item.index()
-      update: (event, ui) =>
-        @keywords.position @_oldPosition, ui.item.index()
+    @keywords = @model.getRelatedCollection 'keywords'
+    @createList @keywords, '.keywords', @addOne
 
-    @keywords = new Positionable []
-
-    @listenTo @keywords, 'add', @addOne
-    @listenTo @keywords, 'reset', @addAll
-    @listenTo @keywords, 'add remove change position', @updateModel
-
-    @keywords.reset @model.get 'keywords'
     @$('input.date').datepicker dateFormat: "yy-mm-dd"
 
   render: ->
@@ -53,28 +41,19 @@ define [
 
   addOne: (model, keywordIndex) ->
     @data = _.omit @data, 'el'
-    view = new ChildView _.extend {}, @data,
+    new ChildView _.extend {}, @data,
       model: model
       keywordIndex: keywordIndex
       ObjectInputView: KeywordView
-    @$attach.append view.el
 
-  addAll: ->
-    @$attach.html('')
-    @keywords.each @addOne, @
-
-  add: ->
-    @keywords.add new Backbone.Model()
+  add: -> @keywords.add {}
 
   addPredefined: (event) ->
     event.preventDefault()
     $target = @$(event.target)
-    @keywords.add new Backbone.Model
+    @keywords.add
       value: $target.text()
       uri: $target.attr 'href'
-
-  updateModel: ->
-    @model.set 'keywords', @keywords.toJSON()
 
   modify: (event) ->
     $target = $(event.target)

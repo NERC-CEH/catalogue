@@ -3,7 +3,7 @@
     <label for="input-<%= data.modelAttribute %>">
       <%= data.label %>
       <% if(data.helpText) { %>
-        <a data-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="glyphicon glyphicon-question-sign"></i></a>
+        <a data-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute.replace('.', '\.') %>" data-parent="#editor"><i class="glyphicon glyphicon-question-sign"></i></a>
       <% } %>
     </label>
     <div id="help-<%= data.modelAttribute %>" class="editor-help">
