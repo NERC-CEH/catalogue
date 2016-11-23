@@ -13,6 +13,7 @@
       --]
       [#if data.type?lower_case == "raster"]
         PROCESSING "BANDS=${attr.id}"
+        PROCESSING "RESAMPLE=NEAREST"
         [#if attr.buckets?has_content] 
           [#--
           If the specified buckets are closed (do not have open ends) then we can tell 
