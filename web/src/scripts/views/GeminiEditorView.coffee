@@ -245,7 +245,7 @@ define [
           label: 'Spatial Data Source'
           ObjectInputView: MapDataSourceView
           helpText: """
-                    <p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/wms/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats are:</p>
+                    <p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/maps/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats are:</p>
                     <ul>
                       <li>Shapefiles - Vector (ignore the .shp extension when specifying the path) </li>
                       <li>GeoTiff - Raster</li>
