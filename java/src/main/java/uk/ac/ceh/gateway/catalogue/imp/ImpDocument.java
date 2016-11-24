@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
+import uk.ac.ceh.gateway.catalogue.ef.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
@@ -27,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 })
 public class ImpDocument extends AbstractMetadataDocument {
     private List<Keyword> keywords;
+    private ResponsibleParty contact;
 
     @Override
     public ImpDocument addAdditionalKeywords(@NonNull List<Keyword> additionalKeywords) {

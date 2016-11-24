@@ -16,7 +16,7 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
     @Template(called="html/imp-model.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class Model extends ImpDocument {
-    private String version, contact, license, operatingRequirements, applicationType,
+    private String version, license, operatingRequirements, applicationType,
             smallestAndLargestApplication, geographicalRestrictions, temporalResolution,
             keyOutputs, calibrationRequired, modelStructure, dataInput;
     private List<String> keyReferences, inputData, outputData;

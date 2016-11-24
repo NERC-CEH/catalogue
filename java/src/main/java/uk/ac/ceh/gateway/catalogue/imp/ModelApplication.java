@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.model.Link;
 
 @Data
 @EqualsAndHashCode(callSuper=true)
@@ -16,6 +15,4 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 public class ModelApplication extends ImpDocument {
     private String date, studySite, studyScale, objective, funderDetails;
     private List<String> inputData;
-    private Contact modellerDetails;
-    private Link model;
 }

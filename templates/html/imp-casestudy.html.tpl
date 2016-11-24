@@ -8,11 +8,21 @@
     <@blocks.title title type />
     <@blocks.description description!"" />
     <div class="row">
-      <div class="col-sm-4 col-xs-12 col-sm-push-8">
+      <div class="col-sm-4 col-sm-push-8">
         <#include "imp/_admin.html.tpl">
       </div>
-      <div class="col-sm-8 col-xs-12 col-sm-pull-4">
-      <p>Link to case study</p>
+      <div class="col-sm-8 col-sm-pull-4">
+        <dl class="dl-horizontal">
+        <#if caseStudy?? >
+          <dt>Link</dt><dd><a href="${caseStudy.href}">${caseStudy.title}</a></dd>
+        </#if>
+        <#if contact??>
+          <dt>Contact</dt>
+          <dd>
+            <#if contact.individualName?has_content>${contact.individualName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
+          </dd>
+        </#if>
+        </dl>
       </div>
     </div>
   </div>

@@ -8,9 +8,9 @@
   "studyScale": "Catchment",
   "objective": "Investigate the effectiveness of measures to improve water quality in the Tarland Burn, given future projections of climate and land cover change.",
   "funderDetails": "Defra",
-  "modellerDetails": {
-    "name": "Leah Jackson-Blake",
-    "organisation": "James Hutton Institute"
+  "contact": {
+    "individualName": "Leah Jackson-Blake",
+    "organisationName": "James Hutton Institute"
   },
   "inputData":[
     "Met data: Met Office 5km gridded data for the baseline. For the future, scenarios from the EU ENSEMBLES project",

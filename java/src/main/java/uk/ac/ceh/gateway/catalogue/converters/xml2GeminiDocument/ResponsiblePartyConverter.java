@@ -10,8 +10,8 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.gemini.ResponsibleParty.Address;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty.Address;
 
 public class ResponsiblePartyConverter {
     private static final String INDIVIDUAL_NAME = "gmd:individualName/gco:CharacterString";

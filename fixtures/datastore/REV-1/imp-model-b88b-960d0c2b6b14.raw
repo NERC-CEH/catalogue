@@ -4,7 +4,7 @@
   "title": "INCA-N",
   "version": "1.0.14",
   "description": "INCA-N is a processed based dynamic model representation of plant/soil system nitrogen dynamics and instream biogeochemical and hydrological dynamics. It is spatially semi-distributed.",
-  "contact": "NIVA, Norway; University of Reading. Contact: Raoul-Marie Couture (NIVA)",
+  "contact": {"organisationName":"NIVA, Norway; University of Reading","individualName":"Raoul-Marie Couture"},
   "license": "Available executable for research work; commercial licence for commercial work",
   "operatingRequirements": "Runs on any standard computer",
   "applicationType":"Executable",

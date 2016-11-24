@@ -8,18 +8,21 @@
     <@blocks.title title type />
     <@blocks.description description!"" />
     <div class="row">
-      <div class="col-sm-4 col-xs-12 pull-right">
+      <div class="col-sm-4 col-sm-push-8">
         <#include "imp/_admin.html.tpl">
         <@blocks.links jena.datasets(uri) "Datasets" />
         <@blocks.links jena.modelApplications(uri) "Model Applications" />
       </div>
-      <div class="col-sm-8 col-xs-12">
+      <div class="col-sm-8 col-sm-pull-4">
         <dl class="dl-horizontal">
           <#if version?has_content>
           <dt>Version</dt><dd>${version}</dd>
           </#if>
-          <#if contact?has_content>
-          <dt>Contact</dt><dd>${contact}</dd>
+          <#if contact??>
+            <dt>Contact</dt>
+            <dd>
+              <#if contact.individualName?has_content>${contact.individualName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
+            </dd>
           </#if>
           <#if license?has_content>
           <dt>License</dt><dd>${license}</dd>

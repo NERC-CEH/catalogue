@@ -8,26 +8,35 @@ define [
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/SelectView'
   'cs!views/editor/RelationshipView'
-  ], (EditorView, InputView, TextareaView, ParentStringView, ParentView, LinkView, ResourceIdentifierView, SelectView, RelationshipView) -> EditorView.extend
+  'cs!views/editor/SingleObjectView'
+  'cs!views/editor/KeywordView'
+  'cs!views/editor/CheckboxView'
+  'cs!views/editor/ShortContactView'
+], (EditorView,
+    InputView,
+    TextareaView,
+    ParentStringView,
+    ParentView,
+    LinkView,
+    ResourceIdentifierView,
+    SelectView,
+    RelationshipView,
+    SingleObjectView,
+    KeywordView,
+    CheckboxView,
+    ShortContactView) -> EditorView.extend
 
   initialize: ->
     @sections = [
-      label: 'One'
+      label: 'Common'
       title:  'Common information'
       views: [
-
-        new ParentView
-          model: @model
-          modelAttribute: 'relationships'
-          label: 'Relationships'
-          ObjectInputView: RelationshipView
-
         new SelectView
           model: @model
           modelAttribute: 'type'
           label: 'Type'
           options: [
-            {value: 'modelApplication', label: 'Application of Model'},
+            {value: 'modelApplication', label: 'Model Application'},
             {value: 'caseStudy', label: 'Case Study'},
             {value: 'model', label: 'Model'}
           ]
@@ -43,6 +52,12 @@ define [
           label: 'Description'
           rows: 17
 
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'contact'
+          label: 'Contact'
+          ObjectInputView: ShortContactView
+
         new ParentView
           model: @model
           modelAttribute: 'resourceIdentifiers'
@@ -52,9 +67,22 @@ define [
                     <p>A unique string or number used to identify the resource.</p>
                     <p> The codespace identifies the context in which the code is unique.</p>
                     """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'relationships'
+          label: 'Relationships'
+          ObjectInputView: RelationshipView
+
+        new ParentView
+          model: @model
+          modelAttribute: 'keywords'
+          label: 'Keywords'
+          ObjectInputView: KeywordView
+
       ]
     ,
-      label: 'Two'
+      label: 'Model'
       title: 'Model only'
       views: [
         new ParentStringView
@@ -66,11 +94,6 @@ define [
           model: @model
           modelAttribute: 'version'
           label: 'Version'
-
-        new InputView
-          model: @model
-          modelAttribute: 'contact'
-          label: 'Contact'
 
         new InputView
           model: @model
@@ -114,6 +137,11 @@ define [
 
         new InputView
           model: @model
+          modelAttribute: 'modelStructure'
+          label: 'Model Structure'
+
+        new InputView
+          model: @model
           modelAttribute: 'dataInput'
           label: 'Data Input'
 
@@ -127,59 +155,108 @@ define [
           modelAttribute: 'outputData'
           label: 'Output Data'
 
-        new ParentView
+        new SingleObjectView
           model: @model
           modelAttribute: 'documentation'
           label: 'Documentation'
           ObjectInputView: LinkView
 
-        new ParentView
+        new CheckboxView
           model: @model
-          modelAttribute: 'modelApplications'
-          label: 'Model Applications'
-          ObjectInputView: LinkView
+          modelAttribute: 'developerTesting'
+          label: 'Developer Testing'
 
-        new ParentView
+        new CheckboxView
           model: @model
-          modelAttribute: 'links'
-          label: 'Links'
-          ObjectInputView: LinkView
+          modelAttribute: 'internalPeerReview'
+          label: 'Internal Peer Review'
+
+        new CheckboxView
+          model: @model
+          modelAttribute: 'externalPeerReview'
+          label: 'External Peer Review'
+
+        new CheckboxView
+          model: @model
+          modelAttribute: 'useOfVersionControl'
+          label: 'Use of Version Control'
+
+        new CheckboxView
+          model: @model
+          modelAttribute: 'internalModelAudit'
+          label: 'Internal Model Audit'
+
+        new CheckboxView
+          model: @model
+          modelAttribute: 'externalModelAudit'
+          label: 'External Model Audit'
+
+        new CheckboxView
+          model: @model
+          modelAttribute: 'qualityAssuranceGuidelinesAndChecklists'
+          label: 'Quality Assurance Guidelines and Checklists'
+
+        new CheckboxView
+          model: @model
+          modelAttribute: 'governance'
+          label: 'Governance'
+
+        new CheckboxView
+          model: @model
+          modelAttribute: 'transparency'
+          label: 'Transparency'
+
+        new CheckboxView
+          model: @model
+          modelAttribute: 'periodicReview'
+          label: 'Periodic Review'
 
         ]
       ,
-      label: 'Three'
-      title: 'Application of model only'
-      views: [
-        new InputView
-          model: @model
-          modelAttribute: 'date'
-          label: 'Date'
+        label: 'Model Application'
+        title: 'Model application only'
+        views: [
+          new InputView
+            model: @model
+            modelAttribute: 'date'
+            label: 'Date'
 
-        new InputView
-          model: @model
-          modelAttribute: 'studySite'
-          label: 'Study Site'
+          new InputView
+            model: @model
+            modelAttribute: 'studySite'
+            label: 'Study Site'
 
-        new InputView
-          model: @model
-          modelAttribute: 'studyScale'
-          label: 'Study Scale'
+          new InputView
+            model: @model
+            modelAttribute: 'studyScale'
+            label: 'Study Scale'
 
-        new InputView
-          model: @model
-          modelAttribute: 'objective'
-          label: 'Objective'
+          new InputView
+            model: @model
+            modelAttribute: 'objective'
+            label: 'Objective'
 
-        new TextareaView
-          model: @model
-          modelAttribute: 'funderDetails'
-          label: 'Funder Details'
+          new TextareaView
+            model: @model
+            modelAttribute: 'funderDetails'
+            label: 'Funder Details'
 
-        new ParentStringView
-          model: @model
-          modelAttribute: 'inputData'
-          label: 'Input Data'
-      ]
+          new ParentStringView
+            model: @model
+            modelAttribute: 'inputData'
+            label: 'Input Data'
+        ]
+      ,
+        label: 'Case Study'
+        title: 'Case Study only'
+        views: [
+          new SingleObjectView
+            model: @model
+            modelAttribute: 'caseStudy'
+            label: 'Case Study Link'
+            ObjectInputView: LinkView
+
+        ]
     ]
 
     EditorView.prototype.initialize.apply @
