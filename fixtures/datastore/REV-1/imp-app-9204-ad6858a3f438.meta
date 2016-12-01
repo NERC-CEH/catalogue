@@ -1,1 +1,1 @@
-{"rawType":"application/json","state":"published","documentType":"IMP_DOCUMENT","permissions":{},"catalogue":"cmp"}
+{"rawType":"application/json","state":"published","documentType":"IMP_DOCUMENT","permissions":{"VIEW":["public"]},"catalogue":"cmp"}

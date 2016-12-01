@@ -17,10 +17,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Relationship;
 
 @Data
 @Accessors(chain = true)
 @XmlType(propOrder = {
+    "relationships",
     "efMetadata",
     "identifiers",
     "name",
@@ -59,6 +61,9 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 })
 @XmlSeeAlso({Activity.class, Programme.class, Network.class, Facility.class})
 public class BaseMonitoringType implements MetadataDocument {
+    
+    private Set<Relationship> relationships;
+    
     @NotNull
     @Valid
     @XmlElement(name = "metadata")

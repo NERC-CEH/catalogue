@@ -17,7 +17,7 @@
       <#include "gemini/_dates.html.tpl">
 
       <div class="row">
-        <div class="col-sm-4 col-xs-12 pull-right">
+        <div class="col-sm-4 col-sm-push-8">
           <#include "gemini/_admin.html.tpl">
           <#include "gemini/_distribution.html.tpl">
           <#include "gemini/_reuse.html.tpl">
@@ -25,7 +25,7 @@
           <#include "gemini/_related.html.tpl">
           <#include "gemini/_model.html.tpl">
         </div>
-        <div class="col-sm-8 col-xs-12">
+        <div class="col-sm-8 col-sm-pull-4">
           <#include "gemini/_extent.html.tpl">
           <#include "gemini/_onlineResources.html.tpl">
           <#include "gemini/_quality.html.tpl">

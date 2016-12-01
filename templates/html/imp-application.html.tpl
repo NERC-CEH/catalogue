@@ -9,34 +9,12 @@
     <@blocks.title title type />
     <@blocks.description description!"" />
     <div class="row">
-      <div class="col-sm-4 col-xs-12 pull-right">
+      <div class="col-sm-4 col-sm-push-8">
         <#include "imp/_admin.html.tpl">
-        <#if links?? >
-          <#list links>
-            <div class="panel panel-default" id="document-order">
-              <div class="panel-heading"><p class="panel-title">Datasets</p></div>
-              <div class="panel-body">
-                <ul class="list-unstyled">
-                  <#items as link>
-                  <li><a href="${link.href}">${link.title}</a></li>
-                  </#items>
-                </ul>
-              </div>
-            </div>
-          </#list>
-        </#if>
-        <#if model?? >
-          <div class="panel panel-default" id="document-order">
-            <div class="panel-heading"><p class="panel-title">Model</p></div>
-            <div class="panel-body">
-              <ul class="list-unstyled">
-                <li><a href="${model.href?html}">${model.title?html}</a></li>
-              </ul>
-            </div>
-          </div>
-        </#if>
+        <@blocks.links jena.datasets(uri) "Datasets" />
+        <@blocks.links jena.models(uri) "Models" />
       </div>
-      <div class="col-sm-8 col-xs-12">
+      <div class="col-sm-8 col-sm-pull-4">
         <dl class="dl-horizontal">
           <#if date?has_content>
           <dt>Date</dt><dd>${date}</dd>
@@ -50,8 +28,11 @@
           <#if funderDetails?has_content>
           <dt>Funder Details</dt><dd>${funderDetails}</dd>
           </#if>
-          <#if (modellerDetails?? && (modellerDetails.name?? || modellerDetails.organisation??)) >
-          <dt>Modeller</dt><dd>${modellerDetails.name}, ${modellerDetails.organisation}</dd>
+          <#if contact??>
+            <dt>Contact</dt>
+            <dd>
+              <#if contact.individualName?has_content>${contact.individualName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
+            </dd>
           </#if>
         </dl>
         <#if inputData?? >

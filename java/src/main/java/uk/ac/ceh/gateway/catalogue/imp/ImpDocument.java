@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
+import uk.ac.ceh.gateway.catalogue.ef.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
@@ -22,13 +23,12 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 @JsonTypeInfo(use=Id.NAME, include=As.EXISTING_PROPERTY, property="type", visible=true)
 @JsonSubTypes({
     @Type(name="model",            value = Model.class),
-    @Type(name="modelApplication", value = ModelApplication.class)
+    @Type(name="modelApplication", value = ModelApplication.class),
+    @Type(name="caseStudy",        value = CaseStudy.class)
 })
 public class ImpDocument extends AbstractMetadataDocument {
-    private String type;
-    private List<String> identifiers;
-    private List<Link> links;
     private List<Keyword> keywords;
+    private ResponsibleParty contact;
 
     @Override
     public ImpDocument addAdditionalKeywords(@NonNull List<Keyword> additionalKeywords) {

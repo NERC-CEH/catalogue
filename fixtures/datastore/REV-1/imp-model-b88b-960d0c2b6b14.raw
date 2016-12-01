@@ -4,7 +4,7 @@
   "title": "INCA-N",
   "version": "1.0.14",
   "description": "INCA-N is a processed based dynamic model representation of plant/soil system nitrogen dynamics and instream biogeochemical and hydrological dynamics. It is spatially semi-distributed.",
-  "contact": "NIVA, Norway; University of Reading. Contact: Raoul-Marie Couture (NIVA)",
+  "contact": {"organisationName":"NIVA, Norway; University of Reading","individualName":"Raoul-Marie Couture"},
   "license": "Available executable for research work; commercial licence for commercial work",
   "operatingRequirements": "Runs on any standard computer",
   "applicationType":"Executable",
@@ -43,11 +43,6 @@
   "externalPeerReview": false,
   "useOfVersionControl": true,
   "internalModelAudit": false,
-  "identifiers": [
-    "2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
-    "4e214aac-221b-4254-a03b-6219ae2d6e90",
-    "8770c16d-465b-46b3-a768-6eb9d6bf2b8e"
-  ],
   "keywords": [
     {
       "value": "Nitrogen",
@@ -62,13 +57,9 @@
       "uri": "http://vocabs.ceh.ac.uk/imp/bci/agri-environment"
     }
   ],
-  "partOfRepository": [
-    "5b4d0ee4-49ed-4fb4-b2f6-e390ef42c00c"
-  ],
-  "modelApplications": [
-    {
-      "href": "/documents/imp-app-9204-ad6858a3f438",
-      "title": "Effectiveness of pollution control measures under scenarios of future climate and land cover change at the catchment scale"
-    }
+  "relationships": [
+    {"relation":"http://purl.org/dc/terms/references","target":"2d023ce9-6dbe-4b4f-a0cd-34768e1455ae"},
+    {"relation":"http://purl.org/dc/terms/references","target":"4e214aac-221b-4254-a03b-6219ae2d6e90"},
+    {"relation":"http://purl.org/dc/terms/references","target":"8770c16d-465b-46b3-a768-6eb9d6bf2b8e"}
   ]
 }

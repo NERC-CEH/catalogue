@@ -1,14 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.Arrays;
+import java.util.List;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.apache.jena.rdf.model.ResourceFactory.createStatement;
 import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
 import org.apache.jena.tdb.TDBFactory;
-import java.util.List;
-import org.apache.jena.rdf.model.Resource;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
@@ -18,8 +18,12 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.HAS_GEOMETRY;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.IDENTIFIER;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.REFERENCES;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SOURCE;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TITLE;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TYPE;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.WKT_LITERAL;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 
 /**
  *
@@ -34,6 +38,60 @@ public class JenaLookupServiceTest {
         MockitoAnnotations.initMocks(this);
         jenaTdb = TDBFactory.createDataset();
         service = new JenaLookupService(jenaTdb);
+    }
+    
+    @Test
+    public void lookupModelApplications() {
+        //Given       
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://modelApplication1"), TITLE, "Model Application 1");
+        triples.add(createResource("http://modelApplication1"), TYPE, "modelApplication");
+        triples.add(createResource("http://modelApplication1"), REFERENCES, createResource("http://model"));
+        triples.add(createResource("http://modelApplication2"), TITLE, "Model Application 2");
+        triples.add(createResource("http://modelApplication2"), TYPE, "modelApplication");
+        triples.add(createResource("http://modelApplication2"), REFERENCES, createResource("http://model"));
+        
+        //When
+        List<Link> actual = service.modelApplications("http://model");
+        
+        //Then
+        assertThat("Should be 2 Links", actual.size(), equalTo(2));
+    }
+    
+    @Test
+    public void lookupModels() {
+        //Given       
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://model1"), TITLE, "Model 1");
+        triples.add(createResource("http://model1"), TYPE, "model");
+        triples.add(createResource("http://modelApplication"), REFERENCES, createResource("http://model1"));
+        triples.add(createResource("http://model2"), TITLE, "Model 2");
+        triples.add(createResource("http://model2"), TYPE, "model");
+        triples.add(createResource("http://modelApplication"), REFERENCES, createResource("http://model2"));
+        
+        //When
+        List<Link> actual = service.models("http://modelApplication");
+        
+        //Then
+        assertThat("Should be 2 Links", actual.size(), equalTo(2));
+    }
+    
+    @Test
+    public void lookupDatasets() {
+        //Given        
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
+        triples.add(createResource("http://dataset1"), TYPE, "dataset");
+        triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset1"));
+        triples.add(createResource("http://dataset2"), TITLE, "Dataset 2");
+        triples.add(createResource("http://dataset2"), TYPE, "dataset");
+        triples.add(createResource("http://dataset2"), REFERENCES, createResource("http://model"));
+        
+        //When
+        List<Link> actual = service.datasets("http://model");
+        
+        //Then
+        assertThat("Should be 2 Links", actual.size(), equalTo(2));
     }
     
     @Test

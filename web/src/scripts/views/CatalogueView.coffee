@@ -13,6 +13,7 @@ define [
           model: @model
           modelAttribute: 'value'
           label: 'Catalogue'
+          options: @model.options
           helpText: """
                     <p>Catalogue</p>
                     """

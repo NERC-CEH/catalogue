@@ -8,44 +8,21 @@
     <@blocks.title title type />
     <@blocks.description description!"" />
     <div class="row">
-      <div class="col-sm-4 col-xs-12 pull-right">
+      <div class="col-sm-4 col-sm-push-8">
         <#include "imp/_admin.html.tpl">
-        <#if links?? >
-          <#list links>
-            <div class="panel panel-default" id="document-order">
-              <div class="panel-heading"><p class="panel-title">Datasets</p></div>
-              <div class="panel-body">
-                <ul class="list-unstyled">
-                  <#items as link>
-                  <li><a href="${link.href}">${link.title}</a></li>
-                  </#items>
-                </ul>
-              </div>
-            </div>
-          </#list>
-        </#if>
-        <#if modelApplications?? >
-          <#list modelApplications>
-            <div class="panel panel-default" id="document-order">
-              <div class="panel-heading"><p class="panel-title">Model Applications</p></div>
-              <div class="panel-body">
-                <ul class="list-unstyled">
-                  <#items as link>
-                  <li><a href="${link.href}">${link.title}</a></li>
-                  </#items>
-                </ul>
-              </div>
-            </div>
-          </#list>
-        </#if>
+        <@blocks.links jena.datasets(uri) "Datasets" />
+        <@blocks.links jena.modelApplications(uri) "Model Applications" />
       </div>
-      <div class="col-sm-8 col-xs-12">
+      <div class="col-sm-8 col-sm-pull-4">
         <dl class="dl-horizontal">
           <#if version?has_content>
           <dt>Version</dt><dd>${version}</dd>
           </#if>
-          <#if contact?has_content>
-          <dt>Contact</dt><dd>${contact}</dd>
+          <#if contact??>
+            <dt>Contact</dt>
+            <dd>
+              <#if contact.individualName?has_content>${contact.individualName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
+            </dd>
           </#if>
           <#if license?has_content>
           <dt>License</dt><dd>${license}</dd>

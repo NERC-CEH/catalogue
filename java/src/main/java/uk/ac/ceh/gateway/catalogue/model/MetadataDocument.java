@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 
@@ -33,6 +34,8 @@ public interface MetadataDocument {
     MetadataDocument setResourceIdentifiers(List<ResourceIdentifier> resourceIdentifiers);
     List<Keyword> getAllKeywords();
     MetadataDocument addAdditionalKeywords(List<Keyword> additionalKeywords);
+    Set<Relationship> getRelationships();
+    MetadataDocument setRelationships(Set<Relationship> relationships);
     
     @JsonIgnore
     default String getCatalogue() {

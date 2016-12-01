@@ -1,5 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
@@ -8,13 +13,10 @@ import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.HAS_GEOMETRY;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.IDENTIFIER;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SOURCE;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 
 /**
  * A simple lookup service powered by the jena linking database. This just looks
@@ -54,6 +56,48 @@ public class JenaLookupService {
     }
     
     /**
+     * ModelApplications linked to this Model
+     * @param uri of model
+     * @return list of Links to modelApplications
+     */
+    public List<Link> modelApplications(String uri) {
+        return links(uri, "SELECT ?node ?title WHERE { ?node <http://purl.org/dc/terms/references> ?me . ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'modelApplication' }");
+    }
+    
+    /**
+     * Models linked to this ModelApplication
+     * @param uri of modelApplication
+     * @return list of Links to models
+     */
+    public List<Link> models(String uri) {
+        return links(uri, "SELECT ?node ?title WHERE { ?me <http://purl.org/dc/terms/references> ?node . ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'model' }");
+    }
+    
+    public List<Link> datasets(String uri) {
+        return links(uri, "SELECT ?node ?title WHERE { { ?me <http://purl.org/dc/terms/references> ?node } UNION { ?node <http://purl.org/dc/terms/references> ?me } . ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'dataset' }");
+    }
+    
+    private List<Link> links(@NonNull String uri, String sparql) {
+        List<Link> toReturn = new ArrayList<>();
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);  
+        pss.setIri("me", uri);
+        jenaTdb.begin(ReadWrite.READ);
+        try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
+            qexec.execSelect().forEachRemaining(s -> {
+                toReturn.add(
+                    Link.builder()
+                        .title(s.getLiteral("title").getString())
+                        .href(s.getResource("node").getURI())
+                        .build()
+                );
+            });
+        } finally {
+            jenaTdb.end();
+        }
+        return toReturn;
+    }
+    
+    /**
      * Performs a literal lookup from the jena database for literals associated 
      * to the given uri with a specified relationship
      * @param uri to look up an attribute of
@@ -62,8 +106,7 @@ public class JenaLookupService {
      */
     public List<Literal> lookup(String uri, Property relationship) {
         ParameterizedSparqlString pss = new ParameterizedSparqlString(
-            "SELECT ?attr " +
-            "WHERE { ?uri ?relationship ?attr }"
+            "SELECT ?attr WHERE { ?uri ?relationship ?attr }"
         );
         pss.setParam("uri", createResource(uri));
         pss.setParam("relationship", relationship);
@@ -90,11 +133,7 @@ public class JenaLookupService {
         Property relationshipOnSubject
     ) {
         ParameterizedSparqlString pss = new ParameterizedSparqlString(
-            "SELECT ?attr " +
-            "WHERE { " +
-            "   _:s ?relationshipToSubject ?objectUri ; " +
-            "       ?relationshipOnSubject ?attr . " +
-            "}"
+            "SELECT ?attr WHERE { _:s ?relationshipToSubject ?objectUri ; ?relationshipOnSubject ?attr . }"
         );
         pss.setParam("objectUri", createResource(objectUri));
         pss.setParam("relationshipToSubject", relationshipToSubject);
