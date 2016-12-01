@@ -52,6 +52,8 @@ module.exports = (grunt) ->
         files: 'src/css/style-inms.css' : 'src/less/style-inms.less'
       nc:
         files: 'src/css/style-nc.css' : 'src/less/style-nc.less'
+      m:
+        files: 'src/css/style-m.css' : 'src/less/style-m.less'
 
     cssmin:
       assist:
@@ -70,6 +72,8 @@ module.exports = (grunt) ->
         files: 'src/css/style-inms.css' : 'src/css/style-inms.css'
       nc:
         files: 'src/css/style-nc.css' : 'src/css/style-nc.css'
+      m:
+        files: 'src/css/style-m.css' : 'src/css/style-m.css'
 
     requirejs:
       compile:

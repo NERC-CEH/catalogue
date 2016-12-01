@@ -2,8 +2,6 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.rdf.model.Statement;
 import com.vividsolutions.jts.io.WKTReader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.template.Template;
@@ -24,6 +22,8 @@ import lombok.Data;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -163,6 +163,13 @@ public class ServiceConfig {
         
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+            
+            Catalogue.builder()
+                .id("m")
+                .title("Modelling")
+                .url("http://www.ceh.ac.uk")
+                .facetKey("resourceType")
+                .build(),
             
             Catalogue.builder()
                 .id("nc")
