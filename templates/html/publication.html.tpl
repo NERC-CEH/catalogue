@@ -10,7 +10,7 @@
         </div>
         <#list transitions as transition>
           <div class="list-group-item">
-            <form method="post" action="${transition.href}">
+            <form method="post" action="/documents/${metadataId}/publication/${transition.id}">
               <p><button type="submit" class="btn btn-default">${transition.title}</button></p>
             </form>
             <p class="list-group-item-text">${transition.helpText}</p>
