@@ -15,10 +15,10 @@ import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.PublicationServiceException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.PublicationServiceException;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -37,7 +37,6 @@ public class GitPublicationServiceTest {
     
     @Before
     public void given() throws IOException {
-        uriBuilder = UriComponentsBuilder.fromHttpUrl("https://example.com/documents").pathSegment(FILENAME, "publication");
         workflow = new PublicationConfig().workflow();
         editor = new CatalogueUser()
             .setUsername("Ron MacDonald")
@@ -65,7 +64,7 @@ public class GitPublicationServiceTest {
         when(documentRepository.read(FILENAME)).thenReturn(draft);
         
         //When
-        publicationService.transition(editor, FILENAME, PENDING_ID, uriBuilder);
+        publicationService.transition(editor, FILENAME, PENDING_ID);
         
         //Then
         verify(documentRepository).read(FILENAME);
@@ -79,7 +78,7 @@ public class GitPublicationServiceTest {
         when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When
-        StateResource actual = publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
+        StateResource actual = publicationService.transition(editor, FILENAME, DRAFT_ID);
         
         //Then
         verify(documentRepository).read(FILENAME);
@@ -94,7 +93,7 @@ public class GitPublicationServiceTest {
         when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When
-        StateResource actual = publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
+        StateResource actual = publicationService.transition(editor, FILENAME, DRAFT_ID);
         
         //Then
         verify(documentRepository).read(FILENAME);
@@ -109,7 +108,7 @@ public class GitPublicationServiceTest {
         when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When
-        StateResource actual = publicationService.transition(editor, FILENAME, DRAFT_ID, uriBuilder);
+        StateResource actual = publicationService.transition(editor, FILENAME, DRAFT_ID);
         
         //Then
         verify(documentRepository).read(FILENAME);
@@ -123,7 +122,7 @@ public class GitPublicationServiceTest {
         when(documentRepository.read(FILENAME)).thenReturn(draft);
         
         //When
-        StateResource current = publicationService.current(editor, FILENAME, uriBuilder);
+        StateResource current = publicationService.current(editor, FILENAME);
         
         //Then
         verify(documentRepository).read(FILENAME);
@@ -136,7 +135,7 @@ public class GitPublicationServiceTest {
         when(documentRepository.read(FILENAME)).thenThrow(new PublicationServiceException("test"));
         
         //When
-        publicationService.current(editor, "this file name does not exist", uriBuilder);
+        publicationService.current(editor, "this file name does not exist");
         
         //Then
         verify(documentRepository).read(FILENAME);

@@ -4,16 +4,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.PublicationServiceException;
-import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.PublishingRole;
 import uk.ac.ceh.gateway.catalogue.publication.State;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.Transition;
 import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -33,22 +32,22 @@ public class GitPublicationService implements PublicationService {
     }
 
     @Override
-    public StateResource current(CatalogueUser user, String fileIdentifier, UriComponentsBuilder builder) {
+    public StateResource current(CatalogueUser user, String fileIdentifier) {
         try {
             MetadataDocument doc = documentRepository.read(fileIdentifier);
-            return current(user, doc.getMetadata(), builder, doc.getId());
+            return current(user, doc.getMetadata(), doc.getId());
         } catch (DocumentRepositoryException | NullPointerException ex) {
             throw new PublicationServiceException(String.format("Could not get current state for: %s", fileIdentifier), ex);
         }
     }
     
-    private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, UriComponentsBuilder builder, String metadataId) {
+    private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, String metadataId) {
         final State currentState = workflow.currentState(metadataInfo);
-        return new StateResource(currentState, getPublishingRoles(user, metadataInfo), builder, metadataId, metadataInfo.getCatalogue());
+        return new StateResource(currentState, getPublishingRoles(user, metadataInfo), metadataId, metadataInfo.getCatalogue());
     }
 
     @Override
-    public StateResource transition(CatalogueUser user, String fileIdentifier, String transitionId, UriComponentsBuilder builder) {
+    public StateResource transition(CatalogueUser user, String fileIdentifier, String transitionId) {
         try {
             final MetadataDocument doc = documentRepository.read(fileIdentifier);
             final MetadataInfo original = doc.getMetadata();
@@ -63,7 +62,7 @@ public class GitPublicationService implements PublicationService {
                 fileIdentifier,
                 String.format("Publication state of %s changed.", fileIdentifier)
             );
-            return current(user, doc.getMetadata(), builder, doc.getId());
+            return current(user, doc.getMetadata(), doc.getId());
         } catch (DocumentRepositoryException | NullPointerException ex) {
             throw new PublicationServiceException(String.format("Could not transition: %s", fileIdentifier), ex);
         }
