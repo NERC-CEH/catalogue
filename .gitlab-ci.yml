@@ -4,6 +4,15 @@ variables:
   CONTAINER_MAPSERVER_IMAGE:   registry.gitlab.ceh.ac.uk/eip/catalogue:mapserver-$CI_BUILD_REF_NAME
   DOCKER_DAEMON_ARGS:          -g /cache/docker
   MAVEN_OPTS:                  -Dmaven.repo.local=$CI_PROJECT_DIR/cache/mvn
+  DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
+  NODE_KEY: catalogue_version
+  NODE_VALUE: $CI_BUILD_REF_NAME
+
+stages:
+  - build
+  - test
+  - docker
+  - deploy
 
 cache:
   key: "$CI_BUILD_NAME"
@@ -53,7 +62,7 @@ rspec:
     - make clean
 
 .deployment_template: &deployment_definition # Hidden deployment definition for docker builds
-  stage: deploy
+  stage: docker
   image: gitlab/dind
   only:
     - tags
@@ -79,3 +88,27 @@ build_mapserver:
     - docker build -t $CONTAINER_MAPSERVER_IMAGE mapserver
     - docker push $CONTAINER_MAPSERVER_IMAGE
 
+.puppet_deploy: &puppet_deployment_definition
+  image: ruby:2
+  stage: deploy
+  script:
+    - curl $DEPLOYMENT_SCRIPT | bash
+  only:
+    - tags
+
+deploy_production:
+  <<: *puppet_deployment_definition
+  variables:
+    SERVER: cig-prod.nerc-lancaster.ac.uk
+  environment:
+    name: production
+    url:  https://catalogue.ceh.ac.uk/eidc/documents
+  when: manual
+
+deploy_staging:
+  <<: *puppet_deployment_definition
+  variables:
+    SERVER: cig-staging.nerc-lancaster.ac.uk
+  environment:
+    name: staging
+    url:  https://catalogue-staging.ceh.ac.uk/eidc/documents
