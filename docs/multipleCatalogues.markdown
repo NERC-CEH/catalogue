@@ -24,11 +24,26 @@ The metadata records need to be tagged with the keywords.
 
 The facetKey needs to be added to the [Solr schema](solr/config/documents/conf/schema.xml) and the  [SolrIndex](java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndex.java)
 
-The documents need to be indexed by the [SolrIndexGeminiDocumentGenerator](java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndexGeminiDocumentGenerator.java) 
+The documents need to be indexed for each document type in the catalogue e.g. [SolrIndexGeminiDocumentGenerator](java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndexGeminiDocumentGenerator.java) for Gemini documents and [SolrIndexImpDocumentGenerator](java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndexImpDocumentGenerator.java) for models / model applications. 
 
 - Add the url of the vocabulary
 - Set the newly added field of the SolrIndex
 
+The new facet needs to be added to [HardcodedFacetFactory](java/src/main/java/uk/ac/ceh/gateway/catalogue/search/HardcodedFacetFactory.java)
+
+### Vocabularies for search facets
+
+The url structure of vocabulary keywords should follow this format:
+
+vocabulary base url / facet identifier / keyword identifier
+
+e.g. http://vocabs.ceh.ac.uk/imp/wp/nitrogen
+
+- http://vocabs.ceh.ac.uk/imp/ is the vocabulary base url
+- wp/ the facet identifier
+- nitrogen the keyword identifier
+
+See [SolrIndexGeminiDocumentGenerator](java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndexGeminiDocumentGenerator.java) for how this is used.
 
 ## Crowd groups
 

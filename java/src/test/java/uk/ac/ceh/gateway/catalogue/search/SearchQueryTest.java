@@ -10,12 +10,12 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.BDDMockito.given;
-import static org.hamcrest.Matchers.contains;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.userstore.Group;
@@ -709,18 +709,16 @@ public class SearchQueryTest {
     @Test
     public void impFacetsConfigured() {
         //Given          
-        Catalogue catalogue = Catalogue
-                .builder()
+        Catalogue catalogue = Catalogue.builder()
                 .id("cmp")
-                .title("Catchment Management Platform")
-                .url("https://cmp.catalogue.ceh.ac.uk")
-                .facetKeys(
-                    Arrays.asList("impBroaderCatchmentIssues",
-                    "impScale",
-                    "impWaterQuality",
-                    "resourceType",
-                    "licence")
-                )
+                .title("Catchment Management Modelling Platform")
+                .url("http://www.ceh.ac.uk")
+                .facetKey("impCaMMPIssues")
+                .facetKey("impDataType")
+                .facetKey("impScale")
+                .facetKey("impTopic")
+                .facetKey("impWaterPollutant")
+                .facetKey("resourceType")
                 .build();
         SearchQuery query = new SearchQuery(
             ENDPOINT,
@@ -748,11 +746,12 @@ public class SearchQueryTest {
         assertThat("",
             actual,
             contains(
-                "impBroaderCatchmentIssues",
+                "impCaMMPIssues",
+                "impDataType",
                 "impScale",
-                "impWaterQuality",
-                "resourceType",
-                "licence"
+                "impTopic",
+                "impWaterPollutant",
+                "resourceType"
             )
         );
     }

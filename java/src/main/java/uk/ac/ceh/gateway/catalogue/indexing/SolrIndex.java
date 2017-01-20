@@ -39,9 +39,11 @@ public class SolrIndex {
     private @Field List<String> view;
     private @Field String catalogue;
     private @Field String documentType;
-    private @Field List<String> impBroaderCatchmentIssues;
+    private @Field List<String> impCaMMPIssues;
+    private @Field List<String> impDataType;
     private @Field List<String> impScale;
-    private @Field List<String> impWaterQuality;
+    private @Field List<String> impTopic;
+    private @Field List<String> impWaterPollutant;
 
     public SolrIndex addLocations(List<String> locations) {
         if(this.locations == null) {

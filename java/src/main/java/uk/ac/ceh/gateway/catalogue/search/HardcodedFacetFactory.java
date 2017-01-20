@@ -10,13 +10,6 @@ public class HardcodedFacetFactory implements FacetFactory {
     @Override
     public Facet newInstance(@NonNull String key) {        
         switch(key) {
-            
-            case "catalogue":
-                return Facet.builder()
-                    .fieldName("catalogue")
-                    .displayName("Catalogue")
-                    .hierarchical(false)
-                    .build();
                 
             case "resourceType":
                 return Facet.builder()
@@ -39,10 +32,17 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .hierarchical(true)
                     .build();
                 
-            case "impBroaderCatchmentIssues":
+            case "impCaMMPIssues":
                 return Facet.builder()
-                    .fieldName("impBroaderCatchmentIssues")
-                    .displayName("Broader Catchment Issues")
+                    .fieldName("impCaMMPIssues")
+                    .displayName("CaMMP Issues")
+                    .hierarchical(false)
+                    .build();
+                
+            case "impDataType":
+                return Facet.builder()
+                    .fieldName("impDataType")
+                    .displayName("Data Type")
                     .hierarchical(false)
                     .build();
                 
@@ -53,10 +53,17 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .hierarchical(false)
                     .build();
                 
-            case "impWaterQuality":
+            case "impTopic":
                 return Facet.builder()
-                    .fieldName("impWaterQuality")
-                    .displayName("Water Quality")
+                    .fieldName("impTopic")
+                    .displayName("Topic")
+                    .hierarchical(false)
+                    .build();
+                
+            case "impWaterPollutant":
+                return Facet.builder()
+                    .fieldName("impWaterPollutant")
+                    .displayName("Water Pollutant")
                     .hierarchical(false)
                     .build();
         }

@@ -46,15 +46,23 @@
   "keywords": [
     {
       "value": "Nitrogen",
-      "uri": "http://vocabs.ceh.ac.uk/imp/wq/nitrogen"
+      "uri": "http://vocabs.ceh.ac.uk/imp/wp/nitrogen"
     },
     {
       "value": "National",
       "uri": "http://vocabs.ceh.ac.uk/imp/scale/national"
     },
     {
-      "value": "Agri-environment",
-      "uri": "http://vocabs.ceh.ac.uk/imp/bci/agri-environment"
+      "value": "Management Outcome",
+      "uri": "http://vocabs.ceh.ac.uk/imp/ci/management-outcome"
+    },
+    {
+      "value": "Tabular",
+      "uri": "http://vocabs.ceh.ac.uk/imp/dt/tabular"
+    },
+    {
+      "value": "Soil",
+      "uri": "http://vocabs.ceh.ac.uk/imp/topic/soil"
     }
   ],
   "relationships": [
