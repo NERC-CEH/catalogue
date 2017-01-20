@@ -10,8 +10,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
@@ -24,9 +24,11 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
     private static final String CEH_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence";
     private static final String OTHER_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence";
-    public static final String IMP_BROADER_CATCHMENT_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/bci/";
+    public static final String IMP_CAMMP_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/ci/";
+    public static final String IMP_DATA_TYPE_URL = "http://vocabs.ceh.ac.uk/imp/dt/";
     public static final String IMP_SCALE_URL = "http://vocabs.ceh.ac.uk/imp/scale/";
-    public static final String IMP_WATER_QUALITY_URL = "http://vocabs.ceh.ac.uk/imp/wq/";
+    public static final String IMP_TOPIC_URL = "http://vocabs.ceh.ac.uk/imp/topic/";
+    public static final String IMP_WATER_POLLUTANT_URL = "http://vocabs.ceh.ac.uk/imp/wp/";
     
     private final TopicIndexer topicIndexer;
     private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;
@@ -56,9 +58,11 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
                 .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
                 .addLocations(geometryService.toSolrGeometry(grab(document.getBoundingBoxes(), BoundingBox::getWkt)))
-                .setImpBroaderCatchmentIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_BROADER_CATCHMENT_ISSUES_URL), Keyword::getValue))
+                .setImpCaMMPIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_CAMMP_ISSUES_URL), Keyword::getValue))
+                .setImpDataType(grab(getKeywordsFilteredByUrlFragment(document, IMP_DATA_TYPE_URL), Keyword::getValue))
                 .setImpScale(grab(getKeywordsFilteredByUrlFragment(document, IMP_SCALE_URL), Keyword::getValue))
-                .setImpWaterQuality(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_QUALITY_URL), Keyword::getValue))
+                .setImpTopic(grab(getKeywordsFilteredByUrlFragment(document, IMP_TOPIC_URL), Keyword::getValue))
+                .setImpWaterPollutant(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_POLLUTANT_URL), Keyword::getValue))
             ;
     }
 

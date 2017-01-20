@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Arrays;
 import java.util.List;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -12,15 +14,13 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
+import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.contains;
-import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 
 /**
  *
@@ -191,17 +191,17 @@ public class SolrIndexGeminiDocumentGeneratorTest {
     }
     
     @Test
-    public void checkThatImpBroaderCatchmentIssuesIsIndexed() {
+    public void checkThatImpCaMMPIssuesIsIndexed() {
         //Given
         DescriptiveKeywords imp = DescriptiveKeywords.builder()
             .keywords(Arrays.asList(
                 Keyword.builder()
                     .value("Agri-environment")
-                    .URI("http://vocabs.ceh.ac.uk/imp/bci/agri-environment")
+                    .URI("http://vocabs.ceh.ac.uk/imp/ci/agri-environment")
                     .build(),
                 Keyword.builder()
                     .value("Ecosystem Response")
-                    .URI("http://vocabs.ceh.ac.uk/imp/bci/ecosystem-response")
+                    .URI("http://vocabs.ceh.ac.uk/imp/ci/ecosystem-response")
                     .build()
             )
         ).build();
@@ -226,7 +226,7 @@ public class SolrIndexGeminiDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertThat("Expected agri-environment and ecosytem response indexed", index.getImpBroaderCatchmentIssues(), contains("Agri-environment", "Ecosystem Response"));
+        assertThat("Expected agri-environment and ecosytem response indexed", index.getImpCaMMPIssues(), contains("Agri-environment", "Ecosystem Response"));
         assertThat("Expected to not index Blue", index.getImpScale(), not(contains("Blue")));
         
     }
@@ -238,11 +238,11 @@ public class SolrIndexGeminiDocumentGeneratorTest {
             .keywords(Arrays.asList(
                 Keyword.builder()
                     .value("Nitrogen")
-                    .URI("http://vocabs.ceh.ac.uk/imp/wq/nitrogen")
+                    .URI("http://vocabs.ceh.ac.uk/imp/wp/nitrogen")
                     .build(),
                 Keyword.builder()
                     .value("Phosphorous")
-                    .URI("http://vocabs.ceh.ac.uk/imp/wq/phosphorous")
+                    .URI("http://vocabs.ceh.ac.uk/imp/wp/phosphorous")
                     .build()
             )
         ).build();
@@ -267,8 +267,8 @@ public class SolrIndexGeminiDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertThat("Expected nitrogen and phosphorous to be indexed", index.getImpWaterQuality(), contains("Nitrogen", "Phosphorous"));
-        assertThat("Expected to not index Blue", index.getImpWaterQuality(), not(contains("Blue")));
+        assertThat("Expected nitrogen and phosphorous to be indexed", index.getImpWaterPollutant(), contains("Nitrogen", "Phosphorous"));
+        assertThat("Expected to not index Blue", index.getImpWaterPollutant(), not(contains("Blue")));
         
     }
     

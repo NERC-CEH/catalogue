@@ -18,23 +18,23 @@
   "keywords": [
     {
       "value": "Nitrogen",
-      "uri": "http://vocabs.ceh.ac.uk/imp/wq/nitrogen"
+      "uri": "http://vocabs.ceh.ac.uk/imp/wp/nitrogen"
     },
     {
       "value": "Phosphorous",
-      "uri": "http://vocabs.ceh.ac.uk/imp/wq/phosphorous"
+      "uri": "http://vocabs.ceh.ac.uk/imp/wp/phosphorous"
     },
     {
       "value": "Sediment",
-      "uri": "http://vocabs.ceh.ac.uk/imp/wq/sediment"
+      "uri": "http://vocabs.ceh.ac.uk/imp/wp/sediment"
     },
     {
       "value": "Catchment",
       "uri": "http://vocabs.ceh.ac.uk/imp/scale/catchment"
     },
     {
-      "value": "Agri-environment",
-      "uri": "http://vocabs.ceh.ac.uk/imp/bci/agri-environment"
+      "value": "Water Quality Pollution Source",
+      "uri": "http://vocabs.ceh.ac.uk/imp/ci/water-quality-pollution-source"
     }
   ],
   "relationships": [
