@@ -24,6 +24,9 @@
               <#if contact.individualName?has_content>${contact.individualName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
             </dd>
           </#if>
+          <#if releaseDate?has_content>
+          <dt>Release Date</dt><dd>${releaseDate}</dd>
+          </#if>
           <#if license?has_content>
           <dt>License</dt><dd>${license}</dd>
           </#if>
@@ -32,6 +35,15 @@
           </#if>
           <#if applicationType?has_content>
           <dt>Application Type</dt><dd>${applicationType}</dd>
+          </#if>
+          <#if userInterface?has_content>
+          <dt>User Interface</dt><dd>${userInterface}</dd>
+          </#if>
+          <#if supportAvailable?has_content>
+          <dt>Support Available</dt><dd>${supportAvailable}</dd>
+          </#if>
+          <#if applicationScale?has_content>
+          <dt>Application Scale</dt><dd>${applicationScale}</dd>
           </#if>
           <#if smallestAndLargestApplication?has_content>
           <dt>Samllest and Largest Application</dt><dd>${smallestAndLargestApplication}</dd>
@@ -42,14 +54,29 @@
           <#if temporalResolution?has_content>
           <dt>Temporal Resolution</dt><dd>${temporalResolution}</dd>
           </#if>
+          <#if spatialResolution?has_content>
+          <dt>Spatial Resolution</dt><dd>${spatialResolution}</dd>
+          </#if>
+          <#if primaryPurpose?has_content>
+          <dt>Primary Purpose</dt><dd>${primaryPurpose}</dd>
+          </#if>
           <#if keyOutputs?has_content>
           <dt>Key Outputs</dt><dd>${keyOutputs}</dd>
+          </#if>
+          <#if keyInputVariables?has_content>
+          <dt>Key Input Variables</dt><dd>${keyInputVariables}</dd>
           </#if>
           <#if calibrationRequired?has_content>
           <dt>Calibration Required</dt><dd>${calibrationRequired}</dd>
           </#if>
           <#if modelStructure?has_content>
           <dt>Model Structure</dt><dd>${modelStructure}</dd>
+          </#if>
+          <#if modelParameterisation?has_content>
+          <dt>Model Parameterisation</dt><dd>${modelParameterisation}</dd>
+          </#if>
+          <#if inputDataAvailableOnCatalogue?has_content>
+          <dt>Input Data Available on CaMMP Catalogue</dt><dd>${inputDataAvailableOnCatalogue}</dd>
           </#if>
           <#if dataInput?has_content>
           <dt>Data Input</dt><dd>${dataInput}</dd>
