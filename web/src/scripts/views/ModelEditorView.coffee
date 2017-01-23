@@ -97,6 +97,11 @@ define [
 
         new InputView
           model: @model
+          modelAttribute: 'releaseDate'
+          label: 'Release Date'
+
+        new InputView
+          model: @model
           modelAttribute: 'license'
           label: 'License'
 
@@ -109,6 +114,31 @@ define [
           model: @model
           modelAttribute: 'applicationType'
           label: 'Application Type'
+
+        new InputView
+          model: @model
+          modelAttribute: 'userInterface'
+          label: 'User Interface'
+
+        new InputView
+          model: @model
+          modelAttribute: 'supportAvailable'
+          label: 'Support Available'
+
+        new SelectView
+          model: @model
+          modelAttribute: 'applicationScale'
+          label: 'Application Scale'
+          options: [
+            {value: 'plot', label: 'plot'},
+            {value: 'field', label: 'field'},
+            {value: 'farm', label: 'farm'},
+            {value: 'river reach', label: 'river reach'},
+            {value: 'catchment', label: 'catchment'},
+            {value: 'landscape', label: 'landscape'},
+            {value: 'regional', label: 'regional'},
+            {value: 'national', label: 'national'},
+          ]
 
         new InputView
           model: @model
@@ -127,8 +157,23 @@ define [
 
         new InputView
           model: @model
+          modelAttribute: 'spatialResolution'
+          label: 'Spatial Resolution'
+
+        new InputView
+          model: @model
+          modelAttribute: 'primaryPurpose'
+          label: 'Primary Purpose'
+
+        new InputView
+          model: @model
           modelAttribute: 'keyOutputs'
           label: 'Key Outputs'
+
+        new InputView
+          model: @model
+          modelAttribute: 'keyInputVariables'
+          label: 'Key Input Variables'
 
         new InputView
           model: @model
@@ -139,6 +184,16 @@ define [
           model: @model
           modelAttribute: 'modelStructure'
           label: 'Model Structure'
+
+        new InputView
+          model: @model
+          modelAttribute: 'modelParameterisation'
+          label: 'Model Parameterisation'
+
+        new InputView
+          model: @model
+          modelAttribute: 'inputDataAvailableOnCatalogue'
+          label: 'Input Data Available on CaMMP Catalogue?'
 
         new InputView
           model: @model
