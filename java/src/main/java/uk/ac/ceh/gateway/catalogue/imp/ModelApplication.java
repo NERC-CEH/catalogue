@@ -13,6 +13,17 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
     @Template(called="html/imp-application.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class ModelApplication extends ImpDocument {
-    private String date, studySite, studyScale, objective, funderDetails;
+    private String date, studySite, studyScale, objective, funderDetails,
+        relevanceToCaMMP, multipleModelsUsed, multipleModelLinkages,
+        sensitivity, uncertainty, validation, modelEasyToUse, userManualUseful,
+        dataObtainable, modelUnderstandable;
     private List<String> inputData;
+    private List<Model> models;
+    
+    @Data
+    public static class Model {
+        private String name, version, primaryPurpose, applicationScale,
+            keyOutputVariables, keyInputVariables, temporalResolution,
+            spatialResolution, inputDataAvailableInDataCatalogue;
+    }
 }

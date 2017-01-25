@@ -12,6 +12,7 @@ define [
   'cs!views/editor/KeywordView'
   'cs!views/editor/CheckboxView'
   'cs!views/editor/ShortContactView'
+  'cs!views/editor/ModelApplicationModelView'
 ], (EditorView,
     InputView,
     TextareaView,
@@ -24,7 +25,8 @@ define [
     SingleObjectView,
     KeywordView,
     CheckboxView,
-    ShortContactView) -> EditorView.extend
+    ShortContactView,
+    ModelApplicationModelView) -> EditorView.extend
 
   initialize: ->
     @sections = [
@@ -273,6 +275,11 @@ define [
         views: [
           new InputView
             model: @model
+            modelAttribute: 'relevanceToCaMMP'
+            label: 'Relevance to CaMMP'
+
+          new InputView
+            model: @model
             modelAttribute: 'date'
             label: 'Date'
 
@@ -300,6 +307,107 @@ define [
             model: @model
             modelAttribute: 'inputData'
             label: 'Input Data'
+
+          new InputView
+            model: @model
+            modelAttribute: 'multipleModelsUsed'
+            label: 'Multiple Models Used'
+
+          new InputView
+            model: @model
+            modelAttribute: 'multipleModelLinkages'
+            label: 'Multiple Model Linkages'
+
+          new ParentView
+            model: @model
+            modelAttribute: 'models'
+            label: 'Models Used'
+            ObjectInputView: ModelApplicationModelView
+            multiline: true
+
+          new SelectView
+            model: @model
+            modelAttribute: 'sensitivity'
+            label: 'Sensitivity'
+            options: [
+              {value: 'strongly disagree', label: 'strongly disagree'},
+              {value: 'disagree', label: 'disagree'},
+              {value: 'neither agree nor disagree', label: 'neither agree nor disagree'},
+              {value: 'agree', label: 'agree'},
+              {value: 'strongly agree', label: 'strongly agree'}
+            ]
+
+          new SelectView
+            model: @model
+            modelAttribute: 'uncertainty'
+            label: 'Uncertainty'
+            options: [
+              {value: 'strongly disagree', label: 'strongly disagree'},
+              {value: 'disagree', label: 'disagree'},
+              {value: 'neither agree nor disagree', label: 'neither agree nor disagree'},
+              {value: 'agree', label: 'agree'},
+              {value: 'strongly agree', label: 'strongly agree'}
+            ]
+          
+          new SelectView
+            model: @model
+            modelAttribute: 'validation'
+            label: 'Validation'
+            options: [
+              {value: 'strongly disagree', label: 'strongly disagree'},
+              {value: 'disagree', label: 'disagree'},
+              {value: 'neither agree nor disagree', label: 'neither agree nor disagree'},
+              {value: 'agree', label: 'agree'},
+              {value: 'strongly agree', label: 'strongly agree'}
+            ]
+
+          new SelectView
+            model: @model
+            modelAttribute: 'modelEasyToUse'
+            label: 'Model Easy to Use'
+            options: [
+              {value: 'strongly disagree', label: 'strongly disagree'},
+              {value: 'disagree', label: 'disagree'},
+              {value: 'neither agree nor disagree', label: 'neither agree nor disagree'},
+              {value: 'agree', label: 'agree'},
+              {value: 'strongly agree', label: 'strongly agree'}
+            ]
+
+          new SelectView
+            model: @model
+            modelAttribute: 'userManualUseful'
+            label: 'User Manual Useful'
+            options: [
+              {value: 'strongly disagree', label: 'strongly disagree'},
+              {value: 'disagree', label: 'disagree'},
+              {value: 'neither agree nor disagree', label: 'neither agree nor disagree'},
+              {value: 'agree', label: 'agree'},
+              {value: 'strongly agree', label: 'strongly agree'}
+            ]
+
+          new SelectView
+            model: @model
+            modelAttribute: 'dataObtainable'
+            label: 'Data Obtainable'
+            options: [
+              {value: 'strongly disagree', label: 'strongly disagree'},
+              {value: 'disagree', label: 'disagree'},
+              {value: 'neither agree nor disagree', label: 'neither agree nor disagree'},
+              {value: 'agree', label: 'agree'},
+              {value: 'strongly agree', label: 'strongly agree'}
+            ]
+
+          new SelectView
+            model: @model
+            modelAttribute: 'modelUnderstandable'
+            label: 'Model Understandable'
+            options: [
+              {value: 'strongly disagree', label: 'strongly disagree'},
+              {value: 'disagree', label: 'disagree'},
+              {value: 'neither agree nor disagree', label: 'neither agree nor disagree'},
+              {value: 'agree', label: 'agree'},
+              {value: 'strongly agree', label: 'strongly agree'}
+            ]
         ]
       ,
         label: 'Case Study'
