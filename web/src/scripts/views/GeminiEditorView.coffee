@@ -572,11 +572,11 @@ define [
           predefined:
             'Open Government Licence':
               value: 'This resource is made available under the terms of the Open Government Licence'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain'
+              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/cehOGL/plain'
               code: 'license'
             'Open Government Licence Non-CEH':
               value: 'This resource is made available under the terms of the Open Government Licence'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data/plain'
+              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGLnonceh/plain'
               code: 'license'
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
