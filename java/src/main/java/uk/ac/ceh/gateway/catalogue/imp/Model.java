@@ -17,8 +17,8 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 })
 public class Model extends ImpDocument {
     private String version, license, operatingRequirements, applicationType,
-            smallestAndLargestApplication, geographicalRestrictions, temporalResolution,
-            keyOutputs, calibrationRequired, modelStructure, dataInput, releaseDate,
+            geographicalRestrictions, temporalResolution,
+            keyOutputVariables, calibrationRequired, modelStructure, releaseDate,
             userInterface, supportAvailable, applicationScale, spatialResolution,
             primaryPurpose, keyInputVariables, modelParameterisation, 
             inputDataAvailableOnCatalogue;

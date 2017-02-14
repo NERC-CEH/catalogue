@@ -144,11 +144,6 @@ define [
 
         new InputView
           model: @model
-          modelAttribute: 'smallestAndLargestApplication'
-          label: 'Smallest And Largest Application'
-
-        new InputView
-          model: @model
           modelAttribute: 'geographicalRestrictions'
           label: 'Geographical Restrictions'
 
@@ -169,8 +164,8 @@ define [
 
         new InputView
           model: @model
-          modelAttribute: 'keyOutputs'
-          label: 'Key Outputs'
+          modelAttribute: 'keyOutputVariables'
+          label: 'Key Output Variables'
 
         new InputView
           model: @model
@@ -196,11 +191,6 @@ define [
           model: @model
           modelAttribute: 'inputDataAvailableOnCatalogue'
           label: 'Input Data Available on CaMMP Catalogue?'
-
-        new InputView
-          model: @model
-          modelAttribute: 'dataInput'
-          label: 'Data Input'
 
         new ParentStringView
           model: @model
