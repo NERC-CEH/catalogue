@@ -95,6 +95,23 @@ public class JenaLookupServiceTest {
     }
     
     @Test
+    public void lookupLinkDatasets() {
+        //Given        
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://link1"), TITLE, "Link 1");
+        triples.add(createResource("http://link1"), SOURCE, createResource("http://dataset1"));
+        triples.add(createResource("http://model"), REFERENCES, createResource("http://link1"));
+        triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
+        triples.add(createResource("http://dataset1"), TYPE, "dataset");
+        
+        //When
+        List<Link> actual = service.datasets("http://model");
+        
+        //Then
+        assertThat("Should be 1 Link", actual.size(), equalTo(1));
+    }
+    
+    @Test
     public void checkThatCanLookupWkt() {
         //Given
         Model triples = jenaTdb.getDefaultModel();
