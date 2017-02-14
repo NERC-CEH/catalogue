@@ -74,7 +74,7 @@ public class JenaLookupService {
     }
     
     public List<Link> datasets(String uri) {
-        return links(uri, "SELECT ?node ?title WHERE {{ ?me <http://purl.org/dc/terms/references> ?node} UNION { ?node <http://purl.org/dc/terms/references> ?me } UNION { ?me <http://purl.org/dc/terms/references> _:n . _:n <http://purl.org/dc/terms/source> ?node . } . ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'dataset'}");
+        return links(uri, "SELECT ?node ?title WHERE {{{ ?me <http://purl.org/dc/terms/references> ?node } UNION { ?node <http://purl.org/dc/terms/references> ?me } ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'dataset' } UNION { ?me <http://purl.org/dc/terms/references> ?node . ?node <http://purl.org/dc/terms/source> _:n . _:n <http://purl.org/dc/terms/title> ?title . _:n <http://purl.org/dc/terms/type> 'dataset' }}");
     }
     
     private List<Link> links(@NonNull String uri, String sparql) {
