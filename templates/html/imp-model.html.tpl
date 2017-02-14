@@ -45,9 +45,6 @@
           <#if applicationScale?has_content>
           <dt>Application Scale</dt><dd>${applicationScale}</dd>
           </#if>
-          <#if smallestAndLargestApplication?has_content>
-          <dt>Samllest and Largest Application</dt><dd>${smallestAndLargestApplication}</dd>
-          </#if>
           <#if geographicalRestrictions?has_content>
           <dt>Geographical Restrictions</dt><dd>${geographicalRestrictions}</dd>
           </#if>
@@ -60,8 +57,8 @@
           <#if primaryPurpose?has_content>
           <dt>Primary Purpose</dt><dd>${primaryPurpose}</dd>
           </#if>
-          <#if keyOutputs?has_content>
-          <dt>Key Outputs</dt><dd>${keyOutputs}</dd>
+          <#if keyOutputVariables?has_content>
+          <dt>Key Output Variables</dt><dd>${keyOutputVariables}</dd>
           </#if>
           <#if keyInputVariables?has_content>
           <dt>Key Input Variables</dt><dd>${keyInputVariables}</dd>
@@ -77,9 +74,6 @@
           </#if>
           <#if inputDataAvailableOnCatalogue?has_content>
           <dt>Input Data Available on CaMMP Catalogue</dt><dd>${inputDataAvailableOnCatalogue}</dd>
-          </#if>
-          <#if dataInput?has_content>
-          <dt>Data Input</dt><dd>${dataInput}</dd>
           </#if>
           <#if (documentation?? && documentation.href??) >
           <dt>Documentation</dt><dd><a href="${documentation.href!}">${documentation.value!documentation.href}</a></dd>
