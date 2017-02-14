@@ -5,4 +5,10 @@ define [
 
   template:  template
 
-  # Need to set select form element
+  initialize: ->
+    @render()
+
+  render: ->
+    ObjectInputView.prototype.render.apply @
+    @$('select').val @model.get 'relation'
+    @
