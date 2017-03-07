@@ -213,7 +213,7 @@ public class ServiceConfig {
             Catalogue.builder()
                 .id("cmp")
                 .title("Catchment Management Modelling Platform")
-                .url("http://www.ceh.ac.uk")
+                .url("http://www.cammp.org.uk/index.php")
                 .facetKey("resourceType")
                 .facetKey("impCaMMPIssues")
                 .facetKey("impDataType")
