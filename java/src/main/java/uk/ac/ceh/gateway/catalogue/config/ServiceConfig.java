@@ -165,6 +165,13 @@ public class ServiceConfig {
             defaultCatalogueKey,
             
             Catalogue.builder()
+                .id("osdp")
+                .title("Open Soils Data Platform")
+                .url("http://www.ceh.ac.uk")
+                .facetKey("resourceType")
+                .build(),
+            
+            Catalogue.builder()
                 .id("m")
                 .title("Modelling")
                 .url("http://www.ceh.ac.uk")
