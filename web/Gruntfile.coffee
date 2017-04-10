@@ -54,6 +54,8 @@ module.exports = (grunt) ->
         files: 'src/css/style-nc.css' : 'src/less/style-nc.less'
       m:
         files: 'src/css/style-m.css' : 'src/less/style-m.less'
+      osdp:
+        files: 'src/css/style-osdp.css' : 'src/less/style-osdp.less'
 
     cssmin:
       assist:
@@ -74,6 +76,8 @@ module.exports = (grunt) ->
         files: 'src/css/style-nc.css' : 'src/css/style-nc.css'
       m:
         files: 'src/css/style-m.css' : 'src/css/style-m.css'
+      osdp:
+        files: 'src/css/style-osdp.css' : 'src/css/style-osdp.css'
 
     requirejs:
       compile:
