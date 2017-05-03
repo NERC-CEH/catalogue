@@ -103,6 +103,28 @@ public class SolrIndexGeminiDocumentGeneratorTest {
     }
     
     @Test
+    public void checkThatIsOglTrueIsTransferredToIndexForOtherFormatOfUrlForAnother(){
+        //Given
+        GeminiDocument document = mock(GeminiDocument.class);
+        when(document.getUseConstraints()).thenReturn(Arrays.asList(
+            ResourceConstraint.builder()
+                .uri("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGLnonceh/plain")
+                .build(),
+            ResourceConstraint.builder()
+                .value("More use limitations")
+                .build()
+        ));
+        when(document.getId()).thenReturn("123");
+        when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
+        
+        //When
+        SolrIndex index = generator.generateIndex(document);
+        
+        //Then
+        assertEquals("Expected isOgl to be true", "IS OGL", index.getLicence());
+    }
+    
+    @Test
     public void checkThatIsNationalArchivesOglTrueIsTransferredToIndex(){
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
