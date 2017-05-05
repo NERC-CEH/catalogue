@@ -15,4 +15,3 @@ define [
   ###
   loadLayers: (route) ->
     @model.set 'metadataIds', route.split('!')
-    console.log "Layers Router #{route}"

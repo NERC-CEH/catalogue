@@ -17,7 +17,7 @@ define [
     @listenTo @model, 'change:visibility', @updateToggle
     @listenTo @model, 'change:opacity', @updateOpacity
     @listenTo @model, 'change:infoVisible', @updateInfoVisibility
-  
+
   toggleLayerInfo: ->
     @model.setInfoVisibility not @model.get 'infoVisible'
 
