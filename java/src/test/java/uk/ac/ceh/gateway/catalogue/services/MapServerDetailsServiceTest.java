@@ -34,6 +34,23 @@ public class MapServerDetailsServiceTest {
     public void init() {
         service = new MapServerDetailsService("https://catalogue.ceh.ac.uk");
     }
+
+    // @Test
+    // public void checkThatNoScalingForByteTif() {
+    //     //Given
+    //     GeminiDocument document = mock(GeminiDocument.class);
+    //     MapDataDefinition definition = mock(MapDataDefinition.class);
+    //     when(document.getMapDataDefinition()).thenReturn(definition);
+
+    //     //When
+    //     service.getScaleBukckets
+
+    // }
+
+    // @Test
+    // public void checkThatHasScalingForNonByteTif() {
+
+    // }
     
     @Test
     public void checkThatGeminiDocumentWithServiceDefinitionIsHostable() {

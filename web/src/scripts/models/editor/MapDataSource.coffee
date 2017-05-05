@@ -7,6 +7,7 @@ define [
   defaults:
     type: 'POLYGON'
     epsgCode: 4326
+    isByte: 'true'
     features:
       style:
         colour: '#000000'
@@ -29,6 +30,7 @@ define [
   setStylingMode: (mode) -> 
     @stylingMode = mode
     @trigger 'change', @, {}
+
 
   validate: (attrs) ->
     errors = []
