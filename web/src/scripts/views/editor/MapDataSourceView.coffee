@@ -61,7 +61,6 @@ define [
     @$("button[stylemode='#{mode}']").addClass('btn-success active')
     @$('.styling-box').hide()
     @$(".styling-box.#{mode}").show()
-#    if mode is 'attributes' and @model.get('type') is 'RASTER' then @$('.byte-box').show() else @$('.byte-box').hide()
     @updateIsByteVisibility mode, @model.get('type')
 
     attrBtn = @$('.addAttribute').removeClass 'disabled'
@@ -69,7 +68,6 @@ define [
     @model.setStylingMode mode
 
   handlerIsByteVisibility: (e) -> @updateIsByteVisibility e.stylingMode, e.attributes.type
-#    if e.stylingMode is 'attributes' and e.attributes.type is 'RASTER' then @$('.byte-box').show() else @$('.byte-box').hide()
 
   ###
   Set the visibility of the isByte selector.  Only show it when the styling is 'attributes' and the type is 'RASTER' 
