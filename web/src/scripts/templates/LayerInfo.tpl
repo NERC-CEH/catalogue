@@ -5,7 +5,7 @@
   </div>
   
   <h2>Online Resource</h2>
-  <a href="<%=onlineResource.attributes.directMap%>"><%=onlineResource.get('name')%></a>
+  <a href="<%=onlineResource.get('url')%>"><%=onlineResource.get('name')%></a>
 
   <h2>Metadata Record</h2>
   <a href="<%=onlineResource.collection.metadataDocument.url()%>">

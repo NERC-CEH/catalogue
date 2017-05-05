@@ -6,9 +6,11 @@
   <#assign viewOnMap="Preview on map">
 </#if>
 
-<#if onlineResources??>
+<#if onlineResources?? >
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources)>
+</#if>
 
+<#if downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || mapViewable || ((resourceType.value)?? && resourceType.value != 'service' &&distributionFormats?? && distributionFormats?has_content) >
   <div class="panel panel-default hidden-print" id="document-distribution">
     <div class="panel-heading"><p class="panel-title">${documentOrderTitle?html}</p></div>
     <div class="panel-body">
