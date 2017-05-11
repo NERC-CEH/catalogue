@@ -15,7 +15,6 @@ define [
       'click .addReprojection': 'addReprojection'
       'click .addAttribute':    'addAttribute'
       'click [styleMode]':      'updateStyleMode'
-      'click [isByte]':         'updateIsByte'
   
   dataTypes:[
     {name: 'Polygon', value: 'POLYGON'}
@@ -30,7 +29,7 @@ define [
 
     @reprojections = @model.getRelatedCollection 'reprojections'
     @attributes = @model.getAttributes()
-    
+
     @createList @reprojections, '.reprojections', @newReprojection
     @createList @attributes, '.attributes', @newAttribute
 
@@ -38,10 +37,12 @@ define [
       el: @$('.features')
       model: @model.getRelated 'features'
 
-    @styleIsByte @model.get('isByte')
     @setStyleMode @model.stylingMode
 
-    @listenTo @model, 'change:type', @handlerIsByteVisibility
+    @listenTo @model, 'change:type', @handlerByteTypeVisibility
+
+    # Set the radio button to the byteType of the model
+    do @updateByteRadioButton
 
   addReprojection: -> @reprojections.add {}
   addAttribute:    -> @attributes.add {}
@@ -61,32 +62,22 @@ define [
     @$("button[stylemode='#{mode}']").addClass('btn-success active')
     @$('.styling-box').hide()
     @$(".styling-box.#{mode}").show()
-    @updateIsByteVisibility mode, @model.get('type')
+    @updateByteTypeVisibility mode, @model.get('type')
 
     attrBtn = @$('.addAttribute').removeClass 'disabled'
     attrBtn.addClass('disabled') if mode is 'features'
     @model.setStylingMode mode
 
-  handlerIsByteVisibility: (e) -> @updateIsByteVisibility e.stylingMode, e.attributes.type
+  handlerByteTypeVisibility: (e) -> @updateByteTypeVisibility e.stylingMode, e.attributes.type
 
   ###
-  Set the visibility of the isByte selector.  Only show it when the styling is 'attributes' and the type is 'RASTER' 
+  Update the bytetype radio button to match the model
   ###
-  updateIsByteVisibility: (stylingMode, type) ->
-    if stylingMode is 'attributes' and type is 'RASTER' then @$('.byte-box').show() else @$('.byte-box').hide()
+  updateByteRadioButton: ->
+    $(@$("input[data-name='bytetype'][value='#{@model.attributes.bytetype}']")[0]).attr('checked', 'checked')
 
   ###
-  Update isByte on the model and style the isByte buttons to match
+  Set the visibility of the byteType selector.  Only show it when the styling is 'attributes' and the type is 'RASTER' 
   ###
-  updateIsByte: (e) -> 
-    isByte = $(e.target).attr 'isByte'
-    @model.set 'isByte', isByte
-    @styleIsByte isByte
-
-  ###
-  Style the isByte buttons accordingly
-  ###
-  styleIsByte: (isByte) -> 
-    @$('button[isByte]').removeClass('btn-success').removeClass 'active'
-    @$("button[isByte='#{isByte}']").addClass('btn-success active')
-    
+  updateByteTypeVisibility: (stylingMode, type) ->
+    if stylingMode.toLowerCase() is 'attributes' and type.toLowerCase() is 'raster' then @$('.byte-box').show() else @$('.byte-box').hide()

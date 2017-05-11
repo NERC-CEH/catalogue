@@ -20,3 +20,4 @@ rspec_screenshots/
 javac-services*
 
 *.*.swp
+/java/targetold/

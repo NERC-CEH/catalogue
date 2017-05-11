@@ -47,12 +47,14 @@
   <div class="col-sm-3 col-lg-3">
     <div class="byte-box">
       <div class="row">
-        <div class="col-sm-4 col-lg-4">
+        <div class="col-sm-3 col-lg-3">
           <label class="control-label">Byte?</label>&nbsp;
         </div>
-        <div class="col-sm-8 col-lg-8">
-          <button type="button" class="btn btn-sm btn-default" isByte="true">Yes</button>
-          <button type="button" class="btn btn-sm btn-default" isByte="false">No</button>
+        <div class="col-sm-5 col-lg-5">
+          <input data-name="bytetype" type="radio" name="bytetype" value="true"> Yes
+        </div>
+        <div class="col-sm-4 col-lg-4">
+          <input data-name="bytetype" type="radio" name="bytetype" value="false"> No
         </div>
       </div>
     </div>
