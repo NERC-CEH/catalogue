@@ -8,7 +8,6 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +33,19 @@ public class MapServerDetailsServiceTest {
     @Before
     public void init() {
         service = new MapServerDetailsService("https://catalogue.ceh.ac.uk");
+    }
+
+    @Test
+    public void checkThatNewDataDefinitionHasFalseByteType() {
+        //Given
+        DataSource ds = new DataSource();
+
+        //When
+        Boolean isDataBtye = ds.getBytetype();
+        
+        //Then
+        assertThat(isDataBtye, is(false));
+                
     }
 
     @Test

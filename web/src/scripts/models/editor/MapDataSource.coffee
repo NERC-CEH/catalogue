@@ -7,7 +7,7 @@ define [
   defaults:
     type: 'POLYGON'
     epsgCode: 4326
-    bytetype: 'true'
+    bytetype: 'false'
     features:
       style:
         colour: '#000000'
