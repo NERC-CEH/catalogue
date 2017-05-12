@@ -27,7 +27,6 @@
           --]
           [#if !((data.bytetype)!false)]
             [#assign hints=mapServerDetails.getScaledBuckets(attr.buckets)!]
-            hints has content: ${hints?has_content?then('y','n')}
             [#if hints?has_content]
               PROCESSING "SCALE=${hints.min?c},${hints.max?c}"
               PROCESSING "SCALE_BUCKETS=${hints.buckets?c}"
