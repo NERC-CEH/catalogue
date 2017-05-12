@@ -14,7 +14,7 @@ define [
     _.extend {}, ObjectInputView.prototype.events,
       'click .addReprojection': 'addReprojection'
       'click .addAttribute':    'addAttribute'
-      'click [styleMode]':      'updateMode'
+      'click [styleMode]':      'updateStyleMode'
   
   dataTypes:[
     {name: 'Polygon', value: 'POLYGON'}
@@ -29,7 +29,7 @@ define [
 
     @reprojections = @model.getRelatedCollection 'reprojections'
     @attributes = @model.getAttributes()
-    
+
     @createList @reprojections, '.reprojections', @newReprojection
     @createList @attributes, '.attributes', @newAttribute
 
@@ -37,7 +37,12 @@ define [
       el: @$('.features')
       model: @model.getRelated 'features'
 
-    @setMode @model.stylingMode
+    @setStyleMode @model.stylingMode
+
+    @listenTo @model, 'change:type', @handlerByteTypeVisibility
+
+    # Set the radio button to the byteType of the model
+    do @updateByteRadioButton
 
   addReprojection: -> @reprojections.add {}
   addAttribute:    -> @attributes.add {}
@@ -49,15 +54,30 @@ define [
       index: i
       ObjectInputView: MapAttributeView
 
-  updateMode: (e) -> @setMode $(e.target).attr 'styleMode'
+  updateStyleMode: (e) -> @setStyleMode $(e.target).attr 'styleMode'
     
-  setMode: (mode)->
-    # Reset the state of all the buttons and update to the correct mode
+  setStyleMode: (mode) ->
+    # Reset the state of all the styling buttons and update to the correct mode
     @$('button[stylemode]').removeClass('btn-success').removeClass 'active'
     @$("button[stylemode='#{mode}']").addClass('btn-success active')
     @$('.styling-box').hide()
     @$(".styling-box.#{mode}").show()
+    @updateByteTypeVisibility mode, @model.get('type')
 
     attrBtn = @$('.addAttribute').removeClass 'disabled'
     attrBtn.addClass('disabled') if mode is 'features'
     @model.setStylingMode mode
+
+  handlerByteTypeVisibility: (e) -> @updateByteTypeVisibility e.stylingMode, e.attributes.type
+
+  ###
+  Update the bytetype radio button to match the model
+  ###
+  updateByteRadioButton: ->
+    $(@$("input[data-name='bytetype'][value='#{@model.attributes.bytetype}']")[0]).attr('checked', 'checked')
+
+  ###
+  Set the visibility of the byteType selector.  Only show it when the styling is 'attributes' and the type is 'RASTER' 
+  ###
+  updateByteTypeVisibility: (stylingMode, type) ->
+    if stylingMode.toLowerCase() is 'attributes' and type.toLowerCase() is 'raster' then @$('.byte-box').show() else @$('.byte-box').hide()

@@ -22,10 +22,15 @@
 
           [More info](http://mapserver.org/input/raster.html#classifying-non-8bit-rasters)
           --]
-          [#assign hints=mapServerDetails.getScaledBuckets(attr.buckets)!]
-          [#if hints?has_content]
-            PROCESSING "SCALE=${hints.min?c},${hints.max?c}"
-            PROCESSING "SCALE_BUCKETS=${hints.buckets?c}"
+          [#--
+          If bytetype is empty then default to false on the assumption that the source geotif is not byte and will require scaling
+          --]
+          [#if !((data.bytetype)!false)]
+            [#assign hints=mapServerDetails.getScaledBuckets(attr.buckets)!]
+            [#if hints?has_content]
+              PROCESSING "SCALE=${hints.min?c},${hints.max?c}"
+              PROCESSING "SCALE_BUCKETS=${hints.buckets?c}"
+            [/#if]
           [/#if]
           [@blocks.buckets "pixel" attr.buckets/] 
         [/#if]

@@ -34,7 +34,20 @@ public class MapServerDetailsServiceTest {
     public void init() {
         service = new MapServerDetailsService("https://catalogue.ceh.ac.uk");
     }
-    
+
+    @Test
+    public void checkThatNewDataDefinitionHasFalseByteType() {
+        //Given
+        DataSource ds = new DataSource();
+
+        //When
+        Boolean isDataBtye = ds.getBytetype();
+        
+        //Then
+        assertThat(isDataBtye, is(false));
+                
+    }
+
     @Test
     public void checkThatGeminiDocumentWithServiceDefinitionIsHostable() {
         //Given
