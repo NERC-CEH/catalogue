@@ -95,6 +95,10 @@ Other available users are:
 - publisher
 - admin
 
+Also, be sure to go to http://foo.ceh.ac.uk:8080/documents rather than http://localhost:8080/documents, which needs an edit to your hosts file:
+
+eg 127.0.0.1       localhost foo.ceh.ac.uk
+
 ## Map Viewer
 
 All requests for maps go through our catalogue api as TMS coordinates (i.e. z, x, y). When a map request comes in, the catalogue api transforms the z, x, y coordinates into a wms GetMap request in the EPSG:3857 projection system. This is the projection system which is used by Google Maps style web mapping applications.
