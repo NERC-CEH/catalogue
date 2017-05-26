@@ -1,0 +1,70 @@
+{
+  "id": "6cfaa265-5b5e-4682-9304-0ce90ba67c4a",
+  "type": "model",
+  "title": "LUCI",
+  "description": "The LUCI (Land Utilisation & Capability Indicator) is a land management decision support framework and an ecosystem services model. LUCI explores the capability of a landscape to provide a variety of ecosystem services, such agricultural production, erosion control, carbon sequestration, flood mitigation, habitat provision etc. compares the services provided by the current utilisation of the landscape to estimates of its potential capability, and uses this information to identify areas where change might be beneficial, and where maintenance of the status quo might be desirable.\r\nLUCI is being jointly developed by Victoria University of Wellington, NZ (lead Bethanna Jackson) and CEH (Bernard Cosby), with more minor contributions from a range of additional international partners. The current version being used by CEH is v0.4. New versions will be included as they are developed. Since August 2014, LUCI is robustly version controlled; with all changes being tracked via a github repository. Major functionality changes.",
+  "primaryPurpose": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum porttitor vitae neque in pharetra. Suspendisse potenti. Maecenas at luctus metus, vitae sodales odio. Vestibulum id felis sodales, consectetur est at, ornare erat. Sed cursus pretium nulla, ac auctor ligula ultrices at. In euismod scelerisque blandit. Integer nec pellentesque sapien, sed tristique leo. Curabitur tempus nec est quis mattis. Suspendisse neque mauris, luctus sed mi quis, ornare fermentum diam. Sed non mattis arcu. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Phasellus libero ante, gravida eu venenatis ultrices, egestas a diam. In hac habitasse platea dictumst. Aliquam erat volutpat. Aenean ac mi enim. Nullam sit amet odio justo. Fusce hendrerit cursus facilisis.\nInteger vel nibh nunc. Pellentesque tincidunt consectetur est at ultricies. Vivamus et lacus a velit facilisis porta nec eget orci. Fusce eu risus eu nisl cursus vestibulum. Phasellus ullamcorper mauris lobortis luctus maximus. Donec justo elit, pharetra non ante at, facilisis efficitur dui. Nulla et gravida enim. Nunc ultricies, arcu et luctus venenatis, quam quam dapibus nibh, eu lobortis metus tellus id diam.\nUt cursus augue egestas tellus aliquet, nec dictum nibh mattis. Nulla ultricies metus eu magna imperdiet pretium vel vitae tortor. Morbi pharetra risus vitae velit volutpat, in tempor tortor bibendum. Suspendisse potenti. Vestibulum maximus porta erat ac mollis. Aliquam semper magna metus, ut blandit sem egestas vel. Pellentesque mollis risus quis sem lacinia auctor. Nunc faucibus lectus nec ipsum semper, at dapibus ex pulvinar. Morbi in est et urna scelerisque tincidunt in nec orci. Nunc urna tortor, placerat ut nulla quis, fermentum sollicitudin tellus. Etiam id luctus orci. Curabitur in commodo lacus. Vestibulum mattis lobortis facilisis. Cras in pulvinar mi. Duis vitae ultrices felis, lobortis euismod elit.",
+  "website": "http://example.com",
+  "seniorResponsibleOfficer": "Jack Cosby",
+  "seniorResponsibleOfficerEmail": "enquiries@ceh.ac.uk",
+  "licenseType": "open",
+  "codeRepositoryUrl": "https://github.com/NERC-CEH",
+  "modelType": "stochastic",
+  "currentModelVersion": "1",
+  "modelCalibration": "calibrated",
+  "spatialDomain": "spatial domain",
+  "spatialResolution": "212",
+  "temporalResolutionMin": "min",
+  "temporalResolutionMax": "max",
+  "language": "C++",
+  "compiler": "gcc",
+  "operatingSystem": "linux",
+  "systemMemory": "50 Mb",
+  "documentation": "http://example.com",
+  "organisations": ["CEH","BGS"],
+  "keyInputVariables": ["input 1", "input 2"],
+  "keyOutputVariables": ["output 1", "output 2"],
+  "keywords": [
+    {"value": "Nitrogen", "uri": "http://example.com/nitrogen"},
+    {"value": "Model"},
+    {"uri": "http://example.com/keyword"}
+  ],
+  "references": [
+    {"doi": "https://doi.org/12123123/1231233424", "nora": "http://nora.nerc.ac.uk/515511/"},
+    {"citation": "citation 2", "nora": "http://nora.nerc.ac.uk/7763882/"},
+    {"doi": "https://doi.org/12123123/1231233424"},
+    {"citation": "Bogdanova, Maria I.; Butler, Adam; Wanless, Sarah; Moe, Børge; Anker-Nilssen, Tycho; Frederiksen, Morten; Boulinier, Thierry; Chivers, Lorraine S.; Christensen-Dalsgaard, Signe; Descamps, Sébastien; Harris, Michael P.; Newell, Mark; Olsen, Bergur; Phillips, Richard A.; Shaw, Deryk; Steen, Harald; Strøm, Hallvard; Thórarinsson, Thorkell L.; Daunt, Francis. 2017 Multi-colony tracking reveals spatio-temporal variation in carry-over effects between breeding success and winter movements in a pelagic seabird. Marine Ecology Progress Series. 10.3354/meps12096", "doi": "http://dx.doi.org/10.3354/meps12096", "nora": "http://nora.nerc.ac.uk/517083/"}
+  ],
+  "releaseDate": "2017-01-23",
+  "developerTesting": {"checked": "yes", "modelVersion": "21", "owner": "Jack Cosby", "note": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin luctus mauris urna, eget feugiat ante hendrerit vitae. Duis ac volutpat velit, vel aliquet lectus. Nulla sollicitudin dolor augue, in consequat augue consectetur nec. Curabitur sed tempor nisl. Vestibulum consectetur mauris sit amet ex dignissim feugiat. Nulla laoreet rutrum quam a efficitur.", "date": "2002-03-09"},
+  "internalPeerReview": {"checked": "no", "modelVersion": "21", "owner": "Jack Cosby", "date": "2012-12-21"},
+  "externalPeerReview": {"checked": "yes"},
+  "internalModelAudit": {"checked": "no"},
+  "externalModelAudit": {"checked": "yes", "modelVersion": "21", "owner": "Jack Cosby", "note": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tristique urna purus. Donec sit amet consectetur lectus.", "date": "2002-03-09"},
+  "qaGuidelinesAndChecklists": {"checked": "yes", "modelVersion": "21"},
+  "governance": {"modelVersion": "21", "owner": "Jack Cosby", "date": "2002-03-09"},
+  "transparency": {"modelVersion": "21", "owner": "Jack Cosby", "note": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec aliquet, est sed condimentum lobortis, purus turpis molestie nibh, sed porta enim orci ac mauris. Fusce a augue non erat tincidunt iaculis. Etiam rutrum urna eget elementum dapibus. Fusce ullamcorper pretium risus, a porttitor purus luctus eget. Vivamus non nisi id dolor convallis dictum. Suspendisse varius magna id sodales tincidunt. Ut sit amet lorem ac ex tempus aliquam eu ut eros. Nulla at ultricies risus, eu efficitur elit. Maecenas rutrum felis odio, ac consectetur elit commodo quis. Curabitur molestie, turpis nec varius sodales, tortor urna volutpat nunc, condimentum volutpat velit purus vel urna.\r\nAenean mi ipsum, cursus aliquam finibus in, venenatis vitae augue. Quisque ornare maximus augue sed tristique. Suspendisse eu orci et ante commodo posuere. Duis porttitor mi at nulla cursus, in sagittis ante blandit. Maecenas leo ante, tincidunt in ante sed, dictum porttitor nunc. Nam placerat mollis semper. Suspendisse et tellus velit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce tincidunt tellus in lacinia dignissim. Quisque vel nibh id velit sollicitudin hendrerit. Quisque aliquam eu sem sed aliquam. Fusce aliquam cursus volutpat. Fusce ligula eros, malesuada sed enim a, volutpat condimentum tortor. Curabitur quis bibendum metus, eu consectetur lorem. Cras in odio odio. Morbi odio tellus, aliquet at pretium vitae, gravida a velit."},
+  "periodicReview": {"checked": "yes", "modelVersion": "21", "owner": "Jack Cosby", "date": "2002-03-09"},
+  "versionHistories": [
+    {
+      "version": "0.0.1",
+      "note": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum porttitor vitae neque in pharetra. Suspendisse potenti. Maecenas at luctus metus, vitae sodales odio. Vestibulum id felis sodales, consectetur est at, ornare erat. Sed cursus pretium nulla, ac auctor ligula ultrices at. In euismod scelerisque blandit. Integer nec pellentesque sapien, sed tristique leo.",
+      "date": "2002-03-09"
+    },
+    {
+      "version": "0.0.2"
+    },
+    {
+      "note": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur et hendrerit lectus, eget tincidunt ipsum. Pellentesque euismod bibendum maximus. Vivamus a vehicula felis. Aenean scelerisque diam sed porta sagittis. Nam tristique dapibus venenatis. Nullam posuere tellus vel libero tincidunt, a tempus sem ultricies. Fusce ac euismod risus. Mauris tincidunt nibh purus, vitae congue orci sollicitudin sed. Praesent blandit elit aliquet turpis commodo posuere. Nam nec erat ligula. Curabitur eget velit odio. Fusce justo nibh, posuere eu pellentesque a, vehicula id quam.\r\nUt tempus vestibulum dictum. Pellentesque ac libero eu nisl interdum molestie sed ut lorem. Nunc in mi augue. Mauris eget leo quam. Mauris euismod, turpis eu accumsan volutpat, velit turpis volutpat mauris, eget bibendum orci turpis posuere nibh."
+    },
+    {
+      "date": "2017-05-26"
+    }
+  ],
+  "projectUsages": [
+    {"date": "2012-12-21"},
+    {"version": "0.0.1"},
+    {"project": "NEC 05791 CWI-WG-GMEP wp10"},
+    {"project": "NEC 05873", "date": "2015-07-05", "version": "0.0.2"}
+  ]
+}

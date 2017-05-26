@@ -92,6 +92,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
@@ -297,6 +298,9 @@ public class ServiceConfig {
         converters.add(new Object2TemplatedMessageConverter(ModelApplication.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(CaseStudy.class,        freemarkerConfiguration()));
         
+        // CEH model catalogue
+        converters.add(new Object2TemplatedMessageConverter(CehModel.class,         freemarkerConfiguration()));
+        
         // Gemini Message Converters
         converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,       freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter(LinkDocument.class,         freemarkerConfiguration()));
@@ -394,7 +398,8 @@ public class ServiceConfig {
                 .register("GEMINI_DOCUMENT", GeminiDocument.class)
                 .register("EF_DOCUMENT", BaseMonitoringType.class)
                 .register("IMP_DOCUMENT", ImpDocument.class)
-                .register("LINK_DOCUMENT", LinkDocument.class);
+                .register("LINK_DOCUMENT", LinkDocument.class)
+                .register("CEH_MODEL", CehModel.class);
     }
     
     @Bean
