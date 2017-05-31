@@ -188,28 +188,32 @@ Replace \n with line breaks
 <#--
 CEH model QA
 -->
-<#macro qa qa>
-  <div>
-    <#if qa.checked?? && qa.checked?has_content>
-      ${qa.checked?cap_first}
-    <#else>
-      Unknown
-    </#if>
-    <#if qa.modelVersion?? && qa.modelVersion?has_content>
-      <span class="key">model version</span> ${qa.modelVersion}
-    </#if>
-    <#if qa.owner?? && qa.owner?has_content>
-      <span class="key">owner</span> ${qa.owner}
-    </#if>
-    <#if qa.date?? && qa.date?has_content>
-      <span class="key">date</span> ${qa.date?date}
-    </#if>
-  </div>
-  <div>
-    <#if qa.note?? && qa.note?has_content>
-      <span class="key">note</span> ${qa.note}
-    </#if>
-  </div>
+<#macro qa qa="">
+  <#if qa?is_string>
+    Unknown
+  <#else>
+    <div>
+      <#if qa.checked?? && qa.checked?has_content>
+        ${qa.checked?cap_first}
+      <#else>
+        Unknown
+      </#if>
+      <#if qa.modelVersion?? && qa.modelVersion?has_content>
+        <span class="key">model version</span> ${qa.modelVersion}
+      </#if>
+      <#if qa.owner?? && qa.owner?has_content>
+        <span class="key">owner</span> ${qa.owner}
+      </#if>
+      <#if qa.date?? && qa.date?has_content>
+        <span class="key">date</span> ${qa.date?date}
+      </#if>
+    </div>
+    <div>
+      <#if qa.note?? && qa.note?has_content>
+        <span class="key">note</span> ${qa.note}
+      </#if>
+    </div>
+  </#if>
 </#macro>
 
 <#--
