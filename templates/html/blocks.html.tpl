@@ -98,37 +98,37 @@ A row of information in the document.
 </#macro>
 
 <#--
-A CEH Model reference
+A repeated row
 -->
-<#macro reference ref>
-  <#if ref.citation?? && ref.citation?has_content>
-    <@basicRow>
-      <@keyContent "Citation" "Publication citation">${ref.citation}</@keyContent>
-    </@basicRow>
-  </#if>
-  <#if ref.doi?? && ref.doi?has_content>
-    <@basicRow>
-      <@keyContent "DOI" "DOI link for the citation"><@bareUrl ref.doi /></@keyContent>
-    </@basicRow>
-  </#if>
-  <#if ref.nora?? && ref.nora?has_content>
-    <@basicRow>
-      <@keyContent "NORA" "NORA link for the citation"><@bareUrl ref.nora /></@keyContent>
-    </@basicRow>
-  </#if>
+<#macro repeatRow>
+  <@basicRow "key-value">
+    <div class="col-sm-12">
+     <#nested>
+    </div>
+  </@basicRow>
 </#macro>
 
 <#--
-A list of CEH Model references
+A CEH Model reference
 -->
-<#macro references references>
-  <#list references as ref>
-    <@basicRow "key-value">
-      <div class="col-sm-12">
-        <@reference ref />
-      </div>
-    </@basicRow>
-  </#list>
+<#macro reference ref>
+  <@repeatRow>
+    <#if ref.citation?? && ref.citation?has_content>
+      <@basicRow>
+        <@keyContent "Citation" "Publication citation">${ref.citation}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if ref.doi?? && ref.doi?has_content>
+      <@basicRow>
+        <@keyContent "DOI" "DOI link for the citation"><@bareUrl ref.doi /></@keyContent>
+      </@basicRow>
+    </#if>
+    <#if ref.nora?? && ref.nora?has_content>
+      <@basicRow>
+        <@keyContent "NORA" "NORA link for the citation"><@bareUrl ref.nora /></@keyContent>
+      </@basicRow>
+    </#if>
+  </@repeatRow>
 </#macro>
 
 <#-- 
@@ -188,96 +188,70 @@ Replace \n with line breaks
 <#--
 CEH model QA
 -->
-<#macro qa qa="">
-  <#if qa?is_string>
-    Unknown
-  <#else>
-    <div>
-      <#if qa.checked?? && qa.checked?has_content>
-        ${qa.checked?cap_first}
-      <#else>
-        Unknown
-      </#if>
-      <#if qa.modelVersion?? && qa.modelVersion?has_content>
-        <span class="key">model version</span> ${qa.modelVersion}
-      </#if>
-      <#if qa.owner?? && qa.owner?has_content>
-        <span class="key">owner</span> ${qa.owner}
-      </#if>
-      <#if qa.date?? && qa.date?has_content>
-        <span class="key">date</span> ${qa.date?date}
-      </#if>
-    </div>
-    <div>
-      <#if qa.note?? && qa.note?has_content>
-        <span class="key">note</span> ${qa.note}
-      </#if>
-    </div>
-  </#if>
+<#macro qa qa={"checked": "unknown"}>
+  <div>
+    <#if qa.checked?? && qa.checked?has_content>
+      ${qa.checked?cap_first}
+    </#if>
+    <#if qa.modelVersion?? && qa.modelVersion?has_content>
+      <span class="key">model version</span> ${qa.modelVersion}
+    </#if>
+    <#if qa.owner?? && qa.owner?has_content>
+      <span class="key">owner</span> ${qa.owner}
+    </#if>
+    <#if qa.date?? && qa.date?has_content>
+      <span class="key">date</span> ${qa.date?date}
+    </#if>
+  </div>
+  <div>
+    <#if qa.note?? && qa.note?has_content>
+      <span class="key">note</span> ${qa.note}
+    </#if>
+  </div>
 </#macro>
 
 <#--
 CEH model version history
 -->
 <#macro versionHistory history>
-  <#if history.version?? && history.version?has_content>
-    <@basicRow>
-      <@keyContent "Version" "Model version">${history.version}</@keyContent>
-    </@basicRow>
-  </#if>
-  <#if history.date?? && history.date?has_content>
-    <@basicRow>
-      <@keyContent "Date" "Version date">${history.date?date}</@keyContent>
-    </@basicRow>
-  </#if>
-  <#if history.note?? && history.note?has_content>
-    <@basicRow>
-      <@keyContent "Note" "">${history.note}</@keyContent>
-    </@basicRow>
-  </#if>
-</#macro>
-
-<#--
-A list of CEH model version history
--->
-<#macro versionHistories histories>
-  <#list histories as history>
-    <@basicRow "key-value">
-      <div class="col-sm-12">
-        <@versionHistory history /> 
-      </div>   
-    </@basicRow>
-  </#list>
+  <@repeatRow>
+    <#if history.version?? && history.version?has_content>
+      <@basicRow>
+        <@keyContent "Version" "Model version">${history.version}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if history.date?? && history.date?has_content>
+      <@basicRow>
+        <@keyContent "Date" "Version date">${history.date?date}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if history.note?? && history.note?has_content>
+      <@basicRow>
+        <@keyContent "Note" "">${history.note}</@keyContent>
+      </@basicRow>
+    </#if>
+  </@repeatRow>
 </#macro>
 
 <#--
 CEH model project usage
 -->
 <#macro projectUsage projectUsage>
-  <#if projectUsage.project?? && projectUsage.project?has_content>
-    <@basicRow>
-      <@keyContent "Project" "Project name and number">${projectUsage.project}</@keyContent>
-    </@basicRow>
-  </#if>
-  <#if projectUsage.version?? && projectUsage.version?has_content>
-    <@basicRow>
-      <@keyContent "Version" "Model version">${projectUsage.version}</@keyContent>
-    </@basicRow>
-  </#if>
-  <#if projectUsage.date?? && projectUsage.date?has_content>
-    <@basicRow>
-      <@keyContent "Date" "Date of usage">${projectUsage.date?date}</@keyContent>
-    </@basicRow>
-  </#if>
-</#macro>
-
-<#--
-A list of CEH model project usage
--->
-<#macro projectUsages projectUsages>
-  <#list projectUsages as usage>
-    <@basicRow "key-value">
-      <@projectUsage usage />    
-    </@basicRow>
-  </#list>
+  <@repeatRow>
+    <#if projectUsage.project?? && projectUsage.project?has_content>
+      <@basicRow>
+        <@keyContent "Project" "Project name and number">${projectUsage.project}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if projectUsage.version?? && projectUsage.version?has_content>
+      <@basicRow>
+        <@keyContent "Version" "Model version">${projectUsage.version}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if projectUsage.date?? && projectUsage.date?has_content>
+      <@basicRow>
+        <@keyContent "Date" "Date of usage">${projectUsage.date?date}</@keyContent>
+      </@basicRow>
+    </#if> 
+  </@repeatRow>
 </#macro>

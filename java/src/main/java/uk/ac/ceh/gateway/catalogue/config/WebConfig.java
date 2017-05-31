@@ -110,6 +110,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(RDF_XML_SHORT, MediaType.parseMediaType(RDF_XML_VALUE))
                         .put(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
                         .put(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE))
+                        .put(CEH_MODEL_SHORT, MediaType.parseMediaType(CEH_MODEL_JSON_VALUE))
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo

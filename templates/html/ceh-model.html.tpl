@@ -40,7 +40,9 @@
     </#if>
     <#if references?? && references?has_content>
       <@b.sectionHeading>References</@b.sectionHeading>
-      <@b.references references />
+      <#list references as ref>
+        <@b.reference ref />
+      </#list>
     </#if>
     <#if keyInputVariables?? || keyOutputVariables?? || description?? || modelType?? || currentModelVersion?? || modelCalibration??>
       <@b.sectionHeading>Model Description</@b.sectionHeading>
@@ -117,11 +119,19 @@
     <@b.key "Periodic review" "Model is reviewed at intervals to ensure it remains fit for the intended purpose, if used on an ongoing basis"><@b.qa periodicReview /></@b.key>
     <#if versionHistories?? && versionHistories?has_content>
       <@b.sectionHeading>Version control change notes</@b.sectionHeading>
-      <@b.versionHistories versionHistories />
+      <#list versionHistories as history>
+        <@b.versionHistory history /> 
+      </#list>
     </#if>
     <#if projectUsages?? && projectUsages?has_content>
       <@b.sectionHeading>Project usage</@b.sectionHeading>
-      <@b.projectUsages projectUsages />
+      <#list projectUsages as usage>
+        <@b.projectUsage usage />    
+      </#list>
+    </#if>
+    <#if metadataDate?? && metadataDate?has_content>
+      <@b.sectionHeading>Metadata</@b.sectionHeading>
+      <@b.key "Metadata Date" "Date metadata last updated">${metadataDateTime}</@b.key>
     </#if>
   </@b.metadataContainer>
 </#escape></@skeleton.master>
