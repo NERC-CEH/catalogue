@@ -22,10 +22,14 @@ define [
   'cs!views/ModelEditorView'
   'cs!views/LinkEditorView'
   'cs!models/LinkEditorMetadata'
+  'cs!views/CehModelEditorView'
   'bootstrap'
-], (_, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
+], (
+  _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
-    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata) ->
+    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata,
+    CehModelEditorView
+) ->
 
   ###
   This is the initalizer method for the entire requirejs project. Here we can
@@ -84,6 +88,10 @@ define [
         View: ModelEditorView
         Model: EditorMetadata
         mediaType: 'application/model+json'
+      CEH_MODEL:
+        View: CehModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.ceh.model+json'
       LINK_DOCUMENT:
         View: LinkEditorView
         Model: LinkEditorMetadata

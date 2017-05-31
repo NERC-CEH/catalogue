@@ -182,7 +182,7 @@ A list of Keywords
 Replace \n with line breaks
 -->
 <#macro linebreaks content>
-    ${content?replace("\n", "<br><br>")}
+    ${content?replace("\n", "<br>")}
 </#macro>
 
 <#--
@@ -254,4 +254,21 @@ CEH model project usage
       </@basicRow>
     </#if> 
   </@repeatRow>
+</#macro>
+
+<#--
+Admin functions
+-->
+<#macro admin>
+  <#if permission.userCanEdit(id)>
+    <@basicRow "hidden-print pull-right">
+      <a href="#" class="edit-control" data-document-type="${metadata.documentType}">Edit</a>
+      |
+      <a href="/documents/${id}/permission">Amend permissions</a>
+      |
+      <a href="/documents/${id}/catalogue">Move catalogues</a>
+      |
+      <a href="/documents/${id}/publication">Publication status</a>
+    </@basicRow>
+  </#if>
 </#macro>

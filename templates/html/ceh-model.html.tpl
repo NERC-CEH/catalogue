@@ -3,6 +3,7 @@
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
   <@b.metadataContainer "ceh-model">
+    <@b.admin />
     <#if title?? || primaryPurpose?? || website?? || seniorResponsibleOfficer?? || organisations?? || keywords?? || licenseType??>
       <@b.sectionHeading>Basic Info</@b.sectionHeading>
       <#if title?? && title?has_content>
