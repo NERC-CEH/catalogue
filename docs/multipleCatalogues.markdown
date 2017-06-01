@@ -8,6 +8,8 @@ Add a new catalogue to [ServiceConfig](java/src/main/java/uk/ac/ceh/gateway/cata
 - *title* title of catalogue
 - *url* url of project page, will be used in the header as a link
 - *facetKey* names of search facets to use in the catalogue search page. A facetKey must match a field name in the [Solr schema](solr/config/documents/conf/schema.xml)
+- *documnetType* names of document types to use in the catalogue
+- *fileUpload **true** if file upload allowed 
 
 ## Search facets
 There are many fields already indexed in Solr that can be used as search facets.
@@ -59,3 +61,7 @@ Where *{id}* is the catalogue id
 The catalogue can have it's own style. A Less file should import the base [ceh style](web/src/less/style-ceh.less). The file should be named style-{id}.less where {id} is the catalogue id.
 
 Modify the [Gruntfile](web/Gruntfile.coffee) adding the catalogue to the less and cssmin targets.
+
+## Document Type
+
+Existing document types can be used in the catalogue or a new document type developed, [instructions here](newDocumentType.markdown).

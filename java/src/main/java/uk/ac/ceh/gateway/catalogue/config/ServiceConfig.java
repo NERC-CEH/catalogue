@@ -81,6 +81,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
@@ -162,6 +163,31 @@ public class ServiceConfig {
     public CatalogueService catalogueService() {
         String defaultCatalogueKey = "eidc";
         
+        DocumentType gemini = DocumentType.builder()
+            .title("Data Resource")
+            .type("GEMINI_DOCUMENT")
+            .build();
+        
+        DocumentType ef = DocumentType.builder()
+            .title("Monitoring")
+            .type("EF_DOCUMENT")
+            .build();
+        
+        DocumentType imp = DocumentType.builder()
+            .title("Model")
+            .type("IMP_DOCUMENT")
+            .build();
+        
+        DocumentType cehModel = DocumentType.builder()
+            .title("Model")
+            .type("CEH_MODEL")
+            .build();
+        
+        DocumentType link = DocumentType.builder()
+            .title("Link")
+            .type("LINK_DOCUMENT")
+            .build();
+        
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
             
@@ -170,6 +196,7 @@ public class ServiceConfig {
                 .title("Open Soils Data Platform")
                 .url("http://www.ceh.ac.uk")
                 .facetKey("resourceType")
+                .fileUpload(false)
                 .build(),
             
             Catalogue.builder()
@@ -177,6 +204,8 @@ public class ServiceConfig {
                 .title("Modelling")
                 .url("http://www.ceh.ac.uk")
                 .facetKey("resourceType")
+                .documentType(cehModel)
+                .fileUpload(false)
                 .build(),
             
             Catalogue.builder()
@@ -184,6 +213,9 @@ public class ServiceConfig {
                 .title("Natural Capital")
                 .url("http://www.ceh.ac.uk")
                 .facetKey("resourceType")
+                .documentType(gemini)
+                .documentType(link)
+                .fileUpload(false)
                 .build(),
 
             Catalogue.builder()
@@ -191,6 +223,10 @@ public class ServiceConfig {
                 .title("International Nitrogen Management System")
                 .url("http://www.ceh.ac.uk")
                 .facetKey("resourceType")
+                .documentType(gemini)
+                .documentType(imp)
+                .documentType(link)
+                .fileUpload(true)
                 .build(),
             
             Catalogue.builder()
@@ -198,6 +234,9 @@ public class ServiceConfig {
                 .title("EDgE")
                 .url("https://edge.climate.copernicus.eu")
                 .facetKey("resourceType")
+                .documentType(gemini)
+                .documentType(link)
+                .fileUpload(true)
                 .build(),
             
             Catalogue.builder()
@@ -207,6 +246,7 @@ public class ServiceConfig {
                 .facetKey("topic")
                 .facetKey("resourceType")
                 .facetKey("licence")
+                .fileUpload(false)
                 .build(),
         
             Catalogue.builder()
@@ -216,6 +256,8 @@ public class ServiceConfig {
                 .facetKey("topic")
                 .facetKey("resourceType")
                 .facetKey("licence")
+                .documentType(gemini)
+                .fileUpload(false)
                 .build(),
         
             Catalogue.builder()
@@ -228,6 +270,10 @@ public class ServiceConfig {
                 .facetKey("impScale")
                 .facetKey("impTopic")
                 .facetKey("impWaterPollutant")
+                .documentType(gemini)
+                .documentType(imp)
+                .documentType(link)
+                .fileUpload(true)
                 .build(),
         
             Catalogue.builder()
@@ -236,6 +282,9 @@ public class ServiceConfig {
                 .url("http://www.ceh.ac.uk/ASSIST")
                 .facetKey("resourceType")
                 .facetKey("licence")
+                .documentType(gemini)
+                .documentType(link)
+                .fileUpload(false)
                 .build(),
             
             Catalogue.builder()
@@ -243,6 +292,8 @@ public class ServiceConfig {
                 .title("CEH In-licensed Datasets")
                 .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
                 .facetKey("resourceType")
+                .documentType(gemini)
+                .fileUpload(false)
                 .build()
         );
     }

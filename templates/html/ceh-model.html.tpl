@@ -67,7 +67,7 @@
         <@b.key "Current model version" "Most recent release version">
           ${currentModelVersion}
           <#if releaseDate?? && releaseDate?has_content>
-          (${releaseDate?date})
+          (${releaseDate})
           </#if>
         </@b.key>
       </#if>

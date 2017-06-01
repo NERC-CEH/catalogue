@@ -7,6 +7,10 @@ define [
   'cs!views/editor/KeywordView'
   'cs!views/editor/SelectView'
   'cs!views/editor/ReferenceView'
+  'cs!views/editor/SingleObjectView'
+  'cs!views/editor/QaView'
+  'cs!views/editor/VersionHistoryView'
+  'cs!views/editor/ProjectUsageView'
 ], (
   EditorView,
   InputView,
@@ -16,6 +20,10 @@ define [
   KeywordView,
   SelectView,
   ReferenceView
+  SingleObjectView
+  QaView
+  VersionHistoryView
+  ProjectUsageView
 ) -> EditorView.extend
 
   initialize: ->
@@ -64,8 +72,6 @@ define [
           helpText: """
                     <p>Email address of the Senior Responsible Officer e.g. someone@ceh.ac.uk</p>
                     """
-
-        
 
         new ParentView
           model: @model
@@ -266,16 +272,113 @@ define [
       label: 'QA Info'
       title: 'QA Info'
       views: [
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'developerTesting'
+          label: 'Developer testing'
+          ObjectInputView: QaView
+          helpText: """
+                    <p>Use of a range of developer tools including parallel build and analytical review or sense check</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'internalPeerReview'
+          label: 'Internal peer review'
+          ObjectInputView: QaView
+          helpText: """
+                    <p>Obtaining a critical evaluation from a third party independent of the development of the model but from within the same organisation</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'externalPeerReview'
+          label: 'External peer review'
+          ObjectInputView: QaView
+          helpText: """
+                    <p>Formal or informal engagement of a third party to conduct critical evaluation from outside the organisation in which the model is being developed</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'internalModelAudit'
+          label: 'Internal model audit'
+          ObjectInputView: QaView
+          helpText: """
+                    <p>Formal audit of a model within the organisation, perhaps involving use of internal audit functions</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'externalModelAudit'
+          label: 'External model audit'
+          ObjectInputView: QaView
+          helpText: """
+                    <p>Formal engagement of external professional to conduct a critical evaluation of the model, perhaps involving audit professionals</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'qaGuidelinesAndChecklists'
+          label: 'Quality assurance guidelines & checklists'
+          ObjectInputView: QaView
+          helpText: """
+                    <p>Model development refers to department’s guidance or other documented QA processes (e.g. third party publications)</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'governance'
+          label: 'Governance'
+          ObjectInputView: QaView
+          helpText: """
+                    <p>At least one of planning, design and/or sign-off of model for use is referred to a more senior person.  There is a clear line of accountability for the model</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'transparency'
+          label: 'Transparency'
+          ObjectInputView: QaView
+          helpText: """
+                    <p>Model is placed in the wider domain for scrutiny, and/or results are published</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'periodicReview'
+          label: 'Periodic review'
+          ObjectInputView: QaView
+          helpText: """
+                    <p>Model is reviewed at intervals to ensure it remains fit for the intended purpose, if used on an ongoing basis</p>
+                    """
       ]
     ,
       label: 'Version Control History'
       title: 'Version Control History'
       views: [
+        new ParentView
+          model: @model
+          modelAttribute: 'versionHistories'
+          label: 'Version control change notes'
+          ObjectInputView: VersionHistoryView
+          multiline: true
+          helpText: """
+                    <p>Use a unique identifier for different versions of a model</p>
+                    """
       ]
     ,
       label: 'Project Usage'
       title: 'Project Usage'
       views: [
+        new ParentView
+          model: @model
+          modelAttribute: 'projectUsages'
+          label: 'Project usage'
+          ObjectInputView: ProjectUsageView
+          helpText: """
+                    <p>Use of model in projects</p>
+                    """
       ]
     ]
 

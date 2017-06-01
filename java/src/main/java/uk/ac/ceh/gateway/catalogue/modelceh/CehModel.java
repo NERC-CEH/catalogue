@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.modelceh;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.http.MediaType;
@@ -36,7 +37,8 @@ public class CehModel extends AbstractMetadataDocument {
         compiler,
         operatingSystem,
         systemMemory,
-        documentation;
+        documentation,
+        releaseDate;
     
     private List<String>
         organisations,
@@ -46,8 +48,6 @@ public class CehModel extends AbstractMetadataDocument {
     private List<Keyword> keywords;
     
     private List<Reference> references;
-    
-    private Date releaseDate;
     
     private QualityAssurance
         developerTesting,
@@ -67,12 +67,16 @@ public class CehModel extends AbstractMetadataDocument {
     @Override
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return keywords;
     }
 
     @Override
     public MetadataDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        keywords = Optional.ofNullable(keywords)
+            .orElse(new ArrayList<>());
+        
+        keywords.addAll(additionalKeywords);
+        return this;
     }
     
     @Data
@@ -86,26 +90,26 @@ public class CehModel extends AbstractMetadataDocument {
     @Data
     public static class QualityAssurance {
         private String
-            checked,
+            done,
             modelVersion,
             owner,
-            note;
-        private Date date;
+            note,
+            date;
     }
     
     @Data
     public static class VersionHistory {
         private String
             version,
-            note;
-        private Date date;
+            note,
+            date;
     }
     
     @Data
     public static class ProjectUsage {
         private String
             project,
-            version;
-        private Date date;
+            version,
+            date;
     }
 }

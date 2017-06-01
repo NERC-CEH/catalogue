@@ -188,10 +188,10 @@ Replace \n with line breaks
 <#--
 CEH model QA
 -->
-<#macro qa qa={"checked": "unknown"}>
+<#macro qa qa={"done": "unknown"}>
   <div>
-    <#if qa.checked?? && qa.checked?has_content>
-      ${qa.checked?cap_first}
+    <#if qa.done?? && qa.done?has_content>
+      <span class="key">done</span> ${qa.done?cap_first}
     </#if>
     <#if qa.modelVersion?? && qa.modelVersion?has_content>
       <span class="key">model version</span> ${qa.modelVersion}
@@ -200,7 +200,7 @@ CEH model QA
       <span class="key">owner</span> ${qa.owner}
     </#if>
     <#if qa.date?? && qa.date?has_content>
-      <span class="key">date</span> ${qa.date?date}
+      <span class="key">date</span> ${qa.date}
     </#if>
   </div>
   <div>
@@ -222,7 +222,7 @@ CEH model version history
     </#if>
     <#if history.date?? && history.date?has_content>
       <@basicRow>
-        <@keyContent "Date" "Version date">${history.date?date}</@keyContent>
+        <@keyContent "Date" "Version date">${history.date}</@keyContent>
       </@basicRow>
     </#if>
     <#if history.note?? && history.note?has_content>
@@ -250,7 +250,7 @@ CEH model project usage
     </#if>
     <#if projectUsage.date?? && projectUsage.date?has_content>
       <@basicRow>
-        <@keyContent "Date" "Date of usage">${projectUsage.date?date}</@keyContent>
+        <@keyContent "Date" "Date of usage">${projectUsage.date}</@keyContent>
       </@basicRow>
     </#if> 
   </@repeatRow>
@@ -266,7 +266,7 @@ Admin functions
       |
       <a href="/documents/${id}/permission">Amend permissions</a>
       |
-      <a href="/documents/${id}/catalogue">Move catalogues</a>
+      <a href="/documents/${id}/catalogue" class="catalogue-control">Move catalogues</a>
       |
       <a href="/documents/${id}/publication">Publication status</a>
     </@basicRow>

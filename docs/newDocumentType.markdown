@@ -40,8 +40,7 @@
   * configure a new editor extending EditorView
 
 ### Create Dropdown
-* Main.coffee - add document-type to initEditor LOOKUP (needs to match ServiceConfig.java metadataRepresentationService() and skeleton.html.tpl dropdown)
-* skeleton.html.tpl - add document-type to create dropdown
+* Main.coffee - add document-type to initEditor LOOKUP (needs to match ServiceConfig.java metadataRepresentationService() and catalogueService())
 
 ## codelist.properties
 
