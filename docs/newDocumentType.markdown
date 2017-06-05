@@ -14,7 +14,7 @@
 
 * register new media type string, "application/{documentType}+json"
 * register new short name, "{documentType}"
-* add mediaType to configureContentNegotiation()
+* add mediaType to configureContentNegotiation() (does not seem to be required for json content?)
 
 ## ServiceConfig
 
@@ -35,7 +35,12 @@
 
 ## Editor
 
-* configure an editor extending EditorView
+### New editor
+
+  * configure a new editor extending EditorView
+
+### Create Dropdown
+* Main.coffee - add document-type to initEditor LOOKUP (needs to match ServiceConfig.java metadataRepresentationService() and catalogueService())
 
 ## codelist.properties
 

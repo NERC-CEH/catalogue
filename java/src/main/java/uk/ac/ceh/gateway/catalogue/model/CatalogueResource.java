@@ -4,13 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
 import lombok.Value;
-import org.springframework.http.MediaType;
-import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
-import uk.ac.ceh.gateway.catalogue.converters.Template;
 
-@ConvertUsing({
-    @Template(called="html/catalogue.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
-})
 @Value
 public class CatalogueResource {
     private final String id, value;

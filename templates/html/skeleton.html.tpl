@@ -2,7 +2,7 @@
 <#setting date_format = 'yyyy-MM-dd'>
 
 <#macro master title catalogue="" rdf="" searching=false><#compress><!DOCTYPE html>
-<html>
+<html <#if catalogue?has_content>data-catalogue=${catalogue.id}</#if>>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -49,12 +49,13 @@
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu" aria-labelledby="createMenu">
-                    <li><a class="edit-control" data-document-type="GEMINI_DOCUMENT" href="#">Data Resource</a></li>
-                    <li><a class="edit-control" data-document-type="EF_DOCUMENT" href="#">Monitoring</a></li>
-					          <li><a class="edit-control" data-document-type="IMP_DOCUMENT" href="#">Model</a></li>
-                    <li><a class="edit-control" data-document-type="LINK_DOCUMENT" href="#">Link</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a href="/documents/upload">File Upload</a></li>
+                    <#list catalogue.documentTypes as docType>
+                      <li><a class="edit-control" data-document-type="${docType.type}" href="#">${docType.title}</a></li>
+                    </#list>
+                    <#if catalogue.fileUpload>
+                      <li role="separator" class="divider"></li>
+                      <li><a href="/documents/upload">File Upload</a></li>
+                    </#if>
                   </ul>
                 </div>
               </li>

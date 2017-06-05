@@ -23,6 +23,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.CEH_MODEL_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.LINKED_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MODEL_JSON_VALUE;
@@ -34,6 +35,7 @@ import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
@@ -150,6 +152,39 @@ public class DocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody GeminiDocument document
+    ) throws DocumentRepositoryException  {      
+        return saveMetadataDocument(
+            user,
+            file,
+            document
+        );
+    }
+    
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+                     method = RequestMethod.POST,
+                     consumes = CEH_MODEL_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newCehModelDocument(
+            @ActiveUser CatalogueUser user,
+            @RequestBody CehModel document,
+            @RequestParam("catalogue") String catalogue
+    ) throws DocumentRepositoryException  {
+        return saveNewMetadataDocument(
+            user,
+            document,
+            catalogue,
+            "new CEH Model document"
+        );
+    }
+    
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+                    method = RequestMethod.PUT,
+                    consumes = CEH_MODEL_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateCehModelDocument(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody CehModel document
     ) throws DocumentRepositoryException  {      
         return saveMetadataDocument(
             user,

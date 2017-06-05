@@ -6,6 +6,7 @@ This is the CEH metadata catalogue project. It is built using Docker.
 
 The Project is built up of a few different parts:
 
+- **/docs**       - Documentation
 - **/web**        - Location of the web component of the project, this is mainly `coffeescript` and `less` style sheets
 - **/java**       - Standard `maven` project which powers the server side of the catalogue
 - **/templates**  - `Freemarker` templates which are used by the `java` application for generating the different metadata views
@@ -23,9 +24,7 @@ The catalogue requires a few system libraries to be installed in order to aid de
 - Docker
 - Make
 
-Having installed these you can then build the catalogue code base. Re-Run this command any time you want to make changes to java code or a docker configuration.
-
-    make
+Having installed these you can then build the catalogue code base by running `make`. 
 
 To develop against the code base, you can run `make develop`. This will construct an environment which compiles LESS stylesheets and responds to changes to the *templates*.
 
@@ -38,26 +37,6 @@ To develop against the code base, you can run `make develop`. This will construc
 
 The project contains an `rspec` suite of selenium tests. These can be executed using the `make selenium` command. This will create the browsers required for testing in docker containers and run through the test suite.
 
-## Getting started (With Vagrant)
-
-If you don't have docker installed natively, you can use the provided Vagrant box to get the project going. The vagrant box will create a docker environment so that you can execute the standard `make` commands.
-
-To get the project running. Install :
-
-* vagrant
-* vagrant_vmware plugin
-
-Then in a bash window run. This will provision a fresh vm with Docker and perform a `make build`
-
-    vagrant up
-
-To execute the different `make` commands you will need to ssh on to the vagrant machine.
-
-    vagrant ssh
-    # Now inside the vagrant machine
-    cd /vagrant
-    make develop
-
 ## Multiple Catalogues
 
 Multiple catalogues are supported by this software.
@@ -67,8 +46,9 @@ A catalogue has it's own:
 - style
 - editor and publisher groups
 - metadata records
+- document types
 
-New catalogues can be [added](docs/multipleCatalogues.markdown).
+New catalogues can be added, [instructions here](docs/multipleCatalogues.markdown).
 
 ### Catalogue Content
 

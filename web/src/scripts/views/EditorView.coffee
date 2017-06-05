@@ -1,8 +1,9 @@
 define [
   'underscore'
+  'jquery'
   'backbone'
   'tpl!templates/Editor.tpl'
-], (_, Backbone, template) -> Backbone.View.extend
+], (_, $, Backbone, template) -> Backbone.View.extend
 
   events:
     'click #editorDelete': 'attemptDelete'
@@ -17,6 +18,7 @@ define [
   initialize: ->
     @currentStep = 1
     @saveRequired = false
+    @catalogue = $('html').data('catalogue')
 
     @listenTo @model, 'error', (model, response) ->
       @$('#editorAjax').toggleClass 'visible'
@@ -57,7 +59,7 @@ define [
       success: =>
         _.invoke @sections, 'remove'
         do @remove
-        Backbone.history.location.replace '/documents'
+        Backbone.history.location.replace "/#{@catalogue}/documents"
 
   save: ->
     do @model.save
@@ -73,8 +75,7 @@ define [
     _.invoke @sections, 'remove'
     do @remove
 
-    catalogue = Backbone.history.location.pathname.split('/')[1]
-    if Backbone.history.location.pathname == "/#{catalogue}/documents"
+    if Backbone.history.location.pathname == "/#{@catalogue}/documents" and not @model.isNew()
       Backbone.history.location.replace "/documents/#{@model.get 'id'}"
     else
       do Backbone.history.location.reload

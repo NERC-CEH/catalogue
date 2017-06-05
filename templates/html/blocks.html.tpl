@@ -45,3 +45,230 @@ Create a box of links
     </div>
   </#list>
 </#macro>
+
+<#--
+The basic wrapper container of a metadata document
+-->
+<#macro metadataContainer classes>
+  <div id="metadata" class="container ${classes}">
+    <#nested>
+  </div>
+</#macro>
+
+<#-- 
+Metadata section heading
+-->
+<#macro sectionHeading>
+   <h1 class="section-heading"><#nested></h1>
+</#macro>
+
+<#-- 
+Row of a metadata document
+-->
+<#macro basicRow classes="">
+  <div class="row ${classes}">
+    <#nested>
+  </div>
+</#macro>
+
+<#-- 
+The basic structure of a metadata item that has a key (title) and content.
+A row of information in the document.
+-->
+<#macro key key description>
+  <@basicRow "key-value">
+    <@keyContent key description>
+      <#nested>
+    </@keyContent>
+  </@basicRow>
+</#macro>
+
+<#macro keyContent key description>
+  <div class="col-sm-3 key">
+    <div class="key-title">
+      ${key}
+    </div>
+    <div class="key-description">
+      ${description}
+    </div>
+  </div>
+  <div class="col-sm-9 value">
+    <#nested>
+  </div>
+</#macro>
+
+<#--
+A repeated row
+-->
+<#macro repeatRow>
+  <@basicRow "key-value">
+    <div class="col-sm-12">
+     <#nested>
+    </div>
+  </@basicRow>
+</#macro>
+
+<#--
+A CEH Model reference
+-->
+<#macro reference ref>
+  <@repeatRow>
+    <#if ref.citation?? && ref.citation?has_content>
+      <@basicRow>
+        <@keyContent "Citation" "Publication citation">${ref.citation}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if ref.doi?? && ref.doi?has_content>
+      <@basicRow>
+        <@keyContent "DOI" "DOI link for the citation"><@bareUrl ref.doi /></@keyContent>
+      </@basicRow>
+    </#if>
+    <#if ref.nora?? && ref.nora?has_content>
+      <@basicRow>
+        <@keyContent "NORA" "NORA link for the citation"><@bareUrl ref.nora /></@keyContent>
+      </@basicRow>
+    </#if>
+  </@repeatRow>
+</#macro>
+
+<#-- 
+A url that show repeats the url as the link text
+-->
+<#macro bareUrl value>
+  <a href="${value}">${value}</a>
+</#macro>
+
+<#-- 
+A list of strings
+-->
+<#macro bareList values>
+  <#list values>
+    <ul class="list-unstyled">
+      <#items as value>
+        <li>${value}</li>
+      </#items>
+    </ul>
+  </#list>
+</#macro>
+
+<#-- 
+A list of Keywords
+-->
+<#macro keywords keywords>  
+  <#list keywords>
+    <ul class="list-unstyled">
+      <#items as keyword>
+        <li>
+          <#if keyword.uri?? && keyword.uri?has_content>
+            <a href="${keyword.uri}">
+              <#if keyword.value?? && keyword.value?has_content>
+                ${keyword.value}
+              <#else>
+                  ${keyword.uri}
+              </#if>
+            </a>
+          <#elseif keyword.value?? && keyword.value?has_content>
+            ${keyword.value}
+          <#else>
+            <span class="text-muted">missing</span>
+          </#if>
+        </li>
+      </#items>
+    </ul>
+  </#list>
+</#macro>
+
+<#--
+Replace \n with line breaks
+-->
+<#macro linebreaks content>
+    ${content?replace("\n", "<br>")}
+</#macro>
+
+<#--
+CEH model QA
+-->
+<#macro qa qa={"done": "unknown"}>
+  <div>
+    <#if qa.done?? && qa.done?has_content>
+      <span class="key">done</span> ${qa.done?cap_first}
+    </#if>
+    <#if qa.modelVersion?? && qa.modelVersion?has_content>
+      <span class="key">model version</span> ${qa.modelVersion}
+    </#if>
+    <#if qa.owner?? && qa.owner?has_content>
+      <span class="key">owner</span> ${qa.owner}
+    </#if>
+    <#if qa.date?? && qa.date?has_content>
+      <span class="key">date</span> ${qa.date}
+    </#if>
+  </div>
+  <div>
+    <#if qa.note?? && qa.note?has_content>
+      <span class="key">note</span> ${qa.note}
+    </#if>
+  </div>
+</#macro>
+
+<#--
+CEH model version history
+-->
+<#macro versionHistory history>
+  <@repeatRow>
+    <#if history.version?? && history.version?has_content>
+      <@basicRow>
+        <@keyContent "Version" "Model version">${history.version}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if history.date?? && history.date?has_content>
+      <@basicRow>
+        <@keyContent "Date" "Version date">${history.date}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if history.note?? && history.note?has_content>
+      <@basicRow>
+        <@keyContent "Note" "">${history.note}</@keyContent>
+      </@basicRow>
+    </#if>
+  </@repeatRow>
+</#macro>
+
+<#--
+CEH model project usage
+-->
+<#macro projectUsage projectUsage>
+  <@repeatRow>
+    <#if projectUsage.project?? && projectUsage.project?has_content>
+      <@basicRow>
+        <@keyContent "Project" "Project name and number">${projectUsage.project}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if projectUsage.version?? && projectUsage.version?has_content>
+      <@basicRow>
+        <@keyContent "Version" "Model version">${projectUsage.version}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if projectUsage.date?? && projectUsage.date?has_content>
+      <@basicRow>
+        <@keyContent "Date" "Date of usage">${projectUsage.date}</@keyContent>
+      </@basicRow>
+    </#if> 
+  </@repeatRow>
+</#macro>
+
+<#--
+Admin functions
+-->
+<#macro admin>
+  <#if permission.userCanEdit(id)>
+    <@basicRow "hidden-print pull-right">
+      <a href="#" class="edit-control" data-document-type="${metadata.documentType}">Edit</a>
+      |
+      <a href="/documents/${id}/permission">Amend permissions</a>
+      |
+      <a href="/documents/${id}/catalogue" class="catalogue-control">Move catalogues</a>
+      |
+      <a href="/documents/${id}/publication">Publication status</a>
+    </@basicRow>
+  </#if>
+</#macro>
