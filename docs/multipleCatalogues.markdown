@@ -9,7 +9,7 @@ Add a new catalogue to [ServiceConfig](java/src/main/java/uk/ac/ceh/gateway/cata
 - *url* url of project page, will be used in the header as a link
 - *facetKey* names of search facets to use in the catalogue search page. A facetKey must match a field name in the [Solr schema](solr/config/documents/conf/schema.xml)
 - *documnetType* names of document types to use in the catalogue
-- *fileUpload **true** if file upload allowed 
+- *fileUpload* **true** if file upload allowed 
 
 ## Search facets
 There are many fields already indexed in Solr that can be used as search facets.
