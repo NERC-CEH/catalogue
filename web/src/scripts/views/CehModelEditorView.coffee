@@ -28,7 +28,7 @@ define [
 
   initialize: ->
 
-    @model.set 'type', 'model'
+    @model.set('type', 'model') unless @model.has('type')
 
     @sections = [
       label: 'Basic Info'
@@ -114,7 +114,7 @@ define [
         new ParentView
           model: @model
           modelAttribute: 'references'
-          label: 'Refrences'
+          label: 'References'
           ObjectInputView: ReferenceView
           multiline: true
           helpText: """

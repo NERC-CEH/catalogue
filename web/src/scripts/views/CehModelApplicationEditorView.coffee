@@ -8,6 +8,7 @@ define [
   'cs!views/editor/SelectView'
   'cs!views/editor/ReferenceView'
   'cs!views/editor/SingleObjectView'
+  'cs!views/editor/DataInfoView'
 ], (
   EditorView,
   InputView,
@@ -18,15 +19,16 @@ define [
   SelectView,
   ReferenceView
   SingleObjectView
+  DataInfoView
 ) -> EditorView.extend
 
   initialize: ->
 
-    @model.set 'type', 'modelApplication'
+    @model.set('type', 'modelApplication') unless @model.has('type')
 
     @sections = [
-      label: 'Basic Info'
-      title: 'Basic Info'
+      label: 'Project Info'
+      title: 'Project Info'
       views: [
 
         new InputView
@@ -55,58 +57,72 @@ define [
                     <p>Longer description of project incl. why models were used to answer the science question, assumptions made, key outputs</p>
                     """
 
-        new InputView
-          model: @model
-          modelAttribute: 'website'
-          label: 'Website url'
-          helpText: """
-                    <p>Link to outward facing model website if one exists e.g. https://jules.jchmr.org/</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'seniorResponsibleOfficer'
-          label: 'Senior responsible officer'
-          helpText: """
-                    <p>Senior responsible officer for the model (this should be the person who is the primary contact for the model)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'seniorResponsibleOfficerEmail'
-          label: 'Senior responsible officer email'
-          helpText: """
-                    <p>Email address of the Senior Responsible Officer e.g. someone@ceh.ac.uk</p>
-                    """
-
         new ParentView
           model: @model
           modelAttribute: 'keywords'
           label: 'Keywords'
           ObjectInputView: KeywordView
           helpText: """
-                    <p>5-10 keywords for model discovery e.g. rainfall; species distribution; nitrogen deposition; global circulation model</p>
-                    """
-
-        new SelectView
-          model: @model
-          modelAttribute: 'licenseType'
-          label: 'License'
-          options: [
-            {value: 'unknown', label: 'Unknown'},
-            {value: 'open', label: 'Open'},
-            {value: 'non-open', label: 'Non-open'}
-          ]
-          helpText: """
-                    <p>License type (open or non-open) under which the model is distributed</p>
+                    <p>5-10 keywords to enable searching for the project</p>
                     """
 
         new InputView
           model: @model
-          modelAttribute: 'codeRepositoryUrl'
-          label: 'Code repository url'
+          modelAttribute: 'projectCompletionDate'
+          label: 'Project completion date'
           helpText: """
-                    <p>Location of code repository e.g. https://github.com/NERC-CEH/Spatial-Upscaling-model</p>
+                    <p>Project end date</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'projectWebsite'
+          label: 'Project website'
+          helpText: """
+                    <p>Public-facing website if available e.g. http://www.ceh.ac.uk/our-science/projects/upscape</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'funderDetails'
+          label: 'Funder details'
+          rows: 3
+          helpText: """
+                    <p>Funder details, including grant number if appropriate</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'contactName'
+          label: 'Contact name'
+          helpText: """
+                    <p>Name of CEH PI/project representative</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'contactNameEmail'
+          label: 'Contact name email'
+          helpText: """
+                    <p>Email of CEH PI/project representative e.g. someone@ceh.ac.uk</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'multipleModelsUsed'
+          label: 'Multiple models used?'
+          rows: 7
+          helpText: """
+                    <p>Were multiple models used in the project? If so, which ones?</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'multipleModelLinkages'
+          label: 'Multiple model linkages'
+          rows: 7
+          helpText: """
+                    <p>If multiple models were used how was this done e.g. chained, independent runs, comparisons, ensemble</p>
                     """
 
       ]
@@ -117,7 +133,7 @@ define [
         new ParentView
           model: @model
           modelAttribute: 'references'
-          label: 'Refrences'
+          label: 'References'
           ObjectInputView: ReferenceView
           multiline: true
           helpText: """
@@ -127,151 +143,25 @@ define [
                     """
       ]
     ,
-      label: 'Model Description'
-      title: 'Model Description'
+      label: 'Model Info'
+      title: 'Model Info'
       views: [
-        new ParentStringView
-          model: @model
-          modelAttribute: 'keyInputVariables'
-          label: 'Key input variables'
-          helpText: """
-                    <p>Short phrases to describe basic types of model inputs e.g. rainfall; temperature; land use; atmospheric deposition</p>
-                    """
 
-        new ParentStringView
-          model: @model
-          modelAttribute: 'keyOutputVariables'
-          label: 'Key output variables'
-          helpText: """
-                    <p>Short phrases to describe basic types of model outputs e.g. nutrient runoff; deposition time series; species occurrence</p>
-                    """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'description'
-          label: 'Model description'
-          rows: 17
-          helpText: """
-                    <p>Longer description of model e.g. development history, use to answer science questions, overview of structure</p>
-                    """
-
-        new SelectView
-          model: @model
-          modelAttribute: 'modelType'
-          label: 'Model type'
-          options: [
-            {value: 'unknown', label: 'Unknown'},
-            {value: 'deterministic', label: 'Deterministic'},
-            {value: 'stochastic', label: 'Stochastic'},
-            {value: 'other', label: 'Other'}
-          ]
-          helpText: """
-                    <p>Type which best fits model</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'currentModelVersion'
-          label: 'Current model version'
-          helpText: """
-                    <p>Most recent release version (if applicable) e.g. v2.5.10</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'releaseDate'
-          label: 'Release date'
-          helpText: """
-                    <p>Date of release of current model version (if applicable) e.g. 2012-02-17</p>
-                    """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'modelCalibration'
-          label: 'Model calibration'
-          rows: 17
-          helpText: """
-                    <p>Does the model need calibration before running? If so, what needs to be supplied to do this? (if applicable)</p>
-                    """
       ]
     ,
-      label: 'Spatio-Temporal Info'
-      title: 'Spatio-Temporal Info'
+      label: 'Data Info'
+      title: 'Data Info'
       views: [
-        new InputView
+        new ParentView
           model: @model
-          modelAttribute: 'spatialDomain'
-          label: 'Spatial domain'
+          modelAttribute: 'inputData'
+          label: 'Input Data'
+          ObjectInputView: DataInfoView
+          multiline: true
           helpText: """
-                    <p>Is the model only applicable to certain areas? E.g. Parameterised for UK only or global (if applicable)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'spatialResolution'
-          label: 'Spatial resolution'
-          helpText: """
-                    <p>Spatial resolution at which model works or at which model outputs are generated e.g. 1km&sup2;  or 5m&sup2; (if applicable)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'temporalResolutionMin'
-          label: 'Temporal resolution (min)'
-          helpText: """
-                    <p>Minimum time step supported by the model e.g. 1 second or 10 days (if applicable)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'temporalResolutionMax'
-          label: 'Temporal resolution (max)'
-          helpText: """
-                    <p>Maximum time step supported by the model e.g. annual or decadal (if applicable)</p>
-                    """
-      ]
-    ,
-      label: 'Technical Info'
-      title: 'Technical Info'
-      views: [
-        new InputView
-          model: @model
-          modelAttribute: 'language'
-          label: 'Language'
-          helpText: """
-                    <p>Computing language in which the model is written e.g. C++; R</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'compiler'
-          label: 'Compiler'
-          helpText: """
-                    <p>Compiled required e.g. C++ compiler (if applicable)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'operatingSystem'
-          label: 'Operating system'
-          helpText: """
-                    <p>Operating system typically used to run the model</p>
-                    """
-
-         new InputView
-          model: @model
-          modelAttribute: 'systemMemory'
-          label: 'System memory'
-          helpText: """
-                    <p>Memory required to run code (if known)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'documentation'
-          label: 'Documentation url'
-          helpText: """
-                    <p>Memory required to run code (if known)</p>
+                    <p>Citation - Add publication citation here</p>
+                    <p>DOI - DOI link for the citation e.g. http://dx.doi.org/10.1179/2042349715Y.0000000010</p>
+                    <p>NORA - NORA links of the citation e.g. http://nora.nerc.ac.uk/513147/</p>
                     """
       ]
     ]
