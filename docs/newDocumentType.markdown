@@ -14,13 +14,14 @@
 
 * register new media type string, "application/{documentType}+json"
 * register new short name, "{documentType}"
-* add mediaType to configureContentNegotiation() (does not seem to be required for json content?)
+* add mediaType to configureContentNegotiation()
 
 ## ServiceConfig
 
 * register template in messageConverters()
 * register document type in metadataRepresentationService()
-* register Solr IndexGenerator in documentIndexingService()
+* register Solr IndexGenerator in documentIndexingService() (if doing additional indexing)
+* create new documentType in catalogueService() and register with a catalogue
 
 ## DocumentController
 

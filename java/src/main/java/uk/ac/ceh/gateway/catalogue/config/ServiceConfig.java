@@ -94,6 +94,7 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
@@ -159,33 +160,45 @@ public class ServiceConfig {
     @Autowired GroupStore<CatalogueUser> groupStore;
     @Autowired @Qualifier("gemini") Schema geminiSchema;
     
+    private static final String GEMINI_DOCUMENT = "GEMINI_DOCUMENT";
+    private static final String EF_DOCUMENT = "EF_DOCUMENT";
+    private static final String IMP_DOCUMENT = "IMP_DOCUMENT";
+    private static final String CEH_MODEL = "CEH_MODEL";
+    private static final String CEH_MODEL_APPLICATION = "CEH_MODEL_APPLICATION";
+    private static final String LINK_DOCUMENT = "LINK_DOCUMENT";
+    
     @Bean
     public CatalogueService catalogueService() {
         String defaultCatalogueKey = "eidc";
         
         DocumentType gemini = DocumentType.builder()
             .title("Data Resource")
-            .type("GEMINI_DOCUMENT")
+            .type(GEMINI_DOCUMENT)
             .build();
         
         DocumentType ef = DocumentType.builder()
             .title("Monitoring")
-            .type("EF_DOCUMENT")
+            .type(EF_DOCUMENT)
             .build();
         
         DocumentType imp = DocumentType.builder()
             .title("Model")
-            .type("IMP_DOCUMENT")
+            .type(IMP_DOCUMENT)
             .build();
         
         DocumentType cehModel = DocumentType.builder()
             .title("Model")
-            .type("CEH_MODEL")
+            .type(CEH_MODEL)
+            .build();
+        
+        DocumentType cehModelApplication = DocumentType.builder()
+            .title("Model Application")
+            .type(CEH_MODEL_APPLICATION)
             .build();
         
         DocumentType link = DocumentType.builder()
             .title("Link")
-            .type("LINK_DOCUMENT")
+            .type(LINK_DOCUMENT)
             .build();
         
         return new InMemoryCatalogueService(
@@ -205,6 +218,7 @@ public class ServiceConfig {
                 .url("http://www.ceh.ac.uk")
                 .facetKey("resourceType")
                 .documentType(cehModel)
+                .documentType(cehModelApplication)
                 .fileUpload(false)
                 .build(),
             
@@ -350,7 +364,8 @@ public class ServiceConfig {
         converters.add(new Object2TemplatedMessageConverter(CaseStudy.class,        freemarkerConfiguration()));
         
         // CEH model catalogue
-        converters.add(new Object2TemplatedMessageConverter(CehModel.class,         freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(CehModel.class,             freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter(CehModelApplication.class,  freemarkerConfiguration()));
         
         // Gemini Message Converters
         converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,       freemarkerConfiguration()));
@@ -446,11 +461,12 @@ public class ServiceConfig {
     @Bean
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
-                .register("GEMINI_DOCUMENT", GeminiDocument.class)
-                .register("EF_DOCUMENT", BaseMonitoringType.class)
-                .register("IMP_DOCUMENT", ImpDocument.class)
-                .register("LINK_DOCUMENT", LinkDocument.class)
-                .register("CEH_MODEL", CehModel.class);
+                .register(GEMINI_DOCUMENT, GeminiDocument.class)
+                .register(EF_DOCUMENT, BaseMonitoringType.class)
+                .register(IMP_DOCUMENT, ImpDocument.class)
+                .register(LINK_DOCUMENT, LinkDocument.class)
+                .register(CEH_MODEL, CehModel.class)
+                .register(CEH_MODEL_APPLICATION, CehModelApplication.class);
     }
     
     @Bean

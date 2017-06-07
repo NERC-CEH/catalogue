@@ -131,11 +131,73 @@ A CEH Model reference
   </@repeatRow>
 </#macro>
 
+<#--
+A CEH Model Application model info
+-->
+<#macro modelInfo modelInfo>
+  <@repeatRow>
+    <#if modelInfo.id?? && modelInfo.id?has_content>
+      <@basicRow>
+        <@keyContent "Model name" "Name of model as shown in metadata"><@titleUrl jena.metadata(modelInfo.id).get()/></@keyContent>
+      </@basicRow>
+    </#if>
+    <#if modelInfo.version?? && modelInfo.version?has_content>
+      <@basicRow>
+        <@keyContent "Version" "Version of the model used for the application (not necessarily the current release version)">${modelInfo.version}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if modelInfo.rationale?? && modelInfo.rationale?has_content>
+      <@basicRow>
+        <@keyContent "Rationale" "Why was this model chosen for use in this project?">${modelInfo.rationale}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if modelInfo.spatialExtentOfApplication?? && modelInfo.spatialExtentOfApplication?has_content>
+      <@basicRow>
+        <@keyContent "Spatial extent of application" "What spatial extent best describes the application?">${modelInfo.spatialExtentOfApplication?cap_first}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if modelInfo.availableSpatialData?? && modelInfo.availableSpatialData?has_content>
+      <@basicRow>
+        <@keyContent "Available spatial data" "Can the application be described by either a shapefile/polygon or bounding box coordinates?">${modelInfo.availableSpatialData?cap_first}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if modelInfo.spatialResolutionOfApplication?? && modelInfo.spatialResolutionOfApplication?has_content>
+      <@basicRow>
+        <@keyContent "Spatial resolution of application" "Spatial resolution at which model outputs were generated">${modelInfo.spatialResolutionOfApplication}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if modelInfo.temporalExtentOfApplicationStartDate?? && modelInfo.temporalExtentOfApplicationStartDate?has_content>
+      <@basicRow>
+        <@keyContent "Temporal extent of application (start date)" "Start date of application (if applicable)">${modelInfo.temporalExtentOfApplicationStartDate}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if modelInfo.temporalExtentOfApplicationEndDate?? && modelInfo.temporalExtentOfApplicationEndDate?has_content>
+      <@basicRow>
+        <@keyContent "Temporal extent of application (end date)" "End date of application (if applicable)">${modelInfo.temporalExtentOfApplicationEndDate}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if modelInfo.temporalResolutionOfApplication?? && modelInfo.temporalResolutionOfApplication?has_content>
+      <@basicRow>
+        <@keyContent "Temporal resolution of application" "Time step used in the model application">${modelInfo.temporalResolutionOfApplication}</@keyContent>
+      </@basicRow>
+    </#if>
+    <#if modelInfo.calibrationConditions?? && modelInfo.calibrationConditions?has_content>
+      <@basicRow>
+        <@keyContent "Calibration conditions" "How was the model calibrated (if applicable)?">${modelInfo.calibrationConditions}</@keyContent>
+      </@basicRow>
+    </#if>
+  </@repeatRow>
+</#macro>
+
 <#-- 
 A url that show repeats the url as the link text
 -->
 <#macro bareUrl value>
   <a href="${value}">${value}</a>
+</#macro>
+  
+<#macro titleUrl link>
+  <a href="${link.href}">${link.title}</a>
 </#macro>
 
 <#-- 
@@ -206,6 +268,26 @@ CEH model QA
   <div>
     <#if qa.note?? && qa.note?has_content>
       <span class="key">note</span> ${qa.note}
+    </#if>
+  </div>
+</#macro>
+  
+<#--
+CEH model application - dataInfo
+-->
+<#macro dataInfo di>
+  <div>
+    <#if di.variableName?? && di.variableName?has_content>
+      <span class="key">Variable</span> ${di.variableName}
+    </#if>
+    <#if di.units?? && di.units?has_content>
+      <span class="key">Units</span> ${di.units}
+    </#if>
+    <#if di.fileFormat?? && di.fileFormat?has_content>
+      <span class="key">File format</span> ${di.fileFormat}
+    </#if>
+    <#if di.url?? && di.url?has_content>
+      <span class="key">Url</span> <@bareUrl di.url/>
     </#if>
   </div>
 </#macro>

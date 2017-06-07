@@ -23,12 +23,13 @@ define [
   'cs!views/LinkEditorView'
   'cs!models/LinkEditorMetadata'
   'cs!views/CehModelEditorView'
+  'cs!views/CehModelApplicationEditorView'
   'bootstrap'
 ], (
   _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata,
-    CehModelEditorView
+    CehModelEditorView, CehModelApplicationEditorView
 ) ->
 
   ###
@@ -92,6 +93,10 @@ define [
         View: CehModelEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.ceh.model+json'
+      CEH_MODEL_APPLICATION:
+        View: CehModelApplicationEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.ceh.model.application+json'
       LINK_DOCUMENT:
         View: LinkEditorView
         Model: LinkEditorMetadata

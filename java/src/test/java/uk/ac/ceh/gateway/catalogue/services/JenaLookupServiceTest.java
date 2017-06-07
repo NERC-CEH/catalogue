@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
@@ -38,6 +39,38 @@ public class JenaLookupServiceTest {
         MockitoAnnotations.initMocks(this);
         jenaTdb = TDBFactory.createDataset();
         service = new JenaLookupService(jenaTdb);
+    }
+    
+    @Test
+    public void lookupMetadata() {
+        //Given 
+        String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://model"), TITLE, "Model");
+        triples.add(createResource("http://model"), IDENTIFIER, id);
+        
+        //When
+        Optional<Link> actual = service.metadata(id);
+        
+        //Then
+        assertThat("Should be link present", actual.isPresent(), is(true));
+        assertThat("title should be equal", actual.get().getTitle(), is("Model"));
+        assertThat("href should be equal", actual.get().getHref(), is("http://model"));
+    }
+    
+    @Test
+    public void lookupNonExistantMetadata() {
+        //Given 
+        String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://model"), TITLE, "Model");
+        triples.add(createResource("http://model"), IDENTIFIER, id);
+        
+        //When
+        Optional<Link> actual = service.metadata("a different id");
+        
+        //Then
+        assertThat("Should not be link present", actual.isPresent(), is(false));
     }
     
     @Test
