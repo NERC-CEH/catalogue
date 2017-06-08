@@ -135,10 +135,11 @@ A CEH Model reference
 A CEH Model Application model info
 -->
 <#macro modelInfo modelInfo>
+  <#local model=jena.metadata(modelInfo.id).get()/>
   <@repeatRow>
     <#if modelInfo.id?? && modelInfo.id?has_content>
       <@basicRow>
-        <@keyContent "Model name" "Name of model as shown in metadata"><@titleUrl jena.metadata(modelInfo.id).get()/></@keyContent>
+        <@keyContent "Model name" "Name of model as shown in metadata"><a href="${model.href}">${model.title}</a></@keyContent>
       </@basicRow>
     </#if>
     <#if modelInfo.version?? && modelInfo.version?has_content>
@@ -194,10 +195,6 @@ A url that show repeats the url as the link text
 -->
 <#macro bareUrl value>
   <a href="${value}">${value}</a>
-</#macro>
-  
-<#macro titleUrl link>
-  <a href="${link.href}">${link.title}</a>
 </#macro>
 
 <#-- 

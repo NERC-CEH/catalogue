@@ -2,6 +2,7 @@
 /mapfiles
 /cache
 .vagrant
+/target
 
 # Ignore the secret configuration file
 puppet/hieradata/secrets.yaml

@@ -32,6 +32,7 @@
   ],
   "modelInfos": [
     {
+      "name": "LUCI",
       "id": "6cfaa265-5b5e-4682-9304-0ce90ba67c4a",
       "version": "0.0.1",
       "rationale": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin feugiat feugiat risus, sed cursus felis tincidunt ac. Nulla at felis et augue pellentesque rutrum. Nunc laoreet tempus massa vitae sagittis. Integer aliquam leo rutrum ullamcorper bibendum. Integer in facilisis diam, et consectetur justo. Vestibulum a magna nisl. Sed non placerat nibh. Nulla non ex id magna luctus pellentesque eget blandit ligula.",
@@ -44,6 +45,7 @@
       "calibrationConditions": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ornare metus id sapien auctor faucibus. Nullam laoreet porttitor lorem, sit amet gravida odio elementum vel. Cras gravida sit amet tortor sit amet consectetur. Nam elementum orci a porttitor tempor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nunc eu sem porta, eleifend risus et, volutpat turpis. Mauris id libero consequat, ullamcorper ex id, dapibus tortor. Fusce fermentum erat nec orci suscipit varius. Maecenas lobortis posuere sagittis. Vestibulum lacinia, libero eu laoreet faucibus, quam enim ultricies purus, id tempor odio odio quis elit. Morbi a tincidunt elit. Phasellus luctus, tellus vel laoreet ullamcorper, urna eros tincidunt est, ac tincidunt enim turpis non ante. Duis a blandit tellus."
     },
     {
+      "name": "Title of a CEH model",
       "id": "b87075a0-c1ac-4aff-bf46-8350b38bbdc8"
     }
   ],

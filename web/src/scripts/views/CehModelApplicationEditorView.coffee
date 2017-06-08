@@ -9,6 +9,7 @@ define [
   'cs!views/editor/ReferenceView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/DataInfoView'
+  'cs!views/editor/ModelInfoView'
 ], (
   EditorView,
   InputView,
@@ -20,6 +21,7 @@ define [
   ReferenceView
   SingleObjectView
   DataInfoView
+  ModelInfoView
 ) -> EditorView.extend
 
   initialize: ->
@@ -101,8 +103,8 @@ define [
 
         new InputView
           model: @model
-          modelAttribute: 'contactNameEmail'
-          label: 'Contact name email'
+          modelAttribute: 'contactEmail'
+          label: 'Contact email'
           helpText: """
                     <p>Email of CEH PI/project representative e.g. someone@ceh.ac.uk</p>
                     """
@@ -146,7 +148,24 @@ define [
       label: 'Model Info'
       title: 'Model Info'
       views: [
-
+        new ParentView
+          model: @model
+          modelAttribute: 'modelInfos'
+          label: 'Model info'
+          ObjectInputView: ModelInfoView
+          multiline: true
+          helpText: """
+                    <p>Models used in the project</p>
+                    <p>Version - Version of the model used for the application (not necessarily the current release version) e.g. v1.5.2 (if applicable)</p>
+                    <p>Rationale - Why was this model chosen for use in this project?</p>
+                    <p>Spatial extent of application - What spatial extent best describes the application?</p>
+                    <p>Available spatial data - Can the application be described by either a shapefile/polygon or bounding box coordinates?</p>
+                    <p>Spatial resolution of application - Spatial resolution at which model outputs were generated e.g. 1km²; 5m² (if applicable)</p>
+                    <p>Temporal extent of application (start date) - Start date of application (if applicable)</p>
+                    <p>Temporal extent of application (end date) - End date of application (if applicable)</p>
+                    <p>Temporal resolution of application - Time step used in the model application e.g. 1s; annual (if applicable)</p>
+                    <p>Calibration conditions - How was the model calibrated (if applicable)?</p>
+                    """
       ]
     ,
       label: 'Data Info'
@@ -159,9 +178,17 @@ define [
           ObjectInputView: DataInfoView
           multiline: true
           helpText: """
-                    <p>Citation - Add publication citation here</p>
-                    <p>DOI - DOI link for the citation e.g. http://dx.doi.org/10.1179/2042349715Y.0000000010</p>
-                    <p>NORA - NORA links of the citation e.g. http://nora.nerc.ac.uk/513147/</p>
+                    <p>Detailed description of input data including: variable name, units, file format, URL to data catalogue record for each input</p>
+                    """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'outputData'
+          label: 'Output Data'
+          ObjectInputView: DataInfoView
+          multiline: true
+          helpText: """
+                    <p>Detailed description of model outputs including: variable name, units, file format, URL to data catalogue record for each output (or alternative location of model outputs from this application)</p>
                     """
       ]
     ]

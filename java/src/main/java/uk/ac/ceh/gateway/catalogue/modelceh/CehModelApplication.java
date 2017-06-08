@@ -58,6 +58,7 @@ public class CehModelApplication extends AbstractMetadataDocument {
     @Data
     public static class ModelInfo {
         private String
+            name,
             id,
             version,
             rationale,
