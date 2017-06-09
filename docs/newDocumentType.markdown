@@ -28,9 +28,13 @@
 * add new{documentType} method
 * add update{documentType} method
 
-## Indexing
+## Solr Indexing
 
 * new SolrIndex{documentType}Generator to index fields not covered by SolrIndexMetadataDocumentGenerator
+
+## Jena Indexing
+
+* new JenaIndex{documentType}Generator to index fields not covered by JenaIndexMetadataDocumentGenerator
 
 ## PostProcessing
 

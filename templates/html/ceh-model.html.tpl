@@ -127,10 +127,20 @@
         <@b.versionHistory history /> 
       </#list>
     </#if>
-    <#if projectUsages?? && projectUsages?has_content>
+    <#assign modelApplications=jena.modelApplications(uri)/>
+    <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
       <@b.sectionHeading>Project usage</@b.sectionHeading>
-      <#list projectUsages as usage>
-        <@b.projectUsage usage />    
+      <#if projectUsages?? && projectUsages?has_content>
+        <#list projectUsages as usage>
+          <@b.projectUsage usage />    
+        </#list>
+      </#if>
+      <#list modelApplications>
+        <@b.key "Model Applications" "Applications of the model">
+          <#items as md>
+            <@b.blockUrl md/>
+          </#items>
+        </@b.key>   
       </#list>
     </#if>
     <#if metadataDate?? && metadataDate?has_content>

@@ -191,10 +191,26 @@ A CEH Model Application model info
 </#macro>
 
 <#-- 
-A url that show repeats the url as the link text
+A url that repeats the url as the link text
 -->
 <#macro bareUrl value>
   <a href="${value}">${value}</a>
+</#macro>
+
+<#-- 
+A url that shows title as the link text
+-->
+<#macro titleUrl link>
+  <a href="<#if link.href??>${link.href}<#else>#</#if>"><#if link.title??>${link.title}<#else>link</#if></a>
+</#macro>
+
+<#--
+Block link
+-->
+<#macro blockUrl link>
+  <div>
+    <@titleUrl link/>
+  </div>
 </#macro>
 
 <#-- 

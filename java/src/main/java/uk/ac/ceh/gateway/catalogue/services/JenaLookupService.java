@@ -66,7 +66,7 @@ public class JenaLookupService {
      * @return list of Links to modelApplications
      */
     public List<Link> modelApplications(String uri) {
-        return links(uri, "SELECT ?node ?title WHERE { ?node <http://purl.org/dc/terms/references> ?me . ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'modelApplication' }");
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE { ?node dc:references ?me . ?node dc:title ?title . ?node dc:type 'modelApplication' }");
     }
     
     /**
@@ -75,11 +75,11 @@ public class JenaLookupService {
      * @return list of Links to models
      */
     public List<Link> models(String uri) {
-        return links(uri, "SELECT ?node ?title WHERE { ?me <http://purl.org/dc/terms/references> ?node . ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'model' }");
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE { ?me dc:references ?node . ?node dc:title ?title . ?node dc:type 'model' }");
     }
     
     public List<Link> datasets(String uri) {
-        return links(uri, "SELECT ?node ?title WHERE {{{ ?me <http://purl.org/dc/terms/references> ?node } UNION { ?node <http://purl.org/dc/terms/references> ?me } ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'dataset' } UNION { ?me <http://purl.org/dc/terms/references> ?node . ?node <http://purl.org/dc/terms/source> _:n . _:n <http://purl.org/dc/terms/title> ?title . _:n <http://purl.org/dc/terms/type> 'dataset' }}");
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE {{{ ?me dc:references ?node } UNION { ?node dc:references ?me } ?node dc:title ?title . ?node dc:type 'dataset' } UNION { ?me dc:references ?node . ?node dc:source _:n . _:n dc:title ?title . _:n dc:type 'dataset' }}");
     }
     
     public Optional<Link> metadata(String id) {
