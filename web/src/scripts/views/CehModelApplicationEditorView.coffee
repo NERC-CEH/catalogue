@@ -156,6 +156,7 @@ define [
           multiline: true
           helpText: """
                     <p>Models used in the project</p>
+                    <p>Name - Name of model (searches catalogue for matching models)
                     <p>Version - Version of the model used for the application (not necessarily the current release version) e.g. v1.5.2 (if applicable)</p>
                     <p>Rationale - Why was this model chosen for use in this project?</p>
                     <p>Spatial extent of application - What spatial extent best describes the application?</p>

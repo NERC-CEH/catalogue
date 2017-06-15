@@ -26,10 +26,6 @@
     {"doi": "https://doi.org/12123123/1231233424"},
     {"citation": "Bogdanova, Maria I.; Butler, Adam; Wanless, Sarah; Moe, Børge; Anker-Nilssen, Tycho; Frederiksen, Morten; Boulinier, Thierry; Chivers, Lorraine S.; Christensen-Dalsgaard, Signe; Descamps, Sébastien; Harris, Michael P.; Newell, Mark; Olsen, Bergur; Phillips, Richard A.; Shaw, Deryk; Steen, Harald; Strøm, Hallvard; Thórarinsson, Thorkell L.; Daunt, Francis. 2017 Multi-colony tracking reveals spatio-temporal variation in carry-over effects between breeding success and winter movements in a pelagic seabird. Marine Ecology Progress Series. 10.3354/meps12096", "doi": "http://dx.doi.org/10.3354/meps12096", "nora": "http://nora.nerc.ac.uk/517083/"}
   ],
-  "relationships": [
-    {"relation": "http://purl.org/dc/terms/references", "target": "6cfaa265-5b5e-4682-9304-0ce90ba67c4a"},
-    {"relation": "http://purl.org/dc/terms/references", "target": "b87075a0-c1ac-4aff-bf46-8350b38bbdc8"}
-  ],
   "modelInfos": [
     {
       "name": "LUCI",

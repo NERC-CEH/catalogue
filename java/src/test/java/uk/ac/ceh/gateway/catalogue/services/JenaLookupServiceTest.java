@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
@@ -12,6 +11,8 @@ import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
 import org.apache.jena.tdb.TDBFactory;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
@@ -50,12 +51,12 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://model"), IDENTIFIER, id);
         
         //When
-        Optional<Link> actual = service.metadata(id);
+        Link actual = service.metadata(id);
         
         //Then
-        assertThat("Should be link present", actual.isPresent(), is(true));
-        assertThat("title should be equal", actual.get().getTitle(), is("Model"));
-        assertThat("href should be equal", actual.get().getHref(), is("http://model"));
+        assertThat("Should be link present", actual, is(notNullValue()));
+        assertThat("title should be equal", actual.getTitle(), is("Model"));
+        assertThat("href should be equal", actual.getHref(), is("http://model"));
     }
     
     @Test
@@ -67,10 +68,10 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://model"), IDENTIFIER, id);
         
         //When
-        Optional<Link> actual = service.metadata("a different id");
+        Link actual = service.metadata("a different id");
         
         //Then
-        assertThat("Should not be link present", actual.isPresent(), is(false));
+        assertThat("Should not be link present", actual, is(nullValue()));
     }
     
     @Test

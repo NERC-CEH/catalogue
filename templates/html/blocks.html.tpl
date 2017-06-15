@@ -135,11 +135,20 @@ A CEH Model reference
 A CEH Model Application model info
 -->
 <#macro modelInfo modelInfo>
-  <#local model=jena.metadata(modelInfo.id).get()/>
   <@repeatRow>
-    <#if modelInfo.id?? && modelInfo.id?has_content>
+    <#if (modelInfo.id?? && modelInfo.id?has_content) || (modelInfo.name?? && modelInfo.name?has_content)>
+      <#local model=jena.metadata(modelInfo.id)!""/>
       <@basicRow>
-        <@keyContent "Model name" "Name of model as shown in metadata"><a href="${model.href}">${model.title}</a></@keyContent>
+        <@keyContent "Model name" "Name of model as shown in metadata">
+          <#if model?has_content>
+            <a href="${model.href}">${model.title}</a>
+          <#else>
+            ${modelInfo.name}
+            <#if modelInfo.id?? && modelInfo.id?has_content>
+              (${modelInfo.id})
+            </#if>
+          </#if>
+        </@keyContent>
       </@basicRow>
     </#if>
     <#if modelInfo.version?? && modelInfo.version?has_content>

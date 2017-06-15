@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -82,8 +82,9 @@ public class JenaLookupService {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE {{{ ?me dc:references ?node } UNION { ?node dc:references ?me } ?node dc:title ?title . ?node dc:type 'dataset' } UNION { ?me dc:references ?node . ?node dc:source _:n . _:n dc:title ?title . _:n dc:type 'dataset' }}");
     }
     
-    public Optional<Link> metadata(String id) {
-        Optional<Link> toReturn = Optional.empty();
+    public Link metadata(String id) {
+        Link toReturn = null;
+        id = nullToEmpty(id);
         String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE { ?node dc:identifier ?id ; dc:title ?title . }";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);  
         pss.setLiteral("id", id);
@@ -92,10 +93,10 @@ public class JenaLookupService {
             ResultSet resultSet = qexec.execSelect();
             if (resultSet.hasNext()) {
                 QuerySolution querySolution = resultSet.next();
-                toReturn = Optional.of(Link.builder()
+                toReturn = Link.builder()
                     .title(querySolution.getLiteral("title").getString())
                     .href(querySolution.getResource("node").getURI())
-                    .build());
+                    .build();
             }
         } finally {
             jenaTdb.end();
