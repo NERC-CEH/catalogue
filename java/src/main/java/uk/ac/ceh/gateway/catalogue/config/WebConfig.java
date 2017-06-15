@@ -47,6 +47,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String MODEL_JSON_VALUE             = "application/model+json";
     public static final String CEH_MODEL_SHORT              = "ceh-model";
     public static final String CEH_MODEL_JSON_VALUE         = "application/vnd.ceh.model+json";
+    public static final String CEH_MODEL_APPLICATION_SHORT  = "ceh-model-application";
+    public static final String CEH_MODEL_APPLICATION_JSON_VALUE = "application/vnd.ceh.model.application+json";
     public static final String LINKED_SHORT                 = "link";
     public static final String LINKED_JSON_VALUE            = "application/link+json";
     public static final String UKEOF_XML_SHORT              = "ukeof";
@@ -111,6 +113,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
                         .put(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE))
                         .put(CEH_MODEL_SHORT, MediaType.parseMediaType(CEH_MODEL_JSON_VALUE))
+                        .put(CEH_MODEL_APPLICATION_SHORT, MediaType.parseMediaType(CEH_MODEL_APPLICATION_JSON_VALUE))
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo

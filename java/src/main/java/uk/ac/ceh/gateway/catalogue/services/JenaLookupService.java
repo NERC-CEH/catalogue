@@ -1,15 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ReadWrite;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
@@ -23,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
  * up any literals associated to a given uri
  * @author cjohn
  */
+@Slf4j
 @AllArgsConstructor
 public class JenaLookupService {
     private final Dataset jenaTdb;
@@ -61,7 +66,7 @@ public class JenaLookupService {
      * @return list of Links to modelApplications
      */
     public List<Link> modelApplications(String uri) {
-        return links(uri, "SELECT ?node ?title WHERE { ?node <http://purl.org/dc/terms/references> ?me . ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'modelApplication' }");
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE { ?node dc:references ?me . ?node dc:title ?title . ?node dc:type 'modelApplication' }");
     }
     
     /**
@@ -70,11 +75,33 @@ public class JenaLookupService {
      * @return list of Links to models
      */
     public List<Link> models(String uri) {
-        return links(uri, "SELECT ?node ?title WHERE { ?me <http://purl.org/dc/terms/references> ?node . ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'model' }");
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE { ?me dc:references ?node . ?node dc:title ?title . ?node dc:type 'model' }");
     }
     
     public List<Link> datasets(String uri) {
-        return links(uri, "SELECT ?node ?title WHERE {{{ ?me <http://purl.org/dc/terms/references> ?node } UNION { ?node <http://purl.org/dc/terms/references> ?me } ?node <http://purl.org/dc/terms/title> ?title . ?node <http://purl.org/dc/terms/type> 'dataset' } UNION { ?me <http://purl.org/dc/terms/references> ?node . ?node <http://purl.org/dc/terms/source> _:n . _:n <http://purl.org/dc/terms/title> ?title . _:n <http://purl.org/dc/terms/type> 'dataset' }}");
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE {{{ ?me dc:references ?node } UNION { ?node dc:references ?me } ?node dc:title ?title . ?node dc:type 'dataset' } UNION { ?me dc:references ?node . ?node dc:source _:n . _:n dc:title ?title . _:n dc:type 'dataset' }}");
+    }
+    
+    public Link metadata(String id) {
+        Link toReturn = null;
+        id = nullToEmpty(id);
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE { ?node dc:identifier ?id ; dc:title ?title . }";
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);  
+        pss.setLiteral("id", id);
+        jenaTdb.begin(ReadWrite.READ);
+        try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
+            ResultSet resultSet = qexec.execSelect();
+            if (resultSet.hasNext()) {
+                QuerySolution querySolution = resultSet.next();
+                toReturn = Link.builder()
+                    .title(querySolution.getLiteral("title").getString())
+                    .href(querySolution.getResource("node").getURI())
+                    .build();
+            }
+        } finally {
+            jenaTdb.end();
+        }
+        return toReturn;
     }
     
     private List<Link> links(@NonNull String uri, String sparql) {

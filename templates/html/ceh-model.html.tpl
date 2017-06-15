@@ -4,8 +4,8 @@
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
   <@b.metadataContainer "ceh-model">
     <@b.admin />
-    <#if title?? || primaryPurpose?? || website?? || seniorResponsibleOfficer?? || organisations?? || keywords?? || licenseType??>
-      <@b.sectionHeading>Basic Info</@b.sectionHeading>
+    <#if title?? || primaryPurpose?? || website?? || seniorResponsibleOfficer?? || organisations?? || keywords?? || licenseType?? || codeRepositoryUrl??>
+      <@b.sectionHeading>Basic Information</@b.sectionHeading>
       <#if title?? && title?has_content>
         <@b.key "Model name" "Name of the model">${title}</@b.key>
       </#if>
@@ -37,6 +37,9 @@
       </#if>
       <#if licenseType?? && licenseType?has_content>
         <@b.key "License" "License type (open or non-open) under which the model is distributed">${licenseType?cap_first}</@b.key>
+      </#if>
+      <#if codeRepositoryUrl?? && codeRepositoryUrl?has_content>
+        <@b.key "Code repository url" "Link to code version control repository"><@b.bareUrl codeRepositoryUrl /></@b.key>
       </#if>
     </#if>
     <#if references?? && references?has_content>
@@ -76,7 +79,7 @@
       </#if>
     </#if>
     <#if spatialDomain?? || spatialResolution?? || temporalResolutionMin?? || temporalResolutionMax??>
-      <@b.sectionHeading>Spatio-Temporal Info</@b.sectionHeading>
+      <@b.sectionHeading>Spatio-Temporal Information</@b.sectionHeading>
       <#if spatialDomain?? && spatialDomain?has_content>
         <@b.key "Spatial domain" "Is the model only applicable to certain areas?">${spatialDomain}</@b.key>
       </#if>
@@ -91,7 +94,7 @@
       </#if>
     </#if>
     <#if language?? || compiler?? || operatingSystem?? || systemMemory?? || documentation??>
-      <@b.sectionHeading>Technical Info</@b.sectionHeading>
+      <@b.sectionHeading>Technical Information</@b.sectionHeading>
       <#if language?? && language?has_content>
         <@b.key "Language" "Computing language in which the model is written">${language}</@b.key>
       </#if>
@@ -108,10 +111,10 @@
         <@b.key "Documentation" "Location of technical documentation for the model"><@b.bareUrl documentation /></@b.key>
       </#if>
     </#if>
-    <@b.sectionHeading>QA Info</@b.sectionHeading>
+    <@b.sectionHeading>QA Information</@b.sectionHeading>
     <@b.key "Developer testing" "Use of a range of developer tools including parallel build and analytical review or sense check"><@b.qa developerTesting /></@b.key>
     <@b.key "Internal peer review" "Obtaining a critical evaluation from a third party independent of the development of the model but from within the same organisation"><@b.qa internalPeerReview /></@b.key>
-    <@b.key "External peer review" "Formal or informal engagement of a third party to conduct critical evaluation from outside the organisation in which the model is being developed"><@b.qa externalPeerReview /></@b.key>
+    <@b.key "External peer review" "Formal or informationrmal engagement of a third party to conduct critical evaluation from outside the organisation in which the model is being developed"><@b.qa externalPeerReview /></@b.key>
     <@b.key "Internal model audit" "Formal audit of a model within the organisation, perhaps involving use of internal audit functions"><@b.qa internalModelAudit /></@b.key>
     <@b.key "External model audit" "Formal engagement of external professional to conduct a critical evaluation of the model, perhaps involving audit professionals;"><@b.qa externalModelAudit /></@b.key>
     <@b.key "Quality assurance guidelines and checklists" "Model development refers to department’s guidance or other documented QA processes (e.g. third party publications)"><@b.qa qaGuidelinesAndChecklists /></@b.key>
@@ -124,10 +127,20 @@
         <@b.versionHistory history /> 
       </#list>
     </#if>
-    <#if projectUsages?? && projectUsages?has_content>
+    <#assign modelApplications=jena.modelApplications(uri)/>
+    <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
       <@b.sectionHeading>Project usage</@b.sectionHeading>
-      <#list projectUsages as usage>
-        <@b.projectUsage usage />    
+      <#if projectUsages?? && projectUsages?has_content>
+        <#list projectUsages as usage>
+          <@b.projectUsage usage />    
+        </#list>
+      </#if>
+      <#list modelApplications>
+        <@b.key "Model Applications" "Applications of the model">
+          <#items as md>
+            <@b.blockUrl md/>
+          </#items>
+        </@b.key>   
       </#list>
     </#if>
     <#if metadataDate?? && metadataDate?has_content>

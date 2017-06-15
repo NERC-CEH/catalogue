@@ -27,6 +27,9 @@ define [
 ) -> EditorView.extend
 
   initialize: ->
+
+    @model.set('type', 'model') unless @model.has('type')
+
     @sections = [
       label: 'Basic Info'
       title: 'Basic Info'
@@ -111,7 +114,7 @@ define [
         new ParentView
           model: @model
           modelAttribute: 'references'
-          label: 'Refrences'
+          label: 'References'
           ObjectInputView: ReferenceView
           multiline: true
           helpText: """

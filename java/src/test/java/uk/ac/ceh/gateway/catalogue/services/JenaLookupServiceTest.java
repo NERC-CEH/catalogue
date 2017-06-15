@@ -11,6 +11,8 @@ import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
 import org.apache.jena.tdb.TDBFactory;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
@@ -38,6 +40,38 @@ public class JenaLookupServiceTest {
         MockitoAnnotations.initMocks(this);
         jenaTdb = TDBFactory.createDataset();
         service = new JenaLookupService(jenaTdb);
+    }
+    
+    @Test
+    public void lookupMetadata() {
+        //Given 
+        String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://model"), TITLE, "Model");
+        triples.add(createResource("http://model"), IDENTIFIER, id);
+        
+        //When
+        Link actual = service.metadata(id);
+        
+        //Then
+        assertThat("Should be link present", actual, is(notNullValue()));
+        assertThat("title should be equal", actual.getTitle(), is("Model"));
+        assertThat("href should be equal", actual.getHref(), is("http://model"));
+    }
+    
+    @Test
+    public void lookupNonExistantMetadata() {
+        //Given 
+        String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://model"), TITLE, "Model");
+        triples.add(createResource("http://model"), IDENTIFIER, id);
+        
+        //When
+        Link actual = service.metadata("a different id");
+        
+        //Then
+        assertThat("Should not be link present", actual, is(nullValue()));
     }
     
     @Test
