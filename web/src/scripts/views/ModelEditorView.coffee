@@ -132,15 +132,15 @@ define [
           modelAttribute: 'applicationScale'
           label: 'Application Scale'
           options: [
-            {value: 'plot', label: 'plot'},
-            {value: 'field', label: 'field'},
-            {value: 'farm', label: 'farm'},
-            {value: 'river reach', label: 'river reach'},
-            {value: 'catchment', label: 'catchment'},
-            {value: 'landscape', label: 'landscape'},
-            {value: 'regional', label: 'regional'},
-            {value: 'national', label: 'national'},
-            {value: 'global', label: 'global'}
+            {value: 'Plot', label: 'Plot'},
+            {value: 'Field', label: 'Field'},
+            {value: 'Farm', label: 'Farm'},
+            {value: 'River reach', label: 'River reach'},
+            {value: 'Catchment', label: 'Catchment'},
+            {value: 'Landscape', label: 'Landscape'},
+            {value: 'Regional', label: 'Regional'},
+            {value: 'National', label: 'National'},
+            {value: 'Global', label: 'Global'}
           ]
 
         new InputView

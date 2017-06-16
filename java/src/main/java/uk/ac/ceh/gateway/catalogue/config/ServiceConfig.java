@@ -237,9 +237,13 @@ public class ServiceConfig {
                 .title("International Nitrogen Management System")
                 .url("http://www.ceh.ac.uk")
                 .facetKey("resourceType")
+                .facetKey("impScale")
+                .facetKey("impTopic")
                 .documentType(gemini)
                 .documentType(imp)
                 .documentType(link)
+                .documentType(DocumentType.builder().title("CEH Model").type(CEH_MODEL).build())
+                .documentType(DocumentType.builder().title("CEH Model Application").type(CEH_MODEL_APPLICATION).build())
                 .fileUpload(true)
                 .build(),
             
