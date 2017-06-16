@@ -24,6 +24,9 @@
               <#if contact.individualName?has_content>${contact.individualName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
             </dd>
           </#if>
+          <#if keywords??>
+          <dt>Keywords</dt><dd><@blocks.keywords keywords/></dd>
+          </#if>
           <#if releaseDate?has_content>
           <dt>Release Date</dt><dd>${releaseDate}</dd>
           </#if>
