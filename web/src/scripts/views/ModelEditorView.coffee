@@ -140,6 +140,7 @@ define [
             {value: 'landscape', label: 'landscape'},
             {value: 'regional', label: 'regional'},
             {value: 'national', label: 'national'},
+            {value: 'global', label: 'global'}
           ]
 
         new InputView
