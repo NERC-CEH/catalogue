@@ -16,13 +16,6 @@ describe "Search page" do
       expect(page).not_to have_content results
     end
 
-    it 'should update results when going to previous page' do
-      visit '/eidc/documents?rows=2&page=2'
-      results = first('.result').text
-      click_on 'Previous'
-      expect(page).not_to have_content results
-    end
-
     it 'should find record when doing case-insesitive search for pollution keyword' do
       visit '/eidc/documents?term=keyword%3Apollution'
       result = first('.result .title').text
