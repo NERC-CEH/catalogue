@@ -49,6 +49,7 @@ public class CehModelApplication extends AbstractMetadataDocument {
         outputData;
 
     @Override
+    @JsonIgnore
     public List<Keyword> getAllKeywords() {
         return keywords;
     }
