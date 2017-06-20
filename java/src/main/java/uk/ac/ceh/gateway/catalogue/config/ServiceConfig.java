@@ -72,6 +72,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexCehModelGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexImpDocumentGenerator;
@@ -235,16 +236,15 @@ public class ServiceConfig {
             Catalogue.builder()
                 .id("inms")
                 .title("International Nitrogen Management System")
-                .url("http://www.ceh.ac.uk")
+                .url("http://www.inms.international/")
                 .facetKey("resourceType")
                 .facetKey("impScale")
                 .facetKey("impTopic")
                 .documentType(gemini)
-                .documentType(imp)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
                 .documentType(link)
-                .documentType(DocumentType.builder().title("CEH Model").type(CEH_MODEL).build())
-                .documentType(DocumentType.builder().title("CEH Model Application").type(CEH_MODEL_APPLICATION).build())
-                .fileUpload(true)
+                .fileUpload(false)
                 .build(),
             
             Catalogue.builder()
@@ -554,6 +554,7 @@ public class ServiceConfig {
         SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
         SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator(documentRepository());
+        SolrIndexCehModelGenerator solrIndexCehModelDocumentGenerator = new SolrIndexCehModelGenerator(metadataDocument);
         
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
@@ -561,6 +562,8 @@ public class ServiceConfig {
             .register(Facility.class,           new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
             .register(BaseMonitoringType.class, baseMonitoringType)
             .register(LinkDocument.class,     solrIndexLinkDocumentGenerator)
+            .register(CehModel.class, solrIndexCehModelDocumentGenerator)
+            .register(CehModelApplication.class, solrIndexCehModelDocumentGenerator)
             .register(MetadataDocument.class,   metadataDocument);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry(mappings);
