@@ -38,18 +38,18 @@
     <label for="modelInfo<%= data.index %>spatialExtentOfApplication">Spatial extent of application</label>
   </div>
   <div class="col-sm-9 col-lg-9">
-    <select data-name="spatialExtentOfApplication" id="modelInfo<%= data.index %>SpatialExtentOfApplication" class="editor-input spatial-extent">>
-      <option value="unknown">Unknown</option>
-      <option value="plot">Plot</option>
-      <option value="field">Field</option>
-      <option value="farm">Farm</option>
-      <option value="river reach">River reach</option>
-      <option value="catchment">Catchment</option>
-      <option value="landscape">Landscape</option>
-      <option value="regional">Regional</option>
-      <option value="national">National</option>
-      <option value="global">Global</option>
-    </select>
+    <input list="modelInfo<%= data.index %>SpatialExtentOfApplicationList" data-name="spatialExtentOfApplication" id="modelInfo<%= data.index %>SpatialExtentOfApplication" class="editor-input"/>
+    <datalist id="modelInfo<%= data.index %>SpatialExtentOfApplicationList">
+      <option value="Plot"/>
+      <option value="Field"/>
+      <option value="Farm"/>
+      <option value="River reach"/>
+      <option value="Catchment"/>
+      <option value="Landscape"/>
+      <option value="Regional"/>
+      <option value="National"/>
+      <option value="Global"/>
+    </datalist>
   </div>
 </div>
 <div class="row">
@@ -57,7 +57,7 @@
     <label for="modelInfo<%= data.index %>AvailableSpatialData">Available spatial data</label>
   </div>
   <div class="col-sm-9 col-lg-9">
-    <select data-name="availableSpatialData" id="modelInfo<%= data.index %>AvailableSpatialData" class="editor-input spatial-data">>
+    <select data-name="availableSpatialData" id="modelInfo<%= data.index %>AvailableSpatialData" class="editor-input spatial-data">
       <option value="unknown">Unknown</option>
       <option value="shapefile">Shapefile</option>
       <option value="bounding box">Bounding box</option>

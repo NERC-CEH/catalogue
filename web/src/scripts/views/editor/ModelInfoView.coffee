@@ -17,9 +17,9 @@ define [
       source: (request, response) ->
         term = request.term.trim()
         if _.isEmpty term
-          query = "/#{catalogue}/documents?term=state:published AND view:public AND documentType:CEH_MODEL"
+          query = "/#{catalogue}/documents?term=documentType:CEH_MODEL"
         else
-          query = "/#{catalogue}/documents?term=state:published AND view:public AND documentType:CEH_MODEL AND #{request.term}"
+          query = "/#{catalogue}/documents?term=documentType:CEH_MODEL AND #{request.term}"
         
         $.getJSON query, (data) ->
           response _.map data.results, (d) -> {value: d.title, label: d.title, identifier: d.identifier}
@@ -30,6 +30,5 @@ define [
 
   render: ->
     ObjectInputView.prototype.render.apply @
-    @$('select.spatial-extent').val @model.get 'spatialExtentOfApplication'
     @$('select.spatial-data').val @model.get 'availableSpatialData'
     @
