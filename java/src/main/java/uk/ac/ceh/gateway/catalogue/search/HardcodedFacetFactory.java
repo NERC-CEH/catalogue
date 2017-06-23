@@ -85,7 +85,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                 return Facet.builder()
                     .fieldName("modelType")
                     .displayName("Model Type")
-                    .hierarchical(true)
+                    .hierarchical(false)
                     .build();
         }
         return null;
