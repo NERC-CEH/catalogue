@@ -26,6 +26,8 @@
       <field name="impScale" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impTopic" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="impWaterPollutant" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="modelType" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="inmsDemonstrationRegion" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
       <dynamicField name="random*" type="random" indexed="true" stored="false"/>
     </fields>

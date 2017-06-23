@@ -72,10 +72,8 @@ import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexCehModelGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexImpDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
@@ -240,6 +238,9 @@ public class ServiceConfig {
                 .facetKey("resourceType")
                 .facetKey("impScale")
                 .facetKey("impTopic")
+                .facetKey("inmsPollutant")
+                .facetKey("modelType")
+                .facetKey("inmsDemonstrationRegion")
                 .documentType(gemini)
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
@@ -554,16 +555,12 @@ public class ServiceConfig {
         SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
         SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator(documentRepository());
-        SolrIndexCehModelGenerator solrIndexCehModelDocumentGenerator = new SolrIndexCehModelGenerator(metadataDocument);
         
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
-            .register(ImpDocument.class,        new SolrIndexImpDocumentGenerator(metadataDocument))
             .register(Facility.class,           new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
             .register(BaseMonitoringType.class, baseMonitoringType)
             .register(LinkDocument.class,     solrIndexLinkDocumentGenerator)
-            .register(CehModel.class, solrIndexCehModelDocumentGenerator)
-            .register(CehModelApplication.class, solrIndexCehModelDocumentGenerator)
             .register(MetadataDocument.class,   metadataDocument);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry(mappings);

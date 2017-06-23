@@ -2,8 +2,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Arrays;
 import java.util.List;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -14,9 +12,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -169,129 +165,6 @@ public class SolrIndexGeminiDocumentGeneratorTest {
         
         //Then
         assertEquals("Expected isOgl to be false", "ISNT OGL", index.getLicence());
-    }
-    
-    @Test
-    public void checkThatImpScaleIsIndexed() {
-        //Given
-        DescriptiveKeywords imp = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Catchment")
-                    .URI("http://vocabs.ceh.ac.uk/imp/scale/catchment")
-                    .build(),
-                Keyword.builder()
-                    .value("National")
-                    .URI("http://vocabs.ceh.ac.uk/imp/scale/national")
-                    .build()
-            )
-        ).build();
-        
-        DescriptiveKeywords other = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Green")
-                    .build(),
-                Keyword.builder()
-                    .value("Blue")
-                    .URI("http://example.com/blue")
-                    .build()
-            )
-        ).build();
-        
-        GeminiDocument document = new GeminiDocument();
-        document.setDescriptiveKeywords(Arrays.asList(imp, other));
-            
-        
-        //When
-        SolrIndex index = generator.generateIndex(document);
-        
-        //Then
-        assertThat("Expected catchment and national indexed", index.getImpScale(), contains("Catchment", "National"));
-        assertThat("Expected to not index Blue", index.getImpScale(), not(contains("Blue")));
-        
-    }
-    
-    @Test
-    public void checkThatImpCaMMPIssuesIsIndexed() {
-        //Given
-        DescriptiveKeywords imp = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Agri-environment")
-                    .URI("http://vocabs.ceh.ac.uk/imp/ci/agri-environment")
-                    .build(),
-                Keyword.builder()
-                    .value("Ecosystem Response")
-                    .URI("http://vocabs.ceh.ac.uk/imp/ci/ecosystem-response")
-                    .build()
-            )
-        ).build();
-        
-        DescriptiveKeywords other = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Green")
-                    .build(),
-                Keyword.builder()
-                    .value("Blue")
-                    .URI("http://example.com/blue")
-                    .build()
-            )
-        ).build();
-        
-        GeminiDocument document = new GeminiDocument();
-        document.setDescriptiveKeywords(Arrays.asList(imp, other));
-            
-        
-        //When
-        SolrIndex index = generator.generateIndex(document);
-        
-        //Then
-        assertThat("Expected agri-environment and ecosytem response indexed", index.getImpCaMMPIssues(), contains("Agri-environment", "Ecosystem Response"));
-        assertThat("Expected to not index Blue", index.getImpScale(), not(contains("Blue")));
-        
-    }
-    
-    @Test
-    public void checkThatImpWaterQualityIsIndexed() {
-        //Given
-        DescriptiveKeywords imp = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Nitrogen")
-                    .URI("http://vocabs.ceh.ac.uk/imp/wp/nitrogen")
-                    .build(),
-                Keyword.builder()
-                    .value("Phosphorous")
-                    .URI("http://vocabs.ceh.ac.uk/imp/wp/phosphorous")
-                    .build()
-            )
-        ).build();
-        
-        DescriptiveKeywords other = DescriptiveKeywords.builder()
-            .keywords(Arrays.asList(
-                Keyword.builder()
-                    .value("Green")
-                    .build(),
-                Keyword.builder()
-                    .value("Blue")
-                    .URI("http://example.com/blue")
-                    .build()
-            )
-        ).build();
-        
-        GeminiDocument document = new GeminiDocument();
-        document.setDescriptiveKeywords(Arrays.asList(imp, other));
-            
-        
-        //When
-        SolrIndex index = generator.generateIndex(document);
-        
-        //Then
-        assertThat("Expected nitrogen and phosphorous to be indexed", index.getImpWaterPollutant(), contains("Nitrogen", "Phosphorous"));
-        assertThat("Expected to not index Blue", index.getImpWaterPollutant(), not(contains("Blue")));
-        
     }
     
 }

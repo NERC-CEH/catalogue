@@ -66,6 +66,27 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Water Pollutant")
                     .hierarchical(false)
                     .build();
+                
+            case "inmsPollutant":
+                return Facet.builder()
+                    .fieldName("impWaterPollutant")
+                    .displayName("Pollutant")
+                    .hierarchical(false)
+                    .build();
+                
+            case "inmsDemonstrationRegion":
+                return Facet.builder()
+                    .fieldName("inmsDemonstrationRegion")
+                    .displayName("Demonstration Region")
+                    .hierarchical(false)
+                    .build();
+                
+            case "modelType":
+                return Facet.builder()
+                    .fieldName("modelType")
+                    .displayName("Model Type")
+                    .hierarchical(true)
+                    .build();
         }
         return null;
     }
