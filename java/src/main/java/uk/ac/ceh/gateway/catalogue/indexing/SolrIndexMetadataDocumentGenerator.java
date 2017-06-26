@@ -32,7 +32,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static final String INMS_SCALE_URL = "http://vocabs.ceh.ac.uk/inms/scale/";
     public static final String INMS_TOPIC_URL = "http://vocabs.ceh.ac.uk/inms/topic/";
     public static final String INMS_MODEL_TYPE_URL = "http://vocabs.ceh.ac.uk/inms/model_type";
-    public static final String INMS_WATER_POLLUTANT_URL = "http://vocabs.ceh.ac.uk/imp/wp/";
+    public static final String INMS_WATER_POLLUTANT_URL = "http://vocabs.ceh.ac.uk/inms/wp/";
     public static final String INMS_REGION_URL = "http://vocabs.ceh.ac.uk/inms/region";
     
     private final CodeLookupService codeLookupService;
@@ -62,7 +62,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setImpScale(impScale(document))
             .setImpTopic(grab(getKeywordsFilteredByUrlFragment(document, IMP_TOPIC_URL, INMS_TOPIC_URL), Keyword::getValue))
             .setImpWaterPollutant(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_POLLUTANT_URL, INMS_WATER_POLLUTANT_URL), Keyword::getValue))
-            .setInmsDemonstrationRegion(grab(getKeywordsFilteredByUrlFragment(document, INMS_WATER_POLLUTANT_URL), Keyword::getValue))
+            .setInmsDemonstrationRegion(grab(getKeywordsFilteredByUrlFragment(document, INMS_REGION_URL), Keyword::getValue))
             .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue));
     }
     
