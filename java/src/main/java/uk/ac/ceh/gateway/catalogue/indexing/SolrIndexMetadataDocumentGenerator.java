@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.base.Strings;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -8,18 +9,32 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 /**
- * The following class is responsible for taking a gemini document and creating 
+ * The following class is responsible for taking a metadata document and creating 
  * beans which are solr indexable
- * @author cjohn
  */
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
+    public static final String IMP_CAMMP_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/ci/";
+    public static final String IMP_DATA_TYPE_URL = "http://vocabs.ceh.ac.uk/imp/dt/";
+    public static final String IMP_SCALE_URL = "http://vocabs.ceh.ac.uk/imp/scale/";
+    public static final String IMP_TOPIC_URL = "http://vocabs.ceh.ac.uk/imp/topic/";
+    public static final String IMP_WATER_POLLUTANT_URL = "http://vocabs.ceh.ac.uk/imp/wp/";
+    
+    public static final String INMS_SCALE_URL = "http://vocabs.ceh.ac.uk/inms/scale/";
+    public static final String INMS_TOPIC_URL = "http://vocabs.ceh.ac.uk/inms/topic/";
+    public static final String INMS_MODEL_TYPE_URL = "http://vocabs.ceh.ac.uk/inms/model_type";
+    public static final String INMS_WATER_POLLUTANT_URL = "http://vocabs.ceh.ac.uk/inms/wp/";
+    public static final String INMS_REGION_URL = "http://vocabs.ceh.ac.uk/inms/region";
+    
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     
@@ -34,14 +49,21 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
         return new SolrIndex()
-                .setDescription(document.getDescription())
-                .setTitle(document.getTitle())
-                .setIdentifier(identifierService.generateFileId(document.getId()))
-                .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
-                .setState(getState(document))
-                .setView(getViews(document))
-                .setCatalogue(document.getCatalogue())
-                .setDocumentType(getDocumentType(document));
+            .setDescription(document.getDescription())
+            .setTitle(document.getTitle())
+            .setIdentifier(identifierService.generateFileId(document.getId()))
+            .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
+            .setState(getState(document))
+            .setView(getViews(document))
+            .setCatalogue(document.getCatalogue())
+            .setDocumentType(getDocumentType(document))
+            .setImpCaMMPIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_CAMMP_ISSUES_URL), Keyword::getValue))
+            .setImpDataType(grab(getKeywordsFilteredByUrlFragment(document, IMP_DATA_TYPE_URL), Keyword::getValue))
+            .setImpScale(impScale(document))
+            .setImpTopic(grab(getKeywordsFilteredByUrlFragment(document, IMP_TOPIC_URL, INMS_TOPIC_URL), Keyword::getValue))
+            .setImpWaterPollutant(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_POLLUTANT_URL, INMS_WATER_POLLUTANT_URL), Keyword::getValue))
+            .setInmsDemonstrationRegion(grab(getKeywordsFilteredByUrlFragment(document, INMS_REGION_URL), Keyword::getValue))
+            .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue));
     }
     
     private String getState(MetadataDocument document) {
@@ -78,5 +100,33 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                         .filter(Objects::nonNull)
                         .distinct()
                         .collect(Collectors.toList());
-    }             
+    }  
+    
+    private List<Keyword> getKeywordsFilteredByUrlFragment(MetadataDocument document, String... urlFragments) {
+        return Optional.ofNullable(document.getAllKeywords())
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(k -> Arrays.stream(urlFragments).anyMatch(urlFragment -> k.getUri().startsWith(urlFragment)))
+                .collect(Collectors.toList());
+    }
+    
+    private List<String> impScale(MetadataDocument document) {
+        List<String> toReturn = grab(
+            getKeywordsFilteredByUrlFragment(document, IMP_SCALE_URL, INMS_SCALE_URL),
+            Keyword::getValue
+        );
+        
+        if (document instanceof Model) {
+            String applicationScale = ((Model) document).getApplicationScale();
+            toReturn.add(applicationScale);
+        } else if (document instanceof CehModelApplication) {
+            CehModelApplication application = (CehModelApplication) document;
+            Optional.ofNullable(application.getModelInfos())
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(mi -> mi.getSpatialExtentOfApplication() != null && !mi.getSpatialExtentOfApplication().isEmpty())
+                .forEach(mi -> toReturn.add(mi.getSpatialExtentOfApplication()));
+        }
+        return toReturn;
+    }
 }

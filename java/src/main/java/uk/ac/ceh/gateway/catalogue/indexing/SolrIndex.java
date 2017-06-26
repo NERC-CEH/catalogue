@@ -44,6 +44,8 @@ public class SolrIndex {
     private @Field List<String> impScale;
     private @Field List<String> impTopic;
     private @Field List<String> impWaterPollutant;
+    private @Field List<String> modelType;
+    private @Field List<String> inmsDemonstrationRegion;
 
     public SolrIndex addLocations(List<String> locations) {
         if(this.locations == null) {
