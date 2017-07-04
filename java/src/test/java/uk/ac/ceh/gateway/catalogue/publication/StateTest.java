@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import static org.junit.Assert.*;
 import org.junit.Test;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 
 public class StateTest {
     private final State draft;

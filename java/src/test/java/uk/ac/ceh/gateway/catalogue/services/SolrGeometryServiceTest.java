@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import com.vividsolutions.jts.io.WKTReader;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;

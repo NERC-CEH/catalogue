@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.util;
 
 import java.util.List;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.springframework.http.MediaType;

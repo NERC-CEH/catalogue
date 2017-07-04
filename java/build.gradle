@@ -1,0 +1,60 @@
+apply plugin: 'war'
+apply plugin: 'idea'
+
+ext {
+    javaVersion = '1.8'
+    cehComponentsVersion = '1.0.43'
+    springVersion = '4.2.6.RELEASE'
+    springSecurityVersion = '4.1.0.RELEASE'
+}
+sourceCompatibility = javaVersion
+
+repositories {
+    maven { url "http://nexus.nerc-lancaster.ac.uk/content/repositories/releases" }
+    mavenCentral()
+}
+
+dependencies {
+    compile "uk.ac.ceh.components:datastore-git:${cehComponentsVersion}"
+    compile "uk.ac.ceh.components:userstore-crowd:${cehComponentsVersion}"
+    compile "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
+    compile "uk.ac.ceh.components:springsecurity-userstore:${cehComponentsVersion}"
+    compile "org.hibernate:hibernate-validator:5.2.4.Final"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.8.1"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-guava:2.8.1"
+    compile "com.google.guava:guava:19.0"
+    compile("org.springframework:spring-core:${springVersion}") {
+        exclude(module: 'commons-logging')
+    }
+    compile "org.springframework:spring-webmvc:${springVersion}"
+    compile "org.springframework:spring-context-support:${springVersion}"
+    compile("org.apache.jena:jena-tdb:3.1.0") {
+        exclude(module: 'slf4j-log4j12')
+        exclude(module: 'log4j')
+    }
+    compile "commons-fileupload:commons-fileupload:1.3.2"
+    compile "org.springframework.security:spring-security-web:${springSecurityVersion}"
+    compile "org.springframework.security:spring-security-core:${springSecurityVersion}"
+    compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
+    compile "net.sf.ehcache:ehcache:2.10.2.2.21"
+    compile("org.apache.solr:solr-solrj:4.10.4") {
+        exclude(module: 'slf4j-api')
+        exclude(module: 'slf4j-log4j12')
+        exclude(module: 'log4j')
+    }
+    compile "com.vividsolutions:jts:1.13"
+    compile "ch.qos.logback:logback-classic:1.1.7"
+    compile "org.slf4j:jcl-over-slf4j:1.7.21"
+    compile "org.freemarker:freemarker:2.3.23"
+    testCompile('junit:junit:4.12') {
+        exclude(module: 'org.hamcrest-core')
+    }
+    testCompile('org.mockito:mockito-core:1.10.19') {
+        exclude(module: 'org.hamcrest-core')
+    }
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
+    testCompile "org.springframework:spring-test:${springVersion}"
+    providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
+    compileOnly 'org.projectlombok:lombok:1.16.18'
+    testCompile 'org.projectlombok:lombok:1.16.18'
+}

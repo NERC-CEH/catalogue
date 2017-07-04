@@ -3,7 +3,7 @@ package uk.ac.ceh.gateway.catalogue.converters;
 import java.io.IOException;
 import java.util.UUID;
 import javax.xml.xpath.XPathExpressionException;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;

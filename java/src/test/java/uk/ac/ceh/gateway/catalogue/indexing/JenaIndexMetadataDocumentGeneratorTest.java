@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import org.apache.jena.rdf.model.Statement;
 import java.util.List;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.assertThat;

@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Before;

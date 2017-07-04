@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.io.IOUtils;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;

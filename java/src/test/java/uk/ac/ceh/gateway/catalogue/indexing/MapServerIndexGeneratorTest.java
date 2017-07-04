@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import freemarker.template.Configuration;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;

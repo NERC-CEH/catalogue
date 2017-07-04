@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
