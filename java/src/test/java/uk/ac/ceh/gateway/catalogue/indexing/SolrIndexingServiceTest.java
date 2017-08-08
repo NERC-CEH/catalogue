@@ -7,18 +7,16 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+
+import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import org.mockito.Mock;
@@ -53,24 +51,15 @@ public class SolrIndexingServiceTest {
     @Before
     public void createSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
-//        service = spy(new SolrIndexingService(
-//            reader,
-//            listingService,
-//            repo,
-//            indexGenerator,
-//            solrServer,
-//            lookupService,
-//            identifierService
-//        ));
-        service = new SolrIndexingService(
-                reader,
-                listingService,
-                repo,
-                indexGenerator,
-                solrServer,
-                lookupService,
-                identifierService
-        );
+        service = spy(new SolrIndexingService(
+            reader,
+            listingService,
+            repo,
+            indexGenerator,
+            solrServer,
+            lookupService,
+            identifierService
+        ));
     }
     
     @Test
@@ -157,18 +146,16 @@ public class SolrIndexingServiceTest {
     public void checkThatExceptionIsThrownIfDocumentFailsToIndex() throws DocumentIndexingException, SolrServerException, IOException, UnknownContentTypeException {
         //Given
         String revId = "Latest";
-//        List<String> documents = Arrays.asList("doc1", "doc2");
-        List<String> documents = Arrays.asList("doc1");
+        List<String> documents = Arrays.asList("doc1", "doc2");
 
-        when(solrServer.addBean(any(Object.class))).thenThrow(new SolrServerException("Please carry on"));
-//                                                   .thenReturn(new UpdateResponse());
+        when(solrServer.addBean(any())).thenThrow(new SolrServerException("Please carry on"))
+                                                   .thenReturn(null);
         
         //When
         service.indexDocuments(documents, revId);
         
         //Then
-        verify(solrServer, times(1)).addBean(any());
-//        fail("Expected to fail with a DocumentIndexingException");
+        fail("Expected to fail with a DocumentIndexingException");
     }
     
     @Test

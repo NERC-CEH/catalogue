@@ -646,7 +646,7 @@ public class ServiceConfig {
                         html
                 )));
         
-        return new ValidationIndexingService(
+        return new ValidationIndexingService<MetadataDocument>(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
@@ -657,7 +657,7 @@ public class ServiceConfig {
     }
     
     //Perform an initial index of solr if their is no content inside
-    protected void performReindexIfNothingIsIndexed(DocumentIndexingService service) {
+    void performReindexIfNothingIsIndexed(DocumentIndexingService service) {
         try {
             if(service.isIndexEmpty()) {
                 service.rebuildIndex();

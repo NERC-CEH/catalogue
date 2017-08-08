@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -77,9 +78,10 @@ public class PermissionService {
     
     public boolean userCanEdit(@NonNull String file) {
         try {
-            CatalogueUser user = getCurrentUser();
-            DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
-            MetadataInfo document = getMetadataInfo(file, latestRevision.getRevisionID());
+            final CatalogueUser user = getCurrentUser();
+            final DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
+            final String revisionID = latestRevision.getRevisionID();
+            final MetadataInfo document = getMetadataInfo(file, revisionID);
             if (user.isPublic()) {
                 return false;
             } else if(userCanMakePublic(document.getCatalogue())) {
@@ -121,16 +123,14 @@ public class PermissionService {
     }
     
     private boolean userCan(Predicate<String> filter) {
-        CatalogueUser user = getCurrentUser();
+        final CatalogueUser user = getCurrentUser();
         if (user.isPublic()) {
             return false;
         } else {
             return groupStore.getGroups(user)
                 .stream()
                 .map(Group::getName)
-                .filter(filter)
-                .findFirst()
-                .isPresent();
+                .anyMatch(filter);
         }
     }
     
@@ -144,12 +144,8 @@ public class PermissionService {
     
     private MetadataInfo getMetadataInfo(String file, String revision) {
         try {
-            return documentInfoMapper.readInfo(
-                repo.getData(
-                    revision,
-                    format("%s.meta", file)
-                ).getInputStream()
-            );
+            final DataDocument dataDocument = repo.getData(revision, format("%s.meta", file));
+            return documentInfoMapper.readInfo(dataDocument.getInputStream());
         } catch (IOException ex) {
             throw new PermissionDeniedException(
                 String.format(

@@ -24,14 +24,14 @@ import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class SearchQueryTest {
-    public static final String ENDPOINT = "http://catalogue.com/documents";
-    public static final String DEFAULT_BBOX = null;
-    public static final int DEFAULT_PAGE = 1;
-    public static final int DEFAULT_ROWS = 20;
-    public static final List<FacetFilter> DEFAULT_FILTERS = Collections.EMPTY_LIST;
+    static final String ENDPOINT = "http://catalogue.com/documents";
+    static final String DEFAULT_BBOX = null;
+    static final int DEFAULT_PAGE = 1;
+    static final int DEFAULT_ROWS = 20;
+    static final List<FacetFilter> DEFAULT_FILTERS = Collections.emptyList();
     @Mock private GroupStore<CatalogueUser> groupStore; 
     private static final FacetFactory FACET_FACTORY = new HardcodedFacetFactory();
-    public static final List<Facet> DEFAULT_FACETS = FACET_FACTORY.newInstances(
+    static final List<Facet> DEFAULT_FACETS = FACET_FACTORY.newInstances(
         Arrays.asList("resourceType","licence")
     );
     
