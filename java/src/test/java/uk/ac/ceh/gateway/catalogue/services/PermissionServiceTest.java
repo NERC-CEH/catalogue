@@ -66,7 +66,7 @@ public class PermissionServiceTest {
         given(repo.getData(any(String.class), any(String.class))).willThrow(DataRepositoryException.class);
         
         //When
-        boolean actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "VIEW");
+        permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "VIEW");
         
         //Then
         fail("Should not be able to get metadata record for unknown");

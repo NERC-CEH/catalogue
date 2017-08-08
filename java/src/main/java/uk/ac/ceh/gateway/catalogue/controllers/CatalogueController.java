@@ -45,7 +45,7 @@ public class CatalogueController {
         @RequestParam(value = "catalogue", required = false) String catalogue,
         @RequestParam(value = "identifier", required = false)String identifier
     ) throws DocumentRepositoryException {
-        List<Catalogue> catalogues = new ArrayList(catalogueService.retrieveAll());
+        List<Catalogue> catalogues = new ArrayList<>(catalogueService.retrieveAll());
         
         try {
             if(catalogue != null) {
