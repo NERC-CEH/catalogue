@@ -53,6 +53,7 @@ public class PermissionResource {
         addPermissions(info, builders, Permission.VIEW);
         addPermissions(info, builders, Permission.EDIT);
         addPermissions(info, builders, Permission.DELETE);
+        addPermissions(info, builders, Permission.UPLOAD);
         
         builders.forEach((k, v) -> {
             toReturn.add(v.build());
@@ -81,6 +82,9 @@ public class PermissionResource {
                     case DELETE:
                         builder.canDelete(true);
                         break;
+                    case UPLOAD:
+                        builder.canUpload(true);
+                        break;
                 }
             });
     }
@@ -88,7 +92,7 @@ public class PermissionResource {
     @Value
     public static class IdentityPermissions {
         private final String identity;
-        private final boolean canView, canEdit, canDelete;
+        private final boolean canView, canEdit, canDelete, canUpload;
 
         @Builder
         @JsonCreator
@@ -96,12 +100,14 @@ public class PermissionResource {
             @JsonProperty("identity") String identity,
             @JsonProperty("canView") boolean canView,
             @JsonProperty("canEdit") boolean canEdit,
-            @JsonProperty("canDelete") boolean canDelete
+            @JsonProperty("canDelete") boolean canDelete,
+            @JsonProperty("canUpload") boolean canUpload
         ) {
             this.identity = Objects.requireNonNull(Strings.emptyToNull(identity));
             this.canView = canView;
             this.canEdit = canEdit;
             this.canDelete = canDelete;
+            this.canUpload = canUpload;
         }
     }
 }

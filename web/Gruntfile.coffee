@@ -148,6 +148,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'prep', ['clean', 'combine_harvester:openlayers']
   grunt.registerTask 'test', ['clean:test', 'coffee', 'jasmine']
-  grunt.registerTask 'develop', ['less', 'copy:requirejs', 'concurrent:watch']
+  grunt.registerTask 'develop', ['less', 'copy:requirejs']
   grunt.registerTask 'build', ['clean', 'less', 'cssmin', 'requirejs']
   grunt.registerTask 'default', ['prep', 'build', 'test']
