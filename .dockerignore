@@ -1,0 +1,16 @@
+.gradle
+cache
+datastore
+docs
+fixtures
+java
+!java/build/libs
+mapfiles
+mapserver
+shell
+solr
+spec
+target
+test-reports
+web/test
+.

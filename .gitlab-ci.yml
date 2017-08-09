@@ -3,7 +3,6 @@ variables:
   CONTAINER_SOLR_IMAGE:        registry.gitlab.ceh.ac.uk/eip/catalogue:solr-$CI_BUILD_REF_NAME
   CONTAINER_MAPSERVER_IMAGE:   registry.gitlab.ceh.ac.uk/eip/catalogue:mapserver-$CI_BUILD_REF_NAME
   DOCKER_DAEMON_ARGS:          -g /cache/docker
-  MAVEN_OPTS:                  -Dmaven.repo.local=$CI_PROJECT_DIR/cache/mvn
   DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
   NODE_KEY: catalogue_version
   NODE_VALUE: $CI_BUILD_REF_NAME
@@ -14,11 +13,6 @@ stages:
   - docker
   - deploy
 
-cache:
-  key: "$CI_BUILD_NAME"
-  paths:
-    - cache/
-
 mirror:
   stage: build
   image: buildpack-deps:xenial-scm
@@ -27,12 +21,12 @@ mirror:
 
 java:
   stage: build
-  image: maven:3.2-jdk-8
+  image: openjdk:8-alpine
   script:
-    - mvn -f java/pom.xml install
+    - java/gradlew --project-dir java clean build 
   artifacts:
     paths:
-      - java/target/ROOT.war
+      - java/build/libs/Catalogue.war
 
 web:
   stage: build

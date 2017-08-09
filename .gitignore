@@ -3,6 +3,7 @@
 /cache
 .vagrant
 /target
+java/.gradle
 
 # Ignore the secret configuration file
 puppet/hieradata/secrets.yaml
