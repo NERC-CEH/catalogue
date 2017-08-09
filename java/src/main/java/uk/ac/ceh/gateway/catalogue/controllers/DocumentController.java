@@ -319,6 +319,12 @@ public class DocumentController {
     ) throws DocumentRepositoryException  {
         return documentRepository.read(file);
     }
+
+    @PreAuthorize("@permission.userCanUpload(#file)")
+    @RequestMapping (value = "documents/{file}/upload", method = RequestMethod.GET)
+    public ModelAndView documentsUpload(@PathVariable("file") String file) {
+        return new ModelAndView("/html/documents-upload.html.tpl");
+    }
     
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
     @RequestMapping(value = "history/{revision}/{file}",
