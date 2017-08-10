@@ -24,7 +24,6 @@ define [
   'cs!models/LinkEditorMetadata'
   'cs!views/CehModelEditorView'
   'cs!views/CehModelApplicationEditorView',
-  'cs!models/Dropzone'
   'cs!views/DropzoneView'
   'bootstrap'
   'dropzone'
@@ -32,7 +31,7 @@ define [
   _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata,
-    CehModelEditorView, CehModelApplicationEditorView, Dropzone, DropzoneView
+    CehModelEditorView, CehModelApplicationEditorView, DropzoneView
 ) ->
 
   ###
@@ -55,7 +54,6 @@ define [
   initDropzone: ->
     view = new DropzoneView
       el: '#dropzone'
-      model: new Dropzone()
 
   initStudyAreaMap: ->
     view = new StudyAreaView();
