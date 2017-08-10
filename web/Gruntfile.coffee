@@ -150,4 +150,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'test', ['clean:test', 'coffee', 'jasmine']
   grunt.registerTask 'develop', ['less', 'copy:requirejs']
   grunt.registerTask 'build', ['clean', 'less', 'cssmin', 'requirejs']
-  grunt.registerTask 'default', ['prep', 'build', 'test']
+  grunt.registerTask 'default', ['prep', 'build']
