@@ -1,6 +1,6 @@
 exclude:
   - README.md
-  - Gruntfile.coffee
+  - Gruntfile.js
   - bower.json
   - package.json
   - LICENSE

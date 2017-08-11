@@ -1,9 +1,7 @@
-/datastore
-/mapfiles
-/cache
-.vagrant
-/target
-java/.gradle
+datastore/
+mapfiles/
+cache/
+.gradle/
 
 # Ignore the secret configuration file
 puppet/hieradata/secrets.yaml
@@ -14,12 +12,11 @@ npm-debug.log
 
 # Ignore webdriver directories (created by rspec/capybara testing)
 webdriver*
+test-reports/
 .idea
 *~
 rspec_screenshots/
 **/nbproject/**
-*.sublime-workspace
-javac-services*
 
 *.*.swp
-/java/targetold/
+*.iml

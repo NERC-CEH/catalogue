@@ -2,7 +2,7 @@ DOCKER   := docker run --rm -v $(CURDIR):$(CURDIR) -v $(CURDIR)/cache:/cache -w 
 COMPOSE  := $(DOCKER) -v /var/run/docker.sock:/var/run/docker.sock docker/compose:1.12.0
 SELENIUM := $(COMPOSE) -f docker-compose.yml -f docker-compose.selenium.yml
 NPM      := $(COMPOSE) run node npm
-GRADLE	 := $(CURDIR)/java/gradlew --project-dir $(CURDIR)/java --build-cache
+MVN			 := $(CURDIR)/java/mvnw --project-dir $(CURDIR)/java --build-cache
 
 .PHONY: build clean web java docker test-data develop selenium
 

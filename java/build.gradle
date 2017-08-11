@@ -1,17 +1,8 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        // gives us the dependencies and dependencyUpdates tasks
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
-    }
+plugins {
+    id 'war'
+    id 'idea'
+    id 'com.github.ben-manes.versions' version '0.15.0'
 }
-
-apply plugin: 'war'
-apply plugin: 'idea'
-apply plugin: 'com.github.ben-manes.versions'
 
 ext {
     javaVersion = '1.8'
