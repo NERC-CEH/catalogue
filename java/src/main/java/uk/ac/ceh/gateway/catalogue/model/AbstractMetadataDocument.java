@@ -3,16 +3,19 @@ package uk.ac.ceh.gateway.catalogue.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Data
 @Accessors(chain = true)
@@ -25,6 +28,7 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     @JsonIgnore
     private MetadataInfo metadata;
     private Set<Relationship> relationships;
+    private List<Keyword> keywords;
     
     @Override
     @JsonIgnore
@@ -32,5 +36,20 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
         return Optional.ofNullable(metadataDate)
             .map(md -> md.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
             .orElse("");
+    }
+
+    @Override
+    @JsonIgnore
+    public List<Keyword> getAllKeywords() {
+        return keywords;
+    }
+
+    @Override
+    public MetadataDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
+        keywords = Optional.ofNullable(keywords)
+                .orElse(new ArrayList<>());
+
+        keywords.addAll(additionalKeywords);
+        return this;
     }
 }

@@ -1,7 +1,9 @@
+build/
 datastore/
 mapfiles/
 cache/
 .gradle/
+.vscode/
 
 # Ignore the secret configuration file
 puppet/hieradata/secrets.yaml
