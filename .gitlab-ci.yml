@@ -23,7 +23,7 @@ java:
   stage: build
   image: openjdk:8
   script:
-    - ./gradlew :java:clean :java:build :web:grunt_build
+    - ./gradlew :java:clean :java:build :web:grunt_default
   artifacts:
     paths:
       - java/build/libs/ROOT.war
