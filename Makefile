@@ -18,6 +18,9 @@ web:
 	$(NPM) run bower
 	$(NPM) run build
 
+npm-build:
+	$(NPM) run build
+
 java:
 	$(MAVEN) -f java/pom.xml clean package
 

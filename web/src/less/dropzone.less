@@ -1,0 +1,40 @@
+.dropzone {
+    padding-top: 15px;
+
+    &-area {
+        margin-top: 15px;
+        height: 60px;
+        border: dashed 1px #338ddd;
+        background-color: lighten(#4999e1, 25%);
+
+        .title {
+            text-align: center;
+            line-height: 10px;
+        }
+    }
+
+    .file-row {
+        margin-top: 15px;
+
+        .max-size {
+            &.is-inactive {
+                display: none;
+            }
+
+            &.is-active {
+                display: block;
+            }
+        }
+
+        .progress {
+            margin-bottom: 0;
+            margin-top: 8px;
+        }
+
+        .name,
+        .size {
+            margin-bottom: 0;
+            line-height: 32px;
+        }
+    }
+}

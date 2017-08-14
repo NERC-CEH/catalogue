@@ -10,6 +10,7 @@
           <th>Can View</th>
           <th>Can Edit</th>
           <th>Can Delete</th>
+          <th>Can Upload</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -20,6 +21,7 @@
             <td><input type="checkbox" disabled <#if permission.canView>checked</#if>></td>
             <td><input type="checkbox" disabled <#if permission.canEdit>checked</#if>></td>
             <td><input type="checkbox" disabled <#if permission.canDelete>checked</#if>></td>
+            <td><input type="checkbox" disabled <#if permission.canUpload>checked</#if>></td>
             <td><button class="btn btn-default btn-xs" disabled ><i class="glyphicon glyphicon-remove"></i></button></td>
           </tr>
         </#list>
