@@ -8,4 +8,4 @@ node {
   download = true
 }
 
-grunt_build.dependsOn 'installGrunt', 'npmInstall'
+grunt_default.dependsOn 'installGrunt', 'npmInstall'
