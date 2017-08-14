@@ -10,7 +10,7 @@ all: clean test-data build develop
 build: web java docker
 
 clean:
-	$(SELENIUM) down
+	$(GRADLE) composeDown
 
 web:
 	$(GRADLE) :web:grunt_build
@@ -19,14 +19,11 @@ java:
 	$(GRADLE) clean build
 
 docker:
-	$(COMPOSE) build
-
-test-data:
-	sh shell/test-data.sh
+	$(GRADLE) composePull
 
 develop:
-	$(COMPOSE) up
+	$(GRADLE) composeUp
 
-selenium: test-data
+selenium:
 	$(SELENIUM) up --force-recreate -d firefox chrome
 	$(SELENIUM) run ruby_test

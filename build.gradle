@@ -1,0 +1,38 @@
+plugins {
+  id 'com.avast.gradle.docker-compose' version '0.4.5'
+  id 'org.ajoberstar.grgit' version '2.0.0'
+}
+
+defaultTasks 'clean', 'prep', 'build', ':web:grunt_default', 'composeUp'
+
+composeUp.dependsOn ':java:war'
+
+task removeMapfiles(type: Delete) {
+  delete fileTree(dir: 'mapfiles', include: '*')
+}
+
+task removeDatastore(type: Delete) {
+  delete 'datastore/.git'
+  delete fileTree(dir: 'datastore', include: '*')
+}
+
+task copyFixtures(type: Copy) {
+  mustRunAfter removeDatastore 
+  from 'fixtures/datastore/REV-1'
+  into 'datastore'
+}
+
+task addFixturesToGit {
+  mustRunAfter copyFixtures
+  doLast {
+    def repo = grgit.init(dir: 'datastore')
+    repo.add(patterns: ['.'])
+    repo.commit(message: 'Adding fixtures', committer: new org.ajoberstar.grgit.Person('Test', 'test@example.com'))
+  }
+}
+
+task prep {
+  description 'Prepare development environment with test fixtures'
+  removeMapfiles
+  addFixturesToGit
+}
