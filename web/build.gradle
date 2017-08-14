@@ -3,5 +3,9 @@ plugins {
   id 'com.moowork.grunt' version '1.2.0'
 }
 
-grunt_build.dependsOn 'installGrunt'
-grunt_build.dependsOn 'npmInstall'
+node {
+  version = '6.11.2'
+  download = true
+}
+
+grunt_build.dependsOn 'installGrunt', 'npmInstall'
