@@ -23,21 +23,10 @@ java:
   stage: build
   image: openjdk:8-alpine
   script:
-    - java/gradlew --project-dir java clean build 
+    - ./gradlew :java:clean :java:build :web:grunt_build
   artifacts:
     paths:
-      - java/build/libs/Catalogue.war
-
-web:
-  stage: build
-  image: node:6.2.0
-  script:
-    - cd web
-    - npm install
-    - npm run bower
-    - npm run build
-  artifacts:
-    paths:
+      - java/build/libs/ROOT.war
       - web/src/css/
       - web/src/scripts/main-out.js
 
