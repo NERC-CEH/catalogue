@@ -16,5 +16,5 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 public class MonitoringFacility extends AbstractMetadataDocument {
     private String facilityType;
     private TimePeriod temporalExtent;
-    
+
 }

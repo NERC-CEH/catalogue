@@ -11,6 +11,11 @@ ext {
     springSecurityVersion = '4.2.3.RELEASE'
     jacksonVersion = '2.9.0'
 }
+
+war {
+    archiveName 'ROOT.war'
+}
+
 sourceCompatibility = javaVersion
 
 repositories {
