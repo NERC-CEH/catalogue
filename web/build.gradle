@@ -1,5 +1,6 @@
 plugins {
-  id "com.moowork.grunt" version "1.2.0"
+  id 'com.moowork.node' version '1.2.0'
+  id 'com.moowork.grunt' version '1.2.0'
 }
 
 grunt_build.dependsOn 'installGrunt'
