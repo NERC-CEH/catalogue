@@ -21,7 +21,7 @@ mirror:
 
 java:
   stage: build
-  image: openjdk:8-alpine
+  image: openjdk:8
   script:
     - ./gradlew :java:clean :java:build :web:grunt_build
   artifacts:
