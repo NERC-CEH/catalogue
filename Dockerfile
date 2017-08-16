@@ -22,6 +22,7 @@ RUN rm -Rf /usr/local/tomcat/webapps/*
 COPY schemas              /opt/ceh-catalogue/schemas
 COPY templates            /opt/ceh-catalogue/templates
 COPY web/src              /opt/ceh-catalogue/web
+COPY dropbox              /var/ceh-catalogue/dropbox
 COPY java/target/ROOT.war /tmp/ROOT.war
 RUN unzip -d /usr/local/tomcat/webapps/ROOT /tmp/ROOT.war
 
