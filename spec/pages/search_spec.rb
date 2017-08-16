@@ -22,4 +22,8 @@ describe "Search page" do
       expect(result).to have_content 'Natural radionuclide concentrations in soil, water and sediments in England and Wales'
     end
   end
+
+  after(:each) do |x|
+    page.save_screenshot("test-reports/#{x.metadata[:full_description]}.png")
+  end
 end
