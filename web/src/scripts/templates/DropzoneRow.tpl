@@ -12,7 +12,7 @@
     </div>
     <div class="col-md-4">
         <div class="progress active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
+            <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress>Uploading</div>
         </div>
     </div>
     <div class="col-md-4">
