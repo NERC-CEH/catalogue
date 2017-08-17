@@ -27,3 +27,4 @@ javac-services*
 .classpath
 .project
 org.eclipse.*
+.vscode
