@@ -16,6 +16,8 @@ The Project is built up of a few different parts:
 - **/fixtures**   - Test data used by the `rspec` suite
 - **/spec**       - RSpec end-to-end test suite
 
+**NB:** `web/src/vendor/requirejs` needs to be left alone otherwise the build breaks
+
 ## Getting started (With Docker)
 
 The catalogue requires a few system libraries to be installed in order to aid development. These are:
