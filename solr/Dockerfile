@@ -15,3 +15,5 @@ ADD https://repo1.maven.org/maven2/log4j/log4j/1.2.16/log4j-1.2.16.jar /usr/loca
 ADD https://repo1.maven.org/maven2/com/vividsolutions/jts/1.13/jts-1.13.jar /usr/local/tomcat/lib/jts.jar
 
 COPY config /var/solr
+
+HEALTHCHECK CMD curl --fail http://localhost:8080/documents/select?q=*%3A* || exit 1
