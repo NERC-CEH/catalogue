@@ -13,7 +13,7 @@
     "backbone": "1.2.0",
     "underscore": "1.8.3",
     "requirejs-text": "2.0.14",
-    "requirejs-tpl": "7438735aa84b76af0fb266d8373b5fbaab2a1a03",
+    "requirejs-tpl": "git://github.com/JulienCabanes/requirejs-tpl",
     "require-cs": "0.5.0",
     "openlayers": "release-2.13.1",
     "chartjs": "1.0.2",
