@@ -1,13 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
+import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -15,6 +10,13 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -71,8 +73,8 @@ public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConv
                     }
                 }
             }
-        } catch(TemplateException te) {
-            throw new HttpMessageNotWritableException("There was an error in the template", te);
+        } catch(TemplateException | ParseException e) {
+            throw new HttpMessageNotWritableException("There was an error in the template", e);
         }
     }
 }

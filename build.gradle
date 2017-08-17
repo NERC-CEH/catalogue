@@ -1,38 +1,32 @@
+import org.ajoberstar.grgit.Person
+
 plugins {
   id 'com.avast.gradle.docker-compose' version '0.4.5'
   id 'org.ajoberstar.grgit' version '2.0.0'
 }
 
-defaultTasks 'clean', 'prep', 'build', ':web:grunt_default', 'composeUp'
+defaultTasks 'composeDown', 'clean', 'prepFixtures', 'build', ':web:grunt_default', 'composeUp'
 
 composeUp.dependsOn ':java:war'
 
-task removeMapfiles(type: Delete) {
-  delete fileTree(dir: 'mapfiles', include: '*')
-}
+task prepFixtures {
+  description 'Prepare development environment with test fixtures'
 
-task removeDatastore(type: Delete) {
-  delete 'datastore/.git'
-  delete fileTree(dir: 'datastore', include: '*')
-}
+  doFirst {
 
-task copyFixtures(type: Copy) {
-  mustRunAfter removeDatastore 
-  from 'fixtures/datastore/REV-1'
-  into 'datastore'
-}
+    delete {
+      delete fileTree(dir: 'mapfiles')
+      delete 'datastore/.git'
+      delete fileTree(dir: 'datastore')
+    }
 
-task addFixturesToGit {
-  mustRunAfter copyFixtures
-  doLast {
+    copy {
+      into 'datastore'
+      from 'fixtures/datastore/REV-1'
+    }
+
     def repo = grgit.init(dir: 'datastore')
     repo.add(patterns: ['.'])
-    repo.commit(message: 'Adding fixtures', committer: new org.ajoberstar.grgit.Person('Test', 'test@example.com'))
+    repo.commit(message: 'Adding fixtures', committer: new Person('prep', 'prep@example.com'))
   }
-}
-
-task prep {
-  description 'Prepare development environment with test fixtures'
-  removeMapfiles
-  addFixturesToGit
 }

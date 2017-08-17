@@ -1,4 +1,4 @@
-FROM tomcat:8.0-jre8
+FROM tomcat:8.5-jre8
 MAINTAINER oss@ceh.ac.uk
 
 RUN echo 'CATALINA_OPTS="                                                            \
@@ -24,5 +24,7 @@ COPY templates            /opt/ceh-catalogue/templates
 COPY web/src              /opt/ceh-catalogue/web
 COPY java/build/libs/ROOT.war /tmp/ROOT.war
 RUN unzip -od /usr/local/tomcat/webapps/ROOT /tmp/ROOT.war
+
+HEALTHCHECK CMD curl --fail http://localhost:8080/eidc/documents || exit 1
 
 RUN ln -s /opt/ceh-catalogue/web /usr/local/tomcat/webapps/ROOT/static

@@ -1,4 +1,5 @@
 .gradle
+.vscode
 cache
 datastore
 docs
@@ -7,7 +8,6 @@ java
 !java/build/libs
 mapfiles
 mapserver
-shell
 solr
 spec
 target

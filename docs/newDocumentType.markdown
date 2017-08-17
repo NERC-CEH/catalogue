@@ -36,8 +36,6 @@
 
 * new JenaIndex{documentType}Generator to index fields not covered by JenaIndexMetadataDocumentGenerator
 
-## PostProcessing
-
 ## Editor
 
 ### New editor

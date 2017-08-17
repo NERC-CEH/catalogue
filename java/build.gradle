@@ -19,7 +19,8 @@ war {
 sourceCompatibility = javaVersion
 
 repositories {
-    maven { url "http://nexus.nerc-lancaster.ac.uk/content/repositories/releases" }
+    mavenLocal()
+    maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
     mavenCentral()
 }
 

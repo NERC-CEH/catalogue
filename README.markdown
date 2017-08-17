@@ -22,16 +22,14 @@ The catalogue requires a few system libraries to be installed in order to aid de
 
 - Git
 - Docker
-- Make
+- Docker Compose
 
-Having installed these you can then build the catalogue code base by running `make`. 
+Having installed these you can then build the catalogue code base by running `./gradlew`. 
 
-To develop against the code base, you can run `make develop`. This will construct an environment which compiles LESS stylesheets and responds to changes to the *templates*.
-
-`make test-data` will populate a repository of test-data. Re-running `make build` will create a catalogue which is powered by this repository.
+To develop against the code base, you can run `./gradlew composeUp`. This will construct an environment which compiles LESS stylesheets and responds to changes to the *templates*.
 
 ### Access the catalogue search page
-`make develop` then visit [http://localhost:8080/documents](http://localhost:8080/documents)
+`./gradlew composeUp` then visit [http://localhost:8080/documents](http://localhost:8080/documents)
 
 ### Selenium Testing (Docker)
 

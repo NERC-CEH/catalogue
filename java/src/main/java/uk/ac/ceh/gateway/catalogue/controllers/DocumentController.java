@@ -1,21 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -23,34 +14,29 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.CEH_MODEL_APPLICATION_JSON_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.CEH_MODEL_JSON_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_JSON_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.LINKED_JSON_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MODEL_JSON_VALUE;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
+
 @Controller
-public class DocumentController {
+public class DocumentController extends AbstractDocumentController {
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
-    private final DocumentRepository documentRepository;
     
     @Autowired
-    public DocumentController(
-        DocumentRepository documentRepository
-    ) {
-        this.documentRepository = documentRepository;
+    public DocumentController(DocumentRepository documentRepository) {
+        super(documentRepository);
     }
     
     @RequestMapping (value = "id/{id}",
@@ -258,42 +244,6 @@ public class DocumentController {
             user,
             file,
             document
-        );
-    }
-    
-    private ResponseEntity<MetadataDocument> saveNewMetadataDocument(
-        CatalogueUser user,
-        MetadataDocument document,
-        String catalogue,
-        String message
-    ) throws DocumentRepositoryException {
-        MetadataDocument data = documentRepository.saveNew(
-            user,
-            document,
-            catalogue,
-            message
-        );
-        return ResponseEntity
-            .created(URI.create(data.getUri()))
-            .body(data);
-        
-    }
-    
-    private ResponseEntity<MetadataDocument> saveMetadataDocument(
-        CatalogueUser user,
-        String file,
-        MetadataDocument document
-    ) throws DocumentRepositoryException {
-        document.setMetadata(
-            documentRepository.read(file).getMetadata()
-        );
-        return ResponseEntity.ok(
-            documentRepository.save(
-                user,
-                document,
-                file,
-                String.format("Edited document: %s", file)
-            )
         );
     }
     
