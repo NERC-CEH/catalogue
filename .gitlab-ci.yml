@@ -31,6 +31,7 @@ java:
   script:
     - mvn -f java/pom.xml install
   artifacts:
+    when: always
     paths:
       - java/target/ROOT.war
 
@@ -43,6 +44,7 @@ web:
     - npm run bower
     - npm run build
   artifacts:
+    when: always
     paths:
       - web/src/css/
       - web/src/scripts/main-out.js
@@ -51,6 +53,7 @@ rspec:
   stage: test
   image: gitlab/dind
   artifacts:
+    when: always
     paths:
       - test-reports
   before_script:

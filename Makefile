@@ -39,7 +39,10 @@ web-test:
 	# Just run the javascript tests
 	$(NPM) run test
 
-docker:
+dropbox:
+	mkdir -p dropbox
+
+docker: dropbox
 	$(COMPOSE) build
 
 test-data:

@@ -1,6 +1,17 @@
-.dropzone {
-    padding-top: 15px;
+.glyphicon-refresh-animate {
+    animation: spin .7s infinite linear;
+}
 
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.dropzone {
     &-area {
         margin-top: 15px;
         height: 60px;
@@ -8,8 +19,13 @@
         background-color: lighten(#4999e1, 25%);
 
         .title {
+            margin-bottom: 45px;
             text-align: center;
             line-height: 10px;
+
+            .glyphicon {
+                margin-top: -15px;
+            }
         }
     }
 

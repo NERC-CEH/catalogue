@@ -117,6 +117,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
+import uk.ac.ceh.gateway.catalogue.services.FileUploadService;
 import uk.ac.ceh.gateway.catalogue.services.GeminiExtractorService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
@@ -324,6 +325,11 @@ public class ServiceConfig {
     @Bean
     public PermissionService permission() {
         return new PermissionService(dataRepository, documentInfoMapper(), groupStore);
+    }
+
+    @Bean
+    public FileUploadService fileUploadService() {
+        return new FileUploadService(new File("/var/ceh-catalogue/dropbox"));
     }
     
     @Bean
