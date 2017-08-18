@@ -43,17 +43,21 @@
   }
 
   .component  {
+    border-bottom: 2px solid lighten(@gray-light, 25%);
+    padding-bottom:1.25em;
     .form-group;
     display: none;
     &.visible {
       display: block;
     }
+    .component  {
     border-style: solid;
-    border-width: 2px;
+    border-width: 1px;
     border-color: lighten(@gray-light, 15%);
     border-radius: 5px;
-    padding: 9px;
-    margin-bottom: 9px;
+    padding: 0.5em;
+    margin-bottom: 1.25em;
+    }
     .row {
       @spacer: 3px;
       margin-bottom: @spacer;
@@ -67,7 +71,7 @@
   }
   .multiline .existing > .row {
     border-style: solid;
-    border-width: 2px;
+    border-width: 1px;
     border-color: lighten(@gray-light, 15%);
     border-radius: 5px;
     padding: 4px;
