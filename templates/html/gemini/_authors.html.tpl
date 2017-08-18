@@ -20,10 +20,14 @@
       <div class="organisationName">${author.organisationName?html}</div>
     </#if>
   </#if>
-  <#if author.orcid?has_content>
-    <div class="orchid"><a href="${author.orcid?ensure_starts_with("http://orcid.org/")}" target="_blank"><img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD"> http://orcid.org/${author.orcid?html}</a></div>
-  </#if>
-  <#if author.address?has_content>
+  <#if author.nameIdentifier?has_content>
+    <div class="nameIdentifier">
+    <#if author.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+      <#assign nameScheme="ORCID", nameSchemeURL="https://orcid.org/">
+      <a href="${author.nameIdentifier}" target="_blank"><img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD"> ${author.nameIdentifier?html}</a>
+    </#if>
+    </div>
+  </#if>  <#if author.address?has_content>
     <div class="postalAddress hidden-xs">
       <#if author.address.deliveryPoint?has_content><div>${author.address.deliveryPoint?html}</div></#if>
       <#if author.address.city?has_content><div>${author.address.city?html}</div></#if>

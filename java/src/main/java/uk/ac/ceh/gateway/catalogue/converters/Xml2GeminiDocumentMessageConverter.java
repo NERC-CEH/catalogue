@@ -52,7 +52,7 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id, title, description, alternateTitle, resourceType, 
         browseGraphicUrl, resourceStatus, metadataDate, lineage, 
-        metadataStandardName, metadataStandardVersion, supplementalInfo, 
+        metadataStandardName, metadataStandardVersion, 
         spatialRepresentationType, datasetLanguage, 
         accessConstraints, securityConstraints, parentIdentifier;
     private final XPath xpath;
@@ -106,7 +106,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.spatialResolutionConverter = new SpatialResolutionConverter(xpath);
         this.metadataStandardName = xpath.compile(XPaths.METADATA_STANDARD);
         this.metadataStandardVersion = xpath.compile(XPaths.METADATA_VERSION);
-        this.supplementalInfo = xpath.compile(XPaths.SUPPLEMENTAL_INFO);
         this.spatialRepresentationType = xpath.compile(XPaths.SPATIAL_REPRESENTATION_TYPE);
         this.datasetLanguage = xpath.compile(XPaths.DATASET_LANGUAGE);
         this.accessConstraints = xpath.compile(XPaths.ACCESS_CONSTRAINT);
@@ -161,7 +160,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setSpatialResolutions(spatialResolutionConverter.convert(document));
             toReturn.setMetadataStandardName(emptyToNull(metadataStandardName.evaluate(document)));
             toReturn.setMetadataStandardVersion(emptyToNull(metadataStandardVersion.evaluate(document)));
-            toReturn.setSupplementalInfo(emptyToNull(supplementalInfo.evaluate(document)));
             toReturn.setSpatialRepresentationTypes(getListOfStrings(document, spatialRepresentationType));
             toReturn.setUseConstraints(useConstraintsConverter.convert(document));
             toReturn.setAccessConstraints(accessConstraintsConverter.convert(document));

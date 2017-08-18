@@ -6,9 +6,12 @@ define [
 
   validate: (attrs) ->
     labels =
-      creationDate: 'Creation Date'
-      publicationDate: 'Publication Date'
-      revisionDate: 'Revision Date'
+      creationDate: 'Creation date'
+      publicationDate: 'Publication date'
+      revisionDate: 'Revision date'
+      supersededDate: 'Date superseded'
+      deprecatedDate: 'Date deprecated'
+      releasedDate: 'Date released'
       begin: 'Begin'
       end: 'End'
 

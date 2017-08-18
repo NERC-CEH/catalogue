@@ -33,12 +33,13 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <#if catalogue?has_content>
-              <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Search Data</a></li>
+              <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Find data</a></li>
             </#if>
-            <li><a href="http://eidc.ceh.ac.uk/help/catalogueHelp">Help</a></li>
-            <#if catalogue?has_content>
-              <li><a href="${catalogue.url!'/'?html}">${catalogue.title?html}</a></li>
-            </#if>
+            <li><a href="http://eidc.ceh.ac.uk/help/catalogueHelp">Deposit data</a></li>
+            <li><a href="http://eidc.ceh.ac.uk/deposit">Support</a></li>
+            <li><a href="http://eidc.ceh.ac.uk/support">About</a></li>
+            <li><a href="http://eidc.ceh.ac.uk/about">Contact us</a></li>
+            <li><a href="http://eidc.ceh.ac.uk/contact-info">Help</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>

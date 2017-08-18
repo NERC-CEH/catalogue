@@ -13,7 +13,7 @@ define [
 
     if equivalentScale && (distance || uom)
       errors.push
-        message: 'Should not have Distance or UOM with Equivalent Scale'
+        message: 'You should have either an Equivalent scale OR a Distance with UOM'
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

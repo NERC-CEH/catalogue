@@ -27,7 +27,7 @@
         </div>
         <div class="col-sm-8 col-sm-pull-4">
           <#include "gemini/_extent.html.tpl">
-          <#include "gemini/_onlineResources.html.tpl">
+          <#include "gemini/_supplemental.html.tpl">
           <#include "gemini/_quality.html.tpl">
 
           <#include "gemini/_authors.html.tpl">

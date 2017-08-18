@@ -44,7 +44,4 @@
 </${ns}:extent>
 </#list>
 </#if>
-<#if supplementalInfo?has_content>
-<gmd:supplementalInformation><gco:CharacterString>${supplementalInfo}</gco:CharacterString></gmd:supplementalInformation>
-</#if>
 </#escape>
