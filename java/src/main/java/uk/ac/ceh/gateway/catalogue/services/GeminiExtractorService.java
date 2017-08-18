@@ -25,7 +25,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 public class GeminiExtractorService {    
     public List<String> getKeywords(GeminiDocument document) {
         return document.getDescriptiveKeywords().stream()
-                .filter((dk) -> dk.getThesaurusName() == null)
                 .map(DescriptiveKeywords::getKeywords)
                 .flatMap((k) -> k.stream())
                 .map(Keyword::getValue)

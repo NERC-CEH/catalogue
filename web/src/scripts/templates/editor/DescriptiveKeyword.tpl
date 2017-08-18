@@ -1,12 +1,14 @@
 <div class="row">
-  <div class="col-sm-1 col-lg-1">
+  <div class="col-sm-1">
     <label class="control-label" for="descriptiveKeyword<%= data.index %>type">Type</label>
   </div>
-  <div class="col-sm-3 col-lg-3">
+  <div class="col-sm-11">
     <select data-name="type" class="editor-input type" id="descriptiveKeyword<%= data.index %>type">
       <option value="" selected >- Select Type -</option>
+      <option value="CEH Topic">CEH Topic</button>
       <option value="dataCentre">Data Centre</option>
       <option value="discipline">Discipline</button>
+      <option value="INSPIRE Theme">INSPIRE Theme</button>
       <option value="instrument">Instrument</option>
       <option value="place">Place</button>
       <option value="project">Project</option>
@@ -17,11 +19,10 @@
     </select>
   </div>
 </div>
-<h5>Keywords</h5>
-<div class="keywords"></div>
+<div class="keywords row col-sm-11 col-sm-offset-1"></div>
 <div class="row">
-  <div class="col-sm-5 col-lg-5">
-    <div class="dropdown hidden" id="inspireTheme">
+  <div class="col-sm-11 col-sm-offset-1">
+    <div class="keyword-dropdown hidden" id="inspireTheme">
       <button class="editor-button dropdown-toggle" type="button" id="dropdownInspireMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         Choose keyword from the INSPIRE vocabulary
         <span class="caret"></span>
@@ -64,7 +65,7 @@
         <li><a href="http://inspire.ec.europa.eu/theme/us">Utility and Governmental Services</a></li>
       </ul>
     </div>
-    <div class="dropdown hidden" id="cehTopic">
+    <div class="keyword-dropdown hidden" id="cehTopic">
       <button class="editor-button dropdown-toggle" type="button" id="dropdownCehTopicMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         Choose keyword from CEH themes
         <span class="caret"></span>
@@ -92,33 +93,5 @@
       </ul>
     </div>
     <button class="editor-button add">Add <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-  </div>
-</div>
-<h5>Thesaurus</h5>
-<div class="row">
-  <div class="col-sm-1 col-lg-1">
-    <label class="control-label" for="descriptiveKeyword<%= data.index %>title">Title</label>
-  </div>
-  <div class="col-sm-11 col-lg-11">
-      <input data-name='title' class="editor-input" id="descriptiveKeyword<%= data.index %>title" value="<%= data.thesaurusName.title %>">
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-1 col-lg-1">
-    <label class="control-label" for="descriptiveKeyword<%= data.index %>Date">Date</label>
-  </div>
-  <div class="col-sm-2 col-lg-2">
-    <input data-name='date' class="editor-input date" id="descriptiveKeyword<%= data.index %>Date" value="<%= data.thesaurusName.date %>">
-  </div>
-  <div class="col-sm-2 col-lg-2">
-    <label class="control-label" for="descriptiveKeyword<%= data.index %>dateType">Date Type</label>
-  </div>
-  <div class="col-sm-3 col-lg-3">
-    <select data-name="dateType" class="editor-input dateType" id="descriptiveKeyword<%= data.index %>dateType">
-      <option value="" selected >- Select Date Type -</option>
-      <option value="creation">Creation</button>
-      <option value="publication">Publication</button>
-      <option value="revision">Revision</button>
-    </select>
   </div>
 </div>

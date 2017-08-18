@@ -147,6 +147,7 @@
         </gmd:resourceMaintenance>
       </#list>
     </#if>
+		<#include "_INSPIREkeywords.xml.tpl">
 		<#include "_descriptiveKeywords.xml.tpl">
 		<#include "_resourceConstraints.xml.tpl">
 		<#if spatialRepresentationTypes?has_content>

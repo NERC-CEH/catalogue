@@ -222,16 +222,9 @@ define [
           multiline: true
           predefined:
             'INSPIRE Theme':
-              type: 'theme'
-              thesaurusName:
-                title: 'GEMET - INSPIRE themes, version 1.0'
-                date: '2008-06-01'
-                dateType: 'revision'
+              type: 'INSPIRE Theme'
             'CEH Topic':
-              thesaurusName:
-                title: 'CEH Metadata Vocabulary'
-                date: '2014-09-19'
-                dateType: 'creation'
+              type: 'CEH Topic'
           helpText: """
                     <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
                     <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>

@@ -35,7 +35,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
 import uk.ac.ceh.gateway.catalogue.gemini.Service.OperationMetadata;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
-import uk.ac.ceh.gateway.catalogue.gemini.ThesaurusName;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 /**
@@ -694,16 +693,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Then
         assertNotNull("Expected Keywords to not be null", actualKeywords);
         assertThat("Content of Keywords is not as expected", actualKeywords, is(expectedKeywords));
-        
-        ThesaurusName thesaurus = descriptiveKeywords.get(0).getThesaurusName();
-        String expectedTitle = "test thesaurus";
-        assertThat("Expected thesaurus title should equal actual title", thesaurus.getTitle(), equalTo(expectedTitle));
-        
-        LocalDate expectedDate = LocalDate.of(2014, 6, 3);
-        assertThat("Expected thesaurus date should equal actual date", thesaurus.getDate(), equalTo(expectedDate));
-        
-        String expectedDateType = "creation";
-        assertThat("Expected thesaurus dateType should equal actual dateType", thesaurus.getDateType(), equalTo(expectedDateType));
     }
     
     @Test
@@ -803,28 +792,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertThat("Content of Type not as expected", actual, is(expected));
     }
     
-    @Test
-    public void canGetCitedKeywordsThesaurus() throws IOException {
-        
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
-        
-        //Then
-        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
-
-        //When
-        ThesaurusName thesaurusName = descriptiveKeywords.get(0).getThesaurusName();
-        
-        //Then
-        assertNotNull("Expected Thesaurus to not be null", thesaurusName);
-        assertEquals("Title not as expected", "test thesaurus" , thesaurusName.getTitle());
-        assertEquals("Date not as expected", LocalDate.of(2014, 6, 3), thesaurusName.getDate());
-    }
 
     @Test
     public void canGetDescription() throws IOException {
