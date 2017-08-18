@@ -35,11 +35,11 @@
             <#if catalogue?has_content>
               <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Find data</a></li>
             </#if>
-            <li><a href="http://eidc.ceh.ac.uk/help/catalogueHelp">Deposit data</a></li>
-            <li><a href="http://eidc.ceh.ac.uk/deposit">Support</a></li>
-            <li><a href="http://eidc.ceh.ac.uk/support">About</a></li>
-            <li><a href="http://eidc.ceh.ac.uk/about">Contact us</a></li>
-            <li><a href="http://eidc.ceh.ac.uk/contact-info">Help</a></li>
+            <li><a href="http://eidc.ceh.ac.uk/deposit">Deposit data</a></li>
+            <li><a href="http://eidc.ceh.ac.uk/support">Support</a></li>
+            <li><a href="http://eidc.ceh.ac.uk/about">About</a></li>
+            <li><a href="http://eidc.ceh.ac.uk/contact-info">Contact us</a></li>
+            <li><a href="http://eidc.ceh.ac.uk/help">Help</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
