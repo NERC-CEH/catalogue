@@ -7,6 +7,7 @@ define [
     if $('.dz').length
       do @initDeleteButtons
       do @initDropzone
+      do @initFinish
   
   updateChecksums: (files) ->
     checksums = files
@@ -115,3 +116,13 @@ define [
         $('.upload-all').click uploadAll
 
         $('.cancel-all').click cancelAll
+
+  initFinish: ->
+    $('#finish').click ->
+      $.ajax
+        url: window.location.href + '/finish'
+        type: 'POST'
+        headers:
+          Accept: 'application/json'
+        success: (response) ->
+          console.log(response)

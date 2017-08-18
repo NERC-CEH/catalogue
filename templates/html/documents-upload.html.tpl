@@ -32,6 +32,11 @@
                 </#list>
                 </tbody>
             </table>
+            <#if permission.userCanUpload(guid)>
+                <button id='finish' class="btn btn-block btn-success">
+                    <i class="glyphicon glyphicon-ok"></i> Finish
+                </button>
+            </#if>
         </div>
         <#if permission.userCanUpload(guid)>
             <div id="dropzone" class="container">
