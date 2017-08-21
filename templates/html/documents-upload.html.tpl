@@ -33,13 +33,37 @@
                 </tbody>
             </table>
             <#if permission.userCanUpload(guid)>
-                <button id='finish' class="btn btn-block btn-success">
-                    <i class="glyphicon glyphicon-ok"></i> Finish
-                </button>
+            <button type="button" class="btn btn-block btn-success" data-toggle="modal" data-target="#finishConfirmation">
+                <i class="glyphicon glyphicon-ok"></i> Finish
+            </button>
+            <div class="modal fade" id="finishConfirmation" tabindex="-1" role="dialog" aria-labelledby="finishConfirmationLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="finishConfirmationLabel">Finish Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            You are about to move these files to <b>finished</b>
+                            <br />
+                            Once you do this you will not be able to undo it
+                            <br />
+                            <br />
+                            Are you sure you want to upload these files?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id='finish' type="button" class="btn btn-success">Finish</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
             </#if>
         </div>
         <#if permission.userCanUpload(guid)>
             <div id="dropzone" class="container">
+                <h2>Upload Files</h2>
                 <div class="dropzone">
                     <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
                         <a class="btn btn-success fileinput-button" role="button" disabled>
