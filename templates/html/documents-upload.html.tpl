@@ -1,6 +1,6 @@
 <#import "skeleton.html.tpl" as skeleton>
 <@skeleton.master title="Upload Files">
-    <div id='documents-upload'>
+    <div id='documents-upload' class='documents-upload'>
         <div class="container">
             <h1>Documents</h1>
             <a class="btn btn-default navbar-btn" href="/documents/${guid}">Return to metadata</a>
@@ -19,10 +19,10 @@
                 <tbody class='checksums-list'>
                 <#list checksums as checksum>
                     <tr data-file="${checksum.filename}">
-                        <td>${checksum.getMD5Hash()}</td>
-                        <td>${checksum.filename}</td>
+                        <td class='checksum-value'>${checksum.getMD5Hash()}</td>
+                        <td class='checksum-file'>${checksum.filename}</td>
                         <#if permission.userCanUpload(guid)>
-                        <td class="text-center">
+                        <td class="checksum-delete text-center">
                             <button class="btn btn-block btn-danger delete" data-file="${checksum.filename}">
                                 <i class="glyphicon glyphicon-trash"></i> Delete
                             </button>
@@ -33,32 +33,19 @@
                 </tbody>
             </table>
             <#if permission.userCanUpload(guid)>
-            <button type="button" class="btn btn-block btn-success" data-toggle="modal" data-target="#finishConfirmation">
-                <i class="glyphicon glyphicon-ok"></i> Finish
-            </button>
-            <div class="modal fade" id="finishConfirmation" tabindex="-1" role="dialog" aria-labelledby="finishConfirmationLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="finishConfirmationLabel">Finish Confirmation</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            You are about to move these files to <b>finished</b>
-                            <br />
-                            Once you do this you will not be able to undo it
-                            <br />
-                            <br />
-                            Are you sure you want to upload these files?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button id='finish' type="button" class="btn btn-success">Finish</button>
-                    </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Finalize</div>
+                    <div class="panel-body">
+                        <p>Once you have uploaded all select finish for them to be finalized</p>
+                        <b>You cannot undo this action, make sure you have all appropiate files uploaded</b>
+                        <p class='finish-message text-danger'></p>
+                        <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
+                            <a class="btn btn-success finish" role="button" disabled>
+                                <i class="glyphicon glyphicon-ban-circle"></i> Finish
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
             </#if>
         </div>
         <#if permission.userCanUpload(guid)>

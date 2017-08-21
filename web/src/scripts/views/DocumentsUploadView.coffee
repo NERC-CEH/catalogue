@@ -1,3 +1,5 @@
+MEGEBYTE = 1000000
+
 define [
   'backbone'
   'tpl!templates/DropzoneRow.tpl',
@@ -6,8 +8,8 @@ define [
   initialize: (options) ->
     if $('.dz').length
       do @initDeleteButtons
-      do @initDropzone
       do @initFinish
+      do @initDropzone
   
   updateChecksums: (files) ->
     checksums = files
@@ -23,33 +25,49 @@ define [
   initDeleteButtons: ->
     $('.delete').click (event) ->
       button = $(event.target)
-      file = button.attr 'data-file'
+      file = button.parent().parent().find('.checksum-file').text()
       $.ajax
         url: window.location.href + '/' + file
         type: 'DELETE'
         success: ->
           do button.parent().parent().remove
+  
+  disableFinish: (message) ->
+    $('.finish-message').text(message)
+    $('.finish').attr 'disabled', on
+    $('.finish .glyphicon').addClass('glyphicon-ban-circle')
+    $('.finish .glyphicon').removeClass('glyphicon-ok')
+  
+  enableFinish: ->
+    $('.finish-message').text('')
+    $('.finish').attr 'disabled', off
+    $('.finish .glyphicon').addClass('glyphicon-ok')
+    $('.finish .glyphicon').removeClass('glyphicon-ban-circle')
 
   loadedDropzone: ->
     $('.dz .title').text 'Drag files here'
     $('.fileinput-button').attr 'disabled', off
+
+    do @enableFinish
   
   toggleUploadCancelAll: (status) ->
     $('.upload-all').attr 'disabled', status
     $('.cancel-all').attr 'disabled', status
 
   addedFile: (file) ->
+    @disableFinish 'Some files have not been uploaded yet'
     @toggleUploadCancelAll off
     $('.file-row').last().attr('id', file.id)
     $('#' + file.id + ' .upload').last().click => @dropzone.enqueueFile file
     $('#' + file.id + ' .cancel').last().click => @dropzone.removeFile file
-    if file.size > 1000
+    if file.size > 300 * MEGEBYTE
       $('#' + file.id + ' .max-size').last().removeClass 'is-inactive'
       $('#' + file.id + ' .max-size').last().addClass 'is-active'
 
   removedFile: ->
     if @dropzone.files.length == 0
       @toggleUploadCancelAll on
+      do @enableFinish
 
   errorMessages:
     default: 'Failed'
@@ -62,6 +80,11 @@ define [
     progress.removeClass 'progress-bar-success'
     progress.addClass 'progress-bar-danger'
     progress.text message
+
+    upload = $('#' + file.id + ' .upload')
+    upload.attr 'disabled', yes
+
+    @disableFinish 'Resolve all issues below'
   
   success: (file, res) ->
     progress = $('#' + file.id + ' .progress-bar')
@@ -91,7 +114,7 @@ define [
 
     @dropzone = new Dropzone '.dz',
       url: window.location.href + '/add'
-      parallelUploads: 20
+      maxFilesize: 1250
       autoQueue: no
       previewTemplate: dropzoneRow()
       previewsContainer: '#previews'
@@ -99,6 +122,9 @@ define [
       init: ->
         do loadedDropzone
         fileCount = -1
+
+        status = () =>
+          @.files.map((f) -> f.status)
 
         @on 'addedfile', (file) ->
           fileCount += 1
@@ -108,8 +134,25 @@ define [
         @on 'removedfile', removedFile
 
         @on 'error', (file, errorMessage, xhr) ->
-          message = errorMessages[xhr.status] || errorMessages.default
+          message = errorMessage || errorMessages.default
+          message = errorMessages[xhr.status] if xhr
           error file, message
+        
+        # @on 'processing', ->
+        #   console.log 'processing'
+        #   console.log(status())
+        
+        # @on 'sending', ->
+        #   console.log 'sending'
+        #   console.log(status())
+        
+        # @on 'complete', ->
+        #   console.log 'complete'
+        #   console.log(status())
+        
+        # @on 'cancelled', ->
+        #   console.log 'cancelled'
+        #   console.log(status())
 
         @on 'success', success
 
