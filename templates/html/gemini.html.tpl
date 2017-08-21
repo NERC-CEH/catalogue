@@ -4,6 +4,14 @@
 
 <#assign authors       = _.filter(responsibleParties, _.isAuthor) >
 <#assign otherContacts = _.reject(responsibleParties, _.isAuthor) >
+<#macro getLabel val array>
+  <#list array as item>
+    <#if item['value']==val>
+      ${item['label']}
+      <#break/>
+    </#if>
+  </#list>
+</#macro>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=rdf">
   <div id="metadata">
    <div class="container">

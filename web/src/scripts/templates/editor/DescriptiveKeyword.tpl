@@ -22,7 +22,7 @@
 <div class="keywords row col-sm-11 col-sm-offset-1"></div>
 <div class="row">
   <div class="col-sm-11 col-sm-offset-1">
-    <div class="keyword-dropdown hidden" id="inspireTheme">
+    <div class="keyword-add hidden" id="inspireTheme">
       <button class="editor-button dropdown-toggle" type="button" id="dropdownInspireMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         Choose keyword from the INSPIRE vocabulary
         <span class="caret"></span>
@@ -65,7 +65,7 @@
         <li><a href="http://inspire.ec.europa.eu/theme/us">Utility and Governmental Services</a></li>
       </ul>
     </div>
-    <div class="keyword-dropdown hidden" id="cehTopic">
+    <div class="keyword-add hidden" id="cehTopic">
       <button class="editor-button dropdown-toggle" type="button" id="dropdownCehTopicMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         Choose keyword from CEH themes
         <span class="caret"></span>
@@ -92,6 +92,8 @@
         <li><a href="http://onto.nerc.ac.uk/CEHMD/topic/16">Water quality</a></li>
       </ul>
     </div>
+    <div class="keyword-add">
     <button class="editor-button add">Add <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+    </div>
   </div>
 </div>

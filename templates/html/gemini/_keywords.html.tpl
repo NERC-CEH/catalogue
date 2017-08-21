@@ -3,7 +3,7 @@
   <dl id="keywords" class="dl-horizontal">
 
     <#if topicCategories?has_content>
-    <dt>Topic Categories</dt>
+    <dt>Topic categories</dt>
     <dd>
       <#list topicCategories as topic>
         <#if topic.uri?has_content>
@@ -28,7 +28,7 @@
             <#assign keywordtype = 'Other keywords' >
         </#if>
         <dt>
-          ${keywordtype}
+          ${keywordtype?cap_first}
         </dt>
         <dd class="descriptive-keywords">
           <#list descriptiveKeyword.keywords as keyword>

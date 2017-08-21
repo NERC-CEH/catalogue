@@ -111,9 +111,10 @@ define [
           label: 'Reference dates'
           ObjectInputView: DatasetReferenceDateView,
           helpText: """
-                    <p>The publication date is the date when the data resource is being made available or released for use. <u>This is different from the creation date</u> which is the date on which the data resource was created.</p>
-                    <p>If you include a revision date, it implies that the resource has been changed as a consequence of edits or updates.
-                    For EIDC records it is usual practice for revised resources to have an entirely new record, therefore revision date is rarely necessary.</p>
+                    <p><u>Created</u> date is the date on which the data resource was originally created.</p>
+                    <p><u>Published</u> date is the date when this metadata record is made available publicly.</p>
+                    <p>For embargoed resources, the <u>Released</u> date is the date on which the embargo was lifted.</p>
+                    <p><u>Superseded</u> date is the date on which the resource was superseded by another resource (where relevant).</p>
                     """
 
         new ParentView
@@ -508,37 +509,6 @@ define [
               dateType: 'publication'
       ]
     ,
-      label: 'Web service'
-      title: 'Web service details'
-      views: [
-        new ServiceView
-          model: @model
-          modelAttribute: 'service'
-          ModelType: Service
-          label: 'Service'
-
-        new ParentView
-          model: @model
-          modelAttribute: 'mapDataDefinition.data'
-          ModelType: MapDataSource
-          multiline: true
-          label: 'Web map service'
-          ObjectInputView: MapDataSourceView
-          helpText: """
-                    <p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/maps/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats are:</p>
-                    <ul>
-                      <li>Shapefiles - Vector (ignore the .shp extension when specifying the path) </li>
-                      <li>GeoTiff - Raster</li>
-                    </ul>
-                    <p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
-                    <p>Vector datasets should be spatially indexed (using <a href="http://mapserver.org/utilities/shptree.html">shptree</a>)</p>
-                    <p>Raster datasets should be provided with <a href="http://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
-                    <p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
-                    This is only needed if you configure 'Stylying=Classification' for your GeoTiff.</p>
-                    <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>
-                    """
-      ]
-    ,
       label: 'Supplemental'
       title:  'Supplemental information and funding'
       views: [
@@ -567,6 +537,37 @@ define [
           helpText: """
                     <p>Include here details of any grants or awards that were used to generate this resource.</p>
                     <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
+                    """
+      ]
+    ,
+      label: 'Web service'
+      title: 'Web service details'
+      views: [
+        new ServiceView
+          model: @model
+          modelAttribute: 'service'
+          ModelType: Service
+          label: 'Service'
+
+        new ParentView
+          model: @model
+          modelAttribute: 'mapDataDefinition.data'
+          ModelType: MapDataSource
+          multiline: true
+          label: 'Web map service'
+          ObjectInputView: MapDataSourceView
+          helpText: """
+                    <p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/maps/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats are:</p>
+                    <ul>
+                      <li>Shapefiles - Vector (ignore the .shp extension when specifying the path) </li>
+                      <li>GeoTiff - Raster</li>
+                    </ul>
+                    <p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
+                    <p>Vector datasets should be spatially indexed (using <a href="http://mapserver.org/utilities/shptree.html">shptree</a>)</p>
+                    <p>Raster datasets should be provided with <a href="http://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
+                    <p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
+                    This is only needed if you configure 'Stylying=Classification' for your GeoTiff.</p>
+                    <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>
                     """
       ]
     ,
