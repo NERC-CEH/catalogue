@@ -21,16 +21,22 @@ define [
       .join ''
 
     document.querySelector('.checksums-list').innerHTML = checksums
+    do @initDeleteButtons
   
   initDeleteButtons: ->
-    $('.delete').click (event) ->
+    $('.delete').unbind 'click'
+    $('.delete').click =>
       button = $(event.target)
       file = button.parent().parent().find('.checksum-file').text()
       $.ajax
-        url: window.location.href + '/' + file
-        type: 'DELETE'
-        success: ->
-          do button.parent().parent().remove
+        url: window.location.href + '/delete'
+        type: 'POST'
+        data:
+          file: file
+        headers:
+          Accept: 'application/json'
+        success: (res) =>
+          @updateChecksums res
   
   disableFinish: (message) ->
     $('.finish-message').text(message)
@@ -47,7 +53,6 @@ define [
   loadedDropzone: ->
     $('.dz .title').text 'Drag files here'
     $('.fileinput-button').attr 'disabled', off
-
     do @enableFinish
   
   toggleUploadCancelAll: (status) ->

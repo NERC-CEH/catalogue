@@ -74,12 +74,12 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#guid)")
-    @RequestMapping(value = "/upload/{guid}/{file:.+}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "upload/{guid}/delete", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<Void> deleteFile(@PathVariable("guid") String guid, @PathVariable("file") String file)
+    public List<FileChecksum> deleteFile(@PathVariable("guid") String guid, @RequestParam("file") String file)
             throws IOException {
         fileUploadService.deleteFile(guid, file);
-        return ResponseEntity.noContent().build();
+        return fileUploadService.getChecksums(guid);
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT, reason = "File already exists")

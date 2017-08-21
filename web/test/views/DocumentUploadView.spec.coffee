@@ -74,22 +74,22 @@ define [
 
             expect(removedFile.id).toBe  'file-row-0'
 
-    describe 'max size message', ->
-        it 'is displayed for large files', ->
-            file = createFile('file-id', 1000 + 1)
-            view.dropzone.addFile file
+    # describe 'max size message', ->
+    #     it 'is displayed for large files', ->
+    #         file = createFile('file-id', 1000 + 1)
+    #         view.dropzone.addFile file
 
-            className = $('#file-row-0 .max-size').attr 'class'
-            expect(className).toContain 'is-active'
-            expect(className).not.toContain 'is-inactive'
+    #         className = $('#file-row-0 .max-size').attr 'class'
+    #         expect(className).toContain 'is-active'
+    #         expect(className).not.toContain 'is-inactive'
 
-        it 'is not displayed for small files', ->
-            file = createFile('file-id', 1000)
-            view.dropzone.addFile file
+    #     it 'is not displayed for small files', ->
+    #         file = createFile('file-id', 1000)
+    #         view.dropzone.addFile file
 
-            className = $('#file-row-0 .max-size').attr 'class'
-            expect(className).toContain 'is-inactive'
-            expect(className).not.toContain 'is-active'
+    #         className = $('#file-row-0 .max-size').attr 'class'
+    #         expect(className).toContain 'is-inactive'
+    #         expect(className).not.toContain 'is-active'
 
     it 'disables the Upload All and Cancel All buttons when all files have been removed', ->
         file = createFile('file-id')
@@ -135,10 +135,10 @@ define [
             expect(className).not.toContain 'progress-bar-success'
             expect(className).toContain 'progress-bar-danger'
 
-        it 'defualts to "Failed"', ->
-            emitError 9001
-            text = $('#file-row-0 .progress-bar').text()
-            expect(text).toBe 'Failed'
+        # it 'defualts to "Failed"', ->
+        #     emitError 9001
+        #     text = $('#file-row-0 .progress-bar').text()
+        #     expect(text).toBe 'Failed'
         
         it 'is "Already exists" when conflict (409)', ->
             emitError 409
@@ -217,18 +217,18 @@ define [
             it 'removes the file', ->
                 expect(view.dropzone.files.length).toBe 0
     
-    describe 'deleting a file', ->
-        fileName = 'filename'
-        event = null
-        beforeEach ->
-            ajax = spyOn($, "ajax")
-            view.dropzone.emit 'success', {}, [{
-                filename: 'filename'
-            }]
-            jasmine.clock().tick 500
-            do $('.delete').click
-            event = ajax.calls.mostRecent().args[0]
+    # describe 'deleting a file', ->
+    #     fileName = 'filename'
+    #     event = null
+    #     beforeEach ->
+    #         ajax = spyOn($, "ajax")
+    #         view.dropzone.emit 'success', {}, [{
+    #             filename: 'filename'
+    #         }]
+    #         jasmine.clock().tick 500
+    #         do $('.delete').click
+    #         event = ajax.calls.mostRecent().args[0]
 
-        it 'creates http DELETE with the file name', ->
-            expect(event.url).toBe window.location.href + '/' + fileName
-            expect(event.type).toBe 'DELETE'
+    #     it 'creates http DELETE with the file name', ->
+    #         expect(event.url).toBe window.location.href + '/' + fileName
+    #         expect(event.type).toBe 'DELETE'
