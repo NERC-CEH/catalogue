@@ -36,7 +36,8 @@ public class UploadController {
     private final PermissionService permissionservice;
 
     @Autowired
-    public UploadController(FileUploadService fileUploadService, JiraService jiraService, PermissionService permissionservice) {
+    public UploadController(FileUploadService fileUploadService, JiraService jiraService,
+            PermissionService permissionservice) {
         this.fileUploadService = fileUploadService;
         this.jiraService = jiraService;
         this.permissionservice = permissionservice;
@@ -51,16 +52,21 @@ public class UploadController {
 
         val issues = jiraService.getIssues("eeffacad-1f23-456a-aac0-1bda40958f75");
         String message = "";
-        if (issues.size() == 0 || issues.size() > 1) message = "if you have any issues please contact an admin";
+        if (issues.size() == 0 || issues.size() > 1)
+            message = "if you have any issues please contact an admin";
         else {
             val issue = issues.get(0);
             val status = issue.getStatus();
             isScheduled = status.equals("scheduled");
 
-            if(status.equals("open") || status.equals("approved")) message = "awaiting scheduling from admin";
-            else if(status.equals("in progress")) message = "awaiting approval from admin";
-            else if(status.equals("resolved") || status.equals("closed")) message = "finsihed";
-            else if(status.equals("on hold")) message = "plase contact an admin";
+            if (status.equals("open") || status.equals("approved"))
+                message = "awaiting scheduling from admin";
+            else if (status.equals("in progress"))
+                message = "awaiting approval from admin";
+            else if (status.equals("resolved") || status.equals("closed"))
+                message = "finsihed";
+            else if (status.equals("on hold"))
+                message = "plase contact an admin";
         }
 
         model.put("message", message);
