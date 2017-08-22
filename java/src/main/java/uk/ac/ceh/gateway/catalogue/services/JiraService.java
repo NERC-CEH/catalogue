@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
@@ -9,12 +8,9 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
 
-@Slf4j
 @AllArgsConstructor
 public class JiraService {
     private final WebResource resource;
@@ -51,13 +47,16 @@ public class JiraService {
         JiraIssue issue = results.getIssues().get(0);
         return issue.getKey();
     }
+    
+    public List<JiraIssue> getIssues (String guid) {
+        String jql = "project=eidchelp and component='data transfer' and labels=%s";
 
-    public void getIssue (@NonNull String guid) {
-        guid = "b902e25a-ffec-446f-a270-03cc2501fe1d";
-        String key = getKey(guid);
-        log.error("This key is {}", key);
-        key = "EIDCHELP-19181";
-        comment(key, "The documents have been uploaded to dropbox and have been finialized by the user");
-        scheduleStart(key);
+        ClientResponse response = resource
+            .path("search")
+            .queryParam("jql", String.format(jql, guid))
+            .accept(MediaType.APPLICATION_JSON_TYPE)
+            .get(ClientResponse.class);
+        JiraSearchResults results = response.getEntity(JiraSearchResults.class);
+        return results.getIssues();
     }
 }

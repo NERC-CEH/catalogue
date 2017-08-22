@@ -4,14 +4,16 @@
         <div class="container">
             <h1>Documents</h1>
             <a class="btn btn-default navbar-btn" href="/documents/${guid}">Return to metadata</a>
+            <p>${message}</p>
         </div>
         <div id='checksums' class="container checksums">
+            <h3>Files and Checksums</h3>
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th>Checksum</th>
                         <th>File</th>
-                        <#if permission.userCanUpload(guid)>
+                        <#if canUpload>
                         <th id='delete'></th>
                         </#if>
                     </tr>
@@ -21,7 +23,7 @@
                     <tr data-file="${checksum.filename}">
                         <td class='checksum-value'>${checksum.getMD5Hash()}</td>
                         <td class='checksum-file'>${checksum.filename}</td>
-                        <#if permission.userCanUpload(guid)>
+                        <#if canUpload>
                         <td class="checksum-delete text-center">
                             <button class="btn btn-block btn-danger delete" data-file="${checksum.filename}">
                                 <i class="glyphicon glyphicon-trash"></i> Delete
@@ -32,7 +34,7 @@
                 </#list>
                 </tbody>
             </table>
-            <#if permission.userCanUpload(guid)>
+            <#if canUpload>
                 <div class="panel panel-default">
                     <div class="panel-heading">Finalize</div>
                     <div class="panel-body">
@@ -48,7 +50,7 @@
                 </div>
             </#if>
         </div>
-        <#if permission.userCanUpload(guid)>
+        <#if canUpload>
             <div id="dropzone" class="container">
                 <h2>Upload Files</h2>
                 <div class="dropzone">
