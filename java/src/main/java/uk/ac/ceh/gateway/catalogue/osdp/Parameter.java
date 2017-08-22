@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class Parameter extends AbstractMetadataDocument {
-    private String definition, unitOfMeasure;
+public class Parameter {
+    private String name, definition, unitOfMeasure;
 }

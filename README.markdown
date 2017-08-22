@@ -1,14 +1,12 @@
 # CEH Catalogue
 
-This is the CEH metadata catalogue project. It is built using Docker.
+The CEH metadata catalogue project.
 
 ## Project Structure
 
-The Project is built up of a few different parts:
-
 - **/docs**       - Documentation
 - **/web**        - Location of the web component of the project, this is mainly `coffeescript` and `less` style sheets
-- **/java**       - Standard `maven` project which powers the server side of the catalogue
+- **/java**       - Standard `gradle` project which powers the server side of the catalogue
 - **/templates**  - `Freemarker` templates which are used by the `java` application for generating the different metadata views
 - **/schemas**    - XSD Schemas which are used to validate the various output xml files
 - **/solr**       - `Solr Server` web application, this handles the free-text indexing and searching of the application
@@ -16,22 +14,29 @@ The Project is built up of a few different parts:
 - **/fixtures**   - Test data used by the `rspec` suite
 - **/spec**       - RSpec end-to-end test suite
 
-## Getting started (With Docker)
+## Getting started
 
-The catalogue requires a few system libraries to be installed in order to aid development. These are:
+The catalogue requires a few tools:
 
 - Git
 - Docker
 - Docker Compose
 
-Having installed these you can then build the catalogue code base by running `./gradlew`. 
+Having installed these you can then build the catalogue code base by running:
 
-To develop against the code base, you can run `./gradlew composeUp`. This will construct an environment which compiles LESS stylesheets and responds to changes to the *templates*.
+    ./gradlew
 
-### Access the catalogue search page
-`./gradlew composeUp` then visit [http://localhost:8080/documents](http://localhost:8080/documents)
+the EIDC catalogue is then available on:
 
-### Selenium Testing (Docker)
+    http://localhost:8080/eidc/documents
+
+## Developing Javascript & LESS
+
+    ./gradlew :web:grunt_concurrent
+
+will run a process that watches the javascript and less directories and recompiles the files on an changes.
+
+## Selenium Testing
 
 The project contains an `rspec` suite of selenium tests. These can be executed using the `make selenium` command. This will create the browsers required for testing in docker containers and run through the test suite.
 
@@ -48,7 +53,7 @@ A catalogue has it's own:
 
 New catalogues can be added, [instructions here](docs/multipleCatalogues.markdown).
 
-### Catalogue Content
+## Catalogue Content
 
 A catalogue can reuse existing metadata content by linking to public metadata in another catalogue using the Link document type.
 
@@ -85,22 +90,22 @@ The Catalogue api will gracefully handle certain upstream mapping failures. Thes
 
 Below are the images which are displayed and there meaning:
 
-## Legend not found
+### Legend not found
 ![Legend not found](java/src/main/resources/legend-not-found.png)
 
 Displayed when a Legend image is requested but one has not been specified in the GetCapabilities
 
-## Upstream Failure
+### Upstream Failure
 ![Upstream Failure](java/src/main/resources/proxy-failure.png)
 
 The call to the server failed for some unspecified reason, this may be because the connection failed.
 
-## Invalid response
+### Invalid response
 ![Invalid response](java/src/main/resources/proxy-invalid-response.png)
 
 The upstream service returned some content, but it was not in the format which was expected. It maybe that the upstream service replied with an error message rather than an image.
 
-## Invalid Resource
+### Invalid Resource
 ![Invalid Resource](java/src/main/resources/proxy-invalid-resource.png)
 
 The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or an corrupt external get capabilities.

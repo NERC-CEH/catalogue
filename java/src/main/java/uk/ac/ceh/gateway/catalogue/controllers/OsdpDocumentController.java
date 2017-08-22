@@ -256,39 +256,6 @@ public class OsdpDocumentController extends AbstractDocumentController {
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,
-        consumes = OSDP_PARAMETER_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> newParameter(
-        @ActiveUser CatalogueUser user,
-        @RequestBody Parameter document,
-        @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
-        return saveNewMetadataDocument(
-            user,
-            document,
-            catalogue,
-            "new OSDP Parameter"
-        );
-    }
-
-    @PreAuthorize("@permission.userCanEdit(#file)")
-    @RequestMapping(value = "documents/{file}",
-        method = RequestMethod.PUT,
-        consumes = OSDP_PARAMETER_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> updateParameter(
-        @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file,
-        @RequestBody Parameter document
-    ) throws DocumentRepositoryException  {
-        return saveMetadataDocument(
-            user,
-            file,
-            document
-        );
-    }
-
-    @PreAuthorize("@permission.userCanCreate(#catalogue)")
-    @RequestMapping (value = "documents",
-        method = RequestMethod.POST,
         consumes = OSDP_PUBLICATION_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newPublication(
         @ActiveUser CatalogueUser user,

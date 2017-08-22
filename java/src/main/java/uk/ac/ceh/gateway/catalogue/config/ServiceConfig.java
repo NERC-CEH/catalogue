@@ -167,11 +167,6 @@ public class ServiceConfig {
             .type(OSDP_MONITORING_PROGRAMME_SHORT)
             .build();
 
-        DocumentType parameter = DocumentType.builder()
-            .title("Parameter")
-            .type(OSDP_PARAMETER_SHORT)
-            .build();
-
         DocumentType publication = DocumentType.builder()
             .title("Publication")
             .type(OSDP_PUBLICATION_SHORT)
@@ -196,7 +191,6 @@ public class ServiceConfig {
                 .documentType(monitoringActivity)
                 .documentType(monitoringFacility)
                 .documentType(monitoringProgramme)
-                .documentType(parameter)
                 .documentType(publication)
                 .documentType(sample)
                 .facetKey("resourceType")
@@ -366,6 +360,14 @@ public class ServiceConfig {
 
         //OSDP
         converters.add(new Object2TemplatedMessageConverter<>(Agent.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(uk.ac.ceh.gateway.catalogue.osdp.Dataset.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Location.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(uk.ac.ceh.gateway.catalogue.osdp.Model.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(MonitoringActivity.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(MonitoringFacility.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(MonitoringProgramme.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Publication.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration()));
         
         // Gemini Message Converters
         converters.add(new Object2TemplatedMessageConverter<>(GeminiDocument.class,       freemarkerConfiguration()));
@@ -474,7 +476,6 @@ public class ServiceConfig {
                 .register(OSDP_MONITORING_ACTIVITY_SHORT, MonitoringActivity.class)
                 .register(OSDP_MONITORING_FACILITY_SHORT, MonitoringFacility.class)
                 .register(OSDP_MONITORING_PROGRAMME_SHORT, MonitoringProgramme.class)
-                .register(OSDP_PARAMETER_SHORT, Parameter.class)
                 .register(OSDP_PUBLICATION_SHORT, Publication.class)
                 .register(OSDP_SAMPLE_SHORT, Sample.class);
     }

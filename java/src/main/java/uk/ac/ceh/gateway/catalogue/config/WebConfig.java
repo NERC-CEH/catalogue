@@ -76,8 +76,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String OSDP_MONITORING_FACILITY_SHORT       = "osdp-monitoring-facility";
     public static final String OSDP_MONITORING_PROGRAMME_JSON_VALUE = "application/vnd.osdp.monitoring-programme+json";
     public static final String OSDP_MONITORING_PROGRAMME_SHORT      = "osdp-monitoring-programme";
-    public static final String OSDP_PARAMETER_JSON_VALUE    = "application/vnd.osdp.parameter+json";
-    public static final String OSDP_PARAMETER_SHORT         = "osdp-parameter";
     public static final String OSDP_PUBLICATION_JSON_VALUE  = "application/vnd.osdp.publication+json";
     public static final String OSDP_PUBLICATION_SHORT       = "osdp-publication";
     public static final String OSDP_SAMPLE_JSON_VALUE       = "application/vnd.osdp.sample+json";
@@ -147,7 +145,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(OSDP_MONITORING_ACTIVITY_SHORT, MediaType.parseMediaType(OSDP_MONITORING_ACTIVITY_JSON_VALUE))
                         .put(OSDP_MONITORING_FACILITY_SHORT, MediaType.parseMediaType(OSDP_MONITORING_FACILITY_JSON_VALUE))
                         .put(OSDP_MONITORING_PROGRAMME_SHORT, MediaType.parseMediaType(OSDP_MONITORING_PROGRAMME_JSON_VALUE))
-                        .put(OSDP_PARAMETER_SHORT, MediaType.parseMediaType(OSDP_PARAMETER_JSON_VALUE))
                         .put(OSDP_PUBLICATION_SHORT, MediaType.parseMediaType(OSDP_PUBLICATION_JSON_VALUE))
                         .put(OSDP_SAMPLE_SHORT, MediaType.parseMediaType(OSDP_SAMPLE_JSON_VALUE))
                         .build()

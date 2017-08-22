@@ -33,16 +33,13 @@ java:
 rspec:
   stage: test
   image: gitlab/dind
+  script:
+    - ./gradlew composeUp selenium
+  after_script:
+    - ./gradlew composeDown
   artifacts:
     paths:
       - test-reports
-  before_script:
-    - apt-get update
-    - apt-get install make
-  script:
-    - make clean docker selenium
-  after_script:
-    - make clean
 
 .deployment_template: &deployment_definition # Hidden deployment definition for docker builds
   stage: docker
