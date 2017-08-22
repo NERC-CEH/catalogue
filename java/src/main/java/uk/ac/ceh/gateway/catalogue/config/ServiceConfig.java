@@ -52,7 +52,33 @@ import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
-import uk.ac.ceh.gateway.catalogue.services.*;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.services.CitationService;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
+import uk.ac.ceh.gateway.catalogue.services.DataciteService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
+import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
+import uk.ac.ceh.gateway.catalogue.services.FileUploadService;
+import uk.ac.ceh.gateway.catalogue.services.GeminiExtractorService;
+import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
+import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
+import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
+import uk.ac.ceh.gateway.catalogue.services.MessageConverterWritingService;
+import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
+import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
+import uk.ac.ceh.gateway.catalogue.services.PermissionService;
+import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
@@ -310,6 +336,11 @@ public class ServiceConfig {
     @Bean
     public PermissionService permission() {
         return new PermissionService(dataRepository, documentInfoMapper(), groupStore);
+    }
+
+    @Bean
+    public FileUploadService fileUploadService() {
+        return new FileUploadService(new File("/var/ceh-catalogue/dropbox"));
     }
     
     @Bean

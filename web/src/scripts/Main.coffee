@@ -23,13 +23,15 @@ define [
   'cs!views/LinkEditorView'
   'cs!models/LinkEditorMetadata'
   'cs!views/CehModelEditorView'
-  'cs!views/CehModelApplicationEditorView'
+  'cs!views/CehModelApplicationEditorView',
+  'cs!views/DocumentsUploadView'
   'bootstrap'
+  'dropzone'
 ], (
   _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata,
-    CehModelEditorView, CehModelApplicationEditorView
+    CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadView
 ) ->
 
   ###
@@ -38,6 +40,7 @@ define [
   we like globally.
   ###
   initialize: ->
+    do @initDocumentsUpload if $('#documents-upload').length
     do @initStudyAreaMap if $('#studyarea-map').length
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
@@ -47,6 +50,10 @@ define [
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
+
+  initDocumentsUpload: ->
+    view = new DocumentsUploadView
+      el: '#dropzone'
 
   initStudyAreaMap: ->
     view = new StudyAreaView();

@@ -19,6 +19,7 @@
       <div class="row">
         <div class="col-sm-4 col-sm-push-8">
           <#include "gemini/_admin.html.tpl">
+          <#include "gemini/_uploadData.html.tpl">
           <#include "gemini/_distribution.html.tpl">
           <#include "gemini/_reuse.html.tpl">
           <#include "gemini/_children.html.tpl">

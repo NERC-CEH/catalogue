@@ -49,12 +49,14 @@ define [
         canView: $('#canView').prop('checked')
         canEdit: $('#canEdit').prop('checked')
         canDelete: $('#canDelete').prop('checked')
+        canUpload: $('#canUpload').prop('checked')
       @model.addPermission permission
 
     $('#identity').val ""
     $('#canView').prop 'checked', false
     $('#canEdit').prop 'checked', false
     $('#canDelete').prop 'checked', false
+    $('#canUpload').prop 'checked', false
 
   leave: ->
     window.location.assign "/documents/#{@model.get 'id'}/permission"

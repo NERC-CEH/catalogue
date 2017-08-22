@@ -20,6 +20,7 @@ require.config({
     'backbone':          { deps: ['underscore', 'jquery'], exports: 'Backbone'}
   },
   paths: {
+    'dropzone':          '../vendor/dropzone/dist/dropzone',
     'bootstrap':         '../vendor/bootstrap/dist/js/bootstrap',
     'colorpicker':       '../vendor/bootstrap-colorpicker/dist/js/bootstrap-colorpicker',
     'cs' :               '../vendor/require-cs/cs',

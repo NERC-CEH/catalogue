@@ -6,6 +6,7 @@
     <th>Can View</th>
     <th>Can Edit</th>
     <th>Can Delete</th>
+    <th>Can Upload</th>
     <th>Action</th>
   </tr>
   </thead>
@@ -15,6 +16,7 @@
       <td><input id="canView" type="checkbox"></td>
       <td><input id="canEdit" type="checkbox"></td>
       <td><input id="canDelete" type="checkbox"></td>
+      <td><input id="canUpload" type="checkbox"></td>
       <td><button id="permissionAdd" class="btn btn-default btn-xs">Add</button></td>
     </tr>
   </tfoot>
@@ -24,7 +26,7 @@
 <div class="navbar navbar-default navbar-fixed-bottom">
   <div class="container">
     <div class="navbar-right">
-      <a href="/documents/<%= id %>" class="btn btn-default navbar-btn">Cancel</a>
+      <a href="/documents/<%= id %>/permission" class="btn btn-default navbar-btn">Cancel</a>
       <button id="permissionSave" class="btn btn-primary navbar-btn"><i class="glyphicon glyphicon-save"></i> Save</button>
     </div>
   </div>

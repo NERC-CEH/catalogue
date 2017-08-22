@@ -25,6 +25,7 @@ java:
   script:
     - ./gradlew :java:clean :java:build :web:grunt_default
   artifacts:
+    when: always
     paths:
       - java/build/libs/ROOT.war
       - web/src/css/
@@ -38,6 +39,7 @@ rspec:
   after_script:
     - ./gradlew composeDown
   artifacts:
+    when: always
     paths:
       - test-reports
 

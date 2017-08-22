@@ -14,7 +14,7 @@ The CEH metadata catalogue project.
 - **/fixtures**   - Test data used by the `rspec` suite
 - **/spec**       - RSpec end-to-end test suite
 
-## Getting started
+**NB:** `web/src/vendor/requirejs` needs to be left alone otherwise the build breaks
 
 The catalogue requires a few tools:
 

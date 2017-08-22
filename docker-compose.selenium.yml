@@ -1,9 +1,5 @@
-# Development docker-compose file
-version: '2'
+version: '3'
 services:
-  web:
-    volumes:
-      - ./datastore:/var/ceh-catalogue/datastore
   mapserver:
     volumes:
       - ./fixtures/mapserver-data:/mapserver/data

@@ -7,3 +7,4 @@ define [
     canView: false
     canEdit: false
     canDelete: false
+    canUpload: false

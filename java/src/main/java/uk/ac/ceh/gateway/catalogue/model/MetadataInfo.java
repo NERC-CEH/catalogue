@@ -37,7 +37,7 @@ public class MetadataInfo {
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "role_cig_readonly";
     public static final String PUBLISHER_GROUP = "role_%s_publisher";
-    
+
     @JsonCreator
     @Builder
     private MetadataInfo(
@@ -57,7 +57,7 @@ public class MetadataInfo {
             this.permissions = HashMultimap.create();
         }
     }
-    
+
     public MetadataInfo(MetadataInfo info) {
         this(
             info.rawType,
@@ -67,7 +67,7 @@ public class MetadataInfo {
             info.permissions
         );
     }
-    
+
     public MetadataInfo withCatalogue(@NonNull String catalogue) {
         return MetadataInfo.builder()
             .rawType(this.rawType)
@@ -77,7 +77,7 @@ public class MetadataInfo {
             .permissions(this.permissions)
             .build();
     }
-    
+
     public MetadataInfo withRawType(String rawType) {
         return MetadataInfo.builder()
             .rawType(rawType)
@@ -87,7 +87,7 @@ public class MetadataInfo {
             .permissions(this.permissions)
             .build();
     }
-    
+
     public MetadataInfo withState(@NonNull String state) {
         return MetadataInfo.builder()
             .rawType(this.rawType)
@@ -97,12 +97,12 @@ public class MetadataInfo {
             .permissions(this.permissions)
             .build();
     }
-      
+
     @JsonIgnore
     public MediaType getRawMediaType() {
         return MediaType.parseMediaType(rawType);
     }
-    
+
     public void addPermission(@NonNull Permission permission, @NonNull String identity) {
         if (PUBLIC_GROUP.equalsIgnoreCase(identity)) {
             if(Permission.VIEW.equals(permission)) {
@@ -113,24 +113,29 @@ public class MetadataInfo {
             permissions.put(permission, identity.toLowerCase());
         }
     }
-    
+
     public MetadataInfo replaceAllPermissions(@NonNull Set<IdentityPermissions> updated) {
         MetadataInfo toReturn = new MetadataInfo(this);
         toReturn.permissions.clear();
-               
-        updated.stream().filter((ip) -> (ip.isCanView())).map((ip) -> {
-            toReturn.addPermission(Permission.VIEW, ip.getIdentity());
-            return ip;
-        }).filter((ip) -> (ip.isCanEdit())).map((ip) -> {
-            toReturn.addPermission(Permission.EDIT, ip.getIdentity());
-            return ip;
-        }).filter((ip) -> (ip.isCanDelete())).forEach((ip) -> {
-            toReturn.addPermission(Permission.DELETE, ip.getIdentity());
+
+        updated.stream().forEach(ip -> {
+            if (ip.isCanView()) {
+                toReturn.addPermission(Permission.VIEW, ip.getIdentity());    
+            }
+            if (ip.isCanEdit()) {
+                toReturn.addPermission(Permission.EDIT, ip.getIdentity());    
+            }
+            if (ip.isCanDelete()) {
+                toReturn.addPermission(Permission.DELETE, ip.getIdentity());    
+            }
+            if (ip.isCanUpload()) {
+                toReturn.addPermission(Permission.UPLOAD, ip.getIdentity());    
+            }
         });
         preventAllPermissionsBeingRemovedOrOnlyPublic(toReturn);
         return toReturn;
     }
-    
+
     private void preventAllPermissionsBeingRemovedOrOnlyPublic(MetadataInfo updated) {
         if (updated.permissions.isEmpty()) {
             updated.permissions.putAll(this.permissions);
@@ -143,7 +148,7 @@ public class MetadataInfo {
             }
         }
     }
-    
+
     public List<String> getIdentities(Permission permission) {
         Objects.requireNonNull(permission);
         return permissions.get(permission)
@@ -151,26 +156,26 @@ public class MetadataInfo {
             .map(String::toLowerCase)
             .collect(Collectors.toList());
     }
-    
+
     public boolean isPubliclyViewable(Permission requested) {
-        return 
+        return
             Permission.VIEW.equals(requested)
             &&
             permissions.containsEntry(Permission.VIEW, PUBLIC_GROUP)
-            && 
+            &&
             getState().equalsIgnoreCase("published");
     }
-       
+
     public boolean canAccess(Permission requested, CatalogueUser user, List<Group> groups) {
         Objects.requireNonNull(requested);
         Objects.requireNonNull(user);
         Objects.requireNonNull(groups);
-        
+
         if (user.isPublic()) {
             return false;
         }
-        
-        return 
+
+        return
             permissions.containsEntry(requested, user.getUsername().toLowerCase())
             ||
             groups

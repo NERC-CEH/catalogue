@@ -1,5 +1,5 @@
 # Ignore the built content
-src/vendor/OpenLayers-custom.js
+src/vendor
 src/scripts/main-out.js
 src/css/*
 
