@@ -11,7 +11,7 @@
     <label class="control-label" for="supplemental<%= data.index %>Description">Description</label>
   </div>
   <div class="col-sm-10">
-    <textarea data-name='description' class="editor-textarea" id="supplemental<%= data.index %>Description" value="<%= data.description %>" rows="3"></textarea>
+    <textarea data-name='description' class="editor-textarea" id="supplemental<%= data.index %>Description" value="<%= data.description %>" rows="7"></textarea>
   </div>
 </div>
 <div class="row">

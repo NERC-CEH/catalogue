@@ -95,3 +95,10 @@
     display: none;
   }
 }
+
+.form-control {
+  &[readonly] { 
+    background-color: lighten(@gray-light, 30%);
+    color: @gray;
+  };
+}

@@ -10,6 +10,7 @@
       <option value="collaborator">Collaborator</option>
       <option value="contributor">Contributor</option>
       <option value="custodian">Custodian</option>
+      <option value="depositor">Depositor</option>
       <option value="distributor">Distributor</option>
       <option value="editor">Editor</option>
       <option value="funder">Funder</option>

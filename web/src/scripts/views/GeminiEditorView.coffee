@@ -193,9 +193,10 @@ define [
               role: 'publisher'
               email: 'eidc@ceh.ac.uk'
           helpText: """
-                    <p>The organisation or person responsible for the authorship, maintenance and curation of the data resource.</p>
-                    <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
-                    <p>The names of individuals should be included in the format Surname, First Initial. Second Initial. For example <strong>Brown, A.B.</strong></p>
+                    <p>The organisation or person responsible for the authorship and maintenance of the data resource.</p>
+                    <p>A contact must include an email address, role and organisation name.  Other elements are optional.</p>
+                    <p>The names of individuals should be included in the format <code>Surname, First Initial. Second Initial.</code> For example <strong>Brown, A.B.</strong></p>
+                    <p>The preferred <b>identifier</b> for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID.  For example <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>.</p>
                     """
       ]
     ,
@@ -291,7 +292,11 @@ define [
               name: 'TIFF'
               type: 'image/tiff'
               version: 'unknown'
- 
+           helpText: """
+                    <p><b>Type</b> is the machine-readable media type.  If you do not know it, leave it blank.</p>
+                    <p><b>Version</b> is mandatory; if it's not applicable, enter '<i>unknown</i>'</p>
+                    """
+
         new PredefinedParentView
           model: @model
           modelAttribute: 'useConstraints'
@@ -355,9 +360,17 @@ define [
                     """
       ]
     ,
-      label: 'Links'
-      title: 'Websites and links to other resources'
+      label: 'Relationships'
+      title: 'Links to other resources'
       views: [
+        new InputView
+          model: @model
+          modelAttribute: 'parentIdentifier'
+          label: 'Parent identifier'
+          helpText: """
+                    <p>File identifier of parent series.</p>
+                    """
+        
         new ParentStringView
           model: @model
           modelAttribute: 'partOfRepository'
@@ -537,6 +550,7 @@ define [
           helpText: """
                     <p>Include here details of any grants or awards that were used to generate this resource.</p>
                     <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
+                    <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>
                     """
       ]
     ,
@@ -602,14 +616,6 @@ define [
                     <p>The organisation or person responsible for the authorship, maintenance and curation of the metadata resource.</p>
                     <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
                     <p>The names of individuals should be included in the format Surname, First Initial. Second Initial.  For example <strong>Brown, A.B.</strong></p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'parentIdentifier'
-          label: 'Parent identifier'
-          helpText: """
-                    <p>File identifier of parent series.</p>
                     """
 
         new InputView
