@@ -1,7 +1,7 @@
 define [
   'underscore'
   'backbone'
-], (_, Backbone) -> Backbone.Model.extend {
+], (_, Backbone) -> Backbone.Model.extend 
 
   validate: (attrs) ->
 
@@ -21,4 +21,4 @@ define [
       return
     else
       return errors
-}
+

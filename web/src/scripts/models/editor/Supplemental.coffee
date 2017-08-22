@@ -15,7 +15,7 @@ define [
 
     errors = []
 
-    if !isValidUrl attrs.url
+    if attrs.url && !isValidUrl attrs.url
       errors.push
         message:
           "Not a valid url"
