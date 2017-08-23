@@ -86,7 +86,7 @@ public class UploadController {
             throws IOException, DocumentRepositoryException {
         Map<String, Object> model = new HashMap<>();
 
-        val issues = jiraService.search(jql("eeffacad-1f23-456a-aac0-1bda40958f75"));
+        val issues = jiraService.search(jql(guid));
         val isScheduled = issues.size() == 1 && issues.get(0).getStatus().equals("scheduled");
         model.put("isScheduled", isScheduled);
         model.put("status", getStatus(issues));
@@ -107,7 +107,7 @@ public class UploadController {
     }
 
     private void transitionIssueToStartProgress(CatalogueUser user, String guid) {
-        val issues = jiraService.search(jql("eeffacad-1f23-456a-aac0-1bda40958f75"));
+        val issues = jiraService.search(jql(guid));
         if (issues.size() != 1)
             throw new NonUniqueJiraIssue();
         val issue = issues.get(0);
