@@ -33,12 +33,12 @@ define [
         if not (dateString.match dateRegExp)
           errors.push
             message:
-              "#{labels[key]} is not in the correct date format of yyyy-mm-dd"
+              "#{labels[key]} is wrong. The date format is supposed to be yyyy-mm-dd"
 
         if isNaN Date.parse dateString
           errors.push
             message:
-              "#{labels[key]} is not a vaild date"
+              "#{labels[key]} doesn't look like a date to me"
 
     if attrs.begin && attrs.end
       begin = Date.parse attrs.begin
@@ -47,7 +47,7 @@ define [
       if begin > end
         errors.push
           message:
-            "End date is before Begin date"
+            "Collection of this data finished before it started! Sort it out you numpty."
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

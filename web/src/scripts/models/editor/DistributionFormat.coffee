@@ -13,7 +13,7 @@ define [
 
     if ! version && (name || type) 
       errors.push
-        message: 'Version is mandatory - if version not applicable, enter "unknown"'
+        message: "The version is mandatory - if it's not applicable, enter 'unknown'"
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

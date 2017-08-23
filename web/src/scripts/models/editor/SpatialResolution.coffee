@@ -3,17 +3,17 @@ define [
   'backbone'
 ], (_, Backbone) -> Backbone.Model.extend {
 
+
   validate: (attrs) ->
 
     errors = []
 
     equivalentScale = attrs.equivalentScale
     distance = attrs.distance
-    uom = attrs.uom
 
-    if equivalentScale && (distance || uom)
+    if equivalentScale && distance
       errors.push
-        message: 'You should have either an Equivalent scale OR a Distance with UOM'
+        message: "You can <b>EITHER</b> enter an Equivalent scale <b>OR</b> a Distance but not both."
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

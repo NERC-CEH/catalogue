@@ -18,7 +18,7 @@ define [
     if !isValidUrl attrs.awardURI
       errors.push
         message:
-          "Not a valid url"
+          "That URL isn't right now is it?"
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate
