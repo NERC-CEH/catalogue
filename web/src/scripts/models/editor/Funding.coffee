@@ -15,6 +15,11 @@ define [
 
     errors = []
 
+    if ! attrs.funderName
+      errors.push
+        message:
+          "Funding body is mandatory"
+
     if attrs.awardURI && !isValidUrl attrs.awardURI
       errors.push
         message:
