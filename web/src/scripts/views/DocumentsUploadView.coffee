@@ -6,9 +6,9 @@ define [
   'tpl!templates/ChecksumRow.tpl'
 ], (Backbone, dropzoneRow, checksumRow) -> Backbone.View.extend
   initialize: (options) ->
+    do @initDeleteButtons
+    do @initFinish
     if $('.dz').length
-      do @initDeleteButtons
-      do @initFinish
       do @initDropzone
   
   updateChecksums: (files) ->
@@ -49,6 +49,15 @@ define [
     $('.finish').attr 'disabled', off
     $('.finish .glyphicon').addClass('glyphicon-ok')
     $('.finish .glyphicon').removeClass('glyphicon-ban-circle')
+  
+  submitFinish: ->
+    $('.finish-message').text('')
+    $('.finish').attr 'disabled', on
+    icon = $('.finish .glyphicon')
+    icon.removeClass('glyphicon-ok')
+    icon.removeClass('glyphicon-ban-circle')
+    icon.addClass('glyphicon-refresh')
+    icon.addClass('glyphicon-refresh-animate')
 
   loadedDropzone: ->
     $('.dz .title').text 'Drag files here'
@@ -142,22 +151,6 @@ define [
           message = errorMessage || errorMessages.default
           message = errorMessages[xhr.status] if xhr
           error file, message
-        
-        # @on 'processing', ->
-        #   console.log 'processing'
-        #   console.log(status())
-        
-        # @on 'sending', ->
-        #   console.log 'sending'
-        #   console.log(status())
-        
-        # @on 'complete', ->
-        #   console.log 'complete'
-        #   console.log(status())
-        
-        # @on 'cancelled', ->
-        #   console.log 'cancelled'
-        #   console.log(status())
 
         @on 'success', success
 
@@ -166,11 +159,12 @@ define [
         $('.cancel-all').click cancelAll
 
   initFinish: ->
-    $('#finish').click ->
+    $('.finish').click =>
+      do @submitFinish
       $.ajax
         url: window.location.href + '/finish'
         type: 'POST'
         headers:
           Accept: 'application/json'
         success: (response) ->
-          console.log(response)
+          window.location.reload()

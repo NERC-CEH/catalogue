@@ -15,16 +15,22 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import lombok.val;
+import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.FileChecksum;
+import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.FileUploadService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,31 +40,24 @@ public class UploadController {
     private final FileUploadService fileUploadService;
     private final JiraService jiraService;
     private final PermissionService permissionservice;
+    private final DocumentRepository documentRepository;
 
     @Autowired
     public UploadController(FileUploadService fileUploadService, JiraService jiraService,
-            PermissionService permissionservice) {
+            PermissionService permissionservice, DocumentRepository documentRepository) {
         this.fileUploadService = fileUploadService;
         this.jiraService = jiraService;
         this.permissionservice = permissionservice;
+        this.documentRepository = documentRepository;
     }
 
-    @RequestMapping(value = "upload/{guid}", method = RequestMethod.GET)
-    @ResponseBody
-    public ModelAndView documentsUpload(@PathVariable("guid") String guid) throws IOException {
-        Map<String, Object> model = new HashMap<>();
-
-        boolean isScheduled = false;
-
-        val issues = jiraService.getIssues("eeffacad-1f23-456a-aac0-1bda40958f75");
+    private String getMessage(List<JiraIssue> issues) {
         String message = "";
-        if (issues.size() == 0 || issues.size() > 1)
+        if (issues.size() != 1)
             message = "if you have any issues please contact an admin";
         else {
             val issue = issues.get(0);
             val status = issue.getStatus();
-            isScheduled = status.equals("scheduled");
-
             if (status.equals("open") || status.equals("approved"))
                 message = "awaiting scheduling from admin";
             else if (status.equals("in progress"))
@@ -68,8 +67,23 @@ public class UploadController {
             else if (status.equals("on hold"))
                 message = "plase contact an admin";
         }
+        return message;
+    }
 
-        model.put("message", message);
+    private String jql(String guid) {
+        String jqlTemplate = "project=eidchelp and component='data transfer' and labels=%s";
+        return String.format(jqlTemplate, guid);
+    }
+
+    @RequestMapping(value = "upload/{guid}", method = RequestMethod.GET)
+    @ResponseBody
+    public ModelAndView documentsUpload(@PathVariable("guid") String guid) throws IOException {
+        Map<String, Object> model = new HashMap<>();
+
+        val issues = jiraService.search(jql("eeffacad-1f23-456a-aac0-1bda40958f75"));
+        val isScheduled = issues.size() == 1 && issues.get(0).getStatus().equals("scheduled");
+
+        model.put("message", getMessage(issues));
 
         List<FileChecksum> checksums = fileUploadService.getChecksums(guid);
         model.put("checksums", checksums);
@@ -83,9 +97,25 @@ public class UploadController {
     @PreAuthorize("@permission.userCanUpload(#guid)")
     @RequestMapping(value = "upload/{guid}/finish", method = RequestMethod.POST)
     @ResponseBody
-    public List<String> finish(@PathVariable("guid") String guid) {
-        List<String> list = new ArrayList<String>();
-        return list;
+    public Map<String, String> finish(@ActiveUser CatalogueUser user, @PathVariable("guid") String guid)
+            throws DocumentRepositoryException {
+        val issues = jiraService.search(jql("eeffacad-1f23-456a-aac0-1bda40958f75"));
+        if (issues.size() != 1)
+            throw new NonUniqueJiraIssue();
+        val issue = issues.get(0);
+        val key = issue.getKey();
+        jiraService.transition(key, "751");
+        jiraService.comment(key, String.format("%s has finished uploading the documents to dropbox", user.getEmail()));
+
+        MetadataDocument document = documentRepository.read(guid);
+        MetadataInfo info = document.getMetadata();
+        info.removePermission(Permission.UPLOAD, user.getUsername());
+        document.setMetadata(info);
+        documentRepository.save(user, document, guid, String.format("Permissions of %s changed.", guid));
+
+        val response = new HashMap<String, String>();
+        response.put("message", "awaiting approval from admin");
+        return response;
     }
 
     @PreAuthorize("@permission.userCanUpload(#guid)")
@@ -111,5 +141,9 @@ public class UploadController {
     @ResponseStatus(value = HttpStatus.CONFLICT, reason = "File already exists")
     @ExceptionHandler(FileAlreadyExistsException.class)
     public void fileAlreadyExists() {
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Non unique issue")
+    private class NonUniqueJiraIssue extends RuntimeException {
     }
 }

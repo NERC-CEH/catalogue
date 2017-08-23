@@ -15,48 +15,33 @@ import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
 public class JiraService {
     private final WebResource resource;
 
-    private WebResource.Builder jira (String path) {
-        return resource
-            .path(path)
-            .accept(MediaType.APPLICATION_JSON_TYPE)
-            .type(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    private ClientResponse comment (String key, String comment) {
+    public void comment (String key, String comment) {
         String path = String.format("issue/%s", key);
         String input = String.format("{\"update\":{\"comment\":[{\"add\":{\"body\":\"%s\"}}]}}", comment);
-
-        return jira(path).put(ClientResponse.class, input);
-    }
-
-    private ClientResponse scheduleStart (String key) {
-        String path = String.format("issue/%s", key);
-        String input = "{\"update\":{\"transition\":{\"id\":\"751\"}}";
-
-        return jira(path).post(ClientResponse.class, input);
-    }
-
-    private String getKey (String guid) {
-        String jql = String.format("project=eidchelp and status=scheduled and component=\"data transfer\" and labels=%s", guid);
-        ClientResponse response = resource
-            .path("search")
-            .queryParam("jql", jql)        
+        resource
+            .path(path)
             .accept(MediaType.APPLICATION_JSON_TYPE)
-            .get(ClientResponse.class);
-        JiraSearchResults results = response.getEntity(JiraSearchResults.class);
-        JiraIssue issue = results.getIssues().get(0);
-        return issue.getKey();
+            .type(MediaType.APPLICATION_JSON_TYPE)
+            .put(input);
     }
-    
-    public List<JiraIssue> getIssues (String guid) {
-        String jql = "project=eidchelp and component='data transfer' and labels=%s";
 
-        ClientResponse response = resource
-            .path("search")
-            .queryParam("jql", String.format(jql, guid))
+    public void transition (String key, String id) {        
+        String path = String.format("issue/%s/transitions", key);
+        String input = String.format("{\"transition\":{\"id\":\"%s\"}}", id);
+        resource
+            .path(path)
             .accept(MediaType.APPLICATION_JSON_TYPE)
-            .get(ClientResponse.class);
-        JiraSearchResults results = response.getEntity(JiraSearchResults.class);
-        return results.getIssues();
+            .type(MediaType.APPLICATION_JSON_TYPE)
+            .post(input);
+    }
+
+    public List<JiraIssue> search (String jql) {
+        return resource
+            .path("search")
+            .queryParam("jql", jql)
+            .accept(MediaType.APPLICATION_JSON_TYPE)
+            .get(ClientResponse.class)
+            .getEntity(JiraSearchResults.class)
+            .getIssues();
     }
 }
