@@ -15,7 +15,7 @@ define [
 
     errors = []
 
-    if !isValidUrl attrs.awardURI
+    if attrs.awardURI && !isValidUrl attrs.awardURI
       errors.push
         message:
           "That URL isn't right now is it?"
