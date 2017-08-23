@@ -19,7 +19,7 @@ define [
           filename: d.filename
           md5Hash: d.md5Hash
       .join ''
-
+    
     document.querySelector('.checksums-list').innerHTML = checksums
     do @initDeleteButtons
   
@@ -84,7 +84,6 @@ define [
       do @enableFinish
 
   errorMessages:
-    default: 'Failed'
     403: 'Unauthorized'
     409: 'Already exists'
 
@@ -148,8 +147,8 @@ define [
         @on 'removedfile', removedFile
 
         @on 'error', (file, errorMessage, xhr) ->
-          message = errorMessage || errorMessages.default
-          message = errorMessages[xhr.status] if xhr
+          message = errorMessage
+          message = errorMessages[xhr.status] || errorMessage if xhr
           error file, message
 
         @on 'success', success

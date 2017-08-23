@@ -21,6 +21,9 @@ web:
 npm-build:
 	$(NPM) run build
 
+npm-test:
+	$(NPM) run test
+
 java:
 	$(MAVEN) -f java/pom.xml clean package
 

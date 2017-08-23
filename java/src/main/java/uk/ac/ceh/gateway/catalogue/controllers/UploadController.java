@@ -55,22 +55,24 @@ public class UploadController {
 
     private String getStatus(List<JiraIssue> issues) {
         String message = "";
-        if (issues.size() != 1)
-            message = "There is an issue clash. If you have any issues please contact an admin";
+        if (issues.size() == 0)
+            message = "No issue exists for this document. Contact an admin to create one.";
+        else if (issues.size() > 1)
+            message = "There is an issue clash for this document. Contact an admin to resolve.";
         else {
             val issue = issues.get(0);
             val status = issue.getStatus();
 
             if (status.equals("open") || status.equals("approved"))
-                message = "Awaiting scheduling from admin";
+                message = "Awaiting scheduling from admin. Try again later.";
             else if (status.equals("in progress"))
-                message = "Awaiting approval from admin";
+                message = "Awaiting approval from admin. Try again later.";
             else if (status.equals("resolved") || status.equals("closed"))
-                message = "This is finsihed";
+                message = "This is finsihed. No further action required.";
             else if (status.equals("on hold"))
-                message = "Plase contact an admin";
+                message = "This issue is blocked. Contact an admin to resolve.";
             else if (status.equals("scheduled"))
-                message = "Please upload your documents";
+                message = "You can now upload your files for this document.";
         }
         return message;
     }
@@ -86,7 +88,7 @@ public class UploadController {
             throws IOException, DocumentRepositoryException {
         Map<String, Object> model = new HashMap<>();
 
-        val issues = jiraService.search(jql(guid));
+        val issues = jiraService.search(jql("b902e25a-ffec-446f-a270-03cc2501fe1d"));
         val isScheduled = issues.size() == 1 && issues.get(0).getStatus().equals("scheduled");
         model.put("isScheduled", isScheduled);
         model.put("status", getStatus(issues));
@@ -129,7 +131,7 @@ public class UploadController {
     @ResponseBody
     public Map<String, String> finish(@ActiveUser CatalogueUser user, @PathVariable("guid") String guid)
             throws DocumentRepositoryException {
-        transitionIssueToStartProgress(user, guid);
+        transitionIssueToStartProgress(user, "b902e25a-ffec-446f-a270-03cc2501fe1d");
         removeUploadPermission(user, guid);
         val response = new HashMap<String, String>();
         response.put("message", "awaiting approval from admin");
