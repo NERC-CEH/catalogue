@@ -33,7 +33,7 @@ define [
         message:
           "That email address is wrong"
 
-    if !isValidnameIdentifier nameIdentifier
+    if nameIdentifier && !isValidnameIdentifier nameIdentifier
       errors.push
         message:
           "Are you using the <i>fully-qualified</i> name identifier. For example, ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X"
