@@ -27,6 +27,9 @@ npm-test:
 java:
 	$(MAVEN) -f java/pom.xml clean package
 
+java-test:
+	$(MAVEN) -f java/pom.xml clean test
+
 java-build: java docker
 
 maven-test:

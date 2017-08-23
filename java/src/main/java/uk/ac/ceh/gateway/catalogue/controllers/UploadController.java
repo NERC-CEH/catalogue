@@ -88,7 +88,7 @@ public class UploadController {
             throws IOException, DocumentRepositoryException {
         Map<String, Object> model = new HashMap<>();
 
-        val issues = jiraService.search(jql("b902e25a-ffec-446f-a270-03cc2501fe1d"));
+        val issues = jiraService.search(jql(guid));
         val isScheduled = issues.size() == 1 && issues.get(0).getStatus().equals("scheduled");
         model.put("isScheduled", isScheduled);
         model.put("status", getStatus(issues));
@@ -131,7 +131,7 @@ public class UploadController {
     @ResponseBody
     public Map<String, String> finish(@ActiveUser CatalogueUser user, @PathVariable("guid") String guid)
             throws DocumentRepositoryException {
-        transitionIssueToStartProgress(user, "b902e25a-ffec-446f-a270-03cc2501fe1d");
+        transitionIssueToStartProgress(user, guid);
         removeUploadPermission(user, guid);
         val response = new HashMap<String, String>();
         response.put("message", "awaiting approval from admin");
