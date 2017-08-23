@@ -92,7 +92,7 @@
 					<gmd:identifier>
 						<gmd:RS_Identifier>
 							<gmd:code>
-								<gco:CharacterString>http://catalogue.ceh.ac.uk/id/ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
+								<gco:CharacterString>http://localhost:8080/id/ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
 							</gmd:code>
 						</gmd:RS_Identifier>
 					</gmd:identifier>
@@ -109,7 +109,7 @@
 					<gmd:identifier>
 						<gmd:RS_Identifier>
 							<gmd:code>
-								<gco:CharacterString>http://catalogue.ceh.ac.uk/id/ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
+								<gco:CharacterString>http://localhost:8080/id/ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
 							</gmd:code>
 						</gmd:RS_Identifier>
 					</gmd:identifier>
@@ -126,7 +126,7 @@
 					<gmd:identifier>
 						<gmd:RS_Identifier>
 							<gmd:code>
-								<gco:CharacterString>http://catalogue.ceh.ac.uk/id/ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
+								<gco:CharacterString>http://localhost:8080/id/ff55462e-38a4-4f30-b562-f82ff263d9c3</gco:CharacterString>
 							</gmd:code>
 						</gmd:RS_Identifier>
 					</gmd:identifier>

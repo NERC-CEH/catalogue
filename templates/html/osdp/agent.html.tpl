@@ -2,18 +2,16 @@
 <#import "osdp.html.tpl" as o>
 
 <@o.base>
-  <#if title?? && role?? && address??>
-    <@b.sectionHeading>Basic Information</@b.sectionHeading>
-    <#if title?has_content>
-      <@b.key "Title" "Name">${title}</@b.key>
-    </#if>
-    <#if role?has_content>
-      <@b.key "Role" "Role of agent">${role}</@b.key>
-    </#if>
-    <#if address?has_content>
-      <@b.key "Address" "">
-        <@b.linebreaks address />
-      </@b.key>
-    </#if>
+  <#if role?? && role?has_content>
+    <@b.key "Role" "Role of agent">${role}</@b.key>
   </#if>
+  <#if address?? && address?has_content>
+    <@b.key "Address" "">
+      <@b.linebreaks address />
+    </@b.key>
+  </#if>
+  <@o.relationships "Creates" "Research Artifacts created by this Agent" "http://onto.nerc.ac.uk/CEHMD/rels/creates" />
+  <@o.relationships "Knows" "Agents known by this Agent" "http://onto.nerc.ac.uk/CEHMD/rels/knows" />
+  <@o.relationships "Associated With" "Monitoring Activities associated with this Agent" "http://onto.nerc.ac.uk/CEHMD/rels/associatedWith" />
+  <@o.relationships "Responsible For" "Monitoring Facilities the repsonsiblity of this Agent" "http://onto.nerc.ac.uk/CEHMD/rels/responsibleFor" />
 </@o.base>

@@ -463,7 +463,7 @@
 						<gco:CharacterString>GetMap</gco:CharacterString>
 					</srv:operationName>
 					<srv:identifier>
-						<gco:CharacterString>http://catalogue.ceh.ac.uk/id/bb2d7874-7bf4-44de-aa43-348bd684a2fe</gco:CharacterString>
+						<gco:CharacterString>http://localhost:8080/id/bb2d7874-7bf4-44de-aa43-348bd684a2fe</gco:CharacterString>
 					</srv:identifier>
 				</srv:SV_CoupledResource>
 			</srv:coupledResource>

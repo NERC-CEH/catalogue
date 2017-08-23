@@ -1,5 +1,5 @@
 {
-  "uri": "http://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
+  "uri": "http://localhost:8080/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
   "id": "2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
   "title": "Woodlands survey flora data 1971-2001",
   "description": "This dataset consists of the vascular plants,  bryophytes and lichens recorded in plots in 103 woodland sites surveyed across Great Britain in 1971 and again over the growing seasons of 2000, 2002 and 2003 (referred to as '2001 survey'), using exactly the same field methods.  Data were collected under projects managed by The Nature Conservancy (in 1971) and the Centre for Ecology and Hydrology (in 2001).  ",
@@ -221,14 +221,14 @@
   "modelLinks": [
     {
       "title": "INCA-N",
-      "href": "http://catalogue.ceh.ac.uk/id/imp-model-b88b-960d0c2b6b14",
+      "href": "http://localhost:8080/id/imp-model-b88b-960d0c2b6b14",
       "associationType": "model"
     }
   ],
   "modelApplicationLinks": [
     {
       "title": "Effectiveness of pollution control measures under scenarios of future climate and land cover change at the catchment scale",
-      "href": "http://catalogue.ceh.ac.uk/id/imp-app-9204-ad6858a3f438"
+      "href": "http://localhost:8080/id/imp-app-9204-ad6858a3f438"
     }
   ],
   "resourceIdentifiers": [
@@ -238,8 +238,8 @@
       "coupledResource": "CEH:EIDC:#1382104570732"
     },
     {
-      "code": "https://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
-      "coupledResource": "https://catalogue.ceh.ac.uk/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae"
+      "code": "https://localhost:8080/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
+      "coupledResource": "https://localhost:8080/id/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae"
     },
     {
       "code": "10.5285/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",

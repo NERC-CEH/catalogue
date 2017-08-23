@@ -12,7 +12,7 @@ services:
       - ./dropbox:/var/ceh-catalogue/dropbox
       - ./mapfiles:/var/ceh-catalogue/mapfiles
     environment:
-      BASE_URI: https://catalogue.ceh.ac.uk
+      BASE_URI: http://localhost:8080
       SPRING_PROFILES: development
   solr:
     build: "solr"

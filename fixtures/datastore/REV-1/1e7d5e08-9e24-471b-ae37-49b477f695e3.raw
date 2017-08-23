@@ -111,7 +111,7 @@
 					<gmd:identifier>
 						<gmd:MD_Identifier>
 							<gmd:code>
-								<gco:CharacterString>https://catalogue.ceh.ac.uk/id/1e7d5e08-9e24-471b-ae37-49b477f695e3</gco:CharacterString>
+								<gco:CharacterString>https://localhost:8080/id/1e7d5e08-9e24-471b-ae37-49b477f695e3</gco:CharacterString>
 							</gmd:code>
 						</gmd:MD_Identifier>
 					</gmd:identifier>

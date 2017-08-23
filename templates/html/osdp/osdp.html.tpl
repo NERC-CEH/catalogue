@@ -4,13 +4,16 @@
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
       <@b.metadataContainer "ceh-model">
-        <@b.admin />
+        <div class="row"><@b.admin /></div>
+        <#if title?? && title?has_content>
+          <@b.key "Title" "Name of Monitoring Facility">${title}</@b.key>
+        </#if>
+        <#if description?? && description?has_content>
+          <@b.key "Description" "Description of Monitoring Facility"><@b.linebreaks description /></@b.key>
+        </#if>
         <#nested>
-        <#if keywords??>
-          <@b.sectionHeading>Other Information</@b.sectionHeading>
-          <#if keywords?has_content>
-            <@b.key "Keywords" ""><@b.keywords keywords/></@b.key>
-          </#if>
+        <#if keywords?? && keywords?has_content>
+          <@b.key "Keywords" ""><@b.keywords keywords/></@b.key>
         </#if>
       </@b.metadataContainer>
   </#escape></@skeleton.master>
@@ -39,9 +42,35 @@
 <#macro temporalExtent temporalExtent>
   <#if temporalExtent.begin?? && temporalExtent.begin?has_content>
     ${temporalExtent.begin}
+  <#else>
+    …
   </#if>
   to
   <#if temporalExtent.end?? && temporalExtent.end?has_content>
     ${temporalExtent.end}
+  <#else>
+    …
+  </#if>
+</#macro>
+
+<#macro relationships title description relation>
+  <#local links=jena.relationships(uri, relation) />
+  <#if links?has_content>
+    <@b.key title description>
+      <#list links as link>
+        <@b.blockUrl link /> 
+      </#list>
+    </@b.key>
+  </#if>
+</#macro>
+
+<#macro inverseRelationships title description relation>
+  <#local links=jena.inverseRelationships(uri, relation) />
+  <#if links?has_content>
+    <@b.key title description>
+      <#list links as link>
+        <@b.blockUrl link /> 
+      </#list>
+    </@b.key>
   </#if>
 </#macro>
