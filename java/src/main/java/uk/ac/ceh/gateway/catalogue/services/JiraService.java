@@ -1,12 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.List;
-
 import javax.ws.rs.core.MediaType;
-
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-
 import lombok.AllArgsConstructor;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;

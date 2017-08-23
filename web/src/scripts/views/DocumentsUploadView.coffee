@@ -168,3 +168,6 @@ define [
           Accept: 'application/json'
         success: (response) ->
           window.location.reload()
+        fail: (error) =>
+          @enableFinish
+          $('.finish-message').text('An error occured, if this persists then please contact an admin')

@@ -15,7 +15,6 @@ public class JiraIssue {
         @SuppressWarnings("unchecked")
         Map<String, Object> status = (Map<String, Object>) fields.get("status");
         String name = (String) status.get("name");
-        name = name.toLowerCase();
-        return name;
+        return name.toLowerCase();
     };
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -42,6 +42,8 @@ public class UploadController {
     private final PermissionService permissionservice;
     private final DocumentRepository documentRepository;
 
+    private static final String START_PROGRESS = "751";
+
     @Autowired
     public UploadController(FileUploadService fileUploadService, JiraService jiraService,
             PermissionService permissionservice, DocumentRepository documentRepository) {
@@ -51,21 +53,24 @@ public class UploadController {
         this.documentRepository = documentRepository;
     }
 
-    private String getMessage(List<JiraIssue> issues) {
+    private String getStatus(List<JiraIssue> issues) {
         String message = "";
         if (issues.size() != 1)
-            message = "if you have any issues please contact an admin";
+            message = "There is an issue clash. If you have any issues please contact an admin";
         else {
             val issue = issues.get(0);
             val status = issue.getStatus();
+
             if (status.equals("open") || status.equals("approved"))
-                message = "awaiting scheduling from admin";
+                message = "Awaiting scheduling from admin";
             else if (status.equals("in progress"))
-                message = "awaiting approval from admin";
+                message = "Awaiting approval from admin";
             else if (status.equals("resolved") || status.equals("closed"))
-                message = "finsihed";
+                message = "This is finsihed";
             else if (status.equals("on hold"))
-                message = "plase contact an admin";
+                message = "Plase contact an admin";
+            else if (status.equals("scheduled"))
+                message = "Please upload your documents";
         }
         return message;
     }
@@ -77,21 +82,46 @@ public class UploadController {
 
     @RequestMapping(value = "upload/{guid}", method = RequestMethod.GET)
     @ResponseBody
-    public ModelAndView documentsUpload(@PathVariable("guid") String guid) throws IOException {
+    public ModelAndView documentsUpload(@PathVariable("guid") String guid)
+            throws IOException, DocumentRepositoryException {
         Map<String, Object> model = new HashMap<>();
 
         val issues = jiraService.search(jql("eeffacad-1f23-456a-aac0-1bda40958f75"));
         val isScheduled = issues.size() == 1 && issues.get(0).getStatus().equals("scheduled");
-
-        model.put("message", getMessage(issues));
+        model.put("isScheduled", isScheduled);
+        model.put("status", getStatus(issues));
 
         List<FileChecksum> checksums = fileUploadService.getChecksums(guid);
         model.put("checksums", checksums);
 
-        boolean canUpload = permissionservice.userCanUpload(guid) && isScheduled;
+        boolean userCanUpload = permissionservice.userCanUpload(guid);
+        boolean canUpload = userCanUpload && isScheduled;
+        model.put("userCanUpload", userCanUpload);
         model.put("canUpload", canUpload);
 
+        MetadataDocument document = documentRepository.read(guid);
+        model.put("title", document.getTitle());
+        model.put("type", StringUtils.capitalize(document.getType()));
+
         return new ModelAndView("/html/documents-upload.html.tpl", model);
+    }
+
+    private void transitionIssueToStartProgress(CatalogueUser user, String guid) {
+        val issues = jiraService.search(jql("eeffacad-1f23-456a-aac0-1bda40958f75"));
+        if (issues.size() != 1)
+            throw new NonUniqueJiraIssue();
+        val issue = issues.get(0);
+        val key = issue.getKey();
+        jiraService.transition(key, START_PROGRESS);
+        jiraService.comment(key, String.format("%s has finished uploading the documents to dropbox", user.getEmail()));
+    }
+
+    private void removeUploadPermission(CatalogueUser user, String guid) throws DocumentRepositoryException {
+        MetadataDocument document = documentRepository.read(guid);
+        MetadataInfo info = document.getMetadata();
+        info.removePermission(Permission.UPLOAD, user.getUsername());
+        document.setMetadata(info);
+        documentRepository.save(user, document, guid, String.format("Permissions of %s changed.", guid));
     }
 
     @PreAuthorize("@permission.userCanUpload(#guid)")
@@ -99,20 +129,8 @@ public class UploadController {
     @ResponseBody
     public Map<String, String> finish(@ActiveUser CatalogueUser user, @PathVariable("guid") String guid)
             throws DocumentRepositoryException {
-        val issues = jiraService.search(jql("eeffacad-1f23-456a-aac0-1bda40958f75"));
-        if (issues.size() != 1)
-            throw new NonUniqueJiraIssue();
-        val issue = issues.get(0);
-        val key = issue.getKey();
-        jiraService.transition(key, "751");
-        jiraService.comment(key, String.format("%s has finished uploading the documents to dropbox", user.getEmail()));
-
-        MetadataDocument document = documentRepository.read(guid);
-        MetadataInfo info = document.getMetadata();
-        info.removePermission(Permission.UPLOAD, user.getUsername());
-        document.setMetadata(info);
-        documentRepository.save(user, document, guid, String.format("Permissions of %s changed.", guid));
-
+        transitionIssueToStartProgress(user, guid);
+        removeUploadPermission(user, guid);
         val response = new HashMap<String, String>();
         response.put("message", "awaiting approval from admin");
         return response;
@@ -143,7 +161,8 @@ public class UploadController {
     public void fileAlreadyExists() {
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Non unique issue")
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Can not finish, contact admin to resolve issue clash")
     private class NonUniqueJiraIssue extends RuntimeException {
+        static final long serialVersionUID = 1L;
     }
 }

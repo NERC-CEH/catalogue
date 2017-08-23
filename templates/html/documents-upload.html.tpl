@@ -1,20 +1,48 @@
 <#import "skeleton.html.tpl" as skeleton>
 <@skeleton.master title="Upload Files">
-    <div id='documents-upload' class='documents-upload'>
-        <div class="container">
-            <h1>Documents</h1>
-            <a class="btn btn-default navbar-btn" href="/documents/${guid}">Return to metadata</a>
-            <p>${message}</p>
-        </div>
-        <div id='checksums' class="container checksums">
-            <h3>Files and Checksums</h3>
+    <div id='documents-upload' class="container documents-upload">
+        <section class='section'>
+            <h1 class='title'>
+                <small class="title-type">${type}</small>
+                <span>${title}</span>
+            </h1>
+        </section>
+        <section class='section'>
+            <h3 class='subtitle'>Status</h3>
+            <p>${status}</p>
+            <#if isScheduled && !userCanUpload>
+                <p class='text-danger'>
+                    This document is currently being worked on but you do not have permission to update
+                    <br />
+                    Please contact an admin for further details
+                </p>
+            </#if>
+        </section>
+        <#if canUpload>
+            <section class='section'>
+                <h3 class='subtitle'>Finish</h3>
+                <p>
+                    Once you have finished uploading your documents click below in order to progress to the next stage
+                    <br />
+                    <b>This action can not be undone</b>
+                    <p class='finish-message text-danger'></p>
+                    <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
+                        <a class="btn btn-success finish" role="button" disabled>
+                            <i class="glyphicon glyphicon-ban-circle"></i> Finish
+                        </a>
+                    </div>
+                </p>
+            </section>
+        </#if>
+        <section class='section'>
+            <h3 class='subtitle'>Documents</h3>
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th>Checksum</th>
                         <th>File</th>
                         <#if canUpload>
-                        <th id='delete'></th>
+                            <th id='delete'></th>
                         </#if>
                     </tr>
                 </thead>
@@ -24,35 +52,20 @@
                         <td class='checksum-value'>${checksum.getMD5Hash()}</td>
                         <td class='checksum-file'>${checksum.filename}</td>
                         <#if canUpload>
-                        <td class="checksum-delete text-center">
-                            <button class="btn btn-block btn-danger delete" data-file="${checksum.filename}">
-                                <i class="glyphicon glyphicon-trash"></i> Delete
-                            </button>
-                        </td>
+                            <td class="checksum-delete text-center">
+                                <button class="btn btn-block btn-danger delete" data-file="${checksum.filename}">
+                                    <i class="glyphicon glyphicon-trash"></i> Delete
+                                </button>
+                            </td>
                         </#if>
                     </tr>
                 </#list>
                 </tbody>
             </table>
-            <#if canUpload>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Finalize</div>
-                    <div class="panel-body">
-                        <p>Once you have uploaded all select finish for them to be finalized</p>
-                        <b>You cannot undo this action, make sure you have all appropiate files uploaded</b>
-                        <p class='finish-message text-danger'></p>
-                        <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
-                            <a class="btn btn-success finish" role="button" disabled>
-                                <i class="glyphicon glyphicon-ban-circle"></i> Finish
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </#if>
-        </div>
+        </section>
         <#if canUpload>
-            <div id="dropzone" class="container">
-                <h2>Upload Files</h2>
+            <section class='section'>
+                <h3 class='subtitle'>Upload</h3>
                 <div class="dropzone">
                     <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
                         <a class="btn btn-success fileinput-button" role="button" disabled>
@@ -75,7 +88,7 @@
                         <div id="previews"></div>
                     </div>
                 </div>
-            </div>
+            </section>
         </#if>
     </div>
 </@skeleton.master>
