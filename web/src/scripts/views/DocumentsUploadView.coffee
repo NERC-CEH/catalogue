@@ -41,14 +41,20 @@ define [
   disableFinish: (message) ->
     $('.finish-message').text(message)
     $('.finish').attr 'disabled', on
-    $('.finish .glyphicon').addClass('glyphicon-ban-circle')
-    $('.finish .glyphicon').removeClass('glyphicon-ok')
+    icon = $('.finish .glyphicon')
+    icon.addClass('glyphicon-ban-circle')
+    icon.removeClass('glyphicon-ok')
+    icon.removeClass('glyphicon-refresh')
+    icon.removeClass('glyphicon-refresh-animate')
   
   enableFinish: ->
     $('.finish-message').text('')
     $('.finish').attr 'disabled', off
-    $('.finish .glyphicon').addClass('glyphicon-ok')
-    $('.finish .glyphicon').removeClass('glyphicon-ban-circle')
+    icon = $('.finish .glyphicon')
+    icon.addClass('glyphicon-ok')
+    icon.removeClass('glyphicon-ban-circle')
+    icon.removeClass('glyphicon-refresh')
+    icon.removeClass('glyphicon-refresh-animate')
   
   submitFinish: ->
     $('.finish-message').text('')
@@ -168,5 +174,5 @@ define [
         success: (response) ->
           window.location.reload()
         fail: (error) =>
-          @enableFinish
+          do @enableFinish
           $('.finish-message').text('An error occured, if this persists then please contact an admin')

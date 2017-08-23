@@ -52,6 +52,19 @@ define [
         it 'enables the fileinput button', ->
             disabled = $('.fileinput-button').attr 'disabled'
             do expect(disabled).not.toBeDefined
+        
+        it 'enables the finish button with', ->
+            finishMessage = $('.finish-message').text()
+            finishDisabled = $('.finish').attr 'disabled'
+            iconClass = $('.finish .glyphicon').attr 'class'
+
+            expect(finishMessage).toBe ''
+            expect(finishDisabled).not.toBe 'disabled'
+
+            expect(iconClass).toContain 'glyphicon-ok'
+            expect(iconClass).not.toContain 'glyphicon-ban-circle'
+            expect(iconClass).not.toContain 'glyphicon-refresh'
+            expect(iconClass).not.toContain 'glyphicon-refresh-animate'
     
     describe 'adding a file', ->
         beforeEach ->
@@ -80,6 +93,19 @@ define [
             do $('#file-row-0 .cancel').click
 
             expect(removedFile.id).toBe  'file-row-0'
+        
+        it 'disables the finish button with appropriate message', ->
+            finishMessage = $('.finish-message').text()
+            finishDisabled = $('.finish').attr 'disabled'
+            iconClass = $('.finish .glyphicon').attr 'class'
+
+            expect(finishMessage).toBe 'Some files have not been uploaded yet'
+            expect(finishDisabled).toBe 'disabled'
+
+            expect(iconClass).toContain 'glyphicon-ban-circle'
+            expect(iconClass).not.toContain 'glyphicon-ok'
+            expect(iconClass).not.toContain 'glyphicon-refresh'
+            expect(iconClass).not.toContain 'glyphicon-refresh-animate'
 
     describe 'max size message', ->
         it 'is displayed for large files', ->
@@ -108,6 +134,23 @@ define [
 
         disabled = $('.cancel-all').attr 'disabled'
         expect(disabled).toBe 'disabled'
+    
+    it 'enables the Finish button when all files have been removed', ->
+        file = createFile('file-id')
+        view.dropzone.addFile file
+        view.dropzone.removeFile file
+
+        finishMessage = $('.finish-message').text()
+        finishDisabled = $('.finish').attr 'disabled'
+        iconClass = $('.finish .glyphicon').attr 'class'
+
+        expect(finishMessage).toBe ''
+        expect(finishDisabled).not.toBe 'disabled'
+
+        expect(iconClass).toContain 'glyphicon-ok'
+        expect(iconClass).not.toContain 'glyphicon-ban-circle'
+        expect(iconClass).not.toContain 'glyphicon-refresh'
+        expect(iconClass).not.toContain 'glyphicon-refresh-animate'
     
     it 'does not disable the Upload All and Cancel All buttons if any files remane after removal', ->
         file1 = createFile('file-id-1')
@@ -142,10 +185,25 @@ define [
             expect(className).not.toContain 'progress-bar-success'
             expect(className).toContain 'progress-bar-danger'
 
-        it 'defualts to "Failed"', ->
+        it 'defualts to dropzone error message', ->
             emitError 9001
             text = $('#file-row-0 .progress-bar').text()
             expect(text).toBe 'Dropezone error'
+        
+        it 'disables the finish button with appropriate message', ->
+            emitError 9001
+
+            finishMessage = $('.finish-message').text()
+            finishDisabled = $('.finish').attr 'disabled'
+            iconClass = $('.finish .glyphicon').attr 'class'
+
+            expect(finishMessage).toBe 'Resolve all issues below'
+            expect(finishDisabled).toBe 'disabled'
+
+            expect(iconClass).toContain 'glyphicon-ban-circle'
+            expect(iconClass).not.toContain 'glyphicon-ok'
+            expect(iconClass).not.toContain 'glyphicon-refresh'
+            expect(iconClass).not.toContain 'glyphicon-refresh-animate'
         
         it 'is "Already exists" when conflict (409)', ->
             emitError 409
@@ -156,7 +214,6 @@ define [
             emitError 403
             text = $('#file-row-0 .progress-bar').text()
             expect(text).toBe 'Unauthorized'
-
 
     it '"Upload All" will enqueue all the files', ->
         file1 = createFile('file-id-1')
@@ -223,4 +280,48 @@ define [
             
             it 'removes the file', ->
                 expect(view.dropzone.files.length).toBe 0
-            
+
+    describe 'finish button', ->
+        event = null
+
+        beforeEach ->
+            ajax = spyOn($, 'ajax')
+            do $('.finish').click
+            event = ajax.calls.mostRecent().args[0]
+            window.location.reload = jasmine.createSpy('reload')
+
+        it 'puts the finish button into loading', ->
+            finishMessage = $('.finish-message').text()
+            finishDisabled = $('.finish').attr 'disabled'
+            iconClass = $('.finish .glyphicon').attr 'class'
+
+            expect(finishMessage).toBe ''
+            expect(finishDisabled).toBe 'disabled'
+
+            expect(iconClass).toContain 'glyphicon-refresh'
+            expect(iconClass).toContain 'glyphicon-refresh-animate'
+            expect(iconClass).not.toContain 'glyphicon-ok'
+            expect(iconClass).not.toContain 'glyphicon-ban-circle'
+        
+        it 'posts a finish', ->
+            expect(event.url).toBe window.location.href + '/finish'
+            expect(event.type).toBe 'POST'
+            expect(event.headers).toEqual {Accept: 'application/json'}
+        
+        it 'changes window location on success', ->
+            do event.success
+            do expect(window.location.reload).toHaveBeenCalled
+        
+        it 'does some funky stuff on error', ->
+            do event.fail
+            finishMessage = $('.finish-message').text()
+            finishDisabled = $('.finish').attr 'disabled'
+            iconClass = $('.finish .glyphicon').attr 'class'
+
+            expect(finishMessage).toBe 'An error occured, if this persists then please contact an admin'
+            expect(finishDisabled).not.toBe 'disabled'
+
+            expect(iconClass).toContain 'glyphicon-ok'
+            expect(iconClass).not.toContain 'glyphicon-refresh'
+            expect(iconClass).not.toContain 'glyphicon-refresh-animate'
+            expect(iconClass).not.toContain 'glyphicon-ban-circle'
