@@ -141,8 +141,8 @@ public class UploadController {
     @PreAuthorize("@permission.userCanUpload(#guid)")
     @RequestMapping(value = "upload/{guid}/add", method = RequestMethod.POST)
     @ResponseBody
-    public List<FileChecksum> documentsUploadSave(@PathVariable("guid") String guid,
-            @RequestParam("file") MultipartFile file) throws IOException, NoSuchAlgorithmException {
+    public List<FileChecksum> addFile(@PathVariable("guid") String guid, @RequestParam("file") MultipartFile file)
+            throws IOException, NoSuchAlgorithmException {
         try (InputStream in = file.getInputStream()) {
             fileUploadService.uploadData(in, guid, file.getOriginalFilename());
             return fileUploadService.getChecksums(guid);
@@ -164,7 +164,7 @@ public class UploadController {
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Can not finish, contact admin to resolve issue clash")
-    private class NonUniqueJiraIssue extends RuntimeException {
+    class NonUniqueJiraIssue extends RuntimeException {
         static final long serialVersionUID = 1L;
     }
 }
