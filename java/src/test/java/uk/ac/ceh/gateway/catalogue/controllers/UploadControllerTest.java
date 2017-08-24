@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.mockito.runners.MockitoJUnitRunner;
+
+import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.FileChecksum;
@@ -69,7 +71,8 @@ public class UploadControllerTest {
     private JiraIssue issue;
 
     @Before
-    public void before() throws IOException, DocumentRepositoryException {
+    @SneakyThrows
+    public void before() {
         FileChecksum fileChecksum = FileChecksum.fromLine("d41d8cd98f00b204e9800998ecf8427e *document-1.txt");
         checksums = new ArrayList<FileChecksum>();
         checksums.add(fileChecksum);
@@ -98,48 +101,56 @@ public class UploadControllerTest {
         doReturn(info).when(document).getMetadata();
     }
 
-    private List<FileChecksum> deleteAFile() throws IOException {
+    @SneakyThrows
+    private List<FileChecksum> deleteAFile() {
         return controller.deleteFile("guid", "filename");
     }
 
     @Test
-    public void deletingAFile_returnsTheChecksums() throws IOException {
+    @SneakyThrows
+    public void deletingAFile_returnsTheChecksums() {
         val actual = deleteAFile();
 
         assertThat(actual, equalTo(checksums));
     }
 
     @Test
-    public void deletingAFile_deletesTheFileWithTheFileUploadService() throws IOException {
+    @SneakyThrows
+    public void deletingAFile_deletesTheFileWithTheFileUploadService() {
         deleteAFile();
 
         verify(fileUploadService).deleteFile(eq("guid"), eq("filename"));
     }
 
-    private List<FileChecksum> addAFile() throws IOException, NoSuchAlgorithmException {
+    @SneakyThrows
+    private List<FileChecksum> addAFile() {
         return controller.addFile("guid", multipartFile);
     }
 
     @Test
-    public void addingAFile_uploadsDataWithTheFileUploadService() throws IOException, NoSuchAlgorithmException {
+    @SneakyThrows
+    public void addingAFile_uploadsDataWithTheFileUploadService() {
         addAFile();
 
         verify(fileUploadService).uploadData(eq(inputStream), eq("guid"), eq("filename"));
     }
 
     @Test
-    public void addingAFile_returnsTheChecksums() throws IOException, NoSuchAlgorithmException {
+    @SneakyThrows
+    public void addingAFile_returnsTheChecksums() {
         val actual = addAFile();
 
         assertThat(actual, equalTo(checksums));
     }
 
-    private Map<String, String> finishAnUpload() throws DocumentRepositoryException {
+    @SneakyThrows
+    private Map<String, String> finishAnUpload() {
         return controller.finish(user, "guid");
     }
 
     @Test
-    public void finishingAnUpload_removesTheUploadPermission() throws DocumentRepositoryException {
+    @SneakyThrows
+    public void finishingAnUpload_removesTheUploadPermission() {
         finishAnUpload();
 
         val idenities = info.getIdentities(Permission.UPLOAD);
@@ -150,7 +161,8 @@ public class UploadControllerTest {
     }
 
     @Test
-    public void finishingAnUpload_updatesJiraIssue() throws DocumentRepositoryException {
+    @SneakyThrows
+    public void finishingAnUpload_updatesJiraIssue() {
         finishAnUpload();
 
         verify(jiraService).transition(eq("key"), eq("751"));
@@ -158,13 +170,15 @@ public class UploadControllerTest {
     }
 
     @Test
-    public void finishingAnUpload_returnsAMessage() throws DocumentRepositoryException {
+    @SneakyThrows
+    public void finishingAnUpload_returnsAMessage() {
         val actual = finishAnUpload();
         assertThat(actual.get("message"), equalTo("awaiting approval from admin"));
     }
 
     @Test(expected = UploadController.NonUniqueJiraIssue.class)
-    public void finishAnUpload_throwsUniqueJiraIssueWhenNoIssuesNotFound() throws DocumentRepositoryException {
+    @SneakyThrows
+    public void finishAnUpload_throwsUniqueJiraIssueWhenNoIssuesNotFound() {
         val noIssues = new ArrayList<JiraIssue>();
         doReturn(noIssues).when(jiraService).search(anyString());
 
@@ -172,7 +186,8 @@ public class UploadControllerTest {
     }
 
     @Test(expected = UploadController.NonUniqueJiraIssue.class)
-    public void finishAnUpload_throwsUniqueJiraIssueWhenMoreThanOneIssueFound() throws DocumentRepositoryException {
+    @SneakyThrows
+    public void finishAnUpload_throwsUniqueJiraIssueWhenMoreThanOneIssueFound() {
         val noIssues = new ArrayList<JiraIssue>();
         noIssues.add(issue);
         noIssues.add(issue);
