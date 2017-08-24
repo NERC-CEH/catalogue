@@ -1,3 +1,4 @@
+secrets.env
 dropbox
 datastore
 mapfiles
@@ -28,3 +29,4 @@ javac-services*
 .project
 org.eclipse.*
 .vscode
+DevStartupController.java

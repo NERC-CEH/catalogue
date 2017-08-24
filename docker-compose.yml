@@ -12,6 +12,8 @@ services:
     environment:
       BASE_URI: https://catalogue.ceh.ac.uk
       SPRING_PROFILES: development
+    env_file:
+      - secrets.env
   solr:
     build: "solr"
   mapserver:

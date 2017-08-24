@@ -2,6 +2,9 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.vividsolutions.jts.io.WKTReader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.template.Template;
@@ -124,6 +127,7 @@ import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
 import uk.ac.ceh.gateway.catalogue.services.MessageConverterWritingService;
@@ -150,6 +154,10 @@ public class ServiceConfig {
     @Value("${doi.prefix}") String doiPrefix;
     @Value("${doi.username}") String doiUsername;
     @Value("${doi.password}") String doiPassword;
+    @Value("#{systemEnvironment['JIRA_USERNAME']}") String jiraUsername;
+    @Value("#{systemEnvironment['JIRA_PASSWORD']}") String jiraPassword;
+    @Value("${jira.address}") String jiraAddress;
+    
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
     @Autowired Dataset jenaTdb;
@@ -331,6 +339,16 @@ public class ServiceConfig {
     public FileUploadService fileUploadService() {
         return new FileUploadService(new File("/var/ceh-catalogue/dropbox"));
     }
+
+    
+    @Bean
+    public JiraService jiraService() {
+        Client client = Client.create();
+        client.addFilter(new HTTPBasicAuthFilter(jiraUsername, jiraPassword));
+        WebResource jira = client.resource(jiraAddress);
+        return new JiraService(jira);
+    }
+
     
     @Bean
     public CitationService citationService() {

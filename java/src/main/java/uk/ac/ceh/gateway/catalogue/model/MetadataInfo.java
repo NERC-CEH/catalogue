@@ -114,6 +114,10 @@ public class MetadataInfo {
         }
     }
 
+    public void removePermission(Permission permission, String identity) {
+        permissions.remove(permission, identity);
+    }
+
     public MetadataInfo replaceAllPermissions(@NonNull Set<IdentityPermissions> updated) {
         MetadataInfo toReturn = new MetadataInfo(this);
         toReturn.permissions.clear();

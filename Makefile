@@ -21,8 +21,14 @@ web:
 npm-build:
 	$(NPM) run build
 
+npm-test:
+	$(NPM) run test
+
 java:
 	$(MAVEN) -f java/pom.xml clean package
+
+java-test:
+	$(MAVEN) -f java/pom.xml clean test
 
 java-build: java docker
 
