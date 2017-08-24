@@ -39,17 +39,17 @@ import java.util.Map;
 public class UploadController {
     private final FileUploadService fileUploadService;
     private final JiraService jiraService;
-    private final PermissionService permissionservice;
+    private final PermissionService permissionService;
     private final DocumentRepository documentRepository;
 
     private static final String START_PROGRESS = "751";
 
     @Autowired
     public UploadController(FileUploadService fileUploadService, JiraService jiraService,
-            PermissionService permissionservice, DocumentRepository documentRepository) {
+            PermissionService permissionService, DocumentRepository documentRepository) {
         this.fileUploadService = fileUploadService;
         this.jiraService = jiraService;
-        this.permissionservice = permissionservice;
+        this.permissionService = permissionService;
         this.documentRepository = documentRepository;
     }
 
@@ -96,7 +96,7 @@ public class UploadController {
         List<FileChecksum> checksums = fileUploadService.getChecksums(guid);
         model.put("checksums", checksums);
 
-        boolean userCanUpload = permissionservice.userCanUpload(guid);
+        boolean userCanUpload = permissionService.userCanUpload(guid);
         boolean canUpload = userCanUpload && isScheduled;
         model.put("userCanUpload", userCanUpload);
         model.put("canUpload", canUpload);
