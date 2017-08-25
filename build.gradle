@@ -30,3 +30,14 @@ task prepFixtures {
     repo.commit(message: 'Adding fixtures', committer: new Person('prep', 'prep@example.com'))
   }
 }
+
+if (System.getenv("SELENIUM_TEST") ?: false) {
+  dockerCompose {
+    useComposeFiles = ['docker-compose.yml', 'docker-compose.selenium.yml']
+  }
+}
+
+task selenium {
+}
+
+dockerCompose.isRequiredBy(selenium)

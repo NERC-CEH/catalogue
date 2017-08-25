@@ -35,9 +35,7 @@ rspec:
   stage: test
   image: gitlab/dind
   script:
-    - ./gradlew composeUp selenium
-  after_script:
-    - ./gradlew composeDown
+    - SELENIUM_TEST=true ./gradlew selenium
   artifacts:
     when: always
     paths:
