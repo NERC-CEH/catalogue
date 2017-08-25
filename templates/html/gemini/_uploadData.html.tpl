@@ -10,11 +10,7 @@
     <div class="panel-body">
       <a href="/upload/${id}">
         <i class="glyphicon glyphicon-open text-info"></i>
-        <#if permission.userCanUpload(id)>
-          <span>Upload</span>
-        <#else>
-          <span>View</span>
-        </#if>
+        <span>Manage Files</span>
       </a>
     </div>
   </div>
