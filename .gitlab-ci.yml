@@ -34,6 +34,8 @@ java:
 rspec:
   stage: test
   image: gitlab/dind
+  before_script:
+    - service docker start
   script:
     - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml up -d
   after_script:
