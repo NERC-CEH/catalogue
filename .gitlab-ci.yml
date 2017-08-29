@@ -35,7 +35,8 @@ rspec:
   stage: test
   image: gitlab/dind
   before_script:
-    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome
+    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome web
+    - sleep 40s # allow containers to start and become healthy
   script:
     - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
   after_script:
