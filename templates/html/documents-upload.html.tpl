@@ -36,11 +36,12 @@
         </#if>
         <section class='section'>
             <h3 class='subtitle'>Documents</h3>
+            <p>These are the files which have been uploaded. The checksum is a value used to guarantee the contents of the file haven't changed. It is generated for you when you upload your files. You may be asked to provide this value in the future.</p>
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th>Checksum</th>
                         <th>File</th>
+                        <th>Checksum</th>
                         <#if canUpload>
                             <th id='delete'></th>
                         </#if>
@@ -49,8 +50,8 @@
                 <tbody class='checksums-list'>
                 <#list checksums as checksum>
                     <tr data-file="${checksum.filename}">
-                        <td class='checksum-value'>${checksum.getMD5Hash()}</td>
                         <td class='checksum-file'>${checksum.filename}</td>
+                        <td class='checksum-value'>${checksum.getMD5Hash()}</td>
                         <#if canUpload>
                             <td class="checksum-delete text-center">
                                 <button class="btn btn-block btn-danger delete" data-file="${checksum.filename}">
