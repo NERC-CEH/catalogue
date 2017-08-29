@@ -35,7 +35,9 @@ rspec:
   stage: test
   image: gitlab/dind
   script:
-    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml up
+    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml up -d
+  after_script:
+    - docker-compose down
   artifacts:
     when: always
     paths:
