@@ -33,7 +33,9 @@ java:
 
 rspec:
   stage: test
-  image: gitlab/dind
+  image: openjdk:8
+  before_script:
+    - ./install-docker.sh
   script:
     - SELENIUM_TEST=true ./gradlew selenium
   artifacts:
