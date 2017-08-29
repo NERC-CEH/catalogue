@@ -34,10 +34,8 @@ java:
 rspec:
   stage: test
   image: gitlab/dind
-  before_script:
-    - apt-get update -qq && apt-get install -y -qq openjdk-8-jre
   script:
-    - SELENIUM_TEST=true ./gradlew selenium
+    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml up
   artifacts:
     when: always
     paths:
