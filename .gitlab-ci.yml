@@ -46,6 +46,7 @@ web:
   artifacts:
     when: always
     paths:
+      - web/src/vendor/
       - web/src/css/
       - web/src/scripts/main-out.js
 
