@@ -8,16 +8,18 @@ import lombok.Builder;
 
 @Value
 public class Supplemental {
-    private final String name, description, url;
+    private final String name, description, url, type;
 
     @Builder
     @JsonCreator
     private Supplemental(
         @JsonProperty("name") String name, 
         @JsonProperty("description") String description,
-        @JsonProperty("url") String url){
+        @JsonProperty("url") String url,
+        @JsonProperty("type") String type){
         this.name = nullToEmpty(name);
         this.description = nullToEmpty(description);
         this.url = nullToEmpty(url);
+        this.type = nullToEmpty(type);
     }   
 }
