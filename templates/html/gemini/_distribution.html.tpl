@@ -17,7 +17,7 @@
       <div>
       <#if (downloadOrder.orderable)?? && downloadOrder.orderable>
         <#list downloadOrder.orderResources as onlineResource>
-          <p><a href="${onlineResource.url?html}"><i class="fa fa-floppy-o text-info"></i>
+          <p><a href="${onlineResource.url?html}"><i class="fa fa-download text-info"></i>
             <#if onlineResource.name?has_content>
               ${onlineResource.name?html}
             <#else>
@@ -39,7 +39,7 @@
       </#if>
 
       <#if (downloadOrder.supportingDocumentsUrl)?has_content>
-        <p><a href="${downloadOrder.supportingDocumentsUrl?html}" title="Supporting information important for the re-use of this dataset"><i class="fa fa-file-o text-info"></i> Supporting documentation</a></p>
+        <p><a href="${downloadOrder.supportingDocumentsUrl?html}" title="Supporting information important for the re-use of this dataset"><i class="fa fa-files-o text-info"></i> Supporting documentation</a></p>
       </#if>
 
       <#if mapViewable>
