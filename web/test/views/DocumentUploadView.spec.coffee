@@ -102,7 +102,7 @@ define [
             expect(finishMessage).toBe 'Some files have not been uploaded yet'
             expect(finishDisabled).toBe 'disabled'
 
-            expect(iconClass).toContain 'fa-ban-'
+            expect(iconClass).toContain 'fa-ban'
             expect(iconClass).not.toContain 'fa-check'
             expect(iconClass).not.toContain 'fa-refresh'
             expect(iconClass).not.toContain 'fa-spin'
@@ -147,7 +147,7 @@ define [
         expect(finishMessage).toBe ''
         expect(finishDisabled).not.toBe 'disabled'
 
-        expect(iconClass).toContain 'fa-ok'
+        expect(iconClass).toContain 'fa-check'
         expect(iconClass).not.toContain 'fa-ban'
         expect(iconClass).not.toContain 'fa-refresh'
         expect(iconClass).not.toContain 'fa-spin'
@@ -201,7 +201,7 @@ define [
             expect(finishDisabled).toBe 'disabled'
 
             expect(iconClass).toContain 'fa-ban'
-            expect(iconClass).not.toContain 'fa-ok'
+            expect(iconClass).not.toContain 'fa-check'
             expect(iconClass).not.toContain 'fa-refresh'
             expect(iconClass).not.toContain 'fa-spin'
         
@@ -301,7 +301,7 @@ define [
             expect(iconClass).toContain 'fa-refresh'
             expect(iconClass).toContain 'fa-spin'
             expect(iconClass).not.toContain 'fa-check'
-            expect(iconClass).not.toContain 'fa-ban-'
+            expect(iconClass).not.toContain 'fa-ban'
         
         it 'posts a finish', ->
             expect(event.url).toBe window.location.href + '/finish'

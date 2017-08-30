@@ -8,8 +8,7 @@
     <div class="navbar-right">
       <p id="editorAjax" class="navbar-text">Saving: <img src="/static/img/ajax-loader.gif"></p>
       <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="fa fa-chevron-left"></i> Back</button>
-      <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="fa fa-chevron-
-      on>
+      <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="fa fa-chevron-right"></i></button>
       <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="fa fa-floppy-o"></i></button>
       <button id="editorExit" class="btn btn-default navbar-btn">Exit <i class="fa fa-power-off"></i></button>
     </div>
