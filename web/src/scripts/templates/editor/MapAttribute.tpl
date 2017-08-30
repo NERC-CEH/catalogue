@@ -34,8 +34,8 @@
 </div>
 
 <hr/>
-<h4>Values <button class="btn btn-default btn-xs addValue">Add <span class="glyphicon glyphicon-plus"></span></button></h4>
+<h4>Values <button class="btn btn-default btn-xs addValue">Add <span class="fa fa-plus"></span></button></h4>
 <div class="values"></div>
 <hr/>
-<h4>Buckets <button class="btn btn-default btn-xs addBucket">Add <span class="glyphicon glyphicon-plus"></span></button></h4>
+<h4>Buckets <button class="btn btn-default btn-xs addBucket">Add <span class="fa fa-plus"></span></button></h4>
 <div class="buckets"></div>

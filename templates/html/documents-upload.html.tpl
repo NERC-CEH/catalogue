@@ -28,7 +28,7 @@
                     <p class='finish-message text-danger'></p>
                     <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
                         <a class="btn btn-success finish" role="button" disabled>
-                            <i class="glyphicon glyphicon-ban-circle"></i> Finish
+                            <i class="fa fa-ban"></i> Finish
                         </a>
                     </div>
                 </p>
@@ -55,7 +55,7 @@
                         <#if canUpload>
                             <td class="checksum-delete text-center">
                                 <button class="btn btn-block btn-danger delete" data-file="${checksum.filename}">
-                                    <i class="glyphicon glyphicon-trash"></i> Delete
+                                    <i class="fa fa-trash-o"></i> Delete
                                 </button>
                             </td>
                         </#if>
@@ -70,21 +70,21 @@
                 <div class="dropzone">
                     <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
                         <a class="btn btn-success fileinput-button" role="button" disabled>
-                            <i class="glyphicon glyphicon-plus"></i>
+                            <i class="fa fa-plus"></i>
                             <span>Add files...</span>
                         </a>
                         <a class="btn btn-success upload-all" role="button" disabled>
-                            <i class="glyphicon glyphicon-open"></i>
+                            <i class="fa fa-upload"></i>
                             <span>Upload All</span>
                         </a>
                         <a class="btn btn-success cancel-all" role="button" disabled>
-                            <i class="glyphicon glyphicon-remove"></i>
+                            <i class="fa fa-times"></i>
                             <span>Cancel All</span>
                         </a>
                     </div>
                     <div class="dz dropzone-area">
                         <h1 class="title">
-                            <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading Dropzone...
+                            <span class="fa fa-refresh glyphicon-refresh-animate"></span> Loading Dropzone...
                         </h1>
                         <div id="previews"></div>
                     </div>

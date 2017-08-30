@@ -22,7 +22,7 @@
             <td><input type="checkbox" disabled <#if permission.canEdit>checked</#if>></td>
             <td><input type="checkbox" disabled <#if permission.canDelete>checked</#if>></td>
             <td><input type="checkbox" disabled <#if permission.canUpload>checked</#if>></td>
-            <td><button class="btn btn-default btn-xs" disabled ><i class="glyphicon glyphicon-remove"></i></button></td>
+            <td><button class="btn btn-default btn-xs" disabled ><i class="fa fa-times"></i></button></td>
           </tr>
         </#list>
       </tbody>
@@ -32,7 +32,7 @@
       <div class="navbar-right">
         <a class="btn btn-default navbar-btn" href="/documents/${id}">Return to metadata</a>
         <#if canEdit>
-          <a class="btn btn-primary navbar-btn" href="#permission/${id}"><i class="glyphicon glyphicon-edit"></i> Edit</a>
+          <a class="btn btn-primary navbar-btn" href="#permission/${id}"><i class="fa fa-pencil-square-o"></i> Edit</a>
         </#if>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <h2>
-  <a href="/documents/<%=identifier%>" target="_new"><%=title%></a> <small><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></small>
+  <a href="/documents/<%=identifier%>" target="_new"><%=title%></a> <small><span class="fa fa-external-link" aria-hidden="true"></span></small>
 </h2>
 <div class="row">
   <div class="col-sm-10 col-lg-10"><%=shortenedDescription%></div>
