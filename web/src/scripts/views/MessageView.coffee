@@ -9,7 +9,7 @@ define [
   defaultMessage: 'A requested resource failed to load.'
 
   events:
-    "click span.glyphicon": "dismissMessage"
+    "click span.fa": "dismissMessage"
 
   initialize: ->
     @listenTo @model, 'error', @appendError

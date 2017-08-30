@@ -24,7 +24,7 @@ define [
 
         <span class='finish-message' />
         <button class='finish' disabled>
-            <i class='glyphicon' />
+            <i class='fa' />
         </button>
 
         <a class='fileinput-button' disabled />
@@ -56,15 +56,15 @@ define [
         it 'enables the finish button with', ->
             finishMessage = $('.finish-message').text()
             finishDisabled = $('.finish').attr 'disabled'
-            iconClass = $('.finish .glyphicon').attr 'class'
+            iconClass = $('.finish .fa').attr 'class'
 
             expect(finishMessage).toBe ''
             expect(finishDisabled).not.toBe 'disabled'
 
-            expect(iconClass).toContain 'glyphicon-ok'
-            expect(iconClass).not.toContain 'glyphicon-ban-circle'
-            expect(iconClass).not.toContain 'glyphicon-refresh'
-            expect(iconClass).not.toContain 'glyphicon-refresh-animate'
+            expect(iconClass).toContain 'fa-check'
+            expect(iconClass).not.toContain 'fa-ban'
+            expect(iconClass).not.toContain 'fa-refresh'
+            expect(iconClass).not.toContain 'fa-rspin'
     
     describe 'adding a file', ->
         beforeEach ->
@@ -97,15 +97,15 @@ define [
         it 'disables the finish button with appropriate message', ->
             finishMessage = $('.finish-message').text()
             finishDisabled = $('.finish').attr 'disabled'
-            iconClass = $('.finish .glyphicon').attr 'class'
+            iconClass = $('.finish .fa').attr 'class'
 
             expect(finishMessage).toBe 'Some files have not been uploaded yet'
             expect(finishDisabled).toBe 'disabled'
 
-            expect(iconClass).toContain 'glyphicon-ban-circle'
-            expect(iconClass).not.toContain 'glyphicon-ok'
-            expect(iconClass).not.toContain 'glyphicon-refresh'
-            expect(iconClass).not.toContain 'glyphicon-refresh-animate'
+            expect(iconClass).toContain 'fa-ban-'
+            expect(iconClass).not.toContain 'fa-check'
+            expect(iconClass).not.toContain 'fa-refresh'
+            expect(iconClass).not.toContain 'fa-spin'
 
     describe 'max size message', ->
         it 'is displayed for large files', ->
@@ -142,15 +142,15 @@ define [
 
         finishMessage = $('.finish-message').text()
         finishDisabled = $('.finish').attr 'disabled'
-        iconClass = $('.finish .glyphicon').attr 'class'
+        iconClass = $('.finish .fa').attr 'class'
 
         expect(finishMessage).toBe ''
         expect(finishDisabled).not.toBe 'disabled'
 
-        expect(iconClass).toContain 'glyphicon-ok'
-        expect(iconClass).not.toContain 'glyphicon-ban-circle'
-        expect(iconClass).not.toContain 'glyphicon-refresh'
-        expect(iconClass).not.toContain 'glyphicon-refresh-animate'
+        expect(iconClass).toContain 'fa-ok'
+        expect(iconClass).not.toContain 'fa-ban'
+        expect(iconClass).not.toContain 'fa-refresh'
+        expect(iconClass).not.toContain 'fa-spin'
     
     it 'does not disable the Upload All and Cancel All buttons if any files remane after removal', ->
         file1 = createFile('file-id-1')
@@ -195,15 +195,15 @@ define [
 
             finishMessage = $('.finish-message').text()
             finishDisabled = $('.finish').attr 'disabled'
-            iconClass = $('.finish .glyphicon').attr 'class'
+            iconClass = $('.finish .fa').attr 'class'
 
             expect(finishMessage).toBe 'Resolve all issues below'
             expect(finishDisabled).toBe 'disabled'
 
-            expect(iconClass).toContain 'glyphicon-ban-circle'
-            expect(iconClass).not.toContain 'glyphicon-ok'
-            expect(iconClass).not.toContain 'glyphicon-refresh'
-            expect(iconClass).not.toContain 'glyphicon-refresh-animate'
+            expect(iconClass).toContain 'fa-ban'
+            expect(iconClass).not.toContain 'fa-ok'
+            expect(iconClass).not.toContain 'fa-refresh'
+            expect(iconClass).not.toContain 'fa-spin'
         
         it 'is "Already exists" when conflict (409)', ->
             emitError 409
@@ -293,15 +293,15 @@ define [
         it 'puts the finish button into loading', ->
             finishMessage = $('.finish-message').text()
             finishDisabled = $('.finish').attr 'disabled'
-            iconClass = $('.finish .glyphicon').attr 'class'
+            iconClass = $('.finish .fa').attr 'class'
 
             expect(finishMessage).toBe ''
             expect(finishDisabled).toBe 'disabled'
 
-            expect(iconClass).toContain 'glyphicon-refresh'
-            expect(iconClass).toContain 'glyphicon-refresh-animate'
-            expect(iconClass).not.toContain 'glyphicon-ok'
-            expect(iconClass).not.toContain 'glyphicon-ban-circle'
+            expect(iconClass).toContain 'fa-refresh'
+            expect(iconClass).toContain 'fa-spin'
+            expect(iconClass).not.toContain 'fa-check'
+            expect(iconClass).not.toContain 'fa-ban-'
         
         it 'posts a finish', ->
             expect(event.url).toBe window.location.href + '/finish'
@@ -316,12 +316,12 @@ define [
             do event.fail
             finishMessage = $('.finish-message').text()
             finishDisabled = $('.finish').attr 'disabled'
-            iconClass = $('.finish .glyphicon').attr 'class'
+            iconClass = $('.finish .fa').attr 'class'
 
             expect(finishMessage).toBe 'An error occured, if this persists then please contact an admin'
             expect(finishDisabled).not.toBe 'disabled'
 
-            expect(iconClass).toContain 'glyphicon-ok'
-            expect(iconClass).not.toContain 'glyphicon-refresh'
-            expect(iconClass).not.toContain 'glyphicon-refresh-animate'
-            expect(iconClass).not.toContain 'glyphicon-ban-circle'
+            expect(iconClass).toContain 'fa-check'
+            expect(iconClass).not.toContain 'fa-refresh'
+            expect(iconClass).not.toContain 'fa-spin'
+            expect(iconClass).not.toContain 'fa-ban'

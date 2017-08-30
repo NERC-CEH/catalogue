@@ -84,7 +84,7 @@
                     </div>
                     <div class="dz dropzone-area">
                         <h1 class="title">
-                            <span class="fa fa-refresh glyphicon-refresh-animate"></span> Loading Dropzone...
+                            <span class="fa fa-refresh fa-spin"></span> Loading Dropzone...
                         </h1>
                         <div id="previews"></div>
                     </div>
