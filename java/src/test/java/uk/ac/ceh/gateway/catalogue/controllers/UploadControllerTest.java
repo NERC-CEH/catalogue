@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.apache.http.annotation.Immutable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
