@@ -24,7 +24,7 @@ COPY schemas              /opt/ceh-catalogue/schemas
 COPY templates            /opt/ceh-catalogue/templates
 COPY web/src              /opt/ceh-catalogue/web
 COPY java/build/libs/ROOT.war /tmp/ROOT.war
-RUN unzip -d /usr/local/tomcat/webapps/ROOT /tmp/ROOT.war
+RUN unzip -od /usr/local/tomcat/webapps/ROOT /tmp/ROOT.war
 
 HEALTHCHECK CMD curl --fail http://localhost:8080/eidc/documents || exit 1
 
