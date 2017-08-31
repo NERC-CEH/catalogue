@@ -41,29 +41,29 @@ define [
   disableFinish: (message) ->
     $('.finish-message').text(message)
     $('.finish').attr 'disabled', on
-    icon = $('.finish .glyphicon')
-    icon.addClass('glyphicon-ban-circle')
-    icon.removeClass('glyphicon-ok')
-    icon.removeClass('glyphicon-refresh')
-    icon.removeClass('glyphicon-refresh-animate')
+    icon = $('.finish .fa')
+    icon.addClass('fa-ban')
+    icon.removeClass('fa-check')
+    icon.removeClass('fa-refresh')
+    icon.removeClass('fa-spin')
   
   enableFinish: ->
     $('.finish-message').text('')
     $('.finish').attr 'disabled', off
-    icon = $('.finish .glyphicon')
-    icon.addClass('glyphicon-ok')
-    icon.removeClass('glyphicon-ban-circle')
-    icon.removeClass('glyphicon-refresh')
-    icon.removeClass('glyphicon-refresh-animate')
+    icon = $('.finish .fa')
+    icon.addClass('fa-check')
+    icon.removeClass('fa-ban')
+    icon.removeClass('fa-refresh')
+    icon.removeClass('fa-spin')
   
   submitFinish: ->
     $('.finish-message').text('')
     $('.finish').attr 'disabled', on
-    icon = $('.finish .glyphicon')
-    icon.removeClass('glyphicon-ok')
-    icon.removeClass('glyphicon-ban-circle')
-    icon.addClass('glyphicon-refresh')
-    icon.addClass('glyphicon-refresh-animate')
+    icon = $('.finish .fa')
+    icon.removeClass('fa-check')
+    icon.removeClass('fa-ban-')
+    icon.addClass('fa-refresh')
+    icon.addClass('fa-spin')
 
   loadedDropzone: ->
     $('.dz .title').text 'Drag files here'

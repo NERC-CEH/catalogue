@@ -52,7 +52,7 @@
             <input type="submit" class="btn" value="Generate DOI">
           </form>
         <#else>
-          <div class="alert alert-info"><i class="glyphicon glyphicon-ok"></i> Resource is citable</div>
+          <div class="alert alert-info"><i class="fa fa-check"></i> Resource is citable</div>
         </#if>
         </div>
       </#if>

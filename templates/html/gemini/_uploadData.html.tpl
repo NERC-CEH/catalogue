@@ -9,7 +9,7 @@
     </div>
     <div class="panel-body">
       <a href="/upload/${id}">
-        <i class="glyphicon glyphicon-open text-info"></i>
+        <i class="fa fa-files-o text-info"></i>
         <span>Manage Files</span>
       </a>
     </div>

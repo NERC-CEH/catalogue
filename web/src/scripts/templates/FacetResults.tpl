@@ -12,7 +12,7 @@
 
       <% if(facet.active) { %>
         <a href="<%=facet.url%>">
-          <span class="glyphicon glyphicon-remove"></span>
+          <span class="fa fa-times"></span>
         </a>
       <% } %>
 

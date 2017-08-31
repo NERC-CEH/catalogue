@@ -91,7 +91,7 @@
         <li><a href="http://onto.nerc.ac.uk/CEHMD/topic/16">Water quality</a></li>
       </ul>
     </div>
-    <button class="editor-button add">Add <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+    <button class="editor-button add">Add <span class="fa fa-plus" aria-hidden="true"></span></button>
   </div>
 </div>
 <h5>Thesaurus</h5>

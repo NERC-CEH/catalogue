@@ -3,14 +3,14 @@
 <div class="navbar navbar-default navbar-fixed-bottom">
   <div class="container-fluid">
     <div class="navbar-left">
-      <button id="editorDelete" class="btn btn-default navbar-btn">Delete <i class="glyphicon glyphicon-remove"></i></button>
+      <button id="editorDelete" class="btn btn-default navbar-btn">Delete <i class="fa fa-times"></i></button>
     </div>
     <div class="navbar-right">
       <p id="editorAjax" class="navbar-text">Saving: <img src="/static/img/ajax-loader.gif"></p>
-      <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
-      <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="glyphicon glyphicon-chevron-right"></i></button>
-      <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="glyphicon glyphicon-save"></i></button>
-      <button id="editorExit" class="btn btn-default navbar-btn">Exit <i class="glyphicon glyphicon-off"></i></button>
+      <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="fa fa-chevron-left"></i> Back</button>
+      <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="fa fa-chevron-right"></i></button>
+      <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="fa fa-floppy-o"></i></button>
+      <button id="editorExit" class="btn btn-default navbar-btn">Exit <i class="fa fa-power-off"></i></button>
     </div>
   </div>
 </div>

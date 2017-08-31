@@ -31,7 +31,7 @@ define [
       view = new MessageView model: model, el: el
       model.trigger 'error'
 
-      do $('.glyphicon-remove', el).click
+      do $('.fa-times', el).click
 
       expect(el.children().length).toBe 0
 
@@ -39,5 +39,5 @@ define [
       view = new MessageView model: model, el: el
       model.trigger 'error'
 
-      do $('.glyphicon-remove', el).click
+      do $('.fa-times', el).click
       expect(el.is ':visible').toBe false

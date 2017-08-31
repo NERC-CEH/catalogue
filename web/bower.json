@@ -20,6 +20,7 @@
     "bootstrap-colorpicker": "2.3.6",
     "ol-loadingPanel": "http://svn.osgeo.org/openlayers/addins/loadingPanel/trunk/lib/OpenLayers/Control/LoadingPanel.js",
     "dropzone": "^5.1.1",
-    "bootstrap": "3.2.0"
+    "bootstrap": "3.2.0",
+    "font-awesome": "fontawesome#^4.7.0"
   }
 }
