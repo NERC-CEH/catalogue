@@ -2,8 +2,6 @@ version: "2"
 services:
   web:
     build: .
-    ports:
-      - "8080:8080"
     depends_on:
       - solr
       - mapserver
@@ -12,8 +10,11 @@ services:
       - ./dropbox:/var/ceh-catalogue/dropbox
       - ./mapfiles:/var/ceh-catalogue/mapfiles
     environment:
+      JIRA_ADDRESS: https://jira-test.nerc-lancaster.ac.uk/rest/api/2
       BASE_URI: http://localhost:8080
       SPRING_PROFILES: development
+    env_file:
+      - secrets.env
   solr:
     build: "solr"
   mapserver:

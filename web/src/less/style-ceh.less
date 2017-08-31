@@ -1,14 +1,16 @@
 // Import our own style sheets
 @import "../vendor/bootstrap-theme-ceh/less/theme";
+@import "../vendor/font-awesome/less/font-awesome";
 @import "message-panel";
 @import "search";
 @import "mapviewer";
 @import "metadata";
 @import "editor";
 @import "validation";
-@import "dropzone";
+@import "documents-upload";
 
 @icon-font-path: "../vendor/bootstrap/fonts/";
+@fa-font-path: "../vendor/font-awesome/fonts";
 @nav-bar-height: 51px;
 @header-text: @gray-dark;
 
@@ -17,4 +19,8 @@ body { margin-top: @nav-bar-height; }
 
 .input-group-addon {
   background-color: #eee;
+}
+
+.modal-open {
+  padding: 0 !important;
 }

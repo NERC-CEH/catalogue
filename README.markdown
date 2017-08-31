@@ -16,6 +16,19 @@ The CEH metadata catalogue project.
 
 **NB:** `web/src/vendor/requirejs` needs to be left alone otherwise the build breaks
 
+## Usernames and Passwords
+
+you will need to create a `secrets.env` file with the following
+
+```
+JIRA_USERNAME=jira_username
+JIRA_PASSWORD=jira_password
+CROWD_USERNAME=eip-ro
+CROWD_PASSWORD=FindMeInK33Pa55
+```
+
+## Getting started
+
 The catalogue requires a few tools:
 
 - Git

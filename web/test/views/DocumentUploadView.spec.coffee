@@ -1,3 +1,5 @@
+MEGEBYTE = 1000000
+
 define [
   'jquery'
   'cs!views/DocumentsUploadView'
@@ -18,15 +20,20 @@ define [
 
         el = $("""
         <div id='delete' />
-        <div class="checksums-list" />
+        <div class='checksums-list' />
 
-        <a class="fileinput-button" disabled />
-        <a class="upload-all" disabled />
-        <a class="cancel-all" disabled />
+        <span class='finish-message' />
+        <button class='finish' disabled>
+            <i class='fa' />
+        </button>
 
-        <div class="dz">
+        <a class='fileinput-button' disabled />
+        <a class='upload-all' disabled />
+        <a class='cancel-all' disabled />
+
+        <div class='dz'>
             <span class='title' />
-            <div id="previews" />
+            <div id='previews' />
         </div>
         """)
         .appendTo $('body')
@@ -45,6 +52,19 @@ define [
         it 'enables the fileinput button', ->
             disabled = $('.fileinput-button').attr 'disabled'
             do expect(disabled).not.toBeDefined
+        
+        it 'enables the finish button with', ->
+            finishMessage = $('.finish-message').text()
+            finishDisabled = $('.finish').attr 'disabled'
+            iconClass = $('.finish .fa').attr 'class'
+
+            expect(finishMessage).toBe ''
+            expect(finishDisabled).not.toBe 'disabled'
+
+            expect(iconClass).toContain 'fa-check'
+            expect(iconClass).not.toContain 'fa-ban'
+            expect(iconClass).not.toContain 'fa-refresh'
+            expect(iconClass).not.toContain 'fa-rspin'
     
     describe 'adding a file', ->
         beforeEach ->
@@ -73,10 +93,23 @@ define [
             do $('#file-row-0 .cancel').click
 
             expect(removedFile.id).toBe  'file-row-0'
+        
+        it 'disables the finish button with appropriate message', ->
+            finishMessage = $('.finish-message').text()
+            finishDisabled = $('.finish').attr 'disabled'
+            iconClass = $('.finish .fa').attr 'class'
+
+            expect(finishMessage).toBe 'Some files have not been uploaded yet'
+            expect(finishDisabled).toBe 'disabled'
+
+            expect(iconClass).toContain 'fa-ban'
+            expect(iconClass).not.toContain 'fa-check'
+            expect(iconClass).not.toContain 'fa-refresh'
+            expect(iconClass).not.toContain 'fa-spin'
 
     describe 'max size message', ->
         it 'is displayed for large files', ->
-            file = createFile('file-id', 1000 + 1)
+            file = createFile('file-id', 300 * MEGEBYTE + 1)
             view.dropzone.addFile file
 
             className = $('#file-row-0 .max-size').attr 'class'
@@ -84,7 +117,7 @@ define [
             expect(className).not.toContain 'is-inactive'
 
         it 'is not displayed for small files', ->
-            file = createFile('file-id', 1000)
+            file = createFile('file-id', 300 * MEGEBYTE)
             view.dropzone.addFile file
 
             className = $('#file-row-0 .max-size').attr 'class'
@@ -101,6 +134,23 @@ define [
 
         disabled = $('.cancel-all').attr 'disabled'
         expect(disabled).toBe 'disabled'
+    
+    it 'enables the Finish button when all files have been removed', ->
+        file = createFile('file-id')
+        view.dropzone.addFile file
+        view.dropzone.removeFile file
+
+        finishMessage = $('.finish-message').text()
+        finishDisabled = $('.finish').attr 'disabled'
+        iconClass = $('.finish .fa').attr 'class'
+
+        expect(finishMessage).toBe ''
+        expect(finishDisabled).not.toBe 'disabled'
+
+        expect(iconClass).toContain 'fa-check'
+        expect(iconClass).not.toContain 'fa-ban'
+        expect(iconClass).not.toContain 'fa-refresh'
+        expect(iconClass).not.toContain 'fa-spin'
     
     it 'does not disable the Upload All and Cancel All buttons if any files remane after removal', ->
         file1 = createFile('file-id-1')
@@ -121,7 +171,7 @@ define [
             view.dropzone.addFile file
             view.dropzone.emit 'error',
                 file,
-                'Unused error message',
+                'Dropezone error',
                 status: status
         
         it 'makes the progress bar full width', ->
@@ -135,10 +185,25 @@ define [
             expect(className).not.toContain 'progress-bar-success'
             expect(className).toContain 'progress-bar-danger'
 
-        it 'defualts to "Failed"', ->
+        it 'defualts to dropzone error message', ->
             emitError 9001
             text = $('#file-row-0 .progress-bar').text()
-            expect(text).toBe 'Failed'
+            expect(text).toBe 'Dropezone error'
+        
+        it 'disables the finish button with appropriate message', ->
+            emitError 9001
+
+            finishMessage = $('.finish-message').text()
+            finishDisabled = $('.finish').attr 'disabled'
+            iconClass = $('.finish .fa').attr 'class'
+
+            expect(finishMessage).toBe 'Resolve all issues below'
+            expect(finishDisabled).toBe 'disabled'
+
+            expect(iconClass).toContain 'fa-ban'
+            expect(iconClass).not.toContain 'fa-check'
+            expect(iconClass).not.toContain 'fa-refresh'
+            expect(iconClass).not.toContain 'fa-spin'
         
         it 'is "Already exists" when conflict (409)', ->
             emitError 409
@@ -149,7 +214,6 @@ define [
             emitError 403
             text = $('#file-row-0 .progress-bar').text()
             expect(text).toBe 'Unauthorized'
-
 
     it '"Upload All" will enqueue all the files', ->
         file1 = createFile('file-id-1')
@@ -216,19 +280,48 @@ define [
             
             it 'removes the file', ->
                 expect(view.dropzone.files.length).toBe 0
-    
-    describe 'deleting a file', ->
-        fileName = 'filename'
-        event = null
-        beforeEach ->
-            ajax = spyOn($, "ajax")
-            view.dropzone.emit 'success', {}, [{
-                filename: 'filename'
-            }]
-            jasmine.clock().tick 500
-            do $('.delete').click
-            event = ajax.calls.mostRecent().args[0]
 
-        it 'creates http DELETE with the file name', ->
-            expect(event.url).toBe window.location.href + '/' + fileName
-            expect(event.type).toBe 'DELETE'
+    describe 'finish button', ->
+        event = null
+
+        beforeEach ->
+            ajax = spyOn($, 'ajax')
+            do $('.finish').click
+            event = ajax.calls.mostRecent().args[0]
+            window.location.reload = jasmine.createSpy('reload')
+
+        it 'puts the finish button into loading', ->
+            finishMessage = $('.finish-message').text()
+            finishDisabled = $('.finish').attr 'disabled'
+            iconClass = $('.finish .fa').attr 'class'
+
+            expect(finishMessage).toBe ''
+            expect(finishDisabled).toBe 'disabled'
+
+            expect(iconClass).toContain 'fa-refresh'
+            expect(iconClass).toContain 'fa-spin'
+            expect(iconClass).not.toContain 'fa-check'
+            expect(iconClass).not.toContain 'fa-ban'
+        
+        it 'posts a finish', ->
+            expect(event.url).toBe window.location.href + '/finish'
+            expect(event.type).toBe 'POST'
+            expect(event.headers).toEqual {Accept: 'application/json'}
+        
+        it 'changes window location on success', ->
+            do event.success
+            do expect(window.location.reload).toHaveBeenCalled
+        
+        it 'does some funky stuff on error', ->
+            do event.fail
+            finishMessage = $('.finish-message').text()
+            finishDisabled = $('.finish').attr 'disabled'
+            iconClass = $('.finish .fa').attr 'class'
+
+            expect(finishMessage).toBe 'An error occured, if this persists then please contact an admin'
+            expect(finishDisabled).not.toBe 'disabled'
+
+            expect(iconClass).toContain 'fa-check'
+            expect(iconClass).not.toContain 'fa-refresh'
+            expect(iconClass).not.toContain 'fa-spin'
+            expect(iconClass).not.toContain 'fa-ban'

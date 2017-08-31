@@ -11,6 +11,7 @@ RUN echo 'CATALINA_OPTS="                                                       
  -Dtemplate.location=/opt/ceh-catalogue/templates                                    \
  -Dsolr.server.documents.url=http://solr:8080/documents                              \
  -Duserstore.crowd.address=https://crowd.ceh.ac.uk/crowd/rest/usermanagement/latest  \
+ -Djira.address=${JIRA_ADDRESS}                                                      \
  -Duserstore.crowd.username=${CROWD_USERNAME}                                        \
  -Duserstore.crowd.password=${CROWD_PASSWORD}                                        \
  -Ddoi.prefix=10.5285/                                                               \
@@ -23,7 +24,7 @@ COPY schemas              /opt/ceh-catalogue/schemas
 COPY templates            /opt/ceh-catalogue/templates
 COPY web/src              /opt/ceh-catalogue/web
 COPY java/build/libs/ROOT.war /tmp/ROOT.war
-RUN unzip -od /usr/local/tomcat/webapps/ROOT /tmp/ROOT.war
+RUN unzip -d /usr/local/tomcat/webapps/ROOT /tmp/ROOT.war
 
 HEALTHCHECK CMD curl --fail http://localhost:8080/eidc/documents || exit 1
 

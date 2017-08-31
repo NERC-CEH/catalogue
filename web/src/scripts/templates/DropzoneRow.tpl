@@ -6,7 +6,7 @@
     <div class="col-md-2">
         <p class="size" data-dz-size></p>
         <p class="max-size is-inactive">
-            <span class="glyphicon glyphicon-warning-sign text-danger" aria-hidden="true"></span>
+            <span class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></span>
             <span>Large files will take a while to upload</span>
         </p>
     </div>
@@ -18,11 +18,11 @@
     <div class="col-md-4">
         <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
             <a class="btn btn-success upload" role="button">
-                <i class="glyphicon glyphicon-open"></i>
+                <i class="fa fa-upload"></i>
                 <span>Upload</span>
             </a>
             <a class="btn btn-success cancel" role="button">
-                <i class="glyphicon glyphicon-remove"></i>
+                <i class="fa fa-times"></i>
                 <span>Cancel</span>
             </a>
         </div>

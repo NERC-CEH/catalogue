@@ -17,13 +17,13 @@ define [
     it "shows a pencil when no link to remove bounding box exists", ->
       view = new DrawingControlView model: model, el: el
 
-      expect($('#drawing-toggle span', el).hasClass 'glyphicon-pencil' ).toBe true
+      expect($('#drawing-toggle span', el).hasClass 'fa-pencil' ).toBe true
 
     it "shows a cross when link to remove bounding box exists", ->
       view = new DrawingControlView model: model, el: el
       model.results.set withoutBbox: 'http://remove-link'
 
-      expect($('a span', el).hasClass 'glyphicon-remove' ).toBe true
+      expect($('a span', el).hasClass 'fa-times' ).toBe true
 
     it "shows a spatial operation dropdown when bounding box exists", ->
       view = new DrawingControlView model: model, el: el

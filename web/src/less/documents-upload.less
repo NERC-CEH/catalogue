@@ -1,14 +1,27 @@
-.glyphicon-refresh-animate {
-    animation: spin .7s infinite linear;
+.title {
+    margin-top: 30px;
+
+    &-type {
+        display: block;
+        line-height: 25px;
+    }
 }
 
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
+.subtitle {
+    margin-top: 2.5em;
+    border-bottom: 1px solid #cccccc;
+    padding-bottom: 6px;
+}
+
+.documents-upload {
+    .panel,
+    .panel-heading {
+        border-radius: 0;
     }
-    to {
-        transform: rotate(360deg);
-    }
+}
+
+.checksums {
+    margin-bottom: 30px;
 }
 
 .dropzone {
@@ -23,7 +36,7 @@
             text-align: center;
             line-height: 10px;
 
-            .glyphicon {
+            .fa {
                 margin-top: -15px;
             }
         }

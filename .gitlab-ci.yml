@@ -28,6 +28,7 @@ java:
     when: always
     paths:
       - java/build/libs/ROOT.war
+      - web/src/vendor/
       - web/src/css/
       - web/src/scripts/main-out.js
 
@@ -35,6 +36,8 @@ rspec:
   stage: test
   image: gitlab/dind
   before_script:
+    - echo JIRA_USERNAME=$JIRA_USERNAME > secrets.env
+    - echo JIRA_PASSWORD=$JIRA_PASSWORD >> secrets.env
     - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome web mapserver solr
   script:
     - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test

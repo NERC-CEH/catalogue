@@ -1,10 +1,10 @@
 <tr data-file="<%= filename %>">
-    <td><%= md5Hash %></td>
-    <td><%= filename %></td>
+    <td class='checksum-file'><%= filename %></td>
+    <td class='checksum-value'><%= md5Hash %></td>
     <% if (canDelete) { %>
-        <td class="text-center">
+        <td class="checksum-delete text-center">
             <button class="btn btn-block btn-danger delete" data-file="<%= filename %>">
-                <i class="glyphicon glyphicon-trash"></i> Delete
+                <i class="fa fa-trash-o"></i> Delete
             </button>
         </td>
     <% } %>
