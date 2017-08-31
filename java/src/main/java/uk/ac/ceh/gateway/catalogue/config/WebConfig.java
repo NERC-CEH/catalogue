@@ -66,8 +66,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String OSDP_AGENT_SHORT             = "osdp-agent";
     public static final String OSDP_DATASET_JSON_VALUE      = "application/vnd.osdp.dataset+json";
     public static final String OSDP_DATASET_SHORT           = "osdp-dataset";
-    public static final String OSDP_LOCATION_JSON_VALUE     = "application/vnd.osdp.location+json";
-    public static final String OSDP_LOCATION_SHORT          = "osdp-location";
     public static final String OSDP_MODEL_JSON_VALUE        = "application/vnd.osdp.model+json";
     public static final String OSDP_MODEL_SHORT             = "osdp-model";
     public static final String OSDP_MONITORING_ACTIVITY_JSON_VALUE  = "application/vnd.osdp.monitoring-activity+json";
@@ -140,7 +138,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(CEH_MODEL_APPLICATION_SHORT, MediaType.parseMediaType(CEH_MODEL_APPLICATION_JSON_VALUE))
                         .put(OSDP_AGENT_SHORT, MediaType.parseMediaType(OSDP_AGENT_JSON_VALUE))
                         .put(OSDP_DATASET_SHORT, MediaType.parseMediaType(OSDP_DATASET_JSON_VALUE))
-                        .put(OSDP_LOCATION_SHORT, MediaType.parseMediaType(OSDP_LOCATION_JSON_VALUE))
                         .put(OSDP_MODEL_SHORT, MediaType.parseMediaType(OSDP_MODEL_JSON_VALUE))
                         .put(OSDP_MONITORING_ACTIVITY_SHORT, MediaType.parseMediaType(OSDP_MONITORING_ACTIVITY_JSON_VALUE))
                         .put(OSDP_MONITORING_FACILITY_SHORT, MediaType.parseMediaType(OSDP_MONITORING_FACILITY_JSON_VALUE))

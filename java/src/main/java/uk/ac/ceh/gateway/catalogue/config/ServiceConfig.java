@@ -121,7 +121,6 @@ public class ServiceConfig {
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
     @Autowired CodeLookupService codeLookupService;
-    @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
     @Autowired GroupStore<CatalogueUser> groupStore;
     @Autowired @Qualifier("gemini") Schema geminiSchema;
     
@@ -176,11 +175,6 @@ public class ServiceConfig {
             .type(OSDP_DATASET_SHORT)
             .build();
 
-        DocumentType location = DocumentType.builder()
-            .title("Location")
-            .type(OSDP_LOCATION_SHORT)
-            .build();
-
         DocumentType model = DocumentType.builder()
             .title("Model")
             .type(OSDP_MODEL_SHORT)
@@ -220,7 +214,6 @@ public class ServiceConfig {
                 .url("http://www.ceh.ac.uk")
                 .documentType(agent)
                 .documentType(dataset)
-                .documentType(location)
                 .documentType(model)
                 .documentType(monitoringActivity)
                 .documentType(monitoringFacility)
@@ -410,7 +403,6 @@ public class ServiceConfig {
         //OSDP
         converters.add(new Object2TemplatedMessageConverter<>(Agent.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(uk.ac.ceh.gateway.catalogue.osdp.Dataset.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(Location.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(uk.ac.ceh.gateway.catalogue.osdp.Model.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(MonitoringActivity.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(MonitoringFacility.class, freemarkerConfiguration()));
@@ -520,7 +512,6 @@ public class ServiceConfig {
                 .register(CEH_MODEL_APPLICATION, CehModelApplication.class)
                 .register(OSDP_AGENT_SHORT, Agent.class)
                 .register(OSDP_DATASET_SHORT, uk.ac.ceh.gateway.catalogue.osdp.Dataset.class)
-                .register(OSDP_LOCATION_SHORT, Location.class)
                 .register(OSDP_MODEL_SHORT, uk.ac.ceh.gateway.catalogue.osdp.Model.class)
                 .register(OSDP_MONITORING_ACTIVITY_SHORT, MonitoringActivity.class)
                 .register(OSDP_MONITORING_FACILITY_SHORT, MonitoringFacility.class)

@@ -29,6 +29,10 @@ define [
   'cs!views/OsdpDatasetEditorView'
   'cs!views/OsdpModelEditorView'
   'cs!views/OsdpSampleEditorView'
+  'cs!views/OsdpPublicationEditorView'
+  'cs!views/OsdpMonitoringActivityEditorView'
+  'cs!views/OsdpMonitoringProgrammeEditorView'
+  'cs!views/OsdpMonitoringFacilityEditorView'
   'bootstrap'
   'dropzone'
 ], (
@@ -36,7 +40,8 @@ define [
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata,
     CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadView, OsdpAgentEditorView, OsdpDatasetEditorView,
-    OsdpModelEditorView, OsdpSampleEditorView
+    OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView,
+    OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView
 ) ->
 
   ###
@@ -129,6 +134,22 @@ define [
         View: OsdpSampleEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.osdp.sample+json'
+      'osdp-publication':
+        View: OsdpPublicationEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.publication+json'
+      'osdp-monitoring-activity':
+        View: OsdpMonitoringActivityEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.monitoring-activity+json'
+      'osdp-monitoring-programme':
+        View: OsdpMonitoringProgrammeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.monitoring-programme+json'
+      'osdp-monitoring-facility':
+        View: OsdpMonitoringFacilityEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.monitoring-facility+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'

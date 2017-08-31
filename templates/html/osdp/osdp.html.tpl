@@ -161,3 +161,45 @@ Temporal Extent
     </@b.key>
   </#if>
 </#macro>
+
+<#macro boundingBox boundingBox>
+  <div id="studyarea-map">
+      <span content="${boundingBox.wkt?html}" datatype="geo:wktLiteral"/>
+  </div>
+</#macro>
+
+<#--
+ObservationCapability
+-->
+<#macro observationCapability oc>
+  <@b.repeatRow>
+    <#if oc.observingTime?? && oc.observingTime?has_content>
+      <@b.basicRow>
+        <@b.keyContent "Observing Time" "Period of time spent on observation">${oc.observingTime}</@b.keyContent>
+      </@b.basicRow>
+    </#if>
+    <#if oc.observedPropertyName?? || oc.observedPropertyDefinition?? || oc.observedPropertyUnitOfMeasure??>
+      <@b.basicRow>
+        <@b.keyContent "Observed Property" "Observed Property">
+        <div>
+          <span class="text-muted">Name</span>
+          ${oc.observedPropertyName!"-"}
+        </div>
+        <div>
+          <span class="text-muted">Definition</span>
+          ${oc.observedPropertyDefinition!"-"}
+        </div>
+        <div>
+          <span class="text-muted">Unit of measure</span>
+          ${oc.observedPropertyUnitOfMeasure!"-"}
+        </div>
+        </@b.keyContent>
+      </@b.basicRow>
+    </#if>
+    <#if oc.procedureName?? && oc.procedureName?has_content>
+      <@b.basicRow>
+        <@b.keyContent "Procedure Name" "Name of observing procedure">${oc.procedureName}</@b.keyContent>
+      </@b.basicRow>
+    </#if>
+  </@b.repeatRow>
+</#macro>
