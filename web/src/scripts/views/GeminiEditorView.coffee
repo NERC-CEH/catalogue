@@ -533,7 +533,10 @@ define [
           label: 'Supplemental information'
           ObjectInputView: SupplementalView
           helpText: """
-                    <p>Include links to related websites or journal articles here</p>
+                    <p>You can add information not documented elsewhere here. This includes links to related articles or websites.  For example:</p>
+                    <ul><li>papers that cite this resource</li><li>papers that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
+                    <p>When linking to published articles, please use DOIs whenever possible.</p>
+                    <p><small class='text-danger'><i class='fa fa-exclamation-triangle'> </i> Project websites may only be maintained for a limited period and may therefore soon become unavailable.</small></p>
                     """
 
         new PredefinedParentView
