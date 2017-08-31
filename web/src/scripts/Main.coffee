@@ -23,15 +23,20 @@ define [
   'cs!views/LinkEditorView'
   'cs!models/LinkEditorMetadata'
   'cs!views/CehModelEditorView'
-  'cs!views/CehModelApplicationEditorView',
+  'cs!views/CehModelApplicationEditorView'
   'cs!views/DocumentsUploadView'
+  'cs!views/OsdpAgentEditorView'
+  'cs!views/OsdpDatasetEditorView'
+  'cs!views/OsdpModelEditorView'
+  'cs!views/OsdpSampleEditorView'
   'bootstrap'
   'dropzone'
 ], (
   _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata,
-    CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadView
+    CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadView, OsdpAgentEditorView, OsdpDatasetEditorView,
+    OsdpModelEditorView, OsdpSampleEditorView
 ) ->
 
   ###
@@ -108,6 +113,22 @@ define [
         View: LinkEditorView
         Model: LinkEditorMetadata
         mediaType: 'application/link+json'
+      'osdp-agent':
+        View: OsdpAgentEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.agent+json'
+      'osdp-dataset':
+        View: OsdpDatasetEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.dataset+json'
+      'osdp-model':
+        View: OsdpModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.model+json'
+      'osdp-sample':
+        View: OsdpSampleEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.sample+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'

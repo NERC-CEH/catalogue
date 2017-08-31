@@ -1,7 +1,7 @@
 <#import "osdp.html.tpl" as o>
 <#import "../blocks.html.tpl" as b>
 
-<@o.base>
+<@o.researchArtifact>
   <#if format?? && format?has_content>
     <@b.key "Format" "Format of dataset">${format}</@b.key>
   </#if>
@@ -15,8 +15,4 @@
       </#list>
     </@b.key>
   </#if>
-  <@o.relationships "Dependency" "Dependency between Datasets" "http://onto.nerc.ac.uk/CEHMD/rels/dependency" />
-  <@o.relationships "Supercedes" "Datasets superceded by this Dataset" "http://onto.nerc.ac.uk/CEHMD/rels/supercedes" />
-  <@o.relationships "Cites" "Citations for this Dataset" "http://onto.nerc.ac.uk/CEHMD/rels/cites" />
-  <@o.relationships "Revises" "Dataset revisions" "http://onto.nerc.ac.uk/CEHMD/rels/revises" />
-</@o.base>
+</@o.researchArtifact>

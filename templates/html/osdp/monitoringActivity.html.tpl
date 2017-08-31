@@ -11,7 +11,7 @@
   </#if>
   <#if temporalExtent?? && temporalExtent?has_content>
     <@b.key "Temporal Extent" "Temporal extent of Monitoring Activity">
-        <@o.temporalExtent temporalExtent /> 
+        <@o.temporalExt temporalExtent /> 
     </@b.key>
   </#if>
   <@o.relationships "Produces" "Research Artifacts produced by this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/produces" />

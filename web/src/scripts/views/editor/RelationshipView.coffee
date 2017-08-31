@@ -5,10 +5,15 @@ define [
 
   template:  template
 
-  initialize: ->
-    @render()
+  optionTemplate: _.template('<option value="<%= value %>"><%= label %></option>')
+
+  initialize: (options) ->
+    @options = options.options
+    ObjectInputView.prototype.initialize.call @, options
 
   render: ->
     ObjectInputView.prototype.render.apply @
-    @$('select').val @model.get 'relation'
+    $list = @$('datalist')
+    @options.forEach (option) =>
+      $list.append @optionTemplate option
     @

@@ -166,12 +166,12 @@ module.exports = function(grunt) {
     },
     watch: {
       less: {
-        files: "src/less/*",
-        tasks: ["less"]
+        files: 'src/less/*',
+        tasks: ['less']
       },
       requirejs: {
         files: 'src/scripts/main.js',
-        tasks: ["copy:requirejs"]
+        tasks: ['copy:requirejs']
       }
     },
     concurrent: {

@@ -1,15 +1,17 @@
-<div class="col-sm-2 col-lg-2">
-  <label for="relationship<%= data.index %>Relation">Relation</label>
+<div class="row">
+  <div class="col-sm-2 col-lg-2">
+    <label for="relationship<%= data.index %>Relation">Relation</label>
+  </div>
+  <div class="col-sm-10 col-lg-10">
+    <input list="relationship<%= data.index %>relationships" data-name="relation" id="relationship<%= data.index %>Relation" class="editor-input" value="<%= data.relation %>">
+    <datalist id="relationship<%= data.index %>relationships"></datalist>
+  </div>
 </div>
-<div class="col-sm-4 col-lg-4">
-  <select data-name="relation" id="relationship<%= data.index %>Relation" class="editor-input">
-    <option value="">-- Select Relationship --</option>
-  	<option value="http://purl.org/dc/terms/references">References</option>
-  </select>
-</div>
-<div class="col-sm-1 col-lg-1">
-  <label for="relationship<%= data.index %>Target">Target</label>
-</div>
-<div class="col-sm-5 col-lg-5">
-  <input data-name="target" id="relationship<%= data.index %>Target" class="editor-input" value="<%= data.target %>">
+<div class="row">
+  <div class="col-sm-2 col-lg-2">
+    <label for="relationship<%= data.index %>Target">Target</label>
+  </div>
+  <div class="col-sm-10 col-lg-10">
+    <input data-name="target" id="relationship<%= data.index %>Target" class="editor-input" value="<%= data.target %>">
+  </div>
 </div>

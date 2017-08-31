@@ -5,7 +5,6 @@ define [
   'cs!views/editor/ParentView'
   'cs!views/editor/ParentStringView'
   'cs!views/editor/KeywordView'
-  'cs!views/editor/SelectView'
   'cs!views/editor/ReferenceView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/DataInfoView'
@@ -17,7 +16,6 @@ define [
   ParentView,
   ParentStringView,
   KeywordView,
-  SelectView,
   ReferenceView
   SingleObjectView
   DataInfoView
