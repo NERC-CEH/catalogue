@@ -16,4 +16,6 @@
   </#if>
   <@o.relationships "Produces" "Research Artifacts produced by this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/produces" />
   <@o.relationships "Uses" "Monitoring Facilities used by this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
+  <@o.inverseRelationships "Used By" "Used by this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
+  <@o.inverseRelationships "Setup By" "Setup by this Monitoring Programme" "http://onto.nerc.ac.uk/CEHMD/rels/setupFor" />
 </@o.base>

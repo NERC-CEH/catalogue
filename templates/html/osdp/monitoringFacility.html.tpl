@@ -16,5 +16,5 @@
     </@b.key>
   </#if>
   <@o.relationships "Part Of" "Part of another Monitoring Facility" "http://onto.nerc.ac.uk/CEHMD/rels/partOf" />
-  <@o.inverseRelationships "Used" "Monitoring Activities using this Monitoring Facility" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
+  <@o.inverseRelationships "Used By" "Used by this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
 </@o.base>

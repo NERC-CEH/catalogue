@@ -51,6 +51,14 @@ OSDP Research Artifact base template
     <@o.relationships "Revises" "Artifact revisions" "http://onto.nerc.ac.uk/CEHMD/rels/revises" />
     <@o.relationships "Uses" "Artifact uses" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
     <@o.relationships "Produces" "Artifact produces" "http://onto.nerc.ac.uk/CEHMD/rels/produces" />
+
+    <@o.inverseRelationships "Related" "Relation between artifacts" "http://onto.nerc.ac.uk/CEHMD/rels/related" />
+    <@o.inverseRelationships "Superceded By" "Superceded by this artifacts" "http://onto.nerc.ac.uk/CEHMD/rels/supercedes" />
+    <@o.inverseRelationships "Cited By" "Cited by this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/cites" />
+    <@o.inverseRelationships "Revised By" "Revised by this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/revises" />
+    <@o.inverseRelationships "Used By" "Used by this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
+    <@o.inverseRelationships "Produced By" "Produced by this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/produces" />
+    <@o.inverseRelationships "Owned By" "Owned by this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/owns" />
   </@base>
 </#macro>
 
