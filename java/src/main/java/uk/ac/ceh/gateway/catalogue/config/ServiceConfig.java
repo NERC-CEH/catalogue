@@ -603,11 +603,12 @@ public class ServiceConfig {
         SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator(documentRepository());
         
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
-            .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
-            .register(Facility.class,           new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
+            .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
+            .register(Facility.class, new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
             .register(BaseMonitoringType.class, baseMonitoringType)
-            .register(LinkDocument.class,     solrIndexLinkDocumentGenerator)
-            .register(MetadataDocument.class,   metadataDocument);
+            .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
+            .register(MonitoringFacility.class, new SolrIndexOsdpMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
+            .register(MetadataDocument.class, metadataDocument);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry(mappings);
         
