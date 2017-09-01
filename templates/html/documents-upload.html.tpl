@@ -3,8 +3,8 @@
     <div id='documents-upload' class="container documents-upload">
         <section class='section'>
             <h1 class='title'>
-                <small class="title-type">${type}</small>
-                <span>${title}</span>
+                <small class="title-type">${documentUpload.type}</small>
+                <span>${documentUpload.title}</span>
             </h1>
         </section>
         <section class='section'>
@@ -45,18 +45,62 @@
                         <#if canUpload>
                             <th id='delete'></th>
                         </#if>
+                        <#if canChangeType>
+                            <th id='canChangeType'></th>
+                        </#if>
                     </tr>
                 </thead>
                 <tbody class='checksums-list'>
-                <#list checksums as checksum>
-                    <tr data-file="${checksum.filename}">
-                        <td class='checksum-file'>${checksum.filename}</td>
-                        <td class='checksum-value'>${checksum.getMD5Hash()}</td>
+                <#list documentUpload.data?values as file>
+                    <tr data-file="${file.name}">
+                        <td class='checksum-file'>${file.name}</td>
+                        <td class='checksum-value'>${file.hash}</td>
                         <#if canUpload>
                             <td class="checksum-delete text-center">
-                                <button class="btn btn-block btn-danger delete" data-file="${checksum.filename}">
+                                <button class="btn btn-block btn-danger delete" data-file="${file.name}">
                                     <i class="fa fa-trash-o"></i> Delete
                                 </button>
+                            </td>
+                        </#if>
+                        <#if canChangeType>
+                            <td>
+                                <form action="">
+                                    <div class="change-type">
+                                        <input type="radio" id="to-data-${file.name}" name="type" value="data" checked />
+                                        <label for="to-data-${file.name}">Data</label>
+                                    </div>
+                                    <div class="change-type">
+                                        <input type="radio" id="to-meta-${file.name}" name="type" value="meta" />
+                                        <label for="to-meta-${file.name}">Meta</label>
+                                    </div>
+                                </form>
+                            </td>
+                        </#if>
+                    </tr>
+                </#list>
+                <#list documentUpload.meta?values as file>
+                    <tr data-file="${file.name}">
+                        <td class='checksum-file'>${file.name}</td>
+                        <td class='checksum-value'>${file.hash}</td>
+                        <#if canUpload>
+                            <td class="checksum-delete text-center">
+                                <button class="btn btn-block btn-danger delete" data-file="${file.name}">
+                                    <i class="fa fa-trash-o"></i> Delete
+                                </button>
+                            </td>
+                        </#if>
+                        <#if canChangeType>
+                            <td>
+                                <form action="">
+                                    <div class="change-type">
+                                        <input type="radio" id="to-data-${file.name}" name="type" value="data" />
+                                        <label for="to-data-${file.name}">Data</label>
+                                    </div>
+                                    <div class="change-type">
+                                        <input type="radio" id="to-meta-${file.name}" name="type" value="meta" checked />
+                                        <label for="to-meta-${file.name}">Meta</label>
+                                    </div>
+                                </form>
                             </td>
                         </#if>
                     </tr>

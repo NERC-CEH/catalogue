@@ -11,16 +11,31 @@ define [
     if $('.dz').length
       do @initDropzone
   
-  updateChecksums: (files) ->
-    checksums = files
-      .map (d) ->
-        checksumRow
-          canDelete: $('#delete').length > 0
-          filename: d.filename
-          md5Hash: d.md5Hash
-      .join ''
+  updateChecksums: (response) ->
+    data = []
     
-    document.querySelector('.checksums-list').innerHTML = checksums
+    for name, value of response.data
+      data.push checksumRow
+        canDelete: $('#delete').length > 0
+        canChangeType: $('#canChangeType').length > 0
+        isData: 'checked'
+        isMeta: ''
+        filename: value.name
+        md5Hash: value.hash
+    
+    meta = []
+    
+    for name, value of response.meta
+      meta.push checksumRow
+        canDelete: $('#delete').length > 0
+        canChangeType: $('#canChangeType').length > 0
+        isData: ''
+        isMeta: 'checked'
+        filename: value.name
+        md5Hash: value.hash
+    
+    checksums = data.concat meta
+    document.querySelector('.checksums-list').innerHTML = checksums.join('')
     do @initDeleteButtons
   
   initDeleteButtons: ->
@@ -138,6 +153,7 @@ define [
       previewTemplate: dropzoneRow()
       previewsContainer: '#previews'
       clickable: '.fileinput-button'
+      parallelUploads: 1
       init: ->
         do loadedDropzone
         fileCount = -1

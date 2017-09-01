@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.apache.http.annotation.Immutable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,18 +13,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.mockito.runners.MockitoJUnitRunner;
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.FileChecksum;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.FileUploadService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentUploadService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
@@ -37,9 +35,6 @@ import com.google.common.collect.Multimap;
 public class UploadControllerTest {
 
     @Mock
-    private FileUploadService fileUploadService;
-
-    @Mock
     private JiraService jiraService;
 
     @Mock
@@ -47,6 +42,9 @@ public class UploadControllerTest {
 
     @Mock
     private DocumentRepository documentRepository;
+
+    @Mock
+    private DocumentUploadService documentUploadService;
 
     @Mock
     private MultipartFile multipartFile;
@@ -65,7 +63,7 @@ public class UploadControllerTest {
     @InjectMocks
     private UploadController controller;
 
-    private List<FileChecksum> checksums;
+    private DocumentUpload documentUpload;
     private JiraIssue issue;
 
     private JiraIssue createJiraIssue(String statusName) {
@@ -82,11 +80,8 @@ public class UploadControllerTest {
     @Before
     @SneakyThrows
     public void before() {
-        FileChecksum fileChecksum = FileChecksum.fromLine("d41d8cd98f00b204e9800998ecf8427e *document-1.txt");
-        checksums = new ArrayList<FileChecksum>();
-        checksums.add(fileChecksum);
-
-        doReturn(checksums).when(fileUploadService).getChecksums(anyString());
+        documentUpload = new DocumentUpload("title", "type", "guid", "path");
+        doReturn(documentUpload).when(documentUploadService).get(anyString());
 
         doReturn(inputStream).when(multipartFile).getInputStream();
         doReturn("filename").when(multipartFile).getOriginalFilename();
@@ -109,16 +104,16 @@ public class UploadControllerTest {
     }
 
     @SneakyThrows
-    private List<FileChecksum> deleteAFile() {
+    private DocumentUpload deleteAFile() {
         return controller.deleteFile("guid", "filename");
     }
 
     @Test
     @SneakyThrows
-    public void deletingAFile_returnsTheChecksums() {
+    public void deletingAFile_returnsTheDocumentUpload() {
         val actual = deleteAFile();
 
-        assertThat(actual, equalTo(checksums));
+        assertThat(actual, equalTo(documentUpload));
     }
 
     @Test
@@ -126,11 +121,11 @@ public class UploadControllerTest {
     public void deletingAFile_deletesTheFileWithTheFileUploadService() {
         deleteAFile();
 
-        verify(fileUploadService).deleteFile(eq("guid"), eq("filename"));
+        verify(documentUploadService).delete(eq("guid"), eq("filename"));
     }
 
     @SneakyThrows
-    private List<FileChecksum> addAFile() {
+    private DocumentUpload addAFile() {
         return controller.addFile("guid", multipartFile);
     }
 
@@ -139,15 +134,15 @@ public class UploadControllerTest {
     public void addingAFile_uploadsDataWithTheFileUploadService() {
         addAFile();
 
-        verify(fileUploadService).uploadData(eq(inputStream), eq("guid"), eq("filename"));
+        verify(documentUploadService).add(eq("guid"), eq("filename"), eq(inputStream));
     }
 
     @Test
     @SneakyThrows
-    public void addingAFile_returnsTheChecksums() {
+    public void addingAFile_returnsTheDocumentUpload() {
         val actual = addAFile();
 
-        assertThat(actual, equalTo(checksums));
+        assertThat(actual, equalTo(documentUpload));
     }
 
     @SneakyThrows
@@ -213,19 +208,10 @@ public class UploadControllerTest {
 
     @Test
     @SneakyThrows
-    public void documentUploadView_addsAllTheChecksums() {
+    public void documentUploadView_addsAllTheDocumentUpload() {
         val model = documentUploadModel();
 
-        assertThat(model.get("checksums"), equalTo(checksums));
-    }
-
-    @Test
-    @SneakyThrows
-    public void documentUploadView_getsTheTitleAndCapitalisesTypeFromDocument() {
-        val model = documentUploadModel();
-
-        assertThat(model.get("title"), equalTo("title"));
-        assertThat(model.get("type"), equalTo("Type"));
+        assertThat(model.get("documentUpload"), equalTo(documentUpload));
     }
 
     @Test
@@ -283,6 +269,16 @@ public class UploadControllerTest {
 
     @Test
     @SneakyThrows
+    public void documentUploadView_isInProgresIfHasOneIssueWhichIsScheduled() {
+        val issues = Arrays.asList(createJiraIssue("in progress"));
+        doReturn(issues).when(jiraService).search(anyString());
+        val model = documentUploadModel();
+
+        assertThat(model.get("isInProgress"), equalTo(true));
+    }
+
+    @Test
+    @SneakyThrows
     public void documentUploadView_isNotScheduledIfHasOneIssueWhichIsNotScheduled() {
         val issues = Arrays.asList(createJiraIssue("in progress"));
         doReturn(issues).when(jiraService).search(anyString());
@@ -294,6 +290,26 @@ public class UploadControllerTest {
     @Test
     @SneakyThrows
     public void documentUploadView_isNotScheduledIfHasNoIssues() {
+        val issues = Arrays.asList();
+        doReturn(issues).when(jiraService).search(anyString());
+        val model = documentUploadModel();
+
+        assertThat(model.get("isScheduled"), equalTo(false));
+    }
+
+    @Test
+    @SneakyThrows
+    public void documentUploadView_isNotInProgressIfHasOneIssueWhichisNotInProgress() {
+        val issues = Arrays.asList(createJiraIssue("closed"));
+        doReturn(issues).when(jiraService).search(anyString());
+        val model = documentUploadModel();
+
+        assertThat(model.get("isInProgress"), equalTo(false));
+    }
+
+    @Test
+    @SneakyThrows
+    public void documentUploadView_isNotInProgressIfHasNoIssues() {
         val issues = Arrays.asList();
         doReturn(issues).when(jiraService).search(anyString());
         val model = documentUploadModel();
@@ -324,9 +340,9 @@ public class UploadControllerTest {
 
     @Test
     @SneakyThrows
-    public void documentUploadView_canNotUploadIseUserCanUploadAndIsNotScheduled() {
+    public void documentUploadView_canNotUploadIseUserCanUploadAndIsNotScheduledOrInProgress() {
         doReturn(true).when(permissionservice).userCanUpload(anyString());
-        val issues = Arrays.asList(createJiraIssue("in progress"));
+        val issues = Arrays.asList(createJiraIssue("closed"));
         doReturn(issues).when(jiraService).search(anyString());
         val model = documentUploadModel();
 

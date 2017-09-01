@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -15,13 +16,14 @@ import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 @AllArgsConstructor
 public class DocumentUploadService {
     private final File dropbox;
     private final DocumentRepository documentRepository;
 
-    public void add(String guid, String filename, InputStream input) throws Exception {
+    public void add(String guid, String filename, InputStream input) throws IOException, DocumentRepositoryException {
         delete(guid, filename);
 
         val documentUpload = get(guid);
@@ -42,7 +44,7 @@ public class DocumentUploadService {
         save(documentUpload);
     }
 
-    public void delete(String guid, String filename) throws Exception {
+    public void delete(String guid, String filename) throws IOException, DocumentRepositoryException {
         val documentUpload = get(guid);
         val file = new File(documentUpload.getPath(), filename);
         if (file.exists()) FileUtils.forceDelete(file);
@@ -51,7 +53,7 @@ public class DocumentUploadService {
         save(documentUpload);
     }
 
-    public void changeFileType(String guid, String filename, DocumentUpload.Type type) throws Exception {
+    public void changeFileType(String guid, String filename, DocumentUpload.Type type) throws IOException, DocumentRepositoryException {
         val documentUpload = get(guid);
         if (type.equals(DocumentUpload.Type.META)) {
             val documentUploadFile = documentUpload.getData().get(filename);
@@ -69,13 +71,13 @@ public class DocumentUploadService {
         save(documentUpload);
     }
 
-    public DocumentUpload get (String guid) throws Exception {
+    public DocumentUpload get (String guid) throws IOException, DocumentRepositoryException {
         val file = createDataFile(guid);
         val mapper = new ObjectMapper();
         return mapper.readValue(file, DocumentUpload.class);
     }
 
-    private File createDataFile (String guid) throws Exception {
+    private File createDataFile (String guid) throws IOException, DocumentRepositoryException {
         val folder = new File(dropbox, guid);
         FileUtils.forceMkdir(folder);
 
@@ -93,7 +95,7 @@ public class DocumentUploadService {
         return file;
     }
 
-    private void save (DocumentUpload documentUpload) throws Exception {
+    private void save (DocumentUpload documentUpload) throws IOException {
         val file = new File(documentUpload.getPath(), "_data.json");
         val mapper = new ObjectMapper();
         mapper.writeValue(file, documentUpload);
