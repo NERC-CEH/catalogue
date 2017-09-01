@@ -47,8 +47,6 @@ rspec:
     when: always
     paths:
       - test-reports
-  only:
-    - branches
 
 .deployment_template: &deployment_definition # Hidden deployment definition for docker builds
   stage: docker
