@@ -34,8 +34,6 @@ public class MapServerIndexingServiceTest {
     @Mock BundledReaderService reader;
     @Mock DocumentListingService listingService;
     @Mock DataRepository repo;
-    @Mock PostProcessingService postProcessingService;
-    @Mock DocumentIdentifierService documentIdentifierService;
     @Mock IndexGenerator indexGenerator;
     
     private MapServerIndexingService service;

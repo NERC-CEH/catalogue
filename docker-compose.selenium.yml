@@ -3,7 +3,6 @@ services:
   mapserver:
     volumes:
       - ./fixtures/mapserver-data:/mapserver/data
-      - ./fixtures/mapfiles:/mapserver/maps
       
   chrome:
     image: selenium/standalone-chrome:2.53.0
