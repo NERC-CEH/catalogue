@@ -80,7 +80,7 @@
 					<identifier xmlns:gmd="http://www.isotc211.org/2005/gmd">
 						<RS_Identifier>
 							<code>
-								<gco:CharacterString>https://localhost:8080/id/001d1d47-65f3-4b67-8a19-61fafc21ecc9</gco:CharacterString>
+								<gco:CharacterString>https://catalogue.ceh.ac.uk/id/001d1d47-65f3-4b67-8a19-61fafc21ecc9</gco:CharacterString>
 							</code>
 						</RS_Identifier>
 					</identifier>

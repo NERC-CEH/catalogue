@@ -38,11 +38,12 @@ rspec:
   before_script:
     - echo JIRA_USERNAME=$JIRA_USERNAME > secrets.env
     - echo JIRA_PASSWORD=$JIRA_PASSWORD >> secrets.env
-    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome web mapserver solr
+    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome
+    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml run wait
   script:
     - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
   after_script:
-    - docker-compose down
+    - docker-compose -f docker-compose.yml -f docker-compose.selenium.yml down --volumes
   artifacts:
     when: always
     paths:

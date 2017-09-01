@@ -1,4 +1,4 @@
-FROM tomcat:8.0-jre8
+FROM tomcat:8.5-jre8
 MAINTAINER oss@ceh.ac.uk
 
 ENV CATALINA_OPTS "-Dsolr.solr.home=/var/solr"
