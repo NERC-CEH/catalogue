@@ -58,12 +58,14 @@ public class DocumentUploadService {
         if (type.equals(DocumentUpload.Type.META)) {
             val documentUploadFile = documentUpload.getData().get(filename);
             if (null != documentUploadFile) {
+                documentUploadFile.setType("META");
                 documentUpload.getData().remove(filename);
                 documentUpload.getMeta().put(filename, documentUploadFile);
             }
         } else if (type.equals(DocumentUpload.Type.DATA)) {
             val documentUploadFile = documentUpload.getMeta().get(filename);
             if (null != documentUploadFile) {
+                documentUploadFile.setType("DATA");
                 documentUpload.getMeta().remove(filename);
                 documentUpload.getData().put(filename, documentUploadFile);
             }

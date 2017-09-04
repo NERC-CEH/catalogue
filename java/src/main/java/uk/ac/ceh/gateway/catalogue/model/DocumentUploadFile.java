@@ -11,4 +11,5 @@ public class DocumentUploadFile {
     private final String encoding;
     private final long bytes;
     private final String hash;
+    private String type = "DATA";
 }

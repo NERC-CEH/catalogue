@@ -1,13 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.jena.ext.com.google.common.collect.Maps;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.Lists;
 
 import lombok.Data;
+import lombok.val;
 
 @Data
 public class DocumentUpload {
@@ -43,6 +46,13 @@ public class DocumentUpload {
         this.path = path;
         this.meta = meta;
         this.data = data;
+    }
+
+    public List<DocumentUploadFile> getFiles () {
+        val files = Lists.newArrayList(meta.values());
+        files.addAll(data.values());
+        files.sort((left, right) -> left.getName().compareTo(right.getName()));
+        return files;
     }
 
     public enum Type {

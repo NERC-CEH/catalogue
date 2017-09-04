@@ -19,6 +19,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -216,6 +217,14 @@ public class UploadControllerTest {
 
     @Test
     @SneakyThrows
+    public void documentUploadView_addsAllFiles() {
+        val model = documentUploadModel();
+
+        assertThat(model.get("files"), equalTo(documentUpload.getFiles()));
+    }
+
+    @Test
+    @SneakyThrows
     public void documentUploadView_hasStatusOfNoIssueIfNoMatchingJiraIssue() {
         val issues = new ArrayList<JiraIssue>();
         doReturn(issues).when(jiraService).search(anyString());
@@ -366,5 +375,19 @@ public class UploadControllerTest {
         doReturn(true).when(permissionservice).userCanUpload(anyString());
         val model = documentUploadModel();
         assertThat(model.get("userCanUpload"), equalTo(true));
+    }
+
+    @Test
+    @SneakyThrows
+    public void change_willChangeTheDocumentType() {
+        controller.change("guid", "file", "META");
+        verify(documentUploadService).changeFileType(eq("guid"), eq("file"), eq(DocumentUpload.Type.META));
+    }
+
+    @Test
+    @SneakyThrows
+    public void change_returnsDocumentUpload() {
+        val actual = controller.change("guid", "file", "META");
+        assertThat(actual, equalTo(documentUpload));
     }
 }

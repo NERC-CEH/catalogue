@@ -93,13 +93,13 @@ public class UploadController {
 
         val documentUpload = documentUploadService.get(guid);
         model.put("documentUpload", documentUpload);
+        val files = documentUpload.getFiles();
+        model.put("files", files);
 
         boolean userCanUpload = permissionService.userCanUpload(guid);
         boolean canUpload = userCanUpload && (isScheduled || isInProgress);
-        boolean canChangeType = userCanUpload && isInProgress;
         model.put("userCanUpload", userCanUpload);
         model.put("canUpload", canUpload);
-        model.put("canChangeType", canChangeType);
 
         return new ModelAndView("/html/documents-upload.html.tpl", model);
     }
@@ -151,6 +151,15 @@ public class UploadController {
     public DocumentUpload deleteFile(@PathVariable("guid") String guid, @RequestParam("file") String file)
             throws IOException, DocumentRepositoryException {
         documentUploadService.delete(guid, file);
+        return documentUploadService.get(guid);
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#guid)")
+    @RequestMapping(value = "upload/{guid}/change", method = RequestMethod.POST)
+    @ResponseBody
+    public DocumentUpload change(@PathVariable("guid") String guid, @RequestParam("file") String file,
+            @RequestParam("type") String type) throws IOException, DocumentRepositoryException {
+        documentUploadService.changeFileType(guid, file, DocumentUpload.Type.valueOf(type));
         return documentUploadService.get(guid);
     }
 
