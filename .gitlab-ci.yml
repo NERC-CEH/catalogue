@@ -38,13 +38,12 @@ rspec:
   before_script:
     - echo JIRA_USERNAME=$JIRA_USERNAME > secrets.env
     - echo JIRA_PASSWORD=$JIRA_PASSWORD >> secrets.env
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome web
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml exec web ls -lAh /var/ceh-catalogue/datastore
-     - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml exec web ls -lAh /mapserver/data
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /builds/eip/catalogue/:/builds/eip/catalogue/ -w /builds/eip/catalogue/ docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome web
+    - sleep 120s
   script:
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /builds/eip/catalogue/:/builds/eip/catalogue/ -w /builds/eip/catalogue/ docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
   after_script:
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml down --volumes
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /builds/eip/catalogue/:/builds/eip/catalogue/ -w /builds/eip/catalogue/ docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml down --volumes
   artifacts:
     when: always
     paths:
