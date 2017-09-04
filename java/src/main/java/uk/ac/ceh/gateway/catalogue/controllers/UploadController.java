@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,27 +15,25 @@ import org.springframework.web.servlet.ModelAndView;
 import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.FileChecksum;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.services.FileUploadService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentUploadService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
 public class UploadController {
-    private final FileUploadService fileUploadService;
+    private final DocumentUploadService documentUploadService;
     private final JiraService jiraService;
     private final PermissionService permissionService;
     private final DocumentRepository documentRepository;
@@ -45,9 +41,9 @@ public class UploadController {
     private static final String START_PROGRESS = "751";
 
     @Autowired
-    public UploadController(FileUploadService fileUploadService, JiraService jiraService,
+    public UploadController(DocumentUploadService documentUploadService, JiraService jiraService,
             PermissionService permissionService, DocumentRepository documentRepository) {
-        this.fileUploadService = fileUploadService;
+        this.documentUploadService = documentUploadService;
         this.jiraService = jiraService;
         this.permissionService = permissionService;
         this.documentRepository = documentRepository;
@@ -91,19 +87,19 @@ public class UploadController {
         val issues = jiraService.search(jql(guid));
         val isScheduled = issues.size() == 1 && issues.get(0).getStatus().equals("scheduled");
         model.put("isScheduled", isScheduled);
+        val isInProgress = issues.size() == 1 && issues.get(0).getStatus().equals("in progress");
+        model.put("isInProgress", isInProgress);
         model.put("status", getStatus(issues));
 
-        List<FileChecksum> checksums = fileUploadService.getChecksums(guid);
-        model.put("checksums", checksums);
+        val documentUpload = documentUploadService.get(guid);
+        model.put("documentUpload", documentUpload);
+        val files = documentUpload.getFiles();
+        model.put("files", files);
 
         boolean userCanUpload = permissionService.userCanUpload(guid);
-        boolean canUpload = userCanUpload && isScheduled;
+        boolean canUpload = userCanUpload && (isScheduled || isInProgress);
         model.put("userCanUpload", userCanUpload);
         model.put("canUpload", canUpload);
-
-        MetadataDocument document = documentRepository.read(guid);
-        model.put("title", document.getTitle());
-        model.put("type", StringUtils.capitalize(document.getType()));
 
         return new ModelAndView("/html/documents-upload.html.tpl", model);
     }
@@ -141,26 +137,30 @@ public class UploadController {
     @PreAuthorize("@permission.userCanUpload(#guid)")
     @RequestMapping(value = "upload/{guid}/add", method = RequestMethod.POST)
     @ResponseBody
-    public List<FileChecksum> addFile(@PathVariable("guid") String guid, @RequestParam("file") MultipartFile file)
-            throws IOException, NoSuchAlgorithmException {
+    public DocumentUpload addFile(@PathVariable("guid") String guid, @RequestParam("file") MultipartFile file)
+            throws IOException, DocumentRepositoryException {
         try (InputStream in = file.getInputStream()) {
-            fileUploadService.uploadData(in, guid, file.getOriginalFilename());
-            return fileUploadService.getChecksums(guid);
+            documentUploadService.add(guid, file.getOriginalFilename(), in);
+            return documentUploadService.get(guid);
         }
     }
 
     @PreAuthorize("@permission.userCanUpload(#guid)")
     @RequestMapping(value = "upload/{guid}/delete", method = RequestMethod.POST)
     @ResponseBody
-    public List<FileChecksum> deleteFile(@PathVariable("guid") String guid, @RequestParam("file") String file)
-            throws IOException {
-        fileUploadService.deleteFile(guid, file);
-        return fileUploadService.getChecksums(guid);
+    public DocumentUpload deleteFile(@PathVariable("guid") String guid, @RequestParam("file") String file)
+            throws IOException, DocumentRepositoryException {
+        documentUploadService.delete(guid, file);
+        return documentUploadService.get(guid);
     }
 
-    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "File already exists")
-    @ExceptionHandler(FileAlreadyExistsException.class)
-    public void fileAlreadyExists() {
+    @PreAuthorize("@permission.userCanUpload(#guid)")
+    @RequestMapping(value = "upload/{guid}/change", method = RequestMethod.POST)
+    @ResponseBody
+    public DocumentUpload change(@PathVariable("guid") String guid, @RequestParam("file") String file,
+            @RequestParam("type") String type) throws IOException, DocumentRepositoryException {
+        documentUploadService.changeFileType(guid, file, DocumentUpload.Type.valueOf(type));
+        return documentUploadService.get(guid);
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Can not finish, contact admin to resolve issue clash")
