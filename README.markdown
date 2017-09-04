@@ -51,7 +51,12 @@ will run a process that watches the javascript and less directories and recompil
 
 ## Selenium Testing
 
-The project contains an `rspec` suite of selenium tests. These can be executed using the `make selenium` command. This will create the browsers required for testing in docker containers and run through the test suite.
+The project contains an `rspec` suite of selenium tests.
+These can be executed using
+
+    SELENIUM_TEST=true ./gradlew selenium
+
+This will create the browsers required for testing in docker containers and run through the test suite.
 
 ## Multiple Catalogues
 
