@@ -12,4 +12,12 @@ public class DocumentUploadFile {
     private final long bytes;
     private final String hash;
     private String type = "DATA";
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setType(DocumentUpload.Type type) {
+        this.type = type.toString();
+    }
 }

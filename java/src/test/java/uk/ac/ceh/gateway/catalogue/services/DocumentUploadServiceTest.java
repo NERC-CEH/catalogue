@@ -3,8 +3,12 @@ package uk.ac.ceh.gateway.catalogue.services;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.After;
@@ -15,9 +19,13 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.*;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -32,6 +40,7 @@ public class DocumentUploadServiceTest {
 
     private static final File dropbox = new File("../dropbox");
     private static final File file = new File(dropbox, "file.txt");
+    private static final File invalid = new File(dropbox, "guid/invalid.txt");
 
     private DocumentUploadService dus;
 
@@ -40,6 +49,7 @@ public class DocumentUploadServiceTest {
     public void before() {
         FileUtils.forceMkdir(dropbox);
         FileUtils.write(file, "something");
+        FileUtils.write(invalid, "invalid content");
 
         initMocks(this);
 
@@ -54,6 +64,80 @@ public class DocumentUploadServiceTest {
     @SneakyThrows
     public void after() {
         FileUtils.forceDelete(new File(dropbox, "guid"));
+        FileUtils.forceDelete(file);
+    }
+
+    @Test
+    @SneakyThrows
+    public void invalidFile_ifNotInDataOrMetaButInFolder() {
+        val actual = dus.get("guid");
+        
+        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.NOT_META_OR_DATA.name()));
+        assertThat(actual.getInvalid().size(), equalTo(1));
+        assertThat(actual.getData().size(), equalTo(0));
+        assertThat(actual.getMeta().size(), equalTo(0));
+    }
+
+    @Test
+    @SneakyThrows
+    public void invalidFile_ifInBothDataOrMeta() {
+        dus.add("guid", "invalid.txt", new FileInputStream(invalid));
+        val documentUpload = dus.get("guid");
+        DocumentUploadFile documentUploadFile = documentUpload.getData().get("invalid.txt");
+        documentUpload.getMeta().put("invalid.txt", documentUploadFile);
+        val file = new File(documentUpload.getPath(), "_data.json");
+        val mapper = new ObjectMapper();
+        mapper.writeValue(file, documentUpload);
+
+        val actual = dus.get("guid");
+        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.BOTH_META_AND_DATA.name()));
+        assertThat(actual.getInvalid().size(), equalTo(1));
+        assertThat(actual.getData().size(), equalTo(0));
+        assertThat(actual.getMeta().size(), equalTo(0));
+    }
+
+    @Test
+    @SneakyThrows
+    public void invalidFile_ifFileHasChanged() {
+        dus.add("guid", "invalid.txt", new FileInputStream(invalid));
+        dus.changeFileType("guid", "invalid.txt", DocumentUpload.Type.META);
+
+        FileUtils.write(invalid, "invalid content again");
+
+        val actual = dus.get("guid");
+        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.INVALID_HASH.name()));
+        assertThat(actual.getInvalid().size(), equalTo(1));
+        assertThat(actual.getData().size(), equalTo(0));
+        assertThat(actual.getMeta().size(), equalTo(0));
+    }
+
+    @Test
+    @SneakyThrows
+    public void invalidFile_ifFileDoesNotExistInMeta() {
+        dus.add("guid", "invalid.txt", new FileInputStream(invalid));
+        dus.changeFileType("guid", "invalid.txt", DocumentUpload.Type.META);
+
+        FileUtils.forceDelete(invalid);
+
+        val actual = dus.get("guid");
+        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.FILE_DOES_NOT_EXISTS.name()));
+        assertThat(actual.getInvalid().size(), equalTo(1));
+        assertThat(actual.getData().size(), equalTo(0));
+        assertThat(actual.getMeta().size(), equalTo(0));
+    }
+
+    @Test
+    @SneakyThrows
+    public void invalidFile_ifFileDoesNotExistInData() {
+        dus.add("guid", "invalid.txt", new FileInputStream(invalid));
+
+        FileUtils.forceDelete(invalid);
+
+        val actual = dus.get("guid");
+        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.FILE_DOES_NOT_EXISTS.name()));
+        assertThat(actual.getInvalid().size(), equalTo(1));
+        assertThat(actual.getData().size(), equalTo(0));
+        assertThat(actual.getMeta().size(), equalTo(0));
     }
 
     @Test

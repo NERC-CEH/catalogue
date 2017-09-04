@@ -18,22 +18,6 @@
                 </p>
             </#if>
         </section>
-        <#if canUpload>
-            <section class='section ${(documentUpload.getFiles()?size == 0)?string("is-inactive", "is-active")}'>
-                <h3 class='subtitle'>Finish</h3>
-                <p>
-                    Once you have finished uploading your documents click below in order to progress to the next stage
-                    <br />
-                    <b>This action can not be undone</b>
-                    <p class='finish-message text-danger'></p>
-                    <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
-                        <a class="btn btn-success finish" role="button" disabled>
-                            <i class="fa fa-ban"></i> Finish
-                        </a>
-                    </div>
-                </p>
-            </section>
-        </#if>
         <section class='section ${(documentUpload.getFiles()?size == 0)?string("is-inactive", "is-active")}'>
             <h3 class='subtitle'>Documents</h3>
             <p>These are the files which have been uploaded. The checksum is a value used to guarantee the contents of the file haven't changed. It is generated for you when you upload your files. You may be asked to provide this value in the future.</p>
@@ -112,6 +96,22 @@
                         <div id="previews"></div>
                     </div>
                 </div>
+            </section>
+        </#if>
+        <#if canUpload>
+            <section class='section ${(documentUpload.getFiles()?size == 0)?string("is-inactive", "is-active")}'>
+                <h3 class='subtitle'>Finish</h3>
+                <p>
+                    Once you have finished uploading your documents click below in order to progress to the next stage
+                    <br />
+                    <b>This action can not be undone</b>
+                    <p class='finish-message text-danger'></p>
+                    <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
+                        <a class="btn btn-success finish" role="button" disabled>
+                            <i class="fa fa-ban"></i> Finish
+                        </a>
+                    </div>
+                </p>
             </section>
         </#if>
     </div>

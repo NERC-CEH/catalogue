@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.jena.ext.com.google.common.collect.Maps;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 
@@ -21,6 +22,7 @@ public class DocumentUpload {
     private final String path;
     private final ConcurrentMap<String, DocumentUploadFile> meta;
     private final ConcurrentMap<String, DocumentUploadFile> data;
+    private final ConcurrentMap<String, DocumentUploadFile> invalid;
 
     public DocumentUpload (String title, String type, String guid, String path) {
         this.title = title;
@@ -29,6 +31,7 @@ public class DocumentUpload {
         this.path = path;
         this.meta = Maps.newConcurrentMap();
         this.data = Maps.newConcurrentMap();
+        this.invalid = Maps.newConcurrentMap();
     }
 
     @JsonCreator
@@ -38,7 +41,8 @@ public class DocumentUpload {
         @JsonProperty("guid") String guid,
         @JsonProperty("path") String path,
         @JsonProperty("meta") ConcurrentMap<String, DocumentUploadFile> meta,
-        @JsonProperty("data") ConcurrentMap<String, DocumentUploadFile> data
+        @JsonProperty("data") ConcurrentMap<String, DocumentUploadFile> data,
+        @JsonProperty("invalid") ConcurrentMap<String, DocumentUploadFile> invalid
     ) {
         this.title = title;
         this.type = type;
@@ -46,6 +50,7 @@ public class DocumentUpload {
         this.path = path;
         this.meta = meta;
         this.data = data;
+        this.invalid = invalid;
     }
 
     public List<DocumentUploadFile> getFiles () {
@@ -55,7 +60,19 @@ public class DocumentUpload {
         return files;
     }
 
+    @JsonIgnore
+    public ConcurrentMap<String, DocumentUploadFile> getFiles(String type) {
+        return getFiles(Type.valueOf(type));
+    }
+
+    @JsonIgnore
+    public ConcurrentMap<String, DocumentUploadFile> getFiles(Type type) {
+        if (type == Type.META) return meta;
+        else if (type == Type.DATA) return data;
+        return invalid;
+    }
+
     public enum Type {
-        META, DATA
+        META, DATA, BOTH_META_AND_DATA, NOT_META_OR_DATA, INVALID_HASH, FILE_DOES_NOT_EXISTS
     }
 }
