@@ -38,7 +38,8 @@ rspec:
   before_script:
     - echo JIRA_USERNAME=$JIRA_USERNAME > secrets.env
     - echo JIRA_PASSWORD=$JIRA_PASSWORD >> secrets.env
-    - apt-get update && apt-get install -y ca-certificates openjdk-7-jre
+    - apt-get update && apt-get install -y openjdk-7-jdk
+    - echo $JAVA_HOME
   script:
     - SELENIUM_TEST=true ./gradlew selenium
   artifacts:
