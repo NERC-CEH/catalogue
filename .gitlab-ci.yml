@@ -38,10 +38,11 @@ rspec:
   before_script:
     - echo JIRA_USERNAME=$JIRA_USERNAME > secrets.env
     - echo JIRA_PASSWORD=$JIRA_PASSWORD >> secrets.env
-    - apt-get update && apt-get install -y ca-certificates-java openjdk-7-jdk
-    - echo $JAVA_HOME
+    - docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome web
   script:
-    - SELENIUM_TEST=true ./gradlew selenium
+    - docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
+  after_script:
+    - docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml down --volumes
   artifacts:
     when: always
     paths:
