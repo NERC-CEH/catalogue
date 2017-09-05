@@ -49,7 +49,8 @@ define [
   
   initButtons: ->
     do @initDeleteButtons
-    do @initChangeTypeButtons
+    @initChangeTypeButtons "meta"
+    @initChangeTypeButtons "data"
     do @initUpdateButtons
 
   initDeleteButtons: ->
@@ -67,14 +68,11 @@ define [
         success: (response) =>
           @updateDocumentView response
 
-  initChangeTypeButtons: ->
-    $('.change-type input').unbind 'click'
-    $('.change-type input').click (evt) =>
-      type = evt.target.value
-      input = $(evt.target)
-      row = input.parent().parent().parent().parent()
-      file = row.find('.checksum-file').text()
-
+  initChangeTypeButtons: (type) ->
+    $('.to-' + type).unbind 'click'
+    $('.to-' + type).click (evt) =>
+      button = $(evt.target)
+      file = button.parent().parent().parent().find('.checksum-file').text()
       $.ajax
         url: window.location.href + '/change'
         type: 'POST'
@@ -82,7 +80,7 @@ define [
           Accept: 'application/json'
         data:
           file: file
-          type: type.toUpperCase()
+          type: button.text().toUpperCase()
         success: (response) =>
           @updateDocumentView response
 

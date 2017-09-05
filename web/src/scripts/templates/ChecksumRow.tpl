@@ -9,17 +9,16 @@
         </td>
     <% } %>
     <% if (canChangeType) { %>
-        <td>
-            <form action="">
-                <div class="change-type">
-                    <input class="change-type-radio" type="radio" name="type" value="data" <%= isData %> />
-                    <label>Data</label>
-                </div>
-                <div class="change-type">
-                    <input class="change-type-radio" type="radio" name="type" value="meta" <%= isMeta %> />
-                    <label>Meta</label>
-                </div>
-            </form>
-        </td>
+    <td>
+        <div class="btn-group data-meta-toggle" data-toggle="buttons">
+            <% if (isData) { %>
+                <button class='btn btn-success to-data is-initialising'>DATA</button>
+                <button class="btn to-meta is-initialising">META</button>
+            <% } else { %>
+                <button class='btn to-data is-initialising'>DATA</button>
+                <button class="btn btn-success to-meta is-initialising">META</button>
+            <% } %>
+        </div>
+    </td>
     <% } %>
 </tr>

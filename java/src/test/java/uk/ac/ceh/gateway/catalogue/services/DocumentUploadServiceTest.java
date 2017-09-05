@@ -78,24 +78,6 @@ public class DocumentUploadServiceTest {
         assertThat(actual.getMeta().size(), equalTo(0));
     }
 
-    // @Test
-    // @SneakyThrows
-    // public void invalidFile_ifInBothDataOrMeta() {
-    //     dus.add("guid", "invalid.txt", new FileInputStream(invalid));
-    //     val documentUpload = dus.get("guid");
-    //     DocumentUploadFile documentUploadFile = documentUpload.getData().get("invalid.txt");
-    //     documentUpload.getMeta().put("invalid.txt", documentUploadFile);
-    //     val file = new File(documentUpload.getPath(), "_data.json");
-    //     val mapper = new ObjectMapper();
-    //     mapper.writeValue(file, documentUpload);
-
-    //     val actual = dus.get("guid");
-    //     assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.BOTH_META_AND_DATA.name()));
-    //     assertThat(actual.getInvalid().size(), equalTo(1));
-    //     assertThat(actual.getData().size(), equalTo(0));
-    //     assertThat(actual.getMeta().size(), equalTo(0));
-    // }
-
     @Test
     @SneakyThrows
     public void invalidFile_ifFileHasChanged() {

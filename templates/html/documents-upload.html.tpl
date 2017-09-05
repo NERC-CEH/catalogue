@@ -46,24 +46,15 @@
                         </#if>
                         <#if canUpload>
                             <td>
-                                <form action="">
-                                    <div class="change-type">
-                                        <#if file.type == "DATA">
-                                            <input class="change-type-radio is-initialising" type="radio" id="to-data-${file.name}" name="type" value="DATA" checked disabled />
-                                        <#else>
-                                            <input class="change-type-radio is-initialising" type="radio" id="to-data-${file.name}" name="type" value="DATA" disabled />
-                                        </#if>
-                                        <label>Data</label>
-                                    </div>
-                                    <div class="change-type">
-                                        <#if file.type == "META">
-                                            <input class="change-type-radio is-initialising" type="radio" id="to-meta-${file.name}" name="type" value="META" checked />
-                                        <#else>
-                                            <input class="change-type-radio is-initialising" type="radio" id="to-meta-${file.name}" name="type" value="META" disabled />
-                                        </#if>
-                                        <label>Meta</label>
-                                    </div>
-                                </form>
+                               <div class="btn-group data-meta-toggle" data-toggle="buttons">
+                                    <#if file.type == "DATA">
+                                        <button class='btn btn-success to-meta is-initialising' disabled>DATA</button>
+                                        <button class="btn to-data is-initialising" disabled>META</button>
+                                    <#else>
+                                        <button class='btn to-meta is-initialising' disabled>DATA</button>
+                                        <button class="btn btn-success to-data is-initialising" disabled>META</button>
+                                    </#if>
+                                </div>
                             </td>
                         </#if>
                     </tr>
