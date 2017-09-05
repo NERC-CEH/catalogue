@@ -135,6 +135,7 @@ import uk.ac.ceh.gateway.catalogue.services.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
+import uk.ac.ceh.gateway.catalogue.services.PloneDataDepositService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
@@ -158,6 +159,9 @@ public class ServiceConfig {
     @Value("#{systemEnvironment['JIRA_USERNAME']}") String jiraUsername;
     @Value("#{systemEnvironment['JIRA_PASSWORD']}") String jiraPassword;
     @Value("${jira.address}") String jiraAddress;
+    @Value("{systemEnvironment['PLONE_USERNAME']}") String ploneUserName;
+    @Value("{systemEnvironment['PLONE_PASSWORD']}") String plonePassword;
+    @Value("{systemEnvironment['PLONE_ADDRESS']}") String ploneAddress;
     
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
@@ -354,6 +358,13 @@ public class ServiceConfig {
         return new JiraService(jira);
     }
 
+    @Bean
+    public PloneDataDepositService ploneDataDepositService() throws XPathExpressionException, IOException, TemplateModelException {
+        Client client = Client.create();
+        client.addFilter(new HTTPBasicAuthFilter(ploneUserName, plonePassword));
+        WebResource plone = client.resource(ploneAddress);
+        return new PloneDataDepositService(plone, documentUploadService());
+    }
     
     @Bean
     public CitationService citationService() {
