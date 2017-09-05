@@ -2,31 +2,55 @@ MEGEBYTE = 1000000
 
 define [
   'backbone'
-  'tpl!templates/DropzoneRow.tpl',
+  'tpl!templates/DropzoneRow.tpl'
   'tpl!templates/ChecksumRow.tpl'
-], (Backbone, dropzoneRow, checksumRow) -> Backbone.View.extend
+  'tpl!templates/InvalidChecksumRow.tpl'
+], (Backbone, dropzoneRow, checksumRow, invalidChecksumRow) -> Backbone.View.extend
   initialize: (options) ->
-    do @initDeleteButtons
-    do @initChangeTypeButtons
+    do @initButtons
     do @initFinish
     do @initDropzone if $('.dz').length
 
-  updateChecksums: (response) ->
-    inactiveSection = $('.section.is-inactive')
-    inactiveSection.removeClass('is-inactive')
+  updateDocumentView: (response) ->
     files = response.files || []
-    checksums = files.map (file) ->
-      canDelete: $('#delete').length > 0
-      canChangeType: $('#canChangeType').length > 0
-      isData: 'checked' if file.type == "DATA"
-      isMeta: 'checked' if file.type == "META"
-      filename: file.name
-      md5Hash: file.hash
+    invalid = response.invalid || {}
 
-    checksums = checksums.map checksumRow
+    if files.length > 0
+      inactiveSection = $('.documents-is-inactive')
+      inactiveSection.removeClass('documents-is-inactive')
+      inactiveSection = $('.finish-is-inactive')
+      inactiveSection.removeClass('finish-is-inactive')
+    if Object.keys(invalid).length > 0
+      inactiveSection = $('.invalid-is-inactive')
+      inactiveSection.removeClass('invalid-is-inactive')
+
+    checksums = files.map (file) ->
+      checksumRow
+        canDelete: $('#delete').length > 0
+        canChangeType: $('#canChangeType').length > 0
+        isData: 'checked' if file.type == "DATA"
+        isMeta: 'checked' if file.type == "META"
+        filename: file.name
+        md5Hash: file.hash
     document.querySelector('.checksums-list').innerHTML = checksums.join('')
+
+    invlaid = []
+    for key, value of invalid
+      invlaid.push (invalidChecksumRow value)
+
+    document.querySelector('.invalid-checksums-list').innerHTML = invlaid.join('')
+    if Object.keys(invalid).length > 0
+      @disableFinish "Resolve invalid files before continuing"
+    if Object.keys(files).length == 0
+      @disableFinish "No files have been uploaded"
+    else
+      do @enableFinish
+    do @initButtons
+  
+  initButtons: ->
     do @initDeleteButtons
     do @initChangeTypeButtons
+    do @initUpdateButtons
 
   initDeleteButtons: ->
     $('.delete').unbind 'click'
@@ -40,10 +64,11 @@ define [
           file: file
         headers:
           Accept: 'application/json'
-        success: (res) =>
-          @updateChecksums res
+        success: (response) =>
+          @updateDocumentView response
 
   initChangeTypeButtons: ->
+    $('.change-type input').unbind 'click'
     $('.change-type input').click (evt) =>
       type = evt.target.value
       input = $(evt.target)
@@ -58,8 +83,23 @@ define [
         data:
           file: file
           type: type.toUpperCase()
-        success: (res) =>
-          @updateChecksums res
+        success: (response) =>
+          @updateDocumentView response
+
+  initUpdateButtons: ->
+    $('.accept-invalid').unbind 'click'
+    $('.accept-invalid').click (evt) =>
+      button = $(event.target)
+      file = button.parent().parent().find('.checksum-file').text()
+      $.ajax
+        url: window.location.href + '/accept-invalid'
+        type: 'POST'
+        headers:
+          Accept: 'application/json'
+        data:
+          file: file
+        success: (response) =>
+          @updateDocumentView response
 
   disableFinish: (message) ->
     $('.finish-message').text(message)
@@ -90,10 +130,12 @@ define [
 
   loadedDropzone: ->
     $('.dz .title').text 'Drag files here'
-    $('.fileinput-button').attr 'disabled', off
-    $('.delete').attr 'disabled', off
-    $('.change-type-radio').attr 'disabled', off
-    do @enableFinish
+    $('.is-initialising').attr 'disabled', off
+    $('.is-initialising').removeClass('is-initialising')
+    if $('.invalid-row').length > 0
+      @disableFinish "Resolve invalid files before continuing"
+    else
+      do @enableFinish
 
   toggleUploadCancelAll: (status) ->
     $('.upload-all').attr 'disabled', status
@@ -130,13 +172,12 @@ define [
 
     @disableFinish 'Resolve all issues below'
 
-  success: (file, res) ->
+  success: (file, response) ->
     progress = $('#' + file.id + ' .progress-bar')
     progress.text 'Uploaded'
     setTimeout (=>
       @dropzone.removeFile file
-      @updateChecksums res
-      do @initDeleteButtons
+      @updateDocumentView response
     ), 500
 
   uploadAll: ->
@@ -197,7 +238,7 @@ define [
         type: 'POST'
         headers:
           Accept: 'application/json'
-        success: (response) ->
+        success: ->
           window.location.reload()
         fail: (error) =>
           do @enableFinish

@@ -163,6 +163,14 @@ public class UploadController {
         return documentUploadService.get(guid);
     }
 
+    @PreAuthorize("@permission.userCanUpload(#guid)")
+    @RequestMapping(value = "upload/{guid}/accept-invalid", method = RequestMethod.POST)
+    @ResponseBody
+    public DocumentUpload acceptInvalid(@PathVariable("guid") String guid, @RequestParam("file") String file) throws IOException, DocumentRepositoryException {
+        documentUploadService.acceptInvalid(guid, file);
+        return documentUploadService.get(guid);
+    }
+
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Can not finish, contact admin to resolve issue clash")
     class NonUniqueJiraIssue extends RuntimeException {
         static final long serialVersionUID = 1L;
