@@ -75,12 +75,13 @@ public class DocumentUploadService {
     public void acceptInvalid(String guid, String filename) throws IOException, DocumentRepositoryException {
         val documentUpload = get(guid);
         val documentUploadFile = documentUpload.getInvalid().get(filename);
-        documentUploadFile.addComment("accepted");
-        documentUploadFile.setType(DocumentUpload.Type.DATA);
-
-        documentUpload.getInvalid().remove(filename);
-        documentUpload.getData().put(filename, documentUploadFile);
-        save(documentUpload);
+        if (null != documentUploadFile) {
+            documentUploadFile.addComment("accepted");
+            documentUploadFile.setType(DocumentUpload.Type.DATA);
+            documentUpload.getInvalid().remove(filename);
+            documentUpload.getData().put(filename, documentUploadFile);
+            save(documentUpload);
+        }
     }
 
     public DocumentUpload get(String guid) throws IOException, DocumentRepositoryException {
