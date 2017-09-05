@@ -28,7 +28,9 @@ public class DocumentUploadService {
         val documentUpload = get(guid);
         File file = new File(documentUpload.getPath(), filename);
         OutputStream out = Files.newOutputStream(file.toPath());
-        IOUtils.copy(input, out);
+        IOUtils.copyLarge(input, out);
+        input.close();
+        out.close();
         String hash = DigestUtils.md5Hex(new FileInputStream(file));
 
         val documentUploadFile = new DocumentUploadFile();
