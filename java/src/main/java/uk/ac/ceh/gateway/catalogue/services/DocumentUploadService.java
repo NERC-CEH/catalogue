@@ -92,12 +92,36 @@ public class DocumentUploadService {
         val documentUpload = mapper.readValue(dataFile, DocumentUpload.class);
         validateFilesInFolder(documentUpload);
         validateFilesFromData(documentUpload);
-
+        removeDuplicates(documentUpload);
+        autoFix(documentUpload, DocumentUpload.Type.DATA);
+        autoFix(documentUpload, DocumentUpload.Type.META);
+        save(documentUpload);
         return documentUpload;
     }
 
+    private void removeDuplicates(DocumentUpload documentUpload) {
+        for (val documentUploadFile : documentUpload.getData().values()) {
+            val name = documentUploadFile.getName();
+            if (documentUpload.getMeta().containsKey(name)) {
+                documentUpload.getMeta().remove(name);
+            }
+        }
+    }
+
+    private void autoFix(DocumentUpload documentUpload, DocumentUpload.Type type) throws IOException {
+        for (val documentUploadFile : documentUpload.getFiles(type).values()) {
+            val name = documentUploadFile.getName();
+            val file = new File(documentUploadFile.getPath());
+            documentUploadFile.setFormat(FilenameUtils.getExtension(name));
+            documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
+            documentUploadFile.setEncoding("utf-8");
+            documentUploadFile.setBytes(file.length());
+            documentUploadFile.setType(type);
+        }
+    }
+
     private void validateFilesFromData(DocumentUpload documentUpload) throws IOException {
-        documentUpload.getFiles().stream().forEach(file -> {
+        documentUpload.getFiles().forEach(file -> {
             if (!new File(file.getPath()).exists()) {
                 documentUpload.getFiles(file.getType()).remove(file.getName());
                 file.setType(DocumentUpload.Type.FILE_DOES_NOT_EXISTS);
