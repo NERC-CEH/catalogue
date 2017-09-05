@@ -7,22 +7,27 @@ define [
 ], (Backbone, dropzoneRow, checksumRow) -> Backbone.View.extend
   initialize: (options) ->
     do @initDeleteButtons
+    do @initChangeTypeButtons
     do @initFinish
-    if $('.dz').length
-      do @initDropzone
-  
-  updateChecksums: (files) ->
-    checksums = files
-      .map (d) ->
-        checksumRow
-          canDelete: $('#delete').length > 0
-          filename: d.filename
-          md5Hash: d.md5Hash
-      .join ''
-    
-    document.querySelector('.checksums-list').innerHTML = checksums
+    do @initDropzone if $('.dz').length
+
+  updateChecksums: (response) ->
+    inactiveSection = $('.section.is-inactive')
+    inactiveSection.removeClass('is-inactive')
+    files = response.files || []
+    checksums = files.map (file) ->
+      canDelete: $('#delete').length > 0
+      canChangeType: $('#canChangeType').length > 0
+      isData: 'checked' if file.type == "DATA"
+      isMeta: 'checked' if file.type == "META"
+      filename: file.name
+      md5Hash: file.hash
+
+    checksums = checksums.map checksumRow
+    document.querySelector('.checksums-list').innerHTML = checksums.join('')
     do @initDeleteButtons
-  
+    do @initChangeTypeButtons
+
   initDeleteButtons: ->
     $('.delete').unbind 'click'
     $('.delete').click =>
@@ -37,7 +42,25 @@ define [
           Accept: 'application/json'
         success: (res) =>
           @updateChecksums res
-  
+
+  initChangeTypeButtons: ->
+    $('.change-type input').click (evt) =>
+      type = evt.target.value
+      input = $(evt.target)
+      row = input.parent().parent().parent().parent()
+      file = row.find('.checksum-file').text()
+
+      $.ajax
+        url: window.location.href + '/change'
+        type: 'POST'
+        headers:
+          Accept: 'application/json'
+        data:
+          file: file
+          type: type.toUpperCase()
+        success: (res) =>
+          @updateChecksums res
+
   disableFinish: (message) ->
     $('.finish-message').text(message)
     $('.finish').attr 'disabled', on
@@ -46,7 +69,7 @@ define [
     icon.removeClass('fa-check')
     icon.removeClass('fa-refresh')
     icon.removeClass('fa-spin')
-  
+
   enableFinish: ->
     $('.finish-message').text('')
     $('.finish').attr 'disabled', off
@@ -55,7 +78,7 @@ define [
     icon.removeClass('fa-ban')
     icon.removeClass('fa-refresh')
     icon.removeClass('fa-spin')
-  
+
   submitFinish: ->
     $('.finish-message').text('')
     $('.finish').attr 'disabled', on
@@ -68,8 +91,10 @@ define [
   loadedDropzone: ->
     $('.dz .title').text 'Drag files here'
     $('.fileinput-button').attr 'disabled', off
+    $('.delete').attr 'disabled', off
+    $('.change-type-radio').attr 'disabled', off
     do @enableFinish
-  
+
   toggleUploadCancelAll: (status) ->
     $('.upload-all').attr 'disabled', status
     $('.cancel-all').attr 'disabled', status
@@ -104,7 +129,7 @@ define [
     upload.attr 'disabled', yes
 
     @disableFinish 'Resolve all issues below'
-  
+
   success: (file, res) ->
     progress = $('#' + file.id + ' .progress-bar')
     progress.text 'Uploaded'
@@ -138,6 +163,7 @@ define [
       previewTemplate: dropzoneRow()
       previewsContainer: '#previews'
       clickable: '.fileinput-button'
+      parallelUploads: 1
       init: ->
         do loadedDropzone
         fileCount = -1
@@ -175,4 +201,4 @@ define [
           window.location.reload()
         fail: (error) =>
           do @enableFinish
-          $('.finish-message').text('An error occured, if this persists then please contact an admin')
+          $('.finish-message').text 'An error occured, if this persists then please contact an admin'

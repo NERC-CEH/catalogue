@@ -64,6 +64,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentUploadService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
@@ -344,6 +345,10 @@ public class ServiceConfig {
         return new FileUploadService(new File("/var/ceh-catalogue/dropbox"));
     }
 
+    @Bean
+    public DocumentUploadService documentUploadService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
+    }
     
     @Bean
     public JiraService jiraService() {

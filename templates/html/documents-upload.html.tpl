@@ -3,8 +3,8 @@
     <div id='documents-upload' class="container documents-upload">
         <section class='section'>
             <h1 class='title'>
-                <small class="title-type">${type}</small>
-                <span>${title}</span>
+                <small class="title-type">${documentUpload.type}</small>
+                <span>${documentUpload.title}</span>
             </h1>
         </section>
         <section class='section'>
@@ -19,7 +19,7 @@
             </#if>
         </section>
         <#if canUpload>
-            <section class='section'>
+            <section class='section ${(documentUpload.getFiles()?size == 0)?string("is-inactive", "is-active")}'>
                 <h3 class='subtitle'>Finish</h3>
                 <p>
                     Once you have finished uploading your documents click below in order to progress to the next stage
@@ -34,29 +34,52 @@
                 </p>
             </section>
         </#if>
-        <section class='section'>
+        <section class='section ${(documentUpload.getFiles()?size == 0)?string("is-inactive", "is-active")}'>
             <h3 class='subtitle'>Documents</h3>
             <p>These are the files which have been uploaded. The checksum is a value used to guarantee the contents of the file haven't changed. It is generated for you when you upload your files. You may be asked to provide this value in the future.</p>
-            <table class="table table-striped table-hover">
+            <table class="table table-hover" >
                 <thead>
                     <tr>
                         <th>File</th>
                         <th>Checksum</th>
                         <#if canUpload>
                             <th id='delete'></th>
+                            <th id='canChangeType'></th>
                         </#if>
                     </tr>
                 </thead>
                 <tbody class='checksums-list'>
-                <#list checksums as checksum>
-                    <tr data-file="${checksum.filename}">
-                        <td class='checksum-file'>${checksum.filename}</td>
-                        <td class='checksum-value'>${checksum.getMD5Hash()}</td>
+                <#list documentUpload.getFiles() as file>
+                    <tr data-file="${file.name}">
+                        <td class='checksum-file'>${file.name}</td>
+                        <td class='checksum-value'>${file.hash}</td>
                         <#if canUpload>
                             <td class="checksum-delete text-center">
-                                <button class="btn btn-block btn-danger delete" data-file="${checksum.filename}">
+                                <button class="btn btn-block btn-danger delete" data-file="${file.name}" disabled>
                                     <i class="fa fa-trash-o"></i> Delete
                                 </button>
+                            </td>
+                        </#if>
+                        <#if canUpload>
+                            <td>
+                                <form action="">
+                                    <div class="change-type">
+                                        <#if file.type == "DATA">
+                                            <input class="change-type-radio" type="radio" id="to-data-${file.name}" name="type" value="DATA" checked disabled />
+                                        <#else>
+                                            <input class="change-type-radio" type="radio" id="to-data-${file.name}" name="type" value="DATA" disabled />
+                                        </#if>
+                                        <label>Data</label>
+                                    </div>
+                                    <div class="change-type">
+                                        <#if file.type == "META">
+                                            <input class="change-type-radio" type="radio" id="to-meta-${file.name}" name="type" value="META" checked />
+                                        <#else>
+                                            <input class="change-type-radio" type="radio" id="to-meta-${file.name}" name="type" value="META" disabled />
+                                        </#if>
+                                        <label>Meta</label>
+                                    </div>
+                                </form>
                             </td>
                         </#if>
                     </tr>
