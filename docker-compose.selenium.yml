@@ -14,8 +14,8 @@ services:
     image: selenium/standalone-firefox:2.53.0
 
   ruby_test:
-    image: ruby:1.9.3
-    command: sh -c "bundle install --path /cache/bundle; bundle exec rake parallel:spec"
+    image: registry.gitlab.ceh.ac.uk/eip/rspec:0.0.1
+    command: ["bundle", "exec", "rake", "parallel:spec"]
     depends_on:
       - chrome
       - firefox
