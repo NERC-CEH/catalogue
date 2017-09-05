@@ -6,6 +6,7 @@ services:
       - solr
       - mapserver
     volumes:
+      - ./datastore:/var/ceh-catalogue/datastore
       - ./dropbox:/var/ceh-catalogue/dropbox
       - mapfiles:/var/ceh-catalogue/mapfiles
     environment:

@@ -38,7 +38,10 @@ rspec:
   before_script:
     - echo JIRA_USERNAME=$JIRA_USERNAME > secrets.env
     - echo JIRA_PASSWORD=$JIRA_PASSWORD >> secrets.env
-    - cd fixtures/datastore/REV-1
+    - rm -rf datastore
+    - mkdir datastore
+    - cp fixtures/datastore/REV-1/* datastore
+    - cd datastore
     - git init
     - git config user.name 'CI'
     - git config user.email ci@localhost

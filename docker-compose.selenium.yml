@@ -1,8 +1,6 @@
 version: '2'
 services:
-  web:
-    volumes:
-      - ./fixtures/datastore/REV-1:/var/ceh-catalogue/datastore
+
   mapserver:
     volumes:
       - ./fixtures/mapserver-data:/mapserver/data
