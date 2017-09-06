@@ -62,7 +62,7 @@ public class UploadController {
             if (status.equals("open") || status.equals("approved"))
                 message = "Awaiting scheduling from admin. Try again later.";
             else if (status.equals("in progress"))
-                message = "Awaiting approval from admin. Try again later.";
+                message = "Currently being checked. Awaiting approval from admin.";
             else if (status.equals("resolved") || status.equals("closed"))
                 message = "This is finsihed. No further action required.";
             else if (status.equals("on hold"))
@@ -160,6 +160,14 @@ public class UploadController {
     public DocumentUpload change(@PathVariable("guid") String guid, @RequestParam("file") String file,
             @RequestParam("type") String type) throws IOException, DocumentRepositoryException {
         documentUploadService.changeFileType(guid, file, DocumentUpload.Type.valueOf(type));
+        return documentUploadService.get(guid);
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#guid)")
+    @RequestMapping(value = "upload/{guid}/accept-invalid", method = RequestMethod.POST)
+    @ResponseBody
+    public DocumentUpload acceptInvalid(@PathVariable("guid") String guid, @RequestParam("file") String file) throws IOException, DocumentRepositoryException {
+        documentUploadService.acceptInvalid(guid, file);
         return documentUploadService.get(guid);
     }
 
