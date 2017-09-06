@@ -74,6 +74,15 @@ public class DocumentUploadServiceTest {
 
     @Test
     @SneakyThrows
+    public void invalidFile_ifNotInDataOrMetaButInFolder_addComment() {
+        val actual = dus.get("guid");
+        val comments = actual.getInvalid().get("invalid.txt").getCommentsAsString();
+        assertThat(comments, equalTo("Unknown file exists in folder"));
+    }
+
+
+    @Test
+    @SneakyThrows
     public void invalidFile_ifFileHasChanged() {
         dus.add("guid", "invalid.txt", new FileInputStream(invalid));
         dus.changeFileType("guid", "invalid.txt", DocumentUpload.Type.META);
@@ -85,6 +94,19 @@ public class DocumentUploadServiceTest {
         assertThat(actual.getInvalid().size(), equalTo(1));
         assertThat(actual.getData().size(), equalTo(0));
         assertThat(actual.getMeta().size(), equalTo(0));
+    }
+
+    @Test
+    @SneakyThrows
+    public void invalidFile_invalidHash_addComment() {
+        dus.add("guid", "invalid.txt", new FileInputStream(invalid));
+        dus.changeFileType("guid", "invalid.txt", DocumentUpload.Type.META);
+
+        FileUtils.write(invalid, "invalid content again");
+
+        val actual = dus.get("guid");
+        val comments = actual.getInvalid().get("invalid.txt").getCommentsAsString();
+        assertThat(comments, equalTo("File's contents has changed"));
     }
 
     @Test
@@ -118,12 +140,33 @@ public class DocumentUploadServiceTest {
 
     @Test
     @SneakyThrows
+    public void invalidFile_ifFileDoesNotExist_addAComment() {
+        dus.add("guid", "invalid.txt", new FileInputStream(invalid));
+
+        FileUtils.forceDelete(invalid);
+
+        val actual = dus.get("guid");
+        val comments = actual.getInvalid().get("invalid.txt").getCommentsAsString();
+        assertThat(comments, equalTo("The file is missing"));
+    }
+
+    @Test
+    @SneakyThrows
     public void acceptInvalid_movesTheInvalidFileToData() {
         dus.acceptInvalid("guid", "invalid.txt");
         val actual = dus.get("guid");
         assertThat(actual.getInvalid().size(), equalTo(0));
         assertThat(actual.getData().size(), equalTo(1));
         assertThat(actual.getMeta().size(), equalTo(0));
+    }
+
+    @Test
+    @SneakyThrows
+    public void acceptInvalid_addsAcceptedComment() {
+        dus.acceptInvalid("guid", "invalid.txt");
+        val actual = dus.get("guid");
+        val comments = actual.getData().get("invalid.txt").getComments();
+        assertThat(comments.get(1), equalTo("accepted"));
     }
 
     @Test
