@@ -18,23 +18,7 @@
                 </p>
             </#if>
         </section>
-        <#if canUpload>
-            <section class='section ${(documentUpload.getFiles()?size == 0)?string("is-inactive", "is-active")}'>
-                <h3 class='subtitle'>Finish</h3>
-                <p>
-                    Once you have finished uploading your documents click below in order to progress to the next stage
-                    <br />
-                    <b>This action can not be undone</b>
-                    <p class='finish-message text-danger'></p>
-                    <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
-                        <a class="btn btn-success finish" role="button" disabled>
-                            <i class="fa fa-ban"></i> Finish
-                        </a>
-                    </div>
-                </p>
-            </section>
-        </#if>
-        <section class='section ${(documentUpload.getFiles()?size == 0)?string("is-inactive", "is-active")}'>
+        <section class='section ${(documentUpload.getFiles()?size == 0)?string("documents-is-inactive", "is-active")}'>
             <h3 class='subtitle'>Documents</h3>
             <p>These are the files which have been uploaded. The checksum is a value used to guarantee the contents of the file haven't changed. It is generated for you when you upload your files. You may be asked to provide this value in the future.</p>
             <table class="table table-hover" >
@@ -50,38 +34,72 @@
                 </thead>
                 <tbody class='checksums-list'>
                 <#list documentUpload.getFiles() as file>
-                    <tr data-file="${file.name}">
+                    <tr>
                         <td class='checksum-file'>${file.name}</td>
                         <td class='checksum-value'>${file.hash}</td>
                         <#if canUpload>
                             <td class="checksum-delete text-center">
-                                <button class="btn btn-block btn-danger delete" data-file="${file.name}" disabled>
+                                <button class="btn btn-block btn-danger delete is-initialising" disabled>
                                     <i class="fa fa-trash-o"></i> Delete
                                 </button>
                             </td>
                         </#if>
                         <#if canUpload>
                             <td>
-                                <form action="">
-                                    <div class="change-type">
-                                        <#if file.type == "DATA">
-                                            <input class="change-type-radio" type="radio" id="to-data-${file.name}" name="type" value="DATA" checked disabled />
-                                        <#else>
-                                            <input class="change-type-radio" type="radio" id="to-data-${file.name}" name="type" value="DATA" disabled />
-                                        </#if>
-                                        <label>Data</label>
-                                    </div>
-                                    <div class="change-type">
-                                        <#if file.type == "META">
-                                            <input class="change-type-radio" type="radio" id="to-meta-${file.name}" name="type" value="META" checked />
-                                        <#else>
-                                            <input class="change-type-radio" type="radio" id="to-meta-${file.name}" name="type" value="META" disabled />
-                                        </#if>
-                                        <label>Meta</label>
-                                    </div>
-                                </form>
+                               <div class="btn-group data-meta-toggle" data-toggle="buttons">
+                                    <#if file.type == "DATA">
+                                        <button class='btn btn-success to-meta is-initialising' disabled>DATA</button>
+                                        <button class="btn to-data is-initialising" disabled>META</button>
+                                    <#else>
+                                        <button class='btn to-meta is-initialising' disabled>DATA</button>
+                                        <button class="btn btn-success to-data is-initialising" disabled>META</button>
+                                    </#if>
+                                </div>
                             </td>
                         </#if>
+                    </tr>
+                </#list>
+                </tbody>
+            </table>
+        </section>
+        <section class='section ${(documentUpload.invalid?values?size == 0)?string("invalid-is-inactive", "is-active")}'>
+            <h3 class='subtitle'>Invalid Files</h3>
+            <p>These files need resolving, either their checksums have changed or there is an inconsitency with the information about files. This could be due to manually uploading large files or someone changing the auto generated data.</p>
+            <table class="table table-hover" >
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Checksum</th>
+                        <th>Error</th>
+                        <#if canUpload>
+                            <th id='fix'></th>
+                            <th id='deleteInvalid'></th>
+                        </#if>
+                    </tr>
+                </thead>
+                <tbody class="invalid-checksums-list">
+                <#list documentUpload.getInvalid()?values as file>
+                    <tr class='invalid-row'>
+                        <td class='checksum-file'>${file.name}</td>
+                        <td>${file.hash}</td>
+                        <td>${file.getCommentsAsString()}</td>
+                        <td class="text-center">
+                            <#if file.type == "INVALID_HASH">
+                                <button class="btn btn-block btn-success accept-invalid is-initialising" disabled>
+                                    <i class="fa fa-check"></i> Update checksum
+                                </button>
+                            </#if>
+                            <#if file.type == "NOT_META_OR_DATA">
+                                <button class="btn btn-block btn-success accept-invalid is-initialising" disabled>
+                                    <i class="fa fa-check"></i> Add file
+                                </button>
+                            </#if>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-block btn-danger is-initialising delete" disabled>
+                                <i class="fa fa-trash-o"></i> Delete
+                            </button>
+                        </td>
                     </tr>
                 </#list>
                 </tbody>
@@ -112,6 +130,22 @@
                         <div id="previews"></div>
                     </div>
                 </div>
+            </section>
+        </#if>
+        <#if canUpload && isScheduled>
+            <section class='section ${(documentUpload.getFiles()?size == 0)?string("finish-is-inactive", "is-active")}'>
+                <h3 class='subtitle'>Finish</h3>
+                <p>
+                    Once you have finished uploading your documents click below in order to progress to the next stage
+                    <br />
+                    <b>This action can not be undone</b>
+                    <p class='finish-message text-danger'></p>
+                    <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
+                        <a class="btn btn-success finish" role="button" disabled>
+                            <i class="fa fa-ban"></i> Finish
+                        </a>
+                    </div>
+                </p>
             </section>
         </#if>
     </div>

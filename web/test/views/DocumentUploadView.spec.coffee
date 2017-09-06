@@ -22,12 +22,15 @@ define [
            <div id='delete' />
            <div id='canChangeType' />
            <div class='checksums-list' />
+           <div class='invalid-checksums-list' />
            
            <span class='finish-message' />
            <button class='finish' disabled>
              <i class='fa' />
            </button>
-           
+        
+           <div class='is-initialising is-initialising-el' disabled />
+
            <a class='fileinput-button' disabled />
            <a class='upload-all' disabled />
            <a class='cancel-all' disabled />
@@ -50,11 +53,14 @@ define [
         text = $('.dz .title').text()
         expect(text).toBe 'Drag files here'
 
-      it 'enables the fileinput button', ->
-        disabled = $('.fileinput-button').attr 'disabled'
+      it 'enabled anything which is-initialising', ->
+        initialising = $('.is-initialising-el')
+        disabled = initialising.attr 'disabled'
         do expect(disabled).not.toBeDefined
+        initialisingClass = initialising.attr 'class'
+        expect(initialisingClass).toBe('is-initialising-el')
 
-      it 'enables the finish button with', ->
+      it 'enables the finish button', ->
         finishMessage = $('.finish-message').text()
         finishDisabled = $('.finish').attr 'disabled'
         iconClass = $('.finish .fa').attr 'class'
