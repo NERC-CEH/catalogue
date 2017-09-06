@@ -109,14 +109,17 @@ public class DocumentUploadService {
     }
 
     private void autoFix(DocumentUpload documentUpload, DocumentUpload.Type type) throws IOException {
-        for (val documentUploadFile : documentUpload.getFiles(type).values()) {
-            val name = documentUploadFile.getName();
-            val file = new File(documentUploadFile.getPath());
+        for (val entrySet : documentUpload.getFiles(type).entrySet()) {
+            val name = entrySet.getKey();
+            val documentUploadFile = entrySet.getValue();
+            val file = new File(documentUpload.getPath(), name);
+            documentUploadFile.setName(name);
             documentUploadFile.setFormat(FilenameUtils.getExtension(name));
             documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
             documentUploadFile.setEncoding("utf-8");
             documentUploadFile.setBytes(file.length());
             documentUploadFile.setType(type);
+            documentUploadFile.setPath(file.getAbsolutePath());
         }
     }
 

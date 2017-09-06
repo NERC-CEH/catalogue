@@ -3,12 +3,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.After;
@@ -25,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
-import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -124,6 +118,16 @@ public class DocumentUploadServiceTest {
 
     @Test
     @SneakyThrows
+    public void acceptInvalid_movesTheInvalidFileToData() {
+        dus.acceptInvalid("guid", "invalid.txt");
+        val actual = dus.get("guid");
+        assertThat(actual.getInvalid().size(), equalTo(0));
+        assertThat(actual.getData().size(), equalTo(1));
+        assertThat(actual.getMeta().size(), equalTo(0));
+    }
+
+    @Test
+    @SneakyThrows
     public void get_hasTitleFromDocument() {
         val actual = dus.get("guid");
 
@@ -154,6 +158,53 @@ public class DocumentUploadServiceTest {
         assertThat(actual.getPath(), equalTo(new File(dropbox, "guid").getAbsolutePath()));
     }
 
+
+    @Test
+    @SneakyThrows
+    public void get_removesAFileFromMetaIfInBothMetaAndData() {
+        val in = new FileInputStream(file);
+        dus.add("guid", "file.txt", in);
+        val documentUpload = dus.get("guid");
+        val documentUploadFile = documentUpload.getData().get("file.txt");
+        documentUpload.getMeta().put("file.txt", documentUploadFile);
+        val file = new File(documentUpload.getPath(), "_data.json");
+        val mapper = new ObjectMapper();
+        mapper.writeValue(file, documentUpload);
+
+        val actual = dus.get("guid");
+        assertThat(actual.getData().size(), equalTo(1));
+        assertThat(actual.getMeta().size(), equalTo(0));
+    }
+
+    @Test
+    @SneakyThrows
+    public void get_autoFixesData() {
+        val in = new FileInputStream(file);
+        dus.add("guid", "file.txt", in);
+        val documentUpload = dus.get("guid");
+        val documentUploadFile = documentUpload.getData().get("file.txt");
+        documentUploadFile.setBytes(999999);
+        documentUploadFile.setEncoding("encoding");
+        documentUploadFile.setFormat("format");
+        documentUploadFile.setMediatype("mediatype");
+        documentUploadFile.setName("name");
+        documentUploadFile.setPath("path");
+        documentUploadFile.setType("META");
+        documentUpload.getData().put("file.txt", documentUploadFile);
+        val dataFile = new File(documentUpload.getPath(), "_data.json");
+        val mapper = new ObjectMapper();
+        mapper.writeValue(dataFile, documentUpload);
+
+        val actual = dus.get("guid").getData().get("file.txt");
+        assertThat(actual.getName(), equalTo("file.txt"));
+        assertThat(actual.getBytes(), equalTo(9L));
+        assertThat(actual.getEncoding(), equalTo("utf-8"));
+        assertThat(actual.getFormat(), equalTo("txt"));
+        assertThat(actual.getMediatype(), equalTo("text/plain"));
+        assertThat(actual.getPath(), equalTo(new File(dropbox, "guid/file.txt").getAbsolutePath()));
+        assertThat(actual.getType(), equalTo("DATA"));
+    }
+
     @Test
     @SneakyThrows
     public void delete_doesNothingIfNothingHasBeenAdded() {
@@ -169,7 +220,6 @@ public class DocumentUploadServiceTest {
     public void delete_removesAddedFile() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         dus.delete("guid", "file.txt");
 
@@ -182,7 +232,6 @@ public class DocumentUploadServiceTest {
     public void delete_removeMetaFile() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
         dus.changeFileType("guid", "file.txt", DocumentUpload.Type.META);
 
         dus.delete("guid", "file.txt");
@@ -196,7 +245,6 @@ public class DocumentUploadServiceTest {
     public void delete_removeTheFileFromDisk() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
         dus.delete("guid", "file.txt");
         assertThat("file exists", !new File(dropbox, "guid/file.txt").exists());
     }
@@ -206,7 +254,6 @@ public class DocumentUploadServiceTest {
     public void add_addsToData() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         val actual = dus.get("guid");
         assertThat(actual.getData().size(), equalTo(1));
@@ -218,7 +265,6 @@ public class DocumentUploadServiceTest {
         assertThat("file exists", !new File(dropbox, "guid/file.txt").exists());
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
         assertThat("file does not exists", new File(dropbox, "guid/file.txt").exists());
     }
 
@@ -227,7 +273,6 @@ public class DocumentUploadServiceTest {
     public void add_documentUploadFile_hasBytes() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         val actual = dus.get("guid");
         val documentUploadFile = actual.getData().get("file.txt");
@@ -239,7 +284,6 @@ public class DocumentUploadServiceTest {
     public void add_documentUploadFile_hasEncodingUtf8() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         val actual = dus.get("guid");
         val documentUploadFile = actual.getData().get("file.txt");
@@ -251,7 +295,6 @@ public class DocumentUploadServiceTest {
     public void add_documentUploadFile_hasFormat() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         val actual = dus.get("guid");
         val documentUploadFile = actual.getData().get("file.txt");
@@ -263,7 +306,6 @@ public class DocumentUploadServiceTest {
     public void add_documentUploadFile_hasHash() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         val actual = dus.get("guid");
         val documentUploadFile = actual.getData().get("file.txt");
@@ -275,7 +317,6 @@ public class DocumentUploadServiceTest {
     public void add_documentUploadFile_hasMediatype() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         val actual = dus.get("guid");
         val documentUploadFile = actual.getData().get("file.txt");
@@ -287,7 +328,6 @@ public class DocumentUploadServiceTest {
     public void add_documentUploadFile_hasName() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         val actual = dus.get("guid");
         val documentUploadFile = actual.getData().get("file.txt");
@@ -299,7 +339,6 @@ public class DocumentUploadServiceTest {
     public void add_documentUploadFile_hasAbsolutePath() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         val actual = dus.get("guid");
         val documentUploadFile = actual.getData().get("file.txt");
@@ -311,10 +350,8 @@ public class DocumentUploadServiceTest {
     public void add_onlyAddsOnce() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
         in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         val actual = dus.get("guid");
         assertThat(actual.getData().size(), equalTo(1));
@@ -325,7 +362,6 @@ public class DocumentUploadServiceTest {
     public void changeType_canChangeFromDataToMeta() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         dus.changeFileType("guid", "file.txt", DocumentUpload.Type.META);
 
@@ -339,7 +375,6 @@ public class DocumentUploadServiceTest {
     public void changeType_canChangeFromMetaToData() {
         InputStream in = new FileInputStream(file);
         dus.add("guid", "file.txt", in);
-        in.close();
 
         dus.changeFileType("guid", "file.txt", DocumentUpload.Type.META);
         dus.changeFileType("guid", "file.txt", DocumentUpload.Type.DATA);
