@@ -58,44 +58,33 @@ define [
     $('.delete').click =>
       button = $(event.target)
       file = button.parent().parent().find('.checksum-file').text()
-      $.ajax
-        url: window.location.href + '/delete'
-        type: 'POST'
-        data:
-          file: file
-        headers:
-          Accept: 'application/json'
-        success: (response) =>
-          @updateDocumentView response
+      @post 'delete',
+        file: file
 
   initChangeTypeButtons: (type) ->
     $('.to-' + type).unbind 'click'
     $('.to-' + type).click (evt) =>
       button = $(evt.target)
       file = button.parent().parent().parent().find('.checksum-file').text()
-      $.ajax
-        url: window.location.href + '/change'
-        type: 'POST'
-        headers:
-          Accept: 'application/json'
-        data:
-          file: file
-          type: button.text().toUpperCase()
-        success: (response) =>
-          @updateDocumentView response
+      @post 'change',
+        type: button.text().toUpperCase()
+        file: file
 
   initUpdateButtons: ->
     $('.accept-invalid').unbind 'click'
     $('.accept-invalid').click (evt) =>
       button = $(event.target)
       file = button.parent().parent().find('.checksum-file').text()
+      @post 'accept-invalid',
+        file: file
+    
+  post: (query, data) ->
       $.ajax
-        url: window.location.href + '/accept-invalid'
+        url: window.location.href + '/' + query
         type: 'POST'
         headers:
           Accept: 'application/json'
-        data:
-          file: file
+        data: data
         success: (response) =>
           @updateDocumentView response
 
