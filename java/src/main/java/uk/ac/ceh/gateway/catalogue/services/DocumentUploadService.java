@@ -10,19 +10,28 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+
+@Slf4j
 @AllArgsConstructor
 public class DocumentUploadService {
     private final File dropbox;
     private final DocumentRepository documentRepository;
 
     public void add(String guid, String filename, InputStream input) throws IOException, DocumentRepositoryException {
+        if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
+        if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
+
         delete(guid, filename);
 
         val documentUpload = get(guid);
@@ -47,6 +56,9 @@ public class DocumentUploadService {
     }
 
     public void delete(String guid, String filename) throws IOException, DocumentRepositoryException {
+        if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
+        if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
+
         val documentUpload = get(guid);
         val file = new File(documentUpload.getPath(), filename);
         if (file.exists()) FileUtils.forceDelete(file);
@@ -57,6 +69,9 @@ public class DocumentUploadService {
     }
 
     public void changeFileType(String guid, String filename, DocumentUpload.Type type) throws IOException, DocumentRepositoryException {
+        if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
+        if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
+
         val documentUpload = get(guid);
         if (type.equals(DocumentUpload.Type.META)) changeFileType(guid, filename, DocumentUpload.Type.DATA, DocumentUpload.Type.META, documentUpload);
         else if (type.equals(DocumentUpload.Type.DATA)) changeFileType(guid, filename, DocumentUpload.Type.META, DocumentUpload.Type.DATA, documentUpload);
@@ -75,6 +90,9 @@ public class DocumentUploadService {
     }
 
     public void acceptInvalid(String guid, String filename) throws IOException, DocumentRepositoryException {
+        if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
+        if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
+
         val documentUpload = get(guid);
         val documentUploadFile = documentUpload.getInvalid().get(filename);
         if (null != documentUploadFile) {
@@ -87,6 +105,8 @@ public class DocumentUploadService {
     }
 
     public DocumentUpload get(String guid) throws IOException, DocumentRepositoryException {
+        if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
+
         val dataFile = createDataFile(guid);
         val mapper = new ObjectMapper();
         val documentUpload = mapper.readValue(dataFile, DocumentUpload.class);

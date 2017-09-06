@@ -87,6 +87,8 @@ define [
         data: data
         success: (response) =>
           @updateDocumentView response
+        error: (err) ->
+          window.location.reload() if err.responseText.indexOf('IllegalArgumentException') != -1
 
   disableFinish: (message) ->
     $('.finish-message').text(message)
