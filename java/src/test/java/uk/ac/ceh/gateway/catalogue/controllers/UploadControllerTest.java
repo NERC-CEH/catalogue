@@ -250,7 +250,7 @@ public class UploadControllerTest {
         val statuses = new HashMap<String, String>();
         statuses.put("open", "Awaiting scheduling from admin. Try again later.");
         statuses.put("approved", "Awaiting scheduling from admin. Try again later.");
-        statuses.put("in progress", "Awaiting approval from admin. Try again later.");
+        statuses.put("in progress", "Currently being checked. Awaiting approval from admin.");
         statuses.put("resolved", "This is finsihed. No further action required.");
         statuses.put("closed", "This is finsihed. No further action required.");
         statuses.put("on hold", "This issue is blocked. Contact an admin to resolve.");
@@ -390,4 +390,19 @@ public class UploadControllerTest {
         val actual = controller.change("guid", "file", "META");
         assertThat(actual, equalTo(documentUpload));
     }
+
+    @Test
+    @SneakyThrows
+    public void acceptInvalid_willAcceptInvalidFile() {
+        controller.acceptInvalid("guid", "file");
+        verify(documentUploadService).acceptInvalid(eq("guid"), eq("file"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void acceptInvalid_returnsDocumentUpload() {
+        val actual = controller.acceptInvalid("guid", "file");
+        assertThat(actual, equalTo(documentUpload));
+    }
+    
 }
