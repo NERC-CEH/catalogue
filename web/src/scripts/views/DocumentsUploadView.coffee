@@ -16,13 +16,10 @@ define [
     invalid = response.invalid || {}
 
     if files.length > 0
-      inactiveSection = $('.documents-is-inactive')
-      inactiveSection.removeClass('documents-is-inactive')
-      inactiveSection = $('.finish-is-inactive')
-      inactiveSection.removeClass('finish-is-inactive')
+      $('.documents-is-inactive').removeClass('documents-is-inactive')
+      $('.finish-is-inactive').removeClass('finish-is-inactive')
     if Object.keys(invalid).length > 0
-      inactiveSection = $('.invalid-is-inactive')
-      inactiveSection.removeClass('invalid-is-inactive')
+      $('.invalid-is-inactive').removeClass('invalid-is-inactive')
 
     checksums = files.map (file) ->
       checksumRow
@@ -41,7 +38,7 @@ define [
     document.querySelector('.invalid-checksums-list').innerHTML = invlaid.join('')
     if Object.keys(invalid).length > 0
       @disableFinish "Resolve invalid files before continuing"
-    if Object.keys(files).length == 0
+    if files.length == 0
       @disableFinish "No files have been uploaded"
     else
       do @enableFinish
