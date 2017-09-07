@@ -17,11 +17,12 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 public class PloneDataDepositService {
     private final WebResource ploneWebResource;
             
-    public String processDataDeposit(DocumentUpload du) throws IOException, DocumentRepositoryException{
+    public String addOrUpdate(DocumentUpload du) throws IOException, DocumentRepositoryException{
         List<String> files = du.getData().entrySet().stream()
                  .map(f -> URLEncoder.encode(f.getKey() + ";" + f.getValue().getHash()))
                  .collect(Collectors.toList());
 
+        System.out.println(ploneWebResource.getURI().getPath());
         ClientResponse response = ploneWebResource
                 .queryParam("fileIdentifier", URLEncoder.encode(du.getGuid()))
                 .queryParam("title", du.getTitle())

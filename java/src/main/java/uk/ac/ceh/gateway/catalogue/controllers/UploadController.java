@@ -30,8 +30,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.services.PloneDataDepositService;
 
+@Slf4j
 @Controller
 public class UploadController {
     private final DocumentUploadService documentUploadService;
@@ -132,7 +134,11 @@ public class UploadController {
             throws DocumentRepositoryException, IOException {
         transitionIssueToStartProgress(user, guid);
         removeUploadPermission(user, guid);
-        ploneDataDepositService.processDataDeposit(documentUploadService.get(guid));
+        try {
+            System.out.println( ploneDataDepositService.addOrUpdate(documentUploadService.get(guid)));
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
         val response = new HashMap<String, String>();
         response.put("message", "awaiting approval from admin");
         return response;

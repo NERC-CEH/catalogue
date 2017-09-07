@@ -159,9 +159,9 @@ public class ServiceConfig {
     @Value("#{systemEnvironment['JIRA_USERNAME']}") String jiraUsername;
     @Value("#{systemEnvironment['JIRA_PASSWORD']}") String jiraPassword;
     @Value("${jira.address}") String jiraAddress;
-    @Value("{systemEnvironment['PLONE_USERNAME']}") String ploneUserName;
-    @Value("{systemEnvironment['PLONE_PASSWORD']}") String plonePassword;
-    @Value("{systemEnvironment['PLONE_ADDRESS']}") String ploneAddress;
+    @Value("#{systemEnvironment['PLONE_USERNAME']}") String ploneUsername;
+    @Value("#{systemEnvironment['PLONE_PASSWORD']}") String plonePassword;
+    @Value("#{systemEnvironment['PLONE_ADDRESS']}") String ploneAddress;
     
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
@@ -361,7 +361,7 @@ public class ServiceConfig {
     @Bean
     public PloneDataDepositService ploneDataDepositService() throws XPathExpressionException, IOException, TemplateModelException {
         Client client = Client.create();
-        client.addFilter(new HTTPBasicAuthFilter(ploneUserName, plonePassword));
+        client.addFilter(new HTTPBasicAuthFilter(ploneUsername, plonePassword));
         WebResource plone = client.resource(ploneAddress);
         return new PloneDataDepositService(plone);
     }

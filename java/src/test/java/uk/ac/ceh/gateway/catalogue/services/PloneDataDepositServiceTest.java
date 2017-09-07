@@ -15,6 +15,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import org.junit.After;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.mockito.Matchers.anyString;
 import org.mockito.Mock;
@@ -48,12 +49,13 @@ public class PloneDataDepositServiceTest {
         initMocks(this);
 
         doReturn(document).when(documentRepository).read(anyString());
-        doReturn("We have shiny shoes and special characters \\/%^& !").when(document).getTitle();
+        doReturn("Demonstration upload").when(document).getTitle();
         doReturn("type").when(document).getType();
 
         Client client = Client.create();
         client.addFilter(new HTTPBasicAuthFilter(getSecret("PLONE_USERNAME"), getSecret("PLONE_PASSWORD")));
-        WebResource ploneClient = client.resource("http://localhost:8080/eidc/administration-folder/eidc-data-inventory/adddatadeposit");
+        System.out.println(getSecret("PLONE_ADDRESS"));
+        WebResource ploneClient = client.resource(getSecret("PLONE_ADDRESS"));
         dus = new DocumentUploadService(dropbox, documentRepository);
         dus.add("guid","file1.txt",new FileInputStream(file1));
         dus.add("guid","file3.txt",new FileInputStream(file2));
@@ -66,9 +68,13 @@ public class PloneDataDepositServiceTest {
         FileUtils.forceDelete(new File(dropbox, "guid"));
     }
     
+    @Ignore
+    /*
+    This test is ignored because it is just useful utility used during plone development to send requests the plone service
+    */
     @Test
     public void testResponse() throws IOException, DocumentRepositoryException {
-        String actual = pdds.processDataDeposit(dus.get("guid"));
+        String actual = pdds.addOrUpdate(dus.get("guid"));
         String expected = "Success - updated: guid";
         assertThat(actual, equalTo(expected));
     }
