@@ -363,7 +363,7 @@ public class ServiceConfig {
         Client client = Client.create();
         client.addFilter(new HTTPBasicAuthFilter(ploneUserName, plonePassword));
         WebResource plone = client.resource(ploneAddress);
-        return new PloneDataDepositService(plone, documentUploadService());
+        return new PloneDataDepositService(plone);
     }
     
     @Bean

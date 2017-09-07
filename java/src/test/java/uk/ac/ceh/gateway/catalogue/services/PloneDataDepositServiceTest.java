@@ -11,7 +11,9 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import static org.hamcrest.CoreMatchers.equalTo;
 import org.junit.After;
+import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.anyString;
@@ -41,12 +43,12 @@ public class PloneDataDepositServiceTest {
     public void before() {
         FileUtils.forceMkdir(dropbox);
         FileUtils.write(file1, "something");
-        FileUtils.write(file2, "something else");
+        FileUtils.write(file2, "something else more again");
         
         initMocks(this);
 
         doReturn(document).when(documentRepository).read(anyString());
-        doReturn("Mock document title").when(document).getTitle();
+        doReturn("We have shiny shoes and special characters \\/%^& !").when(document).getTitle();
         doReturn("type").when(document).getType();
 
         Client client = Client.create();
@@ -54,8 +56,8 @@ public class PloneDataDepositServiceTest {
         WebResource ploneClient = client.resource("http://localhost:8080/eidc/administration-folder/eidc-data-inventory/adddatadeposit");
         dus = new DocumentUploadService(dropbox, documentRepository);
         dus.add("guid","file1.txt",new FileInputStream(file1));
-        dus.add("guid","file2.txt",new FileInputStream(file2));
-        pdds = new PloneDataDepositService(ploneClient, dus);
+        dus.add("guid","file3.txt",new FileInputStream(file2));
+        pdds = new PloneDataDepositService(ploneClient);
     }
     
     @After
@@ -66,7 +68,9 @@ public class PloneDataDepositServiceTest {
     
     @Test
     public void testResponse() throws IOException, DocumentRepositoryException {
-        pdds.processDataDeposit("guid");
+        String actual = pdds.processDataDeposit(dus.get("guid"));
+        String expected = "Success - updated: guid";
+        assertThat(actual, equalTo(expected));
     }
     
     // Get a secret from secrets.env
