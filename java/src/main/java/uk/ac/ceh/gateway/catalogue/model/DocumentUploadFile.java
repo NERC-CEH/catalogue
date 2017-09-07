@@ -1,15 +1,39 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Lists;
+
 import lombok.Data;
 
 @Data
 public class DocumentUploadFile {
-    private final String name;
-    private final String path;
-    private final String format;
-    private final String mediatype;
-    private final String encoding;
-    private final long bytes;
-    private final String hash;
+    private String name;
+    private String path;
+    private String format;
+    private String mediatype;
+    private String encoding;
+    private long bytes;
+    private String hash;
+    private List<String> comments = Lists.newArrayList();
     private String type = "DATA";
+
+    public void addComment(String comment) {
+        comments.add(comment);
+    }
+
+    @JsonIgnore
+    public String getCommentsAsString() {
+        return comments.stream().collect(Collectors.joining("\n"));
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setType(DocumentUpload.Type type) {
+        this.type = type.toString();
+    }
 }
