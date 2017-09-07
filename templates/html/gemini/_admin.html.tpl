@@ -52,11 +52,11 @@
               <button type="submit" class="btn btn-danger" value="Mint DOI">Mint DOI</button>
           </form>
         <#else>
-          <div class="alert alert-info"><i class="glyphicon glyphicon-ok"></i> There is enough information to assign a DOI to this resource</div>
+          <div class="alert alert-info"><i class="fa fa-check"></i> There is enough information to assign a DOI to this resource</div>
         </#if>
       <#else>
         <#if !datacitable >
-        <div class="alert alert-danger"><i class="glyphicon glyphicon-warning-sign"></i> There is insufficient metadata to assign a DOI to this resource</div>
+          <div class="alert alert-danger"><i class="fa fa-exclamation"></i> There is insufficient metadata to assign a DOI to this resource</div>
         </#if>
       </#if>
       </div>
