@@ -82,14 +82,14 @@
                     <tr class='invalid-row'>
                         <td class='checksum-file'>${file.name}</td>
                         <td>${file.hash}</td>
-                        <td>${file.getCommentsAsString()}</td>
+                        <td>${file.getLatestComment()}</td>
                         <td class="text-center">
                             <#if file.type == "INVALID_HASH">
                                 <button class="btn btn-block btn-success accept-invalid is-initialising" disabled>
                                     <i class="fa fa-check"></i> Update checksum
                                 </button>
                             </#if>
-                            <#if file.type == "NOT_META_OR_DATA">
+                            <#if file.type == "UNKNOWN_FILE">
                                 <button class="btn btn-block btn-success accept-invalid is-initialising" disabled>
                                     <i class="fa fa-check"></i> Add file
                                 </button>

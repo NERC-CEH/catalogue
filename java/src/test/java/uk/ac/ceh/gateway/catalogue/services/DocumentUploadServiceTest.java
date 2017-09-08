@@ -65,8 +65,8 @@ public class DocumentUploadServiceTest {
     @SneakyThrows
     public void invalidFile_ifNotInDataOrMetaButInFolder() {
         val actual = dus.get("guid");
-        
-        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.NOT_META_OR_DATA.name()));
+
+        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.UNKNOWN_FILE.name()));
         assertThat(actual.getInvalid().size(), equalTo(1));
         assertThat(actual.getData().size(), equalTo(0));
         assertThat(actual.getMeta().size(), equalTo(0));
@@ -77,9 +77,8 @@ public class DocumentUploadServiceTest {
     public void invalidFile_ifNotInDataOrMetaButInFolder_addComment() {
         val actual = dus.get("guid");
         val comments = actual.getInvalid().get("invalid.txt").getCommentsAsString();
-        assertThat(comments, equalTo("Unknown file exists in folder"));
+        assertThat(comments, equalTo("Unknown file"));
     }
-
 
     @Test
     @SneakyThrows
@@ -106,7 +105,7 @@ public class DocumentUploadServiceTest {
 
         val actual = dus.get("guid");
         val comments = actual.getInvalid().get("invalid.txt").getCommentsAsString();
-        assertThat(comments, equalTo("File's contents has changed"));
+        assertThat(comments, equalTo("File has changed"));
     }
 
     @Test
@@ -118,7 +117,7 @@ public class DocumentUploadServiceTest {
         FileUtils.forceDelete(invalid);
 
         val actual = dus.get("guid");
-        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.FILE_DOES_NOT_EXISTS.name()));
+        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.MISSING_FILE.name()));
         assertThat(actual.getInvalid().size(), equalTo(1));
         assertThat(actual.getData().size(), equalTo(0));
         assertThat(actual.getMeta().size(), equalTo(0));
@@ -132,7 +131,7 @@ public class DocumentUploadServiceTest {
         FileUtils.forceDelete(invalid);
 
         val actual = dus.get("guid");
-        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.FILE_DOES_NOT_EXISTS.name()));
+        assertThat(actual.getInvalid().get("invalid.txt").getType(), equalTo(DocumentUpload.Type.MISSING_FILE.name()));
         assertThat(actual.getInvalid().size(), equalTo(1));
         assertThat(actual.getData().size(), equalTo(0));
         assertThat(actual.getMeta().size(), equalTo(0));
@@ -147,7 +146,7 @@ public class DocumentUploadServiceTest {
 
         val actual = dus.get("guid");
         val comments = actual.getInvalid().get("invalid.txt").getCommentsAsString();
-        assertThat(comments, equalTo("The file is missing"));
+        assertThat(comments, equalTo("File is missing"));
     }
 
     @Test
@@ -200,7 +199,6 @@ public class DocumentUploadServiceTest {
 
         assertThat(actual.getPath(), equalTo(new File(dropbox, "guid").getAbsolutePath()));
     }
-
 
     @Test
     @SneakyThrows
