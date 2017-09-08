@@ -110,7 +110,7 @@
                 <h3 class='subtitle'>Upload</h3>
                 <div class="dropzone">
                     <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
-                        <a class="btn btn-success fileinput-button" role="button" disabled>
+                        <a class="btn btn-success fileinput-button is-initialising" role="button" disabled>
                             <i class="fa fa-plus"></i>
                             <span>Add files...</span>
                         </a>
