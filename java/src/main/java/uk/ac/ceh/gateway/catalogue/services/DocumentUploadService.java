@@ -5,7 +5,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -40,6 +43,7 @@ public class DocumentUploadService {
         String hash = DigestUtils.md5Hex(new FileInputStream(file));
 
         val documentUploadFile = new DocumentUploadFile();
+        documentUploadFile.addComment("added by service");
         documentUploadFile.setName(filename);
         documentUploadFile.setPath(file.getAbsolutePath());
         documentUploadFile.setFormat(FilenameUtils.getExtension(filename));
@@ -105,6 +109,7 @@ public class DocumentUploadService {
         val dataFile = createDataFile(guid);
         val mapper = new ObjectMapper();
         val documentUpload = mapper.readValue(dataFile, DocumentUpload.class);
+        updateWithChecksumsFile(documentUpload);
         updateKnownInvalidFiles(documentUpload);
         updateFromDataAndMetaToInvalid(documentUpload);
         removeDuplicates(documentUpload);
@@ -112,6 +117,41 @@ public class DocumentUploadService {
         autoFix(documentUpload, Type.META);
         save(documentUpload);
         return documentUpload;
+    }
+
+    private static final Pattern regex = Pattern.compile("([a-f0-9]{32})\\ \\*(.*)");
+
+    private void updateWithChecksumsFile(DocumentUpload documentUpload) throws IOException {
+        val folder = new File(documentUpload.getPath());
+        val checksums = new File(folder, "checksums.hash");
+        
+        if (checksums.exists()) {
+            val lines = FileUtils.readLines(checksums);
+            for(val line : lines) {
+                val matches = regex.matcher(line);
+                if (matches.matches()) {
+                    val hash = matches.group(1);
+                    val name = matches.group(2);
+                    documentUpload.getData().remove(name);
+                    documentUpload.getMeta().remove(name);
+                    documentUpload.getInvalid().remove(name);
+
+                    val documentUploadFile = new DocumentUploadFile();
+                    documentUploadFile.addComment("added from checksums.hash");
+                    documentUploadFile.setName(name);
+                    documentUploadFile.setFormat(FilenameUtils.getExtension(name));
+                    documentUploadFile.setEncoding("utf-8");
+                    documentUploadFile.setHash(hash);
+
+                    val file = new File(folder, name);
+                    documentUploadFile.setPath(file.getAbsolutePath());
+                    documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
+                    documentUploadFile.setBytes(file.length());
+
+                    documentUpload.getData().put(name, documentUploadFile);
+                }
+            }
+        }
     }
 
     private void updateKnownInvalidFiles(DocumentUpload documentUpload) throws IOException {
@@ -178,7 +218,7 @@ public class DocumentUploadService {
     private void validateUnknownFiles(DocumentUpload documentUpload) throws IOException {
         val path = documentUpload.getPath();
         val folder = new File(path);
-        val files = folder.listFiles(file -> !file.getName().equals("_data.json"));
+        val files = folder.listFiles(file -> !file.getName().equals("_data.json") && !file.getName().equals("checksums.hash"));
         for(val file : files) {
             val name = file.getName();
             val inData = documentUpload.getData().containsKey(name);
@@ -239,14 +279,27 @@ public class DocumentUploadService {
                 guid,
                 folder.getAbsolutePath()
             );
-            save(documentUpload);
+            saveJson(documentUpload);
         }
         return file;
     }
 
     private void save(DocumentUpload documentUpload) throws IOException {
-        val file = new File(documentUpload.getPath(), "_data.json");
+        saveJson(documentUpload);
+
+        val checksums = new File(documentUpload.getPath(), "checksums.hash");
+        val documentUploadFiles = documentUpload.getData()
+            .values()
+            .stream()
+            .map(documentUploadFile -> String.format("%s *%s", documentUploadFile.getHash(), documentUploadFile.getName()))
+            .collect(Collectors.toList());
+
+        FileUtils.writeLines(checksums, documentUploadFiles);
+    }
+
+    private void saveJson(DocumentUpload documentUpload) throws IOException {
+        val json = new File(documentUpload.getPath(), "_data.json");
         val mapper = new ObjectMapper();
-        mapper.writeValue(file, documentUpload);
+        mapper.writeValue(json, documentUpload);
     }
 }
