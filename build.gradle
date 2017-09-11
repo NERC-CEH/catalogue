@@ -41,4 +41,14 @@ task selenium(type: Exec, dependsOn: prepFixtures) {
   commandLine 'docker-compose', '--file=docker-compose.yml', '--file=docker-compose.selenium.yml', 'run', 'ruby_test'
 }
 
+task unzipWeb(type: Exec, dependsOn: ':java:build') {
+  commandLine 'docker-compose', 'exec', '-T', 'web', 'unzip', '-od', '/usr/local/tomcat/webapps/ROOT', '/opt/ceh-catalogue/libs/ROOT.war'
+}
+
+task web(type: Exec, dependsOn: unzipWeb) {
+  inputs.files(fileTree("java/src/main/java"))
+  description 'Builds the java files, unzips ROOT.war then restarts service'
+  commandLine 'docker-compose', 'restart', 'web'
+}
+
 dockerCompose.isRequiredBy(selenium)

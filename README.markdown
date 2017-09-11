@@ -49,6 +49,18 @@ the EIDC catalogue is then available on:
 
 will run a process that watches the javascript and less directories and recompiles the files on an changes.
 
+## Java
+
+    ./gradlew web
+
+will rebuild the minimum required steps in order to re-build the project and restart apache
+
+to have this continuously watch for changes in the java code (not including tests)
+
+    ./gradlew -t web
+
+You may need to increase your watches see the answer [here](https://askubuntu.com/questions/770374/user-limit-of-inotify-watches-reached-on-ubuntu-16-04) for more details on this
+
 ## Selenium Testing
 
 The project contains an `rspec` suite of selenium tests.
