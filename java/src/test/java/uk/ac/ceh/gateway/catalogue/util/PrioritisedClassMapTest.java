@@ -6,8 +6,8 @@
 
 package uk.ac.ceh.gateway.catalogue.util;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

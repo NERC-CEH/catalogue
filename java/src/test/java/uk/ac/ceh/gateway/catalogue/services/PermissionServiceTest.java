@@ -2,17 +2,20 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -66,7 +69,7 @@ public class PermissionServiceTest {
         given(repo.getData(any(String.class), any(String.class))).willThrow(DataRepositoryException.class);
         
         //When
-        boolean actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "VIEW");
+        permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "a63fe7", "VIEW");
         
         //Then
         fail("Should not be able to get metadata record for unknown");
@@ -178,6 +181,7 @@ public class PermissionServiceTest {
         given(repo.getLatestRevision()).willReturn(revision);
         DataDocument document = mock(DataDocument.class);
         given(repo.getData("revision", "test.meta")).willReturn(document);
+        given(document.getInputStream()).willReturn(new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8)));
         Multimap<Permission, String> permissions = HashMultimap.create();
         permissions.put(Permission.EDIT, "editor");
         MetadataInfo info = MetadataInfo.builder().permissions(permissions).catalogue("eidc").build();
@@ -222,6 +226,7 @@ public class PermissionServiceTest {
         given(repo.getLatestRevision()).willReturn(revision);
         DataDocument document = mock(DataDocument.class);
         given(repo.getData("revision", "test.meta")).willReturn(document);
+        given(document.getInputStream()).willReturn(new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8)));
         MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
         
@@ -270,7 +275,8 @@ public class PermissionServiceTest {
         given(revision.getRevisionID()).willReturn("revision");
         given(repo.getLatestRevision()).willReturn(revision);
         DataDocument document = mock(DataDocument.class);
-        given(repo.getData("revision", "test.meta")).willReturn(document);
+        given(document.getInputStream()).willReturn(new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8)));
+        given(repo.getData(revision.getRevisionID(), "test.meta")).willReturn(document);
         MetadataInfo info = MetadataInfo.builder().catalogue("ceh").build();
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
         

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import javax.xml.xpath.XPathExpressionException;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.when;

@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Arrays;
 import java.util.List;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;

@@ -1,17 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.modelceh;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -45,8 +41,6 @@ public class CehModel extends AbstractMetadataDocument {
         keyInputVariables,
         keyOutputVariables;
     
-    private List<Keyword> keywords;
-    
     private List<Reference> references;
     
     private QualityAssurance
@@ -62,22 +56,7 @@ public class CehModel extends AbstractMetadataDocument {
     
     private List<VersionHistory> versionHistories;
         
-    private List<ProjectUsage> projectUsages;   
-
-    @Override
-    @JsonIgnore
-    public List<Keyword> getAllKeywords() {
-        return keywords;
-    }
-
-    @Override
-    public MetadataDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
-        keywords = Optional.ofNullable(keywords)
-            .orElse(new ArrayList<>());
-        
-        keywords.addAll(additionalKeywords);
-        return this;
-    }
+    private List<ProjectUsage> projectUsages;
     
     @Data
     public static class Reference {

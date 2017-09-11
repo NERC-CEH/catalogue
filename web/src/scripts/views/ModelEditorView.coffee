@@ -75,6 +75,10 @@ define [
           modelAttribute: 'relationships'
           label: 'Relationships'
           ObjectInputView: RelationshipView
+          multiline: true
+          options: [
+            {value: 'http://purl.org/dc/terms/references', label: 'References'}
+          ]
 
         new ParentView
           model: @model

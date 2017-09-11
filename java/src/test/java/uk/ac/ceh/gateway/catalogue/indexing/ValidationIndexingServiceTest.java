@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
@@ -56,7 +56,7 @@ public class ValidationIndexingServiceTest {
         //Given
         String rev = "revision";
         List<String> docs = Arrays.asList("1","2");
-        when(indexGenerator.generateIndex(anyObject())).thenThrow(new DocumentIndexingException("I failed"));
+        when(indexGenerator.generateIndex(any())).thenThrow(new DocumentIndexingException("I failed"));
         
         //When
         try {

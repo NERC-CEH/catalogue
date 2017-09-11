@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

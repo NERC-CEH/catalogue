@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ext.com.google.common.collect.Lists;
@@ -11,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -20,10 +21,10 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload.Type;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.CoreMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.CoreMatchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentUploadServiceTest {
@@ -54,10 +55,10 @@ public class DocumentUploadServiceTest {
     @SneakyThrows
     public void before() {
         FileUtils.forceMkdir(dropbox);
-        FileUtils.write(file, "something");
-        FileUtils.write(checksumFile, "something");
-        FileUtils.write(incorrectChecksumFile, "something else");
-        FileUtils.write(invalid, "invalid content");
+        FileUtils.write(file, "something", Charset.defaultCharset());
+        FileUtils.write(checksumFile, "something", Charset.defaultCharset());
+        FileUtils.write(incorrectChecksumFile, "something else", Charset.defaultCharset());
+        FileUtils.write(invalid, "invalid content", Charset.defaultCharset());
         
         FileUtils.writeLines(checksums, checksumLines);
 

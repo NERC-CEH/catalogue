@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Test;

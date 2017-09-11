@@ -3,8 +3,8 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -34,8 +34,6 @@ public class MapServerIndexingServiceTest {
     @Mock BundledReaderService reader;
     @Mock DocumentListingService listingService;
     @Mock DataRepository repo;
-    @Mock PostProcessingService postProcessingService;
-    @Mock DocumentIdentifierService documentIdentifierService;
     @Mock IndexGenerator indexGenerator;
     
     private MapServerIndexingService service;

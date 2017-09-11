@@ -3,7 +3,7 @@ package uk.ac.ceh.gateway.catalogue.converters;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;

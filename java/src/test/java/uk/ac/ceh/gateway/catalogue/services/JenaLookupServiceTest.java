@@ -4,27 +4,25 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.apache.jena.rdf.model.ResourceFactory.createStatement;
 import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
+
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.tdb.TDBFactory;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.HAS_GEOMETRY;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.IDENTIFIER;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.REFERENCES;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SOURCE;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TITLE;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TYPE;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.WKT_LITERAL;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 
 /**
@@ -34,12 +32,44 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 public class JenaLookupServiceTest {
     private Dataset jenaTdb;
     private JenaLookupService service;
+
+    private static final Property OSDP_PRODUCES = ResourceFactory.createProperty("http://onto.nerc.ac.uk/CEHMD/rels/produces");
     
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
         jenaTdb = TDBFactory.createDataset();
         service = new JenaLookupService(jenaTdb);
+    }
+
+    @Test
+    public void lookupRelationships() {
+        //Given
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
+        triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
+
+        //When
+        List<Link> actual = service.relationships("http://monitoringActivity", OSDP_PRODUCES.toString());
+
+        //Then
+        assertThat("Should be 1 Link", actual.size(), equalTo(1));
+        assertThat("Tile should be Dataset 1", actual.stream().findFirst().get().getTitle(), equalTo("Dataset 1"));
+    }
+
+    @Test
+    public void lookupInverseRelationships() {
+        //Given
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource("http://monitoringActivity"), TITLE, "Monitoring Activity");
+        triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
+
+        //When
+        List<Link> actual = service.inverseRelationships("http://dataset1", OSDP_PRODUCES.toString());
+
+        //Then
+        assertThat("Should be 1 Link", actual.size(), equalTo(1));
+        assertThat("Tile should be Dataset 1", actual.stream().findFirst().get().getTitle(), equalTo("Monitoring Activity"));
     }
     
     @Test

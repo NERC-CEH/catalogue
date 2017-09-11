@@ -1,12 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Arrays;
-import java.util.List;
-import javax.xml.xpath.XPathExpressionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -16,7 +15,10 @@ import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
@@ -25,6 +27,10 @@ import uk.ac.ceh.gateway.catalogue.converters.Gml2WmsFeatureInfoMessageConverter
 import uk.ac.ceh.gateway.catalogue.util.ForgivingParameterContentNegotiationStrategy;
 import uk.ac.ceh.gateway.catalogue.util.MapServerGetFeatureInfoErrorHandler;
 import uk.ac.ceh.gateway.catalogue.util.WmsFormatContentNegotiationStrategy;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebMvc
@@ -56,6 +62,22 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String EF_INSPIRE_XML_SHORT         = "efinspire";
     public static final String EF_INSPIRE_XML_VALUE         = "application/vnd.ukeof.inspire+xml";
     public static final String MAPSERVER_GML_VALUE          = "application/vnd.ogc.gml";
+    public static final String OSDP_AGENT_JSON_VALUE        = "application/vnd.osdp.agent+json";
+    public static final String OSDP_AGENT_SHORT             = "osdp-agent";
+    public static final String OSDP_DATASET_JSON_VALUE      = "application/vnd.osdp.dataset+json";
+    public static final String OSDP_DATASET_SHORT           = "osdp-dataset";
+    public static final String OSDP_MODEL_JSON_VALUE        = "application/vnd.osdp.model+json";
+    public static final String OSDP_MODEL_SHORT             = "osdp-model";
+    public static final String OSDP_MONITORING_ACTIVITY_JSON_VALUE  = "application/vnd.osdp.monitoring-activity+json";
+    public static final String OSDP_MONITORING_ACTIVITY_SHORT       = "osdp-monitoring-activity";
+    public static final String OSDP_MONITORING_FACILITY_JSON_VALUE  = "application/vnd.osdp.monitoring-facility+json";
+    public static final String OSDP_MONITORING_FACILITY_SHORT       = "osdp-monitoring-facility";
+    public static final String OSDP_MONITORING_PROGRAMME_JSON_VALUE = "application/vnd.osdp.monitoring-programme+json";
+    public static final String OSDP_MONITORING_PROGRAMME_SHORT      = "osdp-monitoring-programme";
+    public static final String OSDP_PUBLICATION_JSON_VALUE  = "application/vnd.osdp.publication+json";
+    public static final String OSDP_PUBLICATION_SHORT       = "osdp-publication";
+    public static final String OSDP_SAMPLE_JSON_VALUE       = "application/vnd.osdp.sample+json";
+    public static final String OSDP_SAMPLE_SHORT            = "osdp-sample";
     
     @Autowired MessageConvertersHolder messageConvertersHolder;
     @Autowired freemarker.template.Configuration freemarkerConfiguration;
@@ -114,6 +136,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE))
                         .put(CEH_MODEL_SHORT, MediaType.parseMediaType(CEH_MODEL_JSON_VALUE))
                         .put(CEH_MODEL_APPLICATION_SHORT, MediaType.parseMediaType(CEH_MODEL_APPLICATION_JSON_VALUE))
+                        .put(OSDP_AGENT_SHORT, MediaType.parseMediaType(OSDP_AGENT_JSON_VALUE))
+                        .put(OSDP_DATASET_SHORT, MediaType.parseMediaType(OSDP_DATASET_JSON_VALUE))
+                        .put(OSDP_MODEL_SHORT, MediaType.parseMediaType(OSDP_MODEL_JSON_VALUE))
+                        .put(OSDP_MONITORING_ACTIVITY_SHORT, MediaType.parseMediaType(OSDP_MONITORING_ACTIVITY_JSON_VALUE))
+                        .put(OSDP_MONITORING_FACILITY_SHORT, MediaType.parseMediaType(OSDP_MONITORING_FACILITY_JSON_VALUE))
+                        .put(OSDP_MONITORING_PROGRAMME_SHORT, MediaType.parseMediaType(OSDP_MONITORING_PROGRAMME_JSON_VALUE))
+                        .put(OSDP_PUBLICATION_SHORT, MediaType.parseMediaType(OSDP_PUBLICATION_JSON_VALUE))
+                        .put(OSDP_SAMPLE_SHORT, MediaType.parseMediaType(OSDP_SAMPLE_JSON_VALUE))
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo

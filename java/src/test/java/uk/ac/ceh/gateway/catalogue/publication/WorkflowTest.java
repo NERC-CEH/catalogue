@@ -5,7 +5,7 @@ import java.util.Set;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
 
 public class WorkflowTest {

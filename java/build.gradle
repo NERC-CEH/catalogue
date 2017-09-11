@@ -1,0 +1,83 @@
+plugins {
+    id 'war'
+    id 'idea'
+    id 'com.github.ben-manes.versions' version '0.15.0'
+}
+
+ext {
+    javaVersion = '1.8'
+    cehComponentsVersion = '1.0.44'
+    springVersion = '4.3.10.RELEASE'
+    springSecurityVersion = '4.2.3.RELEASE'
+    jacksonVersion = '2.9.0'
+}
+
+war {
+    archiveName 'ROOT.war'
+}
+
+sourceCompatibility = javaVersion
+
+repositories {
+    mavenLocal()
+    maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
+    mavenCentral()
+}
+
+dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation "uk.ac.ceh.components:datastore-git:${cehComponentsVersion}"
+    implementation "uk.ac.ceh.components:userstore-crowd:${cehComponentsVersion}"
+    implementation "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
+    implementation "uk.ac.ceh.components:springsecurity-userstore:${cehComponentsVersion}"
+    implementation 'org.hibernate:hibernate-validator:6.0.1.Final'
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-guava:${jacksonVersion}"
+    implementation "com.google.guava:guava:23.0"
+    implementation("org.springframework:spring-core:${springVersion}") {
+        exclude(module: 'commons-logging')
+    }
+    implementation "org.springframework:spring-webmvc:${springVersion}"
+    implementation "org.springframework:spring-context-support:${springVersion}"
+    implementation("org.apache.jena:jena-tdb:3.4.0") {
+        exclude(module: 'slf4j-log4j12')
+        exclude(module: 'log4j')
+    }
+    implementation 'commons-fileupload:commons-fileupload:1.3.3'
+    implementation "org.springframework.security:spring-security-web:${springSecurityVersion}"
+    implementation "org.springframework.security:spring-security-core:${springSecurityVersion}"
+    implementation "org.springframework.security:spring-security-config:${springSecurityVersion}"
+    implementation "net.sf.ehcache:ehcache:2.10.4"
+    implementation("org.apache.solr:solr-solrj:4.10.4") {
+        exclude(module: 'slf4j-api')
+        exclude(module: 'slf4j-log4j12')
+        exclude(module: 'log4j')
+    }
+    implementation "com.vividsolutions:jts:1.13"
+    implementation "ch.qos.logback:logback-classic:1.2.3"
+    implementation "org.slf4j:jcl-over-slf4j:1.7.25"
+    implementation "org.freemarker:freemarker:2.3.23"
+    testImplementation('junit:junit:4.12') {
+        exclude(module: 'org.hamcrest-core')
+    }
+    testImplementation('org.mockito:mockito-core:2.8.47') {
+        exclude(module: 'org.hamcrest-core')
+    }
+    testImplementation 'org.hamcrest:hamcrest-all:1.3'
+    testImplementation "org.springframework:spring-test:${springVersion}"
+    providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
+    compileOnly 'org.projectlombok:lombok:1.16.18'
+    testImplementation 'org.projectlombok:lombok:1.16.18'
+}

@@ -1,0 +1,8 @@
+rootProject.name = 'Catalogue'
+include 'java', 'web'
+
+buildCache {
+    local {
+        enabled = true
+    }
+}

@@ -1,20 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.imp;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.ef.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
 @Data
@@ -27,21 +21,6 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
     @Type(name="caseStudy",        value = CaseStudy.class)
 })
 public class ImpDocument extends AbstractMetadataDocument {
-    private List<Keyword> keywords;
     private ResponsibleParty contact;
-
-    @Override
-    public ImpDocument addAdditionalKeywords(@NonNull List<Keyword> additionalKeywords) {
-        keywords = Optional.ofNullable(keywords)
-            .orElse(new ArrayList<>());
-        keywords.addAll(additionalKeywords);
-        return this;
-    }
-
-    @Override
-    @JsonIgnore
-    public List<Keyword> getAllKeywords() {
-        return keywords;
-    }
 
 }
