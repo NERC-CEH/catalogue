@@ -2,13 +2,14 @@ build
 secrets.env
 dropbox
 datastore
-/mapfiles
+mapfiles
 cache
 .gradle
 .vscode
 .vagrant
 target
 java/out
+java/bin
 
 # Ignore the secret configuration file
 puppet/hieradata/secrets.yaml
