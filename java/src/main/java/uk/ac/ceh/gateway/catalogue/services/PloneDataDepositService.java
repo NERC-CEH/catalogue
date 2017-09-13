@@ -8,11 +8,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.MediaType;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
-@Slf4j
 @AllArgsConstructor
 public class PloneDataDepositService {
     private final WebResource ploneWebResource;
