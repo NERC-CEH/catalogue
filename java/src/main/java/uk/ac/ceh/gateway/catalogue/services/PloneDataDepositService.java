@@ -22,7 +22,6 @@ public class PloneDataDepositService {
                  .map(f -> URLEncoder.encode(f.getKey() + ";" + f.getValue().getHash()))
                  .collect(Collectors.toList());
 
-        System.out.println(ploneWebResource.getURI().getPath());
         ClientResponse response = ploneWebResource
                 .queryParam("fileIdentifier", URLEncoder.encode(du.getGuid()))
                 .queryParam("title", du.getTitle())
@@ -31,8 +30,11 @@ public class PloneDataDepositService {
                 .accept(MediaType.TEXT_PLAIN)
                 .get(ClientResponse.class);
         
-        if (response.getStatus() != 200) {
-            throw new RuntimeException("Failed to update Plone: HTTP error code: " + response.getStatus());
+        if (response.getStatus() == 400){
+            String reason = response.getEntity(String.class);
+            throw new RuntimeException(String.format("Failed to update Plone: HTTP error code: %s : Error message: %s", response.getStatus(), reason));
+        }else if (response.getStatus() != 200){
+            throw new RuntimeException(String.format("Failed to update Plone: HTTP error code: %s", response.getStatus()));
         }
         return response.getEntity(String.class);
     }

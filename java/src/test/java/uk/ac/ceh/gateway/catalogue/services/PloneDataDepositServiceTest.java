@@ -21,6 +21,7 @@ import static org.mockito.Matchers.anyString;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.MockitoAnnotations.initMocks;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
@@ -32,6 +33,9 @@ public class PloneDataDepositServiceTest {
 
     @Mock
     private MetadataDocument document;
+    
+    @Mock
+    private DocumentUpload documentUpload;
     
     private PloneDataDepositService pdds;
     private DocumentUploadService dus;

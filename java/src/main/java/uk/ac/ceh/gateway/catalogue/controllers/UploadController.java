@@ -134,11 +134,7 @@ public class UploadController {
             throws DocumentRepositoryException, IOException {
         transitionIssueToStartProgress(user, guid);
         removeUploadPermission(user, guid);
-        try {
-            System.out.println( ploneDataDepositService.addOrUpdate(documentUploadService.get(guid)));
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
-        }
+        ploneDataDepositService.addOrUpdate(documentUploadService.get(guid));
         val response = new HashMap<String, String>();
         response.put("message", "awaiting approval from admin");
         return response;
