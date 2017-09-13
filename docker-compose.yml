@@ -3,7 +3,7 @@ services:
   web:
     build: .
     ports:
-      - "8081:8080"
+      - "8080:8080"
     depends_on:
       - solr
       - mapserver
