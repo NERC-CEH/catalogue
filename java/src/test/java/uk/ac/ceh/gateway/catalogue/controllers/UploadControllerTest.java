@@ -31,6 +31,7 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import org.springframework.web.multipart.MultipartFile;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import uk.ac.ceh.gateway.catalogue.services.PloneDataDepositService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UploadControllerTest {
@@ -58,6 +59,9 @@ public class UploadControllerTest {
 
     @Mock
     private MetadataDocument document;
+    
+    @Mock
+    private PloneDataDepositService ploneDataDepositService;
 
     private MetadataInfo info;
 
@@ -83,6 +87,8 @@ public class UploadControllerTest {
     public void before() {
         documentUpload = new DocumentUpload("title", "type", "guid", "path");
         doReturn(documentUpload).when(documentUploadService).get(anyString());
+
+        doReturn("uploaded").when(ploneDataDepositService).addOrUpdate(documentUpload);
 
         doReturn(inputStream).when(multipartFile).getInputStream();
         doReturn("filename").when(multipartFile).getOriginalFilename();
