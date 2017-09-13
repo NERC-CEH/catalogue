@@ -11,6 +11,7 @@ services:
       - ./mapfiles:/var/ceh-catalogue/mapfiles
     environment:
       JIRA_ADDRESS: https://jira-test.nerc-lancaster.ac.uk/rest/api/2
+      PLONE_ADDRESS: http://eidctest.ceh.ac.uk/administration-folder/eidc-data-inventory/adddatadeposit
       BASE_URI: https://catalogue.ceh.ac.uk
       SPRING_PROFILES: development
     env_file:

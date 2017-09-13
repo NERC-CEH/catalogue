@@ -161,7 +161,7 @@ public class ServiceConfig {
     @Value("${jira.address}") String jiraAddress;
     @Value("#{systemEnvironment['PLONE_USERNAME']}") String ploneUsername;
     @Value("#{systemEnvironment['PLONE_PASSWORD']}") String plonePassword;
-    @Value("#{systemEnvironment['PLONE_ADDRESS']}") String ploneAddress;
+    @Value("${plone.address}") String ploneAddress;
     
     @Autowired ObjectMapper jacksonMapper;
     @Autowired DataRepository<CatalogueUser> dataRepository;
