@@ -4,8 +4,9 @@ import java.io.InputStream;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.eq;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,7 +37,7 @@ public class MessageConverterWritingServiceTest {
         InputStream in = service.write(test, MediaType.TEXT_HTML);
         
         //Then
-        verify(converter).write(eq(test), eq(MediaType.TEXT_HTML), anyObject());
+        verify(converter).write(eq(test), eq(MediaType.TEXT_HTML), any());
     }
     
     @Test(expected=UnknownContentTypeException.class)

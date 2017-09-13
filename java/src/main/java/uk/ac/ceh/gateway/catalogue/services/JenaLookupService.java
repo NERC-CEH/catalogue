@@ -22,6 +22,8 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.IDENTIFIER;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SOURCE;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 
+import javax.annotation.Nullable;
+
 /**
  * A simple lookup service powered by the jena linking database. This just looks
  * up any literals associated to a given uri
@@ -81,33 +83,39 @@ public class JenaLookupService {
     public List<Link> datasets(String uri) {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE {{{ ?me dc:references ?node } UNION { ?node dc:references ?me } ?node dc:title ?title . ?node dc:type 'dataset' } UNION { ?me dc:references ?node . ?node dc:source _:n . _:n dc:title ?title . _:n dc:type 'dataset' }}");
     }
+
+    public List<Link> relationships(String uri, String relation) {
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE {?me ?rel ?node . ?node dc:title ?title}";
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
+        pss.setIri("me", uri);
+        pss.setIri("rel", relation);
+        return links(pss);
+    }
+
+    public List<Link> inverseRelationships(String uri, String relation) {
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE {?node ?rel ?me . ?node dc:title ?title}";
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
+        pss.setIri("me", uri);
+        pss.setIri("rel", relation);
+        return links(pss);
+    }
     
     public Link metadata(String id) {
-        Link toReturn = null;
         id = nullToEmpty(id);
         String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE { ?node dc:identifier ?id ; dc:title ?title . }";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);  
         pss.setLiteral("id", id);
-        jenaTdb.begin(ReadWrite.READ);
-        try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
-            ResultSet resultSet = qexec.execSelect();
-            if (resultSet.hasNext()) {
-                QuerySolution querySolution = resultSet.next();
-                toReturn = Link.builder()
-                    .title(querySolution.getLiteral("title").getString())
-                    .href(querySolution.getResource("node").getURI())
-                    .build();
-            }
-        } finally {
-            jenaTdb.end();
-        }
-        return toReturn;
+        return links(pss).stream().findFirst().orElse(null);
     }
     
     private List<Link> links(@NonNull String uri, String sparql) {
-        List<Link> toReturn = new ArrayList<>();
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);  
         pss.setIri("me", uri);
+        return links(pss);
+    }
+
+    private List<Link> links(ParameterizedSparqlString pss) {
+        List<Link> toReturn = new ArrayList<>();
         jenaTdb.begin(ReadWrite.READ);
         try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
             qexec.execSelect().forEachRemaining(s -> {

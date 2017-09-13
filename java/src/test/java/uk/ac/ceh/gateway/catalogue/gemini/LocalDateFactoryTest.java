@@ -3,8 +3,8 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 

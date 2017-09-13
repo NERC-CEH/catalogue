@@ -3,7 +3,6 @@ variables:
   CONTAINER_SOLR_IMAGE:        registry.gitlab.ceh.ac.uk/eip/catalogue:solr-$CI_BUILD_REF_NAME
   CONTAINER_MAPSERVER_IMAGE:   registry.gitlab.ceh.ac.uk/eip/catalogue:mapserver-$CI_BUILD_REF_NAME
   DOCKER_DAEMON_ARGS:          -g /cache/docker
-  MAVEN_OPTS:                  -Dmaven.repo.local=$CI_PROJECT_DIR/cache/mvn
   DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
   NODE_KEY: catalogue_version
   NODE_VALUE: $CI_BUILD_REF_NAME
@@ -14,11 +13,6 @@ stages:
   - docker
   - deploy
 
-cache:
-  key: "$CI_BUILD_NAME"
-  paths:
-    - cache/
-
 mirror:
   stage: build
   image: buildpack-deps:xenial-scm
@@ -27,25 +21,13 @@ mirror:
 
 java:
   stage: build
-  image: maven:3.2-jdk-8
+  image: openjdk:8
   script:
-    - mvn -f java/pom.xml install
+    - ./gradlew --build-cache :java:clean :java:build :web:grunt_default
   artifacts:
     when: always
     paths:
-      - java/target/ROOT.war
-
-web:
-  stage: build
-  image: node:6.2.0
-  script:
-    - cd web
-    - npm install
-    - npm run bower
-    - npm run build
-  artifacts:
-    when: always
-    paths:
+      - java/build/libs/ROOT.war
       - web/src/vendor/
       - web/src/css/
       - web/src/scripts/main-out.js
@@ -53,19 +35,28 @@ web:
 rspec:
   stage: test
   image: gitlab/dind
+  before_script:
+    - echo JIRA_USERNAME=$JIRA_USERNAME > secrets.env
+    - echo JIRA_PASSWORD=$JIRA_PASSWORD >> secrets.env
+    - rm -rf datastore
+    - mkdir datastore
+    - cp fixtures/datastore/REV-1/* datastore
+    - cd datastore
+    - git init
+    - git config user.name 'CI'
+    - git config user.email ci@localhost
+    - git add --all
+    - git commit --message 'test data'
+    - cd -
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome
+  script:
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
+  after_script:
+    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml down --volumes
   artifacts:
     when: always
     paths:
       - test-reports
-  before_script:
-    - echo JIRA_USERNAME=$JIRA_USERNAME > secrets.env
-    - echo JIRA_PASSWORD=$JIRA_PASSWORD >> secrets.env
-    - apt-get update
-    - apt-get install make
-  script:
-    - make clean docker selenium
-  after_script:
-    - make clean
 
 .deployment_template: &deployment_definition # Hidden deployment definition for docker builds
   stage: docker

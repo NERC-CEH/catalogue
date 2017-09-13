@@ -1,18 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.io.IOUtils;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -56,7 +53,7 @@ public class DataciteIndexingServiceTest {
     @Test
     public void checkThatUpdatesDoiOfDocumentWhichRequestHasChanged() throws Exception {
         //Given
-        String dataciteRequest = IOUtils.toString(getClass().getResource("datacite-date-request.xml"));
+        String dataciteRequest = IOUtils.toString(getClass().getResource("datacite-date-request.xml"), "UTF-8");
         GeminiDocument document = new GeminiDocument();
         when(datacite.isDatacited(document)).thenReturn(true);
         when(datacite.getDoiMetadata(document)).thenReturn(dataciteRequest);
@@ -72,7 +69,7 @@ public class DataciteIndexingServiceTest {
     @Test
     public void checkThatDoesntUpdateDocumentWhichRequestHasntChanged() throws Exception {
         //Given
-        String dataciteRequest = IOUtils.toString(getClass().getResource("datacite-date-request.xml"));
+        String dataciteRequest = IOUtils.toString(getClass().getResource("datacite-date-request.xml"), "UTF-8");
         GeminiDocument document = new GeminiDocument();
         when(datacite.isDatacited(document)).thenReturn(true);
         when(datacite.getDoiMetadata(document)).thenReturn(dataciteRequest);

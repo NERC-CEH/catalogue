@@ -22,7 +22,7 @@ public class MapServerGetFeatureInfoErrorHandler implements ResponseErrorHandler
 
     @Override
     public void handleError(ClientHttpResponse response) throws IOException {
-        String body = IOUtils.toString(response.getBody());
+        String body = IOUtils.toString(response.getBody(), "UTF-8");
         throw new MapServerException(body, response.getStatusCode(), response.getHeaders().getContentType());
     }
 }

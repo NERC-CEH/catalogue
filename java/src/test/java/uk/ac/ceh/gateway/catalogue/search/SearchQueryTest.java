@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.solr.client.solrj.SolrQuery;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.*;
@@ -24,14 +24,14 @@ import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public class SearchQueryTest {
-    public static final String ENDPOINT = "http://catalogue.com/documents";
-    public static final String DEFAULT_BBOX = null;
-    public static final int DEFAULT_PAGE = 1;
-    public static final int DEFAULT_ROWS = 20;
-    public static final List<FacetFilter> DEFAULT_FILTERS = Collections.EMPTY_LIST;
+    static final String ENDPOINT = "http://catalogue.com/documents";
+    static final String DEFAULT_BBOX = null;
+    static final int DEFAULT_PAGE = 1;
+    static final int DEFAULT_ROWS = 20;
+    static final List<FacetFilter> DEFAULT_FILTERS = Collections.emptyList();
     @Mock private GroupStore<CatalogueUser> groupStore; 
     private static final FacetFactory FACET_FACTORY = new HardcodedFacetFactory();
-    public static final List<Facet> DEFAULT_FACETS = FACET_FACTORY.newInstances(
+    static final List<Facet> DEFAULT_FACETS = FACET_FACTORY.newInstances(
         Arrays.asList("resourceType","licence")
     );
     

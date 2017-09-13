@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import java.net.URISyntaxException;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;

@@ -1,10 +1,15 @@
+build
 secrets.env
 dropbox
 datastore
 mapfiles
 cache
+.gradle
+.vscode
 .vagrant
 target
+java/out
+java/bin
 
 # Ignore the secret configuration file
 puppet/hieradata/secrets.yaml
@@ -16,12 +21,12 @@ rspec_screenshots/
 
 # Ignore webdriver directories (created by rspec/capybara testing)
 webdriver*
-
-# IDE and OS things
-
+test-reports/
 .idea
 *~
 **/nbproject/**
+*.*.swp
+*.iml
 *.sublime-workspace
 javac-services*
 *.*.swp

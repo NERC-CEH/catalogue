@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -106,8 +106,6 @@ public class UploadControllerTest {
         info = MetadataInfo.builder().permissions(permissions).build();
         doReturn(info).when(document).getMetadata();
 
-        doReturn("title").when(document).getTitle();
-        doReturn("type").when(document).getType();
     }
 
     @SneakyThrows

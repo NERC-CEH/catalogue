@@ -3,6 +3,7 @@ MAINTAINER oss@ceh.ac.uk
 
 RUN apt-get update; apt-get install -y \
   cgi-mapserver \
+  curl \
   mapserver-bin \
   gdal-bin \
   apache2 \
@@ -16,3 +17,5 @@ RUN a2enmod fcgid rewrite; \
     a2ensite 10-mapserver
 
 CMD sh -c "rm -f /var/run/apache2/apache2.pid; apache2ctl -D FOREGROUND"
+
+HEALTHCHECK CMD curl --fail http://localhost || exit 1

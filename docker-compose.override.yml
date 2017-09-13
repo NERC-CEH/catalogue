@@ -1,33 +1,18 @@
-version: '2'
+version: "2"
 services:
   web:
+    ports:
+      - "8080:8080"
     # Mount working directories for development
     volumes:
       - ./schemas:/opt/ceh-catalogue/schemas
       - ./templates:/opt/ceh-catalogue/templates
       - ./web/src:/opt/ceh-catalogue/web
-      - ./datastore:/var/ceh-catalogue/datastore
-      - ./dropbox:/var/ceh-catalogue/dropbox
-      
+      - ./java/build/libs:/opt/ceh-catalogue/libs
   solr:
     # Expose the solr port for development
     ports:
-      - 7000:8080
-
-  node:
-    image: node:6.2.0
-    working_dir: /web
-    # Store the node modules in a docker volume. This is important on windows
-    # as it means that modules which require symlinks do not touch NTFS
-    volumes:
-      - node_modules:/web/node_modules
-      - ./web/src:/web/src
-      - ./web/test:/web/test
-      - ./web/.bowerrc:/web/.bowerrc
-      - ./web/Gruntfile.coffee:/web/Gruntfile.coffee
-      - ./web/bower.json:/web/bower.json
-      - ./web/package.json:/web/package.json
-    command: sh -c "npm install; npm run develop"
+      - "7000:8080"
 
   mapserver:
     # Mount working directories for mapserver
@@ -36,7 +21,4 @@ services:
       - ./fixtures/mapserver-data:/mapserver/data
     # Expose mapserver port during development
     ports:
-      - 9000:80
-
-volumes:
-  node_modules: {}
+      - "9000:80"

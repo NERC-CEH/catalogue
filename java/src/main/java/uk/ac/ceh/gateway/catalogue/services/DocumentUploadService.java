@@ -5,24 +5,24 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.val;
-import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUpload.Type;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
-@Slf4j
 @AllArgsConstructor
 public class DocumentUploadService {
     private final File dropbox;
@@ -43,6 +43,7 @@ public class DocumentUploadService {
         String hash = DigestUtils.md5Hex(new FileInputStream(file));
 
         val documentUploadFile = new DocumentUploadFile();
+        documentUploadFile.addComment("added by service");
         documentUploadFile.setName(filename);
         documentUploadFile.setPath(file.getAbsolutePath());
         documentUploadFile.setFormat(FilenameUtils.getExtension(filename));
@@ -68,22 +69,20 @@ public class DocumentUploadService {
         save(documentUpload);
     }
 
-    public void changeFileType(String guid, String filename, DocumentUpload.Type type) throws IOException, DocumentRepositoryException {
+    public void changeFileType(String guid, String filename, Type type) throws IOException, DocumentRepositoryException {
         if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
         if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
 
         val documentUpload = get(guid);
-        if (type.equals(DocumentUpload.Type.META)) changeFileType(guid, filename, DocumentUpload.Type.DATA, DocumentUpload.Type.META, documentUpload);
-        else if (type.equals(DocumentUpload.Type.DATA)) changeFileType(guid, filename, DocumentUpload.Type.META, DocumentUpload.Type.DATA, documentUpload);
+        if (type.equals(Type.META)) changeFileType(guid, filename, Type.DATA, Type.META, documentUpload);
+        else if (type.equals(Type.DATA)) changeFileType(guid, filename, Type.META, Type.DATA, documentUpload);
         save(documentUpload);
     }
 
-    private void changeFileType(String guid, String filename, DocumentUpload.Type from, DocumentUpload.Type to, DocumentUpload documentUpload) throws IOException, DocumentRepositoryException {
-        DocumentUploadFile documentUploadFile = documentUpload.getFiles(from).get(filename);
-        if (null == documentUploadFile) documentUploadFile = documentUpload.getInvalid().get(filename);
+    private void changeFileType(String guid, String filename, Type from, Type to, DocumentUpload documentUpload) throws IOException, DocumentRepositoryException {
+        val documentUploadFile = documentUpload.getFiles(from).get(filename);
         if (null != documentUploadFile) {
             documentUploadFile.setType(to);
-            documentUpload.getInvalid().remove(filename);
             documentUpload.getFiles(from).remove(filename);
             documentUpload.getFiles(to).put(filename, documentUploadFile);
         }
@@ -97,7 +96,7 @@ public class DocumentUploadService {
         val documentUploadFile = documentUpload.getInvalid().get(filename);
         if (null != documentUploadFile) {
             documentUploadFile.addComment("accepted");
-            documentUploadFile.setType(DocumentUpload.Type.DATA);
+            documentUploadFile.setType(Type.DATA);
             documentUpload.getInvalid().remove(filename);
             documentUpload.getData().put(filename, documentUploadFile);
             save(documentUpload);
@@ -110,13 +109,137 @@ public class DocumentUploadService {
         val dataFile = createDataFile(guid);
         val mapper = new ObjectMapper();
         val documentUpload = mapper.readValue(dataFile, DocumentUpload.class);
-        validateFilesInFolder(documentUpload);
-        validateFilesFromData(documentUpload);
+        updateWithChecksumsFile(documentUpload);
+        updateKnownInvalidFiles(documentUpload);
+        updateFromDataAndMetaToInvalid(documentUpload);
         removeDuplicates(documentUpload);
-        autoFix(documentUpload, DocumentUpload.Type.DATA);
-        autoFix(documentUpload, DocumentUpload.Type.META);
+        autoFix(documentUpload, Type.DATA);
+        autoFix(documentUpload, Type.META);
         save(documentUpload);
         return documentUpload;
+    }
+
+    private static final Pattern regex = Pattern.compile("([a-f0-9]{32})\\ \\*(.*)");
+
+    private void updateWithChecksumsFile(DocumentUpload documentUpload) throws IOException {
+        val folder = new File(documentUpload.getPath());
+        val checksums = new File(folder, "checksums.hash");
+        
+        if (checksums.exists()) {
+            val lines = FileUtils.readLines(checksums);
+            for(val line : lines) {
+                val matches = regex.matcher(line);
+                if (matches.matches()) {
+                    val hash = matches.group(1);
+                    val name = matches.group(2);
+                    documentUpload.getData().remove(name);
+                    documentUpload.getMeta().remove(name);
+                    documentUpload.getInvalid().remove(name);
+
+                    val documentUploadFile = new DocumentUploadFile();
+                    documentUploadFile.addComment("added from checksums.hash");
+                    documentUploadFile.setName(name);
+                    documentUploadFile.setFormat(FilenameUtils.getExtension(name));
+                    documentUploadFile.setEncoding("utf-8");
+                    documentUploadFile.setHash(hash);
+
+                    val file = new File(folder, name);
+                    documentUploadFile.setPath(file.getAbsolutePath());
+                    documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
+                    documentUploadFile.setBytes(file.length());
+
+                    documentUpload.getData().put(name, documentUploadFile);
+                }
+            }
+        }
+    }
+
+    private void updateKnownInvalidFiles(DocumentUpload documentUpload) throws IOException {
+        val documentUploadFiles = documentUpload.getInvalid().values();
+        for(val documentUploadFile : documentUploadFiles) {
+            val name = documentUploadFile.getName();
+            val path = documentUploadFile.getPath();
+            val file = new File(path);
+            val exists = file.exists();
+            switch (Type.valueOf(documentUploadFile.getType())) {
+                case UNKNOWN_FILE:
+                case INVALID_HASH:
+                    if (!exists) {
+                        documentUploadFile.setType(Type.MISSING_FILE);
+                        documentUploadFile.addComment("File is missing");
+                        documentUpload.getInvalid().put(name, documentUploadFile);
+                    }
+                    break;
+                default:
+                    if (exists) {
+                        documentUploadFile.setType(Type.UNKNOWN_FILE);
+                        documentUploadFile.addComment("Uknown file");
+                        documentUpload.getInvalid().put(name, documentUploadFile);
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void updateFromDataAndMetaToInvalid(DocumentUpload documentUpload) throws IOException {
+        validateHashesAndMissingFiles(documentUpload);
+        validateUnknownFiles(documentUpload);
+    }
+
+    private void validateHashesAndMissingFiles(DocumentUpload documentUpload) throws IOException {
+        val documentUploadFiles = documentUpload.getFiles();
+        for(val documentUploadFile : documentUploadFiles) {
+            val path = documentUploadFile.getPath();
+            val file = new File(path);
+            if (!file.exists()) {
+                val name = documentUploadFile.getName();
+                val type = documentUploadFile.getType();
+                documentUpload.getFiles(type).remove(name);
+
+                documentUploadFile.setType(Type.MISSING_FILE);
+                documentUploadFile.addComment("File is missing");
+                documentUpload.getInvalid().put(name, documentUploadFile);
+            } else {
+                val hash = DigestUtils.md5Hex(new FileInputStream(file));
+                if (!documentUploadFile.getHash().equals(hash)) {
+                    val name = documentUploadFile.getName();
+                    val type = documentUploadFile.getType();
+                    documentUpload.getFiles(type).remove(name);
+
+                    documentUploadFile.setHash(hash);
+                    documentUploadFile.setType(Type.INVALID_HASH);
+                    documentUploadFile.addComment("File has changed");
+                    documentUpload.getInvalid().put(name, documentUploadFile);
+                }
+            }
+        }
+    }
+
+    private void validateUnknownFiles(DocumentUpload documentUpload) throws IOException {
+        val path = documentUpload.getPath();
+        val folder = new File(path);
+        val files = folder.listFiles(file -> !file.getName().equals("_data.json") && !file.getName().equals("checksums.hash"));
+        for(val file : files) {
+            val name = file.getName();
+            val inData = documentUpload.getData().containsKey(name);
+            val inMeta = documentUpload.getMeta().containsKey(name);
+            val alreadyInvalid = documentUpload.getInvalid().containsKey(name);
+            if (!inData && !inMeta && !alreadyInvalid) {
+                val documentUploadFile = new DocumentUploadFile();
+                documentUploadFile.setName(name);
+                documentUploadFile.setPath(file.getAbsolutePath());
+                documentUploadFile.setFormat(FilenameUtils.getExtension(name));
+                documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
+                documentUploadFile.setEncoding("utf-8");
+                documentUploadFile.setBytes(file.length());
+                val hash = DigestUtils.md5Hex(new FileInputStream(file));
+                documentUploadFile.setHash(hash);
+
+                documentUploadFile.setType(Type.UNKNOWN_FILE);
+                documentUploadFile.addComment("Unknown file");
+                documentUpload.getInvalid().put(name, documentUploadFile);
+            }
+        }
     }
 
     private void removeDuplicates(DocumentUpload documentUpload) {
@@ -128,7 +251,7 @@ public class DocumentUploadService {
         }
     }
 
-    private void autoFix(DocumentUpload documentUpload, DocumentUpload.Type type) throws IOException {
+    private void autoFix(DocumentUpload documentUpload, Type type) throws IOException {
         for (val entrySet : documentUpload.getFiles(type).entrySet()) {
             val name = entrySet.getKey();
             val documentUploadFile = entrySet.getValue();
@@ -140,65 +263,6 @@ public class DocumentUploadService {
             documentUploadFile.setBytes(file.length());
             documentUploadFile.setType(type);
             documentUploadFile.setPath(file.getAbsolutePath());
-        }
-    }
-
-    private void validateFilesFromData(DocumentUpload documentUpload) throws IOException {
-        documentUpload.getFiles().forEach(file -> {
-            if (!new File(file.getPath()).exists()) {
-                documentUpload.getFiles(file.getType()).remove(file.getName());
-                file.setType(DocumentUpload.Type.FILE_DOES_NOT_EXISTS);
-                file.addComment("The file is missing");
-                documentUpload.getInvalid().put(file.getName(), file);
-            }
-        });
-    }
-
-    private void validateFilesInFolder(DocumentUpload documentUpload) throws IOException {
-        val folder = new File(documentUpload.getPath());
-        val files = folder.listFiles();
-        for (val file : files) {
-            if (!file.getName().equals("_data.json")) {
-                String hash = DigestUtils.md5Hex(new FileInputStream(file));
-                String name = file.getName();
-
-                boolean inData = documentUpload.getData().containsKey(name);
-                boolean inMeta = documentUpload.getMeta().containsKey(name);
-                boolean notInEither = !inMeta && !inData;
-
-                if (notInEither) invalidateBoth(name, hash, documentUpload, DocumentUpload.Type.NOT_META_OR_DATA, "Unknown file exists in folder", file);
-                else if (inData) invalidateHash(name, hash, documentUpload, DocumentUpload.Type.DATA, "File's contents has changed");
-                else if (inMeta) invalidateHash(name, hash, documentUpload, DocumentUpload.Type.META, "File's contents has changed");
-            }
-        }
-    }
-
-    private void invalidateBoth(String name, String hash, DocumentUpload documentUpload,
-        DocumentUpload.Type type, String comment, File file) throws IOException {
-        documentUpload.getData().remove(name);
-        documentUpload.getMeta().remove(name);
-        val documentUploadFile = new DocumentUploadFile();
-        documentUploadFile.setName(name);
-        documentUploadFile.setPath(file.getAbsolutePath());
-        documentUploadFile.setFormat(FilenameUtils.getExtension(name));
-        documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
-        documentUploadFile.setEncoding("utf-8");
-        documentUploadFile.setBytes(file.length());
-        documentUploadFile.setHash(hash);
-        documentUploadFile.setType(type);
-        documentUploadFile.addComment(comment);
-        documentUpload.getInvalid().put(name, documentUploadFile);
-    }
-
-    private void invalidateHash(String name, String hash, DocumentUpload documentUpload, DocumentUpload.Type type, String comment) {
-        val files = documentUpload.getFiles(type);
-        DocumentUploadFile found = files.get(name);
-        if (!found.getHash().equals(hash)) {
-            files.remove(name);
-            found.setType(DocumentUpload.Type.INVALID_HASH);
-            found.addComment(comment);
-            found.setHash(hash);
-            documentUpload.getInvalid().put(name, found);
         }
     }
 
@@ -215,14 +279,27 @@ public class DocumentUploadService {
                 guid,
                 folder.getAbsolutePath()
             );
-            save(documentUpload);
+            saveJson(documentUpload);
         }
         return file;
     }
 
     private void save(DocumentUpload documentUpload) throws IOException {
-        val file = new File(documentUpload.getPath(), "_data.json");
+        saveJson(documentUpload);
+
+        val checksums = new File(documentUpload.getPath(), "checksums.hash");
+        val documentUploadFiles = documentUpload.getData()
+            .values()
+            .stream()
+            .map(documentUploadFile -> String.format("%s *%s", documentUploadFile.getHash(), documentUploadFile.getName()))
+            .collect(Collectors.toList());
+
+        FileUtils.writeLines(checksums, documentUploadFiles);
+    }
+
+    private void saveJson(DocumentUpload documentUpload) throws IOException {
+        val json = new File(documentUpload.getPath(), "_data.json");
         val mapper = new ObjectMapper();
-        mapper.writeValue(file, documentUpload);
+        mapper.writeValue(json, documentUpload);
     }
 }

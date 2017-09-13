@@ -1,14 +1,14 @@
-version: '2'
+version: "2"
 services:
   web:
     build: .
-    ports:
-      - "8080:8080"
     depends_on:
       - solr
       - mapserver
     volumes:
-      - ./mapfiles:/var/ceh-catalogue/mapfiles
+      - ./datastore:/var/ceh-catalogue/datastore
+      - ./dropbox:/var/ceh-catalogue/dropbox
+      - mapfiles:/var/ceh-catalogue/mapfiles
     environment:
       JIRA_ADDRESS: https://jira-test.nerc-lancaster.ac.uk/rest/api/2
       PLONE_ADDRESS: http://eidctest.ceh.ac.uk/administration-folder/eidc-data-inventory/adddatadeposit
@@ -21,4 +21,7 @@ services:
   mapserver:
     build: "mapserver"
     volumes:
-      - ./mapfiles:/mapserver/maps
+      - mapfiles:/mapserver/maps
+
+volumes:
+  mapfiles:

@@ -73,6 +73,6 @@ public class DocumentUpload {
     }
 
     public enum Type {
-        META, DATA, BOTH_META_AND_DATA, NOT_META_OR_DATA, INVALID_HASH, FILE_DOES_NOT_EXISTS
+        META, DATA, INVALID_HASH, MISSING_FILE, UNKNOWN_FILE
     }
 }

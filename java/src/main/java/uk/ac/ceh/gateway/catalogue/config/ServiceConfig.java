@@ -10,17 +10,6 @@ import freemarker.cache.FileTemplateLoader;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateModelException;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-import javax.xml.validation.Schema;
-import javax.xml.xpath.XPathExpressionException;
 import lombok.Data;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -42,61 +31,19 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.GroupStore;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
-import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
-import uk.ac.ceh.gateway.catalogue.ef.Activity;
-import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
-import uk.ac.ceh.gateway.catalogue.ef.Facility;
-import uk.ac.ceh.gateway.catalogue.ef.Network;
-import uk.ac.ceh.gateway.catalogue.ef.Programme;
+import uk.ac.ceh.gateway.catalogue.converters.*;
+import uk.ac.ceh.gateway.catalogue.ef.*;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
-import uk.ac.ceh.gateway.catalogue.indexing.AsyncDocumentIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.DataciteIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.ExtractTopicFromDocument;
-import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.IndexGeneratorRegistry;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexBaseMonitoringTypeGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexGeminiDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexLinkDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexBaseMonitoringTypeGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexFacilityGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.indexing.*;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.Citation;
-import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
-import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
-import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
-import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
-import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
@@ -144,6 +91,16 @@ import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
 
+import javax.xml.validation.Schema;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.regex.Pattern;
+
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
+
 /**
  * The following spring configuration will populate service beans
  * @author cjohn
@@ -169,7 +126,6 @@ public class ServiceConfig {
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
     @Autowired CodeLookupService codeLookupService;
-    @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
     @Autowired GroupStore<CatalogueUser> groupStore;
     @Autowired @Qualifier("gemini") Schema geminiSchema;
     
@@ -213,7 +169,47 @@ public class ServiceConfig {
             .title("Link")
             .type(LINK_DOCUMENT)
             .build();
-        
+
+        DocumentType agent = DocumentType.builder()
+            .title("Agent")
+            .type(OSDP_AGENT_SHORT)
+            .build();
+
+        DocumentType dataset = DocumentType.builder()
+            .title("Dataset")
+            .type(OSDP_DATASET_SHORT)
+            .build();
+
+        DocumentType model = DocumentType.builder()
+            .title("Model")
+            .type(OSDP_MODEL_SHORT)
+            .build();
+
+        DocumentType monitoringActivity = DocumentType.builder()
+            .title("Monitoring Activity")
+            .type(OSDP_MONITORING_ACTIVITY_SHORT)
+            .build();
+
+        DocumentType monitoringFacility = DocumentType.builder()
+            .title("Monitoring Facility")
+            .type(OSDP_MONITORING_FACILITY_SHORT)
+            .build();
+
+        DocumentType monitoringProgramme = DocumentType.builder()
+            .title("Monitoring Programme")
+            .type(OSDP_MONITORING_PROGRAMME_SHORT)
+            .build();
+
+        DocumentType publication = DocumentType.builder()
+            .title("Publication")
+            .type(OSDP_PUBLICATION_SHORT)
+            .build();
+
+        DocumentType sample = DocumentType.builder()
+            .title("Sample")
+            .type(OSDP_SAMPLE_SHORT)
+            .build();
+
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
             
@@ -221,6 +217,14 @@ public class ServiceConfig {
                 .id("osdp")
                 .title("Open Soils Data Platform")
                 .url("http://www.ceh.ac.uk")
+                .documentType(agent)
+                .documentType(dataset)
+                .documentType(model)
+                .documentType(monitoringActivity)
+                .documentType(monitoringFacility)
+                .documentType(monitoringProgramme)
+                .documentType(publication)
+                .documentType(sample)
                 .facetKey("resourceType")
                 .fileUpload(false)
                 .build(),
@@ -397,33 +401,43 @@ public class ServiceConfig {
         mappingJackson2HttpMessageConverter.setObjectMapper(jacksonMapper);
         
         // EF Message Converters  
-        converters.add(new Object2TemplatedMessageConverter(Activity.class,  freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(Facility.class,  freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(Network.class,   freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(Programme.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Activity.class,  freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Facility.class,  freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Network.class,   freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Programme.class, freemarkerConfiguration()));
         converters.add(new UkeofXml2EFDocumentMessageConverter());
         
         // IMP Message Converters
-        converters.add(new Object2TemplatedMessageConverter(Model.class,            freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(ModelApplication.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(CaseStudy.class,        freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Model.class,            freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(ModelApplication.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(CaseStudy.class,        freemarkerConfiguration()));
         
         // CEH model catalogue
-        converters.add(new Object2TemplatedMessageConverter(CehModel.class,             freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(CehModelApplication.class,  freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(CehModel.class,             freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(CehModelApplication.class,  freemarkerConfiguration()));
+
+        //OSDP
+        converters.add(new Object2TemplatedMessageConverter<>(Agent.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(uk.ac.ceh.gateway.catalogue.osdp.Dataset.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(uk.ac.ceh.gateway.catalogue.osdp.Model.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(MonitoringActivity.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(MonitoringFacility.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(MonitoringProgramme.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Publication.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration()));
         
         // Gemini Message Converters
-        converters.add(new Object2TemplatedMessageConverter(GeminiDocument.class,       freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(LinkDocument.class,         freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(SearchResults.class,        freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(Citation.class,             freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(StateResource.class,        freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(PermissionResource.class,   freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(CatalogueResource.class,    freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(MaintenanceResponse.class,  freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(SparqlResponse.class,       freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(ValidationResponse.class,   freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter(ErrorResponse.class,        freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(GeminiDocument.class,       freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(LinkDocument.class,         freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class,        freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(Citation.class,             freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(StateResource.class,        freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(PermissionResource.class,   freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(CatalogueResource.class,    freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(MaintenanceResponse.class,  freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(SparqlResponse.class,       freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(ValidationResponse.class,   freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(ErrorResponse.class,        freemarkerConfiguration()));
         converters.add(new TransparentProxyMessageConverter(httpClient()));
         converters.add(new ResourceHttpMessageConverter());
         converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
@@ -511,7 +525,15 @@ public class ServiceConfig {
                 .register(IMP_DOCUMENT, ImpDocument.class)
                 .register(LINK_DOCUMENT, LinkDocument.class)
                 .register(CEH_MODEL, CehModel.class)
-                .register(CEH_MODEL_APPLICATION, CehModelApplication.class);
+                .register(CEH_MODEL_APPLICATION, CehModelApplication.class)
+                .register(OSDP_AGENT_SHORT, Agent.class)
+                .register(OSDP_DATASET_SHORT, uk.ac.ceh.gateway.catalogue.osdp.Dataset.class)
+                .register(OSDP_MODEL_SHORT, uk.ac.ceh.gateway.catalogue.osdp.Model.class)
+                .register(OSDP_MONITORING_ACTIVITY_SHORT, MonitoringActivity.class)
+                .register(OSDP_MONITORING_FACILITY_SHORT, MonitoringFacility.class)
+                .register(OSDP_MONITORING_PROGRAMME_SHORT, MonitoringProgramme.class)
+                .register(OSDP_PUBLICATION_SHORT, Publication.class)
+                .register(OSDP_SAMPLE_SHORT, Sample.class);
     }
     
     @Bean
@@ -597,11 +619,12 @@ public class ServiceConfig {
         SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator(documentRepository());
         
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
-            .register(GeminiDocument.class,     new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
-            .register(Facility.class,           new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
+            .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
+            .register(Facility.class, new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
             .register(BaseMonitoringType.class, baseMonitoringType)
-            .register(LinkDocument.class,     solrIndexLinkDocumentGenerator)
-            .register(MetadataDocument.class,   metadataDocument);
+            .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
+            .register(MonitoringFacility.class, new SolrIndexOsdpMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
+            .register(MetadataDocument.class, metadataDocument);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry(mappings);
         
@@ -686,7 +709,7 @@ public class ServiceConfig {
                         html
                 )));
         
-        return new ValidationIndexingService(
+        return new ValidationIndexingService<MetadataDocument>(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
@@ -697,7 +720,7 @@ public class ServiceConfig {
     }
     
     //Perform an initial index of solr if their is no content inside
-    protected void performReindexIfNothingIsIndexed(DocumentIndexingService service) {
+    void performReindexIfNothingIsIndexed(DocumentIndexingService service) {
         try {
             if(service.isIndexEmpty()) {
                 service.rebuildIndex();

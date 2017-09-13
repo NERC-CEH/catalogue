@@ -29,6 +29,11 @@ public class DocumentUploadFile {
         return comments.stream().collect(Collectors.joining("\n"));
     }
 
+    @JsonIgnore
+    public String getLatestComment() {
+        return comments.get(comments.size() - 1);
+    }
+
     public void setType(String type) {
         this.type = type;
     }
