@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import uk.ac.ceh.gateway.catalogue.services.PloneDataDepositService;
 
 @Controller
 public class UploadController {
@@ -37,16 +38,18 @@ public class UploadController {
     private final JiraService jiraService;
     private final PermissionService permissionService;
     private final DocumentRepository documentRepository;
+    private final PloneDataDepositService ploneDataDepositService;
 
     private static final String START_PROGRESS = "751";
 
     @Autowired
     public UploadController(DocumentUploadService documentUploadService, JiraService jiraService,
-            PermissionService permissionService, DocumentRepository documentRepository) {
+            PermissionService permissionService, DocumentRepository documentRepository, PloneDataDepositService ploneDataDepositService) {
         this.documentUploadService = documentUploadService;
         this.jiraService = jiraService;
         this.permissionService = permissionService;
         this.documentRepository = documentRepository;
+        this.ploneDataDepositService = ploneDataDepositService;
     }
 
     private String getStatus(List<JiraIssue> issues) {
@@ -126,9 +129,10 @@ public class UploadController {
     @RequestMapping(value = "upload/{guid}/finish", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> finish(@ActiveUser CatalogueUser user, @PathVariable("guid") String guid)
-            throws DocumentRepositoryException {
+            throws DocumentRepositoryException, IOException {
         transitionIssueToStartProgress(user, guid);
         removeUploadPermission(user, guid);
+        ploneDataDepositService.addOrUpdate(documentUploadService.get(guid));
         val response = new HashMap<String, String>();
         response.put("message", "awaiting approval from admin");
         return response;

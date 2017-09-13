@@ -12,6 +12,7 @@ RUN echo 'CATALINA_OPTS="                                                       
  -Dsolr.server.documents.url=http://solr:8080/documents                              \
  -Duserstore.crowd.address=https://crowd.ceh.ac.uk/crowd/rest/usermanagement/latest  \
  -Djira.address=${JIRA_ADDRESS}                                                      \
+ -Dplone.address=${PLONE_ADDRESS}                                                      \
  -Duserstore.crowd.username=${CROWD_USERNAME}                                        \
  -Duserstore.crowd.password=${CROWD_PASSWORD}                                        \
  -Ddoi.prefix=10.5285/                                                               \
