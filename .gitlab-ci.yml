@@ -38,6 +38,8 @@ rspec:
   before_script:
     - echo JIRA_USERNAME=$JIRA_USERNAME > secrets.env
     - echo JIRA_PASSWORD=$JIRA_PASSWORD >> secrets.env
+    - echo PLONE_USERNAME=$PLONE_USERNAME >> secrets.env
+    - echo PLONE_PASSWORD=$PLONE_PASSWORD >> secrets.env
     - rm -rf datastore
     - mkdir datastore
     - cp fixtures/datastore/REV-1/* datastore
