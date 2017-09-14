@@ -57,7 +57,7 @@ public class DocumentUploadService {
 
         val documentUpload = get(guid);
         val file = new File(documentUpload.getPath(), filename);
-        if (file.exists()) file.delete();
+        if (file.exists()) FileUtils.forceDelete(file);
         documentUpload.getData().remove(filename);
         documentUpload.getMeta().remove(filename);
         documentUpload.getInvalid().remove(filename);
