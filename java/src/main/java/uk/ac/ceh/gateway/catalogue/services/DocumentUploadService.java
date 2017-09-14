@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.regex.Pattern;
@@ -12,7 +11,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -35,11 +33,9 @@ public class DocumentUploadService {
         delete(guid, filename);
 
         val documentUpload = get(guid);
-        val file = new File(documentUpload.getPath(), filename);
-        OutputStream out = Files.newOutputStream(file.toPath());
-        IOUtils.copy(input, out);
-        input.close();
-        out.close();
+        val folder = new File(documentUpload.getPath());
+        val file = new File(folder, filename);
+        FileUtils.copyInputStreamToFile(input, file);
 
         val documentUploadFile = new DocumentUploadFile();
         documentUploadFile.addComment("added by service");
