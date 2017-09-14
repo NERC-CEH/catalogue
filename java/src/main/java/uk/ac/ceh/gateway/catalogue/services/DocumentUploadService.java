@@ -37,7 +37,7 @@ public class DocumentUploadService {
         val documentUpload = get(guid);
         val file = new File(documentUpload.getPath(), filename);
         try(OutputStream out = Files.newOutputStream(file.toPath())) {
-            IOUtils.copyLarge(input, out);
+            IOUtils.copy(input, out);
             input.close();
         }
 
@@ -61,7 +61,7 @@ public class DocumentUploadService {
 
         val documentUpload = get(guid);
         val file = new File(documentUpload.getPath(), filename);
-        if (file.exists()) FileUtils.forceDelete(file);
+        if (file.exists()) file.delete();
         documentUpload.getData().remove(filename);
         documentUpload.getMeta().remove(filename);
         documentUpload.getInvalid().remove(filename);
@@ -266,7 +266,7 @@ public class DocumentUploadService {
 
     private File createDataFile(String guid) throws IOException, DocumentRepositoryException {
         val folder = new File(dropbox, guid);
-        FileUtils.forceMkdir(folder);
+        if (!folder.exists()) FileUtils.forceMkdir(folder);
 
         val file = new File(folder, "_data.json");
         if (!file.exists()) {
