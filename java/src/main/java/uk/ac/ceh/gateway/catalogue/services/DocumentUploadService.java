@@ -36,10 +36,10 @@ public class DocumentUploadService {
 
         val documentUpload = get(guid);
         val file = new File(documentUpload.getPath(), filename);
-        try(OutputStream out = Files.newOutputStream(file.toPath())) {
-            IOUtils.copy(input, out);
-            input.close();
-        }
+        OutputStream out = Files.newOutputStream(file.toPath());
+        IOUtils.copy(input, out);
+        input.close();
+        out.close();
 
         val documentUploadFile = new DocumentUploadFile();
         documentUploadFile.addComment("added by service");
@@ -302,9 +302,9 @@ public class DocumentUploadService {
     }
 
     private String hash(File file) throws IOException {
-        try(val input = new FileInputStream(file)) {
-            val hash = DigestUtils.md5Hex(new FileInputStream(file));
-            return hash;
-        }
+        val input = new FileInputStream(file);
+        val hash = DigestUtils.md5Hex(new FileInputStream(file));
+        input.close();
+        return hash;
     }
 }
