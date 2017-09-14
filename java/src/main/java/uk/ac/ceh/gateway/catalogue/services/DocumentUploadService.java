@@ -35,12 +35,11 @@ public class DocumentUploadService {
         delete(guid, filename);
 
         val documentUpload = get(guid);
-        File file = new File(documentUpload.getPath(), filename);
-        OutputStream out = Files.newOutputStream(file.toPath());
-        IOUtils.copyLarge(input, out);
-        input.close();
-        out.close();
-        String hash = DigestUtils.md5Hex(new FileInputStream(file));
+        val file = new File(documentUpload.getPath(), filename);
+        try(OutputStream out = Files.newOutputStream(file.toPath())) {
+            IOUtils.copyLarge(input, out);
+            input.close();
+        }
 
         val documentUploadFile = new DocumentUploadFile();
         documentUploadFile.addComment("added by service");
@@ -50,7 +49,7 @@ public class DocumentUploadService {
         documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
         documentUploadFile.setEncoding("utf-8");
         documentUploadFile.setBytes(file.length());
-        documentUploadFile.setHash(hash);
+        documentUploadFile.setHash(hash(file));
 
         documentUpload.getData().put(filename, documentUploadFile);
         save(documentUpload);
@@ -126,7 +125,7 @@ public class DocumentUploadService {
         val checksums = new File(folder, "checksums.hash");
         
         if (checksums.exists()) {
-            val lines = FileUtils.readLines(checksums);
+            val lines = FileUtils.readLines(checksums, Charset.defaultCharset());
             for(val line : lines) {
                 val matches = regex.matcher(line);
                 if (matches.matches()) {
@@ -200,7 +199,7 @@ public class DocumentUploadService {
                 documentUploadFile.addComment("File is missing");
                 documentUpload.getInvalid().put(name, documentUploadFile);
             } else {
-                val hash = DigestUtils.md5Hex(new FileInputStream(file));
+                val hash = hash(file);
                 if (!documentUploadFile.getHash().equals(hash)) {
                     val name = documentUploadFile.getName();
                     val type = documentUploadFile.getType();
@@ -232,8 +231,7 @@ public class DocumentUploadService {
                 documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
                 documentUploadFile.setEncoding("utf-8");
                 documentUploadFile.setBytes(file.length());
-                val hash = DigestUtils.md5Hex(new FileInputStream(file));
-                documentUploadFile.setHash(hash);
+                documentUploadFile.setHash(hash(file));
 
                 documentUploadFile.setType(Type.UNKNOWN_FILE);
                 documentUploadFile.addComment("Unknown file");
@@ -301,5 +299,12 @@ public class DocumentUploadService {
         val json = new File(documentUpload.getPath(), "_data.json");
         val mapper = new ObjectMapper();
         mapper.writeValue(json, documentUpload);
+    }
+
+    private String hash(File file) throws IOException {
+        try(val input = new FileInputStream(file)) {
+            val hash = DigestUtils.md5Hex(new FileInputStream(file));
+            return hash;
+        }
     }
 }
