@@ -299,7 +299,7 @@ public class DocumentUploadService {
 
     private String hash(File file) throws IOException {
         val input = new FileInputStream(file);
-        val hash = DigestUtils.md5Hex(new FileInputStream(file));
+        val hash = DigestUtils.md5Hex(input);
         input.close();
         return hash;
     }
