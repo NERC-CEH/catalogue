@@ -47,6 +47,7 @@ public class DocumentController extends AbstractDocumentController {
     ) {
         UriComponentsBuilder url = ServletUriComponentsBuilder
                                             .fromRequest(request)
+                                            .scheme("https")
                                             .replacePath("documents/{id}");
         RedirectView toReturn = new RedirectView(url.buildAndExpand(id).toUriString());
         toReturn.setStatusCode(HttpStatus.SEE_OTHER);

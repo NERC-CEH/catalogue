@@ -54,7 +54,7 @@ public class DocumentControllerTest {
         RedirectView view = controller.redirectToResource(id, request);
         
         //Then
-        assertThat(view.getUrl(), equalTo("http://hostname/documents/M3tADATA_ID?query=string"));
+        assertThat(view.getUrl(), equalTo("https://hostname/documents/M3tADATA_ID?query=string"));
     }
      
     @Test
