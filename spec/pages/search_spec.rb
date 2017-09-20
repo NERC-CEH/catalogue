@@ -9,7 +9,7 @@ describe "Search page" do
       expect(page).not_to have_content results
     end
 
-    it 'should update results when going to next page' do
+    xit 'should update results when going to next page' do
       visit "/eidc/documents?rows=2"
       results = first('.result').text
       click_on 'Next'
