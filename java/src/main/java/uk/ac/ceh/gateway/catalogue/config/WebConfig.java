@@ -42,8 +42,12 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String BIBTEX_VALUE                 = "application/x-bibtex";
     public static final String GEMINI_XML_SHORT             = "gemini";
     public static final String GEMINI_XML_VALUE             = "application/x-gemini+xml";
-    public static final String RDF_XML_SHORT                = "rdfxml";
-    public static final String RDF_XML_VALUE                = "application/rdf+xml";
+//    public static final String RDF_XML_SHORT                = "rdfxml";
+//    public static final String RDF_XML_VALUE                = "application/rdf+xml";
+    public static final String RDF_TTL_SHORT                = "ttl";
+    public static final String RDF_TTL_VALUE                = "text/turtle";
+    public static final String RDF_SCHEMAORG_SHORT          = "schema.org";
+    public static final String RDF_SCHEMAORG_VALUE          = "application/ld+json";
     public static final String RESEARCH_INFO_SYSTEMS_SHORT  = "ris";
     public static final String RESEARCH_INFO_SYSTEMS_VALUE  = "application/x-research-info-systems";
     public static final String DATACITE_XML_VALUE           = "application/x-datacite+xml";
@@ -131,7 +135,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(GEMINI_XML_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
                         .put(UKEOF_XML_SHORT, MediaType.parseMediaType(UKEOF_XML_VALUE))
                         .put(EF_INSPIRE_XML_SHORT, MediaType.parseMediaType(EF_INSPIRE_XML_VALUE))
-                        .put(RDF_XML_SHORT, MediaType.parseMediaType(RDF_XML_VALUE))
+                        //.put(RDF_XML_SHORT, MediaType.parseMediaType(RDF_XML_VALUE))
+                        .put(RDF_TTL_SHORT, MediaType.parseMediaType(RDF_TTL_VALUE))
+                        .put(RDF_SCHEMAORG_SHORT, MediaType.parseMediaType(RDF_SCHEMAORG_VALUE))
                         .put(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
                         .put(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE))
                         .put(CEH_MODEL_SHORT, MediaType.parseMediaType(CEH_MODEL_JSON_VALUE))

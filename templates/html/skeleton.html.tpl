@@ -10,7 +10,7 @@
     <title>${title?html}<#if catalogue?has_content> - ${catalogue.title?html}</#if></title>
     <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id?html}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
     <#if rdf?has_content>
-      <link rel="meta" type="application/rdf+xml" href="${rdf}"/>
+      <link rel="meta" type="text/turtle" href="${rdf}"/>
     </#if>
 
   <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
