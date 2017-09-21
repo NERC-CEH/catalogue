@@ -23,7 +23,7 @@ public class PloneDataDepositService {
         ClientResponse response = ploneWebResource
                 .queryParam("fileIdentifier", URLEncoder.encode(du.getGuid()))
                 .queryParam("title", du.getTitle())
-                .queryParam("location", URLEncoder.encode(du.getPath()))
+                .queryParam("location", URLEncoder.encode("\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\eidchub\\"))
                 .queryParam("files", String.join(",", files))
                 .accept(MediaType.TEXT_PLAIN)
                 .get(ClientResponse.class);
