@@ -4,13 +4,13 @@ DCT = RDF::Vocabulary.new("http://purl.org/dc/terms/")
 
 describe "Metadata RDF properties" do
   let(:graph) {
-    RDF::Graph.load("#{APP_HOST}/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3?format=rdfxml", :format => :rdfxml, :verify_none => true)
+    RDF::Graph.load("#{APP_HOST}/documents/1e7d5e08-9e24-471b-ae37-49b477f695e3?format=ttl", :format => :ttl, :verify_none => true)
   }
 
   let(:subject) { RDF::URI.new('https://catalogue.ceh.ac.uk/id/1e7d5e08-9e24-471b-ae37-49b477f695e3') }
 
-  it "should have dc:title" do
-    title = graph.first([subject, RDF::DC.title, nil])
+  it "should have dct:title" do
+    title = graph.first([subject, RDF::DCT.title, nil])
     expect(title.object).to eq 'Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland)'
   end
 
@@ -19,9 +19,9 @@ describe "Metadata RDF properties" do
     expect(type.object).to eq RDF::URI.new('http://purl.org/dc/dcmitype/Dataset')
   end
 
-  it "should have dc:abstract" do
-    abstract = graph.first_literal([subject, DCT.description, nil])
-    expect(abstract.value).to include 'parcel-based thematic'
+  it "should have dct:description" do
+    description = graph.first_literal([subject, DCT.description, nil])
+    expect(description.value).to include 'parcel-based thematic'
   end
 
   it "should have one dcat:distribution" do
@@ -46,8 +46,7 @@ describe "Metadata RDF properties" do
 
     it "should have rights" do
       rights = graph.query [distribution, DCT.rights, nil]
-      expect(rights.count).to be 3
-      expect(rights.has_object? RDF::Literal.new('If you reuse this data, you must cite: Morton, R.D., Rowland, C., Wood, C., Meek, L., Marston, G., Smith, G., Wadsworth, R., Simpson, I. (2011). Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland). NERC Environmental Information Data Centre 10.5285/1e7d5e08-9e24-471b-ae37-49b477f695e3')).to be true
+      expect(rights.count).to be 1
       expect(rights.has_object? RDF::URI.new('http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain')).to be true
     end
   end
@@ -71,16 +70,17 @@ describe "Metadata RDF properties" do
     expect(temporal.datatype).to eq RDF::DC.PeriodOfTime
   end
 
-  it "should have two subjects" do
+  it "should have four subjects" do
     subjects = graph.query [subject, DCT.subject, nil]
-    expect(subjects.count).to be 2
-    expect(subjects.has_object? RDF::URI.new('http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment')).to be true
-    expect(subjects.has_object? RDF::URI.new('http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/imageryBaseMapsEarthCover')).to be true
+    expect(subjects.count).to be 4
+    expect(subjects.has_object? RDF::URI.new('http://onto.nerc.ac.uk/CEHMD/topic/11')).to be true
   end
 
   it "should have dc:identifier property" do
-    id = graph.first([subject, DCT.identifier, nil])
-    expect(id.object).to eq 'CEH:EIDC:1300193660704'
+    id = graph.query([subject, DCT.identifier, nil])
+    #expect(id.object).to eq 'CEH:EIDC:1300193660704'
+    expect(id.has_object? RDF::URI.new('https://catalogue.ceh.ac.uk/id/1e7d5e08-9e24-471b-ae37-49b477f695e3')).to be true
+    
   end
 
   describe "dc:publisher" do

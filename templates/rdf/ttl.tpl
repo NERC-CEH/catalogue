@@ -79,6 +79,21 @@
    dct:isPartOf <https://catalogue.ceh.ac.uk/id/${parentIdentifier}> ;
   </#if>
 
+  <#-- Subjects -->
+  <#if descriptiveKeywords?has_content>
+  dct:subject 
+    <#list descriptiveKeywords as descriptiveKeyword>
+    <#list descriptiveKeyword.keywords as keyword>
+      <#if keyword.uri?has_content>
+        <${keyword.uri}><#sep>,
+      <#else>
+        "${keyword.value}"<#sep>,
+      </#if>
+    </#list><#sep>,
+    </#list>
+  ;
+  </#if>
+
   <#if type=='dataset' || type=='nonGeographicDataset'>
     <#include "turtle/_dataset.tpl">
   <#elseif type=='aggregate'|| type=='collection'|| type=='series'>

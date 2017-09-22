@@ -52,7 +52,8 @@ dct:type <http://purl.org/dc/dcmitype/Dataset> ;
     </#list><#sep>,
   </#list>
   ;
-</#if> 
+</#if>
+
 <#-- Keywords -->
 <#if descriptiveKeywords?has_content>
   dcat:keyword 
