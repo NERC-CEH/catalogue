@@ -86,13 +86,13 @@ describe "Metadata RDF properties" do
   describe "dc:publisher" do
     let(:publisher) {graph.first([subject, RDF::DC.publisher, nil]).object}
 
-    it "has vcard organization-name" do
-      name = graph.first_literal([publisher, RDF::VCARD['organization-name'], nil ])
+    it "has vcard:fn" do
+      name = graph.first_literal([publisher, RDF::VCARD['fn'], nil ])
       expect(name.value).to include 'NERC Environmental Information Data Centre'
     end
     
-    it "has vcard email" do
-      name = graph.first_literal([publisher, RDF::VCARD['email'], nil ])
+    it "has vcard:hasEmail" do
+      name = graph.first_literal([publisher, RDF::VCARD['hasEmail'], nil ])
       expect(name.value).to include 'eidc@ceh.ac.uk'
     end
   end
