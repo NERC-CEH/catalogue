@@ -32,14 +32,18 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <#if catalogue?has_content>
+          <#if catalogue?has_content>
+            <#if catalogue.id == "eidc">
               <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Find data</a></li>
+              <li><a href="http://eidc.ceh.ac.uk/deposit">Deposit data</a></li>
+              <li><a href="http://eidc.ceh.ac.uk/support">Support</a></li>
+              <li><a href="http://eidc.ceh.ac.uk/about">About</a></li>
+              <li><a href="http://eidc.ceh.ac.uk/contact-info">Contact us</a></li>
+              <li><a href="http://eidc.ceh.ac.uk/help">Help</a></li>
+            <#else>
+              <li><a href="${catalogue.url!'/'?html}">${catalogue.title?html}</a></li>
             </#if>
-            <li><a href="http://eidc.ceh.ac.uk/deposit">Deposit data</a></li>
-            <li><a href="http://eidc.ceh.ac.uk/support">Support</a></li>
-            <li><a href="http://eidc.ceh.ac.uk/about">About</a></li>
-            <li><a href="http://eidc.ceh.ac.uk/contact-info">Contact us</a></li>
-            <li><a href="http://eidc.ceh.ac.uk/help">Help</a></li>
+          </#if>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>

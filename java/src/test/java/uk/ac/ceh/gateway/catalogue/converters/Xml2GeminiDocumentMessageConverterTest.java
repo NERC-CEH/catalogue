@@ -426,21 +426,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertThat("Expected standard version equal to actual", document.getMetadataStandardVersion(), equalTo(expectedVersion));
     }
     
-    //@Test
-    //public void canGetSupplementalInfo() throws IOException {
-        
-        //Given
-        //HttpInputMessage message = mock(HttpInputMessage.class);
-        //when(message.getBody()).thenReturn(getClass().getResourceAsStream("supplementalInfo.xml"));
-        //String expected = "is this supplemental";
-        
-        //When
-        //GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
-        //Then
-        //assertThat("Expected supplemental info to equal actual", document.getSupplementalInfo(), equalTo(expected));
-    //}
-    
     @Test
     public void canGetLineage() throws IOException {
         
