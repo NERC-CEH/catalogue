@@ -6,7 +6,7 @@
     <#else>
       <a href="${uri}.xml?format=gemini" class="label label-default">ISO 19115 (XML)</a>
     </#if>
-    <a href="${uri}.rdf?format=rdfxml" class="label label-default">RDF-XML</a>
+    <a href="${uri}?format=ttl" class="label label-default">RDF (Turtle)</a>
   </#if>
   <a href="${uri}?format=json" class="label label-default">json</a>
 </p>

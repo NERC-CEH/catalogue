@@ -21,7 +21,8 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_XML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_TTL_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_SCHEMAORG_VALUE;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
 /**
@@ -35,7 +36,8 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 @ConvertUsing({
     @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=GEMINI_XML_VALUE),
-    @Template(called="rdf/gemini.xml.tpl",   whenRequestedAs=RDF_XML_VALUE)
+    @Template(called="rdf/ttl.tpl",   whenRequestedAs=RDF_TTL_VALUE),
+    @Template(called="schema.org/schema.org.tpl",   whenRequestedAs=RDF_SCHEMAORG_VALUE)
 })
 public class GeminiDocument extends AbstractMetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
