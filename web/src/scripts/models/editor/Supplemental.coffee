@@ -15,10 +15,10 @@ define [
 
     errors = []
 
-    if !isValidUrl attrs.url
+    if attrs.url && !isValidUrl attrs.url
       errors.push
         message:
-          "That url isn't right. How long have you been using the web?"
+          "Are you sure that web address is correct?"
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

@@ -1,4 +1,5 @@
-<div class="row validation">
-  <h4 class="label label-warning">Validation Warnings</h4>
-  <ul class="text-warning"></ul>
+<div class="alert alert-danger validation">
+  <h4><b>UH OH! Something's not right</b></h4>
+  <div class="warnings text-danger">
+  </div>
 </div>

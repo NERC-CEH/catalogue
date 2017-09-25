@@ -15,7 +15,7 @@ define [
         model: model
         ModelType: TopicCategory
         modelAttribute: 'topicCategories'
-        label: 'Topic Categories'
+        label: 'Topic categories'
         ObjectInputView: TopicCategoryView
         helpText: """
                   <p>Help</p>

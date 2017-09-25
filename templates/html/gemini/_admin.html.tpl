@@ -45,17 +45,21 @@
           </div>
         </#if>
       </div>
+      <div class="mintDOI">
       <#if dataciteMintable && metadata.documentType != 'LINK_DOCUMENT'>
-        <div class="mintDOI">
         <#if permission.userCanDatacite()>
           <form action="/documents/${id?html}/datacite" method="POST">
-            <input type="submit" class="btn" value="Generate DOI">
+              <button type="submit" class="btn btn-danger" value="Mint DOI">Mint DOI</button>
           </form>
         <#else>
-          <div class="alert alert-info"><i class="fa fa-check"></i> Resource is citable</div>
+          <div class="alert alert-info"><i class="fa fa-check"></i> There is enough information to assign a DOI to this resource</div>
         </#if>
-        </div>
+      <#else>
+        <#if !datacitable >
+          <div class="alert alert-danger"><i class="fa fa-exclamation"></i> There is insufficient metadata to assign a DOI to this resource</div>
+        </#if>
       </#if>
+      </div>
     </div>
   </div>
 </#if>

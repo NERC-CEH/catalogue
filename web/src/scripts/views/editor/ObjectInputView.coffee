@@ -18,10 +18,10 @@ define [
         $validation.hide()
       else
         $validation.show()
-        $validationList = $('ul', $validation)
+        $validationList = $('div.warnings', $validation)
         $validationList.html ''
         _.each model.validationError, (error) ->
-          $validationList.append $("<li>#{error.message}</li>")
+          $validationList.append $("<p>#{error.message}</p>")
     do @render
 
   render: ->

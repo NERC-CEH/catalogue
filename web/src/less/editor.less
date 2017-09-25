@@ -17,12 +17,13 @@
   .editor-input {
     .form-control;
     .input-sm;
+    color:#000;
   }
-
   .editor-textarea {
     .form-control;
     .input-sm;
     height: auto;
+    color:#000;
   }
 
   .editor-button {
@@ -41,17 +42,21 @@
   }
 
   .component  {
+    border-bottom: 1px solid lighten(@gray-light, 25%);
+    padding-bottom:1.25em;
     .form-group;
     display: none;
     &.visible {
       display: block;
     }
+    .component  {
     border-style: solid;
-    border-width: 2px;
+    border-width: 1px;
     border-color: lighten(@gray-light, 15%);
     border-radius: 5px;
-    padding: 9px;
-    margin-bottom: 9px;
+    padding: 0.5em;
+    margin-bottom: 1.25em;
+    }
     .row {
       @spacer: 3px;
       margin-bottom: @spacer;
@@ -65,7 +70,7 @@
   }
   .multiline .existing > .row {
     border-style: solid;
-    border-width: 2px;
+    border-width: 1px;
     border-color: lighten(@gray-light, 15%);
     border-radius: 5px;
     padding: 4px;
@@ -73,6 +78,13 @@
   .dropdown {
     .pull-right;
     display: inline-block;
+  }
+  .keywords {
+    margin-top:1em;
+  }
+  .keyword-add {
+    display: inline-block;
+    .pull-left;
   }
   .dropdown-menu.predefined {
     margin-bottom: 70px;
@@ -82,4 +94,17 @@
   .validation {
     display: none;
   }
+
+  .ui-sortable, .ui-sortable-handle {
+    cursor: move;
+  }
+
+}
+
+.form-control {
+  &[readonly],
+  &[disabled] { 
+    background-color: lighten(@gray-light, 30%);
+    color: @gray;
+  };
 }

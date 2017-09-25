@@ -11,8 +11,12 @@
     <#if author.individualName?has_content>
     <creator>
       <creatorName>${author.individualName}</creatorName>
-      <#if author.orcid?has_content>
-      <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/">${author.orcid}</nameIdentifier>
+      <#if author.nameIdentifier?has_content>
+        <#if author.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+          <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${author.nameIdentifier}</nameIdentifier>
+        <#elseif author.nameIdentifier?matches("^http://isni.org/\\d{16}$")>
+          <nameIdentifier nameIdentifierScheme="ISNI" schemeURI="http://isni.org/">${author.nameIdentifier}</nameIdentifier>
+        </#if>
       </#if>
       <#if author.organisationName?has_content>
       <affiliation>${author.organisationName}</affiliation>
@@ -45,6 +49,12 @@
   <dates>
     <#setting date_format = 'yyyy-MM-dd'>
     <date dateType="Submitted">${doc.datasetReferenceDate.publicationDate}</date>
+    <#if doc.datasetReferenceDate.creationDate?has_content>
+      <date dateType="Created">${doc.datasetReferenceDate.creationDate}</date>
+    </#if>
+    <#if doc.datasetReferenceDate.releasedDate?has_content>
+      <date dateType="Available">${doc.datasetReferenceDate.releasedDate}</date>
+    </#if>
   </dates>
   <language>en</language>
   <#if resourceType?has_content>
@@ -71,7 +81,11 @@
   <#if doc.distributionFormats?has_content>
   <formats>
     <#list doc.distributionFormats as format>
-    <format>${format.name}</format>
+    <#if format.type??>
+      <format>${format.type}</format>
+    <#else>
+      <format>${format.name}</format>
+    </#if>
     </#list>
   </formats>
   </#if>
@@ -105,6 +119,28 @@
     </geoLocation>
     </#list>
   </geoLocations>
+  </#if>
+  <#if doc.funding?has_content>
+  <fundingReferences>
+  <#list doc.funding as funder>
+    <fundingReference>
+      <funderName>${funder.funderName}</funderName>
+      <#if funder.funderIdentifier?has_content>
+         <#if funder.funderIdentifier?matches("^http(|s)://(|dx.)doi.org/10.13039/\\d+$")>
+            <funderIdentifier funderIdentifierType="Crossref Funder ID">${funder.funderIdentifier}</funderIdentifier>
+         <#elseif funder.funderIdentifier?matches("^(|http(|s)://grid.ac/institutes/)grid.[\\w.]+$")>
+            <funderIdentifier funderIdentifierType="GRID">${funder.funderIdentifier}</funderIdentifier>
+         </#if>
+      </#if>
+      <#if funder.awardNumber?has_content>
+        <awardNumber>${funder.awardNumber}</awardNumber>
+      </#if>
+      <#if funder.awardTitle?has_content>
+        <awardTitle>${funder.awardTitle}</awardTitle>
+      </#if>
+    </fundingReference>
+  </#list>
+  </fundingReferences>
   </#if>
 </resource>
 </#escape>

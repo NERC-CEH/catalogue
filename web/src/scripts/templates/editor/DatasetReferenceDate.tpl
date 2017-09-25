@@ -1,20 +1,24 @@
-<div class="row">
-  <div class="col-sm-2 col-lg-2">
-    <label for="input-creationDate">Creation Date</label>
+  <div class="col-md-1">
+    <label for="input-creationDate">Created</label><br>
   </div>
-  <div class="col-sm-2 col-lg-2">
+  <div class="col-md-2">
     <input data-name="creationDate" id="input-creationDate" class="editor-input" value="<%= data.creationDate %>">
   </div>
-  <div class="col-sm-2 col-lg-2">
-    <label for="input-publicationDate">Publication Date</label>
+  <div class="col-md-1">
+    <label for="input-publicationDate">Published</label><br>
   </div>
-  <div class="col-sm-2 col-lg-2">
+  <div class="col-md-2">
     <input data-name="publicationDate" id="input-publicationDate" class="editor-input" value="<%= data.publicationDate %>">
   </div>
-  <div class="col-sm-2 col-lg-2">
-    <label for="input-revisionDate">Revision Date</label>
+  <div class="col-md-1">
+    <label for="input-releasedDate">Released</label><br>
   </div>
-  <div class="col-sm-2 col-lg-2">
-    <input data-name="revisionDate" id="input-revisionDate" class="editor-input" value="<%= data.revisionDate %>">
+  <div class="col-md-2">
+    <input data-name="releasedDate" id="input-releasedDate" class="editor-input" value="<%= data.releasedDate %>">
   </div>
-</div>
+  <div class="col-md-1">
+    <label for="input-supersededDate">Superseded</label><br>
+  </div>
+  <div class="col-md-2">
+    <input data-name="supersededDate" id="input-supersededDate" class="editor-input" value="<%= data.supersededDate %>">
+  </div>

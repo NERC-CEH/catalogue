@@ -9,15 +9,18 @@
 </div>
 <% _.each(results, function(result) { %>
   <div class="result" id="<%=result.identifier%>">
-    <h2>
-      <a href="/documents/<%=result.identifier%>" class="title"><%=result.title%></a>
+    <h2 class="resultTitle">
+      <small>
+      <span><%=result.resourceType%></span>
       <% if(result.state == 'draft') { %>
-        <small> - Draft</small>
+        <span class="text-danger"><b>DRAFT</b></span>
       <% } else if(result.state == 'pending') { %>
-        <small> - Pending Publication</small>
+        <span class="text-danger"><b>PENDING PUBLICATION</b></span>
       <% } %>
+      </small><br>
+      <a href="/documents/<%=result.identifier%>" class="title"><%=result.title%></a>
     </h2>
-    <div class="description"><%=result.shortenedDescription%></div>
+    <div class="resultDescription"><%=result.shortenedDescription%></div>
   </div>
 <% }); %>
 <ul class="pager">

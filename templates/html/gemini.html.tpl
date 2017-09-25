@@ -4,6 +4,14 @@
 
 <#assign authors       = _.filter(responsibleParties, _.isAuthor) >
 <#assign otherContacts = _.reject(responsibleParties, _.isAuthor) >
+<#macro getLabel val array>
+  <#list array as item>
+    <#if item['value']==val>
+      ${item['label']}
+      <#break/>
+    </#if>
+  </#list>
+</#macro>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=ttl">
   <div id="metadata">
    <div class="container">
@@ -28,7 +36,7 @@
         </div>
         <div class="col-sm-8 col-sm-pull-4">
           <#include "gemini/_extent.html.tpl">
-          <#include "gemini/_onlineResources.html.tpl">
+          <#include "gemini/_supplemental.html.tpl">
           <#include "gemini/_quality.html.tpl">
 
           <#include "gemini/_authors.html.tpl">

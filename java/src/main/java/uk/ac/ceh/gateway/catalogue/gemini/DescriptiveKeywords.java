@@ -12,18 +12,16 @@ import lombok.Value;
 public class DescriptiveKeywords {
     private final List<Keyword> keywords;
     private final String type;
-    private final ThesaurusName thesaurusName;
     
     @Builder
     @JsonCreator
     private DescriptiveKeywords(@JsonProperty("keywords") List<Keyword> keywords,
-        @JsonProperty("type") String type, @JsonProperty("thesaurusName") ThesaurusName thesaurusName) {
+        @JsonProperty("type") String type) {
         if (keywords == null) {
             this.keywords = Collections.EMPTY_LIST;
         } else {
             this.keywords = keywords;
         }
         this.type = nullToEmpty(type);
-        this.thesaurusName = (thesaurusName == null || thesaurusName.isEmpty())? null : thesaurusName;
     }
 }

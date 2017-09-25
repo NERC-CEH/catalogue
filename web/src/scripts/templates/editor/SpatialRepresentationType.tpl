@@ -4,10 +4,10 @@
       <option value="">- Select Spatial Representation Type -</option>
       <option value="grid">Raster (grid)</option>
       <option value="stereoModel">stereoModel (a three-dimensional view formed by overlapping pairs of images)</option>
-      <option value="textTable">Tabular data (for example, a spreadsheet)</option>
+      <option value="textTable">Tabular data (e.g. a spreadsheet)</option>
       <option value="tin">Triangular Irregular Network</option>
-      <option value="Vector">vector</option>
-      <option value="Video">video</option>
+      <option value="vector">Vector (e.g. Shape file)</option>
+      <option value="video">Video</option>
     </select>
   </div>
   <div class="col-sm-1 col-lg-1">

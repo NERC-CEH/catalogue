@@ -3,7 +3,7 @@
   <dl id="keywords" class="dl-horizontal">
 
     <#if topicCategories?has_content>
-    <dt>Topic Categories</dt>
+    <dt>Topic categories</dt>
     <dd>
       <#list topicCategories as topic>
         <#if topic.uri?has_content>
@@ -17,39 +17,29 @@
     </#if>
 
     <#if descriptiveKeywords?has_content>
-      <!--INSPIRE Theme(s)-->
-      <#list descriptiveKeywords as descriptiveKeyword>
-        <#if descriptiveKeyword.thesaurusName?? && descriptiveKeyword.thesaurusName.title == 'GEMET - INSPIRE themes, version 1.0'>
-          <dt>INSPIRE Theme</dt>
-          <dd>
-            <#list descriptiveKeyword.keywords as keyword>
-              <#if keyword.uri?has_content>
-                <a href="${keyword.uri?html}" target="_blank">${keyword.value?html}</a>
-              <#else>
-                <span>${keyword.value?html}</span>
-              </#if>
-              <#if keyword_has_next><br></#if>
-            </#list>
-          </dd>
-        </#if>
-      </#list>
-
       <#list descriptiveKeywords?sort_by("type") as descriptiveKeyword>
-        <#if (descriptiveKeyword.thesaurusName?? && descriptiveKeyword.thesaurusName.title != 'GEMET - INSPIRE themes, version 1.0') || ( !descriptiveKeyword.thesaurusName??)>
-          <dt>
-            <#if descriptiveKeyword.type?? && descriptiveKeyword.type?has_content>${descriptiveKeyword.type?cap_first?html}<#else>Other</#if> keywords
-          </dt>
-          <dd class="descriptive-keywords">
-            <#list descriptiveKeyword.keywords as keyword>
-              <#if keyword.uri?has_content>
-                <a href="${keyword.uri?html}" target="_blank">${keyword.value?html}</a>
-              <#else>
-                <span>${keyword.value?html}</span>
-              </#if>
-              <#if keyword_has_next><br></#if>
-            </#list>
-          </dd>
+        <#if descriptiveKeyword.type?has_content>
+          <#if descriptiveKeyword.type == 'INSPIRE Theme' ||  descriptiveKeyword.type == 'CEH Topic'>
+            <#assign keywordtype = descriptiveKeyword.type >
+          <#else>
+            <#assign keywordtype = descriptiveKeyword.type + ' keywords' >
+          </#if>
+        <#else>
+            <#assign keywordtype = 'Other keywords' >
         </#if>
+        <dt>
+          ${keywordtype?cap_first}
+        </dt>
+        <dd class="descriptive-keywords">
+          <#list descriptiveKeyword.keywords as keyword>
+            <#if keyword.uri?has_content>
+              <a href="${keyword.uri?html}" target="_blank">${keyword.value?html}</a>
+            <#else>
+              <span>${keyword.value?html}</span>
+            </#if>
+            <#if keyword_has_next><br></#if>
+          </#list>
+        </dd>
       </#list>
     </#if>
   </dl>

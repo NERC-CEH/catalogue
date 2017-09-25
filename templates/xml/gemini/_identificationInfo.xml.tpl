@@ -147,6 +147,7 @@
         </gmd:resourceMaintenance>
       </#list>
     </#if>
+		<#include "_INSPIREkeywords.xml.tpl">
 		<#include "_descriptiveKeywords.xml.tpl">
 		<#include "_resourceConstraints.xml.tpl">
 		<#if spatialRepresentationTypes?has_content>
@@ -175,7 +176,7 @@
 			 <gmd:spatialResolution>
 				<gmd:MD_Resolution>
 				   <gmd:distance>
-					  <gco:Distance uom="${spatialResolution.uom}">${spatialResolution.distance}</gco:Distance>
+					  <gco:Distance uom="urn:ogc:def:uom:EPSG::9001">${spatialResolution.distance}</gco:Distance>
 				   </gmd:distance>
 				</gmd:MD_Resolution>
 			 </gmd:spatialResolution>

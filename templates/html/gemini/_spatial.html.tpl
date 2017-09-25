@@ -6,14 +6,15 @@
         <dt>Spatial representation type</dt>
         <dd>
           <#list spatialRepresentationTypes as spatialRepresentationType>
-            ${spatialRepresentationType?html}
+            <#assign srLabels=[{"value":"grid", "label":"Raster"},{"value":"stereoModel", "label":"Stereo model"},{"value":"textTable", "label":"Tabular (text)"},{"value":"tin", "label":"Triangular irregular network"},{"value":"video", "label":"Video"},{"value":"vector", "label":"Vector"}]>
+            <@getLabel val= spatialRepresentationType array=srLabels/>
             <#if spatialRepresentationType_has_next><br></#if>
           </#list>
         </dd>
       </#if>
 
       <#if spatialReferenceSystems?has_content>
-        <dt>Spatial Reference System</dt>
+        <dt>Spatial reference system</dt>
         <dd>
           <#list spatialReferenceSystems as spatialReferenceSystem>
             ${spatialReferenceSystem.title!(spatialReferenceSystem.reference)?html}

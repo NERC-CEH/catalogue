@@ -15,10 +15,15 @@ define [
 
     errors = []
 
-    if !isValidUrl attrs.url
+    if ! attrs.funderName
       errors.push
         message:
-          "That url isn't right. How long have you been using the web?"
+          "Funding body is mandatory"
+
+    if attrs.awardURI && !isValidUrl attrs.awardURI
+      errors.push
+        message:
+          "That URL isn't right now is it?"
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate
