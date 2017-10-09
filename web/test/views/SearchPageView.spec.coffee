@@ -32,8 +32,8 @@ define [
     it "can populate the model from the dom", ->
       result = $('''
         <div class="result" id="27" data-location="1 2 3 4,5 6 7 8">
-          <h1 class="title">mr title</h1>
-          <p class="description">whatever</p>
+          <h1 class="resultTitle">mr title</h1>
+          <p class="resultDescription">whatever</p>
         </div>
       ''')
       el.append result
@@ -44,6 +44,6 @@ define [
       expect(results.length).toBe 1
       expect(results).toContain 
         identifier:  "27"
-        title:       "mr title"
+        title: "mr title"
         description: "whatever"
         locations:   ["1 2 3 4", "5 6 7 8"]

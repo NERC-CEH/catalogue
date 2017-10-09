@@ -50,8 +50,8 @@ define [
       numFound: @$('#num-records').val()
       results: _.map @$('.result'), (r) -> 
         identifier:  $(r).attr('id')
-        title:       $('.title', r).text()
-        description: $('.description', r).text()
+        title:       $('.resultTitle', r).text()
+        description: $('.resultDescription', r).text()
         locations:   $(r).attr('data-location').split ','
 
   ###
