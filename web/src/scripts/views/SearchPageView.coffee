@@ -50,8 +50,8 @@ define [
       numFound: @$('#num-records').val()
       results: _.map @$('.result'), (r) -> 
         identifier:  $(r).attr('id')
-        title:       $('.title', r).text()
-        description: $('.description', r).text()
+        title:       $('.resultTitle', r).text()
+        description: $('.resultDescription', r).text()
         locations:   $(r).attr('data-location').split ','
 
   ###
@@ -69,7 +69,7 @@ define [
   ###
   findSelected: ->
     if @$('.result').length
-      offset = @$('.result .description').offset().top
+      offset = @$('.result .resultDescription').offset().top
       results = @$ ".result:in-viewport(#{offset})"
       # if no result was detected, default to the last result
       selected = if results.length then $(results[0]) else $('.result').last()
