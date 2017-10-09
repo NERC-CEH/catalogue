@@ -69,7 +69,7 @@ define [
   ###
   findSelected: ->
     if @$('.result').length
-      offset = @$('.result .description').offset().top
+      offset = @$('.result .resultDescription').offset().top
       results = @$ ".result:in-viewport(#{offset})"
       # if no result was detected, default to the last result
       selected = if results.length then $(results[0]) else $('.result').last()
