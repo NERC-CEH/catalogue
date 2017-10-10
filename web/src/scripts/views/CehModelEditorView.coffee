@@ -103,7 +103,10 @@ define [
           modelAttribute: 'codeRepositoryUrl'
           label: 'Code repository url'
           helpText: """
-                    <p>Location of code repository e.g. https://github.com/NERC-CEH/Spatial-Upscaling-model</p>
+                    <p>Location of code repository e.g. https://github.com/NERC-CEH/Spatial-Upscaling-model.</p>
+                    <p>This does not need to be accessible by others but is to demonstrate that the model is under version control.</p>
+                    <p>If your model is not currently under version control and you are unsure about how to achieve this please talk to your Informatics Liaison representative.</p>
+                    <p>CEH currently supports version control primarily with git.</p>
                     """
 
       ]
@@ -244,7 +247,7 @@ define [
           modelAttribute: 'compiler'
           label: 'Compiler'
           helpText: """
-                    <p>Compiled required e.g. C++ compiler (if applicable)</p>
+                    <p>Compiler required e.g. C++ compiler (if applicable)</p>
                     """
 
         new InputView

@@ -39,7 +39,7 @@
         <@b.key "License" "License type (open or non-open) under which the model is distributed">${licenseType?cap_first}</@b.key>
       </#if>
       <#if codeRepositoryUrl?? && codeRepositoryUrl?has_content>
-        <@b.key "Code repository url" "Link to code version control repository"><@b.bareUrl codeRepositoryUrl /></@b.key>
+        <@b.key "Code repository url" "Link to code version control repository. May be access controlled."><@b.bareUrl codeRepositoryUrl /></@b.key>
       </#if>
     </#if>
     <#if references?? && references?has_content>
