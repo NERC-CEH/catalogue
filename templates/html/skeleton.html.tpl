@@ -41,6 +41,7 @@
               <li><a href="http://eidc.ceh.ac.uk/contact-info">Contact us</a></li>
               <li><a href="http://eidc.ceh.ac.uk/help">Help</a></li>
             <#else>
+              <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Search</a></li>
               <li><a href="${catalogue.url!'/'?html}">${catalogue.title?html}</a></li>
             </#if>
           </#if>
