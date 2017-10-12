@@ -1,6 +1,6 @@
 define [
-  'cs!views/editor/ObjectInputView'
+  'cs!views/editor/ObjectInputViewForObjects'
   'tpl!templates/editor/ObservationCapability.tpl'
-], (ObjectInputView, template) -> ObjectInputView.extend
+], (ObjectInputViewForObjects, template) -> ObjectInputViewForObjects.extend
 
   template:  template

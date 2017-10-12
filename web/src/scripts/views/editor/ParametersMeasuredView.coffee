@@ -1,6 +1,7 @@
 define [
-  'cs!views/editor/ObjectInputView'
+  'underscore'
+  'cs!views/editor/ObjectInputViewForObjects'
   'tpl!templates/editor/ParametersMeasured.tpl'
-], (ObjectInputView, template) -> ObjectInputView.extend
+], (_, ObjectInputViewForObjects, template) -> ObjectInputViewForObjects.extend
 
   template:  template
