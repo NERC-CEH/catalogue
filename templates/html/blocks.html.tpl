@@ -222,6 +222,17 @@ Block link
   </div>
 </#macro>
 
+<#--
+Link url or string
+-->
+<#macro urlOrString link>
+  <#if link.href?? && link.href?has_content>
+    <@titleUrl link />
+  <#elseif link.title?? && link.title?has_content>
+    ${link.title}
+  </#if>
+</#macro>
+
 <#-- 
 A list of strings
 -->

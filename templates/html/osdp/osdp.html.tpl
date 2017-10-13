@@ -118,17 +118,12 @@ ParametersMeasured
   <@b.repeatRow>
     <#if parameter.name?? && parameter.name?has_content>
       <@b.basicRow>
-        <@b.keyContent "Name" "Name of parameter">${parameter.name}</@b.keyContent>
-      </@b.basicRow>
-    </#if>
-    <#if parameter.definition?? && parameter.definition?has_content>
-      <@b.basicRow>
-        <@b.keyContent "Definition" "Definition of parameter">${parameter.definition}</@b.keyContent>
+        <@b.keyContent "Name" "Name of parameter"><@b.urlOrString parameter.name /></@b.keyContent>
       </@b.basicRow>
     </#if>
     <#if parameter.unitOfMeasure?? && parameter.unitOfMeasure?has_content>
       <@b.basicRow>
-        <@b.keyContent "Unit of measure" "Units of parameter">${parameter.unitOfMeasure}</@b.keyContent>
+        <@b.keyContent "Unit of measure" "Units of parameter"><@b.urlOrString parameter.unitOfMeasure /></@b.keyContent>
       </@b.basicRow>
     </#if>
   </@b.repeatRow>
@@ -189,27 +184,29 @@ ObservationCapability
         <@b.keyContent "Observing Time" "Period of time spent on observation">${oc.observingTime}</@b.keyContent>
       </@b.basicRow>
     </#if>
-    <#if oc.observedPropertyName?? || oc.observedPropertyDefinition?? || oc.observedPropertyUnitOfMeasure??>
+    <#if oc.observedPropertyName?? || oc.observedPropertyUnitOfMeasure??>
       <@b.basicRow>
         <@b.keyContent "Observed Property" "Observed Property">
-        <div>
-          <span class="text-muted">Name</span>
-          ${oc.observedPropertyName!"-"}
-        </div>
-        <div>
-          <span class="text-muted">Definition</span>
-          ${oc.observedPropertyDefinition!"-"}
-        </div>
-        <div>
-          <span class="text-muted">Unit of measure</span>
-          ${oc.observedPropertyUnitOfMeasure!"-"}
-        </div>
+        <#if oc.observedPropertyName?has_content>
+          <div>
+            <span class="text-muted">Name</span>
+            <@b.urlOrString oc.observedPropertyName />
+          </div>
+        </#if>
+        <#if oc.observedPropertyUnitOfMeasure?has_content>
+          <div>
+            <span class="text-muted">Unit of measure</span>
+            <@b.urlOrString oc.observedPropertyUnitOfMeasure />
+          </div>
+        </#if>
         </@b.keyContent>
       </@b.basicRow>
     </#if>
     <#if oc.procedureName?? && oc.procedureName?has_content>
       <@b.basicRow>
-        <@b.keyContent "Procedure Name" "Name of observing procedure">${oc.procedureName}</@b.keyContent>
+        <@b.keyContent "Procedure Name" "Name of observing procedure">
+          <@b.urlOrString oc.procedureName/>
+        </@b.keyContent>
       </@b.basicRow>
     </#if>
   </@b.repeatRow>
