@@ -13,6 +13,7 @@ define [
   'cs!views/editor/BoundingBoxView'
   'cs!models/editor/BoundingBox'
   'cs!views/editor/ObservationCapabilityView'
+  'cs!views/editor/GeometryView'
 ], (
   EditorView,
   SingleObjectView,
@@ -27,7 +28,8 @@ define [
   ResourceIdentifierView,
   BoundingBoxView,
   BoundingBox,
-  ObservationCapabilityView
+  ObservationCapabilityView,
+  GeometryView
 ) -> EditorView.extend
 
   initialize: ->
@@ -91,6 +93,14 @@ define [
           ObjectInputView: BoundingBoxView,
           helpText: """
                     <p>Bounding Box of Monitoring Facility</p>
+                    """
+
+        new GeometryView
+          model: @model
+          modelAttribute: 'geometry'
+          label: 'Geometry'
+          helpText: """
+                    <p>Geometry of Monitoring Facility</p>
                     """
 
         new ParentView
