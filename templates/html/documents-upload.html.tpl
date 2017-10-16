@@ -39,7 +39,7 @@
                         <td class='checksum-value'>${file.hash}</td>
                         <#if canUpload>
                             <td class="checksum-delete text-center">
-                                <button class="btn btn-block btn-danger delete is-initialising" disabled>
+                                <button class="btn btn-block btn-danger delete is-initialising" disabled data-toggle="modal" data-target="#documentUploadModal">
                                     <i class="fa fa-trash-o"></i> Delete
                                 </button>
                             </td>
@@ -96,7 +96,7 @@
                             </#if>
                         </td>
                         <td class="text-center">
-                            <button class="btn btn-block btn-danger is-initialising delete" disabled>
+                            <button class="btn btn-block btn-danger is-initialising delete" disabled data-toggle="modal" data-target="#documentUploadModal">
                                 <i class="fa fa-trash-o"></i> Delete
                             </button>
                         </td>
@@ -148,5 +148,22 @@
                 </p>
             </section>
         </#if>
+    </div>
+    <div class="modal fade" id="documentUploadModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">title</h4>
+            </div>
+            <div class="modal-body">
+                some stuff
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default modal-dismiss" data-dismiss="modal"></button>
+                <button type="button" class="btn btn-danger modal-accept"  data-dismiss="modal"></button>
+            </div>
+            </div>
+        </div>
     </div>
 </@skeleton.master>
