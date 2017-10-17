@@ -118,6 +118,10 @@ define [
     icon.removeClass('fa-ban-')
     icon.addClass('fa-refresh')
     icon.addClass('fa-spin')
+    setTimeout () ->
+      $('.finish-message')
+        .text 'Sorry, this seems to be taking a while to finish. Please reload the page. If you do not see the Finish button after refreshing then it has finished, otherwise try pressing the Finish button again after refreshing the page. If the problem persists please contact an admin.'
+    , 10 * 1000
 
   loadedDropzone: ->
     $('.dz .title').text 'Drag files here'
