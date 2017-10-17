@@ -133,7 +133,6 @@ define [
     $('.cancel-all').attr 'disabled', status
 
   changeSize: (files) ->
-    console.log('here?', files, files.length)
     $('.dropzone-container').removeClass('is-empty')
     $('.dropzone-container').removeClass('is-large')
     $('.dropzone-container').removeClass('is-1')
