@@ -228,13 +228,13 @@ define [
   initFinish: ->
     $('.finish').click =>
       do @submitFinish
-      # $.ajax
-      #   url: window.location.href + '/finish'
-      #   type: 'POST'
-      #   headers:
-      #     Accept: 'application/json'
-      #   success: ->
-      #     window.location.reload()
-      #   fail: (error) =>
-      #     do @enableFinish
-      #     $('.finish-message').text 'An error occured, if this persists then please contact an admin'
+      $.ajax
+        url: window.location.href + '/finish'
+        type: 'POST'
+        headers:
+          Accept: 'application/json'
+        success: ->
+          window.location.reload()
+        fail: (error) =>
+          do @enableFinish
+          $('.finish-message').text 'An error occured, if this persists then please contact an admin'
