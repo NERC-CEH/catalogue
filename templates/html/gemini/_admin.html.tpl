@@ -56,7 +56,7 @@
         </#if>
       <#else>
         <#if !datacitable >
-          <div class="alert alert-danger"><i class="fa fa-exclamation"></i> There is insufficient metadata to assign a DOI to this resource</div>
+          <div class="alert alert-danger"><i class="fa fa-exclamation"></i> Conditions for assigning a DOI have not been met <a href="http://eidc.ceh.ac.uk/administration-folder/eidc-operations-procedures/mintADOI" target="_blank"><i class="fa fa-question-circle"></i></a></div>
         </#if>
       </#if>
       </div>
