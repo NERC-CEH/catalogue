@@ -78,7 +78,7 @@ define [
     $('.accept-invalid').click (evt) =>
       button = $(event.target)
       file = button.parent().parent().find('.checksum-file').text()
-      @post 'accept-invalid',
+      @post 'accept-invalid', button,
         file: file
     
   post: (query, toDisable, data) ->
