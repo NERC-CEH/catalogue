@@ -60,7 +60,7 @@ define [
       $('.modal-dismiss').text('No')
       $('.modal-accept').text('Yes')
       $('.modal-accept').click =>
-        @post 'delete',
+        @post 'delete', button,
           file: file
 
   initChangeTypeButtons: (type) ->
@@ -68,7 +68,8 @@ define [
     $('.to-' + type).click (evt) =>
       button = $(evt.target)
       file = button.parent().parent().parent().find('.checksum-file').text()
-      @post 'change',
+      buttons = button.parent().find('.btn')
+      @post 'change', buttons,
         type: button.text().toUpperCase()
         file: file
 
@@ -77,10 +78,11 @@ define [
     $('.accept-invalid').click (evt) =>
       button = $(event.target)
       file = button.parent().parent().find('.checksum-file').text()
-      @post 'accept-invalid',
+      @post 'accept-invalid', button,
         file: file
     
-  post: (query, data) ->
+  post: (query, toDisable, data) ->
+      toDisable.attr('disabled', true)
       $.ajax
         url: window.location.href + '/' + query
         type: 'POST'
@@ -89,7 +91,9 @@ define [
         data: data
         success: (response) =>
           @updateDocumentView response
+          toDisable.attr('disabled', false)
         error: (err) ->
+          toDisable.attr('disabled', false)
           window.location.reload() if err.responseText.indexOf('IllegalArgumentException') != -1
 
   disableFinish: (message) ->
