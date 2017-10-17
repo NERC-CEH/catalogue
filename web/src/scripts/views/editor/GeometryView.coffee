@@ -1,69 +1,74 @@
 define [
   'underscore'
-  'cs!views/editor/ObjectInputView'
+  'cs!views/editor/InputView'
   'tpl!templates/editor/Geometry.tpl'
   'cs!views/OpenLayersView'
   'openlayers'
 ],
-(
-  _,
-  ObjectInputView,
-  template,
-  OpenLayersView,
-  OpenLayers) -> ObjectInputView.extend
+(_, InputView, template, OpenLayersView, OpenLayers) ->
 
-  template: template
+  geometryLayer = new OpenLayers.Layer.Vector("Geometry")
 
-  events: ->
-    _.extend {}, ObjectInputView.prototype.events,
-      'change input[value=modify]': 'modifyFeature',
-      'change input[value=create]': 'createFeature',
-
-  initialize: () ->
-    _.bindAll(@,
-      'updateOutput',
-      'createFeature',
-      'modifyFeature'
+  controls = {
+    create: new OpenLayers.Control.DrawFeature(
+      geometryLayer,
+      OpenLayers.Handler.Polygon
     )
-    do @render
-
-    $map = @$('.map')
-    mapView = new OpenLayersView({el: $map})
-    map = mapView.map
-    
-    @geometryLayer = new OpenLayers.Layer.Vector("Geometry")
-    map.addLayer(@geometryLayer)
-
-    @drawing = new OpenLayers.Control.DrawFeature(
-      @geometryLayer,
-      OpenLayers.Handler.Polygon,
-      handlerOptions: holeModifier: "altKey"
+    modify: new OpenLayers.Control.ModifyFeature(geometryLayer)
+    delete: new OpenLayers.Control.SelectFeature(geometryLayer,
+      onSelect: (feature) -> geometryLayer.removeFeatures(feature)
     )
+  }
 
-    @modify = new OpenLayers.Control.ModifyFeature(
-      @geometryLayer
-    )
-    
-    map.addControls [@drawing, @modify]
+  view = InputView.extend
 
-    @drawing.events.register(
-      'featureadded', @geometryLayer, @updateOutput
-    )
+    template: template
 
-    @wktFactory = new OpenLayers.Format.WKT
-      internalProjection: map.baseLayer.projection,
-      externalProjection: new OpenLayers.Projection('EPSG:4326')
+    events:
+      'change input': 'toggleControls'
 
-  updateOutput: (obj) ->
-    do @drawing.deactivate
-    @model.set('geometry', @wktFactory.write(obj.feature))
+    initialize: (options) ->
+      InputView.prototype.initialize.call @, options
+      @stopListening()
+      _.bindAll(@,
+        'setModel'
+      )
 
-  createFeature: ->
-    console.log('create')
-    do @drawing.activate
-    do @modify.deactivate
+      geometryLayer.events.on({
+        'afterfeaturemodified': @setModel,
+        'featureadded': @setModel,
+        'featureremoved': @setModel
+      })
 
-  modifyFeature: ->
-    console.log('modify')
-    do @drawing.deactivate
-    do @modify.activate
+      @wktFactory = new OpenLayers.Format.WKT
+        internalProjection: @map.baseLayer.projection,
+        externalProjection: new OpenLayers.Projection('EPSG:4326')
+
+      if @model.has 'geometry'
+        geometryLayer.addFeatures @wktFactory.read(@model.get('geometry'))
+
+    render: ->
+      InputView.prototype.render.apply @
+
+      mapView = new OpenLayersView({el: @$('.map')})
+      @map = mapView.map
+      @map.addLayer(geometryLayer)
+      @map.addControls(_.values(controls))
+
+    toggleControls: (event) ->
+      target = event.target
+      for key in _.keys(controls)
+        control = controls[key]
+        if target.value is key and target.checked
+          control.activate()
+        else
+          control.deactivate()
+
+    setModel: ->
+      features = geometryLayer.features
+      if features.length > 0
+        @model.set('geometry', @wktFactory.write(features))
+      else
+        @model.unset 'geometry'
+
+  return view

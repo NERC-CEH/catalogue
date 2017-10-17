@@ -8,4 +8,6 @@
   <label for="modifyToggle">modify geometry</label>
   <input type="radio" name="type" value="delete" id="deleteToggle"/>
   <label for="deleteToggle">delete geometry</label>
+  <input type="radio" name="type" value="navigate" checked id="navigateToggle"/>
+  <label for="navigateToggle">navigate</label>
 </div>

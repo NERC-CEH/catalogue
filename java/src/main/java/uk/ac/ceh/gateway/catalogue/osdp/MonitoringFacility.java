@@ -17,7 +17,7 @@ import java.util.List;
     @Template(called="html/osdp/monitoringFacility.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class MonitoringFacility extends AbstractMetadataDocument {
-    private String facilityType;
+    private String facilityType, geometry;
     private TimePeriod temporalExtent;
     private BoundingBox boundingBox;
     private List<ObservationCapability> observationCapabilities;
