@@ -106,7 +106,7 @@
             </table>
         </section>
         <#if canUpload>
-            <section class='section'>
+            <section class='section dropzone-container is-empty'>
                 <h3 class='subtitle'>Upload</h3>
                 <div class="dropzone">
                     <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
@@ -127,7 +127,7 @@
                         <h1 class="title">
                             <span class="fa fa-refresh fa-spin"></span> Loading Dropzone...
                         </h1>
-                        <div id="previews"></div>
+                        <div id="previews" class='previews'></div>
                     </div>
                 </div>
             </section>

@@ -132,6 +132,24 @@ define [
     $('.upload-all').attr 'disabled', status
     $('.cancel-all').attr 'disabled', status
 
+  changeSize: (files) ->
+    console.log('here?', files, files.length)
+    $('.dropzone-container').removeClass('is-empty')
+    $('.dropzone-container').removeClass('is-large')
+    $('.dropzone-container').removeClass('is-1')
+    $('.dropzone-container').removeClass('is-2')
+    $('.dropzone-container').removeClass('is-3')
+    $('.dropzone-container').removeClass('is-4')
+    $('.dropzone-container').removeClass('is-5')
+    $('.dropzone-container').removeClass('is-6')
+
+    if files.length == 0
+      $('.dropzone-container').addClass('is-empty')
+    else if files.length > 6
+      $('.dropzone-container').addClass('is-large')
+    else
+      $('.dropzone-container').addClass('is-' + files.length)
+
   addedFile: (file) ->
     @disableFinish 'Some files have not been uploaded yet'
     @toggleUploadCancelAll off
@@ -141,11 +159,13 @@ define [
     if file.size > 300 * MEGEBYTE
       $('#' + file.id + ' .max-size').last().removeClass 'is-inactive'
       $('#' + file.id + ' .max-size').last().addClass 'is-active'
+    @changeSize @dropzone.files
 
   removedFile: ->
     if @dropzone.files.length == 0
       @toggleUploadCancelAll on
       do @enableFinish
+    @changeSize @dropzone.files
 
   errorMessages:
     403: 'Unauthorized'
