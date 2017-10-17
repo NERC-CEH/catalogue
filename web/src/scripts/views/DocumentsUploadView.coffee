@@ -56,7 +56,7 @@ define [
       button = $(event.target)
       file = button.parent().parent().find('.checksum-file').text()
       $('.modal-title').text('Delete ' + file)
-      $('.modal-body').html('<p>You are about to <b>PERMINATLY DELETE</b> this file.<br /><br />Are you sure you want to continue?</p>')
+      $('.modal-body').html('<p>You are about to <b>PERMANETLY DELETE</b> this file.<br /><br />Are you sure you want to continue?</p>')
       $('.modal-dismiss').text('No')
       $('.modal-accept').text('Yes')
       $('.modal-accept').click =>
