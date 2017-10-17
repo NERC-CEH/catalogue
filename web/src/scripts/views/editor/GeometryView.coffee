@@ -35,6 +35,7 @@ define [
       )
 
       geometryLayer.events.on({
+        'beforefeatureadded': -> false if geometryLayer.features.length > 0
         'afterfeaturemodified': @setModel,
         'featureadded': @setModel,
         'featureremoved': @setModel
@@ -67,7 +68,7 @@ define [
     setModel: ->
       features = geometryLayer.features
       if features.length > 0
-        @model.set('geometry', @wktFactory.write(features))
+        @model.set('geometry', @wktFactory.write(features[0]))
       else
         @model.unset 'geometry'
 

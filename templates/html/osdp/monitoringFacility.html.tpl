@@ -13,6 +13,9 @@
   <#if boundingBox?? && boundingBox?has_content>
     <@b.key "Bounding Box" "Bounding Box of Monitoring Facility"><@o.boundingBox boundingBox /></@b.key>
   </#if>
+  <#if geometry?? && geometry?has_content>
+    <@b.key "Geometry" "Geometry of Monitoring Facility"><@o.geometry geometry /></@b.key>
+  </#if>
   <#if observationCapabilities?? && observationCapabilities?has_content>
     <@b.key "Observation Capabilities" "Observation Capabilities of Monitoring Facility">
     <#list observationCapabilities as observationCapability>
