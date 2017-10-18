@@ -1,30 +1,24 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import lombok.Data;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.stereotype.Service;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Defines a listing service which will filter a list of filenames into a list
  * of document names if there exists filenames with the given extensions
  * @author cjohn
  */
-@Data
-@AllArgsConstructor
-@Slf4j
+@Service
 public class ExtensionDocumentListingService implements DocumentListingService {
-    private final List<String> extensions;
-    
-    public ExtensionDocumentListingService() {
-        this(Arrays.asList("meta", "raw"));
-    }
+    private final List<String> extensions = Arrays.asList("meta", "raw");
     
     @Override
     public List<String> filterFilenames(Collection<String> files) {
@@ -50,7 +44,6 @@ public class ExtensionDocumentListingService implements DocumentListingService {
     }
 
     private List<String> filterFilenames(Collection<String> files, Predicate<Map.Entry<String,List<Filename>>> filter) {
-          log.debug("filtering filenames: {}", files);
           return files.stream()
                   .map((f) -> new Filename(f))
                   .collect(Collectors.groupingBy(Filename::getName))

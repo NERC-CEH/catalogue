@@ -1,7 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
 import java.util.Properties;
-import lombok.Data;
 
 /**
  * The following service will lookup a property from a properties file where the
@@ -11,8 +14,10 @@ import lombok.Data;
  * internal code
  * @author cjohn
  */
-@Data
+@Service
+@AllArgsConstructor
 public class CodeLookupService {
+    @Qualifier("codelist")
     private final Properties properties;
     
     /**

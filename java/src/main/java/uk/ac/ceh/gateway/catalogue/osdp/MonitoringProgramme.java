@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
@@ -15,4 +16,5 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 })
 public class MonitoringProgramme extends AbstractMetadataDocument {
     private TimePeriod temporalExtent;
+    private BoundingBox boundingBox;
 }

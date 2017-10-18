@@ -24,6 +24,11 @@ public class SolrIndexOsdpMonitoringFacilityGenerator implements IndexGenerator<
     public SolrIndex generateIndex(MonitoringFacility mf) {
         return metadataDocumentSolrIndex
             .generateIndex(mf)
-            .addLocations(Arrays.asList(geometryService.toSolrGeometry(mf.getBoundingBox().getWkt())));
+            .addLocations(
+                Arrays.asList(
+                    geometryService.toSolrGeometry(mf.getBoundingBox().getWkt()),
+                    geometryService.toSolrGeometry(mf.getGeometry())
+                )
+            );
     }    
 }

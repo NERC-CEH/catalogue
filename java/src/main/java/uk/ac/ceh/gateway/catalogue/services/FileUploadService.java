@@ -1,13 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import lombok.AllArgsConstructor;
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.model.FileChecksum;
+
+import java.io.*;
 import java.nio.file.Files;
-import static java.nio.file.StandardOpenOption.CREATE_NEW;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -16,15 +16,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.AllArgsConstructor;
-import uk.ac.ceh.gateway.catalogue.model.FileChecksum;
-import org.apache.commons.io.IOUtils;
 
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+
+@Service
 @AllArgsConstructor
 public class FileUploadService {
     private static final String CHECKSUM_NAME = "checksums.hash";
+    @Qualifier("dropbox")
     private final File dropbox;
-    
+
     public FileChecksum uploadData(InputStream input, String guid, String filename) throws IOException, NoSuchAlgorithmException {
         byte[] md5 = saveFile(input, getDepositFile(guid, filename, true));
         return appendChecksum(guid, new FileChecksum(md5, filename));
@@ -33,7 +34,7 @@ public class FileUploadService {
     public List<FileChecksum> getChecksums(String guid) throws IOException {
         return adjustChecksum(guid, (checksums) -> {
             if(!checksums.exists()) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
             try (Stream<String> lines = Files.lines(checksums.toPath())) {
                 return lines.filter((line) -> !line.startsWith("#"))

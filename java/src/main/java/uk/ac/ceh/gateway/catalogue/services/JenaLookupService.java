@@ -1,39 +1,31 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import static com.google.common.base.Strings.nullToEmpty;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Property;
+import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.model.Link;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.ParameterizedSparqlString;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ReadWrite;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Property;
-import static org.apache.jena.rdf.model.ResourceFactory.createResource;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.HAS_GEOMETRY;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.IDENTIFIER;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SOURCE;
-import uk.ac.ceh.gateway.catalogue.model.Link;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Strings.nullToEmpty;
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 /**
  * A simple lookup service powered by the jena linking database. This just looks
  * up any literals associated to a given uri
  * @author cjohn
  */
-@Slf4j
+@Service
 @AllArgsConstructor
 public class JenaLookupService {
     private final Dataset jenaTdb;
-    
+
     /**
      * Looks up the specified uri for an attached geometry.
      * @param uri to lookup for a geometry

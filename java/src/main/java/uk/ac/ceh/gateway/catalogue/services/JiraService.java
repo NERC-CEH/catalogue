@@ -1,15 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.List;
-import javax.ws.rs.core.MediaType;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
 
+import javax.ws.rs.core.MediaType;
+import java.util.List;
+
+@Service
 @AllArgsConstructor
 public class JiraService {
+    @Qualifier("jira")
     private final WebResource resource;
 
     public void comment (String key, String comment) {

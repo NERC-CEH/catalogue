@@ -1,5 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
+import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.DataRevision;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
+import uk.ac.ceh.gateway.catalogue.services.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -9,25 +19,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.datastore.DataRevision;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
-import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
+@Service
+@AllArgsConstructor
 public class GitDocumentRepository implements DocumentRepository {
     private final DocumentTypeLookupService documentTypeLookupService;
     private final DocumentReadingService documentReader;
@@ -35,23 +29,6 @@ public class GitDocumentRepository implements DocumentRepository {
     private final DocumentWritingService documentWriter;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final GitRepoWrapper repo;
-
-    @Autowired
-    public GitDocumentRepository(DocumentTypeLookupService documentTypeLookupService,
-            DocumentReadingService documentReader,
-            DocumentIdentifierService documentIdentifierService,
-            DocumentWritingService documentWriter,
-            BundledReaderService<MetadataDocument> documentBundleReader,
-            PostProcessingService postProcessingService,
-            GitRepoWrapper repoWrapper
-    ) {
-        this.documentTypeLookupService = documentTypeLookupService;
-        this.documentReader = documentReader;
-        this.documentIdentifierService = documentIdentifierService;
-        this.documentWriter = documentWriter;
-        this.documentBundleReader = documentBundleReader;
-        this.repo = repoWrapper;
-    }
     
     @Override
     public MetadataDocument read(
@@ -134,11 +111,8 @@ public class GitDocumentRepository implements DocumentRepository {
                 Files.delete(tmpFile); //file no longer needed
             }
 
-            if (data instanceof MetadataDocument) {
-                data = save(user, (MetadataDocument)data, id, String.format("File upload for id: %s", id));
-            }
+            return save(user, data, id, String.format("File upload for id: %s", id));
 
-            return data;
         } catch (IOException | UnknownContentTypeException ex) {
             throw new DocumentRepositoryException(
                 String.format("File upload save failed for user: %s", user.getUsername()),
@@ -259,7 +233,7 @@ public class GitDocumentRepository implements DocumentRepository {
         List<ResourceIdentifier> resourceIdentifiers;
         
         if (document.getResourceIdentifiers() != null) {
-            resourceIdentifiers = new ArrayList(document.getResourceIdentifiers());
+            resourceIdentifiers = new ArrayList<>(document.getResourceIdentifiers());
         } else {
             resourceIdentifiers = new ArrayList<>();
         }
@@ -275,7 +249,7 @@ public class GitDocumentRepository implements DocumentRepository {
     }
     
      private MetadataInfo retrieveMetadataInfoUpdatingRawType(MetadataDocument document) 
-         throws IOException, DataRepositoryException, UnknownContentTypeException, PostProcessingException {
+         throws IOException, UnknownContentTypeException, PostProcessingException {
         return document.getMetadata().withRawType(MediaType.APPLICATION_JSON_VALUE);
     }
 }

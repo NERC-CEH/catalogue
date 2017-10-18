@@ -12,6 +12,10 @@ ext {
     jacksonVersion = '2.9.0'
 }
 
+compileJava {
+    options.compilerArgs << "-Xlint:deprecation"
+}
+
 war {
     archiveName 'ROOT.war'
 }

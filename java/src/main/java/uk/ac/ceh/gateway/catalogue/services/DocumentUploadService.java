@@ -1,5 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.val;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUpload.Type;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,21 +23,11 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.val;
-import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
-import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
-import uk.ac.ceh.gateway.catalogue.model.DocumentUpload.Type;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
+@Service
 @AllArgsConstructor
 public class DocumentUploadService {
+    @Qualifier("dropbox")
     private final File dropbox;
     private final DocumentRepository documentRepository;
 

@@ -101,10 +101,6 @@ import java.util.regex.Pattern;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
-/**
- * The following spring configuration will populate service beans
- * @author cjohn
- */
 @Configuration
 public class ServiceConfig {
     @Value("${documents.baseUri}") String baseUri;
@@ -125,273 +121,42 @@ public class ServiceConfig {
     @Autowired Dataset jenaTdb;
     @Autowired SolrServer solrServer;
     @Autowired EventBus bus;
-    @Autowired CodeLookupService codeLookupService;
-    @Autowired GroupStore<CatalogueUser> groupStore;
     @Autowired @Qualifier("gemini") Schema geminiSchema;
+    @Autowired JenaLookupService jenaLookupService;
+    @Autowired CodeLookupService codeLookupService;
+    @Autowired DownloadOrderDetailsService downloadOrderDetailsService;
+    @Autowired PermissionService permissionService;
+    @Autowired MapServerDetailsService mapServerDetailsService;
+    @Autowired GeminiExtractorService geminiExtractorService;
+    @Autowired CatalogueService catalogueService;
+    @Autowired CitationService citationService;
+    @Autowired DataciteService dataciteService;
+    @Autowired DocumentIdentifierService documentIdentifierService;
     
-    private static final String GEMINI_DOCUMENT = "GEMINI_DOCUMENT";
-    private static final String EF_DOCUMENT = "EF_DOCUMENT";
-    private static final String IMP_DOCUMENT = "IMP_DOCUMENT";
-    private static final String CEH_MODEL = "CEH_MODEL";
-    private static final String CEH_MODEL_APPLICATION = "CEH_MODEL_APPLICATION";
-    private static final String LINK_DOCUMENT = "LINK_DOCUMENT";
-    
-    @Bean
-    public CatalogueService catalogueService() {
-        String defaultCatalogueKey = "eidc";
-        
-        DocumentType gemini = DocumentType.builder()
-            .title("Data Resource")
-            .type(GEMINI_DOCUMENT)
-            .build();
-        
-        DocumentType ef = DocumentType.builder()
-            .title("Monitoring")
-            .type(EF_DOCUMENT)
-            .build();
-        
-        DocumentType imp = DocumentType.builder()
-            .title("Model")
-            .type(IMP_DOCUMENT)
-            .build();
-        
-        DocumentType cehModel = DocumentType.builder()
-            .title("Model")
-            .type(CEH_MODEL)
-            .build();
-        
-        DocumentType cehModelApplication = DocumentType.builder()
-            .title("Model Application")
-            .type(CEH_MODEL_APPLICATION)
-            .build();
-        
-        DocumentType link = DocumentType.builder()
-            .title("Link")
-            .type(LINK_DOCUMENT)
-            .build();
+    public static final String GEMINI_DOCUMENT = "GEMINI_DOCUMENT";
+    public static final String EF_DOCUMENT = "EF_DOCUMENT";
+    public static final String IMP_DOCUMENT = "IMP_DOCUMENT";
+    public static final String CEH_MODEL = "CEH_MODEL";
+    public static final String CEH_MODEL_APPLICATION = "CEH_MODEL_APPLICATION";
+    public static final String LINK_DOCUMENT = "LINK_DOCUMENT";
 
-        DocumentType agent = DocumentType.builder()
-            .title("Agent")
-            .type(OSDP_AGENT_SHORT)
-            .build();
-
-        DocumentType dataset = DocumentType.builder()
-            .title("Dataset")
-            .type(OSDP_DATASET_SHORT)
-            .build();
-
-        DocumentType model = DocumentType.builder()
-            .title("Model")
-            .type(OSDP_MODEL_SHORT)
-            .build();
-
-        DocumentType monitoringActivity = DocumentType.builder()
-            .title("Monitoring Activity")
-            .type(OSDP_MONITORING_ACTIVITY_SHORT)
-            .build();
-
-        DocumentType monitoringFacility = DocumentType.builder()
-            .title("Monitoring Facility")
-            .type(OSDP_MONITORING_FACILITY_SHORT)
-            .build();
-
-        DocumentType monitoringProgramme = DocumentType.builder()
-            .title("Monitoring Programme")
-            .type(OSDP_MONITORING_PROGRAMME_SHORT)
-            .build();
-
-        DocumentType publication = DocumentType.builder()
-            .title("Publication")
-            .type(OSDP_PUBLICATION_SHORT)
-            .build();
-
-        DocumentType sample = DocumentType.builder()
-            .title("Sample")
-            .type(OSDP_SAMPLE_SHORT)
-            .build();
-
-        return new InMemoryCatalogueService(
-            defaultCatalogueKey,
-            
-            Catalogue.builder()
-                .id("osdp")
-                .title("Open Soils Data Platform")
-                .url("http://www.ceh.ac.uk")
-                .documentType(agent)
-                .documentType(dataset)
-                .documentType(model)
-                .documentType(monitoringActivity)
-                .documentType(monitoringFacility)
-                .documentType(monitoringProgramme)
-                .documentType(publication)
-                .documentType(sample)
-                .facetKey("resourceType")
-                .fileUpload(false)
-                .build(),
-            
-            Catalogue.builder()
-                .id("m")
-                .title("Modelling")
-                .url("http://www.ceh.ac.uk")
-                .facetKey("resourceType")
-                .documentType(cehModel)
-                .documentType(cehModelApplication)
-                .fileUpload(false)
-                .build(),
-            
-            Catalogue.builder()
-                .id("nc")
-                .title("Natural Capital")
-                .url("http://www.ceh.ac.uk")
-                .facetKey("resourceType")
-                .documentType(gemini)
-                .documentType(link)
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
-                .id("inms")
-                .title("International Nitrogen Management System")
-                .url("http://www.inms.international/")
-                .facetKey("resourceType")
-                .facetKey("impScale")
-                .facetKey("impTopic")
-                .facetKey("inmsPollutant")
-                .facetKey("modelType")
-                .facetKey("inmsDemonstrationRegion")
-                .documentType(gemini)
-                .documentType(cehModel)
-                .documentType(cehModelApplication)
-                .documentType(link)
-                .fileUpload(false)
-                .build(),
-            
-            Catalogue.builder()
-                .id("edge")
-                .title("EDgE")
-                .url("https://edge.climate.copernicus.eu")
-                .facetKey("resourceType")
-                .documentType(gemini)
-                .documentType(link)
-                .fileUpload(true)
-                .build(),
-            
-            Catalogue.builder()
-                .id("ceh")
-                .title("Centre for Ecology & Hydrology")
-                .url("https://eip.ceh.ac.uk")
-                .facetKey("topic")
-                .facetKey("resourceType")
-                .facetKey("licence")
-                .fileUpload(false)
-                .build(),
-        
-            Catalogue.builder()
-                .id(defaultCatalogueKey)
-                .title("Environmental Information Data Centre")
-                .url("http://eidc.ceh.ac.uk")
-                .facetKey("topic")
-                .facetKey("resourceType")
-                .facetKey("licence")
-                .documentType(gemini)
-                .fileUpload(false)
-                .build(),
-        
-            Catalogue.builder()
-                .id("cmp")
-                .title("Catchment Management Modelling Platform")
-                .url("http://www.cammp.org.uk/index.php")
-                .facetKey("resourceType")
-                .facetKey("impCaMMPIssues")
-                .facetKey("impDataType")
-                .facetKey("impScale")
-                .facetKey("impTopic")
-                .facetKey("impWaterPollutant")
-                .documentType(gemini)
-                .documentType(imp)
-                .documentType(link)
-                .fileUpload(true)
-                .build(),
-        
-            Catalogue.builder()
-                .id("assist")
-                .title("Achieving Sustainable Agricultural Systems")
-                .url("http://www.ceh.ac.uk/ASSIST")
-                .facetKey("resourceType")
-                .facetKey("licence")
-                .documentType(gemini)
-                .documentType(link)
-                .fileUpload(false)
-                .build(),
-            
-            Catalogue.builder()
-                .id("inlicensed")
-                .title("CEH In-licensed Datasets")
-                .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
-                .facetKey("resourceType")
-                .documentType(gemini)
-                .fileUpload(false)
-                .build()
-        );
-    }
-    
-    @Bean FacetFactory facetFactory() {
-        return new HardcodedFacetFactory();
-    }
+    private final File dropbox = new File("/var/ceh-catalogue/dropbox");
+    private final char replacement = '-';
+    private final String eidcPattern = "http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*";
+    private final String orderManagerPattern = "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*";
     
     @Bean
-    public PermissionService permission() {
-        return new PermissionService(dataRepository, documentInfoMapper(), groupStore);
-    }
-
-    @Bean
-    public FileUploadService fileUploadService() {
-        return new FileUploadService(new File("/var/ceh-catalogue/dropbox"));
-    }
-
-    @Bean
-    public DocumentUploadService documentUploadService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
-    }
-    
-    @Bean
-    public JiraService jiraService() {
+    public WebResource jira() {
         Client client = Client.create();
         client.addFilter(new HTTPBasicAuthFilter(jiraUsername, jiraPassword));
-        WebResource jira = client.resource(jiraAddress);
-        return new JiraService(jira);
+        return client.resource(jiraAddress);
     }
 
     @Bean
-    public PloneDataDepositService ploneDataDepositService() throws XPathExpressionException, IOException, TemplateModelException {
+    public WebResource plone() {
         Client client = Client.create();
         client.addFilter(new HTTPBasicAuthFilter(ploneUsername, plonePassword));
-        WebResource plone = client.resource(ploneAddress);
-        return new PloneDataDepositService(plone);
-    }
-    
-    @Bean
-    public CitationService citationService() {
-        return new CitationService();
-    }
-    
-    @Bean
-    public MapServerDetailsService mapServerDetailsService() {
-        return new MapServerDetailsService(baseUri);
-    }
-    
-    @Bean
-    public DataciteService dataciteService() throws TemplateModelException, IOException {
-        Template dataciteTemplate = freemarkerConfiguration().getTemplate("/datacite/datacite.xml.tpl");
-        return new DataciteService(
-                doiPrefix, 
-                "NERC Environmental Information Data Centre", 
-                doiUsername, 
-                doiPassword,
-                documentIdentifierService(),
-                dataciteTemplate, 
-                new RestTemplate()
-        );
+        return client.resource(ploneAddress);
     }
     
     @Bean
@@ -465,13 +230,13 @@ public class ServiceConfig {
     @Bean
     public freemarker.template.Configuration freemarkerConfiguration() throws TemplateModelException, IOException {
         Map<String, Object> shared = new HashMap<>();
-        shared.put("jena", jenaLookupService());
+        shared.put("jena", jenaLookupService);
         shared.put("codes", codeLookupService);
-        shared.put("downloadOrderDetails", downloadOrderDetailsService());
-        shared.put("permission", permission());
-        shared.put("mapServerDetails", mapServerDetailsService());
-        shared.put("geminiHelper", geminiExtractorService());
-        shared.put("catalogues", catalogueService());
+        shared.put("downloadOrderDetails", downloadOrderDetailsService);
+        shared.put("permission", permissionService);
+        shared.put("mapServerDetails", mapServerDetailsService);
+        shared.put("geminiHelper", geminiExtractorService);
+        shared.put("catalogues", catalogueService);
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
@@ -479,29 +244,6 @@ public class ServiceConfig {
         config.setDefaultEncoding("UTF-8");
         config.setTemplateLoader(new FileTemplateLoader(templates));
         return config;
-    }
-    
-    @Bean
-    public DataRepositoryOptimizingService dataRepositoryOptimizingService() {
-        return new DataRepositoryOptimizingService(dataRepository);
-    }
-    
-    @Bean
-    GitRepoWrapper gitRepoWrapper() {
-        return new GitRepoWrapper(dataRepository, documentInfoMapper());
-    }
-    
-    @Bean 
-    DocumentRepository documentRepository() throws XPathExpressionException, IOException, TemplateModelException {
-        return new GitDocumentRepository(
-            metadataRepresentationService(),
-            documentReadingService(),
-            documentIdentifierService(),
-            documentWritingService(),
-            bundledReaderService(),
-            postProcessingService(),
-            gitRepoWrapper()
-        );
     }
     
     @Bean
@@ -537,34 +279,12 @@ public class ServiceConfig {
     }
     
     @Bean
-    public GetCapabilitiesObtainerService getCapabilitiesObtainerService() throws XPathExpressionException {
+    public RestTemplate capabilitiesObtainer() throws XPathExpressionException {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setMessageConverters(Arrays.asList(
                 new Xml2WmsCapabilitiesMessageConverter()
         ));
-        return new GetCapabilitiesObtainerService(restTemplate, mapServerDetailsService());
-    }
-    
-    @Bean
-    public MetadataListingService getWafListingService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new MetadataListingService(dataRepository, documentListingService(), bundledReaderService());
-    }
-    
-    @Bean
-    public TMSToWMSGetMapService tmsToWmsGetMapService() {
-        return new TMSToWMSGetMapService();
-    }
-    
-    @Bean
-    public GeminiExtractorService geminiExtractorService() {
-        return new GeminiExtractorService();
-    }
-    
-    @Bean
-    public DownloadOrderDetailsService downloadOrderDetailsService() {
-        Pattern eidchub = Pattern.compile("http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*");
-        Pattern orderMan = Pattern.compile("http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*");
-        return new DownloadOrderDetailsService(eidchub, orderMan);
+        return restTemplate;
     }
     
     @Bean
@@ -573,43 +293,18 @@ public class ServiceConfig {
     }
     
     @Bean
-    public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new MetadataInfoBundledReaderService(
-            dataRepository,
-            documentReadingService(),
-            documentInfoMapper(),
-            metadataRepresentationService(),
-            postProcessingService(),
-            documentIdentifierService()
-        );
-    }
-    
-    @Bean
-    public ExtensionDocumentListingService documentListingService() {
-        return new ExtensionDocumentListingService();
-    }
-    
-    @Bean
-    public DocumentIdentifierService documentIdentifierService() {
-        return new DocumentIdentifierService(baseUri, '-');
-    }
-    
-    @Bean
-    public JenaLookupService jenaLookupService() {
-        return new JenaLookupService(jenaTdb);
-    }
-    
-    @Bean
-    public SolrGeometryService solrGeometryService() {
-        return new SolrGeometryService(new WKTReader());
-    }
-    
-    @Bean
-    public PostProcessingService postProcessingService() throws TemplateModelException, IOException {
-        ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
-                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), dataciteService(), jenaTdb, documentIdentifierService()))
-                .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb));
-        return new ClassMapPostProcessingService(mappings);
+    public ClassMap<PostProcessingService> mappings() {
+        return new PrioritisedClassMap<PostProcessingService>()
+            .register(GeminiDocument.class,
+                new GeminiDocumentPostProcessingService(
+                    citationService,
+                    dataciteService,
+                    jenaTdb,
+                    documentIdentifierService
+                )
+            )
+            .register(BaseMonitoringType.class,
+                new BaseMonitoringTypePostProcessingService(jenaTdb));
     }
     
     @Bean @Qualifier("solr-index")
@@ -655,11 +350,11 @@ public class ServiceConfig {
                 .register(MetadataDocument.class, metadataDocument);
         
         JenaIndexingService toReturn = new JenaIndexingService(
-                bundledReaderService(),
-                documentListingService(),
+                bundledReaderService,
+                documentListingService,
                 dataRepository,
                 new IndexGeneratorRegistry(mappings),
-                documentIdentifierService(),
+                documentIdentifierService,
                 jenaTdb
         );
         
@@ -670,7 +365,7 @@ public class ServiceConfig {
     @Bean @Qualifier("datacite-index")
     public DocumentIndexingService dataciteIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
         return new AsyncDocumentIndexingService(
-                new DataciteIndexingService(bundledReaderService(), dataciteService())
+                new DataciteIndexingService(bundledReaderService, dataciteService)
         );
     }
     

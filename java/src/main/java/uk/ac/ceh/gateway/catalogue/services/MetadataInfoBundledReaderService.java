@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -11,6 +11,10 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 
+import java.io.IOException;
+
+@Service
+@AllArgsConstructor
 public class MetadataInfoBundledReaderService implements BundledReaderService<MetadataDocument> {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentReadingService documentReader;
@@ -18,23 +22,6 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
     private final DocumentTypeLookupService representationService;
     private final PostProcessingService postProcessingService;
     private final DocumentIdentifierService documentIdentifierService;
-    
-    @Autowired
-    public MetadataInfoBundledReaderService(
-            DataRepository<CatalogueUser> repo, 
-            DocumentReadingService documentReader, 
-            DocumentInfoMapper<MetadataInfo> documentInfoMapper,
-            DocumentTypeLookupService representationService,
-            PostProcessingService postProcessingService,
-            DocumentIdentifierService documentIdentifierService
-    ) {
-        this.repo = repo;
-        this.documentReader = documentReader;
-        this.documentInfoMapper = documentInfoMapper;
-        this.representationService = representationService;
-        this.postProcessingService = postProcessingService;
-        this.documentIdentifierService = documentIdentifierService;
-    }
     
     @Override
     public MetadataDocument readBundle(String file) throws DataRepositoryException, IOException, PostProcessingException {

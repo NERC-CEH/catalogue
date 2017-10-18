@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 
 /**
@@ -9,7 +10,8 @@ import uk.ac.ceh.gateway.catalogue.util.ClassMap;
  * @see ClassMap
  * @author cjohn
  */
-@Data
+@Service
+@AllArgsConstructor
 public class ClassMapPostProcessingService implements PostProcessingService<Object> {
     private final ClassMap<PostProcessingService> lookup;
     

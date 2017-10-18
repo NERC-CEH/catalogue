@@ -12,5 +12,5 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
     @Template(called="html/osdp/sample.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class Sample extends ResearchArtifact {
-    private String medium;
+    private String medium, geometry;
 }

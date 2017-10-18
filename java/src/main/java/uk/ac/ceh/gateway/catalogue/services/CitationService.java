@@ -1,23 +1,26 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
+import uk.ac.ceh.gateway.catalogue.config.WebConfig;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.web.util.UriComponentsBuilder;
-import uk.ac.ceh.gateway.catalogue.config.WebConfig;
-import uk.ac.ceh.gateway.catalogue.model.Citation;
-import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 /**
  *
  * @author cjohn
  */
+@Service
 public class CitationService {
     public static final String DOI_CODE_SPACE = "doi:";
     public static final String NERC_DOI_PREFIX = "10.5285/";

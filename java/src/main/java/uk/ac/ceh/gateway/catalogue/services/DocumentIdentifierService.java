@@ -1,7 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /**
  * This application hosts metadata documents on paths which take the form:
@@ -16,19 +20,13 @@ import lombok.NonNull;
  * responsible for doing just that.
  * @author cjohn
  */
+@Service
+@AllArgsConstructor
 public class DocumentIdentifierService {
+    @Qualifier("baseUri")
     private final String baseUri;
+    @Qualifier("replacement")
     private final char replacement;
-
-    public DocumentIdentifierService(
-        @NonNull String baseUri,
-        char replacement
-    ) {
-        this.baseUri = baseUri;
-        this.replacement = replacement;
-    }
-    
-    
     
     /**
      * Takes a document describing identifier and derives a new one which 

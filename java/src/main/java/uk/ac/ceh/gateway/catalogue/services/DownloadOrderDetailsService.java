@@ -1,12 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import lombok.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import lombok.Data;
-import lombok.Value;
-import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
 /**
  * The following class will process a list of OnlineResources to identify: 
@@ -22,10 +24,19 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
  * The logic in this class makes use of the fact that OnlineResources have safe
  * variables (That is strings are never null)
  */
-@Data
+@Service
 public class DownloadOrderDetailsService {
     private final Pattern eidchub, orderManager;
-            
+
+    @Autowired
+    public DownloadOrderDetailsService(
+        @Qualifier("eidcPattern") String eidcPattern,
+        @Qualifier("orderManagerPattern") String orderManagerPattern
+    ) {
+        this.eidchub = Pattern.compile(eidcPattern);
+        this.orderManager = Pattern.compile(orderManagerPattern);
+    }
+
     public DownloadOrder from(List<OnlineResource> onlineResources) {
         return new DownloadOrder(onlineResources);
     }
