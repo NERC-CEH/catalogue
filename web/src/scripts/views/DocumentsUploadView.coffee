@@ -40,8 +40,6 @@ define [
       invlaid.push (invalidChecksumRow value)
 
     document.querySelector('.invalid-checksums-list').innerHTML = invlaid.join('')
-    if Object.keys(invalid).length > 0
-      @disableFinish "Resolve invalid files before continuing"
     if files.length == 0
       @disableFinish "No files have been uploaded"
     else
@@ -135,10 +133,7 @@ define [
     $('.dz .title').text 'Drag files here'
     $('.is-initialising').attr 'disabled', off
     $('.is-initialising').removeClass('is-initialising')
-    if $('.invalid-row').length > 0
-      @disableFinish "Resolve invalid files before continuing"
-    else
-      do @enableFinish
+    do @enableFinish
 
   toggleUploadCancelAll: (status) ->
     $('.upload-all').attr 'disabled', status
@@ -192,7 +187,7 @@ define [
     upload = $('#' + file.id + ' .upload')
     upload.attr 'disabled', yes
 
-    @disableFinish 'Resolve all issues below'
+    @disableFinish 'Resolve all issues'
 
   success: (file, response) ->
     progress = $('#' + file.id + ' .progress-bar')
