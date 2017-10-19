@@ -204,7 +204,7 @@ define [
         finishDisabled = $('.finish').attr 'disabled'
         iconClass = $('.finish .fa').attr 'class'
 
-        expect(finishMessage).toBe 'Resolve all issues'
+        expect(finishMessage).toBe 'Resolve all issues with files'
         expect(finishDisabled).toBe 'disabled'
 
         expect(iconClass).toContain 'fa-ban'

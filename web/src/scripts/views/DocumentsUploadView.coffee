@@ -35,11 +35,13 @@ define [
         md5Hash: file.hash
     document.querySelector('.checksums-list').innerHTML = checksums.join('')
 
+    invalidElement = document.querySelector('.invalid-checksums-list')
     invlaid = []
     for key, value of invalid
       invlaid.push (invalidChecksumRow value)
+    if (invalidElement)
+      invalidElement.innerHTML = invlaid.join('')
 
-    document.querySelector('.invalid-checksums-list').innerHTML = invlaid.join('')
     if files.length == 0
       @disableFinish "No files have been uploaded"
     else
@@ -108,13 +110,14 @@ define [
     icon.removeClass('fa-spin')
 
   enableFinish: ->
-    $('.finish-message').text('')
-    $('.finish').attr 'disabled', off
-    icon = $('.finish .fa')
-    icon.addClass('fa-check')
-    icon.removeClass('fa-ban')
-    icon.removeClass('fa-refresh')
-    icon.removeClass('fa-spin')
+    if $('.progress-bar-danger').length == 0
+      $('.finish-message').text('')
+      $('.finish').attr 'disabled', off
+      icon = $('.finish .fa')
+      icon.addClass('fa-check')
+      icon.removeClass('fa-ban')
+      icon.removeClass('fa-refresh')
+      icon.removeClass('fa-spin')
 
   submitFinish: ->
     $('.finish-message').text('')
@@ -187,7 +190,7 @@ define [
     upload = $('#' + file.id + ' .upload')
     upload.attr 'disabled', yes
 
-    @disableFinish 'Resolve all issues'
+    @disableFinish 'Resolve all issues with files'
 
   success: (file, response) ->
     progress = $('#' + file.id + ' .progress-bar')
