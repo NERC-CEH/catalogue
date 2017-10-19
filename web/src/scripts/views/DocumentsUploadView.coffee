@@ -9,7 +9,11 @@ define [
   initialize: (options) ->
     do @initButtons
     do @initFinish
-    do @initDropzone if $('.dz').length
+    if $('.dz').length
+      do @initDropzone
+    else
+      do @loadedDropzone
+    
 
   updateDocumentView: (response) ->
     files = response.files || []
