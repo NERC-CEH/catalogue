@@ -19,7 +19,6 @@ import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
-import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -254,11 +253,8 @@ public class UploadControllerTest {
         val statuses = new HashMap<String, String>();
         statuses.put("open", "Awaiting scheduling from admin. Try again later.");
         statuses.put("approved", "Awaiting scheduling from admin. Try again later.");
-        statuses.put("in progress", "Currently being checked. Awaiting approval from admin.");
-        statuses.put("resolved", "This is finsihed. No further action required.");
-        statuses.put("closed", "This is finsihed. No further action required.");
-        statuses.put("on hold", "This issue is blocked. Contact an admin to resolve.");
-        statuses.put("scheduled", "You can now upload your files for this document.");
+        statuses.put("in progress", "This is now in progress. Awaiting resolution from admin.");
+        statuses.put("scheduled", "This has been scheduled. You can now upload your files for this document.");
 
         for (Map.Entry<String, String> entry : statuses.entrySet()) {
             val issues = Arrays.asList(createJiraIssue(entry.getKey()));
@@ -278,6 +274,26 @@ public class UploadControllerTest {
         val model = documentUploadModel();
 
         assertThat(model.get("isScheduled"), equalTo(true));
+    }
+
+    @Test
+    @SneakyThrows
+    public void documentUploadView_isResolvedIfHasOneIssueWhichIsResolved() {
+        val issues = Arrays.asList(createJiraIssue("resolved"));
+        doReturn(issues).when(jiraService).search(anyString());
+        val model = documentUploadModel();
+
+        assertThat(model.get("isResolved"), equalTo(true));
+    }
+
+    @Test
+    @SneakyThrows
+    public void documentUploadView_isClosedIfHasOneIssueWhichIsClosed() {
+        val issues = Arrays.asList(createJiraIssue("closed"));
+        doReturn(issues).when(jiraService).search(anyString());
+        val model = documentUploadModel();
+
+        assertThat(model.get("isClosed"), equalTo(true));
     }
 
     @Test
@@ -379,6 +395,15 @@ public class UploadControllerTest {
         doReturn(true).when(permissionservice).userCanUpload(anyString());
         val model = documentUploadModel();
         assertThat(model.get("userCanUpload"), equalTo(true));
+    }
+
+
+    @Test
+    @SneakyThrows
+    public void documentUploadView_canViewIfUserCanView() {
+        doReturn(true).when(permissionservice).userCanView(anyString());
+        val model = documentUploadModel();
+        assertThat(model.get("userCanView"), equalTo(true));
     }
 
     @Test

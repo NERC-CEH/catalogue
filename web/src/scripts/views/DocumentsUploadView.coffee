@@ -9,7 +9,11 @@ define [
   initialize: (options) ->
     do @initButtons
     do @initFinish
-    do @initDropzone if $('.dz').length
+    if $('.dz').length
+      do @initDropzone
+    else
+      do @loadedDropzone
+    
 
   updateDocumentView: (response) ->
     files = response.files || []
@@ -31,13 +35,13 @@ define [
         md5Hash: file.hash
     document.querySelector('.checksums-list').innerHTML = checksums.join('')
 
+    invalidElement = document.querySelector('.invalid-checksums-list')
     invlaid = []
     for key, value of invalid
       invlaid.push (invalidChecksumRow value)
+    if (invalidElement)
+      invalidElement.innerHTML = invlaid.join('')
 
-    document.querySelector('.invalid-checksums-list').innerHTML = invlaid.join('')
-    if Object.keys(invalid).length > 0
-      @disableFinish "Resolve invalid files before continuing"
     if files.length == 0
       @disableFinish "No files have been uploaded"
     else
@@ -106,13 +110,14 @@ define [
     icon.removeClass('fa-spin')
 
   enableFinish: ->
-    $('.finish-message').text('')
-    $('.finish').attr 'disabled', off
-    icon = $('.finish .fa')
-    icon.addClass('fa-check')
-    icon.removeClass('fa-ban')
-    icon.removeClass('fa-refresh')
-    icon.removeClass('fa-spin')
+    if $('.progress-bar-danger').length == 0
+      $('.finish-message').text('')
+      $('.finish').attr 'disabled', off
+      icon = $('.finish .fa')
+      icon.addClass('fa-check')
+      icon.removeClass('fa-ban')
+      icon.removeClass('fa-refresh')
+      icon.removeClass('fa-spin')
 
   submitFinish: ->
     $('.finish-message').text('')
@@ -131,10 +136,7 @@ define [
     $('.dz .title').text 'Drag files here'
     $('.is-initialising').attr 'disabled', off
     $('.is-initialising').removeClass('is-initialising')
-    if $('.invalid-row').length > 0
-      @disableFinish "Resolve invalid files before continuing"
-    else
-      do @enableFinish
+    do @enableFinish
 
   toggleUploadCancelAll: (status) ->
     $('.upload-all').attr 'disabled', status
@@ -188,7 +190,7 @@ define [
     upload = $('#' + file.id + ' .upload')
     upload.attr 'disabled', yes
 
-    @disableFinish 'Resolve all issues below'
+    @disableFinish 'Resolve all issues with files'
 
   success: (file, response) ->
     progress = $('#' + file.id + ' .progress-bar')

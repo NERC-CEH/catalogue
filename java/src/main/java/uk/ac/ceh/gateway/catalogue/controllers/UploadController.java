@@ -64,14 +64,10 @@ public class UploadController {
 
             if (status.equals("open") || status.equals("approved"))
                 message = "Awaiting scheduling from admin. Try again later.";
-            else if (status.equals("in progress"))
-                message = "Currently being checked. Awaiting approval from admin.";
-            else if (status.equals("resolved") || status.equals("closed"))
-                message = "This is finsihed. No further action required.";
-            else if (status.equals("on hold"))
-                message = "This issue is blocked. Contact an admin to resolve.";
             else if (status.equals("scheduled"))
-                message = "You can now upload your files for this document.";
+                message = "This has been scheduled. You can now upload your files for this document.";
+            else if (status.equals("in progress"))
+                message = "This is now in progress. Awaiting resolution from admin.";
         }
         return message;
     }
@@ -81,6 +77,10 @@ public class UploadController {
         return String.format(jqlTemplate, guid);
     }
 
+    private boolean isJiraStatus (List<JiraIssue> issues, String status) {
+        return issues.size() == 1 && issues.get(0).getStatus().equals(status);
+    }
+
     @RequestMapping(value = "upload/{guid}", method = RequestMethod.GET)
     @ResponseBody
     public ModelAndView documentsUpload(@PathVariable("guid") String guid)
@@ -88,10 +88,19 @@ public class UploadController {
         Map<String, Object> model = new HashMap<>();
 
         val issues = jiraService.search(jql(guid));
-        val isScheduled = issues.size() == 1 && issues.get(0).getStatus().equals("scheduled");
+        
+        val isScheduled = isJiraStatus(issues, "scheduled");
         model.put("isScheduled", isScheduled);
-        val isInProgress = issues.size() == 1 && issues.get(0).getStatus().equals("in progress");
+        
+        val isInProgress = isJiraStatus(issues, "in progress");
         model.put("isInProgress", isInProgress);
+        
+        val isResolved = isJiraStatus(issues, "resolved");
+        model.put("isResolved", isResolved);
+
+        val isClosed = isJiraStatus(issues, "closed");
+        model.put("isClosed", isClosed);
+
         model.put("status", getStatus(issues));
 
         val documentUpload = documentUploadService.get(guid);
@@ -100,7 +109,9 @@ public class UploadController {
         model.put("files", files);
 
         boolean userCanUpload = permissionService.userCanUpload(guid);
+        boolean userCanView = permissionService.userCanView(guid);
         boolean canUpload = userCanUpload && (isScheduled || isInProgress);
+        model.put("userCanView", userCanView);
         model.put("userCanUpload", userCanUpload);
         model.put("canUpload", canUpload);
 
