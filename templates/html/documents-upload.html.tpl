@@ -136,7 +136,11 @@
                                         </span>
                                     </div>
                                     <div class="files connectedSortable">
-                                        <div class="ui-state-disabled empty-message"></div>
+                                        <div class="ui-state-disabled empty-message">
+                                            <#if documentUpload.getInvalid()?values?size == 0>
+                                                No invalid files
+                                            </#if>
+                                        </div>
                                         <#list documentUpload.getInvalid()?values as file>
                                             <div id="${file.id}" class="file btn btn-primary">
                                                 <p class="filename">
@@ -146,17 +150,17 @@
                                                     <br />
                                                     <div class="text-right">
                                                         <#if file.type == "INVALID_HASH" || file.type == "UNKNOWN_FILE">
-                                                            <button class="btn btn-success" disabled>
+                                                            <button class="btn btn-success accept" disabled>
                                                                 Accept
                                                             </button>
                                                         </#if>
                                                         <#if file.type == "MISSING_FILE">
-                                                            <button class="btn btn-danger" disabled>
+                                                            <button class="btn btn-danger ignore" disabled>
                                                                 Ignore
                                                             </button>
                                                         </#if>
                                                         <#if file.type == "UNKNOWN_FILE">
-                                                            <button class="btn btn-danger" disabled data-toggle="modal" data-target="#documentUploadModal">
+                                                            <button class="btn btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal">
                                                                 Delete
                                                             </button>
                                                         </#if>

@@ -14,12 +14,14 @@ define [
     else
       do $('.message.loading').remove
       $('.messages').hide 'fast' if $('.messages .message').length == 0
+      do @initInvalid
 
-  initDeleteDocuments: ->
-    $('.documents .file').each (index, file) =>
+  initInvalid: ->
+    $('.invalid .delete, .invalid .ignore, .invalid .accept').attr('disabled', off)
+
+    $('.invalid .file').each (index, file) =>
       filename = $(file).find('.filename-label').text()
-      $(file).unbind('click')
-      $(file).click (evt) =>
+      $(file).find('.delete').click (evt) =>
         @modal 'Delete <b>' + filename + '</b>', 'Are you sure you want to delete <b>' + filename + '</b>', 'No', 'Yes', =>
           $.ajax
             url: window.location.href + '/delete'
@@ -31,7 +33,66 @@ define [
               file: filename
             success: (res) =>
               @message 'Removed: ' + filename, 'ok', 3000
-              @update res, @dropzone, filename
+              @update res, filename
+            error: (error) =>
+              if error.responseText
+                @message 'Failed to remove: ' + filename + ', ' + error.responseText, 'warning', 3000
+              else
+                @message 'Failed to remove: ' + filename, 'warning', 3000
+
+      $(file).find('.ignore').click (evt) =>
+        $.ajax
+          url: window.location.href + '/delete'
+          type: 'POST'
+          headers:
+            Accept: 'application/json'
+            Content: 'application/json'
+          data:
+            file: filename
+          success: (res) =>
+            @message 'Ignored: ' + filename, 'ok', 3000
+            @update res, filename
+          error: (error) =>
+            if error.responseText
+              @message 'Failed to ignore: ' + filename + ', ' + error.responseText, 'warning', 3000
+            else
+              @message 'Failed to ignore: ' + filename, 'warning', 3000
+
+      $(file).find('.accept').click (evt) =>
+        $.ajax
+          url: window.location.href + '/accept-invalid'
+          type: 'POST'
+          headers:
+            Accept: 'application/json'
+            Content: 'application/json'
+          data:
+            file: filename
+          success: (res) =>
+            @message 'Accepted: ' + filename, 'ok', 3000
+            @update res, filename
+          error: (error) =>
+            if error.responseText
+              @message 'Failed to accept: ' + filename + ', ' + error.responseText, 'warning', 3000
+            else
+              @message 'Failed to accept: ' + filename, 'warning', 3000
+
+  updateDeleteDocuments: ->
+    $('.documents .file').each (index, file) =>
+      filename = $(file).find('.filename-label').text()
+      $(file).unbind('click')
+      $(file).find('.delete').click (evt) =>
+        @modal 'Delete <b>' + filename + '</b>', 'Are you sure you want to delete <b>' + filename + '</b>', 'No', 'Yes', =>
+          $.ajax
+            url: window.location.href + '/delete'
+            type: 'POST'
+            headers:
+              Accept: 'application/json'
+              Content: 'application/json'
+            data:
+              file: filename
+            success: (res) =>
+              @message 'Removed: ' + filename, 'ok', 3000
+              @update res, filename
             error: (error) =>
               if error.responseText
                 @message 'Failed to remove: ' + filename + ', ' + error.responseText, 'warning', 3000
@@ -46,7 +107,16 @@ define [
     else
       $('.documents .empty-message').html('No files in <u>Documents</u>')
 
+    if $('.invalid .file').length > 0
+      $('.invalid .empty-message').text('')
+    else
+      $('.invalid .empty-message').html('No invalid files')
+
     $('.finish').attr('disabled', $('.documents .file').length == 0)
+
+    $('.invalid .delete').attr('disabled', off)
+    $('.invalid .ignore').attr('disabled', off)
+    $('.invalid .accept').attr('disabled', off)
 
     if $('.dropzone-files').length == 0
       $('.documents .files, .plone .files, .datastore .files').sortable
@@ -77,7 +147,7 @@ define [
       
       do $('.documents .files, .plone .files, .datastore .files').disableSelection
 
-    do @initDeleteDocuments
+    do @updateDeleteDocuments
    
     $('.documents .finish').unbind('click')
     $('.documents .finish').click =>
@@ -137,7 +207,7 @@ define [
           messages.hide 'fast' if messages.find('.message').length == 0
       , timeout
 
-  update: (res, dropzone, file) ->
+  update: (res, file) ->
     if file and file.name
       @message 'Uploaded: ' + file.name, 'ok', 3000
     files = res.files || []
@@ -150,22 +220,26 @@ define [
           hash: file.hash,
           id: file.id)
         $('.documents .files').append(newFile)
-    $('.documents .file').each (index, file) ->
+    $('.documents .file, .invalid .file').each (index, file) ->
       filename = $(file).find('.filename-label').text()
       matching = files.filter (rfile) ->
         return rfile.name == filename
       if matching.length == 0
         $(file).remove()
 
-    do @initDeleteDocuments
+    do @updateDeleteDocuments
 
     if $('.documents .file').length > 0
       $('.documents .empty-message').text('')
     else
       $('.documents .empty-message').html('Drag files into <u>here</u> to upload')
+    
+    if $('.invalid .file').length > 0
+      $('.invalid .empty-message').text('')
+    else
+      $('.invalid .empty-message').html('No invalid files')
   
     $('.finish').attr('disabled', $('.documents .file').length == 0)
-    $(this).sortable 'refresh' if $('.dropzone-files').length == 0
 
   initDropzone: ->
     update = @update.bind this
