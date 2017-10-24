@@ -138,12 +138,12 @@ define [
           if $('.plone .file').length > 0
             $('.plone .empty-message').text('')
           else
-            $('.plone .empty-message').html('Drag files from <u>Documents</u>')
+            $('.plone .empty-message').html('Drag files from <u>Documents</u> or <u>Datastore</u>')
 
           if $('.datastore .file').length > 0
             $('.datastore .empty-message').text('')
           else
-            $('.datastore .empty-message').html('Drag files from <u>Documents</u>')
+            $('.datastore .empty-message').html('Drag files from <u>Documents</u> or <u>Plone</u>')
       
       do $('.documents .files, .plone .files, .datastore .files').disableSelection
 

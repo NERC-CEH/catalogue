@@ -106,7 +106,7 @@
                                         </span>
                                     </div>
                                     <div class="files connectedSortable">
-                                        <div class="ui-state-disabled empty-message">Drag files from <u>Documents</u></div>
+                                        <div class="ui-state-disabled empty-message">Drag files from <u>Documents</u> or <u>Datastore</u></div>
                                     </div>
                                     <div class="folder-options is-empty"></div>
                                 </div>
@@ -121,7 +121,7 @@
                                         </span>
                                     </div>
                                     <div class="files connectedSortable">
-                                        <div class="ui-state-disabled empty-message">Drag files from <u>Documents</u></div>
+                                        <div class="ui-state-disabled empty-message">Drag files from <u>Documents</u> or <u>Plone</u></div>
                                     </div>
                                     <div class="folder-options text-right">
                                         <button class="btn btn-success" disabled data-toggle="modal" data-target="#documentUploadModal">Zip</button>
