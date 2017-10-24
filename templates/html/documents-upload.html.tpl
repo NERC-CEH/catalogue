@@ -136,7 +136,34 @@
                                         </span>
                                     </div>
                                     <div class="files connectedSortable">
-                                        <div class="ui-state-disabled empty-message">No invalid files</div>
+                                        <div class="ui-state-disabled empty-message"></div>
+                                        <#list documentUpload.getInvalid()?values as file>
+                                            <div id="${file.id}" class="file btn btn-primary">
+                                                <p class="filename">
+                                                    <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
+                                                    <br />
+                                                    <i class="fa fa-warning"></i> <span>${file.getLatestComment()}</span>
+                                                    <br />
+                                                    <div class="text-right">
+                                                        <#if file.type == "INVALID_HASH" || file.type == "UNKNOWN_FILE">
+                                                            <button class="btn btn-success" disabled>
+                                                                Accept
+                                                            </button>
+                                                        </#if>
+                                                        <#if file.type == "MISSING_FILE">
+                                                            <button class="btn btn-danger" disabled>
+                                                                Ignore
+                                                            </button>
+                                                        </#if>
+                                                        <#if file.type == "UNKNOWN_FILE">
+                                                            <button class="btn btn-danger" disabled data-toggle="modal" data-target="#documentUploadModal">
+                                                                Delete
+                                                            </button>
+                                                        </#if>
+                                                    </div>
+                                                </p>
+                                            </div>
+                                        </#list>
                                     </div>
                                     <div class="folder-options"></div>
                                 </div>
