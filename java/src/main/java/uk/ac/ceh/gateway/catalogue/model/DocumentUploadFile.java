@@ -12,6 +12,7 @@ import lombok.Data;
 public class DocumentUploadFile {
     private String name;
     private String path;
+    private String id;    
     private String format;
     private String mediatype;
     private String encoding;

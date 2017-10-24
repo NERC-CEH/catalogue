@@ -44,7 +44,8 @@ public class UploadController {
 
     @Autowired
     public UploadController(DocumentUploadService documentUploadService, JiraService jiraService,
-            PermissionService permissionService, DocumentRepository documentRepository, PloneDataDepositService ploneDataDepositService) {
+            PermissionService permissionService, DocumentRepository documentRepository,
+            PloneDataDepositService ploneDataDepositService) {
         this.documentUploadService = documentUploadService;
         this.jiraService = jiraService;
         this.permissionService = permissionService;
@@ -77,7 +78,7 @@ public class UploadController {
         return String.format(jqlTemplate, guid);
     }
 
-    private boolean isJiraStatus (List<JiraIssue> issues, String status) {
+    private boolean isJiraStatus(List<JiraIssue> issues, String status) {
         return issues.size() == 1 && issues.get(0).getStatus().equals(status);
     }
 
@@ -88,13 +89,13 @@ public class UploadController {
         Map<String, Object> model = new HashMap<>();
 
         val issues = jiraService.search(jql(guid));
-        
+
         val isScheduled = isJiraStatus(issues, "scheduled");
         model.put("isScheduled", isScheduled);
-        
+
         val isInProgress = isJiraStatus(issues, "in progress");
         model.put("isInProgress", isInProgress);
-        
+
         val isResolved = isJiraStatus(issues, "resolved");
         model.put("isResolved", isResolved);
 
@@ -181,7 +182,8 @@ public class UploadController {
     @PreAuthorize("@permission.userCanUpload(#guid)")
     @RequestMapping(value = "upload/{guid}/accept-invalid", method = RequestMethod.POST)
     @ResponseBody
-    public DocumentUpload acceptInvalid(@PathVariable("guid") String guid, @RequestParam("file") String file) throws IOException, DocumentRepositoryException {
+    public DocumentUpload acceptInvalid(@PathVariable("guid") String guid, @RequestParam("file") String file)
+            throws IOException, DocumentRepositoryException {
         documentUploadService.acceptInvalid(guid, file);
         return documentUploadService.get(guid);
     }

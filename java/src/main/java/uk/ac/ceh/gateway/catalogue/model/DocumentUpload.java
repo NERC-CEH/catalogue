@@ -56,7 +56,7 @@ public class DocumentUpload {
     public List<DocumentUploadFile> getFiles () {
         val files = Lists.newArrayList(meta.values());
         files.addAll(data.values());
-        files.sort((left, right) -> left.getName().compareTo(right.getName()));
+        files.sort((left, right) -> left.getId().compareTo(right.getId()));
         return files;
     }
 

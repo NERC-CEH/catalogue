@@ -40,6 +40,7 @@ public class DocumentUploadService {
         val documentUploadFile = new DocumentUploadFile();
         documentUploadFile.addComment("added by service");
         documentUploadFile.setName(filename);
+        documentUploadFile.setId(filename.replaceAll("[^\\w?]","_"));
         documentUploadFile.setPath(file.getAbsolutePath());
         documentUploadFile.setFormat(FilenameUtils.getExtension(filename));
         documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
@@ -134,6 +135,7 @@ public class DocumentUploadService {
                     val documentUploadFile = new DocumentUploadFile();
                     documentUploadFile.addComment("added from checksums.hash");
                     documentUploadFile.setName(name);
+                    documentUploadFile.setId(name.replaceAll("[^\\w?]","-"));
                     documentUploadFile.setFormat(FilenameUtils.getExtension(name));
                     documentUploadFile.setEncoding("utf-8");
                     documentUploadFile.setHash(hash);
@@ -222,6 +224,7 @@ public class DocumentUploadService {
             if (!inData && !inMeta && !alreadyInvalid) {
                 val documentUploadFile = new DocumentUploadFile();
                 documentUploadFile.setName(name);
+                documentUploadFile.setId(name.replaceAll("[^\\w?]","-"));
                 documentUploadFile.setPath(file.getAbsolutePath());
                 documentUploadFile.setFormat(FilenameUtils.getExtension(name));
                 documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));

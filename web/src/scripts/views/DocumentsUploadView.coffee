@@ -2,264 +2,195 @@ MEGEBYTE = 1000000
 
 define [
   'backbone'
-  'tpl!templates/DropzoneRow.tpl'
-  'tpl!templates/ChecksumRow.tpl'
-  'tpl!templates/InvalidChecksumRow.tpl'
-], (Backbone, dropzoneRow, checksumRow, invalidChecksumRow) -> Backbone.View.extend
+  'tpl!templates/DocumentUploadMessage.tpl'
+  'tpl!templates/DropzoneFile.tpl'
+  'tpl!templates/File.tpl'
+], (Backbone, documentUploadMessageTpl, dropzoneFileTpl, fileTpl) -> Backbone.View.extend
   initialize: (options) ->
-    do @initButtons
-    do @initFinish
-    if $('.dz').length
-      do @initDropzone
+    do @initDocuments if $('.documents').length
+    do @initDropzone if $('.dropzone-files').length
+
+  initDeleteDocuments: ->
+    $('.documents .file').each (index, file) =>
+      filename = $(file).find('.filename-label').text()
+      $(file).unbind('click')
+      $(file).click (evt) =>
+        @modal 'Delete <b>' + filename + '</b>', 'Are you sure you want to delete <b>' + filename + '</b>', 'No', 'Yes', =>
+          $.ajax
+            url: window.location.href + '/delete'
+            type: 'POST'
+            headers:
+              Accept: 'application/json'
+              Content: 'application/json'
+            data:
+              file: filename
+            success: (res) =>
+              @message 'Removed: ' + filename, 'ok', 3000
+              @update res, @dropzone, filename
+            error: (error) =>
+              if error.responseText
+                @message 'Failed to remove: ' + filename + ', ' + error.responseText, 'warning', 3000
+              else
+                @message 'Failed to remove: ' + filename, 'warning', 3000
+
+  initDocuments: ->
+    if $('.documents .file').length > 0
+      $('.documents .empty-message').text('')
     else
-      do @loadedDropzone
-    
+      $('.documents .empty-message').html('Drag files into <u>here</u> to upload')
 
-  updateDocumentView: (response) ->
-    files = response.files || []
-    invalid = response.invalid || {}
+    $('.finish').attr('disabled', $('.documents .file').length == 0)
 
-    if files.length > 0
-      $('.documents-is-inactive').removeClass('documents-is-inactive')
-      $('.finish-is-inactive').removeClass('finish-is-inactive')
-    if Object.keys(invalid).length > 0
-      $('.invalid-is-inactive').removeClass('invalid-is-inactive')
+    $('.documents .files').sortable
+      connectWith: '.connectedSortable',
+      cancel: '.empty-message'
+      update: ->
+        if $('.documents .file').length > 0
+          $('.documents .empty-message').text('')
+        else
+          $('.documents .empty-message').html('Drag files into <u>here</u> to upload')
 
-    checksums = files.map (file) ->
-      checksumRow
-        canDelete: $('#delete').length > 0
-        canChangeType: $('#canChangeType').length > 0
-        isData: 'checked' if file.type == "DATA"
-        isMeta: 'checked' if file.type == "META"
-        filename: file.name
-        md5Hash: file.hash
-    document.querySelector('.checksums-list').innerHTML = checksums.join('')
+    do @initDeleteDocuments
+   
+    $('.documents .finish').unbind('click')
+    $('.documents .finish').click =>
+      @modal 'Finish Uploading', 'Have you finished upload all your documents? <br /> This will stop you from uploading anymore and progress this issue futher.', 'No', 'Yes', =>
+        $('.delete').attr('disabled', on)
+        $('.fileinput-button').attr('disabled', on)
+        $('.finish').attr('disabled', on)
+        do @dropzone.disable
+        $.ajax
+          url: window.location.href + '/finish'
+          type: 'POST'
+          headers:
+            Accept: 'application/json'
+          success: (res) ->
+            do window.location.reload
+          error: (error) =>
+            $('.delete').attr('disabled', off)
+            $('.fileinput-button').attr('disabled', off)
+            $('.finish').attr('disabled', off)
+            do @dropzone.enable
+            if error.responseText
+              @message 'Could not finish: ' + error.responseText, 'warning', 3000
+            else
+              @message 'Could not finish' + error.responseText, 'warning', 3000
+          always: =>
+            
+            @message 'Finishing please wait ...', 'loading', 5000
+            setTimeout =>
+              @message 'It seems to be taking a while to Finish. Please <b>refresh the page and try again</b>. If there is no <b>Finish</b> button then the issue has moved on.', 'warning'
+            , 5000
 
-    invalidElement = document.querySelector('.invalid-checksums-list')
-    invlaid = []
-    for key, value of invalid
-      invlaid.push (invalidChecksumRow value)
-    if (invalidElement)
-      invalidElement.innerHTML = invlaid.join('')
+  modal: (title, body, dismissText, acceptText, onAccept) ->
+    $('.modal-title').html(title)
+    $('.modal-body').html(body)
+    $('.modal-dismiss').html(dismissText)
+    $('.modal-accept').html(acceptText)
 
-    if files.length == 0
-      @disableFinish "No files have been uploaded"
-    else
-      do @enableFinish
-    do @initButtons
+    $('.modal-accept').unbind('click')
+    $('.modal-accept').click ->
+      do onAccept
+      $('.modal-accept').unbind('click')
   
-  initButtons: ->
-    do @initDeleteButtons
-    @initChangeTypeButtons "meta"
-    @initChangeTypeButtons "data"
-    do @initUpdateButtons
+  message: (message, type, timeout) ->
+    message = documentUploadMessageTpl
+      type: type
+      message: message
+    message = $(message)
+    message.find('.close').click ->
+      do message.remove
+    messages = $('.messages')
+    messages.show 'fast' if !messages.is ':visible'
+    messages.append message
+    if timeout
+      setTimeout ->
+        message.hide 'fast', ->
+          do message.remove
+          messages.hide 'fast' if messages.find('.message').length == 0
+      , timeout
 
-  initDeleteButtons: ->
-    $('.delete').unbind 'click'
-    $('.delete').click =>
-      button = $(event.target)
-      file = button.parent().parent().find('.checksum-file').text()
-      $('.modal-title').text('Delete ' + file)
-      $('.modal-body').html('<p>You are about to <b>PERMANETLY DELETE</b> this file.<br /><br />Are you sure you want to continue?</p>')
-      $('.modal-dismiss').text('No')
-      $('.modal-accept').text('Yes')
-      $('.modal-accept').click =>
-        @post 'delete', button,
-          file: file
+  update: (res, dropzone, file) ->
+    if file and file.name
+      @message 'Uploaded: ' + file.name, 'ok', 3000
+    files = res.files || []
 
-  initChangeTypeButtons: (type) ->
-    $('.to-' + type).unbind 'click'
-    $('.to-' + type).click (evt) =>
-      button = $(evt.target)
-      file = button.parent().parent().parent().find('.checksum-file').text()
-      buttons = button.parent().find('.btn')
-      @post 'change', buttons,
-        type: button.text().toUpperCase()
-        file: file
+    for index, file of files
+      fileElement = $('#' + file.id)
+      if fileElement.length == 0
+        newFile = $(fileTpl
+          name: file.name,
+          hash: file.hash,
+          id: file.id)
+        $('.documents .files').append(newFile)
+    $('.documents .file').each (index, file) ->
+      filename = $(file).find('.filename-label').text()
+      matching = files.filter (rfile) ->
+        return rfile.name == filename
+      if matching.length == 0
+        $(file).remove()
 
-  initUpdateButtons: ->
-    $('.accept-invalid').unbind 'click'
-    $('.accept-invalid').click (evt) =>
-      button = $(event.target)
-      file = button.parent().parent().find('.checksum-file').text()
-      @post 'accept-invalid', button,
-        file: file
-    
-  post: (query, toDisable, data) ->
-      toDisable.attr('disabled', true)
-      $.ajax
-        url: window.location.href + '/' + query
-        type: 'POST'
-        headers:
-          Accept: 'application/json'
-        data: data
-        success: (response) =>
-          @updateDocumentView response
-          toDisable.attr('disabled', false)
-        error: (err) ->
-          toDisable.attr('disabled', false)
-          window.location.reload() if err.responseText.indexOf('IllegalArgumentException') != -1
+    do @initDeleteDocuments
 
-  disableFinish: (message) ->
-    $('.finish-message').text(message)
-    $('.finish').attr 'disabled', on
-    icon = $('.finish .fa')
-    icon.addClass('fa-ban')
-    icon.removeClass('fa-check')
-    icon.removeClass('fa-refresh')
-    icon.removeClass('fa-spin')
-
-  enableFinish: ->
-    if $('.progress-bar-danger').length == 0
-      $('.finish-message').text('')
-      $('.finish').attr 'disabled', off
-      icon = $('.finish .fa')
-      icon.addClass('fa-check')
-      icon.removeClass('fa-ban')
-      icon.removeClass('fa-refresh')
-      icon.removeClass('fa-spin')
-
-  submitFinish: ->
-    $('.finish-message').text('')
-    $('.finish').attr 'disabled', on
-    icon = $('.finish .fa')
-    icon.removeClass('fa-check')
-    icon.removeClass('fa-ban-')
-    icon.addClass('fa-refresh')
-    icon.addClass('fa-spin')
-    setTimeout () ->
-      $('.finish-message')
-        .text 'Sorry, this seems to be taking a while to finish. Please reload the page. If you do not see the Finish button after refreshing then it has finished, otherwise try pressing the Finish button again after refreshing the page. If the problem persists please contact an admin.'
-    , 10 * 1000
-
-  loadedDropzone: ->
-    $('.dz .title').text 'Drag files here'
-    $('.is-initialising').attr 'disabled', off
-    $('.is-initialising').removeClass('is-initialising')
-    do @enableFinish
-
-  toggleUploadCancelAll: (status) ->
-    $('.upload-all').attr 'disabled', status
-    $('.cancel-all').attr 'disabled', status
-
-  changeSize: (files) ->
-    $('.dropzone-container').removeClass('is-empty')
-    $('.dropzone-container').removeClass('is-large')
-    $('.dropzone-container').removeClass('is-1')
-    $('.dropzone-container').removeClass('is-2')
-    $('.dropzone-container').removeClass('is-3')
-    $('.dropzone-container').removeClass('is-4')
-    $('.dropzone-container').removeClass('is-5')
-    $('.dropzone-container').removeClass('is-6')
-
-    if files.length == 0
-      $('.dropzone-container').addClass('is-empty')
-    else if files.length > 6
-      $('.dropzone-container').addClass('is-large')
+    if $('.documents .file').length > 0
+      $('.documents .empty-message').text('')
     else
-      $('.dropzone-container').addClass('is-' + files.length)
+      $('.documents .empty-message').html('Drag files into <u>here</u> to upload')
+  
+    $('.finish').attr('disabled', $('.documents .file').length == 0)
 
-  addedFile: (file) ->
-    @disableFinish 'Some files have not been uploaded yet'
-    @toggleUploadCancelAll off
-    $('.file-row').last().attr('id', file.id)
-    $('#' + file.id + ' .upload').last().click => @dropzone.enqueueFile file
-    $('#' + file.id + ' .cancel').last().click => @dropzone.removeFile file
-    if file.size > 300 * MEGEBYTE
-      $('#' + file.id + ' .max-size').last().removeClass 'is-inactive'
-      $('#' + file.id + ' .max-size').last().addClass 'is-active'
-    @changeSize @dropzone.files
-
-  removedFile: ->
-    if @dropzone.files.length == 0
-      @toggleUploadCancelAll on
-      do @enableFinish
-    @changeSize @dropzone.files
-
-  errorMessages:
-    403: 'Unauthorized'
-    409: 'Already exists'
-
-  error: (file, message) ->
-    progress = $('#' + file.id + ' .progress-bar')
-    progress.width '100%'
-    progress.removeClass 'progress-bar-success'
-    progress.addClass 'progress-bar-danger'
-    progress.text message
-
-    upload = $('#' + file.id + ' .upload')
-    upload.attr 'disabled', yes
-
-    @disableFinish 'Resolve all issues with files'
-
-  success: (file, response) ->
-    progress = $('#' + file.id + ' .progress-bar')
-    progress.text 'Uploaded'
-    setTimeout (=>
-      @dropzone.removeFile file
-      @updateDocumentView response
-    ), 500
-
-  uploadAll: ->
-    @dropzone.enqueueFiles @dropzone.getFilesWithStatus(Dropzone.ADDED)
-
-  cancelAll: ->
-    @toggleUploadCancelAll on
-    @dropzone.removeAllFiles yes
+    $('.documents .files').sortable('refresh')
 
   initDropzone: ->
-    loadedDropzone = @loadedDropzone.bind this
-    addedFile = @addedFile.bind this
-    removedFile = @removedFile.bind this
-    errorMessages = @errorMessages
-    error = @error.bind this
-    success = @success.bind this
-    uploadAll = @uploadAll.bind this
-    cancelAll = @cancelAll.bind this
+    update = @update.bind this
+    message = @message.bind this
 
-    @dropzone = new Dropzone '.dz',
+    dropzone = new Dropzone '.dropzone-files',
       url: window.location.href + '/add'
       maxFilesize: 1250
-      autoQueue: no
-      previewTemplate: dropzoneRow()
-      previewsContainer: '#previews'
+      autoQueue: yes
+      previewTemplate: dropzoneFileTpl()
+      previewsContainer: '.dropzone-files'
       clickable: '.fileinput-button'
       parallelUploads: 1
       init: ->
-        do loadedDropzone
-        fileCount = -1
-
-        status = () =>
-          @.files.map((f) -> f.status)
+        $('.file .delete, .fileinput-button').attr('disabled', off)
+        do $('.message.loading').remove
+        $('.messages').hide 'fast' if $('.messages .message').length == 0
 
         @on 'addedfile', (file) ->
-          fileCount += 1
-          file.id = 'file-row-' + fileCount
-          addedFile file
+          $('.documents .files').sortable('refresh')
+          $('.documents .empty-message').text('')
 
-        @on 'removedfile', removedFile
+          $('.finish').attr('disabled', on)
 
+          last = $('.uploading').length - 1
+          uploading = $($('.uploading')[last])
+          id = file.name.replace(/[^\w?]/g, '_')
+          uploading.addClass('uploading-' + id)
+          uploading.find('.cancel').click ->
+            dropzone.removeFile file
+
+        @on 'success', (file, res) ->
+          update res, dropzone, file
+        
         @on 'error', (file, errorMessage, xhr) ->
-          message = errorMessage
-          message = errorMessages[xhr.status] || errorMessage if xhr
-          error file, message
+          errorMessages =
+            0: 'No connection'
+            403: 'Unauthorized'
 
-        @on 'success', success
+          progressMessage = errorMessage
+          progressMessage = errorMessages[xhr.status] || errorMessage if xhr
+          
+          message 'Could not upload: <b>' + file.name + '</b>, ' + errorMessage, 'warning', 3000
 
-        $('.upload-all').click uploadAll
+          progressMessage = 'Too big' if progressMessage.indexOf 'too big' != -1
 
-        $('.cancel-all').click cancelAll
+          id = file.name.replace(/[^\w?]/g, '_')
+          progress = $('.uploading-' + id + ' .progress-bar')
+          progress.width '100%'
+          progress.removeClass 'progress-bar-success'
+          progress.addClass 'progress-bar-danger'
+          progress.text progressMessage
 
-  initFinish: ->
-    $('.finish').click =>
-      do @submitFinish
-      $.ajax
-        url: window.location.href + '/finish'
-        type: 'POST'
-        headers:
-          Accept: 'application/json'
-        success: ->
-          window.location.reload()
-        fail: (error) =>
-          do @enableFinish
-          $('.finish-message').text 'An error occured, if this persists then please contact an admin'
+    @dropzone = dropzone
