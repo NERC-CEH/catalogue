@@ -72,11 +72,10 @@ define [
             $('.finish').attr('disabled', off)
             do @dropzone.enable
             if error.responseText
-              @message 'Could not finish: ' + error.responseText, 'warning', 3000
+              @message 'Could not finish: ' + error.responseText, 'warning'
             else
-              @message 'Could not finish' + error.responseText, 'warning', 3000
+              @message 'Could not finish' + error.responseText, 'warning'
           always: =>
-            
             @message 'Finishing please wait ...', 'loading', 5000
             setTimeout =>
               @message 'It seems to be taking a while to Finish. Please <b>refresh the page and try again</b>. If there is no <b>Finish</b> button then the issue has moved on.', 'warning'
