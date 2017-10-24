@@ -8,7 +8,11 @@ define [
 ], (Backbone, documentUploadMessageTpl, dropzoneFileTpl, fileTpl) -> Backbone.View.extend
   initialize: (options) ->
     do @initDocuments if $('.documents').length
-    do @initDropzone if $('.dropzone-files').length
+    if $('.dropzone-files').length
+      do @initDropzone
+    else
+      do $('.message.loading').remove
+      $('.messages').hide 'fast' if $('.messages .message').length == 0
 
   initDeleteDocuments: ->
     $('.documents .file').each (index, file) =>
@@ -36,19 +40,41 @@ define [
   initDocuments: ->
     if $('.documents .file').length > 0
       $('.documents .empty-message').text('')
-    else
+    else if $('.dropzone-files').length > 0
       $('.documents .empty-message').html('Drag files into <u>here</u> to upload')
+    else
+      $('.documents .empty-message').html('No files in <u>Documents</u>')
 
     $('.finish').attr('disabled', $('.documents .file').length == 0)
 
-    $('.documents .files').sortable
-      connectWith: '.connectedSortable',
+    $('.documents .files, .plone .files, .datastore .files').sortable
+      placeholder: 'ui-state-highlight'
+      scroll: false
+      connectWith: '.connectedSortable'
       cancel: '.empty-message'
-      update: ->
+      stop: (evt, ui) ->
+        item = $(ui.item)
+        isDocuments = item.parent().parent().hasClass('documents')
+        $(this).sortable('cancel') if isDocuments
+      update: (evt, ui) ->
         if $('.documents .file').length > 0
           $('.documents .empty-message').text('')
-        else
+        else if $('.dropzone-files').length > 0
           $('.documents .empty-message').html('Drag files into <u>here</u> to upload')
+        else
+          $('.documents .empty-message').html('No files in <u>Documents</u>')
+
+        if $('.plone .file').length > 0
+          $('.plone .empty-message').text('')
+        else
+          $('.plone .empty-message').html('Drag files from <u>Documents</u>')
+
+        if $('.datastore .file').length > 0
+          $('.datastore .empty-message').text('')
+        else
+          $('.datastore .empty-message').html('Drag files from <u>Documents</u>')
+    
+    do $('.documents .files, .plone .files, .datastore .files').disableSelection
 
     do @initDeleteDocuments
    

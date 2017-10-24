@@ -1,5 +1,5 @@
 <#import "skeleton.html.tpl" as skeleton>
-    <@skeleton.master title="Upload Files">
+    <@skeleton.master title="Manage Documents">
         <div id="documents-upload" class="container documents-upload">
             <section class="section">
                 <h1 class="title">
@@ -9,9 +9,19 @@
             </section>
             <section class="section">
                 <#if canUpload && isScheduled>
-                    <div class="alert alert-success" role="alert">Currently <b>Scheduled</b>. Drag files into <b>Documents</b> to upload.</div>
+                    <div class="alert alert-success" role="alert">
+                        <b>Scheduled</b>
+                        <br />
+                        Drag files into <b>Documents</b> to upload
+                    </div>
                 <#elseif canUpload && isInProgress>
-                    <div class="alert alert-success" role="alert">Currently <b>In Progress</b>. You can now move and zip files</div>
+                    <div class="alert alert-success" role="alert">
+                        <b>In Progress</b>
+                        <br />
+                        You can now move and zip files into the <b>Datastore</b>
+                        <br />
+                        Or you can drag files into <b>Plone</b> (currently you have to manually upload these, but they will be marked in this view as though in plone)
+                    </div>
                 <#elseif !canUpload>
                     <div class="alert alert-danger" role="alert">You do not have permissions to view this page</div>
                 <#else>
@@ -19,7 +29,7 @@
                 </#if>
                 <#if canUpload>
                     <div class="messages alert alert-info" role="alert">
-                        <#if isScheduled>
+                        <#if isScheduled || isInProgress>
                             <div class="message loading">
                                 <span class="fa fa-refresh fa-spin"></span>
                                 <span>Loading please wait ...</span>
@@ -65,7 +75,75 @@
                     </div>
                 </section>
             <#elseif canUpload && isInProgress>
-                <div>dropbox, eidchub, plone, trash</div>
+                <section class="section">
+                    <div class="container-fluid folders">
+                        <div class="row">
+                            <div class='col-md-6'>
+                                <div class="documents folder">
+                                    <div class="folder-title">
+                                        <span class="folder-name">
+                                            <i class="fa fa-folder"></i> Documents
+                                        </span>
+                                    </div>
+                                    <div class="files connectedSortable">
+                                        <div class="ui-state-disabled empty-message"></div>
+                                        <#list documentUpload.getFiles() as file>
+                                            <div id="${file.id}" class="file btn btn-primary">
+                                                <p class="filename">
+                                                    <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
+                                                </p>
+                                            </div>
+                                        </#list>
+                                    </div>
+                                    <div class="folder-options is-empty"></div>
+                                </div>
+                            </div>
+                            <div class='col-md-6'>
+                                <div class="plone folder">
+                                    <div class="folder-title">
+                                        <span class="folder-name">
+                                            <i class="fa fa-database"></i> Plone
+                                        </span>
+                                    </div>
+                                    <div class="files connectedSortable">
+                                        <div class="ui-state-disabled empty-message">Drag files from <u>Documents</u></div>
+                                    </div>
+                                    <div class="folder-options is-empty"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class='col-md-6'>
+                                <div class="datastore folder">
+                                    <div class="folder-title">
+                                        <span class="folder-name">
+                                            <i class="fa fa-archive"></i> Datastore
+                                        </span>
+                                    </div>
+                                    <div class="files connectedSortable">
+                                        <div class="ui-state-disabled empty-message">Drag files from <u>Documents</u></div>
+                                    </div>
+                                    <div class="folder-options text-right">
+                                        <button class="btn btn-success" disabled data-toggle="modal" data-target="#documentUploadModal">Zip</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='col-md-6'>
+                                <div class="invalid folder">
+                                    <div class="folder-title">
+                                        <span class="folder-name">
+                                            <i class="fa fa-warning"></i> Invalid
+                                        </span>
+                                    </div>
+                                    <div class="files connectedSortable">
+                                        <div class="ui-state-disabled empty-message">No invalid files</div>
+                                    </div>
+                                    <div class="folder-options"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </#if>
         </div>
 

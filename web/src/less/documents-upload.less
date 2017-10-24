@@ -22,6 +22,7 @@
 
 .folder {
     margin: auto;
+    margin-bottom: 30px;
     width: 100%;
     font-size: 20px;
     background-color: white;
@@ -57,16 +58,17 @@
     width: 100%;
     border-top-right-radius: 4px;
     height: 300px;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     position: relative;
 }
 
 .file {
+    float: left;
     font-size: 18px;
-    width: 240px;
+    width: 32%;
     overflow: hidden;
     margin: 2px;
-    display: inline-block;
 }
 
 .file-options {
@@ -86,6 +88,11 @@
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     padding: 10px;
+    height: 56px;
+}
+
+.folder-options.is-empty {
+    height: 8px;
 }
 
 .files .empty-message {
@@ -106,4 +113,17 @@
 .file .progress-bar {
     font-size: 18px;
     line-height: 32px;
+}
+
+.ui-state-highlight {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    opacity: 0.3;
+    height: 10000px;
+}
+
+.documents .ui-state-highlight {
+    display: none;
 }
