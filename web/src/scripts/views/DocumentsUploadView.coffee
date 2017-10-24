@@ -7,7 +7,8 @@ define [
   'tpl!templates/File.tpl'
 ], (Backbone, documentUploadMessageTpl, dropzoneFileTpl, fileTpl) -> Backbone.View.extend
   initialize: (options) ->
-    do @initDocuments if $('.documents').length
+    do @initFolders
+
     if $('.dropzone-files').length
       do @initDropzone
     else
@@ -37,7 +38,7 @@ define [
               else
                 @message 'Failed to remove: ' + filename, 'warning', 3000
 
-  initDocuments: ->
+  initFolders: ->
     if $('.documents .file').length > 0
       $('.documents .empty-message').text('')
     else if $('.dropzone-files').length > 0
@@ -47,34 +48,34 @@ define [
 
     $('.finish').attr('disabled', $('.documents .file').length == 0)
 
-    $('.documents .files, .plone .files, .datastore .files').sortable
-      placeholder: 'ui-state-highlight'
-      scroll: false
-      connectWith: '.connectedSortable'
-      cancel: '.empty-message'
-      stop: (evt, ui) ->
-        item = $(ui.item)
-        isDocuments = item.parent().parent().hasClass('documents')
-        $(this).sortable('cancel') if isDocuments
-      update: (evt, ui) ->
-        if $('.documents .file').length > 0
-          $('.documents .empty-message').text('')
-        else if $('.dropzone-files').length > 0
-          $('.documents .empty-message').html('Drag files into <u>here</u> to upload')
-        else
-          $('.documents .empty-message').html('No files in <u>Documents</u>')
+    if $('.dropzone-files').length == 0
+      $('.documents .files, .plone .files, .datastore .files').sortable
+        placeholder: 'ui-state-highlight'
+        scroll: false
+        connectWith: '.connectedSortable'
+        cancel: '.empty-message'
+        stop: (evt, ui) ->
+          item = $(ui.item)
+          isDocuments = item.parent().parent().hasClass('documents')
+          $(this).sortable 'cancel' if isDocuments
+          if $('.documents .file').length > 0
+            $('.documents .empty-message').text('')
+          else if $('.dropzone-files').length > 0
+            $('.documents .empty-message').html('Drag files into <u>here</u> to upload')
+          else
+            $('.documents .empty-message').html('No files in <u>Documents</u>')
 
-        if $('.plone .file').length > 0
-          $('.plone .empty-message').text('')
-        else
-          $('.plone .empty-message').html('Drag files from <u>Documents</u>')
+          if $('.plone .file').length > 0
+            $('.plone .empty-message').text('')
+          else
+            $('.plone .empty-message').html('Drag files from <u>Documents</u>')
 
-        if $('.datastore .file').length > 0
-          $('.datastore .empty-message').text('')
-        else
-          $('.datastore .empty-message').html('Drag files from <u>Documents</u>')
-    
-    do $('.documents .files, .plone .files, .datastore .files').disableSelection
+          if $('.datastore .file').length > 0
+            $('.datastore .empty-message').text('')
+          else
+            $('.datastore .empty-message').html('Drag files from <u>Documents</u>')
+      
+      do $('.documents .files, .plone .files, .datastore .files').disableSelection
 
     do @initDeleteDocuments
    
@@ -128,6 +129,7 @@ define [
     messages = $('.messages')
     messages.show 'fast' if !messages.is ':visible'
     messages.append message
+    messages.scrollTop 30 * messages.find('.message').length
     if timeout
       setTimeout ->
         message.hide 'fast', ->
@@ -163,8 +165,7 @@ define [
       $('.documents .empty-message').html('Drag files into <u>here</u> to upload')
   
     $('.finish').attr('disabled', $('.documents .file').length == 0)
-
-    $('.documents .files').sortable('refresh')
+    $(this).sortable 'refresh' if $('.dropzone-files').length == 0
 
   initDropzone: ->
     update = @update.bind this
@@ -184,7 +185,6 @@ define [
         $('.messages').hide 'fast' if $('.messages .message').length == 0
 
         @on 'addedfile', (file) ->
-          $('.documents .files').sortable('refresh')
           $('.documents .empty-message').text('')
 
           $('.finish').attr('disabled', on)
