@@ -149,6 +149,17 @@ public class UploadController {
         return response;
     }
 
+    @RequestMapping(value = "plonetest", method = RequestMethod.GET)
+    @ResponseBody
+    public String plonetest() {
+        String toReturn = "toreturn!";
+    try {
+		toReturn = ploneDataDepositService.addOrUpdate(null);
+	} catch (Exception e) {
+		toReturn = e.getMessage();
+	}
+        return toReturn;
+    }
     @PreAuthorize("@permission.userCanUpload(#guid)")
     @RequestMapping(value = "upload/{guid}/add", method = RequestMethod.POST)
     @ResponseBody
