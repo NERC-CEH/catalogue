@@ -141,16 +141,15 @@ define [
           isPlone = item.parent().parent().hasClass('plone')
           isDatastore = item.parent().parent().hasClass('datastore')
 
+          from = item.attr('id').split('-')[0]
+          to = 'plone'
+          to = 'datastore' if isDatastore
+
           file = item.find('.filename-label').text()
 
           if isDocuments
-            $(this).sortable 'cancel'
-          else
-            to = 'plone'
-            to = 'datastore' if isDatastore
-
-            from = item.attr('id').split('-')[0]
-
+            $('.documents .files, .plone .files, .datastore .files').sortable 'cancel'
+          else if from != to
             $.ajax
               url: window.location.href + '/move'
               type: 'POST'
@@ -163,7 +162,7 @@ define [
               success: (res) =>
                   currentId = item.attr('id')
                   item.attr('id', currentId.replace(from, to))
-                  @message 'Moved: ' + item.attr('id'), 'success'
+                  @message 'Moved: from <b>' + from + '/' + file + '</b> to <b>' + to + '/' + file + '</b>', 'success', 3000
               error: (error) =>
                 do @dropzone.enable
                 if error.responseText
