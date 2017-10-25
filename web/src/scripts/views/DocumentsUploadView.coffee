@@ -134,7 +134,7 @@ define [
         placeholder: 'ui-state-highlight'
         scroll: false
         connectWith: '.connectedSortable'
-        cancel: '.empty-message, .file-invalid'
+        cancel: '.empty-message, .file-invalid, .moving'
         stop: (evt, ui) =>
           item = $(ui.item)
           isDocuments = item.parent().parent().hasClass('documents')
@@ -150,6 +150,8 @@ define [
           if isDocuments
             $('.documents .files, .plone .files, .datastore .files').sortable 'cancel'
           else if from != to
+            item.addClass('moving')
+            item.attr('disabled', on)
             $.ajax
               url: window.location.href + '/move'
               type: 'POST'
@@ -162,13 +164,17 @@ define [
               success: (res) =>
                   currentId = item.attr('id')
                   item.attr('id', currentId.replace(from, to))
+                  item.removeClass('moving')
+                  item.attr('disabled', off)
                   @message 'Moved: from <b>' + from + '/' + file + '</b> to <b>' + to + '/' + file + '</b>', 'success', 3000
               error: (error) =>
-                do @dropzone.enable
+                item.removeClass('moving')
+                item.attr('disabled', off)
+                $('.documents .files, .plone .files, .datastore .files').sortable 'cancel'
                 if error.responseText
-                  @message 'Could not move: ' + error.responseText, 'warning'
+                  @message 'Could not move: ' + file + ' because ' + error.responseText, 'warning'
                 else
-                  @message 'Could not move' + error.responseText, 'warning'
+                  @message 'Could not move: ' + file, 'warning'
 
           if $('.documents .file').length > 0
             $('.documents .empty-message').text('')
