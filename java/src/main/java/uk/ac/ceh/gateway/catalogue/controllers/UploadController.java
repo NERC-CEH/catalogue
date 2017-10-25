@@ -219,6 +219,18 @@ public class UploadController {
         return get(guid);
     }
 
+    @PreAuthorize("@permission.userCanUpload(#guid)")
+    @RequestMapping(value = "upload/{guid}/move-all", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, DocumentUpload> moveAll(@PathVariable("guid") String guid, @RequestParam("files[]") String[] files,
+            @RequestParam("from") String from, @RequestParam("to") String to)
+            throws IOException, DocumentRepositoryException {
+        val fromService = services.get(from);
+        val toService = services.get(to);
+        for(val file : files) fromService.move(guid, file, toService);
+        return get(guid);
+    }
+
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Can not finish, contact admin to resolve issue clash")
     class NonUniqueJiraIssue extends RuntimeException {
         static final long serialVersionUID = 1L;

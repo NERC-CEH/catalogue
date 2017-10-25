@@ -113,7 +113,7 @@
                                         </#list>
                                     </div>
                                     <div class="folder-options text-right">
-                                        <button class="btn btn-success" disabled data-toggle="modal" data-target="#documentUploadModal">Move to Datastore</button>
+                                        <button class="btn btn-success move-to-datastore" disabled>Move to Datastore</button>
                                     </div>
                                 </div>
                             </div>

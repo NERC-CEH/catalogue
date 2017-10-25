@@ -4,9 +4,10 @@ define [
   'backbone'
   'tpl!templates/DocumentUploadMessage.tpl'
   'tpl!templates/DropzoneFile.tpl'
+  'tpl!templates/DeleteableFile.tpl'
   'tpl!templates/File.tpl'
   'tpl!templates/InvalidFile.tpl'
-], (Backbone, documentUploadMessageTpl, dropzoneFileTpl, fileTpl, invalidFileTpl) -> Backbone.View.extend
+], (Backbone, documentUploadMessageTpl, dropzoneFileTpl, deleteableFileTpl, fileTpl, invalidFileTpl) -> Backbone.View.extend
   initialize: (options) ->
     do @initFolders
 
@@ -16,6 +17,37 @@ define [
       do $('.message.loading').remove
       $('.messages').hide 'fast' if $('.messages .message').length == 0
       do @updateInvalid
+      do @initMoveToDatastore
+
+  initMoveToDatastore: ->
+    $('.move-to-datastore').attr('disabled', off)
+    $('.move-to-datastore').click =>
+      $('.move-to-datastore').attr('disabled', on)
+      filenameLabels = $('.documents .file .filename-label')
+      files = []
+      filenameLabels.each (index, filenameLabel) ->
+        files.push $(filenameLabel).text()
+      $.ajax
+        url: window.location.href + '/move-all'
+        type: 'POST'
+        headers:
+          Accept: 'application/json'
+        data:
+          files: files
+          from: 'documents'
+          to: 'datastore'
+        success: (res) =>
+            @update res, undefined, 'documents'
+            @update res, undefined, 'datastore'
+            @update res, undefined, 'plone'
+            @message 'Moved: from <b>' + files.join(', ') + '</b> to <u>Datastore</u>', 'success', 3000
+        error: (error) =>
+          $('.move-to-datastore').attr('disabled', off)
+          $('.documents .files, .plone .files, .datastore .files').sortable 'cancel'
+          if error.responseText
+            @message 'Could not move: <b>' + files.join(', ') + '</b> because ' + error.responseText, 'warning'
+          else
+            @message 'Could not move: <b>' + files.join(', ') + '</b>', 'warning'
 
   updateInvalid: ->
     $('.file-invalid .delete, .file-invalid .ignore, .file-invalid .accept').attr('disabled', off)
@@ -263,12 +295,14 @@ define [
     invalid = res[name].invalid || {}
     invalid = (value for own prop, value of invalid)
     all = files.concat invalid
-    console.log(name, all)
 
     for index, file of files
       fileElement = $('#' + name + '-' + file.id)
       if fileElement.length == 0
-        newFile = $(fileTpl
+        tpl = fileTpl
+        tpl = deleteableFileTpl if $('.dropzone-files').length
+
+        newFile = $(tpl
           name: file.name,
           hash: file.hash,
           id: name + '-' + file.id)
