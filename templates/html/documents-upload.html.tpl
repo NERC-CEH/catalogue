@@ -37,7 +37,6 @@
                         </#if>
                     </div>
                 </#if>
-
             </section>
             <#if canUpload && isScheduled>
                 <section class="section">
@@ -95,7 +94,9 @@
                                             </div>
                                         </#list>
                                     </div>
-                                    <div class="folder-options is-empty"></div>
+                                    <div class="folder-options text-right">
+                                        <button class="btn btn-success" disabled data-toggle="modal" data-target="#documentUploadModal">Move to Datastore</button>
+                                    </div>
                                 </div>
                             </div>
                             <div class='col-md-6'>
@@ -108,7 +109,7 @@
                                     <div class="files connectedSortable">
                                         <div class="ui-state-disabled empty-message">Drag files from <u>Documents</u> or <u>Datastore</u></div>
                                     </div>
-                                    <div class="folder-options is-empty"></div>
+                                    <div class="folder-options"></div>
                                 </div>
                             </div>
                         </div>

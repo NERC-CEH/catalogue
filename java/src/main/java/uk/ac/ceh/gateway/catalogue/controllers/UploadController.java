@@ -175,15 +175,6 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#guid)")
-    @RequestMapping(value = "upload/{guid}/change", method = RequestMethod.POST)
-    @ResponseBody
-    public DocumentUpload change(@PathVariable("guid") String guid, @RequestParam("file") String file,
-            @RequestParam("type") String type) throws IOException, DocumentRepositoryException {
-        documentUploadService.changeFileType(guid, file, DocumentUpload.Type.valueOf(type));
-        return documentUploadService.get(guid);
-    }
-
-    @PreAuthorize("@permission.userCanUpload(#guid)")
     @RequestMapping(value = "upload/{guid}/accept-invalid", method = RequestMethod.POST)
     @ResponseBody
     public DocumentUpload acceptInvalid(@PathVariable("guid") String guid, @RequestParam("file") String file)

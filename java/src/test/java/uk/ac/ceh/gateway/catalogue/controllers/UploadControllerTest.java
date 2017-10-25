@@ -408,20 +408,6 @@ public class UploadControllerTest {
 
     @Test
     @SneakyThrows
-    public void change_willChangeTheDocumentType() {
-        controller.change("guid", "file", "META");
-        verify(documentUploadService).changeFileType(eq("guid"), eq("file"), eq(DocumentUpload.Type.META));
-    }
-
-    @Test
-    @SneakyThrows
-    public void change_returnsDocumentUpload() {
-        val actual = controller.change("guid", "file", "META");
-        assertThat(actual, equalTo(documentUpload));
-    }
-
-    @Test
-    @SneakyThrows
     public void acceptInvalid_willAcceptInvalidFile() {
         controller.acceptInvalid("guid", "file");
         verify(documentUploadService).acceptInvalid(eq("guid"), eq("file"));

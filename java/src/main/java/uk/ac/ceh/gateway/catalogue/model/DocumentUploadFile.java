@@ -19,7 +19,7 @@ public class DocumentUploadFile {
     private long bytes;
     private String hash;
     private List<String> comments = Lists.newArrayList();
-    private String type = "DATA";
+    private String type = "DOCUMENTS";
 
     public void addComment(String comment) {
         comments.add(comment);

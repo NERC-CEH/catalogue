@@ -16,7 +16,7 @@ public class PloneDataDepositService {
     private final WebResource ploneWebResource;
 
     public String addOrUpdate(DocumentUpload du) throws IOException, DocumentRepositoryException{
-        List<String> files = du.getData().entrySet().stream()
+        List<String> files = du.getDocuments().entrySet().stream()
                  .map(f -> URLEncoder.encode(f.getKey() + ";" + f.getValue().getHash()))
                  .collect(Collectors.toList());
 

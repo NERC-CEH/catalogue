@@ -127,7 +127,13 @@ define [
         stop: (evt, ui) ->
           item = $(ui.item)
           isDocuments = item.parent().parent().hasClass('documents')
+          isPlone = item.parent().parent().hasClass('plone')
+          isDatastore = item.parent().parent().hasClass('datastore')
+
           $(this).sortable 'cancel' if isDocuments
+          console.log('move to plone') if isPlone
+          console.log('move to datastore') if isDatastore
+
           if $('.documents .file').length > 0
             $('.documents .empty-message').text('')
           else if $('.dropzone-files').length > 0

@@ -23,7 +23,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 @AllArgsConstructor
 public class DocumentUploadService {
-    private final File dropbox;
+    private final File directory;
     private final DocumentRepository documentRepository;
 
     public void add(String guid, String filename, InputStream input) throws IOException, DocumentRepositoryException {
@@ -48,7 +48,7 @@ public class DocumentUploadService {
         documentUploadFile.setBytes(file.length());
         documentUploadFile.setHash(hash(file));
 
-        documentUpload.getData().put(filename, documentUploadFile);
+        documentUpload.getDocuments().put(filename, documentUploadFile);
         save(documentUpload);
     }
 
@@ -59,29 +59,9 @@ public class DocumentUploadService {
         val documentUpload = get(guid);
         val file = new File(documentUpload.getPath(), filename);
         if (file.exists()) FileUtils.forceDelete(file);
-        documentUpload.getData().remove(filename);
-        documentUpload.getMeta().remove(filename);
+        documentUpload.getDocuments().remove(filename);
         documentUpload.getInvalid().remove(filename);
         save(documentUpload);
-    }
-
-    public void changeFileType(String guid, String filename, Type type) throws IOException, DocumentRepositoryException {
-        if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
-        if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
-
-        val documentUpload = get(guid);
-        if (type.equals(Type.META)) changeFileType(guid, filename, Type.DATA, Type.META, documentUpload);
-        else if (type.equals(Type.DATA)) changeFileType(guid, filename, Type.META, Type.DATA, documentUpload);
-        save(documentUpload);
-    }
-
-    private void changeFileType(String guid, String filename, Type from, Type to, DocumentUpload documentUpload) throws IOException, DocumentRepositoryException {
-        val documentUploadFile = documentUpload.getFiles(from).get(filename);
-        if (null != documentUploadFile) {
-            documentUploadFile.setType(to);
-            documentUpload.getFiles(from).remove(filename);
-            documentUpload.getFiles(to).put(filename, documentUploadFile);
-        }
     }
 
     public void acceptInvalid(String guid, String filename) throws IOException, DocumentRepositoryException {
@@ -92,9 +72,9 @@ public class DocumentUploadService {
         val documentUploadFile = documentUpload.getInvalid().get(filename);
         if (null != documentUploadFile) {
             documentUploadFile.addComment("accepted");
-            documentUploadFile.setType(Type.DATA);
+            documentUploadFile.setType(Type.DOCUMENTS);
             documentUpload.getInvalid().remove(filename);
-            documentUpload.getData().put(filename, documentUploadFile);
+            documentUpload.getDocuments().put(filename, documentUploadFile);
             save(documentUpload);
         }
     }
@@ -108,9 +88,7 @@ public class DocumentUploadService {
         updateWithChecksumsFile(documentUpload);
         updateKnownInvalidFiles(documentUpload);
         updateFromDataAndMetaToInvalid(documentUpload);
-        removeDuplicates(documentUpload);
-        autoFix(documentUpload, Type.DATA);
-        autoFix(documentUpload, Type.META);
+        autoFix(documentUpload);
         save(documentUpload);
         return documentUpload;
     }
@@ -128,8 +106,7 @@ public class DocumentUploadService {
                 if (matches.matches()) {
                     val hash = matches.group(1);
                     val name = matches.group(2);
-                    documentUpload.getData().remove(name);
-                    documentUpload.getMeta().remove(name);
+                    documentUpload.getDocuments().remove(name);
                     documentUpload.getInvalid().remove(name);
 
                     val documentUploadFile = new DocumentUploadFile();
@@ -145,7 +122,7 @@ public class DocumentUploadService {
                     documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
                     documentUploadFile.setBytes(file.length());
 
-                    documentUpload.getData().put(name, documentUploadFile);
+                    documentUpload.getDocuments().put(name, documentUploadFile);
                 }
             }
         }
@@ -218,10 +195,9 @@ public class DocumentUploadService {
         val files = folder.listFiles(file -> !file.getName().equals("_data.json") && !file.getName().equals("checksums.hash"));
         for(val file : files) {
             val name = file.getName();
-            val inData = documentUpload.getData().containsKey(name);
-            val inMeta = documentUpload.getMeta().containsKey(name);
+            val inData = documentUpload.getDocuments().containsKey(name);
             val alreadyInvalid = documentUpload.getInvalid().containsKey(name);
-            if (!inData && !inMeta && !alreadyInvalid) {
+            if (!inData && !alreadyInvalid) {
                 val documentUploadFile = new DocumentUploadFile();
                 documentUploadFile.setName(name);
                 documentUploadFile.setId(name.replaceAll("[^\\w?]","-"));
@@ -239,17 +215,8 @@ public class DocumentUploadService {
         }
     }
 
-    private void removeDuplicates(DocumentUpload documentUpload) {
-        for (val documentUploadFile : documentUpload.getData().values()) {
-            val name = documentUploadFile.getName();
-            if (documentUpload.getMeta().containsKey(name)) {
-                documentUpload.getMeta().remove(name);
-            }
-        }
-    }
-
-    private void autoFix(DocumentUpload documentUpload, Type type) throws IOException {
-        for (val entrySet : documentUpload.getFiles(type).entrySet()) {
+    private void autoFix(DocumentUpload documentUpload) throws IOException {
+        for (val entrySet : documentUpload.getFiles(Type.DOCUMENTS).entrySet()) {
             val name = entrySet.getKey();
             val documentUploadFile = entrySet.getValue();
             val file = new File(documentUpload.getPath(), name);
@@ -258,13 +225,13 @@ public class DocumentUploadService {
             documentUploadFile.setMediatype(Files.probeContentType(file.toPath()));
             documentUploadFile.setEncoding("utf-8");
             documentUploadFile.setBytes(file.length());
-            documentUploadFile.setType(type);
+            documentUploadFile.setType(Type.DOCUMENTS);
             documentUploadFile.setPath(file.getAbsolutePath());
         }
     }
 
     private File createDataFile(String guid) throws IOException, DocumentRepositoryException {
-        val folder = new File(dropbox, guid);
+        val folder = new File(directory, guid);
         if (!folder.exists()) FileUtils.forceMkdir(folder);
 
         val file = new File(folder, "_data.json");
@@ -285,7 +252,7 @@ public class DocumentUploadService {
         saveJson(documentUpload);
 
         val checksums = new File(documentUpload.getPath(), "checksums.hash");
-        val documentUploadFiles = documentUpload.getData()
+        val documentUploadFiles = documentUpload.getDocuments()
             .values()
             .stream()
             .map(documentUploadFile -> String.format("%s *%s", documentUploadFile.getHash(), documentUploadFile.getName()))
