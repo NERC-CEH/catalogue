@@ -135,15 +135,41 @@ define [
         scroll: false
         connectWith: '.connectedSortable'
         cancel: '.empty-message, .file-invalid'
-        stop: (evt, ui) ->
+        stop: (evt, ui) =>
           item = $(ui.item)
           isDocuments = item.parent().parent().hasClass('documents')
           isPlone = item.parent().parent().hasClass('plone')
           isDatastore = item.parent().parent().hasClass('datastore')
 
-          $(this).sortable 'cancel' if isDocuments
-          console.log('move to plone') if isPlone
-          console.log('move to datastore') if isDatastore
+          file = item.find('.filename-label').text()
+
+          if isDocuments
+            $(this).sortable 'cancel'
+          else
+            to = 'plone'
+            to = 'datastore' if isDatastore
+
+            from = item.attr('id').split('-')[0]
+
+            $.ajax
+              url: window.location.href + '/move'
+              type: 'POST'
+              headers:
+                Accept: 'application/json'
+              data:
+                file: file
+                from: from
+                to: to
+              success: (res) =>
+                  currentId = item.attr('id')
+                  item.attr('id', currentId.replace(from, to))
+                  @message 'Moved: ' + item.attr('id'), 'success'
+              error: (error) =>
+                do @dropzone.enable
+                if error.responseText
+                  @message 'Could not move: ' + error.responseText, 'warning'
+                else
+                  @message 'Could not move' + error.responseText, 'warning'
 
           if $('.documents .file').length > 0
             $('.documents .empty-message').text('')

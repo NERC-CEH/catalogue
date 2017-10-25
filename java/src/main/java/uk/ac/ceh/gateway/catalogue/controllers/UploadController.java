@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.common.collect.Maps;
 
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
@@ -28,6 +29,8 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.DocumentUploadService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -35,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import uk.ac.ceh.gateway.catalogue.services.PloneDataDepositService;
 
+@Slf4j
 @Controller
 public class UploadController {
     private final DocumentUploadService documentsUploadService;
@@ -211,6 +215,18 @@ public class UploadController {
     public Map<String, DocumentUpload> move(@PathVariable("guid") String guid, @RequestParam("file") String file,
             @RequestParam("from") String from, @RequestParam("to") String to)
             throws IOException, DocumentRepositoryException {
+        val fromDocumentUploadService = services.get(from);
+        val fromDocumentUpload = fromDocumentUploadService.get(guid);
+        val toDocumentUploadService = services.get(to);
+
+        val documentUploadFile = fromDocumentUpload.getDocuments().get(file);
+        val name = documentUploadFile.getName();
+        val path = documentUploadFile.getPath();
+        val inputStream = new FileInputStream(path);
+        
+        toDocumentUploadService.add(guid, name, inputStream);
+        fromDocumentUploadService.delete(guid, name);
+
         return get(guid);
     }
 
