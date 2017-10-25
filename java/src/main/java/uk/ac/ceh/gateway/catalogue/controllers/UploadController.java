@@ -215,18 +215,7 @@ public class UploadController {
     public Map<String, DocumentUpload> move(@PathVariable("guid") String guid, @RequestParam("file") String file,
             @RequestParam("from") String from, @RequestParam("to") String to)
             throws IOException, DocumentRepositoryException {
-        val fromDocumentUploadService = services.get(from);
-        val fromDocumentUpload = fromDocumentUploadService.get(guid);
-        val toDocumentUploadService = services.get(to);
-
-        val documentUploadFile = fromDocumentUpload.getDocuments().get(file);
-        val name = documentUploadFile.getName();
-        val path = documentUploadFile.getPath();
-        val inputStream = new FileInputStream(path);
-        
-        toDocumentUploadService.add(guid, name, inputStream);
-        fromDocumentUploadService.delete(guid, name);
-
+        services.get(from).move(guid, file, services.get(to));
         return get(guid);
     }
 

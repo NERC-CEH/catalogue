@@ -79,6 +79,17 @@ public class DocumentUploadService {
         }
     }
 
+    public void move(String guid, String file, DocumentUploadService to) throws IOException, DocumentRepositoryException {
+        val fromDocumentUpload = get(guid);
+        val documentUploadFile = fromDocumentUpload.getDocuments().get(file);
+        val name = documentUploadFile.getName();
+        val path = documentUploadFile.getPath();
+        val inputStream = new FileInputStream(path);
+        
+        to.add(guid, name, inputStream);
+        delete(guid, name);
+    }
+
     public DocumentUpload get(String guid) throws IOException, DocumentRepositoryException {
         if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
 
