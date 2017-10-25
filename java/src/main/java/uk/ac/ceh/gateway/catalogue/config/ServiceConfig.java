@@ -68,7 +68,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentUploadService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
-import uk.ac.ceh.gateway.catalogue.services.FileUploadService;
 import uk.ac.ceh.gateway.catalogue.services.GeminiExtractorService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
@@ -345,13 +344,18 @@ public class ServiceConfig {
     }
 
     @Bean
-    public FileUploadService fileUploadService() {
-        return new FileUploadService(new File("/var/ceh-catalogue/dropbox"));
+    public DocumentUploadService documentsUploadService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
     }
 
     @Bean
-    public DocumentUploadService documentUploadService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
+    public DocumentUploadService datastoreUploadService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentUploadService(new File("/var/ceh-catalogue/eidchub"), documentRepository());
+    }
+
+    @Bean
+    public DocumentUploadService ploneUploadService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentUploadService(new File("/var/ceh-catalogue/plone"), documentRepository());
     }
     
     @Bean

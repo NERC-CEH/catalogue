@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Maps;
+
 import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -34,7 +37,9 @@ import uk.ac.ceh.gateway.catalogue.services.PloneDataDepositService;
 
 @Controller
 public class UploadController {
-    private final DocumentUploadService documentUploadService;
+    private final DocumentUploadService documentsUploadService;
+    private final DocumentUploadService datastoreUploadService;
+    private final DocumentUploadService ploneUploadService;
     private final JiraService jiraService;
     private final PermissionService permissionService;
     private final DocumentRepository documentRepository;
@@ -42,15 +47,23 @@ public class UploadController {
 
     private static final String START_PROGRESS = "751";
 
+    private static final Map<String, DocumentUploadService> services = Maps.newConcurrentMap();
+
     @Autowired
-    public UploadController(DocumentUploadService documentUploadService, JiraService jiraService,
-            PermissionService permissionService, DocumentRepository documentRepository,
-            PloneDataDepositService ploneDataDepositService) {
-        this.documentUploadService = documentUploadService;
+    public UploadController(DocumentUploadService documentsUploadService, DocumentUploadService datastoreUploadService,
+            DocumentUploadService ploneUploadService, JiraService jiraService, PermissionService permissionService,
+            DocumentRepository documentRepository, PloneDataDepositService ploneDataDepositService) {
+        this.documentsUploadService = documentsUploadService;
+        this.datastoreUploadService = datastoreUploadService;
+        this.ploneUploadService = ploneUploadService;
         this.jiraService = jiraService;
         this.permissionService = permissionService;
         this.documentRepository = documentRepository;
         this.ploneDataDepositService = ploneDataDepositService;
+
+        services.put("documents", documentsUploadService);
+        services.put("datastore", datastoreUploadService);
+        services.put("plone", ploneUploadService);
     }
 
     private String getStatus(List<JiraIssue> issues) {
@@ -82,6 +95,14 @@ public class UploadController {
         return issues.size() == 1 && issues.get(0).getStatus().equals(status);
     }
 
+    private Map<String, DocumentUpload> get(String guid) throws IOException, DocumentRepositoryException {
+        Map<String, DocumentUpload> value = Maps.newHashMap();
+        value.put("documents", documentsUploadService.get(guid));
+        value.put("datastore", datastoreUploadService.get(guid));
+        value.put("plone", ploneUploadService.get(guid));
+        return value;
+    }
+
     @RequestMapping(value = "upload/{guid}", method = RequestMethod.GET)
     @ResponseBody
     public ModelAndView documentsUpload(@PathVariable("guid") String guid)
@@ -104,10 +125,9 @@ public class UploadController {
 
         model.put("status", getStatus(issues));
 
-        val documentUpload = documentUploadService.get(guid);
-        model.put("documentUpload", documentUpload);
-        val files = documentUpload.getFiles();
-        model.put("files", files);
+        model.put("documents", documentsUploadService.get(guid));
+        model.put("datastore", datastoreUploadService.get(guid));
+        model.put("plone", ploneUploadService.get(guid));
 
         boolean userCanUpload = permissionService.userCanUpload(guid);
         boolean userCanView = permissionService.userCanView(guid);
@@ -145,8 +165,8 @@ public class UploadController {
         transitionIssueToStartProgress(user, guid);
         removeUploadPermission(user, guid);
         try {
-            ploneDataDepositService.addOrUpdate(documentUploadService.get(guid));
-        } catch (Exception ignoreError)  {
+            ploneDataDepositService.addOrUpdate(documentsUploadService.get(guid));
+        } catch (Exception ignoreError) {
 
         }
         val response = new HashMap<String, String>();
@@ -155,32 +175,43 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#guid)")
-    @RequestMapping(value = "upload/{guid}/add", method = RequestMethod.POST)
+    @RequestMapping(value = "upload/{guid}/add/{name}", method = RequestMethod.POST)
     @ResponseBody
-    public DocumentUpload addFile(@PathVariable("guid") String guid, @RequestParam("file") MultipartFile file)
+    public Map<String, DocumentUpload> addFile(@PathVariable("guid") String guid,
+            @RequestParam("file") MultipartFile file, @PathVariable("name") String name)
             throws IOException, DocumentRepositoryException {
         try (InputStream in = file.getInputStream()) {
-            documentUploadService.add(guid, file.getOriginalFilename(), in);
-            return documentUploadService.get(guid);
+            services.get(name).add(guid, file.getOriginalFilename(), in);
+            return get(guid);
         }
     }
 
     @PreAuthorize("@permission.userCanUpload(#guid)")
-    @RequestMapping(value = "upload/{guid}/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "upload/{guid}/delete/{name}", method = RequestMethod.POST)
     @ResponseBody
-    public DocumentUpload deleteFile(@PathVariable("guid") String guid, @RequestParam("file") String file)
-            throws IOException, DocumentRepositoryException {
-        documentUploadService.delete(guid, file);
-        return documentUploadService.get(guid);
+    public Map<String, DocumentUpload> deleteFile(@PathVariable("guid") String guid, @RequestParam("file") String file,
+            @PathVariable("name") String name) throws IOException, DocumentRepositoryException {
+        services.get(name).delete(guid, file);
+        return get(guid);
     }
 
     @PreAuthorize("@permission.userCanUpload(#guid)")
-    @RequestMapping(value = "upload/{guid}/accept-invalid", method = RequestMethod.POST)
+    @RequestMapping(value = "upload/{guid}/accept-invalid/{name}", method = RequestMethod.POST)
     @ResponseBody
-    public DocumentUpload acceptInvalid(@PathVariable("guid") String guid, @RequestParam("file") String file)
+    public Map<String, DocumentUpload> acceptInvalid(@PathVariable("guid") String guid,
+            @RequestParam("file") String file, @PathVariable("name") String name)
             throws IOException, DocumentRepositoryException {
-        documentUploadService.acceptInvalid(guid, file);
-        return documentUploadService.get(guid);
+        services.get(name).acceptInvalid(guid, file);
+        return get(guid);
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#guid)")
+    @RequestMapping(value = "upload/{guid}/move", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, DocumentUpload> move(@PathVariable("guid") String guid, @RequestParam("file") String file,
+            @RequestParam("from") String from, @RequestParam("to") String to)
+            throws IOException, DocumentRepositoryException {
+        return get(guid);
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Can not finish, contact admin to resolve issue clash")
