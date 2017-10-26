@@ -24,7 +24,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 public class PloneDataDepositServiceTest {
     
@@ -77,7 +76,8 @@ public class PloneDataDepositServiceTest {
     This test is ignored because it is just useful utility used during plone development to send requests the plone service
     */
     @Test
-    public void testResponse() throws IOException, DocumentRepositoryException {
+    @SneakyThrows
+    public void testResponse() {
         String actual = pdds.addOrUpdate(dus.get("guid"));
         String expected = "Success - updated: guid";
         assertThat(actual, equalTo(expected));

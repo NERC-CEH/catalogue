@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.MediaType;
 import lombok.AllArgsConstructor;
+import net.lingala.zip4j.exception.ZipException;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
@@ -15,7 +16,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 public class PloneDataDepositService {
     private final WebResource ploneWebResource;
 
-    public String addOrUpdate(DocumentUpload du) throws IOException, DocumentRepositoryException{
+    public String addOrUpdate(DocumentUpload du) throws ZipException, IOException, DocumentRepositoryException{
         List<String> files = du.getDocuments().entrySet().stream()
                  .map(f -> URLEncoder.encode(f.getKey() + ";" + f.getValue().getHash()))
                  .collect(Collectors.toList());

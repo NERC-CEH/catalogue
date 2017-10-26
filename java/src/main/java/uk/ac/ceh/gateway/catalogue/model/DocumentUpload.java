@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
@@ -22,6 +23,9 @@ public class DocumentUpload {
     private final String path;
     private final ConcurrentMap<String, DocumentUploadFile> documents;
     private final ConcurrentMap<String, DocumentUploadFile> invalid;
+    
+    @SuppressWarnings("unused")
+    private boolean zipped;
 
     public DocumentUpload (String title, String type, String guid, String path) {
         this.title = title;
@@ -53,6 +57,10 @@ public class DocumentUpload {
         val files = Lists.newArrayList(documents.values());
         files.sort((left, right) -> left.getId().compareTo(right.getId()));
         return files;
+    }
+
+    public boolean isZipped() {
+        return new File(path, String.format("%s.zip", guid)).exists();
     }
 
     @JsonIgnore

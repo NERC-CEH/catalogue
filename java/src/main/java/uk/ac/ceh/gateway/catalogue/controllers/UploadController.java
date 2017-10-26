@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.common.collect.Maps;
 
 import lombok.val;
-import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.exception.ZipException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
@@ -30,7 +30,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentUploadService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -38,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import uk.ac.ceh.gateway.catalogue.services.PloneDataDepositService;
 
-@Slf4j
 @Controller
 public class UploadController {
     private final DocumentUploadService documentsUploadService;
@@ -99,7 +97,7 @@ public class UploadController {
         return issues.size() == 1 && issues.get(0).getStatus().equals(status);
     }
 
-    private Map<String, DocumentUpload> get(String guid) throws IOException, DocumentRepositoryException {
+    private Map<String, DocumentUpload> get(String guid) throws ZipException, IOException, DocumentRepositoryException {
         Map<String, DocumentUpload> value = Maps.newHashMap();
         value.put("documents", documentsUploadService.get(guid));
         value.put("datastore", datastoreUploadService.get(guid));
@@ -110,7 +108,7 @@ public class UploadController {
     @RequestMapping(value = "upload/{guid}", method = RequestMethod.GET)
     @ResponseBody
     public ModelAndView documentsUpload(@PathVariable("guid") String guid)
-            throws IOException, DocumentRepositoryException {
+            throws ZipException, IOException, DocumentRepositoryException {
         Map<String, Object> model = new HashMap<>();
 
         val issues = jiraService.search(jql(guid));
@@ -183,7 +181,7 @@ public class UploadController {
     @ResponseBody
     public Map<String, DocumentUpload> addFile(@PathVariable("guid") String guid,
             @RequestParam("file") MultipartFile file, @PathVariable("name") String name)
-            throws IOException, DocumentRepositoryException {
+            throws ZipException, IOException, DocumentRepositoryException {
         try (InputStream in = file.getInputStream()) {
             services.get(name).add(guid, file.getOriginalFilename(), in);
             return get(guid);
@@ -194,7 +192,7 @@ public class UploadController {
     @RequestMapping(value = "upload/{guid}/delete/{name}", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, DocumentUpload> deleteFile(@PathVariable("guid") String guid, @RequestParam("file") String file,
-            @PathVariable("name") String name) throws IOException, DocumentRepositoryException {
+            @PathVariable("name") String name) throws ZipException, IOException, DocumentRepositoryException {
         services.get(name).delete(guid, file);
         return get(guid);
     }
@@ -204,7 +202,7 @@ public class UploadController {
     @ResponseBody
     public Map<String, DocumentUpload> acceptInvalid(@PathVariable("guid") String guid,
             @RequestParam("file") String file, @PathVariable("name") String name)
-            throws IOException, DocumentRepositoryException {
+            throws ZipException, IOException, DocumentRepositoryException {
         services.get(name).acceptInvalid(guid, file);
         return get(guid);
     }
@@ -214,7 +212,7 @@ public class UploadController {
     @ResponseBody
     public Map<String, DocumentUpload> move(@PathVariable("guid") String guid, @RequestParam("file") String file,
             @RequestParam("from") String from, @RequestParam("to") String to)
-            throws IOException, DocumentRepositoryException {
+            throws ZipException, IOException, DocumentRepositoryException {
         services.get(from).move(guid, file, services.get(to));
         return get(guid);
     }
@@ -222,12 +220,31 @@ public class UploadController {
     @PreAuthorize("@permission.userCanUpload(#guid)")
     @RequestMapping(value = "upload/{guid}/move-all", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, DocumentUpload> moveAll(@PathVariable("guid") String guid, @RequestParam("files[]") String[] files,
-            @RequestParam("from") String from, @RequestParam("to") String to)
-            throws IOException, DocumentRepositoryException {
+    public Map<String, DocumentUpload> moveAll(@PathVariable("guid") String guid,
+            @RequestParam("files[]") String[] files, @RequestParam("from") String from, @RequestParam("to") String to)
+            throws ZipException, IOException, DocumentRepositoryException {
         val fromService = services.get(from);
         val toService = services.get(to);
-        for(val file : files) fromService.move(guid, file, toService);
+        for (val file : files)
+            fromService.move(guid, file, toService);
+        return get(guid);
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#guid)")
+    @RequestMapping(value = "upload/{guid}/zip/{name}", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, DocumentUpload> zip(@PathVariable("guid") String guid, @PathVariable("name") String name)
+            throws ZipException, IOException, DocumentRepositoryException {
+        services.get(name).zip(guid);
+        return get(guid);
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#guid)")
+    @RequestMapping(value = "upload/{guid}/unzip/{name}", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, DocumentUpload> unzip(@PathVariable("guid") String guid, @PathVariable("name") String name)
+            throws ZipException, IOException, DocumentRepositoryException {
+        services.get(name).unzip(guid);
         return get(guid);
     }
 

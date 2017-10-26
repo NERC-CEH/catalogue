@@ -18,6 +18,47 @@ define [
       $('.messages').hide 'fast' if $('.messages .message').length == 0
       do @updateInvalid
       do @initMoveToDatastore
+      do @initZip
+
+  initZip: ->
+    $('.zip, .unzip').attr('disabled', off)
+    $('.zip').click =>
+      $('.zip').attr('disabled', on)
+      $.ajax
+        url: window.location.href + '/zip/datastore'
+        type: 'POST'
+        headers:
+          Accept: 'application/json'
+        success: (res) =>
+            $('.zip, .unzip').attr('disabled', off)
+            $('.zip').hide()
+            $('.unzip').show()
+            @message 'Zipped <u>Datastore</u>', 'success', 3000
+        error: (error) =>
+          $('.zip, .unzip').attr('disabled', off)
+          if error.responseText
+            @message 'Could not zip <u>Datastore</u> because ' + error.responseText, 'warning', 3000
+          else
+            @message 'Could not zip <u>Datastore</u>', 'warning', 3000
+
+    $('.unzip').click =>
+      $('.unzip').attr('disabled', on)
+      $.ajax
+        url: window.location.href + '/unzip/datastore'
+        type: 'POST'
+        headers:
+          Accept: 'application/json'
+        success: (res) =>
+            $('.zip, .unzip').attr('disabled', off)
+            $('.unzip').hide()
+            $('.zip').show()
+            @message 'Unzipped <u>Datastore</u>', 'success', 3000
+        error: (error) =>
+          $('.zip, .unzip').attr('disabled', off)
+          if error.responseText
+            @message 'Could not unzip <u>Datastore</u> because ' + error.responseText, 'warning', 3000
+          else
+            @message 'Could not unzip <u>Datastore</u>', 'warning', 3000
 
   initMoveToDatastore: ->
     $('.move-to-datastore').attr('disabled', off)
@@ -45,9 +86,9 @@ define [
           $('.move-to-datastore').attr('disabled', off)
           $('.documents .files, .plone .files, .datastore .files').sortable 'cancel'
           if error.responseText
-            @message 'Could not move: <b>' + files.join(', ') + '</b> because ' + error.responseText, 'warning'
+            @message 'Could not move: <b>' + files.join(', ') + '</b> because ' + error.responseText, 'warning', 3000
           else
-            @message 'Could not move: <b>' + files.join(', ') + '</b>', 'warning'
+            @message 'Could not move: <b>' + files.join(', ') + '</b>', 'warning', 3000
 
   updateInvalid: ->
     $('.file-invalid .delete, .file-invalid .ignore, .file-invalid .accept').attr('disabled', off)

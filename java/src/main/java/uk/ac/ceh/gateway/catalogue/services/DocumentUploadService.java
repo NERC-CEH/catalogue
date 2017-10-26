@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -15,6 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.val;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload.Type;
@@ -26,13 +30,17 @@ public class DocumentUploadService {
     private final File directory;
     private final DocumentRepository documentRepository;
 
-    public void add(String guid, String filename, InputStream input) throws IOException, DocumentRepositoryException {
+    public void add(String guid, String filename, InputStream input) throws ZipException, IOException, DocumentRepositoryException {
         if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
         if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
 
+        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
+        val wasZipped = zipFile.exists();
+        unzip(guid);
+        
+        val documentUpload = get(guid);
         delete(guid, filename);
 
-        val documentUpload = get(guid);
         val folder = new File(documentUpload.getPath());
         val file = new File(folder, filename);
         FileUtils.copyInputStreamToFile(input, file);
@@ -50,11 +58,17 @@ public class DocumentUploadService {
 
         documentUpload.getDocuments().put(filename, documentUploadFile);
         save(documentUpload);
+
+        if (wasZipped) zip(guid);
     }
 
-    public void delete(String guid, String filename) throws IOException, DocumentRepositoryException {
+    public void delete(String guid, String filename) throws ZipException, IOException, DocumentRepositoryException {
         if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
         if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
+
+        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
+        val wasZipped = zipFile.exists();
+        unzip(guid);
 
         val documentUpload = get(guid);
         val file = new File(documentUpload.getPath(), filename);
@@ -62,11 +76,47 @@ public class DocumentUploadService {
         documentUpload.getDocuments().remove(filename);
         documentUpload.getInvalid().remove(filename);
         save(documentUpload);
+
+        if (wasZipped) zip(guid);
     }
 
-    public void acceptInvalid(String guid, String filename) throws IOException, DocumentRepositoryException {
+    public void zip(String guid) throws ZipException, IOException, DocumentRepositoryException {
+        val documentUpload = get(guid);
+        val zipFilename = String.format("%s.zip", documentUpload.getGuid());
+        val zipRawFile = new File(documentUpload.getPath(), zipFilename);
+        if (!zipRawFile.exists()) {
+            ZipFile zipFile = new ZipFile(zipRawFile);
+            for (val documentUploadFile : documentUpload.getFiles()) {
+                val file = new File(documentUploadFile.getPath());
+                zipFile.addFile(file, new ZipParameters());
+                FileUtils.forceDelete(file);
+            }
+
+            val checksums = new File(documentUpload.getPath(), "checksums.hash");
+            zipFile.addFile(checksums, new ZipParameters());
+            save(documentUpload);
+
+            FileUtils.forceDelete(checksums);
+            FileUtils.write(checksums, String.format("%s *%s", hash(zipRawFile),  zipFilename), Charset.defaultCharset());
+        }
+    }
+
+    public void unzip(String guid) throws ZipException, IOException, DocumentRepositoryException {
+        val file = new File(directory, String.format("%s/%s.zip", guid, guid));
+        if (file.exists()) {
+            ZipFile zipFile = new ZipFile(file);
+            zipFile.extractAll(file.getAbsolutePath().replaceAll(String.format("%s.zip", guid), ""));
+            FileUtils.forceDelete(file);
+        }
+    }
+
+    public void acceptInvalid(String guid, String filename) throws ZipException, IOException, DocumentRepositoryException {
         if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
         if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
+
+        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
+        val wasZipped = zipFile.exists();
+        unzip(guid);
 
         val documentUpload = get(guid);
         val documentUploadFile = documentUpload.getInvalid().get(filename);
@@ -77,9 +127,15 @@ public class DocumentUploadService {
             documentUpload.getDocuments().put(filename, documentUploadFile);
             save(documentUpload);
         }
+
+        if (wasZipped) zip(guid);
     }
 
-    public void move(String guid, String file, DocumentUploadService to) throws IOException, DocumentRepositoryException {
+    public void move(String guid, String file, DocumentUploadService to) throws ZipException, IOException, DocumentRepositoryException {
+        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
+        val wasZipped = zipFile.exists();
+        unzip(guid);
+
         val fromDocumentUpload = get(guid);
         val documentUploadFile = fromDocumentUpload.getDocuments().get(file);
         val name = documentUploadFile.getName();
@@ -88,10 +144,16 @@ public class DocumentUploadService {
         
         to.add(guid, name, inputStream);
         delete(guid, name);
+
+        if (wasZipped) zip(guid);
     }
 
-    public DocumentUpload get(String guid) throws IOException, DocumentRepositoryException {
+    public DocumentUpload get(String guid) throws ZipException, IOException, DocumentRepositoryException {
         if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
+
+        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
+        val wasZipped = zipFile.exists();
+        unzip(guid);
 
         val dataFile = createDataFile(guid);
         val mapper = new ObjectMapper();
@@ -101,6 +163,9 @@ public class DocumentUploadService {
         updateFromDataAndMetaToInvalid(documentUpload);
         autoFix(documentUpload);
         save(documentUpload);
+
+        if (wasZipped) zip(guid);
+
         return documentUpload;
     }
 
@@ -203,7 +268,11 @@ public class DocumentUploadService {
     private void validateUnknownFiles(DocumentUpload documentUpload) throws IOException {
         val path = documentUpload.getPath();
         val folder = new File(path);
-        val files = folder.listFiles(file -> !file.getName().equals("_data.json") && !file.getName().equals("checksums.hash"));
+        val files = folder.listFiles(file -> {
+            return !file.getName().equals("_data.json") &&
+            !file.getName().equals("checksums.hash") &&
+            !file.getName().equals(String.format("%s.zip", documentUpload.getGuid()));
+        });
         for(val file : files) {
             val name = file.getName();
             val inData = documentUpload.getDocuments().containsKey(name);
