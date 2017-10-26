@@ -21,7 +21,7 @@ public class PloneDataDepositService {
 
     public String addOrUpdate(DocumentUpload du) throws IOException, DocumentRepositoryException{
         List<String> files = du.getData().entrySet().stream()
-                .map(f -> URLEncoder.encode(f.getKey() + ";" + f.getValue().getHash()))
+                .map(f -> f.getKey() + ";" + f.getValue().getHash())
                 .collect(Collectors.toList());
 
         MultivaluedMap formData = new MultivaluedMapImpl();
