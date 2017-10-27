@@ -88,7 +88,8 @@ public class PloneDataDepositServiceTest {
     This tests the uploading code's ability to update plone with the details of 1000 files.  It is useful during development, but is otherwise ignored since it depends on a Plone instance.
     */
     @Test
-    public void test1000Files() throws IOException, DocumentRepositoryException {
+    @SneakyThrows
+    public void test1000Files() {
         dus.delete("guid", "file1.txt");
         dus.delete("guid", "file3.txt");
         int numberOfFiles = 1000;
