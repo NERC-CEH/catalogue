@@ -422,8 +422,8 @@ public class DocumentUploadServiceTest {
         val file = new File(documentUploadTestFolder, "guid/checksums.hash");
         val lines = FileUtils.readLines(file, Charset.defaultCharset());
 
-        assertThat(lines.size(), is(1));
-        assertThat(lines.get(0), containsString("*valid-checksum.txt"));
+        assertThat(lines.size(), is(3));
+        assertThat(lines.get(2), containsString("*valid-checksum.txt"));
     }
 
     @Test

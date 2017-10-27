@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -27,19 +28,29 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 @AllArgsConstructor
 public class DocumentUploadService {
+    
+    private static final Pattern regex = Pattern.compile("([a-f0-9]{32})\\ \\*(.*)");
+
     private final File directory;
     private final DocumentRepository documentRepository;
 
-    public void add(String guid, String filename, InputStream input) throws ZipException, IOException, DocumentRepositoryException {
-        if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
-        if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
+    public DocumentUpload get(String guid) {
+        return archive(guid, documentUpload -> {});
+    }
 
-        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
-        val wasZipped = zipFile.exists();
-        unzip(guid);
-        
-        val documentUpload = get(guid);
-        delete(guid, filename);
+    public void add(String guid, String filename, InputStream input) {
+        if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
+        archive(guid, documentUpload -> {
+            try {
+                addFile(documentUpload, filename, input);
+            } catch (IOException ioe) {
+                throw new UncheckedIOException(ioe);
+            }
+        });
+    }
+
+    private void addFile(DocumentUpload documentUpload, String filename, InputStream input) throws IOException {
+        deleteFile(documentUpload, filename);
 
         val folder = new File(documentUpload.getPath());
         val file = new File(folder, filename);
@@ -57,104 +68,117 @@ public class DocumentUploadService {
         documentUploadFile.setHash(hash(file));
 
         documentUpload.getDocuments().put(filename, documentUploadFile);
-        save(documentUpload);
-
-        if (wasZipped) zip(guid);
     }
 
-    public void delete(String guid, String filename) throws ZipException, IOException, DocumentRepositoryException {
-        if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
+    public void move(String guid, String file, DocumentUploadService to) {
+        archive(guid, fromDocumentUpload -> {
+            val documentUploadFile = fromDocumentUpload.getDocuments().get(file);
+            val name = documentUploadFile.getName();
+            val path = documentUploadFile.getPath();
+            try {
+                val inputStream = new FileInputStream(path);
+                to.add(guid, name, inputStream);
+                deleteFile(fromDocumentUpload, name);
+            } catch (IOException ioe) {
+                throw new UncheckedIOException(ioe);
+            }
+        });
+    }
+
+    public void delete(String guid, String filename) {
         if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
+        archive(guid, documentUpload -> {
+            try {
+                deleteFile(documentUpload, filename);
+            } catch(IOException ioe) {
+                throw new UncheckedIOException(ioe);
+            }
+        });
+    }
 
-        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
-        val wasZipped = zipFile.exists();
-        unzip(guid);
-
-        val documentUpload = get(guid);
+    private void deleteFile(DocumentUpload documentUpload, String filename) throws IOException {
         val file = new File(documentUpload.getPath(), filename);
         if (file.exists()) FileUtils.forceDelete(file);
         documentUpload.getDocuments().remove(filename);
         documentUpload.getInvalid().remove(filename);
-        save(documentUpload);
-
-        if (wasZipped) zip(guid);
     }
 
-    public void zip(String guid) throws ZipException, IOException, DocumentRepositoryException {
-        val documentUpload = get(guid);
+    public void zip(String guid) {
+        archive(guid, documentUpload -> {
+            try {
+                zipIt(documentUpload);
+            } catch (IOException ioe) {
+                throw new UncheckedIOException(ioe);
+            }
+        });
+    }
+
+    private void zipIt(DocumentUpload documentUpload) throws IOException {
         val zipFilename = String.format("%s.zip", documentUpload.getGuid());
         val zipRawFile = new File(documentUpload.getPath(), zipFilename);
         if (!zipRawFile.exists()) {
-            ZipFile zipFile = new ZipFile(zipRawFile);
-            for (val documentUploadFile : documentUpload.getFiles()) {
-                val file = new File(documentUploadFile.getPath());
-                zipFile.addFile(file, new ZipParameters());
-                FileUtils.forceDelete(file);
+            try {
+                ZipFile zipFile = new ZipFile(zipRawFile);
+                for (val documentUploadFile : documentUpload.getFiles()) {
+                    val file = new File(documentUploadFile.getPath());
+                    zipFile.addFile(file, new ZipParameters());
+                    FileUtils.forceDelete(file);
+                }
+                val checksums = new File(documentUpload.getPath(), "checksums.hash");
+                zipFile.addFile(checksums, new ZipParameters());
+            } catch(ZipException ze) {
+                throw new RuntimeException(ze);
             }
-
-            val checksums = new File(documentUpload.getPath(), "checksums.hash");
-            zipFile.addFile(checksums, new ZipParameters());
-            save(documentUpload);
-
-            FileUtils.forceDelete(checksums);
-            FileUtils.write(checksums, String.format("%s *%s", hash(zipRawFile),  zipFilename), Charset.defaultCharset());
         }
     }
 
-    public void unzip(String guid) throws ZipException, IOException, DocumentRepositoryException {
+    public void unzip(String guid) {
         val file = new File(directory, String.format("%s/%s.zip", guid, guid));
         if (file.exists()) {
-            ZipFile zipFile = new ZipFile(file);
-            zipFile.extractAll(file.getAbsolutePath().replaceAll(String.format("%s.zip", guid), ""));
-            FileUtils.forceDelete(file);
+            try {
+                ZipFile zipFile = new ZipFile(file);
+                zipFile.extractAll(file.getAbsolutePath().replaceAll(String.format("%s.zip", guid), ""));
+                FileUtils.forceDelete(file);
+            } catch(IOException ioe) {
+                throw new UncheckedIOException(ioe);
+            } catch (ZipException ze) {
+                throw new RuntimeException(ze);   
+            }
         }
     }
 
-    public void acceptInvalid(String guid, String filename) throws ZipException, IOException, DocumentRepositoryException {
-        if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
+    public void acceptInvalid(String guid, String filename) {
         if (StringUtils.isBlank(filename)) throw new IllegalArgumentException("filename can not be blank");
+        archive(guid, documentUpload -> acceptInvalidFile(documentUpload, filename));
+    }
 
-        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
-        val wasZipped = zipFile.exists();
-        unzip(guid);
-
-        val documentUpload = get(guid);
+    private void acceptInvalidFile(DocumentUpload documentUpload, String filename) {
         val documentUploadFile = documentUpload.getInvalid().get(filename);
         if (null != documentUploadFile) {
             documentUploadFile.addComment("accepted");
             documentUploadFile.setType(Type.DOCUMENTS);
             documentUpload.getInvalid().remove(filename);
             documentUpload.getDocuments().put(filename, documentUploadFile);
-            save(documentUpload);
         }
-
-        if (wasZipped) zip(guid);
     }
 
-    public void move(String guid, String file, DocumentUploadService to) throws ZipException, IOException, DocumentRepositoryException {
-        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
-        val wasZipped = zipFile.exists();
-        unzip(guid);
-
-        val fromDocumentUpload = get(guid);
-        val documentUploadFile = fromDocumentUpload.getDocuments().get(file);
-        val name = documentUploadFile.getName();
-        val path = documentUploadFile.getPath();
-        val inputStream = new FileInputStream(path);
-        
-        to.add(guid, name, inputStream);
-        delete(guid, name);
-
-        if (wasZipped) zip(guid);
-    }
-
-    public DocumentUpload get(String guid) throws ZipException, IOException, DocumentRepositoryException {
+    private DocumentUpload archive (String guid, Consumer<DocumentUpload> consumer) {
         if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
-
         val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
         val wasZipped = zipFile.exists();
         unzip(guid);
+        try {
+            val documentUpload = getDocumentUpload(guid);
+            consumer.accept(documentUpload);
+            save(documentUpload);
+            if (wasZipped) zipIt(documentUpload);
+            return documentUpload;
+        } catch (IOException ioe) {
+            throw new UncheckedIOException(ioe);
+        }
+    }
 
+    private DocumentUpload getDocumentUpload (String guid) throws IOException {
         val dataFile = createDataFile(guid);
         val mapper = new ObjectMapper();
         val documentUpload = mapper.readValue(dataFile, DocumentUpload.class);
@@ -162,14 +186,8 @@ public class DocumentUploadService {
         updateKnownInvalidFiles(documentUpload);
         updateFromDataAndMetaToInvalid(documentUpload);
         autoFix(documentUpload);
-        save(documentUpload);
-
-        if (wasZipped) zip(guid);
-
         return documentUpload;
     }
-
-    private static final Pattern regex = Pattern.compile("([a-f0-9]{32})\\ \\*(.*)");
 
     private void updateWithChecksumsFile(DocumentUpload documentUpload) throws IOException {
         val folder = new File(documentUpload.getPath());
@@ -204,7 +222,7 @@ public class DocumentUploadService {
         }
     }
 
-    private void updateKnownInvalidFiles(DocumentUpload documentUpload) throws IOException {
+    private void updateKnownInvalidFiles(DocumentUpload documentUpload) {
         val documentUploadFiles = documentUpload.getInvalid().values();
         for(val documentUploadFile : documentUploadFiles) {
             val name = documentUploadFile.getName();
@@ -245,7 +263,6 @@ public class DocumentUploadService {
                 val name = documentUploadFile.getName();
                 val type = documentUploadFile.getType();
                 documentUpload.getFiles(type).remove(name);
-
                 documentUploadFile.setType(Type.MISSING_FILE);
                 documentUploadFile.addComment("File is missing");
                 documentUpload.getInvalid().put(name, documentUploadFile);
@@ -255,7 +272,6 @@ public class DocumentUploadService {
                     val name = documentUploadFile.getName();
                     val type = documentUploadFile.getType();
                     documentUpload.getFiles(type).remove(name);
-
                     documentUploadFile.setHash(hash);
                     documentUploadFile.setType(Type.INVALID_HASH);
                     documentUploadFile.addComment("File has changed");
@@ -287,7 +303,6 @@ public class DocumentUploadService {
                 documentUploadFile.setEncoding("utf-8");
                 documentUploadFile.setBytes(file.length());
                 documentUploadFile.setHash(hash(file));
-
                 documentUploadFile.setType(Type.UNKNOWN_FILE);
                 documentUploadFile.addComment("Unknown file");
                 documentUpload.getInvalid().put(name, documentUploadFile);
@@ -310,12 +325,13 @@ public class DocumentUploadService {
         }
     }
 
-    private File createDataFile(String guid) throws IOException, DocumentRepositoryException {
+    private File createDataFile(String guid) throws IOException {
         val folder = new File(directory, guid);
         if (!folder.exists()) FileUtils.forceMkdir(folder);
 
         val file = new File(folder, "_data.json");
         if (!file.exists()) {
+            try {
             val document = documentRepository.read(guid);
             val documentUpload = new DocumentUpload(
                 document.getTitle(),
@@ -324,6 +340,9 @@ public class DocumentUploadService {
                 folder.getAbsolutePath()
             );
             saveJson(documentUpload);
+            } catch (DocumentRepositoryException dre) {
+                throw new RuntimeException(dre);
+            }
         }
         return file;
     }
@@ -332,13 +351,19 @@ public class DocumentUploadService {
         saveJson(documentUpload);
 
         val checksums = new File(documentUpload.getPath(), "checksums.hash");
-        val documentUploadFiles = documentUpload.getDocuments()
-            .values()
-            .stream()
-            .map(documentUploadFile -> String.format("%s *%s", documentUploadFile.getHash(), documentUploadFile.getName()))
-            .collect(Collectors.toList());
-
-        FileUtils.writeLines(checksums, documentUploadFiles);
+        if (documentUpload.isZipped()) {
+            val zipFilename = String.format("%s.zip", documentUpload.getGuid());
+            val zipRawFile = new File(documentUpload.getPath(), zipFilename);
+            FileUtils.write(checksums, String.format("%s *%s", hash(zipRawFile),  zipFilename), Charset.defaultCharset());
+        }
+        else {
+            val documentUploadFiles = documentUpload.getDocuments()
+                .values()
+                .stream()
+                .map(documentUploadFile -> String.format("%s *%s", documentUploadFile.getHash(), documentUploadFile.getName()))
+                .collect(Collectors.toList());
+            FileUtils.writeLines(checksums, documentUploadFiles);
+        }
     }
 
     private void saveJson(DocumentUpload documentUpload) throws IOException {
