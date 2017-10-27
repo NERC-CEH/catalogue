@@ -24,7 +24,9 @@ define [
   'cs!models/LinkEditorMetadata'
   'cs!views/CehModelEditorView'
   'cs!views/CehModelApplicationEditorView'
-  'cs!views/DocumentsUploadView'
+  'cs!views/DocumentsUploadScheduledView'
+  'cs!views/DocumentsUploadInProgressView'
+  'cs!views/DocumentsUploadReadOnlyView'
   'cs!views/OsdpAgentEditorView'
   'cs!views/OsdpDatasetEditorView'
   'cs!views/OsdpModelEditorView'
@@ -39,9 +41,9 @@ define [
   _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata,
-    CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadView, OsdpAgentEditorView, OsdpDatasetEditorView,
-    OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView,
-    OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView
+    CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView, DocumentsUploadInProgressView,
+    DocumentsUploadReadOnlyView, OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
+    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView
 ) ->
 
   ###
@@ -50,7 +52,9 @@ define [
   we like globally.
   ###
   initialize: ->
-    do @initDocumentsUpload if $('#documents-upload').length
+    do @initScheduled if $('#documents-upload .scheduled').length
+    do @initInProgress if $('#documents-upload .in-progress').length
+    do @initReadOnly if $('#documents-upload .read-only').length
     do @initStudyAreaMap if $('#studyarea-map').length
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
@@ -61,12 +65,17 @@ define [
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
 
-  initDocumentsUpload: ->
-    view = new DocumentsUploadView
-      el: '#dropzone'
+  initReadOnly: ->
+    view = new DocumentsUploadReadOnlyView()
+
+  initScheduled: ->
+    view = new DocumentsUploadScheduledView()
+
+  initInProgress: ->
+    view = new DocumentsUploadInProgressView()
 
   initStudyAreaMap: ->
-    view = new StudyAreaView();
+    view = new StudyAreaView()
 
   ###
   Initialize the map viewer app, view and router
@@ -192,7 +201,7 @@ define [
     catalogues = undefined
 
     $.getJSON '/catalogues', (data) ->
-      catalogues = _.chain(data).map((c) -> {value: c.id, label: c.title}).value()
+      catalogues = _.chain(data).map((c) -> { value: c.id, label: c.title }).value()
 
     $('.catalogue-control').on 'click', (event) ->
       do event.preventDefault
