@@ -16,7 +16,7 @@
     </div>
 </section>
 <section class="section">
-    <div class="container-fluid folders">
+    <div class="container-fluid folders in-progress">
         <div class="row">
             <#if documents.getFiles()?size != 0 || documents.getInvalid()?size != 0>
                 <div class="col-md-6">
@@ -109,7 +109,11 @@
                                 </div>
                             </#list>
                     </div>
-                    <div class="folder-options"></div>
+                    <#if documents.getFiles()?size != 0 || documents.getInvalid()?size != 0>
+                        <div class="folder-options"></div>
+                    <#else>
+                        <div class="folder-options is-empty"></div>
+                    </#if>
                 </div>
             </div>
         </div>

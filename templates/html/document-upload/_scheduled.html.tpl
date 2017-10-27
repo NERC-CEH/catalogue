@@ -12,7 +12,7 @@
     </div>
 </section>
 <section class="section">
-    <div class="container-fluid folders">
+    <div class="container-fluid folders scheduled">
         <div class="row">
             <div class="documents folder">
                 <div class="folder-title">

@@ -10,9 +10,9 @@
     </div>
 </section>
 <section class="section">
-    <div class="container-fluid folders">
+    <div class="container-fluid folders read-only">
         <div class="row">
-            <div class="read-only folder">
+            <div class="folder">
                 <div class="folder-title">
                     <span class="folder-name">
                         <i class="fa fa-folder"></i> Documents
