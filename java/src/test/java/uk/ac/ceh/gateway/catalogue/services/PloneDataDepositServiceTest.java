@@ -82,6 +82,25 @@ public class PloneDataDepositServiceTest {
         String expected = "Success - updated: guid";
         assertThat(actual, equalTo(expected));
     }
+
+    @Ignore
+    /*
+    This tests the uploading code's ability to update plone with the details of 1000 files.  It is useful during development, but is otherwise ignored since it depends on a Plone instance.
+    */
+    @Test
+    public void test1000Files() throws IOException, DocumentRepositoryException {
+        dus.delete("guid", "file1.txt");
+        dus.delete("guid", "file3.txt");
+        int numberOfFiles = 1000;
+        for(int i=0; i<numberOfFiles; i++){
+            File file = new File(dropbox, String.format("test_file_%s.txt",i));
+            FileUtils.write(file, String.format("something %s",i));
+            dus.add("guid1000", String.format("file%s.txt",i), new FileInputStream(file));
+        }
+        String actual = pdds.addOrUpdate(dus.get("guid1000"));
+        String expected = "Success - added: guid1000";
+        assertThat(actual, equalTo(expected));
+    }
     
     // Get a secret from secrets.env
     private String getSecret(String secret) throws IOException{
