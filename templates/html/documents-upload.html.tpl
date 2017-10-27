@@ -19,10 +19,8 @@
                         You can now move and zip files into the <b>Datastore</b>
                         Or you can drag files into <b>Plone</b> (currently you have to manually upload these, but they will be marked in this view as though in plone)
                     </div>
-                <#elseif !canUpload>
+                <#elseif !canUpload  && isScheduled>
                     <div class="alert alert-danger" role="alert">You do not have permissions to view this page</div>
-                <#else>
-                    <div class="alert alert-success" role="alert">All done, nothing to see here</div>
                 </#if>
                 <#if canUpload>
                     <div class="messages alert alert-info" role="alert">
@@ -228,20 +226,71 @@
                         </div>
                     </div>
                 </section>
+            <#else>
+                <div class="messages alert alert-info" role="alert">
+                    <div class="message loading">
+                        <span class="fa fa-refresh fa-spin"></span>
+                        <span>Loading please wait ...</span>
+                    </div>
+                </div>
+                <section class="section">
+                    <div class="container-fluid folders">
+                        <div class="row">
+                            <div class="read-only folder">
+                                <div class="folder-title">
+                                    <span class="folder-name">
+                                        <i class="fa fa-folder"></i> Documents
+                                    </span>
+                                </div>
+                                <div class="files connectedSortable">
+                                    <#if datastore.getFiles()?size == 0>
+                                        <div class="empty-message">No files</div>
+                                    <#else>
+                                        <div class="empty-message"></div>
+                                    </#if>
+                                    <#list datastore.getFiles() as file>
+                                        <div id="datastore-${file.id}" class="file btn btn-primary file-readonly is-inactive">
+                                            <div class="filename">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class="fa fa-file-text-o"></i>
+                                                    </span>
+                                                    <input type="text" class="form-control filename-input" value="${file.name}" readonly>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default copy" data-clipboard-action="copy" data-clipboard-target="#datastore-${file.id} .filename-input" disabled><i class="fa fa-clipboard"></i> Copy</button>
+                                                    </span>
+                                                </div>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">
+                                                        <i class="fa fa-file-text-o"></i>
+                                                    </span>
+                                                    <input type="text" class="form-control filehash-input" value="${file.hash}" readonly>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default copy" data-clipboard-action="copy" data-clipboard-target="#datastore-${file.id} .filehash-input" disabled><i class="fa fa-clipboard"></i> Copy</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </#list>
+                                </div>
+                                <div class="folder-options is-empty"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </#if>
         </div>
-
         <div class="modal fade" id="documentUploadModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title"></h4>
                 </div>
                 <div class="modal-body"></div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default modal-dismiss" data-dismiss="modal"></button>
-                    <button type="button" class="btn btn-danger modal-accept"  data-dismiss="modal"></button>
+                    <button class="btn btn-default modal-dismiss" data-dismiss="modal"></button>
+                    <button class="btn btn-danger modal-accept"  data-dismiss="modal"></button>
                 </div>
                 </div>
             </div>

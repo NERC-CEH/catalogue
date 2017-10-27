@@ -2,12 +2,13 @@ MEGEBYTE = 1000000
 
 define [
   'backbone'
+  'clipboard'
   'tpl!templates/DocumentUploadMessage.tpl'
   'tpl!templates/DropzoneFile.tpl'
   'tpl!templates/DeleteableFile.tpl'
   'tpl!templates/File.tpl'
   'tpl!templates/InvalidFile.tpl'
-], (Backbone, documentUploadMessageTpl, dropzoneFileTpl, deleteableFileTpl, fileTpl, invalidFileTpl) -> Backbone.View.extend
+], (Backbone, Clipboard, documentUploadMessageTpl, dropzoneFileTpl, deleteableFileTpl, fileTpl, invalidFileTpl) -> Backbone.View.extend
   initialize: (options) ->
     do @initFolders
 
@@ -19,6 +20,15 @@ define [
       do @updateInvalid
       do @initMoveToDatastore
       do @initZip
+      do @initCopy
+
+  initCopy: ->
+    clipboard = new Clipboard('.copy')
+    clipboard.on 'success', (e) =>
+      @message 'Copied to clipboard: <b>' + e.text + '</b>', 'success', 3000
+    clipboard.on 'error', (e) =>
+      @message 'Could not copy to clipboard: <b>' + e.text + '</b>', 'warning', 3000
+    $('.copy').attr('disabled', off)
 
   initZip: ->
     $('.zip, .unzip').attr('disabled', off)
@@ -113,7 +123,7 @@ define [
             data:
               file: filename
             success: (res) =>
-              @message 'Removed: ' + filename, 'ok', 3000
+              @message 'Removed: ' + filename, 'success', 3000
               @update res, filename, 'documents'
               @update res, filename, 'datastore'
               @update res, filename, 'plone'
@@ -134,7 +144,7 @@ define [
           data:
             file: filename
           success: (res) =>
-            @message 'Ignored: ' + filename, 'ok', 3000
+            @message 'Ignored: ' + filename, 'success', 3000
             @update res, filename, 'documents'
             @update res, filename, 'datastore'
             @update res, filename, 'plone'
@@ -155,7 +165,7 @@ define [
           data:
             file: filename
           success: (res) =>
-            @message 'Accepted: ' + filename, 'ok', 3000
+            @message 'Accepted: ' + filename, 'success', 3000
             @update res, filename, 'documents'
             @update res, filename, 'datastore'
             @update res, filename, 'plone'
@@ -180,7 +190,7 @@ define [
             data:
               file: filename
             success: (res) =>
-              @message 'Removed: ' + filename, 'ok', 3000
+              @message 'Removed: ' + filename, 'success', 3000
               @update res, filename, 'documents'
             error: (error) =>
               if error.responseText
@@ -331,7 +341,7 @@ define [
 
   update: (res, file, name) ->
     if file and file.name
-      @message 'Uploaded: ' + file.name, 'ok', 3000
+      @message 'Uploaded: ' + file.name, 'success', 3000
     files = res[name].files || []
     invalid = res[name].invalid || {}
     invalid = (value for own prop, value of invalid)
