@@ -262,7 +262,7 @@
                                                 </div>
                                                 <div class="input-group">
                                                     <span class="input-group-addon">
-                                                        <i class="fa fa-file-text-o"></i>
+                                                        <i class="fa fa-hashtag"></i>
                                                     </span>
                                                     <input type="text" class="form-control filehash-input" value="${file.hash}" readonly>
                                                     <span class="input-group-btn">
