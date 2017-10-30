@@ -25,6 +25,7 @@ define [
   'cs!views/CehModelEditorView'
   'cs!views/CehModelApplicationEditorView'
   'cs!views/DocumentsUploadScheduledView'
+  'cs!models/DocumentsUploadScheduledModel'
   'cs!views/DocumentsUploadInProgressView'
   'cs!models/DocumentsUploadInProgressModel'
   'cs!views/DocumentsUploadReadOnlyView'
@@ -41,9 +42,9 @@ define [
 ], (
   _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
-    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata,
-    CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView, DocumentsUploadInProgressView, DocumentsUploadInProgressModel,
-    DocumentsUploadReadOnlyView, OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
+    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
+    DocumentsUploadScheduledView, DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView,
+    OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
     OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView
 ) ->
 
@@ -70,7 +71,8 @@ define [
     view = new DocumentsUploadReadOnlyView()
 
   initScheduled: ->
-    view = new DocumentsUploadScheduledView()
+    app = new DocumentsUploadScheduledModel()
+    view = new DocumentsUploadScheduledView model: app
 
   initInProgress: ->
     app = new DocumentsUploadInProgressModel()

@@ -5,136 +5,43 @@ define [
   'tpl!templates/DeleteableFile.tpl'
   'tpl!templates/InvalidFile.tpl'
 ], (Backbone, message, dropzoneFileTpl, deleteableFileTpl, invalidFileTpl) -> Backbone.View.extend
-  initialize: (options) ->
-    do @initDcouments
+  initialize: ->
+    @model.on 'sync', => do @render
+    @model.on 'change', => do @render
+    @model.save null,
+      url: window.location.href + '/get'
+
+    do $('.loading').remove
+    $('.messages').hide 'fast'
+
+    do @initFinish
     do @initDropzone
 
-  updateDeleteDocuments: ->
-    $('.documents .file').each (index, file) =>
-      filename = $(file).find('.filename-label').text()
-      $(file).unbind('click')
-      $(file).find('.delete').click (evt) =>
-        @modal 'Delete <b>' + filename + '</b>', 'Are you sure you want to delete <b>' + filename + '</b>', 'No', 'Yes', =>
-          $.ajax
-            url: window.location.href + '/delete/documents'
-            type: 'POST'
-            headers:
-              Accept: 'application/json'
-              Content: 'application/json'
-            data:
-              file: filename
-            success: (res) =>
-              message 'Removed: ' + filename, 'success', 3000
-              @update res, filename, 'documents'
-            error: (error) ->
-              if error.responseText
-                message 'Failed to remove: ' + filename + ', ' + error.responseText, 'warning', 3000
-              else
-                message 'Failed to remove: ' + filename, 'warning', 3000
-
-  initDcouments: ->
-    if $('.documents .file').length > 0
-      $('.documents .empty-message').text('')
-    else
-      $('.documents .empty-message').html('Drag files into <u>here</u> to upload')
-
-    $('.finish').attr('disabled', $('.documents .file').length == 0)
-
-    do @updateDeleteDocuments
-   
-    $('.documents .finish').unbind('click')
-    $('.documents .finish').click =>
-      @modal 'Finish Uploading', 'Have you finished upload all your documents? <br /> This will stop you from uploading anymore and progress this issue futher.', 'No', 'Yes', =>
-        $('.delete').attr('disabled', on)
-        $('.fileinput-button').attr('disabled', on)
-        $('.finish').attr('disabled', on)
-        do @dropzone.disable
-        $.ajax
-          url: window.location.href + '/finish'
-          type: 'POST'
-          headers:
-            Accept: 'application/json'
-          success: (res) ->
-            do window.location.reload
-          error: (error) =>
-            $('.delete').attr('disabled', off)
-            $('.fileinput-button').attr('disabled', off)
-            $('.finish').attr('disabled', off)
-            do @dropzone.enable
-            if error.responseText
-              message 'Could not finish: ' + error.responseText, 'warning'
-            else
-              message 'Could not finish' + error.responseText, 'warning'
-          always: ->
-            message 'Finishing please wait ...', 'loading', 5000
-            setTimeout ->
-              message 'It seems to be taking a while to Finish. Please <b>refresh the page and try again</b>. If there is no <b>Finish</b> button then the issue has moved on.', 'warning'
-            , 5000
-
-  modal: (title, body, dismissText, acceptText, onAccept) ->
-    $('.modal-title').html(title)
-    $('.modal-body').html(body)
-    $('.modal-dismiss').html(dismissText)
-    $('.modal-accept').html(acceptText)
-
-    $('.modal-accept').unbind('click')
-    $('.modal-accept').click ->
-      do onAccept
-      $('.modal-accept').unbind('click')
-
-  update: (res, file, name) ->
-    if file and file.name
-      message 'Uploaded: ' + file.name, 'success', 3000
-    files = res[name].files || []
-    invalid = res[name].invalid || {}
-    invalid = (value for own prop, value of invalid)
-    all = files.concat invalid
-
-    for index, file of files
-      fileElement = $('#' + name + '-' + file.id)
-      if fileElement.length == 0
-        newFile = $(deleteableFileTpl
-          name: file.name,
-          hash: file.hash,
-          id: name + '-' + file.id)
-        $('.' + name + ' .files').append(newFile)
-      else if fileElement.hasClass('file-invalid')
-        fileElement.find('.invalid-container').remove()
-        fileElement.removeClass('file-invalid')
-    
-    for index, file of invalid
-      fileElement = $('#' + name + '-' + file.id)
-      if fileElement.length == 0
-        newFile = $(invalidFileTpl
-          comment: file.comments[file.comments.length - 1]
-          type: file.type,
-          name: file.name,
-          hash: file.hash,
-          id: name + '-' + file.id)
-        newFile.addClass 'file-invalid'
-        $('.' + name + ' .files').append(newFile)
-    
-    $('.' + name + ' .file, .invalid .file').each (index, file) ->
-      filename = $(file).find('.filename-label').text()
-      matching = all.filter (rfile) ->
-        return rfile.name == filename
-      if matching.length == 0
-        $(file).remove()
-
-    do @updateDeleteDocuments
-
-    if $('.' + name + ' .file').length > 0
-      $('.' + name + ' .empty-message').text('')
-    else
-      $('.' + name + ' .empty-message').html('Drag files into <u>here</u> to upload')
-  
-    $('.finish').attr('disabled', $('.' + name + ' .file').length == 0)
+  initFinish: ->
+    $('.finish').attr 'disabled', off
+    $('.finish').click =>
+      @model.set 'modal',
+        title: 'Finish'
+        body: 'Once you have finished you will not be able to add, remove or update files. Are you sure you want to finish?'
+        dismiss: 'No'
+        accept: 'Yes'
+        onAccept: =>
+          do @model.finish
+          do @dropzone.disable
+          $('.file, .finish').attr 'disabled', on
+          message 'Finish in progress, please wait', 'loading'
+          @finishFirstTimeout = setTimeout ->
+            message 'This is taking a while, please wait', 'warning', 3000
+          , 3000
+          @finishSecondTimeout = setTimeout ->
+            message 'Taking too long, please refresh and try again. If problem persists please contact an admin', 'warning'
+          , 6000
 
   initDropzone: ->
-    update = @update.bind this
-    message = message.bind this
+    model = @model.bind @
+    render = @render.bind @
 
-    dropzone = new Dropzone '.dropzone-files',
+    @dropzone = new Dropzone '.dropzone-files',
       url: window.location.href + '/add/documents'
       maxFilesize: 1250
       autoQueue: yes
@@ -143,42 +50,88 @@ define [
       clickable: '.fileinput-button'
       parallelUploads: 1
       init: ->
-        $('.file .delete, .fileinput-button').attr('disabled', off)
-        do $('.message.loading').remove
-        $('.messages').hide 'fast' if $('.messages .message').length == 0
+        $('.finish').attr 'disabled', on
+        $('.file .delete, .fileinput-button').attr 'disabled', off
 
         @on 'addedfile', (file) ->
-          $('.documents .empty-message').text('')
-
           $('.finish').attr('disabled', on)
-
+          $('.documents .empty-message').text('')
           last = $('.uploading').length - 1
           uploading = $($('.uploading')[last])
-          id = file.name.replace(/[^\w?]/g, '_')
+          id = file.name.replace(/[^\w?]/g, '-')
           uploading.addClass('uploading-' + id)
-          uploading.find('.cancel').click ->
-            dropzone.removeFile file
-
+          uploading.find('.cancel').click => @removeFile file
+        
         @on 'success', (file, res) ->
-          update res, file, 'documents'
+          model.uploaded file, res
+          do render
         
         @on 'error', (file, errorMessage, xhr) ->
+          id = file.name.replace(/[^\w?]/g, '-')
+          $('.uploading-' + id).remove()
           errorMessages =
             0: 'No connection'
             403: 'Unauthorized'
+          errorMessage = errorMessage
+          errorMessage = errorMessages[xhr.status] || errorMessage if xhr
+          model.set 'message',
+            message: 'Could not upload <b>' + file.name + '</b> because <b>' + errorMessage + '</b>'
+            type: 'warning'
+            timeout: 3000
+  
+  render: ->
+    do @renderFinish
 
-          progressMessage = errorMessage
-          progressMessage = errorMessages[xhr.status] || errorMessage if xhr
-          
-          message 'Could not upload: <b>' + file.name + '</b>, ' + errorMessage, 'warning', 3000
+    do @renderEmptyMessage
 
-          progressMessage = 'Too big' if progressMessage.indexOf 'too big' != -1
+    messageValue = @model.get 'message'
+    message messageValue.message, messageValue.type, messageValue.timeout if messageValue
 
-          id = file.name.replace(/[^\w?]/g, '_')
-          progress = $('.uploading-' + id + ' .progress-bar')
-          progress.width '100%'
-          progress.removeClass 'progress-bar-success'
-          progress.addClass 'progress-bar-danger'
-          progress.text progressMessage
+    @renderModal @model.get 'modal' if @model.get 'modal'
 
-    @dropzone = dropzone
+    if @model.get('message') != no or @model.get('modal') != off
+      @model.set
+        message: off
+        modal: off
+
+    do @renderFiles
+
+  renderFinish: ->
+    $('.finish').attr 'disabled', off if $('.uploading').length == 0
+
+  renderEmptyMessage: ->
+    emptyMessage = 'Drag files into <u>here</u> to upload'
+    emptyMessage = '' if @model.get('documents').files
+    $('.documents .empty-message').html emptyMessage
+
+  renderModal: (modal) ->
+    $('.modal-title').html modal.title
+    $('.modal-body').html modal.body
+    $('.modal-dismiss').html modal.dismiss
+    $('.modal-accept').html modal.accept
+    $('.modal-accept').unbind 'click'
+    $('.modal-accept').click ->
+      do modal.onAccept
+      $('.modal-accept').unbind 'click'
+  
+  renderFiles: ->
+    do $('.file:not(".uploading")').remove
+
+    for index, file of @model.get('documents').files
+      do $('.uploading-' + file.id).remove
+      newFile = $(deleteableFileTpl
+        name: file.name,
+        id: 'documents-' + file.id)
+      $('.files').append(newFile)
+    
+    $('.delete').unbind 'click'
+    $('.delete').click (evt) =>
+      target = $(evt.target).parent().parent()
+      filename = target.find('.filename-label').text()
+      @model.set 'modal',
+        title: 'Delete <b>' + filename + '</b>'
+        body: 'Are you sure you want to perminatly delete <b>' + filename + '</b>'
+        dismiss: 'No'
+        accept: 'Yes'
+        onAccept: =>
+          @model.delete filename
