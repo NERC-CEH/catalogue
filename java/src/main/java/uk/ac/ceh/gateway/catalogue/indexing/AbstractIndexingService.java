@@ -1,12 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.io.IOException;
-import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * The following abstract class defines the common structure for a 
@@ -24,25 +27,12 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
  * @param <I> indexable representation of a given document
  */
 @Slf4j
+@AllArgsConstructor
 public abstract class AbstractIndexingService<D, I> implements DocumentIndexingService {
     private final BundledReaderService<D> reader;
     private final DocumentListingService listingService;
     private final DataRepository<?> repo;
     private final IndexGenerator<D, I> indexGenerator;
-
-    public AbstractIndexingService(
-        BundledReaderService<D> reader,
-        DocumentListingService listingService,
-        DataRepository<?> repo,
-        IndexGenerator<D, I> indexGenerator
-    ) {
-        this.reader = reader;
-        this.listingService = listingService;
-        this.repo = repo;
-        this.indexGenerator = indexGenerator;
-    }
-    
-    
     
     protected abstract void clearIndex() throws DocumentIndexingException;
     protected abstract void index(I toIndex) throws Exception;
@@ -81,6 +71,13 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         //If an exception was supressed, then throw
         if(joinedException.getSuppressed().length != 0) {
             throw joinedException;
+        }
+    }
+
+    @PostConstruct
+    public void postConstruct() throws DocumentIndexingException {
+        if(this.isIndexEmpty()) {
+            this.rebuildIndex();
         }
     }
     

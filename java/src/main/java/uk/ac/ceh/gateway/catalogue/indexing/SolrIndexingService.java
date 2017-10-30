@@ -1,16 +1,18 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This is the Solr Indexing Service. Instances of this can read documents from
@@ -19,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
  * @author cjohn
  * @param <D> type of documents to be read from the DataRepository
  */
+@Service("solr-index")
 public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex> {
     private final SolrServer solrServer;
     private final JenaLookupService lookupService;

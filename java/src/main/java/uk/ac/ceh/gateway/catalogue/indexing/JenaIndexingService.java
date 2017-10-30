@@ -6,12 +6,13 @@ import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.update.UpdateExecutionFactory;
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+
+import java.util.List;
 
 /**
  * This is the Jena Indexing Service. Instances of this can read documents from
@@ -20,7 +21,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
  * @author cjohn
  * @param <D> type of documents to be read from the DataRepository
  */
-@Slf4j
+@Service("jena-index")
 public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Statement>> {
     private final DocumentIdentifierService documentIdentifierService;
     private final Dataset jenaTdb;

@@ -1,24 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.time.LocalDate;
-import java.util.List;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
+
+import java.util.List;
 
 /**
  * The following DataciteIndexingService detects when a GeminiDocument has been
@@ -26,21 +16,12 @@ import uk.ac.ceh.gateway.catalogue.services.DataciteService;
  * that the change in the GeminiDocument adjusts the datacite metadata request.
  * @author cjohn
  */
-@Data
 @Slf4j
+@Service
+@AllArgsConstructor
 public class DataciteIndexingService implements DocumentIndexingService {
     private final BundledReaderService<MetadataDocument> bundleReader;
     private final DataciteService datacite;
-    
-    private final XPathExpression dateSubmittedXPath;
-    
-    public DataciteIndexingService(BundledReaderService<MetadataDocument> bundleReader, DataciteService datacite) throws XPathExpressionException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        
-        this.dateSubmittedXPath = xpath.compile("/*/dates/date[@dateType='Submitted']");
-        this.bundleReader = bundleReader;
-        this.datacite = datacite;
-    }
 
     /**
      * Loop around all of the documents ids in the toIndex. Read these and if a

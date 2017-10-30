@@ -20,10 +20,6 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import java.io.File;
 import java.io.IOException;
 
-/**
- *
- * @author cjohn
- */
 @Configuration
 public class ApplicationConfig {
     @Value("${data.repository.location}") private String dataRespository;
@@ -40,8 +36,8 @@ public class ApplicationConfig {
     
     @Bean
     public DataRepository<CatalogueUser> catalogDataRepository() throws IOException, UsernameAlreadyTakenException {
-        return new GitDataRepository<>(new File(dataRespository), 
-                                        new InMemoryUserStore(), 
+        return new GitDataRepository<>(new File(dataRespository),
+                                        new InMemoryUserStore<>(),
                                         phantomUserBuilderFactory(), 
                                         communicationBus());
     }
@@ -57,6 +53,6 @@ public class ApplicationConfig {
     
     @Bean
     public AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory() {
-        return new AnnotatedUserHelper(CatalogueUser.class);
+        return new AnnotatedUserHelper<>(CatalogueUser.class);
     }
 }

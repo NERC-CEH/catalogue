@@ -1,24 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
-import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+
+import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
 
 /**
  * Based upon a general MetadataDocument generator, instances of this class will
  * index BaseMonitoringType specific details.
  * @author cjohn
  */
-@Data
+@Service
+@AllArgsConstructor
 public class SolrIndexBaseMonitoringTypeGenerator implements IndexGenerator<BaseMonitoringType, SolrIndex> {
-    private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;
-    private final SolrGeometryService geometryService;
+    private final SolrIndexMetadataDocumentGenerator solrIndexMetadataDocumentGenerator;
+    private final SolrGeometryService solrGeometryService;
     
     @Override
     public SolrIndex generateIndex(BaseMonitoringType ef) {
-        return metadataDocumentSolrIndex
+        return solrIndexMetadataDocumentGenerator
                 .generateIndex(ef)
-                .addLocations(geometryService.toSolrGeometry(grab(ef.getBoundingBoxes(), BaseMonitoringType.BoundingBox::getWkt)));
+                .addLocations(solrGeometryService.toSolrGeometry(grab(ef.getBoundingBoxes(), BaseMonitoringType.BoundingBox::getWkt)));
     }    
 }

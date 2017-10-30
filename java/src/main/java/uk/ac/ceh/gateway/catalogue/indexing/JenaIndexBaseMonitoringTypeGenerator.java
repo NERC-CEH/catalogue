@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import lombok.AllArgsConstructor;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -13,6 +14,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Data;
 import java.time.LocalDate;
+
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType.BoundingBox;
@@ -31,7 +34,8 @@ import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
  * UKEOF. This is defined in uk.ac.ceh.ukeof.linkstore.guava.Linker
  * @author cjohn
  */
-@Data
+@Service
+@AllArgsConstructor
 public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<BaseMonitoringType, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;
     

@@ -1,23 +1,24 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.util.Collections;
-import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+
+import java.util.Collections;
+import java.util.Optional;
+
+import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
 
 /**
  * Processes a GeminiDocument and populates a SolrIndex object will all of the
  * bits of the document transferred. Ready to be indexed by Solr
  * @author cjohn
  */
+@Service
+@AllArgsConstructor
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
     private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
     private static final String CEH_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/cehOGL";
@@ -28,14 +29,6 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;
     private final SolrGeometryService geometryService;
     private final CodeLookupService codeLookupService;
-
-    @Autowired
-    public SolrIndexGeminiDocumentGenerator(TopicIndexer topicIndexer, SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex, SolrGeometryService geometryService, CodeLookupService codeLookupService) {
-        this.topicIndexer = topicIndexer;
-        this.metadataDocumentSolrIndex = metadataDocumentSolrIndex;
-        this.geometryService = geometryService;
-        this.codeLookupService = codeLookupService;
-    }
     
     @Override
     public SolrIndex generateIndex(GeminiDocument document) {

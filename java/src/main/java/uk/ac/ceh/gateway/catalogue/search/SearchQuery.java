@@ -64,7 +64,7 @@ public class SearchQuery {
         this.spatialOperation = spatialOperation;
         this.page = page;
         this.rows = rows;
-        this.facetFilters = new ArrayList(facetFilters);
+        this.facetFilters = new ArrayList<>(facetFilters);
         this.groupStore = groupStore;
         this.facets = facets;
         this.catalogue = catalogue;

@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -23,6 +25,7 @@ import static java.lang.String.format;
  * @author cjohn
  * @param <D> Document type which a map service can be created from
  */
+@Service("mapserver-index")
 public class MapServerIndexingService<D extends MetadataDocument> extends AbstractIndexingService<D, MapFile> {
     private static final Pattern MAP_FILE_PATTERN = Pattern.compile("_.*\\.map$");
     private static final String MAP_FILE_EXTENSION = ".map";
@@ -35,7 +38,7 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
             DocumentListingService listingService, 
             DataRepository<?> repo,
             IndexGenerator<D, MapFile> indexGenerator,
-            File mapFiles) {
+            @Qualifier("mapsLocation") File mapFiles) {
         super(reader, listingService, repo, indexGenerator);
         this.mapFiles = mapFiles;
     }

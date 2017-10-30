@@ -1,22 +1,26 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import static com.google.common.base.Strings.emptyToNull;
+import lombok.AllArgsConstructor;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import lombok.Data;
+
+import static com.google.common.base.Strings.emptyToNull;
 import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 /**
  * A triple extractor for generic metadata documents.
  * @author cjohn
  */
-@Data
+@Service
+@AllArgsConstructor
 public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, List<Statement>> {
     private final DocumentIdentifierService documentIdentifierService;
 
