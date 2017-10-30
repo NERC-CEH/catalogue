@@ -159,6 +159,13 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#guid)")
+    @RequestMapping(value = "upload/{guid}/get", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, DocumentUpload> getData(@PathVariable("guid") String guid) {
+        return get(guid);
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#guid)")
     @RequestMapping(value = "upload/{guid}/finish", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> finish(@ActiveUser CatalogueUser user, @PathVariable("guid") String guid) throws DocumentRepositoryException {

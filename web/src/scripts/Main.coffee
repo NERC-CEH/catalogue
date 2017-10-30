@@ -26,6 +26,7 @@ define [
   'cs!views/CehModelApplicationEditorView'
   'cs!views/DocumentsUploadScheduledView'
   'cs!views/DocumentsUploadInProgressView'
+  'cs!models/DocumentsUploadInProgressModel'
   'cs!views/DocumentsUploadReadOnlyView'
   'cs!views/OsdpAgentEditorView'
   'cs!views/OsdpDatasetEditorView'
@@ -41,7 +42,7 @@ define [
   _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata,
-    CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView, DocumentsUploadInProgressView,
+    CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView, DocumentsUploadInProgressView, DocumentsUploadInProgressModel,
     DocumentsUploadReadOnlyView, OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
     OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView
 ) ->
@@ -72,7 +73,8 @@ define [
     view = new DocumentsUploadScheduledView()
 
   initInProgress: ->
-    view = new DocumentsUploadInProgressView()
+    app = new DocumentsUploadInProgressModel()
+    view = new DocumentsUploadInProgressView model: app
 
   initStudyAreaMap: ->
     view = new StudyAreaView()
