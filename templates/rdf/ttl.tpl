@@ -85,7 +85,11 @@
     <#list descriptiveKeywords as descriptiveKeyword>
     <#list descriptiveKeyword.keywords as keyword>
       <#if keyword.uri?has_content>
-        <${keyword.uri}><#sep>,
+        <#if keyword.value?has_content>
+          <${keyword.uri}>, "${keyword.value}"<#sep>,
+        <#else>
+          "${keyword.uri}"<#sep>,
+        </#if>
       <#else>
         "${keyword.value}"<#sep>,
       </#if>

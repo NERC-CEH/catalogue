@@ -12,7 +12,7 @@
     </#if>
   </#list>
 </#macro>
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=ttl">
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}">
   <div id="metadata">
    <div class="container">
 	  <div id="section-Top">
