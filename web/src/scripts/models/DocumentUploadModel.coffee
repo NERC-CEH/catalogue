@@ -1,6 +1,12 @@
 define [
   'backbone'
 ], (Backbone) -> Backbone.Model.extend
+  urlRoot: window.location.href
+  defaults:
+    cancel: no
+    message: off
+    modal: off
+
   postWithFormData: (url, successMessage, errorMessage, data) ->
     formData = new FormData()
     for key, value of data
@@ -15,7 +21,7 @@ define [
       data: formData
       processData: false
       contentType: false
-      success: (xhr, res) => @success successMessage
+      success: => @success successMessage
       error: (xhr, error) => @error error, errorMessage
 
   success: (message) ->
@@ -25,11 +31,11 @@ define [
       timeout: 3000
 
   error: (error, baseMessage) ->
-    error =
+    errorMessage =
       message: baseMessage
       type: 'warning'
       timeout: 3000
-    error.message = baseMessage + ' because ' + error.responseText if error.responseText
+    errorMessage.message = baseMessage + ' because ' + error.responseText if error && error.responseText
     @set
       cancel: yes
-      message: error
+      message: errorMessage

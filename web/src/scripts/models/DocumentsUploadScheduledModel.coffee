@@ -1,11 +1,6 @@
 define [
   'cs!models/DocumentUploadModel'
 ], (DocumentUploadModel) -> DocumentUploadModel.extend
-  urlRoot: window.location.href
-  defaults:
-    message: off
-    modal: off
-
   uploaded: (file, res) ->
     @set
       documents: res.documents

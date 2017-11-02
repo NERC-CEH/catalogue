@@ -1,12 +1,6 @@
 define [
   'cs!models/DocumentUploadModel'
 ], (DocumentUploadModel) -> DocumentUploadModel.extend
-  urlRoot: window.location.href
-  defaults:
-    cancel: no
-    message: off
-    modal: off
-
   accept: (name, file) ->
     baseMessage = '<b>' + file + '</b>'
     @postWithFormData window.location.href + '/accept-invalid/' + name,
