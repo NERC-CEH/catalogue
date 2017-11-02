@@ -48,6 +48,30 @@
                             </div>
                         </div>
                     </#list>
+                    <#list documents.getFiles() as file>
+                        <div id="documents-${file.id}" class="file btn btn-primary file-readonly is-inactive">
+                            <div class="filename">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-file-text-o"></i>
+                                    </span>
+                                    <input type="text" class="form-control filename-input" value="${file.name}" readonly>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default copy" data-clipboard-action="copy" data-clipboard-target="#datastore-${file.id} .filename-input" disabled><i class="fa fa-clipboard"></i> Copy</button>
+                                    </span>
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-hashtag"></i>
+                                    </span>
+                                    <input type="text" class="form-control filehash-input" value="${file.hash}" readonly>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default copy" data-clipboard-action="copy" data-clipboard-target="#datastore-${file.id} .filehash-input" disabled><i class="fa fa-clipboard"></i> Copy</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </#list>
                 </div>
                 <div class="folder-options is-empty"></div>
             </div>
