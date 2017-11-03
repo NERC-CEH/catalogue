@@ -102,7 +102,7 @@ define [
   renderEmptyMessage: ->
     emptyMessage = 'Drag files into <u>here</u> to upload'
     emptyMessage = '' if @model.get('documents').files
-    $('.documents .empty-message').html emptyMessage
+    $('.empty-message').html emptyMessage
 
   renderModal: (modal) ->
     $('.modal-title').html modal.title
