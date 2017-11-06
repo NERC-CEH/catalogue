@@ -13,7 +13,6 @@ define [
       constructor: (selector, obj) ->
         obj.init.apply @
       on: (event, callback) ->
-        dropzoneCallbacks[event] = callback
       disable: ->
         dropzoneEnabled = no
     
