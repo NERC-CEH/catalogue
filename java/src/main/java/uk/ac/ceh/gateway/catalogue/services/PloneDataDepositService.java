@@ -3,21 +3,19 @@ package uk.ac.ceh.gateway.catalogue.services;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import lombok.AllArgsConstructor;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 @AllArgsConstructor
 public class PloneDataDepositService {
     private final WebResource ploneWebResource;
 
-    public String addOrUpdate(DocumentUpload du) throws IOException, DocumentRepositoryException{
-        List<String> files = du.getData().entrySet().stream()
+    public String addOrUpdate(DocumentUpload du) {
+        List<String> files = du.getDocuments().entrySet().stream()
                 .map(f -> f.getKey() + ";" + f.getValue().getHash())
                 .collect(Collectors.toList());
 

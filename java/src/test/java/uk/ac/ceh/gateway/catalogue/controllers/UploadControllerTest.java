@@ -40,7 +40,7 @@ public class UploadControllerTest {
 
     @Mock
     private PermissionService permissionservice;
-
+    
     @Mock
     private DocumentRepository documentRepository;
 
@@ -108,8 +108,8 @@ public class UploadControllerTest {
     }
 
     @SneakyThrows
-    private DocumentUpload deleteAFile() {
-        return controller.deleteFile("guid", "filename");
+    private Map<String, DocumentUpload> deleteAFile() {
+        return controller.deleteFile("guid", "filename", "documents");
     }
 
     @Test
@@ -117,7 +117,7 @@ public class UploadControllerTest {
     public void deletingAFile_returnsTheDocumentUpload() {
         val actual = deleteAFile();
 
-        assertThat(actual, equalTo(documentUpload));
+        assertThat(actual.get("documents"), equalTo(documentUpload));
     }
 
     @Test
@@ -129,8 +129,8 @@ public class UploadControllerTest {
     }
 
     @SneakyThrows
-    private DocumentUpload addAFile() {
-        return controller.addFile("guid", multipartFile);
+    private Map<String, DocumentUpload> addAFile() {
+        return controller.addFile("guid", multipartFile, "documents");
     }
 
     @Test
@@ -146,7 +146,7 @@ public class UploadControllerTest {
     public void addingAFile_returnsTheDocumentUpload() {
         val actual = addAFile();
 
-        assertThat(actual, equalTo(documentUpload));
+        assertThat(actual.get("documents"), equalTo(documentUpload));
     }
 
     @SneakyThrows
@@ -215,15 +215,7 @@ public class UploadControllerTest {
     public void documentUploadView_addsAllTheDocumentUpload() {
         val model = documentUploadModel();
 
-        assertThat(model.get("documentUpload"), equalTo(documentUpload));
-    }
-
-    @Test
-    @SneakyThrows
-    public void documentUploadView_addsAllFiles() {
-        val model = documentUploadModel();
-
-        assertThat(model.get("files"), equalTo(documentUpload.getFiles()));
+        assertThat(model.get("documents"), equalTo(documentUpload));
     }
 
     @Test
@@ -408,30 +400,16 @@ public class UploadControllerTest {
 
     @Test
     @SneakyThrows
-    public void change_willChangeTheDocumentType() {
-        controller.change("guid", "file", "META");
-        verify(documentUploadService).changeFileType(eq("guid"), eq("file"), eq(DocumentUpload.Type.META));
-    }
-
-    @Test
-    @SneakyThrows
-    public void change_returnsDocumentUpload() {
-        val actual = controller.change("guid", "file", "META");
-        assertThat(actual, equalTo(documentUpload));
-    }
-
-    @Test
-    @SneakyThrows
     public void acceptInvalid_willAcceptInvalidFile() {
-        controller.acceptInvalid("guid", "file");
+        controller.acceptInvalid("guid", "file", "documents");
         verify(documentUploadService).acceptInvalid(eq("guid"), eq("file"));
     }
 
     @Test
     @SneakyThrows
     public void acceptInvalid_returnsDocumentUpload() {
-        val actual = controller.acceptInvalid("guid", "file");
-        assertThat(actual, equalTo(documentUpload));
+        val actual = controller.acceptInvalid("guid", "file", "documents");
+        assertThat(actual.get("documents"), equalTo(documentUpload));
     }
     
 }

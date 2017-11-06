@@ -317,13 +317,18 @@ public class ServiceConfig {
     }
 
     @Bean
-    public FileUploadService fileUploadService() {
-        return new FileUploadService(new File("/var/ceh-catalogue/dropbox"));
+    public DocumentUploadService documentsUploadService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
     }
 
     @Bean
-    public DocumentUploadService documentUploadService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
+    public DocumentUploadService datastoreUploadService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentUploadService(new File("/var/ceh-catalogue/eidchub"), documentRepository());
+    }
+
+    @Bean
+    public DocumentUploadService ploneUploadService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentUploadService(new File("/var/ceh-catalogue/plone"), documentRepository());
     }
     
     @Bean

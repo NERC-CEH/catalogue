@@ -24,7 +24,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 public class PloneDataDepositServiceTest {
     
@@ -77,7 +76,8 @@ public class PloneDataDepositServiceTest {
     This test is ignored because it is just useful utility used during plone development to send requests the plone service
     */
     @Test
-    public void testResponse() throws IOException, DocumentRepositoryException {
+    @SneakyThrows
+    public void testResponse() {
         String actual = pdds.addOrUpdate(dus.get("guid"));
         String expected = "Success - updated: guid";
         assertThat(actual, equalTo(expected));
@@ -88,7 +88,8 @@ public class PloneDataDepositServiceTest {
     This tests the uploading code's ability to update plone with the details of 1000 files.  It is useful during development, but is otherwise ignored since it depends on a Plone instance.
     */
     @Test
-    public void test1000Files() throws IOException, DocumentRepositoryException {
+    @SneakyThrows
+    public void test1000Files() {
         dus.delete("guid", "file1.txt");
         dus.delete("guid", "file3.txt");
         int numberOfFiles = 1000;
