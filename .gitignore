@@ -2,7 +2,7 @@ build
 secrets.env
 dropbox
 plone
-eidchub
+eidchub-rw
 datastore
 mapfiles
 cache
