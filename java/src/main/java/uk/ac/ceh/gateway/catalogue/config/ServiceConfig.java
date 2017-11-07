@@ -323,7 +323,7 @@ public class ServiceConfig {
 
     @Bean
     public DocumentUploadService datastoreUploadService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new DocumentUploadService(new File("/var/ceh-catalogue/eidchub"), documentRepository());
+        return new DocumentUploadService(new File("/var/ceh-catalogue/eidchub-rw"), documentRepository());
     }
 
     @Bean
