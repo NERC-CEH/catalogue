@@ -5,9 +5,11 @@
   <div class="col-sm-10">
     <select data-name="type" class="editor-input type" id="supplemental<%= data.index %>Type">
       <option value="" selected>General</option>
+      <option value="dataPaper">Data paper describing this resource</option>
       <option value="isCitedBy">Article that cites this resource</option>
       <option value="relatedArticle">Article that is related but which DOESN'T cite this resource</option>
-      <option value="website">Website</option>
+      <option value="relatedDataset">Dataset that is related but which is NOT hosted by EIDC</option>
+      <option value="website">Related website (e.g. project website)</option>
     </select>
   </div>
 </div>

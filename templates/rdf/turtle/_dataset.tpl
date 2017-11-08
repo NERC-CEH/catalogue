@@ -35,7 +35,7 @@ dct:type <http://purl.org/dc/dcmitype/Dataset> ;
   dct:available "${datasetReferenceDate.publicationDate}" ;
 </#if>
  
- dcat:landingPage <${uri}> <#if datacitable?string=="true" && citation?has_content>,${citation.url}</#if>;
+ dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url}></#if>;
 
 <#if datacitable?string=='true' && citation?has_content>
     dct:bibliographicCitation "${citation.authors?join(' ,')} (${citation.year?string("0")}). ${citation.title}. ${citation.publisher}. ${citation.url}" ;
@@ -59,9 +59,7 @@ dct:type <http://purl.org/dc/dcmitype/Dataset> ;
   dcat:keyword 
   <#list descriptiveKeywords as descriptiveKeyword>
   <#list descriptiveKeyword.keywords as keyword>
-    <#if keyword.uri?has_content>
-      <${keyword.uri}><#sep>,
-    <#else>
+    <#if keyword.value?has_content>
       "${keyword.value}"<#sep>,
     </#if>
   </#list><#sep>,

@@ -1,7 +1,9 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#macro master title catalogue="" rdf="" searching=false><#compress><!DOCTYPE html>
+<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false>
+<#compress>
+<!DOCTYPE html>
 <html <#if catalogue?has_content>data-catalogue=${catalogue.id}</#if>>
   <head>
     <meta charset="utf-8">
@@ -9,10 +11,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${title?html}<#if catalogue?has_content> - ${catalogue.title?html}</#if></title>
     <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id?html}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
-    <#if rdf?has_content>
-      <link rel="meta" type="text/turtle" href="${rdf}"/>
+    <#if canonical?has_content>
+      <link rel="canonical" href="${canonical}"/>
     </#if>
-
+    <#if rdf?has_content>
+      <link rel="alternate" type="text/turtle" href="${rdf}"/>
+    </#if>
+    <#if schemaorg?has_content>
+      <link rel="alternate" type="application/vnd.schemaorg.ld+json" href="${schemaorg}"/>
+    </#if>
   <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>

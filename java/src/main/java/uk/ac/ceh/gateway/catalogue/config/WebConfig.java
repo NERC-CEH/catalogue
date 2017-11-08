@@ -45,7 +45,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String RDF_TTL_SHORT                = "ttl";
     public static final String RDF_TTL_VALUE                = "text/turtle";
     public static final String RDF_SCHEMAORG_SHORT          = "schema.org";
-    public static final String RDF_SCHEMAORG_VALUE          = "application/ld+json";
+    public static final String RDF_SCHEMAORG_VALUE          = "application/vnd.schemaorg.ld+json";
     public static final String RESEARCH_INFO_SYSTEMS_SHORT  = "ris";
     public static final String RESEARCH_INFO_SYSTEMS_VALUE  = "application/x-research-info-systems";
     public static final String DATACITE_XML_VALUE           = "application/x-datacite+xml";
