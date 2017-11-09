@@ -1,29 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService.DownloadOrder;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  *
  * @author cjohn
  */
 public class DownloadOrderDetailsServiceTest {
-    
+    private final String eidchub = "http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*";
+    private final String orderMan = "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*";
     private DownloadOrderDetailsService service;
     
     @Before
     public void init() {
-        Pattern eidchub = Pattern.compile("http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*");
-        Pattern orderMan = Pattern.compile("http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*");
         service = new DownloadOrderDetailsService(eidchub, orderMan);
     }
     

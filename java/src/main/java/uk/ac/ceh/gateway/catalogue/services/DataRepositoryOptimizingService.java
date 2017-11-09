@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -15,11 +15,15 @@ import java.util.Date;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class DataRepositoryOptimizingService {
     private final DataRepository<CatalogueUser> repo;
     private Date lastOptimized;
-    
+
+    @Autowired
+    public DataRepositoryOptimizingService(DataRepository<CatalogueUser> repo) {
+        this.repo = repo;
+    }
+
     @Scheduled(cron="0 0 0 * * ?")
     public void performOptimization() throws DataRepositoryException {
         if(repo instanceof GitDataRepository) {
@@ -33,7 +37,11 @@ public class DataRepositoryOptimizingService {
     }
 
     public Date getLastOptimized() {
-        return new Date(this.lastOptimized.getTime());
+        if (this.lastOptimized != null) {
+            return new Date(this.lastOptimized.getTime());
+        } else {
+            return null;
+        }
     }
 
     public DataRevision<CatalogueUser> getLatestRevision() throws DataRepositoryException {

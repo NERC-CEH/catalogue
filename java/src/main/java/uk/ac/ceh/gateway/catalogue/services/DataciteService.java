@@ -1,13 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import com.google.common.base.Strings;
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,37 +33,19 @@ import java.util.Optional;
 /**
  * A service which interacts with the datacite rest api to obtain a DOI for a 
  * GeminiMetadata record
- * @author cjohn
  */
 @Slf4j
 @Service
 @AllArgsConstructor
 public class DataciteService {
     private final static String DATACITE_API = "https://mds.datacite.org";
-    private final String doiPrefix;
-    private final String publisher;
-    private final String username;
-    private final String password;
+    @Qualifier("doiPrefix") private final String doiPrefix;
+    @Qualifier("publisher") private final String publisher;
+    @Qualifier("doiUsername") private final String username;
+    @Qualifier("doiPassword") private final String password;
     private final DocumentIdentifierService identifierService;
-    private final Template dataciteRequest;
-    private final RestTemplate rest = new RestTemplate();
-
-    @Autowired
-    public DataciteService(
-        @Qualifier("doiPrefix") String doiPrefix,
-        @Qualifier("publisher") String publisher,
-        @Qualifier("doiUsername") String username,
-        @Qualifier("doiPassword") String password,
-        DocumentIdentifierService identifierService,
-        Configuration configuration
-    ) throws IOException {
-        this.doiPrefix = doiPrefix;
-        this.publisher = publisher;
-        this.username = username;
-        this.password = password;
-        this.identifierService = identifierService;
-        this.dataciteRequest = configuration.getTemplate("/datacite/datacite.xml.tpl");
-    }
+    @Qualifier("doiTemplate") private final Template template;
+    private final RestTemplate rest;
 
     /**
      * Contacts the DATACITE rest api and uploads a datacite requests and then
@@ -249,7 +229,7 @@ public class DataciteService {
             data.put("doc", document);
             data.put("resourceType", getDataciteResourceType(document));
             data.put("doi", doi);
-            return FreeMarkerTemplateUtils.processTemplateIntoString(dataciteRequest, data);
+            return FreeMarkerTemplateUtils.processTemplateIntoString(template, data);
         }
         catch(IOException | TemplateException ex) {
             throw new DataciteException(ex);

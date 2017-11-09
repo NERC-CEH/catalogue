@@ -3,28 +3,30 @@ package uk.ac.ceh.gateway.catalogue.services;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.Mock;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
-import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
+
 import static org.hamcrest.CoreMatchers.equalTo;
-import org.junit.After;
 import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import static org.mockito.Matchers.anyString;
-import org.mockito.Mock;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.MockitoAnnotations.initMocks;
-import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 public class PloneDataDepositServiceTest {
     
@@ -47,8 +49,8 @@ public class PloneDataDepositServiceTest {
     @SneakyThrows
     public void before() {
         FileUtils.forceMkdir(dropbox);
-        FileUtils.write(file1, "something");
-        FileUtils.write(file2, "something else more again");
+        FileUtils.write(file1, "something", "utf-8");
+        FileUtils.write(file2, "something else more again", "utf-8");
         
         initMocks(this);
 

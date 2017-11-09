@@ -92,7 +92,11 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                         .filter(Objects::nonNull)
                         .distinct()
                         .collect(Collectors.toList());
-    }  
+    }
+
+    public static <T> List<String> grab(T item, Function<? super T, String> mapper ) {
+        return grab(Arrays.asList(item), mapper);
+    }
     
     private List<Keyword> getKeywordsFilteredByUrlFragment(MetadataDocument document, String... urlFragments) {
         return Optional.ofNullable(document.getAllKeywords())
