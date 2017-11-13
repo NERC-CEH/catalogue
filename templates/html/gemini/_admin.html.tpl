@@ -45,6 +45,7 @@
           </div>
         </#if>
       </div>
+      <#if metadata.catalogue == "eidc">
       <div class="mintDOI">
       <#if dataciteMintable && metadata.documentType != 'LINK_DOCUMENT'>
         <#if permission.userCanDatacite()>
@@ -60,6 +61,7 @@
         </#if>
       </#if>
       </div>
+      </#if>
     </div>
   </div>
 </#if>
