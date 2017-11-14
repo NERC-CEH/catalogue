@@ -1,7 +1,11 @@
+<#if doc.onlineResources?has_content>
 <#assign infoResources = func.filterRegex(func.filter(doc.onlineResources, "function", "information"), "url", "http://eidc.ceh.ac.uk/metadata")>
+</#if>
 
-<#assign dataPapers = func.filter(doc.supplemental, "type", "dataPaper")>
-<#assign citedBy = func.filter(doc.supplemental, "type", "isCitedBy")>
+<#if doc.supplemental?has_content>
+  <#assign dataPapers = func.filter(doc.supplemental, "type", "dataPaper")>
+  <#assign citedBy = func.filter(doc.supplemental, "type", "isCitedBy")>
+</#if>
 
 <#if doc.revisionOfIdentifier?has_content || infoResources?has_content || dataPapers?has_content || citedBy?has_content>
   <relatedIdentifiers>

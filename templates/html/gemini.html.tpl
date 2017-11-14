@@ -1,6 +1,7 @@
 <#import "blocks.html.tpl" as blocks>
 <#import "skeleton.html.tpl" as skeleton>
 <#import "../underscore.tpl" as _>
+<#import "../functions.tpl" as func>
 
 <#assign authors       = _.filter(responsibleParties, _.isAuthor) >
 <#assign otherContacts = _.reject(responsibleParties, _.isAuthor) >
