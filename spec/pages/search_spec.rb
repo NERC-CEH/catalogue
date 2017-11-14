@@ -1,20 +1,20 @@
 describe "Search page" do
   sized [:xs, :sm, :md, :lg] do
-    it 'should update results when term changes' do
-      visit "/eidc/documents"
-      results = first('.result').text
-      within(".search-form") do
-        fill_in 'term', :with => 'my search'
-      end
-      expect(page).not_to have_content results
-    end
+    # xit 'should update results when term changes' do
+    #   visit "/eidc/documents"
+    #   results = first('.result').text
+    #   within(".search-form") do
+    #     fill_in 'term', :with => 'my search'
+    #   end
+    #   expect(page).not_to have_content results
+    # end
 
-    xit 'should update results when going to next page' do
-      visit "/eidc/documents?rows=2"
-      results = first('.result').text
-      click_on 'Next'
-      expect(page).not_to have_content results
-    end
+    # xit 'should update results when going to next page' do
+    #   visit "/eidc/documents?rows=2"
+    #   results = first('.result').text
+    #   click_on 'Next'
+    #   expect(page).not_to have_content results
+    # end
 
     it 'should find record when doing case-insesitive search for pollution keyword' do
       visit '/eidc/documents?term=keyword%3Apollution'
