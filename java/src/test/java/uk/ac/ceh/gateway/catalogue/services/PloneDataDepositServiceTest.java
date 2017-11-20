@@ -130,6 +130,7 @@ public class PloneDataDepositServiceTest {
     So just have 2 files per list and check that the data deposit in Plone shows just those files.
     You should see the data deposit has 4 files, where file0.txt and file1.txt have physical location = <documentLocation>, and file3.txt and file4.txt have physical location = <dataLocation>.  There should no longer be file3.txt or file5.txt
     */
+    @Ignore
     @Test
     @SneakyThrows
     public void testCreateMoveSomeFilesToPlone() {
