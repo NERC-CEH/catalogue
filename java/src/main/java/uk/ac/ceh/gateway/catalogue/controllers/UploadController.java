@@ -172,10 +172,8 @@ public class UploadController {
         transitionIssueToStartProgress(user, guid);
         removeUploadPermission(user, guid);
         try {
-            ploneDataDepositService.addOrUpdate(documentsUploadService.get(guid));
-        } catch (Exception ignoreError) {
-
-        }
+            ploneDataDepositService.addOrUpdate(services.get("documents").get(guid) , services.get("datastore").get(guid));
+        } catch (Exception ignoreError) {}
         val response = new HashMap<String, String>();
         response.put("message", "awaiting approval from admin");
         return response;
@@ -216,6 +214,9 @@ public class UploadController {
     public Map<String, DocumentUpload> move(@PathVariable("guid") String guid, @RequestParam("file") String file,
             @RequestParam("from") String from, @RequestParam("to") String to) {
         services.get(from).move(guid, file, services.get(to));
+        try {
+            ploneDataDepositService.addOrUpdate(services.get("documents").get(guid) , services.get("datastore").get(guid));
+        } catch (Exception ignoreError) {}
         return get(guid);
     }
 
@@ -251,4 +252,5 @@ public class UploadController {
     class NonUniqueJiraIssue extends RuntimeException {
         static final long serialVersionUID = 1L;
     }
+
 }
