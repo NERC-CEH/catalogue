@@ -242,6 +242,7 @@ public class UploadController {
     @ResponseBody
     public Map<String, DocumentUpload> zip(@PathVariable("guid") String guid, @PathVariable("name") String name) {
         services.get(name).zip(guid);
+        updatePlone(guid);
         return get(guid);
     }
 
@@ -250,6 +251,7 @@ public class UploadController {
     @ResponseBody
     public Map<String, DocumentUpload> unzip(@PathVariable("guid") String guid, @PathVariable("name") String name) {
         services.get(name).unzip(guid);
+        updatePlone(guid);
         return get(guid);
     }
 

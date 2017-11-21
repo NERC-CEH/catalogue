@@ -23,14 +23,14 @@ public class PloneDataDepositService {
     }
     
     public String addOrUpdate(DocumentUpload documentsUpload, DocumentUpload datastoreUpload) {
-        List<String> files = toList(documentsUpload, locations.get("documents"));
-        files.addAll(toList(datastoreUpload, locations.get("data")));
+        List<String> files = toList(documentsUpload, locations.get("documents"), documentsUpload.isZipped());
+        files.addAll(toList(datastoreUpload, locations.get("data"), datastoreUpload.isZipped()));
         return addOrUpdate(files, documentsUpload.getGuid(), documentsUpload.getTitle());
     }
 
-    private List<String> toList(DocumentUpload upload, String location) {
+    private List<String> toList(DocumentUpload upload, String location, boolean isZipped) {
         return upload.getDocuments().entrySet().stream()
-                .map(f -> String.format("%s;%s;%s%s", f.getKey(), f.getValue().getHash(), location, upload.getGuid()))
+                .map(f -> String.format("%s;%s;%s%s%s", f.getKey(), f.getValue().getHash(), location, upload.getGuid(), (isZipped ? String.format("\\%s.zip", upload.getGuid()) : "")))
                 .collect(Collectors.toList());
     }
 
