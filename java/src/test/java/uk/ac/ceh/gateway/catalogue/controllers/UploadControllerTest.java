@@ -87,8 +87,6 @@ public class UploadControllerTest {
         documentUpload = new DocumentUpload("title", "type", "guid", "path");
         doReturn(documentUpload).when(documentUploadService).get(anyString());
 
-        doReturn("uploaded").when(ploneDataDepositService).addOrUpdate(documentUpload, documentUpload);
-
         doReturn(inputStream).when(multipartFile).getInputStream();
         doReturn("filename").when(multipartFile).getOriginalFilename();
 
