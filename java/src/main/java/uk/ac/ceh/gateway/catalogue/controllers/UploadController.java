@@ -200,6 +200,7 @@ public class UploadController {
     public Map<String, DocumentUpload> deleteFile(@PathVariable("guid") String guid, @RequestParam("file") String file,
             @PathVariable("name") String name) {
         services.get(name).delete(guid, file);
+        updatePlone(guid);
         return get(guid);
     }
 
