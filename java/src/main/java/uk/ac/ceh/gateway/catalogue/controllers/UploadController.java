@@ -233,6 +233,7 @@ public class UploadController {
         val toService = services.get(to);
         for (val file : files)
             fromService.move(guid, file, toService);
+        updatePlone(guid);
         return get(guid);
     }
 
