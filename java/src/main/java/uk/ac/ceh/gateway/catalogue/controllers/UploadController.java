@@ -158,6 +158,10 @@ public class UploadController {
         documentRepository.save(user, document, guid, String.format("Permissions of %s changed.", guid));
     }
 
+    private void updatePlone(String guid) {
+        ploneDataDepositService.addOrUpdate(services.get("documents").get(guid) , services.get("datastore").get(guid));
+    }
+
     @PreAuthorize("@permission.userCanUpload(#guid)")
     @RequestMapping(value = "upload/{guid}/get", method = RequestMethod.POST)
     @ResponseBody
@@ -171,9 +175,7 @@ public class UploadController {
     public Map<String, String> finish(@ActiveUser CatalogueUser user, @PathVariable("guid") String guid) throws DocumentRepositoryException {
         transitionIssueToStartProgress(user, guid);
         removeUploadPermission(user, guid);
-        try {
-            ploneDataDepositService.addOrUpdate(services.get("documents").get(guid) , services.get("datastore").get(guid));
-        } catch (Exception ignoreError) {}
+        updatePlone(guid);
         val response = new HashMap<String, String>();
         response.put("message", "awaiting approval from admin");
         return response;
@@ -196,6 +198,7 @@ public class UploadController {
     public Map<String, DocumentUpload> deleteFile(@PathVariable("guid") String guid, @RequestParam("file") String file,
             @PathVariable("name") String name) {
         services.get(name).delete(guid, file);
+        updatePlone(guid);
         return get(guid);
     }
 
@@ -205,6 +208,7 @@ public class UploadController {
     public Map<String, DocumentUpload> acceptInvalid(@PathVariable("guid") String guid,
             @RequestParam("file") String file, @PathVariable("name") String name) {
         services.get(name).acceptInvalid(guid, file);
+        updatePlone(guid);
         return get(guid);
     }
 
@@ -214,9 +218,7 @@ public class UploadController {
     public Map<String, DocumentUpload> move(@PathVariable("guid") String guid, @RequestParam("file") String file,
             @RequestParam("from") String from, @RequestParam("to") String to) {
         services.get(from).move(guid, file, services.get(to));
-        try {
-            ploneDataDepositService.addOrUpdate(services.get("documents").get(guid) , services.get("datastore").get(guid));
-        } catch (Exception ignoreError) {}
+        updatePlone(guid);
         return get(guid);
     }
 
@@ -229,6 +231,7 @@ public class UploadController {
         val toService = services.get(to);
         for (val file : files)
             fromService.move(guid, file, toService);
+        updatePlone(guid);
         return get(guid);
     }
 
@@ -237,6 +240,7 @@ public class UploadController {
     @ResponseBody
     public Map<String, DocumentUpload> zip(@PathVariable("guid") String guid, @PathVariable("name") String name) {
         services.get(name).zip(guid);
+        updatePlone(guid);
         return get(guid);
     }
 
@@ -245,6 +249,7 @@ public class UploadController {
     @ResponseBody
     public Map<String, DocumentUpload> unzip(@PathVariable("guid") String guid, @PathVariable("name") String name) {
         services.get(name).unzip(guid);
+        updatePlone(guid);
         return get(guid);
     }
 
