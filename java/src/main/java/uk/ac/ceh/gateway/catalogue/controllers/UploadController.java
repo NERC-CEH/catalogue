@@ -159,9 +159,7 @@ public class UploadController {
     }
 
     private void updatePlone(String guid) {
-        try {
-            ploneDataDepositService.addOrUpdate(services.get("documents").get(guid) , services.get("datastore").get(guid));
-        } catch (Exception ignoreError) {}
+        ploneDataDepositService.addOrUpdate(services.get("documents").get(guid) , services.get("datastore").get(guid));
     }
 
     @PreAuthorize("@permission.userCanUpload(#guid)")

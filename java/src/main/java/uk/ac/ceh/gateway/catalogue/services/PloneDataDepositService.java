@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 
 @AllArgsConstructor
@@ -45,13 +47,15 @@ public class PloneDataDepositService {
             .accept(MediaType.TEXT_PLAIN)
             .post(ClientResponse.class, formData);
 
-        if (response.getStatus() == 400){
-            String reason = response.getEntity(String.class);
-            throw new RuntimeException(String.format("Failed to update Plone: HTTP error code: %s : Error message: %s", response.getStatus(), reason));
-        }else if (response.getStatus() != 200){
-            throw new RuntimeException(String.format("Failed to update Plone: HTTP error code: %s", response.getStatus()));
+        if (response.getStatus() != 200){
+            throw new PloneUpdateFailure();
         }
         return response.getEntity(String.class);
+
     }
 
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR , reason = "Can not finish your file upload or file move, there was a problem updating a backend service (Plone).")
+    class PloneUpdateFailure extends RuntimeException {
+        static final long serialVersionUID = 1L;
+    }
 }
