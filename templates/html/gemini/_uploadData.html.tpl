@@ -1,5 +1,4 @@
-<#if metadata.catalogue == "eidc">
-<#if permission.userCanEdit(id)>
+<#if metadata.catalogue == "eidc" && permission.userCanEdit(id) && metadata.documentType != 'LINK_DOCUMENT' && (resourceType.value == 'dataset' | resourceType.value == 'nonGeographicDataset' | resourceType.value == 'application')>
   <div class="panel panel-default hidden-print" id="document-upload-panel">
     <div class="panel-body text-center">
       <#if permission.userCanUpload(id)>
@@ -17,5 +16,4 @@
       </#if>
       </div>
   </div>
-</#if>
 </#if>
