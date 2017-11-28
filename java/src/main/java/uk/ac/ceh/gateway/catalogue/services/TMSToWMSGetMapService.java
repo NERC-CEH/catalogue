@@ -1,7 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import org.springframework.stereotype.Service;
-
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -9,9 +7,7 @@ import java.util.stream.Collectors;
 /**
  * The following service will take a wms url, layer and tms coordiantes then
  * return a WMS GetMap Request url for the desired tile.
- * @author cjohn
  */
-@Service
 public class TMSToWMSGetMapService {
     private final DecimalFormat bboxPartFormat;
     private final int height, width;

@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@RunWith(MockitoJUnitRunner.class)
 public class SolrIndexOsdpMonitoringFacilityGeneratorTest {
     @Mock SolrIndexMetadataDocumentGenerator metadataDocumentGenerator;
     @Mock SolrGeometryService geometryService;

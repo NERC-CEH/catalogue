@@ -6,6 +6,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import freemarker.cache.FileTemplateLoader;
+import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateModelException;
 import lombok.Data;
@@ -27,6 +28,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.converters.*;
 import uk.ac.ceh.gateway.catalogue.ef.*;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -40,9 +42,15 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
+import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
+import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
+import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.*;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
@@ -58,6 +66,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.*;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
 @Configuration
@@ -66,13 +75,14 @@ public class ServiceConfig {
     @Value("${template.location}") private File templates;
     @Value("${maps.location}") private File mapsLocation;
     @Value("${doi.prefix}") private String doiPrefix;
+    @Value("${doi.codespace") private String doiCodespace;
     @Value("${doi.username}") private String doiUsername;
     @Value("${doi.password}") private String doiPassword;
-    @Value("#{systemEnvironment['JIRA_USERNAME']}") private String jiraUsername;
-    @Value("#{systemEnvironment['JIRA_PASSWORD']}") private String jiraPassword;
+    @Value("${jira.username}") private String jiraUsername;
+    @Value("${jira.password}") private String jiraPassword;
     @Value("${jira.address}") private String jiraAddress;
-    @Value("#{systemEnvironment['PLONE_USERNAME']}") private String ploneUsername;
-    @Value("#{systemEnvironment['PLONE_PASSWORD']}") private String plonePassword;
+    @Value("${plone.username}") private String ploneUsername;
+    @Value("${plone.password}") private String plonePassword;
     @Value("${plone.address}") private String ploneAddress;
     
     @Autowired private ObjectMapper jacksonMapper;
@@ -80,51 +90,73 @@ public class ServiceConfig {
     @Autowired private Dataset jenaTdb;
     @Autowired private SolrServer solrServer;
     @Autowired private EventBus bus;
-    @Autowired @Qualifier("gemini") private Schema geminiSchema;
-    @Autowired private JenaLookupService jenaLookupService;
     @Autowired private CodeLookupService codeLookupService;
-    @Autowired private DownloadOrderDetailsService downloadOrderDetailsService;
-    @Autowired private PermissionService permissionService;
-    @Autowired private MapServerDetailsService mapServerDetailsService;
-    @Autowired private GeminiExtractorService geminiExtractorService;
+    @Autowired private GroupStore<CatalogueUser> groupStore;
     @Autowired private CatalogueService catalogueService;
-    @Autowired private CitationService citationService;
-    @Autowired private DataciteService dataciteService;
-    @Autowired private DocumentIdentifierService documentIdentifierService;
-    @Autowired private BundledReaderService<MetadataDocument> bundledReaderService;
-    @Autowired private DocumentListingService documentListingService;
-    @Autowired private SolrGeometryService solrGeometryService;
-    @Autowired private SolrIndexMetadataDocumentGenerator solrIndexMetadataDocumentGenerator;
-    @Autowired private SolrIndexBaseMonitoringTypeGenerator solrIndexBaseMonitoringTypeGenerator;
-    @Autowired private SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator;
-    @Autowired private JenaIndexMetadataDocumentGenerator jenaIndexMetadataDocumentGenerator;
-    @Autowired private PostProcessingService<MetadataDocument> postProcessingService;
-    @Autowired private MapServerIndexGenerator mapServerIndexGenerator;
+    @Autowired @Qualifier("gemini") private Schema geminiSchema;
     
-    public static final String GEMINI_DOCUMENT = "GEMINI_DOCUMENT";
-    public static final String EF_DOCUMENT = "EF_DOCUMENT";
-    public static final String IMP_DOCUMENT = "IMP_DOCUMENT";
-    public static final String CEH_MODEL = "CEH_MODEL";
-    public static final String CEH_MODEL_APPLICATION = "CEH_MODEL_APPLICATION";
-    public static final String LINK_DOCUMENT = "LINK_DOCUMENT";
-
-    private final File dropbox = new File("/var/ceh-catalogue/dropbox");
-    private final char replacement = '-';
-    private final String eidcPattern = "http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*";
-    private final String orderManagerPattern = "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*";
+    @Bean FacetFactory facetFactory() {
+        return new HardcodedFacetFactory();
+    }
     
     @Bean
-    public WebResource jira() {
-        Client client = Client.create();
-        client.addFilter(new HTTPBasicAuthFilter(jiraUsername, jiraPassword));
-        return client.resource(jiraAddress);
+    public PermissionService permission() {
+        return new PermissionService(dataRepository, documentInfoMapper(), groupStore);
     }
 
     @Bean
-    public WebResource plone() {
+    public DocumentUploadService documentsUploadService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
+    }
+
+    @Bean
+    public DocumentUploadService datastoreUploadService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentUploadService(new File("/var/ceh-catalogue/eidchub-rw"), documentRepository());
+    }
+
+    @Bean
+    public DocumentUploadService ploneUploadService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DocumentUploadService(new File("/var/ceh-catalogue/plone"), documentRepository());
+    }
+    
+    @Bean
+    public JiraService jiraService() {
+        Client client = Client.create();
+        client.addFilter(new HTTPBasicAuthFilter(jiraUsername, jiraPassword));
+        WebResource jira = client.resource(jiraAddress);
+        return new JiraService(jira);
+    }
+
+    @Bean
+    public PloneDataDepositService ploneDataDepositService() throws XPathExpressionException, IOException, TemplateModelException {
         Client client = Client.create();
         client.addFilter(new HTTPBasicAuthFilter(ploneUsername, plonePassword));
-        return client.resource(ploneAddress);
+        WebResource plone = client.resource(ploneAddress);
+        return new PloneDataDepositService(plone);
+    }
+    
+    @Bean
+    public CitationService citationService() {
+        return new CitationService(doiCodespace, doiPrefix);
+    }
+    
+    @Bean
+    public MapServerDetailsService mapServerDetailsService() {
+        return new MapServerDetailsService(baseUri);
+    }
+    
+    @Bean
+    public DataciteService dataciteService() throws TemplateModelException, IOException {
+        Template dataciteTemplate = freemarkerConfiguration().getTemplate("/datacite/datacite.xml.tpl");
+        return new DataciteService(
+                doiPrefix, 
+                "NERC Environmental Information Data Centre", 
+                doiUsername, 
+                doiPassword,
+                documentIdentifierService(),
+                dataciteTemplate, 
+                new RestTemplate()
+        );
     }
     
     @Bean
@@ -198,12 +230,12 @@ public class ServiceConfig {
     @Bean
     public freemarker.template.Configuration freemarkerConfiguration() throws TemplateModelException, IOException {
         Map<String, Object> shared = new HashMap<>();
-        shared.put("jena", jenaLookupService);
+        shared.put("jena", jenaLookupService());
         shared.put("codes", codeLookupService);
-        shared.put("downloadOrderDetails", downloadOrderDetailsService);
-        shared.put("permission", permissionService);
-        shared.put("mapServerDetails", mapServerDetailsService);
-        shared.put("geminiHelper", geminiExtractorService);
+        shared.put("downloadOrderDetails", downloadOrderDetailsService());
+        shared.put("permission", permission());
+        shared.put("mapServerDetails", mapServerDetailsService());
+        shared.put("geminiHelper", geminiExtractorService());
         shared.put("catalogues", catalogueService);
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
@@ -212,6 +244,28 @@ public class ServiceConfig {
         config.setDefaultEncoding("UTF-8");
         config.setTemplateLoader(new FileTemplateLoader(templates));
         return config;
+    }
+    
+    @Bean
+    public DataRepositoryOptimizingService dataRepositoryOptimizingService() {
+        return new DataRepositoryOptimizingService(dataRepository);
+    }
+    
+    @Bean
+    GitRepoWrapper gitRepoWrapper() {
+        return new GitRepoWrapper(dataRepository, documentInfoMapper());
+    }
+    
+    @Bean 
+    DocumentRepository documentRepository() throws XPathExpressionException, IOException, TemplateModelException {
+        return new GitDocumentRepository(
+            metadataRepresentationService(),
+            documentReadingService(),
+            documentIdentifierService(),
+            documentWritingService(),
+            bundledReaderService(),
+            gitRepoWrapper()
+        );
     }
     
     @Bean
@@ -247,69 +301,166 @@ public class ServiceConfig {
     }
     
     @Bean
-    public RestTemplate capabilitiesObtainer() throws XPathExpressionException {
+    public GetCapabilitiesObtainerService getCapabilitiesObtainerService() throws XPathExpressionException {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setMessageConverters(Arrays.asList(
                 new Xml2WmsCapabilitiesMessageConverter()
         ));
-        return restTemplate;
+        return new GetCapabilitiesObtainerService(restTemplate, mapServerDetailsService());
     }
     
     @Bean
-    public DocumentInfoMapper<MetadataInfo> documentInfoMapper() {
-        return new JacksonDocumentInfoMapper<>(jacksonMapper, MetadataInfo.class);
+    public MetadataListingService getWafListingService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new MetadataListingService(dataRepository, documentListingService(), bundledReaderService());
     }
     
     @Bean
-    public ClassMap<PostProcessingService> postProcessingServiceClassMap() {
-        return new PrioritisedClassMap<PostProcessingService>()
-            .register(GeminiDocument.class,
-                new GeminiDocumentPostProcessingService(
-                    citationService,
-                    dataciteService,
-                    jenaTdb,
-                    documentIdentifierService
-                )
-            )
-            .register(BaseMonitoringType.class,
-                new BaseMonitoringTypePostProcessingService(jenaTdb));
+    public TMSToWMSGetMapService tmsToWmsGetMapService() {
+        return new TMSToWMSGetMapService();
     }
-
+    
     @Bean
-    public IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry() {
-        return new IndexGeneratorRegistry<>(solrIndexGeneratorClassMap());
+    public GeminiExtractorService geminiExtractorService() {
+        return new GeminiExtractorService();
     }
-
+    
     @Bean
-    ClassMap<IndexGenerator<?, SolrIndex>> solrIndexGeneratorClassMap() {
-        return new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
-            .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), solrIndexMetadataDocumentGenerator, solrGeometryService, codeLookupService))
-            .register(Facility.class, new SolrIndexFacilityGenerator(solrIndexBaseMonitoringTypeGenerator, solrGeometryService))
-            .register(BaseMonitoringType.class, solrIndexBaseMonitoringTypeGenerator)
+    public DownloadOrderDetailsService downloadOrderDetailsService() {
+        String eidchub = "http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*";
+        String orderMan = "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*";
+        return new DownloadOrderDetailsService(eidchub, orderMan);
+    }
+    
+    @Bean
+    public DocumentInfoMapper documentInfoMapper() {
+        return new JacksonDocumentInfoMapper(jacksonMapper, MetadataInfo.class);
+    }
+    
+    @Bean
+    public MetadataInfoBundledReaderService bundledReaderService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new MetadataInfoBundledReaderService(
+            dataRepository,
+            documentReadingService(),
+            documentInfoMapper(),
+            metadataRepresentationService(),
+            postProcessingService(),
+            documentIdentifierService()
+        );
+    }
+    
+    @Bean
+    public ExtensionDocumentListingService documentListingService() {
+        return new ExtensionDocumentListingService();
+    }
+    
+    @Bean
+    public DocumentIdentifierService documentIdentifierService() {
+        return new DocumentIdentifierService(baseUri, '-');
+    }
+    
+    @Bean
+    public JenaLookupService jenaLookupService() {
+        return new JenaLookupService(jenaTdb);
+    }
+    
+    @Bean
+    public SolrGeometryService solrGeometryService() {
+        return new SolrGeometryService();
+    }
+    
+    @Bean
+    public PostProcessingService postProcessingService() throws TemplateModelException, IOException {
+        ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
+                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), dataciteService(), jenaTdb, documentIdentifierService()))
+                .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb));
+        return new ClassMapPostProcessingService(mappings);
+    }
+    
+    @Bean @Qualifier("solr-index")
+    public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
+        SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
+        SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
+        SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
+        solrIndexLinkDocumentGenerator.setRepository(documentRepository());
+        
+        ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
+            .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
+            .register(Facility.class, new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
+            .register(BaseMonitoringType.class, baseMonitoringType)
             .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
-            .register(MonitoringFacility.class, new SolrIndexOsdpMonitoringFacilityGenerator(solrIndexMetadataDocumentGenerator, solrGeometryService))
-            .register(MetadataDocument.class, solrIndexMetadataDocumentGenerator);
-    }
+            .register(MonitoringFacility.class, new SolrIndexOsdpMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
+            .register(MetadataDocument.class, metadataDocument);
+        
+        IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry(mappings);
 
-    @Bean
-    ClassMap<IndexGenerator<?, List<Statement>>> jenaIndexGeneratorClassMap() {
-        return new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
-            .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(jenaIndexMetadataDocumentGenerator))
-            .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(jenaIndexMetadataDocumentGenerator))
-            .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(jenaIndexMetadataDocumentGenerator))
-            .register(MetadataDocument.class, jenaIndexMetadataDocumentGenerator);
+        solrIndexLinkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
+        
+        SolrIndexingService toReturn = new SolrIndexingService<>(
+                bundledReaderService(),
+                documentListingService(),
+                dataRepository,
+                indexGeneratorRegistry,
+                solrServer,
+                jenaLookupService(),
+                documentIdentifierService()
+        );
+        
+        solrIndexLinkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
+        
+        performReindexIfNothingIsIndexed(toReturn);
+        return toReturn;
+    }
+    
+    @Bean @Qualifier("jena-index")
+    public JenaIndexingService documentLinkingService() throws XPathExpressionException, IOException, TemplateModelException {
+        JenaIndexMetadataDocumentGenerator metadataDocument = new JenaIndexMetadataDocumentGenerator(documentIdentifierService());
+        
+        ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
+                .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(metadataDocument))
+                .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument))
+                .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(metadataDocument))
+                .register(MetadataDocument.class, metadataDocument);
+        
+        JenaIndexingService toReturn = new JenaIndexingService(
+                bundledReaderService(),
+                documentListingService(),
+                dataRepository,
+                new IndexGeneratorRegistry(mappings),
+                documentIdentifierService(),
+                jenaTdb
+        );
+        
+        performReindexIfNothingIsIndexed(toReturn);
+        return toReturn;
     }
     
     @Bean @Qualifier("datacite-index")
     public DocumentIndexingService dataciteIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
         return new AsyncDocumentIndexingService(
-            new DataciteIndexingService(bundledReaderService, dataciteService)
+                new DataciteIndexingService(bundledReaderService(), dataciteService())
         );
     }
     
     @Bean @Qualifier("validation-index")
     public DocumentIndexingService asyncValidationIndexingService() throws Exception {
-        return new AsyncDocumentIndexingService(validationIndexingService());
+        DocumentIndexingService toReturn = new AsyncDocumentIndexingService(validationIndexingService());
+        
+        performReindexIfNothingIsIndexed(toReturn);
+        return toReturn;
+    }
+    
+    @Bean @Qualifier("mapserver-index")
+    public MapServerIndexingService mapServerIndexingService() throws Exception {
+        MapServerIndexGenerator generator = new MapServerIndexGenerator(freemarkerConfiguration(), mapServerDetailsService());
+        MapServerIndexingService toReturn = new MapServerIndexingService(
+                bundledReaderService(),
+                documentListingService(),
+                dataRepository,
+                generator,
+                mapsLocation);
+        
+        performReindexIfNothingIsIndexed(toReturn);
+        return toReturn;
     }
         
     @Bean 
@@ -326,12 +477,25 @@ public class ServiceConfig {
                 )));
         
         return new ValidationIndexingService<MetadataDocument>(
-                bundledReaderService,
-                documentListingService,
+                bundledReaderService(),
+                documentListingService(),
                 dataRepository,
-                postProcessingService,
-                documentIdentifierService,
+                postProcessingService(),
+                documentIdentifierService(),
                 new IndexGeneratorRegistry(mappings)
         );
+    }
+    
+    //Perform an initial index of solr if their is no content inside
+    void performReindexIfNothingIsIndexed(DocumentIndexingService service) {
+        try {
+            if(service.isIndexEmpty()) {
+                service.rebuildIndex();
+            }
+        }
+        catch(DocumentIndexingException ex) {
+            //Indexing or reading from solr failed... 
+            bus.post(ex); //Silently hand over to the event bus
+        }
     }
 }

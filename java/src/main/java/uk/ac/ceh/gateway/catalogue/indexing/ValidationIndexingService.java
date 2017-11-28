@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
@@ -15,10 +14,8 @@ import java.util.*;
 /**
  * The following ValidationIndexingService checks a document against some 
  * validation checks.
- * @author cjohn
  * @param <D>
  */
-@Service
 public class ValidationIndexingService<D extends MetadataDocument> extends AbstractIndexingService<D, ValidationReport> {
     private final Map<String, ValidationReport> results;
     private final Set<String> failed;

@@ -12,7 +12,6 @@ import java.util.concurrent.Executors;
  * DocumentIndexingService using a specified ExecutorService. This enables long
  * indexing tasks to be performed on a different thread and the bulk of the 
  * methods to return without blocking.
- * @author cjohn
  */
 @Slf4j
 @AllArgsConstructor

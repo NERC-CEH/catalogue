@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -13,7 +12,6 @@ import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 
 import java.io.IOException;
 
-@Service
 @AllArgsConstructor
 public class MetadataInfoBundledReaderService implements BundledReaderService<MetadataDocument> {
     private final DataRepository<CatalogueUser> repo;

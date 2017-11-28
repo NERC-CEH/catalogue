@@ -1,14 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
-/**
- *
- * @author cjohn
- */
 public class HashMapDocumentTypeLookupService implements DocumentTypeLookupService {
     private final Map<String, Class<? extends MetadataDocument>> lookup;
     

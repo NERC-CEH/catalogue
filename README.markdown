@@ -21,10 +21,11 @@ The CEH metadata catalogue project.
 you will need to create a `secrets.env` file with the following
 
 ```
-JIRA_USERNAME=jira_username
-JIRA_PASSWORD=jira_password
-CROWD_USERNAME=eip-ro
-CROWD_PASSWORD=FindMeInK33Pa55
+jira.username=jira_username
+jira.password=jira_password
+crowd.password=FindMeInK33Pa55
+plone.password=plone_password
+doi.password=
 ```
 
 ## Getting started

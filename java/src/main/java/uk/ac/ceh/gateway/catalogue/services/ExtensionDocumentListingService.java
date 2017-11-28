@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.Data;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,9 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Defines a listing service which will filter a list of filenames into a list
  * of document names if there exists filenames with the given extensions
- * @author cjohn
  */
-@Service
 public class ExtensionDocumentListingService implements DocumentListingService {
     private final List<String> extensions = Arrays.asList("meta", "raw");
     

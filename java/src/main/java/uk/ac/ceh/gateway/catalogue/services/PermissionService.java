@@ -1,13 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.io.IOException;
-import static java.lang.String.format;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import uk.ac.ceh.components.datastore.DataDocument;
@@ -17,18 +10,23 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.controllers.DataciteController;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 
-@Slf4j
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+
+import static java.lang.String.format;
+
 public class PermissionService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final GroupStore<CatalogueUser> groupStore;
 
-    @Autowired
     public PermissionService(DataRepository<CatalogueUser> repo, DocumentInfoMapper documentInfoMapper, GroupStore<CatalogueUser> groupStore) {
         this.repo = repo;
         this.documentInfoMapper = documentInfoMapper;

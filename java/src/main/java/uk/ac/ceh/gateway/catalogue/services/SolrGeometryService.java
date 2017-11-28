@@ -6,7 +6,6 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
@@ -16,9 +15,7 @@ import java.util.stream.Collectors;
  * The following service allows us to process well known text geometries into 
  * either bounding boxes or points. These are presented in the native spatial 
  * solr format.
- * @author cjohn
  */
-@Service
 public class SolrGeometryService {
     private final WKTReader reader = new WKTReader();
     

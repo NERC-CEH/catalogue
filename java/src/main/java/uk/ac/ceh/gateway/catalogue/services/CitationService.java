@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import org.springframework.stereotype.Service;
+import lombok.AllArgsConstructor;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
@@ -16,14 +16,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- *
- * @author cjohn
- */
-@Service
+@AllArgsConstructor
 public class CitationService {
-    public static final String DOI_CODE_SPACE = "doi:";
-    public static final String NERC_DOI_PREFIX = "10.5285/";
+    public final String doiCodeSpace;
+    public final String nercDoiPrefix;
     
     /**
      * Generate a citation value for the current geminidocument. If the document
@@ -39,8 +35,8 @@ public class CitationService {
             .map(GeminiDocument::getResourceIdentifiers)
             .orElse(Collections.emptyList())
             .stream()
-            .filter((r)->r.getCodeSpace().equals(DOI_CODE_SPACE))
-            .filter((r)->r.getCode().startsWith(NERC_DOI_PREFIX))
+            .filter((r)->r.getCodeSpace().equals(doiCodeSpace))
+            .filter((r)->r.getCode().startsWith(nercDoiPrefix))
             .findFirst();
         
         //If is present and rest of document is valid

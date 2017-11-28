@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -19,11 +18,9 @@ import java.util.List;
  * The following is a cacheable metadata file lister. It will scan the data 
  * repository for metadata files of a particular type which are accessible by a 
  * particular user.
- * 
- * @author cjohn
+
  */
 @Slf4j
-@Service
 @AllArgsConstructor
 public class MetadataListingService {
     private final DataRepository<CatalogueUser> repo;

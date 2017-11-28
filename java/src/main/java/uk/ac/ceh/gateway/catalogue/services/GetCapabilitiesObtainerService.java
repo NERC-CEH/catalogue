@@ -1,9 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
@@ -16,10 +14,8 @@ import java.net.URISyntaxException;
 
 import static java.lang.String.format;
 
-@Service
 @AllArgsConstructor
 public class GetCapabilitiesObtainerService {
-    @Qualifier("CapabilitiesObtainer")
     private final RestTemplate rest;
     private final MapServerDetailsService mapServerDetailsService;
     

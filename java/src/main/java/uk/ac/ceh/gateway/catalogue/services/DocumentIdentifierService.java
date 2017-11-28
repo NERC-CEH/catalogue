@@ -2,8 +2,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
@@ -18,14 +16,10 @@ import java.util.UUID;
  * As such, it is important that we are able to produce a internal identifier
  * which can be used to create a valid url in the above scheme. This class is
  * responsible for doing just that.
- * @author cjohn
  */
-@Service
 @AllArgsConstructor
 public class DocumentIdentifierService {
-    @Qualifier("baseUri")
     private final String baseUri;
-    @Qualifier("replacement")
     private final char replacement;
     
     /**

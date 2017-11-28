@@ -6,12 +6,10 @@ import freemarker.template.TemplateException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -35,16 +33,15 @@ import java.util.Optional;
  * GeminiMetadata record
  */
 @Slf4j
-@Service
 @AllArgsConstructor
 public class DataciteService {
     private final static String DATACITE_API = "https://mds.datacite.org";
-    @Qualifier("doiPrefix") private final String doiPrefix;
-    @Qualifier("publisher") private final String publisher;
-    @Qualifier("doiUsername") private final String username;
-    @Qualifier("doiPassword") private final String password;
+    private final String doiPrefix;
+    private final String publisher;
+    private final String username;
+    private final String password;
     private final DocumentIdentifierService identifierService;
-    @Qualifier("doiTemplate") private final Template template;
+    private final Template template;
     private final RestTemplate rest;
 
     /**

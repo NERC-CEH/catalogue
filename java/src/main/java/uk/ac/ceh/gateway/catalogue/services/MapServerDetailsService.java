@@ -2,8 +2,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -26,12 +24,10 @@ import static java.util.Objects.nonNull;
 /**
  * The following service is a 'helper' which produces text which is useful in
  * the creation of map server mapfiles.
- * @author cjohn
  */
-@Service
 @AllArgsConstructor
 public class MapServerDetailsService {
-    @Qualifier("baseUri") private final String hostUrl;
+    private final String hostUrl;
     
     /**
      * For the given document, return the potential wms endpoint where the 

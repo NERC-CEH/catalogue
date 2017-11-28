@@ -3,8 +3,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
@@ -15,10 +13,8 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 @AllArgsConstructor
 public class PloneDataDepositService {
-    @Qualifier("plone")
     private final WebResource ploneWebResource;
 
     public String addOrUpdate(DocumentUpload du) throws IOException, DocumentRepositoryException{

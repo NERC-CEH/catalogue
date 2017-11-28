@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -14,10 +13,8 @@ import java.util.List;
  * The following DataciteIndexingService detects when a GeminiDocument has been
  * updated and submits an update to the datacite rest api if it has been determined
  * that the change in the GeminiDocument adjusts the datacite metadata request.
- * @author cjohn
  */
 @Slf4j
-@Service
 @AllArgsConstructor
 public class DataciteIndexingService implements DocumentIndexingService {
     private final BundledReaderService<MetadataDocument> bundleReader;

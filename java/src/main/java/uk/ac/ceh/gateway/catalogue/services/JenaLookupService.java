@@ -5,7 +5,6 @@ import lombok.NonNull;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 
 import java.util.ArrayList;
@@ -19,9 +18,7 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 /**
  * A simple lookup service powered by the jena linking database. This just looks
  * up any literals associated to a given uri
- * @author cjohn
  */
-@Service
 @AllArgsConstructor
 public class JenaLookupService {
     private final Dataset jenaTdb;

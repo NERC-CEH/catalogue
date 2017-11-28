@@ -9,6 +9,7 @@ import com.google.common.eventbus.EventBus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Configuration
+@PropertySource("classpath:application.properties")
 public class ApplicationConfig {
     @Value("${data.repository.location}") private String dataRespository;
     

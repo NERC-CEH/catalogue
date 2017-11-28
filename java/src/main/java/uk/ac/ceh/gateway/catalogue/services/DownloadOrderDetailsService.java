@@ -1,9 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.Value;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
 import java.util.ArrayList;
@@ -24,14 +21,12 @@ import java.util.regex.Pattern;
  * The logic in this class makes use of the fact that OnlineResources have safe
  * variables (That is strings are never null)
  */
-@Service
 public class DownloadOrderDetailsService {
     private final Pattern eidchub, orderManager;
 
-    @Autowired
     public DownloadOrderDetailsService(
-        @Qualifier("eidcPattern") String eidcPattern,
-        @Qualifier("orderManagerPattern") String orderManagerPattern
+        String eidcPattern,
+        String orderManagerPattern
     ) {
         this.eidchub = Pattern.compile(eidcPattern);
         this.orderManager = Pattern.compile(orderManagerPattern);

@@ -7,11 +7,15 @@ import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_SAMPLE_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.ServiceConfig.*;
 
 @Configuration
 public class CatalogueServiceConfig {
+    public static final String GEMINI_DOCUMENT = "GEMINI_DOCUMENT";
+    public static final String EF_DOCUMENT = "EF_DOCUMENT";
+    public static final String IMP_DOCUMENT = "IMP_DOCUMENT";
+    public static final String CEH_MODEL = "CEH_MODEL";
+    public static final String CEH_MODEL_APPLICATION = "CEH_MODEL_APPLICATION";
+    public static final String LINK_DOCUMENT = "LINK_DOCUMENT";
 
     @Bean
     public CatalogueService catalogueService() {
