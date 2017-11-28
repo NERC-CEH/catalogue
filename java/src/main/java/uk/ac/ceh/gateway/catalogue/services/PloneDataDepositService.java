@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import lombok.AllArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
@@ -25,22 +26,32 @@ public class PloneDataDepositService {
     }
     
     public String addOrUpdate(DocumentUpload documentsUpload, DocumentUpload datastoreUpload) {
-        List<String> files = toList(documentsUpload, locations.get("documents"), documentsUpload.isZipped());
-        files.addAll(toList(datastoreUpload, locations.get("data"), datastoreUpload.isZipped()));
-        return addOrUpdate(files, documentsUpload.getGuid(), documentsUpload.getTitle());
+        List<String> validFiles = getValidFiles(documentsUpload, locations.get("documents"), documentsUpload.isZipped());
+        validFiles.addAll(getValidFiles(datastoreUpload, locations.get("data"), datastoreUpload.isZipped()));
+        List<String> invalidFiles = getInvalidFiles(documentsUpload);
+        invalidFiles.addAll(getInvalidFiles(datastoreUpload));
+        return addOrUpdate(validFiles, invalidFiles, documentsUpload.getGuid(), documentsUpload.getTitle());
     }
 
-    private List<String> toList(DocumentUpload upload, String location, boolean isZipped) {
+    private List<String> getValidFiles(DocumentUpload upload, String location, boolean isZipped) {
         return upload.getDocuments().entrySet().stream()
                 .map(f -> String.format("%s;%s;%s%s%s", f.getKey(), f.getValue().getHash(), location, upload.getGuid(), (isZipped ? String.format("\\%s.zip", upload.getGuid()) : "")))
                 .collect(Collectors.toList());
     }
 
-    private String addOrUpdate(List<String> files, String guid, String title){
+    private List<String> getInvalidFiles(DocumentUpload upload) {
+        return upload.getInvalid().entrySet().stream()
+                .map(f -> f.getKey())
+                .collect(Collectors.toList());
+    }
+
+    private String addOrUpdate(List<String> validFiles, List<String> invalidFiles, String guid, String title) {
         MultivaluedMap formData = new MultivaluedMapImpl();
         formData.add("fileIdentifier", guid);
         formData.add("title", title);
-        formData.add("files", String.join(",", files));
+        formData.add("files", String.join(",", validFiles));
+        formData.add("invalidFiles", String.join(",", invalidFiles));
+
 
         ClientResponse response = ploneWebResource
             .type(MediaType.APPLICATION_FORM_URLENCODED)

@@ -49,6 +49,13 @@ the EIDC catalogue is then available on:
 
 will run a process that watches the javascript and less directories and recompiles the files on an changes.
 
+## Developing just Javascript
+
+    ./gradlew
+    ./gradlew :web:grunt_copy
+
+Probably need to do first command in one terminal and after it has run do the second.  I used this as I couldn't get ./gradlew :web:grunt_concurrent working.
+
 ## Java
 
     ./gradlew web

@@ -54,7 +54,7 @@ define [
     $('.move-to-datastore').click =>
       files = []
       $('.documents .file .filename-label').each (index, filename) ->
-        files.push $(filename).text() if !$(filename).parent().parent().hasClass('file-invalid')
+        files.push $(filename).text() 
 
       if files.length > 0
         $('.move-to-datastore').attr 'disabled', on
