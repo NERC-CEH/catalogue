@@ -27,14 +27,18 @@
           <#if metadata.documentType != 'LINK_DOCUMENT'>
             <#if metadata.catalogue == "eidc" && (resourceType.value == 'dataset' | resourceType.value == 'nonGeographicDataset' | resourceType.value == 'application')>
 
-              <#if !dataciteMintable && !datacitable>
-                <#assign menuIcon="<i class='fa fa-exclamation-triangle text-red'></i>">
+
+              <#assign menuLabel="DOI">
+              <#if dataciteMintable>
+                <#assign menuLabel="Mint DOI">
               <#else>
-                <#assign menuIcon="">
+                <#if !datacitable>
+                   <#assign menuLabel="<i class='fa fa-exclamation-triangle text-red'></i> DOI">
+                </#if>
               </#if>
 
               <div class="btn-group btn-group-sm" role="group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">${menuIcon} DOI <span class="caret"></span></button>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">${menuLabel} <span class="caret"></span></button>
                   <ul class="dropdown-menu dropdown-menu-right">
                     <#if dataciteMintable>
                       <li><div class="msg text-success"><i class="fa fa-check text-success"></i> There is enough information<br>to assign a DOI to this resource</div></li>
