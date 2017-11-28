@@ -7,7 +7,7 @@
       <option value="" selected>General</option>
       <option value="dataPaper">Data paper describing this resource</option>
       <option value="isCitedBy">Article that cites this resource</option>
-      <option value="relatedArticle">Article that is related but which DOESN'T cite this resource</option>
+      <option value="relatedArticle">Article (or grey literature) that is related but which DOESN'T cite this resource</option>
       <option value="relatedDataset">Dataset that is related but which is NOT hosted by EIDC</option>
       <option value="website">Related website (e.g. project website)</option>
     </select>

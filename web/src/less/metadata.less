@@ -66,21 +66,25 @@
     border-color: @brand-success; 
   } 
 
-  #adminPanel{
-    .panel-info;
-  	.panel-heading {
-      background-color: @brand-info;
-      color:#FFF
-    }
-    .mintDOI{
-        margin-top: 1em;
-        text-align: center;
-        .btn {
-          font-size: 90%;
-        };
+  #section-children{
+    margin-bottom:6em;
+      .children {
+        margin-left:3em;
+        margin-top:1em;
+        padding-top: 0.25em;
+        .childRecord {margin-bottom:0.25em;}
     };
-	ul a{font-size: 90%;};
   }
+
+  #adminPanel{
+    margin: 1.75em auto -1.75em auto;
+    ul {
+      a{font-size: 90%;};
+      div.msg {margin:1em; white-space:nowrap;};
+    }
+  }
+
+  .mintDOI{margin:0 1em;};
 
   #studyarea-map { height: 300px; width: 300px; }
 

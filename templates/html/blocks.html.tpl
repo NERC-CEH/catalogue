@@ -13,7 +13,7 @@ draft or is pending publication
       </#if>
       ${title?html}
       <#if (metadata.state == 'draft' || metadata.state == 'pending') >
-        <small> - ${codes.lookup('publication.state', metadata.state)!''}</small>
+        <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
       </#if>
     </h1>
   </#if>
