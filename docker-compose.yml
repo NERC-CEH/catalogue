@@ -7,7 +7,9 @@ services:
       - mapserver
     volumes:
       - ./datastore:/var/ceh-catalogue/datastore
+      - ./plone:/var/ceh-catalogue/plone
       - ./dropbox:/var/ceh-catalogue/dropbox
+      - ./eidchub-rw:/var/ceh-catalogue/eidchub-rw
       - mapfiles:/var/ceh-catalogue/mapfiles
     environment:
       - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2

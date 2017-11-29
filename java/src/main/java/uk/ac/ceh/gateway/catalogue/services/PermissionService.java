@@ -109,6 +109,19 @@ public class PermissionService {
             throw new PermissionDeniedException(message, ex);
         }
     }
+
+    public boolean userCanView(@NonNull String file) {
+        try {
+            CatalogueUser user = getCurrentUser();
+            DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
+            MetadataInfo document = getMetadataInfo(file, latestRevision.getRevisionID());
+            return !user.isPublic() && toAccess(user, document, "VIEW");
+        } catch (DataRepositoryException ex) {
+            String message = String.format("No document found for: %s", file);
+            throw new PermissionDeniedException(message, ex);
+        }
+    }
+
     public boolean userCanCreate(@NonNull String catalogue) {
         return userCan((String name) -> name.equalsIgnoreCase(
             format("role_%s_editor", catalogue)

@@ -1,6 +1,8 @@
 build
 secrets.env
 dropbox
+plone
+eidchub-rw
 datastore
 mapfiles
 cache
@@ -18,6 +20,8 @@ puppet/hieradata/secrets.yaml
 test-reports/**
 npm-debug.log
 rspec_screenshots/
+document-upload-test-main
+document-upload-test-second
 
 # Ignore webdriver directories (created by rspec/capybara testing)
 webdriver*

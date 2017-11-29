@@ -24,7 +24,11 @@ define [
   'cs!models/LinkEditorMetadata'
   'cs!views/CehModelEditorView'
   'cs!views/CehModelApplicationEditorView'
-  'cs!views/DocumentsUploadView'
+  'cs!views/DocumentsUploadScheduledView'
+  'cs!models/DocumentsUploadScheduledModel'
+  'cs!views/DocumentsUploadInProgressView'
+  'cs!models/DocumentsUploadInProgressModel'
+  'cs!views/DocumentsUploadReadOnlyView'
   'cs!views/OsdpAgentEditorView'
   'cs!views/OsdpDatasetEditorView'
   'cs!views/OsdpModelEditorView'
@@ -38,10 +42,10 @@ define [
 ], (
   _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
     SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
-    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata,
-    CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadView, OsdpAgentEditorView, OsdpDatasetEditorView,
-    OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView,
-    OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView
+    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
+    DocumentsUploadScheduledView, DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView,
+    OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
+    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView
 ) ->
 
   ###
@@ -50,7 +54,9 @@ define [
   we like globally.
   ###
   initialize: ->
-    do @initDocumentsUpload if $('#documents-upload').length
+    do @initScheduled if $('#documents-upload .scheduled').length
+    do @initInProgress if $('#documents-upload .in-progress').length
+    do @initReadOnly if $('#documents-upload .read-only').length
     do @initStudyAreaMap if $('#studyarea-map').length
     do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
@@ -62,9 +68,16 @@ define [
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
 
-  initDocumentsUpload: ->
-    view = new DocumentsUploadView
-      el: '#dropzone'
+  initReadOnly: ->
+    view = new DocumentsUploadReadOnlyView()
+
+  initScheduled: ->
+    app = new DocumentsUploadScheduledModel()
+    view = new DocumentsUploadScheduledView model: app
+
+  initInProgress: ->
+    app = new DocumentsUploadInProgressModel()
+    view = new DocumentsUploadInProgressView model: app
 
   initStudyAreaMap: ->
     view = new StudyAreaView
@@ -198,7 +211,7 @@ define [
     catalogues = undefined
 
     $.getJSON '/catalogues', (data) ->
-      catalogues = _.chain(data).map((c) -> {value: c.id, label: c.title}).value()
+      catalogues = _.chain(data).map((c) -> { value: c.id, label: c.title }).value()
 
     $('.catalogue-control').on 'click', (event) ->
       do event.preventDefault

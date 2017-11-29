@@ -16,6 +16,21 @@
 
   #document-description { margin-bottom:1em; }
 
+  #section-supplemental {
+    p {
+      margin-bottom:1.75em;
+      small {
+        a { color:#99aefd;}
+      }
+    }
+  }
+
+  #document-otherContacts {
+    dl.dl-horizontal {
+        dd, dt { margin-bottom:0;}
+    }
+  }
+
   #publicationActions {
 	  .label-Draft{
 		.label-default;
@@ -46,23 +61,32 @@
     padding-bottom: 6px;
   }
 
-  #adminPanel{
-    .panel-info;
-  	.panel-heading {
-      background-color: @brand-info;
-      color:#FFF
-    }
-    .mintDOI{
-        margin-top: 1em;
-        text-align: center;
-        .btn {
-          font-size: 90%;
-        };
+  #document-upload-panel {
+    border-width:3px;
+    border-color: @brand-success; 
+  } 
+
+  #section-children{
+    margin-bottom:6em;
+      .children {
+        margin-left:3em;
+        margin-top:1em;
+        padding-top: 0.25em;
+        .childRecord {margin-bottom:0.25em;}
     };
-	ul a{font-size: 90%;};
+  }
+
+  #adminPanel{
+    margin: 1.75em auto -1.75em auto;
+    ul {
+      a{font-size: 90%;};
+      div.msg {margin:1em; white-space:nowrap;};
+    }
   }
 
   #studyarea-map, #geometry-map { height: 300px; width: 300px; }
+
+  .mintDOI{margin:0 1em;};
 
   // If the current metadata document is a historic archive, a warning is
   // displayed to the user at the top of the metadata page with

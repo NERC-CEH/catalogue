@@ -1,6 +1,5 @@
 .title {
     margin-top: 30px;
-
     &-type {
         display: block;
         line-height: 25px;
@@ -8,82 +7,151 @@
 }
 
 .subtitle {
-    margin-top: 2.5em;
     border-bottom: 1px solid #cccccc;
     padding-bottom: 6px;
+    margin-top: 0;
 }
 
-.documents-upload {
-    .panel,
-    .panel-heading {
-        border-radius: 0;
-    }
-
-    .documents,
-    .finish,
-    .invalid {
-        &-is-inactive {
-            display: none;
-        }
-    }
+.document-upload-footer {
+    border-radius: 0;
 }
 
-.data-meta-toggle {
-    width: 100%;
-
-    .btn {
-        width: 50%;
-    }
-}
-
-.checksums {
+.folders {
     margin-bottom: 30px;
 }
 
-.change-type {
-    height: 16px;
+.folder {
+    margin: auto;
+    margin-bottom: 30px;
+    width: 100%;
+    font-size: 20px;
+    background-color: white;
 }
 
-.dropzone {
-    &-area {
-        margin-top: 15px;
-        height: 60px;
-        border: dashed 1px #338ddd;
-        background-color: lighten(#4999e1, 25%);
+.folder-name {
+    font-weight: bold;
+    color: white;
+    height: 300px;
+    background-color: #225378;
+    position: relative;
+    padding: 10px;
+    padding-right: 25px;
+    border-top-left-radius: 4px;
+}
 
-        .title {
-            margin-bottom: 45px;
-            text-align: center;
-            line-height: 10px;
+.folder-name:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-top: 41px solid white;
+    border-left: 20px solid #225378;
+    width: 0;
+}
 
-            .fa {
-                margin-top: -15px;
-            }
-        }
-    }
+.files {
+    background-color: #225378;
+    color: white;
+    border: solid 1px #225378;
+    margin-top: 0;
+    padding: 10px;
+    width: 100%;
+    border-top-right-radius: 4px;
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+}
 
-    .file-row {
-        margin-top: 15px;
+.file {
+    float: left;
+    font-size: 18px;
+    width: 32%;
+    overflow: hidden;
+    margin: 2px;
+}
 
-        .max-size {
-            &.is-inactive {
-                display: none;
-            }
+.file-readonly {
+    width: 49%;
+}
 
-            &.is-active {
-                display: block;
-            }
-        }
+.file-readonly .input-group:nth-child(1) {
+    margin-bottom: 5px;
+}
 
-        .progress {
-            margin-bottom: 0;
-            margin-top: 8px;
-        }
+.file-readonly .input-group-addon {
+    width: 40px;
+}
 
-        .name,
-        .size {
-            margin-bottom: 0;
-            line-height: 32px;
-        }
-    }
+.file-readonly input:hover,
+.file-readonly .input-group-addon:hover {
+    cursor: initial;   
+}
+
+.file-options {
+    padding: 4px;
+}
+
+.filename {
+    margin: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.folder-options {
+    background-color: #225378;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    padding: 10px;
+    height: 56px;
+}
+
+.folder-options.is-empty {
+    padding: 1px;
+    height: 0px;
+}
+
+.files .empty-message {
+    pointer-events: none;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    bottom: 0;
+    opacity: 0.35;
+}
+
+.file .progress {
+    margin: 2px;
+    height: 32px;
+}
+
+.file .progress-bar {
+    font-size: 18px;
+    line-height: 32px;
+}
+
+.ui-state-highlight {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    opacity: 0.3;
+    height: 10000px;
+}
+
+.documents .ui-state-highlight {
+    display: none;
+}
+
+.messages {
+    max-height: 300px;
+    overflow: auto;
+}
+
+.invalid-container {
+    text-align: left;
 }

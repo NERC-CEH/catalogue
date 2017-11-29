@@ -1,31 +1,14 @@
 <#import "../underscore.tpl" as _>
+<#import "../functions.tpl" as func>
 <#assign authors = _.filter(doc.responsibleParties, _.isAuthor) >
 <#compress>
 <#escape x as x?xml>
 <?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.1/metadata.xsd">
   <identifier identifierType="DOI">${doi}</identifier>
-  <#if authors?has_content>
-  <creators>
-  <#list authors as author>
-    <#if author.individualName?has_content>
-    <creator>
-      <creatorName>${author.individualName}</creatorName>
-      <#if author.nameIdentifier?has_content>
-        <#if author.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
-          <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${author.nameIdentifier}</nameIdentifier>
-        <#elseif author.nameIdentifier?matches("^http://isni.org/\\d{16}$")>
-          <nameIdentifier nameIdentifierScheme="ISNI" schemeURI="http://isni.org/">${author.nameIdentifier}</nameIdentifier>
-        </#if>
-      </#if>
-      <#if author.organisationName?has_content>
-      <affiliation>${author.organisationName}</affiliation>
-      </#if>
-    </creator>
-    </#if>
-  </#list>
-  </creators>
-  </#if>
+  
+  <#include "_creators.xml.tpl">
+
   <titles>
     <title>${doc.title}</title>
   </titles>
@@ -73,35 +56,11 @@
     </#list>
   </alternateIdentifiers>
   </#if>
-  <#if doc.revisionOfIdentifier??>
-    <relatedIdentifiers>
-      <relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf">10.5285/${doc.revisionOfIdentifier}</relatedIdentifier>
-    </relatedIdentifiers>
-  </#if>
-  <#if doc.distributionFormats?has_content>
-  <formats>
-    <#list doc.distributionFormats as format>
-    <#if format.type??>
-      <format>${format.type}</format>
-    <#else>
-      <format>${format.name}</format>
-    </#if>
-    </#list>
-  </formats>
-  </#if>
-  <#if doc.useConstraints?has_content>
-    <rightsList>
-      <#list doc.useConstraints as useConstraint>
-      <#if useConstraint.code == "license">
-      <#if useConstraint.uri?has_content>
-        <rights rightsURI="${useConstraint.uri}">${useConstraint.value}</rights>
-      <#else>
-        <rights>${useConstraint.value}</rights>
-      </#if>
-      </#if>
-      </#list>
-    </rightsList>
-  </#if>
+ 
+  <#include "_related.xml.tpl">
+  <#include "_formats.xml.tpl">
+  <#include "_rights.xml.tpl">
+
   <descriptions>
     <description descriptionType="Abstract">${doc.description}</description>
     <description descriptionType="Methods">${doc.lineage}</description>

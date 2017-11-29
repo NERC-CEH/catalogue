@@ -15,7 +15,7 @@ module.exports = function(grunt) {
     jasmine: {
       test: {
         options: {
-          specs: 'test-compiled/**/*spec.js',
+          specs: 'test-compiled/**/*.spec.js',
           template: require('grunt-template-jasmine-requirejs'),
           templateOptions: {
             requireConfigFile: 'src/scripts/main.js',

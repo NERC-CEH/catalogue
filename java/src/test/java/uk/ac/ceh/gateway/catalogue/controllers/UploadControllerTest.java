@@ -19,7 +19,6 @@ import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
-import uk.ac.ceh.gateway.catalogue.model.DocumentUploadFile;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -41,7 +40,7 @@ public class UploadControllerTest {
 
     @Mock
     private PermissionService permissionservice;
-
+    
     @Mock
     private DocumentRepository documentRepository;
 
@@ -88,8 +87,6 @@ public class UploadControllerTest {
         documentUpload = new DocumentUpload("title", "type", "guid", "path");
         doReturn(documentUpload).when(documentUploadService).get(anyString());
 
-        doReturn("uploaded").when(ploneDataDepositService).addOrUpdate(documentUpload);
-
         doReturn(inputStream).when(multipartFile).getInputStream();
         doReturn("filename").when(multipartFile).getOriginalFilename();
 
@@ -109,8 +106,8 @@ public class UploadControllerTest {
     }
 
     @SneakyThrows
-    private DocumentUpload deleteAFile() {
-        return controller.deleteFile("guid", "filename");
+    private Map<String, DocumentUpload> deleteAFile() {
+        return controller.deleteFile("guid", "filename", "documents");
     }
 
     @Test
@@ -118,7 +115,7 @@ public class UploadControllerTest {
     public void deletingAFile_returnsTheDocumentUpload() {
         val actual = deleteAFile();
 
-        assertThat(actual, equalTo(documentUpload));
+        assertThat(actual.get("documents"), equalTo(documentUpload));
     }
 
     @Test
@@ -130,8 +127,8 @@ public class UploadControllerTest {
     }
 
     @SneakyThrows
-    private DocumentUpload addAFile() {
-        return controller.addFile("guid", multipartFile);
+    private Map<String, DocumentUpload> addAFile() {
+        return controller.addFile("guid", multipartFile, "documents");
     }
 
     @Test
@@ -147,7 +144,7 @@ public class UploadControllerTest {
     public void addingAFile_returnsTheDocumentUpload() {
         val actual = addAFile();
 
-        assertThat(actual, equalTo(documentUpload));
+        assertThat(actual.get("documents"), equalTo(documentUpload));
     }
 
     @SneakyThrows
@@ -216,15 +213,7 @@ public class UploadControllerTest {
     public void documentUploadView_addsAllTheDocumentUpload() {
         val model = documentUploadModel();
 
-        assertThat(model.get("documentUpload"), equalTo(documentUpload));
-    }
-
-    @Test
-    @SneakyThrows
-    public void documentUploadView_addsAllFiles() {
-        val model = documentUploadModel();
-
-        assertThat(model.get("files"), equalTo(documentUpload.getFiles()));
+        assertThat(model.get("documents"), equalTo(documentUpload));
     }
 
     @Test
@@ -254,11 +243,8 @@ public class UploadControllerTest {
         val statuses = new HashMap<String, String>();
         statuses.put("open", "Awaiting scheduling from admin. Try again later.");
         statuses.put("approved", "Awaiting scheduling from admin. Try again later.");
-        statuses.put("in progress", "Currently being checked. Awaiting approval from admin.");
-        statuses.put("resolved", "This is finsihed. No further action required.");
-        statuses.put("closed", "This is finsihed. No further action required.");
-        statuses.put("on hold", "This issue is blocked. Contact an admin to resolve.");
-        statuses.put("scheduled", "You can now upload your files for this document.");
+        statuses.put("in progress", "This is now in progress. Awaiting resolution from admin.");
+        statuses.put("scheduled", "This has been scheduled. You can now upload your files for this document.");
 
         for (Map.Entry<String, String> entry : statuses.entrySet()) {
             val issues = Arrays.asList(createJiraIssue(entry.getKey()));
@@ -278,6 +264,26 @@ public class UploadControllerTest {
         val model = documentUploadModel();
 
         assertThat(model.get("isScheduled"), equalTo(true));
+    }
+
+    @Test
+    @SneakyThrows
+    public void documentUploadView_isResolvedIfHasOneIssueWhichIsResolved() {
+        val issues = Arrays.asList(createJiraIssue("resolved"));
+        doReturn(issues).when(jiraService).search(anyString());
+        val model = documentUploadModel();
+
+        assertThat(model.get("isResolved"), equalTo(true));
+    }
+
+    @Test
+    @SneakyThrows
+    public void documentUploadView_isClosedIfHasOneIssueWhichIsClosed() {
+        val issues = Arrays.asList(createJiraIssue("closed"));
+        doReturn(issues).when(jiraService).search(anyString());
+        val model = documentUploadModel();
+
+        assertThat(model.get("isClosed"), equalTo(true));
     }
 
     @Test
@@ -381,32 +387,27 @@ public class UploadControllerTest {
         assertThat(model.get("userCanUpload"), equalTo(true));
     }
 
-    @Test
-    @SneakyThrows
-    public void change_willChangeTheDocumentType() {
-        controller.change("guid", "file", "META");
-        verify(documentUploadService).changeFileType(eq("guid"), eq("file"), eq(DocumentUpload.Type.META));
-    }
 
     @Test
     @SneakyThrows
-    public void change_returnsDocumentUpload() {
-        val actual = controller.change("guid", "file", "META");
-        assertThat(actual, equalTo(documentUpload));
+    public void documentUploadView_canViewIfUserCanView() {
+        doReturn(true).when(permissionservice).userCanView(anyString());
+        val model = documentUploadModel();
+        assertThat(model.get("userCanView"), equalTo(true));
     }
 
     @Test
     @SneakyThrows
     public void acceptInvalid_willAcceptInvalidFile() {
-        controller.acceptInvalid("guid", "file");
+        controller.acceptInvalid("guid", "file", "documents");
         verify(documentUploadService).acceptInvalid(eq("guid"), eq("file"));
     }
 
     @Test
     @SneakyThrows
     public void acceptInvalid_returnsDocumentUpload() {
-        val actual = controller.acceptInvalid("guid", "file");
-        assertThat(actual, equalTo(documentUpload));
+        val actual = controller.acceptInvalid("guid", "file", "documents");
+        assertThat(actual.get("documents"), equalTo(documentUpload));
     }
     
 }

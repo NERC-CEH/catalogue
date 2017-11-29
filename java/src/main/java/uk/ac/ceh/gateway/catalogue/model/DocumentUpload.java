@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
@@ -20,17 +21,18 @@ public class DocumentUpload {
     private final String type;
     private final String guid;
     private final String path;
-    private final ConcurrentMap<String, DocumentUploadFile> meta;
-    private final ConcurrentMap<String, DocumentUploadFile> data;
+    private final ConcurrentMap<String, DocumentUploadFile> documents;
     private final ConcurrentMap<String, DocumentUploadFile> invalid;
+    
+    @SuppressWarnings("unused")
+    private boolean zipped;
 
     public DocumentUpload (String title, String type, String guid, String path) {
         this.title = title;
         this.type = type;
         this.guid = guid;
         this.path = path;
-        this.meta = Maps.newConcurrentMap();
-        this.data = Maps.newConcurrentMap();
+        this.documents = Maps.newConcurrentMap();
         this.invalid = Maps.newConcurrentMap();
     }
 
@@ -40,24 +42,25 @@ public class DocumentUpload {
         @JsonProperty("type") String type,
         @JsonProperty("guid") String guid,
         @JsonProperty("path") String path,
-        @JsonProperty("meta") ConcurrentMap<String, DocumentUploadFile> meta,
-        @JsonProperty("data") ConcurrentMap<String, DocumentUploadFile> data,
+        @JsonProperty("documents") ConcurrentMap<String, DocumentUploadFile> documents,
         @JsonProperty("invalid") ConcurrentMap<String, DocumentUploadFile> invalid
     ) {
         this.title = title;
         this.type = type;
         this.guid = guid;
         this.path = path;
-        this.meta = meta;
-        this.data = data;
+        this.documents = documents;
         this.invalid = invalid;
     }
 
     public List<DocumentUploadFile> getFiles () {
-        val files = Lists.newArrayList(meta.values());
-        files.addAll(data.values());
-        files.sort((left, right) -> left.getName().compareTo(right.getName()));
+        val files = Lists.newArrayList(documents.values());
+        files.sort((left, right) -> left.getId().compareTo(right.getId()));
         return files;
+    }
+
+    public boolean isZipped() {
+        return new File(path, String.format("%s.zip", guid)).exists();
     }
 
     @JsonIgnore
@@ -67,12 +70,11 @@ public class DocumentUpload {
 
     @JsonIgnore
     public ConcurrentMap<String, DocumentUploadFile> getFiles(Type type) {
-        if (type == Type.META) return meta;
-        else if (type == Type.DATA) return data;
+        if (type == Type.DOCUMENTS) return documents;
         return invalid;
     }
 
     public enum Type {
-        META, DATA, INVALID_HASH, MISSING_FILE, UNKNOWN_FILE
+        DOCUMENTS, INVALID_HASH, MISSING_FILE, UNKNOWN_FILE
     }
 }

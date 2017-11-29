@@ -70,6 +70,7 @@ dependencies {
         exclude(module: 'log4j')
     }
     implementation "com.vividsolutions:jts:1.13"
+    implementation "net.lingala.zip4j:zip4j:1.2.4"
     implementation "ch.qos.logback:logback-classic:1.2.3"
     implementation "org.slf4j:jcl-over-slf4j:1.7.25"
     implementation "org.freemarker:freemarker:2.3.23"

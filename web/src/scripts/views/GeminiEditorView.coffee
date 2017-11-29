@@ -192,6 +192,9 @@ define [
               organisationName: 'NERC Environmental Information Data Centre'
               role: 'publisher'
               email: 'eidc@ceh.ac.uk'
+            'Unaffiliated author':
+              organisationName: 'Unaffiliated'
+              role: 'author'
           helpText: """
                     <p>The organisation or person responsible for the authorship and maintenance of the data resource.</p>
                     <p>A contact must include an email address, role and organisation name.  Other elements are optional.</p>
@@ -533,10 +536,10 @@ define [
           label: 'Supplemental information'
           ObjectInputView: SupplementalView
           helpText: """
-                    <p>You can add information not documented elsewhere here. This includes links to related articles or websites.  For example:</p>
-                    <ul><li>papers that cite this resource</li><li>papers that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
+                    <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
+                    <ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
                     <p>When linking to published articles, please use DOIs whenever possible.</p>
-                    <p><small class='text-danger'><i class='fa fa-exclamation-triangle'> </i> Project websites may only be maintained for a limited period and may therefore soon become unavailable.</small></p>
+                    <p><small class='text-danger'><i class='fa fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>
                     """
 
         new PredefinedParentView
