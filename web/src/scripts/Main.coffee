@@ -37,6 +37,7 @@ define [
   'cs!views/OsdpMonitoringActivityEditorView'
   'cs!views/OsdpMonitoringProgrammeEditorView'
   'cs!views/OsdpMonitoringFacilityEditorView'
+  'cs!views/JonSampleArchiveEditorView'
   'bootstrap'
   'dropzone'
 ], (
@@ -45,7 +46,7 @@ define [
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
     DocumentsUploadScheduledView, DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView,
     OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
-    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView
+    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView, JonSampleArchiveEditor
 ) ->
 
   ###
@@ -107,6 +108,10 @@ define [
   initEditor: ->
 
     lookup =
+      SAMPLE_ARCHIVE_DOCUMENT:
+        View: JonSampleArchiveEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.sample-archive+json'
       GEMINI_DOCUMENT:
         View: GeminiEditorView
         Model: EditorMetadata
