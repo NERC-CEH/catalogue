@@ -3,7 +3,7 @@ secrets.env
 dropbox
 plone
 eidchub-rw
-datastore
+/datastore
 mapfiles
 cache
 .gradle
@@ -30,12 +30,9 @@ test-reports/
 *~
 **/nbproject/**
 *.*.swp
-*.iml
 *.sublime-workspace
 javac-services*
-*.*.swp
 .classpath
 .project
 org.eclipse.*
-.vscode
 DevStartupController.java

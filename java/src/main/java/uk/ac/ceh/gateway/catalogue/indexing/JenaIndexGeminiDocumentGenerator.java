@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import lombok.AllArgsConstructor;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 
 import java.util.Collections;
@@ -17,9 +16,7 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 /**
  * The following class extracts semantic details from a GeminiDocument and 
  * returns these as Jena Statements (triples)
- * @author cjohn
  */
-@Service
 @AllArgsConstructor
 public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;

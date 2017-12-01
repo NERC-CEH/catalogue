@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
  * The following class is responsible for taking a metadata document and creating 
  * beans which are solr indexable
  */
-@Service
 @AllArgsConstructor
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
     public static final String IMP_CAMMP_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/ci/";

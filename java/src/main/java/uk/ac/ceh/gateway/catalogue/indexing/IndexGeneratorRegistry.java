@@ -1,16 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 
-/**
- *
- * @author cjohn
- * @param <D>
- * @param <I>
- */
-@Component
 @AllArgsConstructor
 public class IndexGeneratorRegistry<D, I> implements IndexGenerator<D, I> {
     private final ClassMap<IndexGenerator<?, I>> lookup;

@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import lombok.AllArgsConstructor;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
@@ -17,9 +16,7 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 /**
  * A triple extractor for generic metadata documents.
- * @author cjohn
  */
-@Service
 @AllArgsConstructor
 public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, List<Statement>> {
     private final DocumentIdentifierService documentIdentifierService;

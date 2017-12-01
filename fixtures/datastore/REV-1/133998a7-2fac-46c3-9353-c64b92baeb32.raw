@@ -1,0 +1,18 @@
+{
+  "uri": "https://catalogue.ceh.ac.uk/id/133998a7-2fac-46c3-9353-c64b92baeb32",
+  "id": "133998a7-2fac-46c3-9353-c64b92baeb32",
+  "type": "monitoringActivity",
+  "title": "OSDP Monitoring Activity",
+  "format": "text/csv",
+  "version": "2",
+  "parametersMeasured": [
+    {"name": {"title": "Parameter 0", "href": "http://example.com"}, "unitOfMeasure": {"title": "m/s²/kg", "href": "http://example.com"}},
+    {"name": {"title": "Parameter 1"}, "unitOfMeasure": {"title": "℃/m"}},
+    {"name": {"title": "Snowman Index"}, "unitOfMeasure": {"title": "⛄/m²/y"}}
+  ],
+  "keywords": [
+    {"value": "Keyword 0", "uri": "http://example.com/keyword0"},
+    {"value": "Keyword 1", "uri": "http://example.com/keyword1"},
+    {"value": "Keyword 2", "uri": "http://example.com/keyword2"}
+  ]
+}

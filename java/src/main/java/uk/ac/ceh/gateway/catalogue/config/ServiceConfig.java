@@ -332,8 +332,8 @@ public class ServiceConfig {
     }
     
     @Bean
-    public DocumentInfoMapper documentInfoMapper() {
-        return new JacksonDocumentInfoMapper(jacksonMapper, MetadataInfo.class);
+    public DocumentInfoMapper<MetadataInfo> documentInfoMapper() {
+        return new JacksonDocumentInfoMapper<>(jacksonMapper, MetadataInfo.class);
     }
     
     @Bean
@@ -391,11 +391,10 @@ public class ServiceConfig {
             .register(MonitoringFacility.class, new SolrIndexOsdpMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
             .register(MetadataDocument.class, metadataDocument);
         
-        IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry(mappings);
-
+        IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry<>(mappings);
         solrIndexLinkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
         
-        SolrIndexingService toReturn = new SolrIndexingService<>(
+        return new SolrIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
@@ -404,11 +403,6 @@ public class ServiceConfig {
                 jenaLookupService(),
                 documentIdentifierService()
         );
-        
-        solrIndexLinkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
-        
-        performReindexIfNothingIsIndexed(toReturn);
-        return toReturn;
     }
     
     @Bean @Qualifier("jena-index")
@@ -421,17 +415,14 @@ public class ServiceConfig {
                 .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(metadataDocument))
                 .register(MetadataDocument.class, metadataDocument);
         
-        JenaIndexingService toReturn = new JenaIndexingService(
+        return new JenaIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
-                new IndexGeneratorRegistry(mappings),
+                new IndexGeneratorRegistry<>(mappings),
                 documentIdentifierService(),
                 jenaTdb
         );
-        
-        performReindexIfNothingIsIndexed(toReturn);
-        return toReturn;
     }
     
     @Bean @Qualifier("datacite-index")
@@ -443,24 +434,18 @@ public class ServiceConfig {
     
     @Bean @Qualifier("validation-index")
     public DocumentIndexingService asyncValidationIndexingService() throws Exception {
-        DocumentIndexingService toReturn = new AsyncDocumentIndexingService(validationIndexingService());
-        
-        performReindexIfNothingIsIndexed(toReturn);
-        return toReturn;
+        return new AsyncDocumentIndexingService(validationIndexingService());
     }
     
     @Bean @Qualifier("mapserver-index")
     public MapServerIndexingService mapServerIndexingService() throws Exception {
         MapServerIndexGenerator generator = new MapServerIndexGenerator(freemarkerConfiguration(), mapServerDetailsService());
-        MapServerIndexingService toReturn = new MapServerIndexingService(
+        return new MapServerIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
                 generator,
                 mapsLocation);
-        
-        performReindexIfNothingIsIndexed(toReturn);
-        return toReturn;
     }
         
     @Bean 
@@ -476,26 +461,13 @@ public class ServiceConfig {
                         html
                 )));
         
-        return new ValidationIndexingService<MetadataDocument>(
+        return new ValidationIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
                 dataRepository,
                 postProcessingService(),
                 documentIdentifierService(),
-                new IndexGeneratorRegistry(mappings)
+                new IndexGeneratorRegistry<>(mappings)
         );
-    }
-    
-    //Perform an initial index of solr if their is no content inside
-    void performReindexIfNothingIsIndexed(DocumentIndexingService service) {
-        try {
-            if(service.isIndexEmpty()) {
-                service.rebuildIndex();
-            }
-        }
-        catch(DocumentIndexingException ex) {
-            //Indexing or reading from solr failed... 
-            bus.post(ex); //Silently hand over to the event bus
-        }
     }
 }

@@ -2,14 +2,12 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
-@Service
 public class SolrIndexLinkDocumentGenerator implements IndexGenerator<LinkDocument, SolrIndex> {
     @Setter(onMethod = @__({@Autowired}))
     private DocumentRepository repository;

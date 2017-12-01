@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Properties;
@@ -12,12 +11,10 @@ import java.util.Properties;
  * 
  * This service is useful for looking up the English textual value for some 
  * internal code
- * @author cjohn
  */
-@Service
 @AllArgsConstructor
+@Service
 public class CodeLookupService {
-    @Qualifier("codelist")
     private final Properties properties;
     
     /**

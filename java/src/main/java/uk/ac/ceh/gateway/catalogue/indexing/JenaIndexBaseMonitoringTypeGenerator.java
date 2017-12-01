@@ -32,9 +32,7 @@ import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
 /**
  * The following code is a Jena translation of the linking mechanism defined for
  * UKEOF. This is defined in uk.ac.ceh.ukeof.linkstore.guava.Linker
- * @author cjohn
  */
-@Service
 @AllArgsConstructor
 public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<BaseMonitoringType, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;

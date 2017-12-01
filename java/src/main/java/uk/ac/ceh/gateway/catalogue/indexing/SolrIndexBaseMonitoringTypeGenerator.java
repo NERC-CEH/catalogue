@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
@@ -10,9 +9,7 @@ import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGene
 /**
  * Based upon a general MetadataDocument generator, instances of this class will
  * index BaseMonitoringType specific details.
- * @author cjohn
  */
-@Service
 @AllArgsConstructor
 public class SolrIndexBaseMonitoringTypeGenerator implements IndexGenerator<BaseMonitoringType, SolrIndex> {
     private final SolrIndexMetadataDocumentGenerator solrIndexMetadataDocumentGenerator;

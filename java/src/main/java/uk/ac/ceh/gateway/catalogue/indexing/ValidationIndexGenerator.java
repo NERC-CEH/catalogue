@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 import uk.ac.ceh.gateway.catalogue.validation.Validator;
@@ -9,10 +8,8 @@ import uk.ac.ceh.gateway.catalogue.validation.Validator;
 import java.util.List;
 
 /**
- * For the given metadata document, evaluate the validators which have been 
- * @author cjohn
+ * For the given metadata document, evaluate the validators which have been
  */
-@Service
 @AllArgsConstructor
 public class ValidationIndexGenerator implements IndexGenerator<MetadataDocument, ValidationReport> {
     private final List<Validator> validators;

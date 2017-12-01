@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.osdp.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
@@ -12,7 +11,6 @@ import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGene
  * Based upon a general MetadataDocument generator, instances of this class will
  * index OsdpMonitoringFacility specific details.
  */
-@Service
 @AllArgsConstructor
 public class SolrIndexOsdpMonitoringFacilityGenerator implements IndexGenerator<MonitoringFacility, SolrIndex> {
     private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;

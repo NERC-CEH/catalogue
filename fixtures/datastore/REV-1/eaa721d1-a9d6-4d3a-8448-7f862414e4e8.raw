@@ -1,0 +1,13 @@
+{
+  "uri": "https://catalogue.ceh.ac.uk/id/eaa721d1-a9d6-4d3a-8448-7f862414e4e8",
+  "id": "eaa721d1-a9d6-4d3a-8448-7f862414e4e8",
+  "type": "model",
+  "title": "OSDP Model",
+  "format": "format",
+  "version": "2",
+  "keywords": [
+    {"value": "Keyword 0", "uri": "http://example.com/keyword0"},
+    {"value": "Keyword 1", "uri": "http://example.com/keyword1"},
+    {"value": "Keyword 2", "uri": "http://example.com/keyword2"}
+  ]
+}

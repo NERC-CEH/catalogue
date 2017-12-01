@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -17,7 +16,6 @@ import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGene
  * bits of the document transferred. Ready to be indexed by Solr
  * @author cjohn
  */
-@Service
 @AllArgsConstructor
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
     private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
