@@ -4,16 +4,17 @@ define [
 ], (EditorView, InputView) -> EditorView.extend
 
   initialize: ->
+    @model.set('type', 'sampleArchive') unless @model.has('type')
     @sections = [
       label: 'One'
       title:  'General information'
       views: [
         new InputView
           model: @model
-          modelAttribute: 'archiveType'
-          label: 'Temporal extent'
+          modelAttribute: 'title'
+          label: 'Title'
           helpText: """
-                    <p>Sample Archive</p>
+                    <p>Title</p>
                     """
         ]
     ]

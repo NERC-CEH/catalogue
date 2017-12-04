@@ -13,7 +13,6 @@
         <#if description?? && description?has_content>
           <@b.key "Description" "Description of OSDP"><@b.linebreaks description /></@b.key>
         </#if>
-        <#nested>
         <#if keywords?? && keywords?has_content>
           <@b.key "Keywords" ""><@b.keywords keywords/></@b.key>
         </#if>
@@ -29,3 +28,26 @@
         </#if>
       </@b.metadataContainer>
   </#escape></@skeleton.master>
+
+  <#--
+Identifiers
+-->
+<#macro identifier ident>
+  <@b.repeatRow>
+    <#if ident.code?? && ident.code?has_content>
+      <@b.basicRow>
+        <@b.keyContent "Code" "">${ident.code}</@b.keyContent>
+      </@b.basicRow>
+    </#if>
+    <#if ident.codeSpace?? && ident.codeSpace?has_content>
+      <@b.basicRow>
+        <@b.keyContent "Codespace" "">${ident.codeSpace}</@b.keyContent>
+      </@b.basicRow>
+    </#if>
+    <#if ident.version?? && ident.version?has_content>
+      <@b.basicRow>
+        <@b.keyContent "Version" "">${ident.version}</@b.keyContent>
+      </@b.basicRow>
+    </#if>
+  </@b.repeatRow>
+</#macro>

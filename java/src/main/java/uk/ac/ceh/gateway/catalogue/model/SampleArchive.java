@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
     @Template(called="html/sample_archive/sample_archive.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class SampleArchive extends AbstractMetadataDocument {
-  private String archiveType;
+  // private String archiveType;
   // private TimePeriod temporalExtent;
   
   // spatialExtent, temporalExtent, lineage, language, topicCateory, availibility, accessRestriction, storage, healthandsafety, archiveLocation, website, resourceLocator, archiveContacts, metadataContacts;
