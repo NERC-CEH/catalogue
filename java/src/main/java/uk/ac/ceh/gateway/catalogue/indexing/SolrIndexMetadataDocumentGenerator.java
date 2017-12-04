@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  * beans which are solr indexable
  */
 @AllArgsConstructor
+@Slf4j
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
     public static final String IMP_CAMMP_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/ci/";
     public static final String IMP_DATA_TYPE_URL = "http://vocabs.ceh.ac.uk/imp/dt/";
@@ -38,6 +40,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
 
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
+        log.info("{} is a {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()));
         return new SolrIndex()
             .setDescription(document.getDescription())
             .setTitle(document.getTitle())

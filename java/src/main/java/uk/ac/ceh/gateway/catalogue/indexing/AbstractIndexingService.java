@@ -7,7 +7,6 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 
@@ -61,10 +60,8 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
                 index(indexGenerator.generateIndex(readDocument(document, revision)));
             }
             catch(Exception ex) {
-                log.error("Failed to index: {}", document, ex);
                 joinedException.addSuppressed(document, new DocumentIndexingException(
                     String.format("Failed to index %s : %s", document, ex.getMessage()), ex));
-                log.error("Suppressed indexing errors", (Object[]) joinedException.getSuppressed());
             }
         });
 
@@ -74,10 +71,14 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         }
     }
 
-    @PostConstruct
-    public void postConstruct() throws DocumentIndexingException {
-        if(this.isIndexEmpty()) {
-            this.rebuildIndex();
+    public void initialIndex() {
+        try {
+            if(this.isIndexEmpty()) {
+                this.rebuildIndex();
+            }
+        } catch (Exception ex) {
+            log.error("There were records that did not index successfully at container creation. This does not stop the container starting");
+            log.error("Suppressed indexing errors", (Object[]) ex.getSuppressed());
         }
     }
     

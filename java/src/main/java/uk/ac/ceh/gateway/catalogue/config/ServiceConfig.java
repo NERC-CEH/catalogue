@@ -376,7 +376,7 @@ public class ServiceConfig {
         return new ClassMapPostProcessingService(mappings);
     }
     
-    @Bean @Qualifier("solr-index")
+    @Bean(initMethod = "initialIndex") @Qualifier("solr-index")
     public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
         SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
         SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
@@ -393,19 +393,19 @@ public class ServiceConfig {
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry<>(mappings);
         solrIndexLinkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
-        
+
         return new SolrIndexingService<>(
-                bundledReaderService(),
-                documentListingService(),
-                dataRepository,
-                indexGeneratorRegistry,
-                solrServer,
-                jenaLookupService(),
-                documentIdentifierService()
+            bundledReaderService(),
+            documentListingService(),
+            dataRepository,
+            indexGeneratorRegistry,
+            solrServer,
+            jenaLookupService(),
+            documentIdentifierService()
         );
     }
     
-    @Bean @Qualifier("jena-index")
+    @Bean(initMethod = "initialIndex") @Qualifier("jena-index")
     public JenaIndexingService documentLinkingService() throws XPathExpressionException, IOException, TemplateModelException {
         JenaIndexMetadataDocumentGenerator metadataDocument = new JenaIndexMetadataDocumentGenerator(documentIdentifierService());
         
@@ -414,7 +414,7 @@ public class ServiceConfig {
                 .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument))
                 .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(metadataDocument))
                 .register(MetadataDocument.class, metadataDocument);
-        
+
         return new JenaIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
@@ -437,7 +437,7 @@ public class ServiceConfig {
         return new AsyncDocumentIndexingService(validationIndexingService());
     }
     
-    @Bean @Qualifier("mapserver-index")
+    @Bean(initMethod = "initialIndex") @Qualifier("mapserver-index")
     public MapServerIndexingService mapServerIndexingService() throws Exception {
         MapServerIndexGenerator generator = new MapServerIndexGenerator(freemarkerConfiguration(), mapServerDetailsService());
         return new MapServerIndexingService<>(

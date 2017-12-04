@@ -22,5 +22,5 @@ public class SolrIndexOsdpMonitoringFacilityGenerator implements IndexGenerator<
             .generateIndex(mf)
             .addLocation(geometryService.toSolrGeometry(mf.getGeometry()))
             .addLocations(geometryService.toSolrGeometry(grab(mf.getBoundingBox(), BoundingBox::getWkt)));
-    }    
+    }
 }

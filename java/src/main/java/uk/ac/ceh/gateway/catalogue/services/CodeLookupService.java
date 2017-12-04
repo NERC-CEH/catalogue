@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
@@ -13,7 +12,6 @@ import java.util.Properties;
  * internal code
  */
 @AllArgsConstructor
-@Service
 public class CodeLookupService {
     private final Properties properties;
     

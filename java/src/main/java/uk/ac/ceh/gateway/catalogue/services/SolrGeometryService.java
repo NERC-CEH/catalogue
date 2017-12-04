@@ -21,18 +21,20 @@ public class SolrGeometryService {
     
     public String toSolrGeometry(String wkt) {
         try {
-            Geometry geom = reader.read(wkt).getEnvelope();
+            Geometry geom = reader.read(wkt);
             if(geom.isEmpty()) {
                 return null;
             }
-            else if (geom instanceof Point) {
-                Coordinate coordinate = geom.getCoordinate();
+
+            Geometry envelope = geom.getEnvelope();
+            if (envelope instanceof Point) {
+                Coordinate coordinate = envelope.getCoordinate();
                 return new StringBuilder()
                         .append(coordinate.x).append(" ")
                         .append(coordinate.y).toString();
             }
-            else if (geom instanceof LineString) {
-                Coordinate[] coordinates = geom.getCoordinates();
+            else if (envelope instanceof LineString) {
+                Coordinate[] coordinates = envelope.getCoordinates();
                 return new StringBuilder()
                         .append(coordinates[0].x).append(" ")
                         .append(coordinates[0].y).append(" ")
@@ -40,7 +42,7 @@ public class SolrGeometryService {
                         .append(coordinates[1].y).toString();
             }
             else {
-                Coordinate[] coordinates = geom.getCoordinates();
+                Coordinate[] coordinates = envelope.getCoordinates();
                 return new StringBuilder()
                         .append(coordinates[0].x).append(" ")
                         .append(coordinates[0].y).append(" ")
@@ -48,7 +50,7 @@ public class SolrGeometryService {
                         .append(coordinates[2].y).toString();
             }
         }
-        catch(ParseException pe) {
+        catch(NullPointerException | ParseException e) {
             return null;
         }
     }
