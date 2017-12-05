@@ -13,9 +13,10 @@
         <#if description?? && description?has_content>
           <@b.key "Description" "Description of OSDP"><@b.linebreaks description /></@b.key>
         </#if>
-        <#if keywords?? && keywords?has_content>
-          <@b.key "Keywords" ""><@b.keywords keywords/></@b.key>
+        <#if specimenTypes?? && specimenTypes?has_content>
+          <@b.key "Specimen Types" ""><@b.keywords specimenTypes/></@b.key>
         </#if>
+        <#include "_extent.html.tpl">
         <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
           <@b.key "Identifiers" "">
             <#list resourceIdentifiers as resourceIdentifier>

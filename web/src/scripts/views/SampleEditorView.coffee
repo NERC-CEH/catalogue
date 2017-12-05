@@ -16,7 +16,6 @@ define [
   ], (EditorView, SingleObjectView, InputView, TextareaView, ParentStringView, ParentView, LinkView, SpatialExtent, SpatialExtentView, TemporalExtent, TemporalExtentView, TopicCategory, TopicCategoryView, KeywordsView) -> EditorView.extend
 
   initialize: ->
-    console.log 'hello'
     @sections = [
       label: 'One'
       title:  'General information'
