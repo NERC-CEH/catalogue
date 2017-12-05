@@ -197,10 +197,12 @@ public class CatalogueServiceConfig {
             Catalogue.builder()
                 .id("assist")
                 .title("Achieving Sustainable Agricultural Systems")
-                .url("http://www.ceh.ac.uk/ASSIST")
+                .url("http://assist.ceh.ac.uk")
                 .facetKey("resourceType")
                 .facetKey("licence")
                 .documentType(gemini)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
                 .documentType(link)
                 .fileUpload(false)
                 .build(),
