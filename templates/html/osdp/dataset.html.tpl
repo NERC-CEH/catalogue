@@ -15,4 +15,7 @@
       </#list>
     </@b.key>
   </#if>
+  <#if boundingBox?? && boundingBox?has_content>
+    <@b.key "Bounding Box" "Bounding Box of Dataset"><@o.boundingBox boundingBox /></@b.key>
+  </#if>
 </@o.researchArtifact>

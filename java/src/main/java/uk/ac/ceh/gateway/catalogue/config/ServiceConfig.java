@@ -389,6 +389,10 @@ public class ServiceConfig {
             .register(BaseMonitoringType.class, baseMonitoringType)
             .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
             .register(MonitoringFacility.class, new SolrIndexOsdpMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
+            .register(MonitoringActivity.class, new SolrIndexOsdpMonitoringActivityGenerator(metadataDocument, solrGeometryService()))
+            .register(MonitoringProgramme.class, new SolrIndexOsdpMonitoringProgrammeGenerator(metadataDocument, solrGeometryService()))
+            .register(uk.ac.ceh.gateway.catalogue.osdp.Dataset.class, new SolrIndexOsdpDatasetGenerator(metadataDocument, solrGeometryService()))
+            .register(Sample.class, new SolrIndexOsdpSampleGenerator(metadataDocument, solrGeometryService()))
             .register(MetadataDocument.class, metadataDocument);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry<>(mappings);

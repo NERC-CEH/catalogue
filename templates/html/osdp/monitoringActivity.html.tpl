@@ -14,6 +14,9 @@
         <@o.temporalExt temporalExtent />
     </@b.key>
   </#if>
+  <#if boundingBox?? && boundingBox?has_content>
+    <@b.key "Bounding Box" "Bounding Box of Monitoring Activity"><@o.boundingBox boundingBox /></@b.key>
+  </#if>
   <@o.relationships "Produces" "Research Artifacts produced by this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/produces" />
   <@o.relationships "Uses" "Monitoring Facilities used by this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
   <@o.inverseRelationships "Used By" "Used by this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />

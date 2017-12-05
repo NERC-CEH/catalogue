@@ -1,11 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.AllArgsConstructor;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.osdp.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
-
-import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
 
 /**
  * Based upon a general MetadataDocument generator, instances of this class will
@@ -18,9 +15,13 @@ public class SolrIndexOsdpMonitoringFacilityGenerator implements IndexGenerator<
 
     @Override
     public SolrIndex generateIndex(MonitoringFacility mf) {
-        return metadataDocumentSolrIndex
-            .generateIndex(mf)
-            .addLocation(geometryService.toSolrGeometry(mf.getGeometry()))
-            .addLocations(geometryService.toSolrGeometry(grab(mf.getBoundingBox(), BoundingBox::getWkt)));
+        SolrIndex toReturn = metadataDocumentSolrIndex.generateIndex(mf);
+        if (mf.getGeometry() != null) {
+            toReturn.addLocation(geometryService.toSolrGeometry(mf.getGeometry()));
+        }
+        if (mf.getBoundingBox() != null) {
+            toReturn.addLocation(geometryService.toSolrGeometry(mf.getBoundingBox().getWkt()));
+        }
+        return toReturn;
     }
 }

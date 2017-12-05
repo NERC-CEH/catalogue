@@ -12,6 +12,8 @@ define [
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/ParametersMeasuredView'
+  'cs!models/editor/BoundingBox'
+  'cs!views/editor/BoundingBoxView'
 ], (
   EditorView,
   SingleObjectView,
@@ -25,7 +27,9 @@ define [
   MultipleDate,
   TemporalExtentView,
   ResourceIdentifierView,
-  ParametersMeasuredView
+  ParametersMeasuredView,
+  BoundingBox,
+  BoundingBoxView
 ) -> EditorView.extend
 
   initialize: ->
@@ -107,6 +111,16 @@ define [
           ObjectInputView: LinkView
           helpText: """
                     <p>Access to dataset</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'boundingBox'
+          ModelType: BoundingBox
+          label: 'Bounding Box'
+          ObjectInputView: BoundingBoxView,
+          helpText: """
+                    <p>Bounding Box of Dataset</p>
                     """
 
         new ParentView

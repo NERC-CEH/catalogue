@@ -11,6 +11,8 @@ define [
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/ParametersMeasuredView'
+  'cs!models/editor/BoundingBox'
+  'cs!views/editor/BoundingBoxView'
 ], (
   EditorView,
   SingleObjectView,
@@ -23,7 +25,9 @@ define [
   MultipleDate,
   TemporalExtentView,
   ResourceIdentifierView,
-  ParametersMeasuredView
+  ParametersMeasuredView,
+  BoundingBox,
+  BoundingBoxView
 ) -> EditorView.extend
 
   initialize: ->
@@ -79,6 +83,16 @@ define [
           ObjectInputView: KeywordView
           helpText: """
                     <p>Keywords for discovery</p>
+                    """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'boundingBox'
+          ModelType: BoundingBox
+          label: 'Bounding Box'
+          ObjectInputView: BoundingBoxView,
+          helpText: """
+                    <p>Bounding Box of Monitoring Activity</p>
                     """
 
         new ParentView

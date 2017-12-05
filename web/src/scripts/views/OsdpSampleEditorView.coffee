@@ -11,6 +11,7 @@ define [
   'cs!models/editor/MultipleDate'
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/ResourceIdentifierView'
+  'cs!views/editor/GeometryView'
 ], (
   EditorView,
   SingleObjectView,
@@ -23,7 +24,8 @@ define [
   DatasetReferenceDateView,
   MultipleDate,
   TemporalExtentView,
-  ResourceIdentifierView
+  ResourceIdentifierView,
+  GeometryView
 ) -> EditorView.extend
 
   initialize: ->
@@ -78,6 +80,14 @@ define [
           ObjectInputView: TemporalExtentView,
           helpText: """
                     <p>Temporal Extent of model</p>
+                    """
+
+        new GeometryView
+          model: @model
+          modelAttribute: 'geometry'
+          label: 'Geometry'
+          helpText: """
+                    <p>Geometry of Sample</p>
                     """
 
         new SingleObjectView
