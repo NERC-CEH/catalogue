@@ -257,13 +257,13 @@ A list of Keywords
           <#if keyword.uri?? && keyword.uri?has_content>
             <a href="${keyword.uri}">
               <#if keyword.value?? && keyword.value?has_content>
-                ${keyword.value}
+                ${keyword.value?cap_first}
               <#else>
                   ${keyword.uri}
               </#if>
             </a>
           <#elseif keyword.value?? && keyword.value?has_content>
-            ${keyword.value}
+            ${keyword.value?cap_first}
           <#else>
             <span class="text-muted">missing</span>
           </#if>

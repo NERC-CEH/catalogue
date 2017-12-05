@@ -5,27 +5,42 @@
       <@b.metadataContainer "ceh-model">
         <div class="row"><@b.admin /></div>
         <#if title?? && title?has_content>
-          <@b.key "Title" "Name">${title}</@b.key>
+          <@b.key "Title" "">${title}</@b.key>
         </#if>
         <#if type?? && type?has_content>
-          <@b.key "Type" "Type of record">${codes.lookup('metadata.resourceType', type)!''}</@b.key>
+          <@b.key "Type" "">${codes.lookup('metadata.resourceType', type)!''}</@b.key>
         </#if>
         <#if description?? && description?has_content>
-          <@b.key "Description" "Description of OSDP"><@b.linebreaks description /></@b.key>
+          <@b.key "Description" ""><@b.linebreaks description /></@b.key>
+        </#if>
+        <#if archiveType?? && archiveType?has_content>
+          ${archiveType}
+        </#if>
+        <#if lineage?? && lineage?has_content>
+          <@b.key "Lineage" "">${lineage}</@b.key>
+        </#if>
+        <#if language?? && language?has_content>
+          <@b.key "Language" "">${language}</@b.key>
         </#if>
         <#if specimenTypes?? && specimenTypes?has_content>
           <@b.key "Specimen Types" ""><@b.keywords specimenTypes/></@b.key>
         </#if>
+        <#if keywords?? && keywords?has_content>
+          <@b.key "Keywords" ""><@b.keywords keywords/></@b.key>
+        </#if>
+        <#if topicCategories?? && topicCategories?has_content>
+          <@b.key "Topic Categories" ""><@b.keywords topicCategories/></@b.key>
+        </#if>
         <#include "_extent.html.tpl">
+        <#if availability?? && availability?has_content>
+          <@b.key "Availability" "">${availability}</@b.key>
+        </#if>
         <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
           <@b.key "Identifiers" "">
             <#list resourceIdentifiers as resourceIdentifier>
               <@identifier resourceIdentifier /> 
             </#list>
           </@b.key>
-        </#if>
-        <#if archiveType?? && archiveType?has_content>
-          ${archiveType}
         </#if>
       </@b.metadataContainer>
   </#escape></@skeleton.master>

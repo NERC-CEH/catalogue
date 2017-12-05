@@ -37,7 +37,7 @@ define [
   'cs!views/OsdpMonitoringActivityEditorView'
   'cs!views/OsdpMonitoringProgrammeEditorView'
   'cs!views/OsdpMonitoringFacilityEditorView'
-  'cs!views/JonSampleArchiveEditorView'
+  'cs!views/SampleArchiveEditorView'
   'bootstrap'
   'dropzone'
 ], (
@@ -46,7 +46,7 @@ define [
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
     DocumentsUploadScheduledView, DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView,
     OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
-    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView, JonSampleArchiveEditorView
+    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView, SampleArchiveEditorView
 ) ->
 
   ###
@@ -165,7 +165,7 @@ define [
         Model: EditorMetadata
         mediaType: 'application/vnd.osdp.monitoring-facility+json'
       'sample-archive':
-        View: JonSampleArchiveEditorView
+        View: SampleArchiveEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.sample-archive+json'
 

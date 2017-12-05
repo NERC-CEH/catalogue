@@ -5,7 +5,6 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.ef.ResponsibleParty.Address;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import java.util.List;
@@ -22,7 +21,8 @@ import lombok.experimental.Accessors;
     @Template(called="html/sample_archive/sample_archive.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class SampleArchive extends AbstractMetadataDocument {
-  private List<Keyword> specimenTypes;
+  private String lineage, language, availability;
+  private List<Keyword> specimenTypes, topicCategories, keywords;
   private TimePeriod temporalExtent;
   private List<BoundingBox> boundingBoxes;
 }

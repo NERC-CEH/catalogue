@@ -7,11 +7,13 @@ define [
   'cs!views/editor/PredefinedParentView'
   'cs!models/editor/BoundingBox'
   'cs!models/editor/MultipleDate'
+  'cs!models/editor/TopicCategory'
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/SingleView'
-], (EditorView, InputView, TextareaView, KeywordView, ParentView, PredefinedParentView, BoundingBox, MultipleDate, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView) -> EditorView.extend
+  'cs!views/editor/TopicCategoryView'
+], (EditorView, InputView, TextareaView, KeywordView, ParentView, PredefinedParentView, BoundingBox, MultipleDate, TopicCategory, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView) -> EditorView.extend
 
   initialize: ->
     @model.set('type', 'sampleArchive') unless @model.has('type')
@@ -36,6 +38,7 @@ define [
           helpText: """
                     <p>An abstract that gives details about the sample collection.</p>
                     """
+
         new ParentView
           model: @model
           modelAttribute: 'specimenTypes'
@@ -111,7 +114,57 @@ define [
                     <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
                     """
       ]
+    ,
+      label: 'Three'
+      title:  'Three'
+      views: [
+        new TextareaView
+          model: @model
+          modelAttribute: 'lineage'
+          label: 'Lineage'
+          rows: 5
+          helpText: """
+                    <p>An overview of how samples are collected and any QC or QA.</p>
+                    """
 
+        new InputView
+          model: @model
+          modelAttribute: 'language'
+          label: 'Language'
+          helpText: """
+                    <p>The principle language of the archive.</p>
+                    """
+
+        new ParentView
+          model: @model
+          ModelType: TopicCategory
+          modelAttribute: 'topicCategories'
+          label: 'Topic categories'
+          ObjectInputView: TopicCategoryView
+          helpText: """
+                    <p>The main theme(s) of the data resource as defined by the INSPIRE Directive.</p>
+                    <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
+                    <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
+                    """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'keywords'
+          label: 'Keywords'
+          ObjectInputView: KeywordView
+          helpText: """
+                    <p>A list of keywords that help identify and describe the archive.</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'availability'
+          label: 'Availability'
+          rows: 5
+          helpText: """
+                    <p>Information about how readily available the sampes are, who is allowed to have access and how to gain access.</p>
+                    """
+      ]
     ]
     
     EditorView.prototype.initialize.apply @
