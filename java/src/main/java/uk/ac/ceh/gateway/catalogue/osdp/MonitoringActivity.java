@@ -7,8 +7,10 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
+import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,8 +18,17 @@ import java.util.List;
 @ConvertUsing({
     @Template(called="html/osdp/monitoringActivity.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
-public class MonitoringActivity extends AbstractMetadataDocument {
+public class MonitoringActivity extends AbstractMetadataDocument implements WellKnownText {
     private TimePeriod temporalExtent;
     private List<Parameter> parametersMeasured;
     private BoundingBox boundingBox;
+
+    @Override
+    public List<String> getWKTs() {
+        List<String> toReturn = new ArrayList<>();
+        if (boundingBox != null) {
+            toReturn.add(boundingBox.getWkt());
+        }
+        return toReturn;
+    }
 }

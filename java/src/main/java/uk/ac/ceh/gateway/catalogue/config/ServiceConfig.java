@@ -378,22 +378,14 @@ public class ServiceConfig {
     
     @Bean(initMethod = "initialIndex") @Qualifier("solr-index")
     public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
-        SolrIndexMetadataDocumentGenerator metadataDocument = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService());
-        SolrIndexBaseMonitoringTypeGenerator baseMonitoringType = new SolrIndexBaseMonitoringTypeGenerator(metadataDocument, solrGeometryService());
+        SolrIndexMetadataDocumentGenerator metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService(),solrGeometryService());
         SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
         solrIndexLinkDocumentGenerator.setRepository(documentRepository());
         
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
-            .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocument, solrGeometryService(), codeLookupService))
-            .register(Facility.class, new SolrIndexFacilityGenerator(baseMonitoringType, solrGeometryService()))
-            .register(BaseMonitoringType.class, baseMonitoringType)
+            .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
             .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
-            .register(MonitoringFacility.class, new SolrIndexOsdpMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
-            .register(MonitoringActivity.class, new SolrIndexOsdpMonitoringActivityGenerator(metadataDocument, solrGeometryService()))
-            .register(MonitoringProgramme.class, new SolrIndexOsdpMonitoringProgrammeGenerator(metadataDocument, solrGeometryService()))
-            .register(uk.ac.ceh.gateway.catalogue.osdp.Dataset.class, new SolrIndexOsdpDatasetGenerator(metadataDocument, solrGeometryService()))
-            .register(Sample.class, new SolrIndexOsdpSampleGenerator(metadataDocument, solrGeometryService()))
-            .register(MetadataDocument.class, metadataDocument);
+            .register(MetadataDocument.class, metadataDocumentGenerator);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry<>(mappings);
         solrIndexLinkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);

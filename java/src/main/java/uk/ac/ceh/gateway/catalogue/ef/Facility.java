@@ -1,13 +1,21 @@
 package uk.ac.ceh.gateway.catalogue.ef;
 
-import java.util.*;
-import javax.xml.bind.annotation.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.EF_INSPIRE_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
+
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.EF_INSPIRE_XML_VALUE;
 
 @Data
 @Accessors(chain = true)
@@ -34,7 +42,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
     @Template(called="html/ef.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/emf.xml.tpl",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
 })
-public class Facility extends BaseMonitoringType {
+public class Facility extends BaseMonitoringType implements WellKnownText {
     
     private List<Link> 
         legalBackground = new ArrayList<>(),
@@ -61,4 +69,13 @@ public class Facility extends BaseMonitoringType {
     private String mobile;
     
     private Geometry geometry;
+
+    @Override
+    public List<String> getWKTs() {
+        List<String> toReturn = super.getWKTs();
+        if (geometry != null) {
+            toReturn.add(geometry.getValue());
+        }
+        return toReturn;
+    }
 }

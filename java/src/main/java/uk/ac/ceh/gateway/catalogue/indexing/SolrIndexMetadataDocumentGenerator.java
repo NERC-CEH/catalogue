@@ -11,6 +11,7 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
 import java.util.*;
 import java.util.function.Function;
@@ -37,6 +38,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
+    private final SolrGeometryService geometryService;
 
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
@@ -56,7 +58,16 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setImpTopic(grab(getKeywordsFilteredByUrlFragment(document, IMP_TOPIC_URL, INMS_TOPIC_URL), Keyword::getValue))
             .setImpWaterPollutant(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_POLLUTANT_URL, INMS_WATER_POLLUTANT_URL), Keyword::getValue))
             .setInmsDemonstrationRegion(grab(getKeywordsFilteredByUrlFragment(document, INMS_REGION_URL), Keyword::getValue))
-            .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue));
+            .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue))
+            .setLocations(getLocations(document));
+    }
+
+    private List<String> getLocations(MetadataDocument document) {
+        if (document instanceof WellKnownText) {
+            return geometryService.toSolrGeometry(((WellKnownText) document).getWKTs());
+        } else {
+            return Collections.emptyList();
+        }
     }
     
     private String getState(MetadataDocument document) {

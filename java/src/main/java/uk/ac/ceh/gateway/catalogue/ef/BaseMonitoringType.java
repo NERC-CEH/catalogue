@@ -1,23 +1,28 @@
 package uk.ac.ceh.gateway.catalogue.ef;
 
-import com.fasterxml.jackson.annotation.*;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Range;
 import uk.ac.ceh.gateway.catalogue.ef.adapters.AnyXMLHandler;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @Accessors(chain = true)
@@ -60,7 +65,7 @@ import uk.ac.ceh.gateway.catalogue.model.Relationship;
     @JsonSubTypes.Type(value = Facility.class, name = "facility")
 })
 @XmlSeeAlso({Activity.class, Programme.class, Network.class, Facility.class})
-public class BaseMonitoringType implements MetadataDocument {
+public class BaseMonitoringType implements MetadataDocument, WellKnownText {
     
     private Set<Relationship> relationships;
     
@@ -161,7 +166,14 @@ public class BaseMonitoringType implements MetadataDocument {
         );
         return this;
     }
-    
+
+    @Override
+    public List<String> getWKTs() {
+        return boundingBoxes.stream()
+            .map(BoundingBox::getWkt)
+            .collect(Collectors.toList());
+    }
+
     @Data
     public static class Identifier {
         @XmlAttribute

@@ -91,6 +91,12 @@ A catalogue has it's own:
 
 New catalogues can be added, [instructions here](docs/multipleCatalogues.markdown).
 
+## New DocumentTypes
+
+There are many different documentTypes in the catalogues e.g. Gemini, Model, Model Application, Monitoring Activity, Monitoring Facility … 
+
+New documentTypes can be added to catalogues, [instructions here](docs/newDocumentType.markdown)
+
 ## Catalogue Content
 
 A catalogue can reuse existing metadata content by linking to public metadata in another catalogue using the Link document type.

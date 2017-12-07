@@ -1,10 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.AllArgsConstructor;
-import uk.ac.ceh.gateway.catalogue.gemini.*;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -14,7 +16,6 @@ import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGene
 /**
  * Processes a GeminiDocument and populates a SolrIndex object will all of the
  * bits of the document transferred. Ready to be indexed by Solr
- * @author cjohn
  */
 @AllArgsConstructor
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
@@ -25,7 +26,6 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     
     private final TopicIndexer topicIndexer;
     private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;
-    private final SolrGeometryService geometryService;
     private final CodeLookupService codeLookupService;
     
     @Override
@@ -41,8 +41,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setOnlineResourceName(grab(document.getOnlineResources(), OnlineResource::getName))
             .setOnlineResourceDescription(grab(document.getOnlineResources(), OnlineResource::getDescription))
             .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
-            .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
-            .addLocations(geometryService.toSolrGeometry(grab(document.getBoundingBoxes(), BoundingBox::getWkt)));
+            .setKeyword(grab(document.getAllKeywords(), Keyword::getValue));
     }
 
     private String getLicence(GeminiDocument document){
