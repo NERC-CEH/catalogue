@@ -12,7 +12,11 @@
 <section class="section">
     <div class="container-fluid folders read-only">
         <div class="row">
+        <#if plone.getFiles()?size == 0 && plone.getInvalid()?values?size == 0>
             <div class="col-md-12">
+        <#else>
+            <div class="col-md-6">
+        </#if>
                 <div class="folder">
                     <div class="folder-title">
                         <span class="folder-name">
@@ -101,6 +105,57 @@
                     <div class="folder-options is-empty"></div>
                 </div>
             </div>
+            <#if plone.getFiles()?size != 0 || plone.getInvalid()?values?size != 0>
+                <div class="col-md-6">
+                    <div class="folder">
+                        <div class="folder-title">
+                            <span class="folder-name">
+                                <i class="fa fa-folder"></i> Plone
+                            </span>
+                        </div>
+                        <div class="files">
+                            <div class="empty-message"></div>
+                            <#list plone.getInvalid()?values as file>
+                                <div id="plone-invalid-${file.id}" class="file btn btn-primary file-readonly is-inactive">
+                                    <div class="filename">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-file-text-o"></i>
+                                            </span>
+                                            <input type="text" class="form-control filename-input" value="${file.name}" readonly>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-hashtag"></i>
+                                            </span>
+                                            <input type="text" class="form-control filehash-input" value="${file.hash}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </#list>
+                            <#list plone.getFiles() as file>
+                                <div id="plone-${file.id}" class="file btn btn-primary file-readonly is-inactive">
+                                    <div class="filename">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-file-text-o"></i>
+                                            </span>
+                                            <input type="text" class="form-control filename-input" value="${file.name}" readonly>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-hashtag"></i>
+                                            </span>
+                                            <input type="text" class="form-control filehash-input" value="${file.hash}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </#list>
+                        </div>
+                        <div class="folder-options is-empty"></div>
+                    </div>
+                </div>
+            </#if>
         </div>
     </div>
 </section>
