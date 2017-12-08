@@ -4,6 +4,8 @@ define [
   'cs!views/editor/TextareaView'
   'cs!views/editor/KeywordView'
   'cs!views/editor/ParentView'
+  'cs!views/editor/ParentStringView'
+  'cs!views/editor/ParentStringTextboxView'
   'cs!views/editor/PredefinedParentView'
   'cs!models/editor/BoundingBox'
   'cs!models/editor/MultipleDate'
@@ -13,7 +15,8 @@ define [
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/SingleView'
   'cs!views/editor/TopicCategoryView'
-], (EditorView, InputView, TextareaView, KeywordView, ParentView, PredefinedParentView, BoundingBox, MultipleDate, TopicCategory, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView) -> EditorView.extend
+  'cs!views/editor/ShortContactView'
+], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, MultipleDate, TopicCategory, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, ShortContactView) -> EditorView.extend
 
   initialize: ->
     @model.set('type', 'sampleArchive') unless @model.has('type')
@@ -164,6 +167,44 @@ define [
           helpText: """
                     <p>Information about how readily available the sampes are, who is allowed to have access and how to gain access.</p>
                     """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'accessRestrictions'
+          label: 'Access restrictions'
+          rows: 5
+          helpText: """
+                    <p>An overview of any restrictions that will apply, usually things like IPR and T&C.</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'storage'
+          label: 'Storage'
+          rows: 5
+          helpText: """
+                    <p>An overview of how the samples are stored to help a potential sample user understand what will be required if they request a sample.</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'healthSafety'
+          label: 'Health and safety'
+          rows: 5
+          helpText: """
+                    <p>Any information users need to know regarding Health and Safety when they are considering taking on samples.</p>
+                    """
+
+        new ParentStringTextboxView
+          model: @model
+          modelAttribute: 'archiveLocations'
+          label: 'Archive location'
+          rows: 5
+          helpText: """
+                    <p>Archive location</p>
+                    """
+
+
       ]
     ]
     

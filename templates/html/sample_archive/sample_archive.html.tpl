@@ -35,6 +35,24 @@
         <#if availability?? && availability?has_content>
           <@b.key "Availability" "">${availability}</@b.key>
         </#if>
+        <#if accessRestrictions?? && accessRestrictions?has_content>
+          <@b.key "Access Restrictions" "">${accessRestrictions}</@b.key>
+        </#if>
+        <#if storage?? && storage?has_content>
+          <@b.key "Storage" "">${storage}</@b.key>
+        </#if>
+        <#if healthSafety?? && healthSafety?has_content>
+          <@b.key "Health and Safety" "">${healthSafety}</@b.key>
+        </#if>
+        <#if archiveLocations?? && archiveLocations?has_content>
+          <@b.key "Archive Location${(archiveLocations?size > 1)?then('s', '')}" "">
+            <#list archiveLocations as archiveLocation>
+              <@b.key "Address" + (archiveLocations?size > 1)?then(" " + (archiveLocation?index + 1),'') "">
+                <#noescape>${archiveLocation?html?replace("\n", "<br>")}</#noescape>
+              </@b.key>
+            </#list>
+          </@b.key>
+        </#if>
         <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
           <@b.key "Identifiers" "">
             <#list resourceIdentifiers as resourceIdentifier>

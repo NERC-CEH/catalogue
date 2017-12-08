@@ -75,7 +75,7 @@ Row of a metadata document
 The basic structure of a metadata item that has a key (title) and content.
 A row of information in the document.
 -->
-<#macro key key description>
+<#macro key key description auto_esc=false>
   <@basicRow "key-value">
     <@keyContent key description>
       <#nested>
