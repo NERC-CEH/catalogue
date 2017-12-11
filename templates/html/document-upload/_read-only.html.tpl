@@ -12,11 +12,7 @@
 <section class="section">
     <div class="container-fluid folders read-only">
         <div class="row">
-        <#if plone.getFiles()?size == 0 && plone.getInvalid()?values?size == 0>
             <div class="col-md-12">
-        <#else>
-            <div class="col-md-6">
-        </#if>
                 <div class="folder">
                     <div class="folder-title">
                         <span class="folder-name">
@@ -102,11 +98,13 @@
                             </div>
                         </#list>
                     </div>
-                    <div class="folder-options is-empty"></div>
+                    <div class="folder-options">
+                        <a class="btn btn-success download-files" href="data:text/csv;charset=utf-8,${csvList}" download="${guid}.csv">Download File List</a>
+                    </div>
                 </div>
             </div>
             <#if plone.getFiles()?size != 0 || plone.getInvalid()?values?size != 0>
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="folder">
                         <div class="folder-title">
                             <span class="folder-name">
@@ -124,12 +122,6 @@
                                             </span>
                                             <input type="text" class="form-control filename-input" value="${file.name}" readonly>
                                         </div>
-                                        <div class="input-group">
-                                            <span class="input-group-addon">
-                                                <i class="fa fa-hashtag"></i>
-                                            </span>
-                                            <input type="text" class="form-control filehash-input" value="${file.hash}" readonly>
-                                        </div>
                                     </div>
                                 </div>
                             </#list>
@@ -141,12 +133,6 @@
                                                 <i class="fa fa-file-text-o"></i>
                                             </span>
                                             <input type="text" class="form-control filename-input" value="${file.name}" readonly>
-                                        </div>
-                                        <div class="input-group">
-                                            <span class="input-group-addon">
-                                                <i class="fa fa-hashtag"></i>
-                                            </span>
-                                            <input type="text" class="form-control filehash-input" value="${file.hash}" readonly>
                                         </div>
                                     </div>
                                 </div>

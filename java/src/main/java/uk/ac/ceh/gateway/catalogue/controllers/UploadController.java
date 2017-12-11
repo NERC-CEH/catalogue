@@ -12,11 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.google.common.collect.Maps;
-
 import lombok.val;
-import net.lingala.zip4j.exception.ZipException;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
@@ -24,12 +21,12 @@ import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.model.DocumentUpload.Type;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.DocumentUploadService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -137,7 +134,24 @@ public class UploadController {
         model.put("userCanUpload", userCanUpload);
         model.put("canUpload", canUpload);
 
+        String csv = filesToCsv(guid, documentsUploadService, Type.DOCUMENTS);
+        csv += filesToCsv(guid, documentsUploadService, Type.INVALID);
+        csv += filesToCsv(guid, datastoreUploadService, Type.DOCUMENTS);
+        csv += filesToCsv(guid, datastoreUploadService, Type.INVALID);
+        model.put("csvList", csv);
+
         return new ModelAndView("/html/documents-upload.html.tpl", model);
+    }
+
+    private String filesToCsv(String guid, DocumentUploadService dus, Type type) {
+        String csv = "";
+        val documents = dus.get(guid).getFiles(type).values();
+        for (val document : documents) {
+            val hash = document.getHash();
+            val name = document.getName();
+            csv += String.format("%s,%s\r\n", name, hash);
+        }
+        return csv;
     }
 
     private void transitionIssueToStartProgress(CatalogueUser user, String guid) {
