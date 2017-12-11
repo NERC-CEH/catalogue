@@ -121,8 +121,12 @@
             <div class="col-md-12">
                 <div class="datastore folder">
                     <div class="folder-title">
-                        <span class="folder-name">
-                            <i class="fa fa-archive"></i> Datastore
+                        <span class="datastore-icon folder-name">
+                        <#if datastore.isZipped()>
+                            <i class="fa fa-file-archive-o"></i> Datastore
+                        <#else>
+                            <i class="fa fa-file-o"></i> Datastore
+                        </#if>
                         </span>
                     </div>
                     <div class="files connectedSortable">
