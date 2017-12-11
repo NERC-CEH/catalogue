@@ -1,5 +1,6 @@
 <#import "../skeleton.html.tpl" as skeleton>
 <#import "../blocks.html.tpl" as b>
+<#import "/../../functions.tpl" as func>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
       <@b.metadataContainer "ceh-model">
@@ -60,6 +61,7 @@
             </#list>
           </@b.key>
         </#if>
+        <#include "_pointsOfContact.html.tpl" />
       </@b.metadataContainer>
   </#escape></@skeleton.master>
 

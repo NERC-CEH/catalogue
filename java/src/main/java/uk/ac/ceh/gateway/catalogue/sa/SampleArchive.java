@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -26,4 +27,4 @@ public class SampleArchive extends AbstractMetadataDocument {
   private TimePeriod temporalExtent;
   private List<BoundingBox> boundingBoxes;
   private List<String> archiveLocations;
-}
+  private List<ResponsibleParty> contacts;}

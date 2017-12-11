@@ -8,6 +8,7 @@ define [
   'cs!views/editor/ParentStringTextboxView'
   'cs!views/editor/PredefinedParentView'
   'cs!models/editor/BoundingBox'
+  'cs!models/editor/Contact'
   'cs!models/editor/MultipleDate'
   'cs!models/editor/TopicCategory'
   'cs!views/editor/BoundingBoxView'
@@ -15,8 +16,8 @@ define [
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/SingleView'
   'cs!views/editor/TopicCategoryView'
-  'cs!views/editor/ShortContactView'
-], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, MultipleDate, TopicCategory, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, ShortContactView) -> EditorView.extend
+  'cs!views/editor/PointOfContactView'
+], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, TopicCategory, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, PointOfContactView) -> EditorView.extend
 
   initialize: ->
     @model.set('type', 'sampleArchive') unless @model.has('type')
@@ -194,6 +195,11 @@ define [
           helpText: """
                     <p>Any information users need to know regarding Health and Safety when they are considering taking on samples.</p>
                     """
+      ]
+    ,
+      label: 'Contact'
+      title:  'Contact'
+      views: [
 
         new ParentStringTextboxView
           model: @model
@@ -204,7 +210,17 @@ define [
                     <p>Archive location</p>
                     """
 
-
+        new ParentView
+          model: @model
+          ModelType: Contact
+          modelAttribute: 'contacts'
+          label: 'Point of Contact'
+          ObjectInputView: PointOfContactView
+          multiline: true
+          helpText: """
+                    <p>One or more points of contact for the sample archive.</p>
+                    """
+        
       ]
     ]
     
