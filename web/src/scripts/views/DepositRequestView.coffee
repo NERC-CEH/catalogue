@@ -4,9 +4,11 @@ define [
   'tpl!templates/PlanningDocuments.tpl'
   'tpl!templates/RelatedDOIs.tpl'
   'tpl!templates/RelatedDOI.tpl'
-], (Backbone, datasetOfferedTpl, planningDocumentsTpl, relatedDOIsTpl, relatedDOITpl) -> Backbone.View.extend
+  'tpl!templates/ScienceDomain.tpl'
+], (Backbone, datasetOfferedTpl, planningDocumentsTpl, relatedDOIsTpl, relatedDOITpl, scienceDomainTpl) -> Backbone.View.extend
   initialize: ->
     $('#planningDocs').change => do @planningDocs
+    $('#scienceDomain').change => do @scienceDomain
     $('.dataset-remove').click (evt) => @removeDataset evt
     $('#dataset-add').click => do @addDataset
 
@@ -21,6 +23,13 @@ define [
       active: yes)
     $('.planning-documents').append other if val == 'other'
     do $('#planningDocsOther').remove if val != 'other'
+
+  scienceDomain: ->
+    val = $('#scienceDomain').val()
+    other = $(scienceDomainTpl
+      active: yes)
+    $('#science-domain').append other if val == 'other'
+    do $('.science-domain-other').remove if val != 'other'
   
   removeDataset: (evt) ->
     $(evt.target).parent().remove()

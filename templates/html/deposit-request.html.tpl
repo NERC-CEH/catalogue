@@ -98,22 +98,20 @@
                 </label>
             </div>
         </div>
-        <div class="form-group">
-            <label for="scienceDomain">*Science Domain</label>
-            <select class="form-control" required id="scienceDomain">
-                <option value=""></option>
-                <option value="terrestrial">Terrestrial</option>
-                <option value="ecology">Ecology</option>
-                <option value="freshwater">Freshwater</option>
-                <option value="ecology">Ecology</option>
-                <option value="hydrology">Hydrology</option>
-                <option value="environmentalBiology">Environmental Biology</option>
-                <option value="other">Other</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="scienceDomainOther">Science Domain Other</label>
-            <input class="form-control" id="scienceDomainOther" type="text" placeholder="Other"></textarea>
+        <div id="science-domain">
+            <div class="form-group">
+                <label for="">*Science Domain</label>
+                <select class="form-control" required id="scienceDomain">
+                    <option value=""></option>
+                    <option value="terrestrial">Terrestrial</option>
+                    <option value="ecology">Ecology</option>
+                    <option value="freshwater">Freshwater</option>
+                    <option value="ecology">Ecology</option>
+                    <option value="hydrology">Hydrology</option>
+                    <option value="environmentalBiology">Environmental Biology</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
         </div>
         <div class="form-group">
             <label for="uniqueDeposit">*Unique Deposit</label>
