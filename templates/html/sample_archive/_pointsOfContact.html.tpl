@@ -1,6 +1,6 @@
 <#if contacts?has_content>
   <div id="document-otherContacts">
-  <h3><a id="otherContacts"></a>Contacts</h3>
+  <h3><a id="otherContacts"></a>Archive Contacts</h3>
   <dl class="dl-horizontal">
 
     <#list contacts as contact>

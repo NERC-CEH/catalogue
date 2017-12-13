@@ -27,4 +27,5 @@ public class SampleArchive extends AbstractMetadataDocument {
   private TimePeriod temporalExtent;
   private List<BoundingBox> boundingBoxes;
   private List<String> archiveLocations;
-  private List<ResponsibleParty> contacts;}
+  private List<ResponsibleParty> archiveContacts, metadataContacts;
+}

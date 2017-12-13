@@ -10,6 +10,7 @@ define [
   'cs!models/editor/BoundingBox'
   'cs!models/editor/Contact'
   'cs!models/editor/MultipleDate'
+  'cs!models/editor/PointOfContact'
   'cs!models/editor/TopicCategory'
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/TemporalExtentView'
@@ -17,10 +18,11 @@ define [
   'cs!views/editor/SingleView'
   'cs!views/editor/TopicCategoryView'
   'cs!views/editor/PointOfContactView'
-], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, TopicCategory, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, PointOfContactView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, PointOfContact, TopicCategory, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, PointOfContactView) -> EditorView.extend
 
   initialize: ->
     @model.set('type', 'sampleArchive') unless @model.has('type')
+
     @sections = [
       label: 'General'
       title:  'General information'
@@ -56,13 +58,10 @@ define [
           model: @model
           modelAttribute: 'temporalExtent'
           ModelType: MultipleDate
-          label: 'Reference dates'
+          label: 'Temporal extent'
           ObjectInputView: TemporalExtentView,
           helpText: """
-                    <p><u>Created</u> date is the date on which the data resource was originally created.</p>
-                    <p><u>Published</u> date is the date when this metadata record is made available publicly.</p>
-                    <p>For embargoed resources, the <u>Released</u> date is the date on which the embargo was lifted.</p>
-                    <p><u>Superseded</u> date is the date on which the resource was superseded by another resource (where relevant).</p>
+                    <p>The time span of the sampling regime or project. The start date is mandatory, it is for the earliest sample in the archive and may be approximate if not precisely known. The end date is optional, if it is provided it represents the last sample in the archive.</p>
                     """
       ]
     ,
@@ -197,10 +196,9 @@ define [
                     """
       ]
     ,
-      label: 'Contact'
-      title:  'Contact'
+      label: 'Contacts'
+      title:  'Contacts'
       views: [
-
         new ParentStringTextboxView
           model: @model
           modelAttribute: 'archiveLocations'
@@ -212,15 +210,61 @@ define [
 
         new ParentView
           model: @model
-          ModelType: Contact
-          modelAttribute: 'contacts'
-          label: 'Point of Contact'
+          ModelType: PointOfContact
+          modelAttribute: 'archiveContacts'
+          label: 'Archive contact(s)'
           ObjectInputView: PointOfContactView
           multiline: true
           helpText: """
                     <p>One or more points of contact for the sample archive.</p>
                     """
-        
+
+      ]
+    ,
+      label: 'Metadata'
+      title:  'Metadata'
+      views: [
+        new ParentView
+          model: @model
+          ModelType: PointOfContact
+          modelAttribute: 'metadataContacts'
+          label: 'Metadata contact(s)'
+          ObjectInputView: PointOfContactView
+          multiline: true
+          helpText: """
+                    <p>The organisation or person responsible for the authorship, maintenance and curation of the metadata resource.</p>
+                    <p>A contact must include the contact's email address, role and an organisation name and/or individual's name. Other elements are optional.</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'id'
+          label: 'File identifier'
+          readonly: true
+          helpText: """
+                    <p>File identifier of metadata record.</p>
+                    <p>For information only, not editable.</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'uri'
+          label: 'URL'
+          readonly: true
+          helpText: """
+                    <p>URL of metadata record.</p>
+                    <p>For information only, not editable.</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'metadataDate'
+          label: 'Metadata date'
+          readonly: true
+          helpText: """
+                    <p>Date and time metadata last updated.</p>
+                    <p>For information only, not editable.</p>
+                    """
       ]
     ]
     

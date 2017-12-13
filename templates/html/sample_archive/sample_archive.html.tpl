@@ -55,13 +55,17 @@
           </@b.key>
         </#if>
         <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
-          <@b.key "Identifiers" "">
+          <@b.key "Identifier" "">
             <#list resourceIdentifiers as resourceIdentifier>
               <@identifier resourceIdentifier /> 
             </#list>
           </@b.key>
         </#if>
         <#include "_pointsOfContact.html.tpl" />
+        <#if metadataDate?? && metadataDate?has_content>
+          <@b.sectionHeading>Metadata</@b.sectionHeading>
+          <@b.key "Metadata Date" "Date metadata last updated">${metadataDateTime}</@b.key>
+        </#if>
       </@b.metadataContainer>
   </#escape></@skeleton.master>
 

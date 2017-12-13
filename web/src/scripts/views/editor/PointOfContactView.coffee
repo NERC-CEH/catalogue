@@ -6,8 +6,7 @@ define [
 
   template: template
 
-  initialize: ->
-    @model.set 'role', 'pointOfContact'
+  initialize: (options) ->
     ObjectInputView.prototype.initialize.apply @
 
   render: ->
