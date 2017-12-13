@@ -1,6 +1,6 @@
 <div class="dataset" id="dataset<%= number %>">
-    <a class="btn btn-danger dataset-remove" id="dataset-add">Remove Dataset</a>
     <p><i>Dataset</i></p>
+    <a class="btn btn-danger dataset-remove" id="dataset-add">Remove Dataset</a>
     <div class="row">
         <div class="col-md-4 dataset-value">
             <input type="text" placeholder="Name" class="form-control" name="datasetOfferedName<%= number %>" required />

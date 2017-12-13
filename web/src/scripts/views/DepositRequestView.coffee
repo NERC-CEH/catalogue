@@ -11,16 +11,19 @@ define [
       $('.planning-documents').append other if val == 'other'
       do $('#planningDocsOther').remove if val != 'other'
 
-    $('.dataset-remove').click (evt) ->
-      $(evt.target).parent().remove()
+    $('.dataset-remove').click (evt) => @removeDataset(evt)
+    $('#dataset-add').click => do @addDataset
 
-    $('#dataset-add').click =>
-      datasets = @model.get('datasets') + 1
-      @model.set 'datasets', datasets
-      dataset = $(datasetOfferedTpl
-        number: datasets)
-      $('.datasets-offered').append dataset
+  removeDataset: (evt) ->
+    $(evt.target).parent().remove()
+    do @addDataset if $('.dataset').length == 0
 
-      $('.dataset-remove').unbind 'click'
-      $('.dataset-remove').click (evt) ->
-        $(evt.target).parent().remove()
+  addDataset: ->
+    datasets = @model.get('datasets') + 1
+    @model.set 'datasets', datasets
+    dataset = $(datasetOfferedTpl
+      number: datasets)
+    $('.datasets-offered').append dataset
+
+    $('.dataset-remove').unbind 'click'
+    $('.dataset-remove').click (evt) => @removeDataset(evt)
