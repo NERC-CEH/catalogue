@@ -134,7 +134,8 @@ public class UploadController {
         model.put("userCanUpload", userCanUpload);
         model.put("canUpload", canUpload);
 
-        String csv = filesToCsv(guid, documentsUploadService, Type.DOCUMENTS);
+        String csv = "Filename,MD5 hash\r\n";
+        csv += filesToCsv(guid, documentsUploadService, Type.DOCUMENTS);
         csv += filesToCsv(guid, documentsUploadService, Type.INVALID);
         csv += filesToCsv(guid, datastoreUploadService, Type.DOCUMENTS);
         csv += filesToCsv(guid, datastoreUploadService, Type.INVALID);

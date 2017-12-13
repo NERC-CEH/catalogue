@@ -1,12 +1,14 @@
 <section class="section">
     <div class="container">
-        <p class="alert alert-success" role="alert">
+         <div class="intro">
+         <p>
             <b>In Progress</b>
             <#if documents.getFiles()?size != 0 || documents.getInvalid()?size != 0>
                 <br />Move file from <u>Documents</u> to <u>Datastore</u> and <u>Plone</u>
             </#if>
             <br />You can move files between <u>Datastore</u> and <u>Plone</u>
         </p>
+        </div>
         <div class="messages alert alert-info" role="alert">
             <div class="message loading">
                 <span class="fa fa-refresh fa-spin"></span>
@@ -29,28 +31,28 @@
                         <div class="files connectedSortable">
                             <div class="empty-message"></div>
                             <#list documents.getFiles() as file>
-                                <div id="documents-${file.id}" class="file btn btn-primary">
-                                    <p class="filename">
+                                <div id="documents-${file.id}" class="file">
+                                    <div class="filename">
                                         <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
-                                    </p>
+                                    </div>
                                 </div>
                             </#list>
                             <#list documents.getInvalid()?values as file>
-                                <div id="documents-${file.id}" class="file file-invalid btn btn-primary">
-                                    <p class="filename">
+                                <div id="documents-${file.id}" class="file file-invalid">
+                                    <div class="filename">
                                         <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
-                                    </p>
+                                    </div>
                                     <div class="invalid-container">
                                         <i class="fa fa-warning"></i> <span>${file.getLatestComment()}</span>
                                         <div class="text-right">
                                             <#if file.type == "INVALID_HASH" || file.type == "UNKNOWN_FILE">
-                                                <button class="btn btn-success accept" disabled>Accept</button>
+                                                <button class="btn btn-xs btn-success accept" disabled>Accept</button>
                                             </#if>
                                             <#if file.type == "MISSING_FILE">
-                                                <button class="btn btn-danger ignore" disabled>Ignore</button>
+                                                <button class="btn btn-xs btn-danger ignore" disabled>Ignore</button>
                                             </#if>
                                             <#if file.type == "UNKNOWN_FILE">
-                                                <button class="btn btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal">Delete</button>
+                                                <button class="btn btn-xs btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal">Delete</button>
                                             </#if>
                                         </div>
                                     </div>
@@ -81,28 +83,28 @@
                                 <div class="empty-message">No files in <u>Plone</u> drag from <u>Datastore</u></div>
                             </#if>
                             <#list plone.getFiles() as file>
-                                <div id="plone-${file.id}" class="file btn btn-primary">
-                                    <p class="filename">
+                                <div id="plone-${file.id}" class="file">
+                                    <div class="filename">
                                         <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
-                                    </p>
+                                    </div>
                                 </div>
                             </#list>
                             <#list plone.getInvalid()?values as file>
                                 <div id="plone-${file.id}" class="file file-invalid btn btn-primary">
-                                    <p class="filename">
+                                    <div class="filename">
                                         <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
-                                    </p>
+                                    </div>
                                     <div class="invalid-container">
                                         <i class="fa fa-warning"></i> <span>${file.getLatestComment()}</span>
                                         <div class="text-right">
                                             <#if file.type == "INVALID_HASH" || file.type == "UNKNOWN_FILE">
-                                                <button class="btn btn-success accept" disabled>Accept</button>
+                                                <button class="btn btn-xs btn-success accept" disabled>Accept</button>
                                             </#if>
                                             <#if file.type == "MISSING_FILE">
-                                                <button class="btn btn-danger ignore" disabled>Ignore</button>
+                                                <button class="btn btn-xs btn-danger ignore" disabled>Ignore</button>
                                             </#if>
                                             <#if file.type == "UNKNOWN_FILE">
-                                                <button class="btn btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal">Delete</button>
+                                                <button class="btn btn-xs btn-danger  delete" disabled data-toggle="modal" data-target="#documentUploadModal">Delete</button>
                                             </#if>
                                         </div>
                                     </div>
@@ -134,28 +136,28 @@
                                 <div class="empty-message">No files in <u>Datastore</u> drag from <u>Plone</u></div>
                             </#if>
                             <#list datastore.getFiles() as file>
-                                <div id="datastore-${file.id}" class="file btn btn-primary">
-                                    <p class="filename">
+                                <div id="datastore-${file.id}" class="file">
+                                    <div  class="filename">
                                         <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
-                                    </p>
+                                    </div >
                                 </div>
                             </#list>
                             <#list datastore.getInvalid()?values as file>
-                                <div id="datastore-${file.id}" class="file file-invalid btn btn-primary">
-                                    <p class="filename">
+                                <div id="datastore-${file.id}" class="file file-invalid">
+                                    <div  class="filename">
                                         <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
-                                    </p>
+                                    </div >
                                     <div class="invalid-container">
                                         <i class="fa fa-warning"></i> <span>${file.getLatestComment()}</span>
                                         <div class="text-right">
                                             <#if file.type == "INVALID_HASH" || file.type == "UNKNOWN_FILE">
-                                                <button class="btn btn-success accept" disabled>Accept</button>
+                                                <button class="btn btn-xs btn-success accept" disabled>Accept</button>
                                             </#if>
                                             <#if file.type == "MISSING_FILE">
-                                                <button class="btn btn-danger ignore" disabled>Ignore</button>
+                                                <button class="btn btn-xs btn-danger ignore" disabled>Ignore</button>
                                             </#if>
                                             <#if file.type == "UNKNOWN_FILE">
-                                                <button class="btn btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal">Delete</button>
+                                                <button class="btn btn-xs btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal">Delete</button>
                                             </#if>
                                         </div>
                                     </div>
