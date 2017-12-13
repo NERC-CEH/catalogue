@@ -3,7 +3,7 @@
 <@skeleton.master title="Deposit Request">
 <div class="container">
     <h1>Deposit Request</h1>
-    <form class="deposit-request">
+    <form id="deposit-request" class="deposit-request">
         <div class="form-group">
             <label for="datasetTitle">*Dataset Title</label>
             <input required type="text" class="form-control" id="datasetTitle" placeholder="Dataset Title">
@@ -18,7 +18,7 @@
         </div>
         <div class="form-group">
             <label for="depositorOtherContact">Other Contact</label>
-            <input type="text" class="form-control" id="depositorOtherContact" placeholder="Other Contact">
+            <textarea class="form-control" id="depositorOtherContact" rows="3" placeholder="Other Contact"></textarea>
         </div>
         <div class="form-group">
             <label for="projectName">Project Name</label>
@@ -34,7 +34,7 @@
                 <option value="other">Other</option>
             </select>
         </div>
-        <div class="form-group">
+        <div class="form-group planning-docs-other is-inactive" id="planningDocsOther">
             <label for="planningDocsOther">Other Planning Documents</label>
             <p class="form-comment">Describe any other pre-existing planing documentation that may be relevant</p>
             <textarea class="form-control" id="planningDocsOther" rows="3" placeholder="Other Planning Documents"></textarea>
@@ -67,8 +67,26 @@
         </div>
         <div class="form-group">
             <label>*Dataset Offered</label>
-            <p class="form-comment">Briefly describe each dataset, giving details on formats and file sizes</p>
-            <textarea class="form-control" id="datasetOffered" rows="3" placeholder="Dataset Offered"></textarea>
+            <div class="datasets-offered">
+                <div class="dataset" id="dataset0">
+                    <p><i>Dataset</i></p>
+                    <a class="btn btn-danger dataset-remove">Remove Dataset</a>
+                    <div class="row">
+                        <div class="col-md-4 dataset-value">
+                            <input type="text" placeholder="Name" class="form-control" name="datasetOfferedName0" required />
+                        </div>
+                        <div class="col-md-4 dataset-format">
+                            <input type="text" placeholder="Format" class="form-control" name="datasetOfferedFormat0" />
+                        </div>
+                        <div class="col-md-4 dataset-value">
+                            <input type="text" placeholder="Estimated Size" class="form-control" name="datasetOfferedSize0" />
+                        </div>
+                    </div>
+                    <textarea rows="3" placeholder="Description" class="form-control dataset-description" name="datasetOfferedDescription0"></textarea>
+                    
+                </div>
+            </div>
+            <a class="btn btn-success" id="dataset-add">Add Dataset</a>
         </div>
         <div class="form-group">
             <label for="relatedDatasets">*Related Datasets</label>

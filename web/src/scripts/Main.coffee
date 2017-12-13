@@ -37,6 +37,8 @@ define [
   'cs!views/OsdpMonitoringActivityEditorView'
   'cs!views/OsdpMonitoringProgrammeEditorView'
   'cs!views/OsdpMonitoringFacilityEditorView'
+  'cs!models/DepositRequestModel'
+  'cs!views/DepositRequestView'
   'bootstrap'
   'dropzone'
 ], (
@@ -45,7 +47,8 @@ define [
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
     DocumentsUploadScheduledView, DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView,
     OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
-    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView
+    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView,
+    DepositRequestModel, DepositRequestView
 ) ->
 
   ###
@@ -57,6 +60,7 @@ define [
     do @initScheduled if $('#documents-upload .scheduled').length
     do @initInProgress if $('#documents-upload .in-progress').length
     do @initReadOnly if $('#documents-upload .read-only').length
+    do @initDepositRequest if $('#deposit-request').length
     do @initStudyAreaMap if $('#studyarea-map').length
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
@@ -66,6 +70,10 @@ define [
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
+
+  initDepositRequest: ->
+    app = new DepositRequestModel
+    view = new DepositRequestView model: app
 
   initReadOnly: ->
     view = new DocumentsUploadReadOnlyView()
