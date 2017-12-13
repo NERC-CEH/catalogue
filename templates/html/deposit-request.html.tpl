@@ -28,7 +28,7 @@
             <div class="form-group">
                 <label for="planningDocs">*Planning Documents</label>
                 <select class="form-control" required id="planningDocs">
-                    <option value="">---</option>
+                    <option value=""></option>
                     <option value="none">None</option>
                     <option value="outline">Outline</option>
                     <option value="intermediate">Intermediate</option>
@@ -65,10 +65,11 @@
         </div>
         <div class="form-group">
             <label>*Dataset Offered</label>
+            <div>
+                <a class="btn btn-success dataset-add" id="dataset-add">Add Dataset</a>
+            </div>
             <div class="datasets-offered">
                 <div class="dataset" id="dataset0">
-                    <p><i>Dataset</i></p>
-                    <a class="btn btn-danger dataset-remove">Remove Dataset</a>
                     <div class="row">
                         <div class="col-md-4 dataset-value">
                             <input type="text" placeholder="Name" class="form-control" name="datasetOfferedName0" required />
@@ -81,29 +82,26 @@
                         </div>
                     </div>
                     <textarea rows="3" placeholder="Description" class="form-control dataset-description" name="datasetOfferedDescription0"></textarea>
-                    
+                    <a class="btn btn-danger dataset-remove">Remove Dataset</a>                    
                 </div>
             </div>
-            <a class="btn btn-success" id="dataset-add">Add Dataset</a>
         </div>
-        <div class="form-group">
-            <label for="relatedDatasets">*Related Datasets</label>
-            <br />
-            <label class="radio-inline">
-                <input type="radio" name="relatedDatasets" id="relatedDatasetsNo" value="no" required> No
-            </label>
-            <label class="radio-inline">
-                <input type="radio" name="relatedDatasets" id="relatedDatasetsYes" value="yes"> Yes
-            </label>
-        </div>
-        <div class="form-group">
-            <label for="relatedDatasetsDetail">Related Datasets Detail</label>
-            <p class="form-comment">Enter DOI(s)</p>
-            <textarea class="form-control" id="relatedDatasetsDetail" rows="3" placeholder="Related Datasets Detail"></textarea>
+        <div id="relatedDatasets">
+            <div class="form-group">
+                <label for="relatedDatasets">*Related Datasets</label>
+                <br />
+                <label class="radio-inline">
+                    <input type="radio" name="relatedDatasets" id="relatedDatasetsNo" value="no" required> No
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="relatedDatasets" id="relatedDatasetsYes" value="yes"> Yes
+                </label>
+            </div>
         </div>
         <div class="form-group">
             <label for="scienceDomain">*Science Domain</label>
             <select class="form-control" required id="scienceDomain">
+                <option value=""></option>
                 <option value="terrestrial">Terrestrial</option>
                 <option value="ecology">Ecology</option>
                 <option value="freshwater">Freshwater</option>
