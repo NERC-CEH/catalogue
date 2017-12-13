@@ -24,20 +24,18 @@
             <label for="projectName">Project Name</label>
             <input type="text" class="form-control" id="projectName" placeholder="Project Name">
         </div>
-        <div class="form-group">
-            <label for="planningDocs">*Planning Documents</label>
-            <select class="form-control" required id="planningDocs">
-                <option value="none">None</option>
-                <option value="outline">Outline</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="full">Full</option>
-                <option value="other">Other</option>
-            </select>
-        </div>
-        <div class="form-group planning-docs-other is-inactive" id="planningDocsOther">
-            <label for="planningDocsOther">Other Planning Documents</label>
-            <p class="form-comment">Describe any other pre-existing planing documentation that may be relevant</p>
-            <textarea class="form-control" id="planningDocsOther" rows="3" placeholder="Other Planning Documents"></textarea>
+        <div class='planning-documents'>
+            <div class="form-group">
+                <label for="planningDocs">*Planning Documents</label>
+                <select class="form-control" required id="planningDocs">
+                    <option value="">---</option>
+                    <option value="none">None</option>
+                    <option value="outline">Outline</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="full">Full</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
         </div>
         <div class="form-group">
             <label for="nercFunded">*Nerc Funded</label>

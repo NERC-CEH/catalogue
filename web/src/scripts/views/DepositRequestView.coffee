@@ -1,14 +1,15 @@
 define [
   'backbone'
   'tpl!templates/DatasetOffered.tpl'
-], (Backbone, datasetOfferedTpl) -> Backbone.View.extend
+  'tpl!templates/PlanningDocuments.tpl'
+], (Backbone, datasetOfferedTpl, planningDocumentsTpl) -> Backbone.View.extend
   initialize: ->
     $('#planningDocs').change ->
       val = $('#planningDocs').val()
-      $('#planningDocsOther').removeClass 'is-active'
-      $('#planningDocsOther').removeClass 'is-inactive'
-      $('#planningDocsOther').addClass 'is-active' if val == 'other'
-      $('#planningDocsOther').addClass 'is-inactive' if val != 'other'
+      other = $(planningDocumentsTpl
+        active: yes)
+      $('.planning-documents').append other if val == 'other'
+      do $('#planningDocsOther').remove if val != 'other'
 
     $('.dataset-remove').click (evt) ->
       $(evt.target).parent().remove()
