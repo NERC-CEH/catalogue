@@ -317,6 +317,11 @@ public class ServiceConfig {
     }
 
     @Bean
+    public DepositRequestService depositRequestService() {
+        return new DepositRequestService();
+    }
+
+    @Bean
     public DocumentUploadService documentsUploadService() throws XPathExpressionException, IOException, TemplateModelException {
         return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
     }
