@@ -1,4 +1,4 @@
 <div class="science-domain-other form-group">
-    <label for="scienceDomainOther">*Science Domain Other</label>
-    <input class="form-control" id="scienceDomainOther" type="text" placeholder="Other" required>
+    <label>*Science Domain Other</label>
+    <input class="form-control" name="scienceDomainOther" type="text" placeholder="Other" required>
 </div>
