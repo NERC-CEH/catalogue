@@ -1,88 +1,88 @@
-<section class="section">
-    <div class="intro">
-        <h2>Data files</h2>
-        <p>These are the files that blah de blah de blah</p>
-        <p>Something about checksums with link to help somewhere http://helpy.help.com/</p>
-    </div>
-    <div class="messages alert alert-info" role="alert">
-        <div class="message loading">
-            <span class="fa fa-refresh fa-spin"></span>
-            <span>Loading please wait ...</span>
-        </div>
-    </div>
-</section>
+<#if
+datastore.getFiles()?size != 0 || documents.getFiles()?size != 0 || datastore.getInvalid()?values?size != 0 ||documents.getInvalid()?values?size != 0 || plone.getFiles()?size != 0 || plone.getInvalid()?values?size != 0 >
 
-<section class="section">
-    <div class="container-fluid folders read-only">
-            <div class="folder">
-                <div class="files">
-                    <#if datastore.getFiles()?size == 0 && documents.getFiles()?size == 0 && datastore.getInvalid()?values?size == 0 && documents.getInvalid()?values?size == 0>
-                        <div class="empty-message">No files</div>
-                    <#else>
-                        <#list datastore.getInvalid()?values as file>
-                            <div id="datastore-invalid-${file.id}" class="file b file-readonly is-inactive">
-                                <div class="filename">
-                                    <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
-                                </div>
-                                 <small class="filehash">{file.hash}</small>
-                            </div>
-                        </#list>
-                        <#list datastore.getFiles() as file>
-                            <div id="datastore-${file.id}" class="file file-readonly is-inactive">
-                                <div class="filename">
-                                    <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
-                                    </div>
-                                    <small class="filehash">{file.hash}</small>
-                            </div>
-                        </#list>
-                        <#list documents.getFiles() as file>
-                            <div id="documents-${file.id}" class="file file-readonly is-inactive">
-                                <div class="filename">
-                                    <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
-                                </div>
-                                <small class="filehash">${file.hash}</small>
-                            </div>
-                        </#list>
-                        <#list documents.getInvalid()?values as file>
-                            <div id="documents-invalid-${file.id}" class="file file-readonly is-inactive">
-                                <div class="filename">
-                                    <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
-                                </div>
-                                 <small class="filehash">${file.hash}</small>
-                            </div>
-                        </#list>
-                        <div class="folder-options">
-                            <a class="btn btn-success download-files" href="data:text/csv;charset=utf-8,${csvList}" download="${guid}.csv">Download checksum report</a>
-                        </div>
-                    </#if>
-                </div>
+    <section class="section">
+        <div class="intro">
+            <h2>These are the data and metadata files that have been deposited.</h2>
+            <p>We use MD5 checksums to verify data integrity and to ensure no errors occur during the files' transmission or storage. You can download a copy of the checksums for the data below.  For more information about checksums visit <a href="http://eidc.ceh.ac.uk/deposit/checksums" target="_blank">http://eidc.ceh.ac.uk/deposit/checksums/</a></p>
+        </div>
+        <div class="messages alert alert-info" role="alert">
+            <div class="message loading">
+                <span class="fa fa-refresh fa-spin"></span>
+                <span>Loading please wait ...</span>
             </div>
-            <#if plone.getFiles()?size != 0 || plone.getInvalid()?values?size != 0>
-                <div class="folder">
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container-fluid folders read-only">
+                <div class="folder clearfix">
                     <div class="folder-title">
-                        <span class="folder-name">
-                            <i class="fa fa-folder"></i> Metadata
-                        </span>
+                        <h2 class="folder-name"><i class="fa fa-lock"></i> Data</h2>
                     </div>
                     <div class="files">
-                        <div class="empty-message"></div>
-                        <#list plone.getInvalid()?values as file>
-                            <div id="plone-invalid-${file.id}" class="file file-readonly is-inactive">
-                                <div class="filename">
-                                    <i class="fa fa-file-text-o"></i> <span>{file.name}</span>
-                                 </div>
-                            </div>
-                        </#list>
-                        <#list plone.getFiles() as file>
-                            <div id="plone-${file.id}" class="file file-readonly is-inactive">
-                                <div class="filename">
-                                    <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
+                        <#if datastore.getFiles()?size == 0 && documents.getFiles()?size == 0 && datastore.getInvalid()?values?size == 0 && documents.getInvalid()?values?size == 0>
+                            <div class="empty-message"><span>No files</span></div>
+                        <#else>
+                            <#list datastore.getInvalid()?values as file>
+                                <div id="datastore-invalid-${file.id}" class="file b file-readonly is-inactive">
+                                    <div class="filename">
+                                        <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
+                                    </div>
                                 </div>
+                            </#list>
+                            <#list datastore.getFiles() as file>
+                                <div id="datastore-${file.id}" class="file file-readonly is-inactive">
+                                    <div class="filename">
+                                        <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
+                                        </div>
+                                </div>
+                            </#list>
+                            <#list documents.getFiles() as file>
+                                <div id="documents-${file.id}" class="file file-readonly is-inactive">
+                                    <div class="filename">
+                                        <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
+                                    </div>
+                                </div>
+                            </#list>
+                            <#list documents.getInvalid()?values as file>
+                                <div id="documents-invalid-${file.id}" class="file file-readonly is-inactive">
+                                    <div class="filename">
+                                        <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
+                                    </div>
+                                </div>
+                            </#list>
+                            <div class="folder-options clearfix">
+                                <a class="btn btn-success downloadChecksum" href="data:text/csv;charset=utf-8,${csvList}" download="${guid}.csv">Download checksum report</a>
                             </div>
-                        </#list>
+                        </#if>
                     </div>
-                    <div class="folder-options is-empty"></div>
                 </div>
-            </#if>
-    </div>
-</section>
+                <#if plone.getFiles()?size != 0 || plone.getInvalid()?values?size != 0>
+                    <div class="folder clearfix">
+                        <div class="folder-title">
+                            <h2 class="folder-name"><i class="fa fa-files-o"></i> Metadata</h2>
+                        </div>
+                        <div class="files">
+                            <div class="empty-message"></div>
+                            <#list plone.getInvalid()?values as file>
+                                <div id="plone-invalid-${file.id}" class="file file-readonly is-inactive">
+                                    <div class="filename">
+                                        <i class="fa fa-file-text-o"></i> <span>{file.name}</span>
+                                    </div>
+                                </div>
+                            </#list>
+                            <#list plone.getFiles() as file>
+                                <div id="plone-${file.id}" class="file file-readonly is-inactive">
+                                    <div class="filename">
+                                        <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
+                                    </div>
+                                </div>
+                            </#list>
+                        </div>
+                        <div class="folder-options is-empty"></div>
+                    </div>
+                </#if>
+        </div>
+    </section>
+</#if>

@@ -1,8 +1,8 @@
 <section class="section">
     <div class="intro">
         <h2>Upload your data</h2>
-        <p>Drag and drop your files below or click "Add files" to browse your computer. Click the Finish button when you're done</p>
-        <p>For help go to http://helpme.help/</p>
+        <p>Drag and drop your files below or click "Add files" to browse your computer.</p><p>Click the Finish button when you're done</p>
+        <p>For more help go to <a href="http://eidc.ceh.ac.uk/deposit/uploadhelp" target="_blank">http://eidc.ceh.ac.uk/deposit/uploadhelp</a></p>
     </div>
 
     <div class="messages alert alert-info" role="alert">
