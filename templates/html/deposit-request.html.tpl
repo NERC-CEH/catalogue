@@ -9,11 +9,11 @@
             </div>
             <div class="form-group">
                 <label>*Depositor Name</label>
-                <input required type="text" class="form-control" name="depositorName" id="depositorName" placeholder="Depositor Name">
+                <input required type="text" class="form-control" name="depositorName" id="depositorName" value="${name}">
             </div>
             <div class="form-group">
                 <label>*Depositor Email</label>
-                <input required type="email" class="form-control" name="depositorEmail" id="depositorEmail" placeholder="Depositor Email">
+                <input required type="email" class="form-control" name="depositorEmail" id="depositorEmail" value="${email}">
             </div>
             <div class="form-group">
                 <label>Other Contact</label>
