@@ -36,8 +36,8 @@ define [
     do @addDataset if $('.dataset').length == 0
 
   addDataset: ->
-    datasets = @model.get('datasets') + 1
-    @model.set 'datasets', datasets
+    datasets = @model.get('datasets')
+    @model.set 'datasets', datasets + 1
     dataset = $(datasetOfferedTpl
       number: datasets)
     $('.datasets-offered').append dataset
@@ -56,8 +56,8 @@ define [
     $('#addDoi').click => do @addDoi
 
   addDoi: ->
-    dois = @model.get('dois') + 1
-    @model.set 'dois', dois
+    dois = @model.get('dois')
+    @model.set 'dois', dois + 1
     doi = $(relatedDOITpl
       number: dois)
     $('#dois').append doi

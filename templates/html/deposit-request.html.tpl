@@ -2,7 +2,7 @@
 <@skeleton.master title="Deposit Request">
     <div class="container">
         <h1>Deposit Request</h1>
-        <form id="deposit-request" class="deposit-request">
+        <form id="deposit-request" class="deposit-request" method="post" action="deposit-request/form">
             <div class="form-group">
                 <label>*Dataset Title</label>
                 <input required type="text" class="form-control" name="datasetTitle" id="datasetTitle" placeholder="Dataset Title">
@@ -73,16 +73,16 @@
                     <div class="dataset" id="dataset0">
                         <div class="row">
                             <div class="col-md-4 dataset-value">
-                                <input type="text" placeholder="Name" class="form-control" name="datasetOffered[0][name]" required />
+                                <input type="text" placeholder="Name" class="form-control" name="datasetsOfferedName[0]" required />
                             </div>
                             <div class="col-md-4 dataset-format">
-                                <input type="text" placeholder="Format" class="form-control" name="datasetOffered[0][format]" />
+                                <input type="text" placeholder="Format" class="form-control" name="datasetsOfferedFormat[0]" />
                             </div>
                             <div class="col-md-4 dataset-value">
-                                <input type="text" placeholder="Estimated Size" class="form-control" name="datasetOffered[0][size]" />
+                                <input type="text" placeholder="Estimated Size" class="form-control" name="datasetsOfferedSize[0]" />
                             </div>
                         </div>
-                        <textarea rows="3" placeholder="Description" class="form-control dataset-description" name="datasetOffered[0][description]"></textarea>
+                        <textarea rows="3" placeholder="Description" class="form-control dataset-description" name="datasetsOfferedDescription[0]"></textarea>
                         <a class="btn btn-danger dataset-remove">Remove Dataset</a>
                     </div>
                 </div>
