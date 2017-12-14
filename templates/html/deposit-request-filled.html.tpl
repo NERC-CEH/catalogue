@@ -6,7 +6,7 @@
         <form class="deposit-request">
             <div class="form-group">
                 <label>Dataset Title</label>
-                <input type="text" class="form-control" value="${depositRequest.datasetTitle}" disabled />
+                <input type="text" class="form-control" value="${depositRequest.title}" disabled />
             </div>
             <div class="form-group">
                 <label>Depositor Name</label>

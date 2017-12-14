@@ -5,7 +5,7 @@
         <form id="deposit-request" class="deposit-request" method="post" action="deposit-request/form">
             <div class="form-group">
                 <label>*Dataset Title</label>
-                <input required type="text" class="form-control" name="datasetTitle" id="datasetTitle" placeholder="Dataset Title">
+                <input required type="text" class="form-control" name="title" id="datasetTitle" placeholder="Dataset Title">
             </div>
             <div class="form-group">
                 <label>*Depositor Name</label>

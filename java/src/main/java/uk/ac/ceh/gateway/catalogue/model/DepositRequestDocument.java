@@ -3,15 +3,15 @@ package uk.ac.ceh.gateway.catalogue.model;
 import java.util.List;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class DepositRequest {
-    private String datasetTitle;
+@EqualsAndHashCode(callSuper = true)
+public class DepositRequestDocument extends AbstractMetadataDocument {
     private String depositorName;
     private String depositorEmail;
-    private String depositorOtherContact;
-    private String projectName;
-
+    private String depositorOtherContact = "";
+    private String projectName = "";
 
     private String planningDocs;
     private String planningDocsOther;
