@@ -2,6 +2,7 @@ plugins {
     id 'war'
     id 'idea'
     id 'com.github.ben-manes.versions' version '0.15.0'
+    id 'org.unbroken-dome.test-sets' version '1.4.2'
 }
 
 ext {
@@ -40,6 +41,13 @@ dependencyUpdates.resolutionStrategy = {
         }
     }
 }
+
+testSets {
+    integrationTest
+}
+
+check.dependsOn integrationTest
+integrationTest.mustRunAfter test
 
 dependencies {
     implementation "uk.ac.ceh.components:datastore-git:${cehComponentsVersion}"
@@ -85,6 +93,8 @@ dependencies {
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
     compileOnly 'org.projectlombok:lombok:1.16.18'
     testImplementation 'org.projectlombok:lombok:1.16.18'
-    testImplementation 'org.testcontainers:selenium:1.4.3'
-    testImplementation 'org.seleniumhq.selenium:selenium-remote-driver:3.8.1'
+    integrationTestImplementation 'org.testcontainers:selenium:1.4.3'
+    integrationTestImplementation 'org.seleniumhq.selenium:selenium-remote-driver:3.8.1'
+    integrationTestImplementation 'com.jayway.jsonpath:json-path:2.3.0'
+    integrationTestImplementation 'net.sourceforge.htmlunit:htmlunit:2.28'
 }
