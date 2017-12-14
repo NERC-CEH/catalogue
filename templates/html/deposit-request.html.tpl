@@ -73,16 +73,16 @@
                     <div class="dataset" id="dataset0">
                         <div class="row">
                             <div class="col-md-4 dataset-value">
-                                <input type="text" placeholder="Name" class="form-control" name="datasetsOfferedName[0]" required />
+                                <input type="text" placeholder="Name" class="form-control" name="datasetsOffered[0].name" required />
                             </div>
                             <div class="col-md-4 dataset-format">
-                                <input type="text" placeholder="Format" class="form-control" name="datasetsOfferedFormat[0]" />
+                                <input type="text" placeholder="Format" class="form-control" name="datasetsOffered[0].format" />
                             </div>
                             <div class="col-md-4 dataset-value">
-                                <input type="text" placeholder="Estimated Size" class="form-control" name="datasetsOfferedSize[0]" />
+                                <input type="text" placeholder="Estimated Size" class="form-control" name="datasetsOffered[0].size" />
                             </div>
                         </div>
-                        <textarea rows="3" placeholder="Description" class="form-control dataset-description" name="datasetsOfferedDescription[0]"></textarea>
+                        <textarea rows="3" placeholder="Description" class="form-control dataset-description" name="datasetsOffered[0].description"></textarea>
                         <a class="btn btn-danger dataset-remove">Remove Dataset</a>
                     </div>
                 </div>

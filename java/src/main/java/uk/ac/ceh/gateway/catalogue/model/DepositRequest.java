@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.model;
 import java.util.List;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import lombok.Data;
-import lombok.Value;
 
 @Data
 public class DepositRequest {
@@ -22,21 +21,11 @@ public class DepositRequest {
         return planningDocs;
     }
 
-    private Foolean nercFunded;
-    private Foolean publicFunded;
+    private Funded nercFunded;
+    private Funded publicFunded;
 
-    private List<String> datasetsOfferedName;
-    private List<String> datasetsOfferedFormat;
-    private List<String> datasetsOfferedSize;
-    private List<String> datasetsOfferedDescription;
-
-    public List<DatasetOffered> getDatasetsOffered() {
-        List<DatasetOffered> datasetsOffered = Lists.newArrayList();
-        for (int i = 0; i <  datasetsOfferedName.size(); i++)
-            if (null != datasetsOfferedName.get(i))
-                datasetsOffered.add(new DatasetOffered(datasetsOfferedName.get(i), datasetsOfferedFormat.get(i), datasetsOfferedSize.get(i), datasetsOfferedDescription.get(i)));
-        return datasetsOffered;
-    }
+    private List<DatasetOffered> datasetsOffered = Lists.newArrayList();
+    private DatasetOffered datasetOffered;
 
     private boolean hasRelatedDatasets;
     private List<String> relatedDatasets = Lists.newArrayList();
@@ -59,15 +48,18 @@ public class DepositRequest {
     private boolean publishedPaper;
     private boolean reusable;
 
-    @Value
-    private class DatasetOffered {
+    @Data
+    public static class DatasetOffered {
         private String name;
         private String format;
         private String size;
         private String description;
+        public int getDescriptionSize() {
+            return description.split("\r\n|\r|\n").length;
+        }
     }
 
-    private enum Foolean {
+    public enum Funded {
         no, yes, partly
     }
 }

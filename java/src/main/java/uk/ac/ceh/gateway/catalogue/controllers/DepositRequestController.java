@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.google.common.collect.Lists;
+
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
@@ -36,9 +38,7 @@ public class DepositRequestController {
     @RequestMapping(value = "deposit-request/form", method = RequestMethod.POST)
     @ResponseBody
     public RedirectView documentsUploadForm(@ModelAttribute DepositRequest depositRequest) {
-        // Map<String, Object> model = new HashMap<>();
-        // model.put("depositRequest {}", depositRequest);
-        // return new ModelAndView("/html/deposit-request-filled.html.tpl", model);
+        log.error("deposit request {}", depositRequest);
         return new RedirectView("/deposit-request/guid");
     }
 
@@ -47,9 +47,39 @@ public class DepositRequestController {
     public ModelAndView documentsUploadView() {
         Map<String, Object> model = new HashMap<>();
         val depositRequest = new DepositRequest();
-        depositRequest.setDatasetTitle("My Dataset Title");
-        model.put("depositRequest {}", depositRequest);
+        depositRequest.setDatasetTitle("datasetTitle");
+        depositRequest.setDepositorName("depositorName");
+        depositRequest.setDepositorEmail("depositorEmail");
+        depositRequest.setDepositorOtherContact("line 1\nline 2");
+        depositRequest.setProjectName("projectName");
+        depositRequest.setPlanningDocs("other");
+        depositRequest.setPlanningDocsOther("line 1\nline 2\nline3");
+        depositRequest.setNercFunded(DepositRequest.Funded.yes);
+        depositRequest.setPublicFunded(DepositRequest.Funded.yes);
+        depositRequest.setScienceDomain("other");
+        depositRequest.setScienceDomainOther("scienceDomainOther");
+        depositRequest.setUniqueDeposit(true);
+        depositRequest.setModelOutput(false);
+        depositRequest.setPublishedPaper(true);
+        depositRequest.setReusable(false);
+
+        depositRequest.setHasRelatedDatasets(true);
+        depositRequest.setRelatedDatasets(Lists.newArrayList("doi0", "doi1"));
+
+        model.put("depositRequest", depositRequest);
+
+        model.put("depositorOtherContactRows", countLines(depositRequest.getDepositorOtherContact()));
+        model.put("planningDocsRows", countLines(depositRequest.getPlanningDocs()));
+
+        model.put("status", "Awaiting Approval");
+        
         return new ModelAndView("/html/deposit-request-filled.html.tpl", model);
     }
 
+    private static int countLines(String str){
+        return str.split("\r\n|\r|\n").length;
+     }
+
 }
+
+
