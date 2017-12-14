@@ -1,13 +1,13 @@
 <div class="dataset" id="dataset<%= number %>">
     <div class="row">
         <div class="col-md-4 dataset-value">
-            <input type="text" placeholder="Name" class="form-control" name="datasetsOfferedName[<%= number %>]" required />
+            <input type="text" placeholder="Name" class="form-control" name="datasetsOffered[<%= number %>].name" required />
         </div>
         <div class="col-md-4 dataset-format">
-            <input type="text" placeholder="Format" class="form-control" name="datasetsOfferedFormat[<%= number %>]" />
+            <input type="text" placeholder="Format" class="form-control" name="datasetsOffered[<%= number %>].format" />
         </div>
         <div class="col-md-4 dataset-value">
-            <input type="text" placeholder="Estimated Size" class="form-control" name="datasetsOfferedSize[<%= number %>]" />
+            <input type="text" placeholder="Estimated Size" class="form-control" name="datasetsOffered[<%= number %>].size" />
         </div>
     </div>
     <textarea rows="3" placeholder="Description" class="form-control dataset-description" name="datasetsOfferedDescription[<%= number %>]"></textarea>

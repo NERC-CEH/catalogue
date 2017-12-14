@@ -63,6 +63,13 @@ public class DepositRequestController {
         depositRequest.setPublishedPaper(true);
         depositRequest.setReusable(false);
 
+        val dataset0 = new DepositRequest.DatasetOffered();
+        val dataset1 = new DepositRequest.DatasetOffered();
+        dataset1.setName("name");
+        dataset1.setDocument("document");
+
+        depositRequest.setDatasetsOffered(Lists.newArrayList(dataset0, dataset1));
+
         depositRequest.setHasRelatedDatasets(true);
         depositRequest.setRelatedDatasets(Lists.newArrayList("doi0", "doi1"));
 

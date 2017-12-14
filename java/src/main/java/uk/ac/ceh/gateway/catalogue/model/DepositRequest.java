@@ -25,11 +25,13 @@ public class DepositRequest {
     private Funded publicFunded;
 
     private List<DatasetOffered> datasetsOffered = Lists.newArrayList();
-    private DatasetOffered datasetOffered;
+    public List<DatasetOffered> getDatasetsOffered () {
+        datasetsOffered.removeIf(dataset -> dataset.getName() == null);
+        return datasetsOffered;
+    }
 
     private boolean hasRelatedDatasets;
     private List<String> relatedDatasets = Lists.newArrayList();
-
     public List<String> getRelatedDatasets () {
         relatedDatasets.removeIf(dataset -> dataset == null);
         return relatedDatasets;
@@ -54,8 +56,9 @@ public class DepositRequest {
         private String format;
         private String size;
         private String description;
+        private String document;
         public int getDescriptionSize() {
-            return description.split("\r\n|\r|\n").length;
+            return description == null ? 1 : description.split("\r\n|\r|\n").length;
         }
     }
 
