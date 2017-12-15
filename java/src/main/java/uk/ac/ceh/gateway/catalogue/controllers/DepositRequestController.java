@@ -13,22 +13,28 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
+import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.services.DepositRequestService;
+import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
+@Slf4j
 @Controller
 public class DepositRequestController {
 
     private final DepositRequestService depositRequestService;
     private final PermissionService permissionService;
+    private final JiraService jiraService;
 
     @Autowired
-    public DepositRequestController(DepositRequestService depositRequestService, PermissionService permissionService) {
+    public DepositRequestController(DepositRequestService depositRequestService, PermissionService permissionService, JiraService jiraService) {
         this.depositRequestService = depositRequestService;
         this.permissionService = permissionService;
+        this.jiraService = jiraService;
     }
 
     @RequestMapping(value = "deposit-request", method = RequestMethod.GET)
@@ -44,6 +50,8 @@ public class DepositRequestController {
     @ResponseBody
     public RedirectView documentsUploadForm(@ActiveUser CatalogueUser user, @ModelAttribute DepositRequestDocument depositRequest) {
         depositRequestService.save(user, depositRequest);
+        val jiraIssue = jiraService.create();
+        log.error("jiraIssue {}", jiraIssue);
         return new RedirectView(String.format("/deposit-request/%s", depositRequest.getId()));
     }
 
