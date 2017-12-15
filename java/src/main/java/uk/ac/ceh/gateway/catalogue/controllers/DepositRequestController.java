@@ -48,7 +48,19 @@ public class DepositRequestController {
     @RequestMapping(value = "deposit-request/form", method = RequestMethod.POST)
     @ResponseBody
     public RedirectView documentsUploadForm(@ActiveUser CatalogueUser user, @ModelAttribute DepositRequestDocument depositRequest) {
+        log.error("depositRequest {}", depositRequest);
+
         depositRequestService.save(user, depositRequest);
+
+        val builder = new JiraService.IssueBuilder("EIDCHELP", "Job", depositRequest.getTitle());
+        builder
+            .withDescription(depositRequest.getJiraDescription())
+            .withCompoent("Deposit Request")
+            .withLabel(depositRequest.getId())
+            .withField("customfield_11950", depositRequest.getDepositorName())
+            .withField("customfield_11951", depositRequest.getDepositorEmail());
+        jiraService.create(builder);
+
         return new RedirectView(String.format("/deposit-request/%s", depositRequest.getId()));
     }
 
@@ -57,15 +69,6 @@ public class DepositRequestController {
     @ResponseBody
     public ModelAndView documentsUploadView(@PathVariable("guid") String guid) {    
         val depositRequest = depositRequestService.get(guid);
-        val builder = new JiraService.IssueBuilder("EIDCHELP", "Job", depositRequest.getTitle());
-        builder
-            .withDescription(depositRequest.getJiraDescription())
-            .withCompoent("Deposit Request")
-            .withLabel(guid)
-            .withField("customfield_11950", depositRequest.getDepositorName())
-            .withField("customfield_11951", depositRequest.getDepositorEmail());
-        val jiraIssue = jiraService.create(builder);
-        log.error("jiraIssue {}", jiraIssue);
     
         Map<String, Object> model = new HashMap<>();
         model.put("depositRequest", depositRequest);
