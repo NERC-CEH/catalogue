@@ -46,11 +46,11 @@
                     </div>
                 </#list>
             </div>
-            <#if documents.getFiles()?size != 0 || documents.getInvalid()?size != 0>
             <div class="folder-options text-right">
-                <button class="btn btn-success move-to-datastore" disabled>Move all to datastore</button>
+                <#if documents.getFiles()?size != 0>
+                    <button class="btn btn-success move-to-datastore" disabled>Move all to datastore</button>
+                </#if>
             </div>
-            </#if>    
         </div>
         <div class="plone folder">
             <h2 class="folder-name"> <i class="fa fa-files-o"></i> Metadata</h2>

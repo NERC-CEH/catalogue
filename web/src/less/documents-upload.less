@@ -9,8 +9,10 @@
         width: 100%;
         h2 {
             margin-left:1em;
-            small { margin-left:2em;};
-        }
+            small {
+                margin-left:2em;
+            };
+        };
     };
 
     .dropzone-files {
@@ -23,19 +25,22 @@
     };
 
     .in-progress .folder {
-        border:2px dashed #7F7FFF; padding:1em;
+        border:2px dashed #7F7FFF;
+        padding:1em;
     };
 
     .files {
         padding:1em;
+        .file {
+            display:block;
+            padding:1em;
+            border-bottom:1px solid #EEE;
+        };
+        .file:last-child {
+            border-style:none;
+        };
     };
     
-    .file {
-        display:block;
-        padding:1em;
-        border-bottom:1px solid #EEE;
-    };
-
     .file:hover {
         background-color: #EEE;
     };
@@ -150,4 +155,18 @@
             min-width: 7em;
         };
     };
+}
+
+.document-upload-footer {
+    padding:1em 0;
+}
+
+/*the definition below is a temporary measure
+for the first few months of use while the ILs get
+used to the system.  It can then be deleted */
+.plone.folder .folder-name::after {
+    content: '(Plone)';
+    margin-left:1em;
+    font-size: 70%;
+    color:#bbb;
 }

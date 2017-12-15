@@ -86,9 +86,9 @@ define [
       do $('.unzip').hide
 
   renderEmptyMessages: ->
-    @renderEmptyMessage 'documents', '<span>Documents</span> is empty'
-    @renderEmptyMessage 'plone', 'Move files here from <span>Documents</span> or <span>Datastore</span>'
-    @renderEmptyMessage 'datastore', 'Move files here from <span>Documents</span> or <span>Metadata</span>'
+    @renderEmptyMessage 'documents', '<span>Dropbox</span> is empty'
+    @renderEmptyMessage 'plone', 'Move files here from <span>Dropbox</span> or <span>Datastore</span>'
+    @renderEmptyMessage 'datastore', 'Move files here from <span>Dropbox</span> or <span>Metadata</span>'
 
   renderEmptyMessage: (folder, message) ->
     message = '' if @model.get(folder).files
