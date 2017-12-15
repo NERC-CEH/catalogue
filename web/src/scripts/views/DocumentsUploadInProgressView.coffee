@@ -79,9 +79,13 @@ define [
   renderZip: ->
     $('.zip, .unzip').attr 'disabled', off
     if @model.attributes.datastore.zipped
+      $('.datastore-icon .fa').removeClass('fa-file-o')
+      $('.datastore-icon .fa').addClass('fa-file-archive-o')
       do $('.zip').hide
       do $('.unzip').show
     else
+      $('.datastore-icon .fa').removeClass('fa-file-archive-o')
+      $('.datastore-icon .fa').addClass('fa-file-o')
       do $('.zip').show
       do $('.unzip').hide
 
