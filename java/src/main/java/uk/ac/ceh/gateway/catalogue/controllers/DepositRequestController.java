@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
-import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.services.DepositRequestService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
@@ -50,18 +49,25 @@ public class DepositRequestController {
     @ResponseBody
     public RedirectView documentsUploadForm(@ActiveUser CatalogueUser user, @ModelAttribute DepositRequestDocument depositRequest) {
         depositRequestService.save(user, depositRequest);
-        val jiraIssue = jiraService.create();
-        log.error("jiraIssue {}", jiraIssue);
         return new RedirectView(String.format("/deposit-request/%s", depositRequest.getId()));
     }
 
     @PreAuthorize("@permission.userCanView(#guid)")
     @RequestMapping(value = "deposit-request/{guid}", method = RequestMethod.GET)
     @ResponseBody
-    public ModelAndView documentsUploadView(@PathVariable("guid") String guid) {
-        Map<String, Object> model = new HashMap<>();
-        
+    public ModelAndView documentsUploadView(@PathVariable("guid") String guid) {    
         val depositRequest = depositRequestService.get(guid);
+        val builder = new JiraService.IssueBuilder("EIDCHELP", "Job", depositRequest.getTitle());
+        builder
+            .withDescription(depositRequest.getJiraDescription())
+            .withCompoent("Deposit Request")
+            .withLabel(guid)
+            .withField("customfield_11950", depositRequest.getDepositorName())
+            .withField("customfield_11951", depositRequest.getDepositorEmail());
+        val jiraIssue = jiraService.create(builder);
+        log.error("jiraIssue {}", jiraIssue);
+    
+        Map<String, Object> model = new HashMap<>();
         model.put("depositRequest", depositRequest);
 
         model.put("depositorOtherContactRows", countLines(depositRequest.getDepositorOtherContact()));

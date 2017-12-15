@@ -1,47 +1,111 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import javax.ws.rs.core.MediaType;
+
+import org.apache.jena.ext.com.google.common.collect.Lists;
+
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import lombok.AllArgsConstructor;
+import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueCreate;
 import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
 
+@Slf4j
 @AllArgsConstructor
 public class JiraService {
     private final WebResource resource;
 
-    public JiraIssueCreate create (String project, String issueTypeName, String summary) {
+    public static class IssueBuilder  {
+        private final String project;
+        private final String issueTypeName;
+        private final String summary;
+        private String description;
+        private final Map<String, String> fields;
+        private final List<String> components;
+        private final List<String> labels;
+
+        public IssueBuilder(String project, String issueTypeName, String summary) {
+            this.project = project;
+            this.issueTypeName = issueTypeName;
+            this.summary = summary;
+            fields = new HashMap<>();
+            components = Lists.newArrayList();
+            labels = Lists.newArrayList();
+        }
+
+        public IssueBuilder withDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public IssueBuilder withField(String name, String value) {
+            fields.put(name, value);
+            return this;
+        }
+
+        public IssueBuilder withCompoent(String component) {
+            components.add(component);
+            return this;
+        }
+
+        public IssueBuilder withLabel(String label) {
+            labels.add(label);
+            return this;
+        }
+
+        public String build () {
+            String inputFields = "";
+            if (fields.size() > 0) {
+                for (val field : fields.entrySet()) {
+                    val key = field.getKey();
+                    val value = field.getValue();
+                    inputFields += String.format(", \"%s\":\"%s\"", key, value);
+                }
+            }
+
+            String inputComponents = "";
+            if (components.size() > 0) {
+                for (val component : components)
+                    inputComponents += String.format("{\"name\": \"%s\"}", component);
+                inputComponents = String.format(", \"components\": [%s]", inputComponents);
+            }
+
+            String inputLabels = "";
+            if (labels.size() > 0) {
+                for (val label : labels)
+                    inputLabels += String.format("\"%s\",", label);
+                inputLabels = inputLabels.substring(0, inputLabels.length() - 1);
+                inputLabels = String.format(", \"labels\": [%s]", inputLabels);
+            }
+
+            if (description != null) {
+                description = String.format(", \"description\": \"%s\"", description);
+            }
+
+            return String.format(
+                "{\"fields\": {\"project\": {\"key\": \"%s\"},\"issuetype\": {\"name\": \"%s\"},\"summary\": \"%s\" %s %s %s %s}}",
+                project, issueTypeName, summary,
+                inputFields, inputComponents, inputLabels, description
+            );
+        }
+    }
+
+    public JiraIssueCreate create (IssueBuilder builder) {
         String path = "issue";
-        String input = "{\"fields\": {\"project\": {\"key\": \"EIDCHELP\"},\"issuetype\": {\"name\": \"Job\"},\"summary\": \"my summary\"}}";
+        val input = builder.build();
+        log.error("input {}", input);
         return resource
             .path(path)
             .accept(MediaType.APPLICATION_JSON_TYPE)
             .type(MediaType.APPLICATION_JSON_TYPE)
             .post(JiraIssueCreate.class, input);
     }
-
-    // components:10771
-    // labels:guid
-    // issuetype:79 <- job    
-    // summary:summary 1 <- title
-    // description: <- some sort of summary?
-
-    // customfield_11950:depositor name
-    // customfield_11951:depositor email
-    // customfield_11952:contact details
-    // customfield_11953:project name
-    // customfield_11955:planning documentation
-    // customfield_11956:other planning documentation
-    // customfield_11957:yes
-    // customfield_11958:yes
-    // customfield_11961:doi1,doi2,doi3
-    // customfield_11962:scientific domain
-    // customfield_11963:other scientific domain
-    // customfield_11968:yes
-    // customfield_11970:related data sets
 
     public void comment (String key, String comment) {
         String path = String.format("issue/%s", key);
