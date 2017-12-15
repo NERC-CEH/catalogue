@@ -63,7 +63,7 @@ define [
       accept = $('.modal-accept').html()
 
       expect(title).toBe 'Finish'
-      expect(body).toBe 'Once you have finished you will not be able to add, remove or update files. Are you sure you want to finish?'
+      expect(body).toBe 'You will no longer be able to add, remove or update files! ARE YOU SURE?'
       expect(dismiss).toBe 'No'
       expect(accept).toBe 'Yes'
       do $('.modal-accept').click
@@ -90,7 +90,7 @@ define [
       accept = $('.modal-accept').html()
 
       expect(title).toBe 'Delete <b>file.txt</b>'
-      expect(body).toBe 'Are you sure you want to perminatly delete <b>file.txt</b>'
+      expect(body).toBe 'Are you sure you want to permanently delete file.txt'
       expect(dismiss).toBe 'No'
       expect(accept).toBe 'Yes'
       do $('.modal-accept').click
