@@ -18,14 +18,15 @@ define [
   'cs!views/editor/SingleView'
   'cs!views/editor/TopicCategoryView'
   'cs!views/editor/PointOfContactView'
-], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, PointOfContact, TopicCategory, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, PointOfContactView) -> EditorView.extend
+  'cs!views/editor/LinkView'
+], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, PointOfContact, TopicCategory, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, PointOfContactView, LinkView) -> EditorView.extend
 
   initialize: ->
     @model.set('type', 'sampleArchive') unless @model.has('type')
 
     @sections = [
-      label: 'General'
-      title:  'General information'
+      label: 'Sample Archive Metadata Entry'
+      title:  'Sample Archive Metadata Entry'
       views: [
         new TextareaView
           model: @model
@@ -33,7 +34,7 @@ define [
           label: 'Title'
           rows: 1
           helpText: """
-                    <p>An informative title</p>
+                    <p>A brief and informative title.</p>
                     """
 
         new TextareaView
@@ -42,7 +43,7 @@ define [
           label: 'Description'
           rows: 5
           helpText: """
-                    <p>An abstract that gives details about the sample collection.</p>
+                    <p>An abstract that gives details about the sample collection. A well filled in description will provide many of the search terms that ensure the record appears appropriately in catalogue searches.</p>
                     """
 
         new ParentView
@@ -51,7 +52,71 @@ define [
           label: 'Specimen Types'
           ObjectInputView: KeywordView
           helpText: """
-                    <p>A list of keywords and terms that describe the type(s) of specimens in the archive.</p>
+                    <p>A list of keywords and terms that describe the types of specimens in the archive.</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'website'
+          label: 'Website url'
+          helpText: """
+                    <p>A link to a website for this archive.</p>
+                    """
+
+        new ParentView
+          model: @model
+          ModelType: PointOfContact
+          modelAttribute: 'archiveContacts'
+          label: 'Archive contacts'
+          ObjectInputView: PointOfContactView
+          multiline: true
+          helpText: """
+                    <p>One or more points of contact for the sample archive.</p>
+                    """
+
+        new ParentStringTextboxView
+          model: @model
+          modelAttribute: 'archiveLocations'
+          label: 'Archive locations'
+          rows: 5
+          helpText: """
+                    <p>Address of the archiving facility. If it is spread over more than one location then provide a list of addresses.</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'availability'
+          label: 'Availability'
+          rows: 5
+          helpText: """
+                    <p>Information about how readily available the samples are, who is allowed to have access and how to gain access.</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'accessRestrictions'
+          label: 'Access restrictions'
+          rows: 5
+          helpText: """
+                    <p>An overview of any restrictions that will apply, usually things like Intellectual Property Rights and Terms and Conditions.</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'storage'
+          label: 'Storage'
+          rows: 5
+          helpText: """
+                    <p>An overview of how the samples are stored to help a potential sample user understand what will be required if they request a sample.</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'healthSafety'
+          label: 'Health and safety'
+          rows: 5
+          helpText: """
+                    <p>Any information users need to know regarding Health and Safety when they are considering taking on samples.</p>
                     """
         
         new SingleObjectView
@@ -63,16 +128,12 @@ define [
           helpText: """
                     <p>The time span of the sampling regime or project. The start date is mandatory, it is for the earliest sample in the archive and may be approximate if not precisely known. The end date is optional, if it is provided it represents the last sample in the archive.</p>
                     """
-      ]
-    ,
-      label: 'Spatial'
-      title:  'Geographic area that the archive covers'
-      views: [
+
         new PredefinedParentView
           model: @model
           modelAttribute: 'boundingBoxes'
           ModelType: BoundingBox
-          label: 'Spatial extent'
+          label: 'Spatial extents'
           ObjectInputView: BoundingBoxView
           multiline: true
           # These bounding box values were copied from terraCatalog
@@ -113,21 +174,16 @@ define [
               southBoundLatitude: -90.00
               westBoundLongitude: -180.00
           helpText: """
-                    <p>A bounding box representing the limits of the data resource's study area.</p>
-                    <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
+                    <p>A bounding box showing the area that the archive covers. It will encompass the remit of the archive, which may be larger than that represented by the samples actually in the archive. It is represented by north, south, east and west in decimal degrees (WGS84).</p>
                     """
-      ]
-    ,
-      label: 'Three'
-      title:  'Three'
-      views: [
+
         new TextareaView
           model: @model
           modelAttribute: 'lineage'
           label: 'Lineage'
           rows: 5
           helpText: """
-                    <p>An overview of how samples are collected and any QC or QA.</p>
+                    <p>An overview of how samples are collected and any Quality Control or Quality Assurance.</p>
                     """
 
         new InputView
@@ -145,9 +201,7 @@ define [
           label: 'Topic categories'
           ObjectInputView: TopicCategoryView
           helpText: """
-                    <p>The main theme(s) of the data resource as defined by the INSPIRE Directive.</p>
-                    <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
-                    <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
+                    <p>An ISO 19115 topic category. This is a high level keyword used to categorise datasets that have a spatial component.</p>
                     """
 
         new ParentView
@@ -156,84 +210,18 @@ define [
           label: 'Keywords'
           ObjectInputView: KeywordView
           helpText: """
-                    <p>A list of keywords that help identify and describe the archive.</p>
+                    <p>A list of words that help to identify and describe the archive. It will be used to improve search results and filtering. A keyword may be associated with an entry in a vocabulary via a uri, or just be a simple custom keyword. The list is unique on keyword-uri combinations.</p>
                     """
 
-        new TextareaView
-          model: @model
-          modelAttribute: 'availability'
-          label: 'Availability'
-          rows: 5
-          helpText: """
-                    <p>Information about how readily available the sampes are, who is allowed to have access and how to gain access.</p>
-                    """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'accessRestrictions'
-          label: 'Access restrictions'
-          rows: 5
-          helpText: """
-                    <p>An overview of any restrictions that will apply, usually things like IPR and T&C.</p>
-                    """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'storage'
-          label: 'Storage'
-          rows: 5
-          helpText: """
-                    <p>An overview of how the samples are stored to help a potential sample user understand what will be required if they request a sample.</p>
-                    """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'healthSafety'
-          label: 'Health and safety'
-          rows: 5
-          helpText: """
-                    <p>Any information users need to know regarding Health and Safety when they are considering taking on samples.</p>
-                    """
-      ]
-    ,
-      label: 'Contacts'
-      title:  'Contacts'
-      views: [
-        new ParentStringTextboxView
-          model: @model
-          modelAttribute: 'archiveLocations'
-          label: 'Archive location'
-          rows: 5
-          helpText: """
-                    <p>Archive location</p>
-                    """
-
-        new ParentView
-          model: @model
-          ModelType: PointOfContact
-          modelAttribute: 'archiveContacts'
-          label: 'Archive contact(s)'
-          ObjectInputView: PointOfContactView
-          multiline: true
-          helpText: """
-                    <p>One or more points of contact for the sample archive.</p>
-                    """
-
-      ]
-    ,
-      label: 'Metadata'
-      title:  'Metadata'
-      views: [
         new ParentView
           model: @model
           ModelType: PointOfContact
           modelAttribute: 'metadataContacts'
-          label: 'Metadata contact(s)'
+          label: 'Metadata contacts'
           ObjectInputView: PointOfContactView
           multiline: true
           helpText: """
-                    <p>The organisation or person responsible for the authorship, maintenance and curation of the metadata resource.</p>
-                    <p>A contact must include the contact's email address, role and an organisation name and/or individual's name. Other elements are optional.</p>
+                    <p>One or more points of contact for the owners/authors of this metadata record if different to the Archive Contacts.</p>
                     """
 
         new InputView
@@ -262,8 +250,16 @@ define [
           label: 'Metadata date'
           readonly: true
           helpText: """
-                    <p>Date and time metadata last updated.</p>
-                    <p>For information only, not editable.</p>
+                    <p>Date and time the record was last updated. This is autogenerated and not editable.</p>
+                    """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'resourceLocators'
+          label: 'Additional Resources'
+          ObjectInputView: LinkView
+          helpText: """
+                    <p>A list of links to additional resources that may be of use to the user. These are in the form of name: url pairs.</p>
                     """
       ]
     ]

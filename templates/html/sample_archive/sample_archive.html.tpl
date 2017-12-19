@@ -66,6 +66,9 @@
           <@b.sectionHeading>Metadata</@b.sectionHeading>
           <@b.key "Metadata Date" "Date metadata last updated">${metadataDateTime}</@b.key>
         </#if>
+        <#if website?? && website?has_content>
+          <@b.key "Website" "">${website}</@b.key>
+        </#if>
       </@b.metadataContainer>
   </#escape></@skeleton.master>
 
