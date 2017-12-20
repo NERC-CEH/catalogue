@@ -4,7 +4,7 @@
     <dl>
     
 	  <#if boundingBoxes?has_content>
-        <dt>Study area</dt>
+        <dt>Study area${(boundingBoxes?size > 1)?then('s','')}</dt>
         <dd>
           <div id="studyarea-map">
             <#list boundingBoxes as extent>

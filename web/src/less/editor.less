@@ -64,8 +64,13 @@
         padding-top: @spacer;
       }
     }
-    .dataentry label {
-      font-size: 12px;
+    .dataentry {
+      label {
+        font-size: 12px;
+      }
+      &.child {
+        z-index: 0;
+      }
     }
   }
   .multiline .existing > .row {

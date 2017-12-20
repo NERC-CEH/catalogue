@@ -6,16 +6,17 @@
       <@b.metadataContainer "ceh-model">
         <div class="row"><@b.admin /></div>
         <#if title?? && title?has_content>
-          <@b.key "Title" "">${title}</@b.key>
-        </#if>
-        <#if type?? && type?has_content>
-          <@b.key "Type" "">${codes.lookup('metadata.resourceType', type)!''}</@b.key>
+          <@verySimpleRow><h1>${title}</h1></@verySimpleRow>
         </#if>
         <#if description?? && description?has_content>
-          <@b.key "Description" ""><@b.linebreaks description /></@b.key>
+          <@verySimpleRow><@b.linebreaks description /></@verySimpleRow>
         </#if>
         <#if archiveType?? && archiveType?has_content>
           ${archiveType}
+        </#if>
+        <#include "_extent.html.tpl">
+        <#if specimenTypes?? && specimenTypes?has_content>
+          <@b.key "Specimen Types" ""><@b.keywords specimenTypes/></@b.key>
         </#if>
         <#if lineage?? && lineage?has_content>
           <@b.key "Lineage" "">${lineage}</@b.key>
@@ -23,16 +24,12 @@
         <#if language?? && language?has_content>
           <@b.key "Language" "">${language}</@b.key>
         </#if>
-        <#if specimenTypes?? && specimenTypes?has_content>
-          <@b.key "Specimen Types" ""><@b.keywords specimenTypes/></@b.key>
-        </#if>
         <#if keywords?? && keywords?has_content>
           <@b.key "Keywords" ""><@b.keywords keywords/></@b.key>
         </#if>
         <#if topicCategories?? && topicCategories?has_content>
           <@b.key "Topic Categories" ""><@b.keywords topicCategories/></@b.key>
         </#if>
-        <#include "_extent.html.tpl">
         <#if availability?? && availability?has_content>
           <@b.key "Availability" "">${availability}</@b.key>
         </#if>
@@ -54,14 +51,21 @@
             </#list>
           </@b.key>
         </#if>
-        <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
-          <@b.key "Identifier" "">
-            <#list resourceIdentifiers as resourceIdentifier>
-              <@identifier resourceIdentifier /> 
-            </#list>
+        
+        <#if archiveContacts?? && archiveContacts?has_content>
+          <@b.key "Archive contacts" "">
+                <#list archiveContacts as contact>
+                  <#noescape>
+                    <div class="responsibleParty">      
+                      ${func.displayContact(contact, true)}
+                    </div>
+                  </#noescape>
+                </#list>
           </@b.key>
         </#if>
-        <#include "_pointsOfContact.html.tpl" />
+
+
+
         <#if metadataDate?? && metadataDate?has_content>
           <@b.sectionHeading>Metadata</@b.sectionHeading>
           <@b.key "Metadata Date" "Date metadata last updated">${metadataDateTime}</@b.key>
@@ -69,6 +73,18 @@
         <#if website?? && website?has_content>
           <@b.key "Website" "">${website}</@b.key>
         </#if>
+
+        <#if resourceLocators?? && resourceLocators?has_content>
+          <#--  ${resourceLocators.toString()}  -->
+          <#--  <@b.key "resourceLocators" "">  -->
+            <#list resourceLocators as resourseLocator>
+              <@resourceLocatorRow resourseLocator />
+            </#list>
+          <#--  </@b.key>  -->
+        </#if>
+
+
+
       </@b.metadataContainer>
   </#escape></@skeleton.master>
 
@@ -94,3 +110,89 @@ Identifiers
     </#if>
   </@b.repeatRow>
 </#macro>
+
+<#--
+Resource Locators
+-->
+<#macro resourceLocatorRow res>
+  <@b.repeatRow>
+    <#if res.href?? && res.href?has_content>
+      <@b.basicRow>
+        <@b.keyContent "${res.title}" "">${res.href}</@b.keyContent>
+      </@b.basicRow>
+    </#if>
+  </@b.repeatRow>
+
+</#macro>
+
+<#--
+Utils
+-->
+<#macro verySimpleRow auto_esc=false>
+  <@basicRow>
+    <@content>
+      <#nested>
+    </@content>
+  </@basicRow>
+</#macro>
+
+<#macro basicRow classes="">
+  <div class="row ${classes}">
+    <#nested>
+  </div>
+</#macro>
+
+<#macro content>
+  <div class="col-sm-12 value">
+    <#nested>
+  </div>
+</#macro>
+
+<#--  <#macro keywordlist keywords title>
+  <#list keywords>
+    <dl class="dl-horizontal">
+      <dt>${title}</dt>
+      <dd>
+        <#items as keyword>
+            <div>
+              <#if keyword.uri?? && keyword.uri?has_content>
+                <a href="${keyword.uri}">
+                  <#if keyword.value?? && keyword.value?has_content>
+                    ${keyword.value?cap_first}
+                  <#else>
+                      ${keyword.uri}
+                  </#if>
+                </a>
+              <#elseif keyword.value?? && keyword.value?has_content>
+                ${keyword.value?cap_first}
+              <#else>
+                <span class="text-muted">missing</span>
+              </#if>
+          </div>
+        </#items>
+      </dd>
+    </dl>
+  </#list>
+</#macro>  -->
+
+<#--  <#macro basickeyswordlist keywords>
+  <#list keywords>
+        <#items as keyword>
+            <div>
+              <#if keyword.uri?? && keyword.uri?has_content>
+                <a href="${keyword.uri}">
+                  <#if keyword.value?? && keyword.value?has_content>
+                    ${keyword.value?cap_first}
+                  <#else>
+                      ${keyword.uri}
+                  </#if>
+                </a>
+              <#elseif keyword.value?? && keyword.value?has_content>
+                ${keyword.value?cap_first}
+              <#else>
+                <span class="text-muted">missing</span>
+              </#if>
+          </div>
+        </#items>
+  </#list>
+</#macro>  -->

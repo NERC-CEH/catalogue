@@ -146,6 +146,4 @@ define [
         ]
     ]
     
-    console.log @sections
-    
     EditorView.prototype.initialize.apply @
