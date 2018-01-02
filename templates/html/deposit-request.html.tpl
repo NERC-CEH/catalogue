@@ -5,23 +5,23 @@
         <form id="deposit-request" class="deposit-request" method="post" action="deposit-request/form">
             <div class="form-group">
                 <label>*Dataset Title</label>
-                <input required type="text" class="form-control" name="title" id="datasetTitle" placeholder="Dataset Title">
+                <input required type="text" class="form-control" name="title" placeholder="Dataset Title">
             </div>
             <div class="form-group">
                 <label>*Depositor Name</label>
-                <input required type="text" class="form-control" name="depositorName" id="depositorName" value="${name}">
+                <input required type="text" class="form-control" name="depositorName" value="${name}">
             </div>
             <div class="form-group">
                 <label>*Depositor Email</label>
-                <input required type="email" class="form-control" name="depositorEmail" id="depositorEmail" value="${email}">
+                <input required type="email" class="form-control" name="depositorEmail" value="${email}">
             </div>
             <div class="form-group">
                 <label>Other Contact</label>
-                <textarea class="form-control" name="depositorOtherContact" id="depositorOtherContact" rows="3" placeholder="Other Contact"></textarea>
+                <textarea class="form-control" name="depositorOtherContact" rows="3" placeholder="Other Contact"></textarea>
             </div>
             <div class="form-group">
                 <label>Project Name</label>
-                <input type="text" class="form-control" name="projectName" id="projectName" placeholder="Project Name">
+                <input type="text" class="form-control" name="projectName" placeholder="Project Name">
             </div>
             <div class='planning-documents'>
                 <div class="form-group">
@@ -41,13 +41,13 @@
                     <label>*Nerc Funded</label>
                 </div>
                 <label class="radio-inline">
-                    <input type="radio" name="nercFunded" id="nercFundedNo" value="no" required> No
+                    <input type="radio" name="nercFunded" value="no" required> No
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="nercFunded" id="nercFundedYes" value="yes"> Yes
+                    <input type="radio" name="nercFunded" value="yes"> Yes
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="nercFunded" id="nercFundedPartly" value="partly"> Partly
+                    <input type="radio" name="nercFunded" value="partly"> Partly
                 </label>
             </div>
             <div class="form-group">
@@ -55,13 +55,13 @@
                     <label>*Public Funded</label>
                 </div>
                 <label class="radio-inline">
-                    <input type="radio" name="publicFunded" id="publicFundedNo" value="no" required> No
+                    <input type="radio" name="publicFunded" value="no" required> No
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="publicFunded" id="publicFundedYes" value="yes"> Yes
+                    <input type="radio" name="publicFunded" value="yes"> Yes
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="publicFunded" id="publicFundedPartly" value="partly"> Partly
+                    <input type="radio" name="publicFunded" value="partly"> Partly
                 </label>
             </div>
             <div class="form-group">
@@ -73,13 +73,13 @@
                     <div class="dataset" id="dataset0">
                         <div class="row">
                             <div class="col-md-4 dataset-value">
-                                <input type="text" placeholder="Name" class="form-control" name="datasetsOffered[0].name" required />
+                                <input type="text" placeholder="Name" class="form-control" name="datasetsOffered[0].name" required >
                             </div>
                             <div class="col-md-4 dataset-format">
-                                <input type="text" placeholder="Format" class="form-control" name="datasetsOffered[0].format" />
+                                <input type="text" placeholder="Format" class="form-control" name="datasetsOffered[0].format" >
                             </div>
                             <div class="col-md-4 dataset-value">
-                                <input type="text" placeholder="Estimated Size" class="form-control" name="datasetsOffered[0].size" />
+                                <input type="text" placeholder="Estimated Size" class="form-control" name="datasetsOffered[0].size" >
                             </div>
                         </div>
                         <textarea rows="3" placeholder="Description" class="form-control dataset-description" name="datasetsOffered[0].description"></textarea>
@@ -119,40 +119,40 @@
                 <label>*Unique Deposit</label>
                 <p class="form-comment">Are there copies of the data held in another data centre?</p>
                 <label class="radio-inline">
-                    <input type="radio" name="uniqueDeposit" id="uniqueDepositNo" value="false" required> No
+                    <input type="radio" name="uniqueDeposit" value="false" required> No
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="uniqueDeposit" id="uniqueDepositYes" value="true"> Yes
+                    <input type="radio" name="uniqueDeposit" value="true"> Yes
                 </label>
             </div>
             <div class="form-group">
                 <label>*Model Output</label>
                 <p class="form-comment">Are the data model output data that could be reproduced at minimal cost?</p>
                 <label class="radio-inline">
-                    <input type="radio" name="modelOutput" id="modelOutputNo" value="false" required> No
+                    <input type="radio" name="modelOutput" value="false" required> No
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="modelOutput" id="modelOutputYes" value="true"> Yes
+                    <input type="radio" name="modelOutput" value="true"> Yes
                 </label>
             </div>
             <div class="form-group">
                 <label>*Published Paper</label>
                 <p class="form-comment">Have the data been used in a peer-reviewed, published journal paper?</p>
                 <label class="radio-inline">
-                    <input type="radio" name="publishedPaper" id="publishedPaperNo" value="false" required> No
+                    <input type="radio" name="publishedPaper" value="false" required> No
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="publishedPaper" id="publishedPaperYes" value="true"> Yes
+                    <input type="radio" name="publishedPaper" value="true"> Yes
                 </label>
             </div>
             <div class="form-group">
                 <label>*Reusable</label>
                 <p class="form-comment">Can the data be sufficiently described to make it re-usable?</p>
                 <label class="radio-inline">
-                    <input type="radio" name="reusable" id="reusableNo" value="false" required> No
+                    <input type="radio" name="reusable" value="false" required> No
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="reusable" id="reusableYes" value="true"> Yes
+                    <input type="radio" name="reusable" value="true"> Yes
                 </label>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
