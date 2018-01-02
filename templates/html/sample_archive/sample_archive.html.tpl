@@ -63,27 +63,34 @@
                 </#list>
           </@b.key>
         </#if>
-
-
-
-        <#if metadataDate?? && metadataDate?has_content>
-          <@b.sectionHeading>Metadata</@b.sectionHeading>
-          <@b.key "Metadata Date" "Date metadata last updated">${metadataDateTime}</@b.key>
-        </#if>
         <#if website?? && website?has_content>
           <@b.key "Website" "">${website}</@b.key>
         </#if>
 
         <#if resourceLocators?? && resourceLocators?has_content>
-          <#--  ${resourceLocators.toString()}  -->
-          <#--  <@b.key "resourceLocators" "">  -->
+          <@b.sectionHeading>Additional resources</@b.sectionHeading>
             <#list resourceLocators as resourseLocator>
               <@resourceLocatorRow resourseLocator />
             </#list>
-          <#--  </@b.key>  -->
         </#if>
 
-
+        <#if metadataDate?? && metadataDate?has_content>
+          <@b.sectionHeading>About this metadata</@b.sectionHeading>
+          <@b.key "Metadata Date" "Date metadata last updated">${metadataDateTime}</@b.key>
+          <#if metadataContacts?? && metadataContacts?has_content>
+            <@b.key "Metadata contacts" "">
+                  <#list metadataContacts as contact>
+                    <#noescape>
+                      <div class="responsibleParty">      
+                        ${func.displayContact(contact, true)}
+                      </div>
+                    </#noescape>
+                  </#list>
+            </@b.key>
+          </#if>
+          <@b.key "Identifier" "">${id}</@b.key>
+          <@b.key "URL" ""><a href="https://catalogue.ceh.ac.uk/documents/${id}">https://catalogue.ceh.ac.uk/documents/${id}</a></@b.key>
+        </#if>
 
       </@b.metadataContainer>
   </#escape></@skeleton.master>
@@ -147,52 +154,3 @@ Utils
     <#nested>
   </div>
 </#macro>
-
-<#--  <#macro keywordlist keywords title>
-  <#list keywords>
-    <dl class="dl-horizontal">
-      <dt>${title}</dt>
-      <dd>
-        <#items as keyword>
-            <div>
-              <#if keyword.uri?? && keyword.uri?has_content>
-                <a href="${keyword.uri}">
-                  <#if keyword.value?? && keyword.value?has_content>
-                    ${keyword.value?cap_first}
-                  <#else>
-                      ${keyword.uri}
-                  </#if>
-                </a>
-              <#elseif keyword.value?? && keyword.value?has_content>
-                ${keyword.value?cap_first}
-              <#else>
-                <span class="text-muted">missing</span>
-              </#if>
-          </div>
-        </#items>
-      </dd>
-    </dl>
-  </#list>
-</#macro>  -->
-
-<#--  <#macro basickeyswordlist keywords>
-  <#list keywords>
-        <#items as keyword>
-            <div>
-              <#if keyword.uri?? && keyword.uri?has_content>
-                <a href="${keyword.uri}">
-                  <#if keyword.value?? && keyword.value?has_content>
-                    ${keyword.value?cap_first}
-                  <#else>
-                      ${keyword.uri}
-                  </#if>
-                </a>
-              <#elseif keyword.value?? && keyword.value?has_content>
-                ${keyword.value?cap_first}
-              <#else>
-                <span class="text-muted">missing</span>
-              </#if>
-          </div>
-        </#items>
-  </#list>
-</#macro>  -->
