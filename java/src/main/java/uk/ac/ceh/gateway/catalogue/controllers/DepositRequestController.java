@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import lombok.val;
-import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
@@ -21,7 +20,6 @@ import uk.ac.ceh.gateway.catalogue.services.DepositRequestService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
-@Slf4j
 @Controller
 public class DepositRequestController {
 
@@ -48,8 +46,6 @@ public class DepositRequestController {
     @RequestMapping(value = "deposit-request/form", method = RequestMethod.POST)
     @ResponseBody
     public RedirectView documentsUploadForm(@ActiveUser CatalogueUser user, @ModelAttribute DepositRequestDocument depositRequest) {
-        log.error("depositRequest {}", depositRequest);
-
         depositRequestService.save(user, depositRequest);
 
         val builder = new JiraService.IssueBuilder("EIDCHELP", "Job", depositRequest.getTitle());
@@ -59,7 +55,8 @@ public class DepositRequestController {
             .withLabel(depositRequest.getId())
             .withField("customfield_11950", depositRequest.getDepositorName())
             .withField("customfield_11951", depositRequest.getDepositorEmail());
-        jiraService.create(builder);
+        val issue = jiraService.create(builder);
+        jiraService.comment(issue.getKey(), String.format("this issue was created by %s", user.getEmail()));
 
         return new RedirectView(String.format("/deposit-request/%s", depositRequest.getId()));
     }

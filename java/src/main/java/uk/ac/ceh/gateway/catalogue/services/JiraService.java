@@ -11,12 +11,10 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import lombok.AllArgsConstructor;
 import lombok.val;
-import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueCreate;
 import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
 
-@Slf4j
 @AllArgsConstructor
 public class JiraService {
     private final WebResource resource;
@@ -99,7 +97,6 @@ public class JiraService {
     public JiraIssueCreate create (IssueBuilder builder) {
         String path = "issue";
         val input = builder.build();
-        log.error("input {}", input);
         return resource
             .path(path)
             .accept(MediaType.APPLICATION_JSON_TYPE)
