@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
@@ -21,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.services.DepositRequestService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
+@Slf4j
 @Controller
 public class DepositRequestController {
 
@@ -35,6 +37,20 @@ public class DepositRequestController {
         this.jiraService = jiraService;
     }
 
+    @RequestMapping(value = "deposit-requests", method = RequestMethod.GET)
+    @ResponseBody
+    public ModelAndView depositRequests(@ActiveUser CatalogueUser user) {
+        val depositRequests = depositRequestService.getForUser(user);
+        Map<String, Object> model = new HashMap<>();
+        model.put("depositRequests", depositRequests);
+
+        val isPublisher = permissionService.userInGroup("role_eidc_publisher");
+        if (isPublisher)
+            model.put("allDepositRequests", depositRequestService.getAll());
+        
+        return new ModelAndView("/html/deposit-requests.html.tpl", model);
+    }
+
     @RequestMapping(value = "deposit-request", method = RequestMethod.GET)
     @ResponseBody
     public ModelAndView documentsUpload(@ActiveUser CatalogueUser user) {
@@ -46,16 +62,14 @@ public class DepositRequestController {
 
     @RequestMapping(value = "deposit-request/form", method = RequestMethod.POST)
     @ResponseBody
-    public RedirectView documentsUploadForm(@ActiveUser CatalogueUser user, @ModelAttribute DepositRequestDocument depositRequest) {
+    public RedirectView documentsUploadForm(@ActiveUser CatalogueUser user,
+            @ModelAttribute DepositRequestDocument depositRequest) {
         depositRequestService.save(user, depositRequest);
 
         val builder = new JiraIssueBuilder("EIDCHELP", "Job", depositRequest.getTitle());
-        builder
-            .withDescription(depositRequest.getJiraDescription())
-            .withCompoent("Deposit Request")
-            .withLabel(depositRequest.getId())
-            .withField("customfield_11950", depositRequest.getDepositorName())
-            .withField("customfield_11951", depositRequest.getDepositorEmail());
+        builder.withDescription(depositRequest.getJiraDescription()).withCompoent("Deposit Request")
+                .withLabel(depositRequest.getId()).withField("customfield_11950", depositRequest.getDepositorName())
+                .withField("customfield_11951", depositRequest.getDepositorEmail());
         val issue = jiraService.create(builder);
         jiraService.comment(issue.getKey(), String.format("this issue was created by %s", user.getEmail()));
 
@@ -65,9 +79,9 @@ public class DepositRequestController {
     @PreAuthorize("@permission.userCanView(#guid)")
     @RequestMapping(value = "deposit-request/{guid}", method = RequestMethod.GET)
     @ResponseBody
-    public ModelAndView documentsUploadView(@PathVariable("guid") String guid) {    
+    public ModelAndView documentsUploadView(@PathVariable("guid") String guid) {
         val depositRequest = depositRequestService.get(guid);
-    
+
         Map<String, Object> model = new HashMap<>();
         model.put("depositRequest", depositRequest);
 
@@ -78,14 +92,12 @@ public class DepositRequestController {
 
         boolean userCanView = permissionService.userCanView(guid);
         model.put("userCanView", userCanView);
-        
+
         return new ModelAndView("/html/deposit-request-filled.html.tpl", model);
     }
 
-    private static int countLines(String str){
+    private static int countLines(String str) {
         return str.split("\r\n|\r|\n").length;
-     }
+    }
 
 }
-
-

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import lombok.NonNull;
+import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -138,6 +139,16 @@ public class PermissionService {
     
     public boolean userCanDatacite() {
         return userCan((String name) -> name.equalsIgnoreCase(DataciteController.DATACITE_ROLE));
+    }
+
+    public boolean userInGroup (String name) {
+        val groups = getGroupsForUser(getCurrentUser());
+        boolean can = false;
+        for (val group : groups)
+            if (group.getName().equalsIgnoreCase(name))
+                can = true;
+
+        return can;
     }
     
     private List<Group> getGroupsForUser(CatalogueUser user) {
