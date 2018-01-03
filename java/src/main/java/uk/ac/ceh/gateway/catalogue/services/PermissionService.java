@@ -113,6 +113,10 @@ public class PermissionService {
         }
     }
 
+    public boolean userCanViewOrIsInGroup(@NonNull String file, @NonNull String group) {
+        return userInGroup(group) || userCanView(file);
+    }
+
     public boolean userCanView(@NonNull String file) {
         try {
             CatalogueUser user = getCurrentUser();
@@ -141,14 +145,8 @@ public class PermissionService {
         return userCan((String name) -> name.equalsIgnoreCase(DataciteController.DATACITE_ROLE));
     }
 
-    public boolean userInGroup (String name) {
-        val groups = getGroupsForUser(getCurrentUser());
-        boolean can = false;
-        for (val group : groups)
-            if (group.getName().equalsIgnoreCase(name))
-                can = true;
-
-        return can;
+    public boolean userInGroup (String group) {
+        return userCan((String name) -> name.equalsIgnoreCase(group));
     }
     
     private List<Group> getGroupsForUser(CatalogueUser user) {
