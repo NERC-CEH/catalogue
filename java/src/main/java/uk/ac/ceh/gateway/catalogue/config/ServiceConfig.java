@@ -319,7 +319,7 @@ public class ServiceConfig {
 
     @Bean
     public DepositRequestService depositRequestService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new DepositRequestService(documentRepository());
+        return new DepositRequestService(documentRepository(), solrServer);
     }
 
     @Bean
