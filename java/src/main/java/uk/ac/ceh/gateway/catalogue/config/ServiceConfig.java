@@ -619,6 +619,7 @@ public class ServiceConfig {
             .register(BaseMonitoringType.class, baseMonitoringType)
             .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
             .register(MonitoringFacility.class, new SolrIndexOsdpMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
+            .register(SampleArchive.class, new SolrIndexSaMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
             .register(MetadataDocument.class, metadataDocument);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry(mappings);
