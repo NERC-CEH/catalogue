@@ -70,19 +70,19 @@
                     <a class="btn btn-success dataset-add" id="dataset-add">Add Dataset</a>
                 </div>
                 <div class="datasets-offered">
-                    <div class="dataset" id="dataset0">
+                    <div class="dataset">
                         <div class="row">
                             <div class="col-md-4 dataset-value">
                                 <input type="text" placeholder="Name" class="form-control" name="datasetsOffered[0].name" required >
                             </div>
                             <div class="col-md-4 dataset-format">
-                                <input type="text" placeholder="Format" class="form-control" name="datasetsOffered[0].format" >
+                                <input type="text" placeholder="Format" class="form-control" name="datasetsOffered[0].type" >
                             </div>
                             <div class="col-md-4 dataset-value">
                                 <input type="text" placeholder="Estimated Size" class="form-control" name="datasetsOffered[0].size" >
                             </div>
                         </div>
-                        <textarea rows="3" placeholder="Description" class="form-control dataset-description" name="datasetsOffered[0].description"></textarea>
+                        <textarea rows="3" placeholder="Description" class="form-control dataset-description" name="datasetsOffered[0].value"></textarea>
                         <a class="btn btn-danger dataset-remove">Remove Dataset</a>
                     </div>
                 </div>

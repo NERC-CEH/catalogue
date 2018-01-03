@@ -79,22 +79,6 @@ public class DepositRequestDocument extends AbstractMetadataDocument {
         ;
     }
 
-    @Data
-    public static class DatasetOffered {
-        private String name;
-        private String format;
-        private String size;
-        private String description;
-        private String document;
-        public int getDescriptionSize() {
-            return description == null ? 1 : description.split("\r\n|\r|\n").length;
-        }
-
-        public String toString() {
-            return String.format("*name*: _%s_\n*format*: _%s_\n*size*: _%s_\n*descrption*: _%s_", name, format, size, description);
-        }
-    }
-
     public enum Funded {
         no, yes, partly
     }

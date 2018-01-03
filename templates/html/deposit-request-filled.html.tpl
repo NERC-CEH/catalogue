@@ -46,13 +46,13 @@
                                 <input type="text" class="form-control" disabled value="${dataset.name}" />
                             </div>
                             <div class="col-md-4 dataset-format">
-                                <input type="text" class="form-control" disabled value="${dataset.format!''}" />
+                                <input type="text" class="form-control" disabled value="${dataset.type!''}" />
                             </div>
                             <div class="col-md-4 dataset-value">
                                 <input type="text" class="form-control" disabled value="${dataset.size!''}" />
                             </div>
                         </div>
-                        <textarea class="form-control dataset-description" disabled rows="${dataset.getDescriptionSize()}">${dataset.description!""}</textarea>
+                        <textarea class="form-control dataset-description" disabled rows="${dataset.getDescriptionSize()}">${dataset.value!""}</textarea>
                         <#if dataset.document??>
                             <a class='btn btn-link' href="documents/${dataset.document}">
                                 <i class="fa fa-files-o"></i>
