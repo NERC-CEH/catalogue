@@ -16,6 +16,7 @@ import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
+import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
 import uk.ac.ceh.gateway.catalogue.services.DepositRequestService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
@@ -48,7 +49,7 @@ public class DepositRequestController {
     public RedirectView documentsUploadForm(@ActiveUser CatalogueUser user, @ModelAttribute DepositRequestDocument depositRequest) {
         depositRequestService.save(user, depositRequest);
 
-        val builder = new JiraService.IssueBuilder("EIDCHELP", "Job", depositRequest.getTitle());
+        val builder = new JiraIssueBuilder("EIDCHELP", "Job", depositRequest.getTitle());
         builder
             .withDescription(depositRequest.getJiraDescription())
             .withCompoent("Deposit Request")
