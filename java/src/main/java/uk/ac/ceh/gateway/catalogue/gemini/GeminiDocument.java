@@ -41,7 +41,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 })
 public class GeminiDocument extends AbstractMetadataDocument {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
-    private String otherCitationDetails, browseGraphicUrl, resourceStatus, lineage,
+    private String otherCitationDetails, browseGraphicUrl, resourceStatus, lineage, erratum,
         metadataStandardName, metadataStandardVersion, parentIdentifier, revisionOfIdentifier;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
       securityConstraints;      

@@ -18,10 +18,7 @@
    <div class="container">
     <#include "gemini/_admin.html.tpl">
 	  <div id="section-Top">
-		  <@blocks.title title=title!"" type=(resourceType.value)!"" />
-		  <#include "gemini/_licence.html.tpl">
-		  <#include "gemini/_notCurrent.html.tpl">
-		  <#include "gemini/_authorsTop.html.tpl">
+      <#include "gemini/_title.html.tpl">
 	  </div>
       <@blocks.description description!"" />
       <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>

@@ -79,7 +79,10 @@
 			</gmd:CI_Citation>
 		</gmd:citation>
 		<gmd:abstract>
-			<gco:CharacterString>${description!''}</gco:CharacterString>
+			<gco:CharacterString>
+				<#if erratum??>${erratum}. </#if>
+				${description!''}
+			</gco:CharacterString>
 		</gmd:abstract>
     <#if resourceStatus??>
       <gmd:status>
