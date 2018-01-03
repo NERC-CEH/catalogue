@@ -1,21 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.ArrayList;
 import javax.ws.rs.core.MediaType;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
+import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
+import uk.ac.ceh.gateway.catalogue.model.JiraIssueCreate;
 import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
+
+import static org.mockito.Mockito.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JiraServiceTest {
@@ -28,6 +32,9 @@ public class JiraServiceTest {
 
     @Mock
     private ClientResponse response;
+
+    @Mock
+    private JiraIssueBuilder jiraIssueBuilder;
 
     @InjectMocks
     private JiraService jiraService;
@@ -52,6 +59,22 @@ public class JiraServiceTest {
         doReturn(response).when(builder).get(ClientResponse.class);
 
         doReturn(jiraSearchResults).when(response).getEntity(JiraSearchResults.class);
+
+        doReturn("jira issue").when(jiraIssueBuilder).build();
+    }
+
+    @Test
+    public void createingAnIssue() {
+        val created = new JiraIssueCreate();
+        created.setId("id");
+        doReturn(created).when(builder).post(eq(JiraIssueCreate.class), anyString());
+
+        val issue = jiraService.create(jiraIssueBuilder);
+        verify(resource).path(eq("issue"));
+        verify(resource).accept(eq(MediaType.APPLICATION_JSON_TYPE));
+        verify(builder).type(eq(MediaType.APPLICATION_JSON_TYPE));
+        verify(builder).post(eq(JiraIssueCreate.class), eq("jira issue"));
+        assertThat(issue, equalTo(created));
     }
 
     @Test
@@ -84,6 +107,6 @@ public class JiraServiceTest {
         verify(builder).get(eq(ClientResponse.class));
         verify(response).getEntity(eq(JiraSearchResults.class));
 
-        org.hamcrest.MatcherAssert.assertThat(actual, CoreMatchers.equalTo(jiraSearchResults.getIssues()));
+        assertThat(actual, equalTo(jiraSearchResults.getIssues()));
     }
 }
