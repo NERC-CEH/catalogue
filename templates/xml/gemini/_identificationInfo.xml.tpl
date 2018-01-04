@@ -80,6 +80,7 @@
 		</gmd:citation>
 		<gmd:abstract>
 			<gco:CharacterString>
+				<#if resourceStatus?has_content && resourceStatus == "historicalArchive">THIS ${resourceType.value?upper_case} HAS BEEN WITHDRAWN. </#if>
 				<#if erratum??>${erratum}. </#if>
 				${description!''}
 			</gco:CharacterString>
