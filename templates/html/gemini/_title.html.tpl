@@ -57,6 +57,6 @@
       </#if>
     </div>
   <#else>
-  <div class="jimjimminy"/>
+  <div class="titleSpacer"/>
   </#if>
 </div>
