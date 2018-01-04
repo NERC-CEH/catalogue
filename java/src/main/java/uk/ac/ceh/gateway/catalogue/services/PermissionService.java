@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import lombok.NonNull;
-import lombok.val;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,14 +21,13 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 
-@Slf4j
 public class PermissionService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final GroupStore<CatalogueUser> groupStore;
 
     @Autowired
-    public PermissionService(DataRepository<CatalogueUser> repo, DocumentInfoMapper documentInfoMapper, GroupStore<CatalogueUser> groupStore) {
+    public PermissionService(DataRepository<CatalogueUser> repo, DocumentInfoMapper<MetadataInfo> documentInfoMapper, GroupStore<CatalogueUser> groupStore) {
         this.repo = repo;
         this.documentInfoMapper = documentInfoMapper;
         this.groupStore = groupStore;
