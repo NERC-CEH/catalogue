@@ -65,9 +65,12 @@ public class DepositRequestController {
         depositRequestService.save(user, depositRequest);
 
         val builder = new JiraIssueBuilder("EIDCHELP", "Job", depositRequest.getTitle());
-        builder.withDescription(depositRequest.getJiraDescription()).withCompoent("Deposit Request")
-                .withLabel(depositRequest.getId()).withField("customfield_11950", depositRequest.getDepositorName())
-                .withField("customfield_11951", depositRequest.getDepositorEmail());
+        builder
+            .withDescription(depositRequest.getJiraDescription())
+            .withCompoent("Deposit Request")
+            .withLabel(depositRequest.getId())
+            .withField("customfield_11950", depositRequest.getDepositorName())
+            .withField("customfield_11951", depositRequest.getDepositorEmail());
         val issue = jiraService.create(builder);
         jiraService.comment(issue.getKey(), String.format("this issue was created by %s", user.getEmail()));
 
