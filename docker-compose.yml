@@ -24,6 +24,7 @@ services:
     build: "mapserver"
     volumes:
       - mapfiles:/mapserver/maps
+      - ./fixtures/mapserver-data:/mapserver/data
 
 volumes:
   mapfiles:

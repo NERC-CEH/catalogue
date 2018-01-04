@@ -96,5 +96,4 @@ dependencies {
     integrationTestImplementation 'org.testcontainers:selenium:1.4.3'
     integrationTestImplementation 'org.seleniumhq.selenium:selenium-remote-driver:3.8.1'
     integrationTestImplementation 'com.jayway.jsonpath:json-path:2.3.0'
-    integrationTestImplementation 'net.sourceforge.htmlunit:htmlunit:2.28'
 }

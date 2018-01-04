@@ -27,19 +27,6 @@ task prepFixtures {
   }
 }
 
-if (System.getenv("SELENIUM_TEST") ?: false) {
-  dockerCompose {
-    useComposeFiles = ['docker-compose.yml', 'docker-compose.selenium.yml']
-    startedServices = ['chrome', 'firefox']
-  }
-}
-
-// Run as:
-// SELENIUM_TEST=true ./gradlew selenium
-task selenium(type: Exec, dependsOn: prepFixtures) {
-  commandLine 'docker-compose', '--file=docker-compose.yml', '--file=docker-compose.selenium.yml', 'run', 'ruby_test'
-}
-
 task unzipWeb(type: Exec, dependsOn: ':java:build') {
   commandLine 'docker-compose', 'exec', '-T', 'web', 'unzip', '-od', '/usr/local/tomcat/webapps/ROOT', '/opt/ceh-catalogue/libs/ROOT.war'
 }
@@ -49,5 +36,3 @@ task web(type: Exec, dependsOn: unzipWeb) {
   description 'Builds the java files, unzips ROOT.war then restarts service'
   commandLine 'docker-compose', 'restart', 'web'
 }
-
-dockerCompose.isRequiredBy(selenium)
