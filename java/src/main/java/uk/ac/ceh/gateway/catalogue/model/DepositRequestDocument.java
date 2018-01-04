@@ -72,7 +72,7 @@ public class DepositRequestDocument extends AbstractMetadataDocument {
             getJiraRow("Datasets Offered", getDatasetsOffered().stream().map(x -> x.toString()).collect(Collectors.joining("\n---\n"))) +
             getJiraRow("Related Datasets", getRelatedDatasets().stream().map(x -> x.toString()).collect(Collectors.joining("\n"))) +
             getJiraRow("Science Domain", getScienceDomain()) +
-            getJiraRow("Unique Depsoit", uniqueDeposit ? "yes" : "no") +
+            getJiraRow("Unique Deposit", uniqueDeposit ? "yes" : "no") +
             getJiraRow("Model Ouput", modelOutput ? "yes" : "no") +
             getJiraRow("Published Paper", publishedPaper ? "yes" : "no") +
             getJiraRow("Reusable", reusable ? "yes" : "no")

@@ -4,8 +4,8 @@
         <h1>Deposit Requests</h1>
         <a href="/deposit-request" class="btn btn-success">Create Deposit Request</a>
         <div class="context"> 
-            <h1 class="title">Your Depsoit Requests</h1> 
-            <h2><span>${depositRequests?size}</span> Depsoit Requests</h2> 
+            <h1 class="title">Your Deposit Requests</h1> 
+            <h2><span>${depositRequests?size}</span> Deposit Requests</h2> 
             <div class="list-group">
             <#list depositRequests as depositRequest>
                 <a href="/deposit-request/${depositRequest.id}" class="list-group-item">
@@ -15,8 +15,8 @@
 
             
             <#if allDepositRequests??>
-            <h1 class="title">All Depsoit Requests</h1> 
-            <h2><span>${allDepositRequests?size}</span> Depsoit Requests</h2> 
+            <h1 class="title">All Deposit Requests</h1> 
+            <h2><span>${allDepositRequests?size}</span> Deposit Requests</h2> 
             <div class="list-group">
                 <#list allDepositRequests as depositRequest>
                     <a href="/deposit-request/${depositRequest.id}" class="list-group-item">
