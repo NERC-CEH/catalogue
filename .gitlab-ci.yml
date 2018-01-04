@@ -3,9 +3,13 @@ variables:
   CONTAINER_SOLR_IMAGE:        registry.gitlab.ceh.ac.uk/eip/catalogue:solr-$CI_BUILD_REF_NAME
   CONTAINER_MAPSERVER_IMAGE:   registry.gitlab.ceh.ac.uk/eip/catalogue:mapserver-$CI_BUILD_REF_NAME
   DOCKER_DAEMON_ARGS:          -g /cache/docker
+  DOCKER_DRIVER: overlay2
   DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
   NODE_KEY: catalogue_version
   NODE_VALUE: $CI_BUILD_REF_NAME
+
+services:
+  - docker:dind
 
 stages:
   - build
@@ -20,14 +24,20 @@ mirror:
 
 java:
   stage: build
-  image: openjdk:8
+  image: docker:latest
   before_script:
     - echo jira.username=$JIRA_USERNAME > secrets.env
     - echo jira.password=$JIRA_PASSWORD >> secrets.env
     - echo plone.username=$PLONE_USERNAME >> secrets.env
     - echo plone.password=$PLONE_PASSWORD >> secrets.env
   script:
-    - ./gradlew --build-cache :java:clean :java:build :web:grunt_default
+    - >
+      docker run -t --rm
+      -v /var/run/docker.sock:/var/run/docker.sock
+      -v "$(pwd)":"$(pwd)"
+      -w "$(pwd)"
+      -u 0:0
+      gradle:jdk8 ./gradlew :java:clean :java:build :web:grunt_default
   artifacts:
     when: always
     paths:
