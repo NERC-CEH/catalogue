@@ -27,7 +27,7 @@ public class PermissionService {
     private final GroupStore<CatalogueUser> groupStore;
 
     @Autowired
-    public PermissionService(DataRepository<CatalogueUser> repo, DocumentInfoMapper<MetadataInfo> documentInfoMapper, GroupStore<CatalogueUser> groupStore) {
+    public PermissionService(DataRepository<CatalogueUser> repo, DocumentInfoMapper documentInfoMapper, GroupStore<CatalogueUser> groupStore) {
         this.repo = repo;
         this.documentInfoMapper = documentInfoMapper;
         this.groupStore = groupStore;
