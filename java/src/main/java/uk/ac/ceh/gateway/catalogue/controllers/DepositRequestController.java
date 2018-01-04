@@ -35,6 +35,20 @@ public class DepositRequestController {
         this.jiraService = jiraService;
     }
 
+    @RequestMapping(value = "deposit-requests", method = RequestMethod.GET)
+    @ResponseBody
+    public ModelAndView depositRequests(@ActiveUser CatalogueUser user) {
+        val depositRequests = depositRequestService.getForUser(user);
+        Map<String, Object> model = new HashMap<>();
+        model.put("depositRequests", depositRequests);
+
+        val isPublisher = permissionService.userInGroup("role_eidc_publisher");
+        if (isPublisher)
+            model.put("allDepositRequests", depositRequestService.getAll());
+        
+        return new ModelAndView("/html/deposit-requests.html.tpl", model);
+    }
+
     @RequestMapping(value = "deposit-request", method = RequestMethod.GET)
     @ResponseBody
     public ModelAndView documentsUpload(@ActiveUser CatalogueUser user) {
@@ -46,7 +60,8 @@ public class DepositRequestController {
 
     @RequestMapping(value = "deposit-request/form", method = RequestMethod.POST)
     @ResponseBody
-    public RedirectView documentsUploadForm(@ActiveUser CatalogueUser user, @ModelAttribute DepositRequestDocument depositRequest) {
+    public RedirectView documentsUploadForm(@ActiveUser CatalogueUser user,
+            @ModelAttribute DepositRequestDocument depositRequest) {
         depositRequestService.save(user, depositRequest);
 
         val builder = new JiraIssueBuilder("EIDCHELP", "Job", depositRequest.getTitle());
@@ -62,12 +77,12 @@ public class DepositRequestController {
         return new RedirectView(String.format("/deposit-request/%s", depositRequest.getId()));
     }
 
-    @PreAuthorize("@permission.userCanView(#guid)")
+    @PreAuthorize("@permission.userCanViewOrIsInGroup(#guid, 'role_eidc_publisher')")
     @RequestMapping(value = "deposit-request/{guid}", method = RequestMethod.GET)
     @ResponseBody
-    public ModelAndView documentsUploadView(@PathVariable("guid") String guid) {    
+    public ModelAndView documentsUploadView(@PathVariable("guid") String guid) {
         val depositRequest = depositRequestService.get(guid);
-    
+
         Map<String, Object> model = new HashMap<>();
         model.put("depositRequest", depositRequest);
 
@@ -78,14 +93,12 @@ public class DepositRequestController {
 
         boolean userCanView = permissionService.userCanView(guid);
         model.put("userCanView", userCanView);
-        
+
         return new ModelAndView("/html/deposit-request-filled.html.tpl", model);
     }
 
-    private static int countLines(String str){
+    private static int countLines(String str) {
         return str.split("\r\n|\r|\n").length;
-     }
+    }
 
 }
-
-

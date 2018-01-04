@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +21,6 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 
-@Slf4j
 public class PermissionService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
@@ -112,6 +110,10 @@ public class PermissionService {
         }
     }
 
+    public boolean userCanViewOrIsInGroup(@NonNull String file, @NonNull String group) {
+        return userInGroup(group) || userCanView(file);
+    }
+
     public boolean userCanView(@NonNull String file) {
         try {
             CatalogueUser user = getCurrentUser();
@@ -138,6 +140,10 @@ public class PermissionService {
     
     public boolean userCanDatacite() {
         return userCan((String name) -> name.equalsIgnoreCase(DataciteController.DATACITE_ROLE));
+    }
+
+    public boolean userInGroup (String group) {
+        return userCan((String name) -> name.equalsIgnoreCase(group));
     }
     
     private List<Group> getGroupsForUser(CatalogueUser user) {
