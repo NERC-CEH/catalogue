@@ -196,7 +196,7 @@ public class DevelopmentUserStoreConfig {
         toReturn.createGroup(INMS_PUBLISHER,   "INMS Publisher Role");
         toReturn.createGroup(OSDP_EDITOR,      "OSDP Editor Role");
         toReturn.createGroup(OSDP_PUBLISHER,   "OSDP Publisher Role");
-        toReturn.createGroup(SA_EDITOR,        "SA Publisher Role");
+        toReturn.createGroup(SA_EDITOR,        "SA Editor Role");
         toReturn.createGroup(SA_PUBLISHER,     "SA Publisher Role");
         toReturn.createGroup(MAINTENANCE_ROLE, "System Admin Role");
         toReturn.createGroup(DATACITE_ROLE,    "Datacite Role");
