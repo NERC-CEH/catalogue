@@ -25,6 +25,7 @@ public class SolrIndex {
     private @Field List<String> altTitle;
     private @Field String description;
     private @Field String lineage;
+    private @Field String resourceStatus;
     private @Field List<String> organisation;
     private @Field List<String> individual;
     private @Field List<String> onlineResourceName;
