@@ -37,7 +37,7 @@ java:
       -v "$(pwd)":"$(pwd)"
       -w "$(pwd)"
       -u 0:0
-      gradle:jdk8 ./gradlew :java:clean :java:build :web:grunt_default
+      gradle:jdk8 ./gradlew :java:clean :java:build :web:grunt_default -x integrationTest
   artifacts:
     when: always
     paths:
