@@ -62,6 +62,11 @@
     <#local displayAddress = displayAddress + '</div>'>
   </#if>
 
+  <#local nameIdentifier = "">
+  <#if contact.nameIdentifier?has_content>
+    <#local nameIdentifier = contact.nameIdentifier>
+  </#if>
+
   <#if contact.organisationName?has_content>
     <#if contact.organisationName?matches("unaffiliated(|.+)", "i")>
       <#assign orgName = "">
@@ -72,13 +77,16 @@
     <#if contact.email?has_content>
       <#if contact.individualName?has_content>
         <#local lcontact = lcontact + "<div class='individualName' title='"+ concatAddress + "'><a href='mailto:" + contact.email + "&amp;subject=RE: " + title + "'>" + contact.individualName + "</a></div>">
+        <#local lcontact = lcontact + "<div class='nameIdentifier'>" + nameIdentifier + "</div>">
         <#local lcontact = lcontact + "<div class='organisationName'>" + orgName  + "</div>">
       <#else>
         <#local lcontact = lcontact + "<div class='organisationName' title='"+ concatAddress + "'><a href='mailto:" + contact.email + "&amp;subject=RE: " + title + "'>" + orgName + "</a></div>">
+        <#local lcontact = lcontact + "<div class='nameIdentifier'>" + nameIdentifier + "</div>">
       </#if>
     <#else>
       <#if contact.individualName?has_content>
         <#local lcontact = lcontact + "<div class='individualName' title='"+ concatAddress + "'>" + contact.individualName + "</div>">
+        <#local lcontact = lcontact + "<div class='nameIdentifier'>" + nameIdentifier + "</div>">
       </#if>
       <#local lcontact = lcontact + "<div class='organisationName' title='"+ concatAddress + "'>" + orgName + "</div>">
     </#if>

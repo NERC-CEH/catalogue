@@ -51,6 +51,7 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
+import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
@@ -181,8 +182,21 @@ public class ServiceConfig {
             .type(OSDP_SAMPLE_SHORT)
             .build();
 
+        DocumentType sampleArchive = DocumentType.builder()
+            .title("Sample Archive")
+            .type(SAMPLE_ARCHIVE_SHORT)
+            .build();
+
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            Catalogue.builder()
+                .id("sa")
+                .title("Sample Archive")
+                .url("http://www.ceh.ac.uk")
+                .documentType(sampleArchive)
+                .fileUpload(false)
+                .build(),
             
             Catalogue.builder()
                 .id("osdp")
@@ -408,6 +422,9 @@ public class ServiceConfig {
         converters.add(new Object2TemplatedMessageConverter<>(MonitoringProgramme.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(Publication.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration()));
+
+        //Sample Archive
+        converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration()));
         
         // Gemini Message Converters
         converters.add(new Object2TemplatedMessageConverter<>(GeminiDocument.class,       freemarkerConfiguration()));
@@ -517,7 +534,8 @@ public class ServiceConfig {
                 .register(OSDP_MONITORING_FACILITY_SHORT, MonitoringFacility.class)
                 .register(OSDP_MONITORING_PROGRAMME_SHORT, MonitoringProgramme.class)
                 .register(OSDP_PUBLICATION_SHORT, Publication.class)
-                .register(OSDP_SAMPLE_SHORT, Sample.class);
+                .register(OSDP_SAMPLE_SHORT, Sample.class)
+                .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class);
     }
     
     @Bean
@@ -608,6 +626,7 @@ public class ServiceConfig {
             .register(BaseMonitoringType.class, baseMonitoringType)
             .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
             .register(MonitoringFacility.class, new SolrIndexOsdpMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
+            .register(SampleArchive.class, new SolrIndexSaMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
             .register(MetadataDocument.class, metadataDocument);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry(mappings);

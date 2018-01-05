@@ -68,6 +68,20 @@ to have this continuously watch for changes in the java code (not including test
 
 You may need to increase your watches see the answer [here](https://askubuntu.com/questions/770374/user-limit-of-inotify-watches-reached-on-ubuntu-16-04) for more details on this
 
+If using System.out.println('foo'), you can grep it out like this:
+    
+    docker logs catalogue_web_1 > stdout.log 2>stderr.log && cat stdout.log | grep foo
+
+Run single tests:
+    
+    gradle -Dtest.single=JiraService --info test -t
+
+--info spits out the error message and -t is watching for file changes and will re-run then
+
+Can use package names and * in the name
+
+[More info](https://stackoverflow.com/questions/22505533/how-to-run-only-one-test-class-on-gradle) about single file tests
+
 ## Selenium Testing
 
 The project contains an `rspec` suite of selenium tests.

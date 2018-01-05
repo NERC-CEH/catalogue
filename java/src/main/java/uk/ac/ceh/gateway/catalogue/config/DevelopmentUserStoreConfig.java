@@ -35,6 +35,8 @@ public class DevelopmentUserStoreConfig {
     public static final String INMS_PUBLISHER   = "role_inms_publisher";
     public static final String OSDP_EDITOR      = "role_osdp_editor";
     public static final String OSDP_PUBLISHER   = "role_osdp_publisher";
+    public static final String SA_EDITOR        = "role_sa_editor";
+    public static final String SA_PUBLISHER     = "role_sa_publisher";
     
     @Bean @Qualifier("superadmin")
     public CatalogueUser superadmin() throws UsernameAlreadyTakenException {
@@ -154,6 +156,18 @@ public class DevelopmentUserStoreConfig {
         userStore().addUser(publisher, "publisherpassword");
         return publisher;
     }
+
+    @Bean
+    @Qualifier("sa-publisher")
+    public CatalogueUser saPublisher() throws UsernameAlreadyTakenException {
+        CatalogueUser publisher = new CatalogueUser().setUsername("sa-publisher")
+                .setEmail("sa-publisher@ceh.ac.uk");
+
+        groupStore().grantGroupToUser(publisher, SA_EDITOR);
+        groupStore().grantGroupToUser(publisher, SA_PUBLISHER);
+        userStore().addUser(publisher, "publisherpassword");
+        return publisher;
+    }
     
     @Bean @Qualifier("admin")
     public CatalogueUser admin() throws UsernameAlreadyTakenException {
@@ -182,6 +196,8 @@ public class DevelopmentUserStoreConfig {
         toReturn.createGroup(INMS_PUBLISHER,   "INMS Publisher Role");
         toReturn.createGroup(OSDP_EDITOR,      "OSDP Editor Role");
         toReturn.createGroup(OSDP_PUBLISHER,   "OSDP Publisher Role");
+        toReturn.createGroup(SA_EDITOR,        "SA Editor Role");
+        toReturn.createGroup(SA_PUBLISHER,     "SA Publisher Role");
         toReturn.createGroup(MAINTENANCE_ROLE, "System Admin Role");
         toReturn.createGroup(DATACITE_ROLE,    "Datacite Role");
         return toReturn;

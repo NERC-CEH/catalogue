@@ -26,6 +26,9 @@ define [
     do @render
     @listenTo @model, 'change:mapsearch', @updateSearchMap
 
+    #The Sample Archive has no filters, so default to the Map Search view
+    do @enableSearchMap if ($('html').data('catalogue') == 'sa')
+
   ###
   Grab the query state from the anchors clicked href. Use this to update the
   models state

@@ -37,6 +37,7 @@ define [
   'cs!views/OsdpMonitoringActivityEditorView'
   'cs!views/OsdpMonitoringProgrammeEditorView'
   'cs!views/OsdpMonitoringFacilityEditorView'
+  'cs!views/SampleArchiveEditorView'
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
   'bootstrap'
@@ -47,8 +48,7 @@ define [
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
     DocumentsUploadScheduledView, DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView,
     OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
-    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView,
-    DepositRequestModel, DepositRequestView
+    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView
 ) ->
 
   ###
@@ -171,6 +171,10 @@ define [
         View: OsdpMonitoringFacilityEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.osdp.monitoring-facility+json'
+      'sample-archive':
+        View: SampleArchiveEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.sample-archive+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'

@@ -18,7 +18,7 @@ define [
     if !isValidUrl attrs.url
       errors.push
         message:
-          "That url isn't right. How long have you been using the web?"
+          "That url isn't right."
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

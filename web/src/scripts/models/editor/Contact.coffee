@@ -40,7 +40,7 @@ define [
 
     if ! organisationName || ! email || ! role
       errors.push
-        message: "The organisation name, role and email are mandatory.  Don't ask me why - just accept it."
+        message: "The organisation name, role and email are mandatory."
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

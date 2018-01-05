@@ -56,6 +56,8 @@ Each catalogue needs two groups in [Crowd](https://crowd.ceh.ac.uk)
 
 Where *{id}* is the catalogue id
 
+In Development update [DevelopmentUserStoreConfig](../java/src/main/java/uk/ac/ceh/gateway/catalogue/config/DevelopmentUserStoreConfig.java) with your new roles
+
 ## Style
 
 The catalogue can have it's own style. A Less file should import the base [ceh style](../web/src/less/style-ceh.less). The file should be named style-{id}.less where {id} is the catalogue id.
