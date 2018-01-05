@@ -38,6 +38,8 @@ define [
   'cs!views/OsdpMonitoringProgrammeEditorView'
   'cs!views/OsdpMonitoringFacilityEditorView'
   'cs!views/SampleArchiveEditorView'
+  'cs!models/DepositRequestModel'
+  'cs!views/DepositRequestView'
   'bootstrap'
   'dropzone'
 ], (
@@ -46,7 +48,7 @@ define [
     PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
     DocumentsUploadScheduledView, DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView,
     OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
-    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView, SampleArchiveEditorView
+    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView
 ) ->
 
   ###
