@@ -7,6 +7,7 @@
       <field name="altTitle" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>
       <field name="lineage" type="text_general" indexed="true" stored="true" multiValued="false"/>
+      <field name="resourceStatus" type="text_general" indexed="true" stored="true" multiValued="false"/>
       <field name="organisation" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="individual" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="onlineResourceName" type="text_general" indexed="true" stored="true" multiValued="true"/>
