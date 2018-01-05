@@ -22,7 +22,7 @@ define [
     $('.finish').click =>
       @model.set 'modal',
         title: 'Finish'
-        body: 'Once you have finished you will not be able to add, remove or update files. Are you sure you want to finish?'
+        body: 'You will no longer be able to add, remove or update files! ARE YOU SURE?'
         dismiss: 'No'
         accept: 'Yes'
         onAccept: =>
@@ -100,7 +100,7 @@ define [
     $('.finish').attr 'disabled', off if $('.uploading').length == 0
 
   renderEmptyMessage: ->
-    emptyMessage = 'Drag files into <u>here</u> to upload'
+    emptyMessage = 'Drag files here to upload'
     emptyMessage = '' if @model.get('documents').files
     $('.empty-message').html emptyMessage
 
@@ -130,7 +130,7 @@ define [
       filename = target.find('.filename-label').text()
       @model.set 'modal',
         title: 'Delete <b>' + filename + '</b>'
-        body: 'Are you sure you want to perminatly delete <b>' + filename + '</b>'
+        body: 'Are you sure you want to permanently delete ' + filename 
         dismiss: 'No'
         accept: 'Yes'
         onAccept: =>

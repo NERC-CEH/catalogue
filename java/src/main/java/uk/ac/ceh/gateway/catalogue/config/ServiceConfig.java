@@ -100,6 +100,7 @@ public class ServiceConfig {
     @Autowired GroupStore<CatalogueUser> groupStore;
     @Autowired @Qualifier("gemini") Schema geminiSchema;
     
+    private static final String DEPOSIT_REQUEST_DOCUMENT = "DEPOSIT_REQUEST_DOCUMENT";
     private static final String GEMINI_DOCUMENT = "GEMINI_DOCUMENT";
     private static final String EF_DOCUMENT = "EF_DOCUMENT";
     private static final String IMP_DOCUMENT = "IMP_DOCUMENT";
@@ -331,6 +332,11 @@ public class ServiceConfig {
     }
 
     @Bean
+    public DepositRequestService depositRequestService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DepositRequestService(documentRepository(), solrServer);
+    }
+
+    @Bean
     public DocumentUploadService documentsUploadService() throws XPathExpressionException, IOException, TemplateModelException {
         return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
     }
@@ -514,6 +520,7 @@ public class ServiceConfig {
     @Bean
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
+                .register(DEPOSIT_REQUEST_DOCUMENT, DepositRequestDocument.class)
                 .register(GEMINI_DOCUMENT, GeminiDocument.class)
                 .register(EF_DOCUMENT, BaseMonitoringType.class)
                 .register(IMP_DOCUMENT, ImpDocument.class)

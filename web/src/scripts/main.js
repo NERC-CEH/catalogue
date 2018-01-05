@@ -21,7 +21,6 @@ require.config({
   },
   paths: {
     'dropzone':          '../vendor/dropzone/dist/dropzone',
-    'clipboard':         '../vendor/clipboard/dist/clipboard',
     'bootstrap':         '../vendor/bootstrap/dist/js/bootstrap',
     'colorpicker':       '../vendor/bootstrap-colorpicker/dist/js/bootstrap-colorpicker',
     'cs' :               '../vendor/require-cs/cs',

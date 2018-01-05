@@ -1,26 +1,45 @@
 #metadata {
   @light-gray-border: #CCC;
 
-  #section-Top{
-	.licenceText {
-		a{font-weight:bold;}
-	}
-
-	#section-authorsTop{
-	border:       1px solid @light-gray-border;
-	border-width: 1px 0;
-	margin:       .75em 0;
-	padding-top:  0.6em;
+  #section-title {
+    margin-top: 3em;
+    padding: 1em 0;
+    h1 {
+      margin-top: 0;
+      margin-bottom: 0.2em;
     };
+    .authorList {color:#999;}
+    .doi {
+      font-size: 90%;
+      margin: 0;
+    };
+    .licenceText {
+      a{font-weight:bold;}
+    }
+    .titleSpacer {
+      border-bottom: 1px solid @light-gray-border;
+      margin-bottom: 1em;
+      padding: 1em 0;
+    }
   }
 
+  .modal-body {
+    #citation-text {
+      margin:-0.5em 2em 2em 2em;
+    };
+    .licenceText {
+      margin-top:3em;
+      .text-center;
+    }
+  }
+  
   #document-description { margin-bottom:1em; }
 
   #section-supplemental {
     p {
       margin-bottom:1.75em;
       small {
-        a { color:#99aefd;}
+        a {color:#99aefd;}
       }
     }
   }
@@ -80,7 +99,10 @@
     margin: 1.75em auto -1.75em auto;
     ul {
       a{font-size: 90%;};
-      div.msg {margin:1em; white-space:nowrap;};
+      div.msg {
+        margin:1em;
+        white-space:nowrap;
+      };
     }
   }
 
@@ -91,11 +113,20 @@
   // If the current metadata document is a historic archive, a warning is
   // displayed to the user at the top of the metadata page with
   // id = 'not-current'
-  #not-current {
+  #not-current {    
     .alert;
     .alert-danger;
+    margin: 1em 0 0 0 ;
     a {
-      .alert-link;
+      color:#00B;
+      text-decoration: underline;
+    };
+    a:hover {
+      text-decoration: none;
+    };
+    .errataDescription {
+      margin-top: 1em;
+      margin-left:2em;
     }
   }
 
@@ -132,9 +163,7 @@
  @media (min-width: 468px) {
     .dl-horizontal dd { margin-bottom:1em;}
   }
-
-
- }
+}
 
 #footer {background-color:#CCC; padding-top:1em;}
 

@@ -126,6 +126,7 @@ public class DocumentUploadService {
                 }
                 val checksums = new File(documentUpload.getPath(), "checksums.hash");
                 zipFile.addFile(checksums, new ZipParameters());
+                FileUtils.write(checksums, String.format("%s *%s", hash(zipRawFile),  zipFilename), Charset.defaultCharset());
             } catch(ZipException ze) {
                 throw new RuntimeException(ze);
             }

@@ -5,12 +5,25 @@ import javax.ws.rs.core.MediaType;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import lombok.AllArgsConstructor;
+import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
+import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
+import uk.ac.ceh.gateway.catalogue.model.JiraIssueCreate;
 import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
 
 @AllArgsConstructor
 public class JiraService {
     private final WebResource resource;
+
+    public JiraIssueCreate create (JiraIssueBuilder builder) {
+        String path = "issue";
+        val input = builder.build();
+        return resource
+            .path(path)
+            .accept(MediaType.APPLICATION_JSON_TYPE)
+            .type(MediaType.APPLICATION_JSON_TYPE)
+            .post(JiraIssueCreate.class, input);
+    }
 
     public void comment (String key, String comment) {
         String path = String.format("issue/%s", key);
