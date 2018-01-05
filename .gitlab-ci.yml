@@ -11,6 +11,10 @@ variables:
 services:
   - docker:dind
 
+cache:
+  paths:
+    - cache/gradle
+
 stages:
   - build
   - docker
@@ -37,7 +41,7 @@ java:
       -v "$(pwd)":"$(pwd)"
       -w "$(pwd)"
       -u 0:0
-      gradle:jdk8 ./gradlew :java:clean prepFixtures :java:build :web:grunt_default
+      gradle:jdk8 ./gradlew -g ./cache/gradle :java:clean prepFixtures :java:build :web:grunt_default
   artifacts:
     when: always
     paths:
