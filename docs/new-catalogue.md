@@ -1,4 +1,4 @@
-# Super Quick, How to Build a New Catalgue
+# How to Build a New Catalogue
 
 # Step 0: Name
 
