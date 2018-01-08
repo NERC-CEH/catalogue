@@ -81,7 +81,7 @@ See [SolrIndexGeminiDocumentGenerator](../java/src/main/java/uk/ac/ceh/gateway/c
 
 # Step 2: Users
 
-you need to create some new roles which is done in two places
+you need to create some new roles for development
 
 first in `DevelopmentUserStoreConfig`
 
