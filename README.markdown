@@ -93,6 +93,8 @@ This will create the browsers required for testing in docker containers and run 
 
 ## Multiple Catalogues
 
+[Create a new catalogue](docs/new-catalogue.md).
+
 Multiple catalogues are supported by this software.
 
 A catalogue has it's own:
@@ -101,8 +103,6 @@ A catalogue has it's own:
 - editor and publisher groups
 - metadata records
 - document types
-
-New catalogues can be added, [instructions here](docs/multipleCatalogues.markdown).
 
 ## Catalogue Content
 
