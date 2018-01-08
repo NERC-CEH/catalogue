@@ -31,7 +31,7 @@
 
 <div id="section-title" class="clearfix">
   <div class="authorList">${authorlist}</div>
-  <h1>
+  <h1 id="document-title">
     <#if (metadata.state == 'draft' || metadata.state == 'pending') >
       <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
     </#if>

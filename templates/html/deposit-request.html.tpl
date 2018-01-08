@@ -105,10 +105,8 @@
                     <label>*Science Domain</label>
                     <select class="form-control" required name="scienceDomain" id="scienceDomain">
                         <option value=""></option>
-                        <option value="terrestrial">Terrestrial</option>
-                        <option value="ecology">Ecology</option>
-                        <option value="freshwater">Freshwater</option>
-                        <option value="ecology">Ecology</option>
+                        <option value="terrestrialEcology">Terrestrial Ecology</option>
+                        <option value="freshwaterEcology">Freshwater Ecology</option>
                         <option value="hydrology">Hydrology</option>
                         <option value="environmentalBiology">Environmental Biology</option>
                         <option value="other">Other</option>
