@@ -162,6 +162,8 @@ this is going to show requirements for making/editing and assigning permissions 
 
 you need at least one document otherwise your catalogue is a waste of breath
 
+if you want to see more then read [new document type](newDocumentType.markdown)
+
 # Step 4a: Document
 
 create a new folder `uk.ac.ceh.gateway.catalogue.your-id` add your document to this folder e.g.
