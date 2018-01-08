@@ -8,6 +8,9 @@ variables:
   NODE_KEY: catalogue_version
   NODE_VALUE: $CI_BUILD_REF_NAME
 
+services:
+  - docker:dind
+
 cache:
   paths:
     - cache/gradle
@@ -26,21 +29,14 @@ mirror:
 
 java:
   stage: build
-  image: gitlab/dind
+  image: emundo/docker-compose-openjdk-node
   before_script:
-    - docker pull gradle:jdk8
     - echo jira.username=$JIRA_USERNAME > secrets.env
     - echo jira.password=$JIRA_PASSWORD >> secrets.env
     - echo plone.username=$PLONE_USERNAME >> secrets.env
     - echo plone.password=$PLONE_PASSWORD >> secrets.env
   script:
-    - >
-      docker run -t --rm
-      -v /var/run/docker.sock:/var/run/docker.sock
-      -v "$(pwd)":"$(pwd)"
-      -w "$(pwd)"
-      -u 0:0
-      gradle:jdk8 ./gradlew -g ./cache/gradle :java:clean prepFixtures :java:build :web:grunt_default
+    - ./gradlew -g ./cache/gradle :java:clean prepFixtures :java:build :web:grunt_default
   artifacts:
     when: always
     paths:
