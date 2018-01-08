@@ -25,21 +25,21 @@ Catalogue.builder()
   .build()
 ```
 
-* id
+* `id`
   * the url e.g. `http://location:8080/your-id/documents"
   * identiying the document
-* title
+* `title`
   * self explanitory
-* url
+* `url`
   * no idea but you need it
-* facetKey
+* `facetKey`
   * you can have chain of these e.g. `.facetKey("keyA").facetKey("keyB")`
   * the values live here `SolrIndex` and have a look in codelist.properties
   * these are filters in your documents view
-* documentType
+* `documentType`
   * a list of documents you can create and edit (see documents below)
   * you can have chain of these e.g. `.documentType(documentTypeA).documentType(documentTypeB)`
-* file upload
+* `fileUpload`
   * if true then you can upload documents, you see this when you go to <http://location:8080/your-id/documents> and click `create` then select `file-upload`
 
 ### Search facets
