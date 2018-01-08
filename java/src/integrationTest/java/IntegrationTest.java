@@ -2,7 +2,6 @@ import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.core.IsEqual;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -10,9 +9,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.BrowserWebDriverContainer;
-import org.testcontainers.containers.DockerComposeContainer;
-
-import java.io.File;
 
 import static com.google.common.collect.ImmutableList.of;
 import static java.lang.Integer.parseInt;
@@ -23,14 +19,8 @@ import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class IntegrationTest {
-    private static String WEB_SERVICE = "web_1";
     private static int WEB_PORT = 8080;
-    private static String DOCKER_HOST = "172.17.0.1";
-    private static String DOCKER_COMPOSE = "../docker-compose.yml";
-
-    @ClassRule
-    public static DockerComposeContainer environment = new DockerComposeContainer(new File(DOCKER_COMPOSE))
-                                                            .withExposedService(WEB_SERVICE, WEB_PORT);
+    private static String DOCKER_HOST = "172.21.0.1";
 
     @Rule
     public BrowserWebDriverContainer chrome = new BrowserWebDriverContainer()
@@ -45,7 +35,7 @@ public class IntegrationTest {
             "http://{host}:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
             String.class,
             DOCKER_HOST,
-            environment.getServicePort(WEB_SERVICE, WEB_PORT),
+            WEB_PORT,
             "mapserver-shapefile"
         );
         assertThat("Response should be OK", response.getStatusCode().is2xxSuccessful(), is(true));
@@ -59,7 +49,7 @@ public class IntegrationTest {
             "http://{host}:{port}/documents/{id}/onlineResources/0/tms/1.0.0/{layer}/3/3/5.png",
             String.class,
             DOCKER_HOST,
-            environment.getServicePort(WEB_SERVICE, WEB_PORT),
+            WEB_PORT,
             "mapserver-shapefile",
             "ukdata"
         );
@@ -74,7 +64,7 @@ public class IntegrationTest {
             "http://{host}:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS={layers}&STYLES=&FORMAT=image/png&HEIGHT=256&WIDTH=256&SRS={srs}&BBOX=0,0,700000,1300000",
             String.class,
             DOCKER_HOST,
-            environment.getServicePort(WEB_SERVICE, WEB_PORT),
+            WEB_PORT,
             "mapserver-raster",
             "Band1",
             "EPSG:27700"
@@ -97,7 +87,7 @@ public class IntegrationTest {
             new HttpEntity<>(headers),
             String.class,
             DOCKER_HOST,
-            environment.getServicePort(WEB_SERVICE, WEB_PORT)
+            WEB_PORT
         );
 
         //Then
@@ -119,7 +109,7 @@ public class IntegrationTest {
             new HttpEntity<>(headers),
             String.class,
             DOCKER_HOST,
-            environment.getServicePort(WEB_SERVICE, WEB_PORT)
+            WEB_PORT
         );
 
         //Then
@@ -138,7 +128,7 @@ public class IntegrationTest {
         String docUrl = format(
             "http://%s:%s/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
             DOCKER_HOST,
-            environment.getServicePort(WEB_SERVICE, WEB_PORT)
+            WEB_PORT
         );
 
         //when
@@ -159,7 +149,7 @@ public class IntegrationTest {
         String docUrl = format(
             "http://%s:%s/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/publication",
             DOCKER_HOST,
-            environment.getServicePort(WEB_SERVICE, WEB_PORT)
+            WEB_PORT
         );
 
         //when
@@ -180,7 +170,7 @@ public class IntegrationTest {
         String docUrl = format(
             "http://%s:%s/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/permission",
             DOCKER_HOST,
-            environment.getServicePort(WEB_SERVICE, WEB_PORT)
+            WEB_PORT
         );
 
         //when
@@ -200,7 +190,7 @@ public class IntegrationTest {
         String eidcUrl = format(
             "http://%s:%s/eidc/documents",
             DOCKER_HOST,
-            environment.getServicePort(WEB_SERVICE, WEB_PORT)
+            WEB_PORT
         );
 
         driver.get(eidcUrl);
