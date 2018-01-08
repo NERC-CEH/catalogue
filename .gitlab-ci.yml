@@ -29,7 +29,7 @@ mirror:
 
 java:
   stage: build
-  image: emundo/docker-compose-openjdk-node
+  image: docker
   before_script:
     - echo jira.username=$JIRA_USERNAME > secrets.env
     - echo jira.password=$JIRA_PASSWORD >> secrets.env
@@ -37,7 +37,13 @@ java:
     - echo plone.password=$PLONE_PASSWORD >> secrets.env
     - echo doi.password= >> secrets.env
   script:
-    - ./gradlew -g ./cache/gradle :java:clean prepFixtures :java:build :web:grunt_default
+    - >
+      docker run -t --rm
+      -v /var/run/docker.sock:/var/run/docker.sock
+      -v "$(pwd)":"$(pwd)"
+      -w "$(pwd)"
+      -u 0:0
+      emundo/docker-compose-openjdk-node ./gradlew -g ./cache/gradle :java:clean prepFixtures :java:build :web:grunt_default
   artifacts:
     when: always
     paths:
