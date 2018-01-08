@@ -8,9 +8,6 @@ variables:
   NODE_KEY: catalogue_version
   NODE_VALUE: $CI_BUILD_REF_NAME
 
-services:
-  - docker:dind
-
 cache:
   paths:
     - cache/gradle
@@ -29,8 +26,9 @@ mirror:
 
 java:
   stage: build
-  image: docker:latest
+  image: gitlab/dind
   before_script:
+    - docker pull gradle:jdk8
     - echo jira.username=$JIRA_USERNAME > secrets.env
     - echo jira.password=$JIRA_PASSWORD >> secrets.env
     - echo plone.username=$PLONE_USERNAME >> secrets.env
