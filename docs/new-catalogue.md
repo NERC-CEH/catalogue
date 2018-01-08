@@ -1,10 +1,10 @@
 # Super Quick, How to Build a New Catalgue
 
-## Step 0: Name
+# Step 0: Name
 
 First: `catalogue` not `catalog`, we are not American
 
-## Step 1: ServiceConfig
+# Step 1: ServiceConfig
 
 You need to add you rnew Catalogue to the service config
 
@@ -79,7 +79,7 @@ e.g. http://vocabs.ceh.ac.uk/imp/wp/nitrogen
 See [SolrIndexGeminiDocumentGenerator](../java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndexGeminiDocumentGenerator.java) for how this is used.
 
 
-## Step 2: Users
+# Step 2: Users
 
 you need to create some new roles which is done in two places
 
