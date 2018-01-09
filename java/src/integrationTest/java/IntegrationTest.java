@@ -1,41 +1,58 @@
 import com.jayway.jsonpath.JsonPath;
+import com.palantir.docker.compose.DockerComposeRule;
+import com.palantir.docker.compose.connection.DockerPort;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.core.IsEqual;
-import org.junit.Rule;
+import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
-import org.testcontainers.containers.BrowserWebDriverContainer;
+
+import java.net.URL;
 
 import static com.google.common.collect.ImmutableList.of;
 import static java.lang.Integer.parseInt;
-import static java.lang.String.format;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
+@Ignore
 @Slf4j
 public class IntegrationTest {
-    private static int WEB_PORT = 8080;
-    private static String DOCKER_HOST = "172.21.0.1";
+    private final int webPort;
+    private final RestTemplate template;
+    private final RemoteWebDriver driver;
 
-    @Rule
-    public BrowserWebDriverContainer chrome = new BrowserWebDriverContainer()
-        .withDesiredCapabilities(DesiredCapabilities.chrome());
+    @ClassRule
+    public static DockerComposeRule docker  = DockerComposeRule.builder()
+        .file("../docker-compose.yml")
+        .build();
 
-    private final RestTemplate template = new RestTemplate();
+    @SneakyThrows
+    public IntegrationTest() {
+        webPort = docker.containers()
+            .container("web")
+            .port(8080)
+            .getExternalPort();
+
+        template = new RestTemplate();
+
+        DockerPort chromePort = docker.containers().container("chrome").port(4444);
+        URL url = new URL("http", "localhost", chromePort.getExternalPort(), "/wd/hub");
+        ChromeOptions options = new ChromeOptions();
+        driver = new RemoteWebDriver(url, options);
+    }
 
     @Test
     @SneakyThrows
     public void getCapabilities() {
         ResponseEntity<String> response = template.getForEntity(
-            "http://{host}:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
+            "http://localhost:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
             String.class,
-            DOCKER_HOST,
-            WEB_PORT,
+            webPort,
             "mapserver-shapefile"
         );
         assertThat("Response should be OK", response.getStatusCode().is2xxSuccessful(), is(true));
@@ -46,10 +63,9 @@ public class IntegrationTest {
     @SneakyThrows
     public void getTmsImage() {
         ResponseEntity<String> response = template.getForEntity(
-            "http://{host}:{port}/documents/{id}/onlineResources/0/tms/1.0.0/{layer}/3/3/5.png",
+            "http://localhost:{port}/documents/{id}/onlineResources/0/tms/1.0.0/{layer}/3/3/5.png",
             String.class,
-            DOCKER_HOST,
-            WEB_PORT,
+            webPort,
             "mapserver-shapefile",
             "ukdata"
         );
@@ -61,10 +77,9 @@ public class IntegrationTest {
     @SneakyThrows
     public void getMapImage() {
         ResponseEntity<String> response = template.getForEntity(
-            "http://{host}:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS={layers}&STYLES=&FORMAT=image/png&HEIGHT=256&WIDTH=256&SRS={srs}&BBOX=0,0,700000,1300000",
+            "http://localhost:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS={layers}&STYLES=&FORMAT=image/png&HEIGHT=256&WIDTH=256&SRS={srs}&BBOX=0,0,700000,1300000",
             String.class,
-            DOCKER_HOST,
-            WEB_PORT,
+            webPort,
             "mapserver-raster",
             "Band1",
             "EPSG:27700"
@@ -82,12 +97,11 @@ public class IntegrationTest {
 
         //When
         ResponseEntity<String> response = template.exchange(
-            "http://{host}:{port}/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/publication",
+            "http://localhost:{port}/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/publication",
             HttpMethod.GET,
             new HttpEntity<>(headers),
             String.class,
-            DOCKER_HOST,
-            WEB_PORT
+            webPort
         );
 
         //Then
@@ -104,12 +118,11 @@ public class IntegrationTest {
 
         //When
         ResponseEntity<String> response = template.exchange(
-            "http://{host}:{port}/eidc/documents?term=land",
+            "http://localhost:{port}/eidc/documents?term=land",
             HttpMethod.GET,
             new HttpEntity<>(headers),
             String.class,
-            DOCKER_HOST,
-            WEB_PORT
+            webPort
         );
 
         //Then
@@ -123,16 +136,9 @@ public class IntegrationTest {
     public void getIndividualDocument() {
         //given
         String expectedTitle = "Woodlands survey flora data 1971-2001";
-        RemoteWebDriver driver = chrome.getWebDriver();
-
-        String docUrl = format(
-            "http://%s:%s/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae",
-            DOCKER_HOST,
-            WEB_PORT
-        );
 
         //when
-        driver.get(docUrl);
+        driver.get("http://web:8080/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae");
 
         //then
         String actualText = driver.findElementById("document-title").getText();
@@ -144,20 +150,14 @@ public class IntegrationTest {
     @SneakyThrows
     public void getPublicationPage() {
         //given
-        RemoteWebDriver driver = chrome.getWebDriver();
-
-        String docUrl = format(
-            "http://%s:%s/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/publication",
-            DOCKER_HOST,
-            WEB_PORT
-        );
+        String expectedTitle = "Publication - Environmental Information Data Centre";
 
         //when
-        driver.get(docUrl);
+        driver.get("http://web:8080/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/publication");
 
         //then
         String actualTitle = driver.getTitle();
-        assertThat("Page title should be correct", actualTitle, equalTo("Publication - Environmental Information Data Centre"));
+        assertThat("Page title should be correct", actualTitle, equalTo(expectedTitle));
 
     }
 
@@ -165,20 +165,14 @@ public class IntegrationTest {
     @SneakyThrows
     public void getPermissionPage() {
         //given
-        RemoteWebDriver driver = chrome.getWebDriver();
-
-        String docUrl = format(
-            "http://%s:%s/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/permission",
-            DOCKER_HOST,
-            WEB_PORT
-        );
+        String expectedTitle = "Permissions - Environmental Information Data Centre";
 
         //when
-        driver.get(docUrl);
+        driver.get("http://web:8080/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/permission");
 
         //then
         String actualTitle = driver.getTitle();
-        assertThat("Page title should be correct", actualTitle, equalTo("Permissions - Environmental Information Data Centre"));
+        assertThat("Page title should be correct", actualTitle, equalTo(expectedTitle));
 
     }
 
@@ -186,16 +180,14 @@ public class IntegrationTest {
     @Test
     @SneakyThrows
     public void searchResults() {
-        RemoteWebDriver driver = chrome.getWebDriver();
-        String eidcUrl = format(
-            "http://%s:%s/eidc/documents",
-            DOCKER_HOST,
-            WEB_PORT
-        );
+        //given
+        int minRecords = 0;
 
-        driver.get(eidcUrl);
+        //when
+        driver.get("http://web:8080/eidc/documents");
+
+        //then
         int numRecords = parseInt(driver.findElementById("num-records").getText(), 10);
-
-        assertThat("Should have found documents", numRecords, greaterThan(0));
+        assertThat("Should have found documents", numRecords, greaterThan(minRecords));
     }
 }

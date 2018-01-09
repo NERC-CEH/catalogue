@@ -43,7 +43,7 @@ java:
       -v "$(pwd)":"$(pwd)"
       -w "$(pwd)"
       -u 0:0
-      emundo/docker-compose-openjdk-node ./gradlew -g ./cache/gradle :java:clean prepFixtures :java:build :web:grunt_default
+      registry.gitlab.ceh.ac.uk/eip/catalogue-builder:0.0.1 ./gradlew -g ./cache/gradle :java:clean prepFixtures :java:build :web:grunt_default
   artifacts:
     when: always
     paths:

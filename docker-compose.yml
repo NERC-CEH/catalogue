@@ -1,10 +1,15 @@
-version: "2"
+version: "3"
 services:
   web:
     build: .
     depends_on:
       - solr
       - mapserver
+    networks:
+      - frontend
+      - backend
+    ports:
+      - 8080
     volumes:
       - ./datastore:/var/ceh-catalogue/datastore
       - ./plone:/var/ceh-catalogue/plone
@@ -20,11 +25,25 @@ services:
       - secrets.env
   solr:
     build: "solr"
+    networks:
+      - backend
   mapserver:
     build: "mapserver"
+    networks:
+      - backend
     volumes:
       - mapfiles:/mapserver/maps
       - ./fixtures/mapserver-data:/mapserver/data
+  chrome:
+    image: selenium/standalone-chrome:3.8.1
+    networks:
+      - frontend
+    ports:
+      - 4444
+
+networks:
+  frontend:
+  backend:
 
 volumes:
   mapfiles:
