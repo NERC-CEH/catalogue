@@ -4,7 +4,6 @@ import com.palantir.docker.compose.connection.DockerPort;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.core.IsEqual;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -22,29 +21,26 @@ import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class IntegrationTest {
-    private static int webPort;
-    private static RestTemplate template;
-    private static RemoteWebDriver driver;
+    private final RestTemplate template = new RestTemplate();
 
     @ClassRule
     public static DockerComposeRule docker  = DockerComposeRule.builder()
         .file("../docker-compose.yml")
         .build();
 
-    @BeforeClass
-    @SneakyThrows
-    public static void setupClass() {
-        webPort = docker.containers()
+    private int webPort() {
+        return docker.containers()
             .container("web")
             .port(8080)
             .getExternalPort();
+    }
 
-        template = new RestTemplate();
-
+    @SneakyThrows
+    private RemoteWebDriver webDriver() {
         DockerPort chromePort = docker.containers().container("chrome").port(4444);
         URL url = new URL("http", "localhost", chromePort.getExternalPort(), "/wd/hub");
         ChromeOptions options = new ChromeOptions();
-        driver = new RemoteWebDriver(url, options);
+        return new RemoteWebDriver(url, options);
     }
 
     @Test
@@ -53,7 +49,7 @@ public class IntegrationTest {
         ResponseEntity<String> response = template.getForEntity(
             "http://localhost:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
             String.class,
-            webPort,
+            webPort(),
             "mapserver-shapefile"
         );
         assertThat("Response should be OK", response.getStatusCode().is2xxSuccessful(), is(true));
@@ -66,7 +62,7 @@ public class IntegrationTest {
         ResponseEntity<String> response = template.getForEntity(
             "http://localhost:{port}/documents/{id}/onlineResources/0/tms/1.0.0/{layer}/3/3/5.png",
             String.class,
-            webPort,
+            webPort(),
             "mapserver-shapefile",
             "ukdata"
         );
@@ -80,7 +76,7 @@ public class IntegrationTest {
         ResponseEntity<String> response = template.getForEntity(
             "http://localhost:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS={layers}&STYLES=&FORMAT=image/png&HEIGHT=256&WIDTH=256&SRS={srs}&BBOX=0,0,700000,1300000",
             String.class,
-            webPort,
+            webPort(),
             "mapserver-raster",
             "Band1",
             "EPSG:27700"
@@ -102,7 +98,7 @@ public class IntegrationTest {
             HttpMethod.GET,
             new HttpEntity<>(headers),
             String.class,
-            webPort
+            webPort()
         );
 
         //Then
@@ -123,7 +119,7 @@ public class IntegrationTest {
             HttpMethod.GET,
             new HttpEntity<>(headers),
             String.class,
-            webPort
+            webPort()
         );
 
         //Then
@@ -136,6 +132,7 @@ public class IntegrationTest {
     @SneakyThrows
     public void getIndividualDocument() {
         //given
+        RemoteWebDriver driver = webDriver();
         String expectedTitle = "Woodlands survey flora data 1971-2001";
 
         //when
@@ -151,6 +148,7 @@ public class IntegrationTest {
     @SneakyThrows
     public void getPublicationPage() {
         //given
+        RemoteWebDriver driver = webDriver();
         String expectedTitle = "Publication - Environmental Information Data Centre";
 
         //when
@@ -166,6 +164,7 @@ public class IntegrationTest {
     @SneakyThrows
     public void getPermissionPage() {
         //given
+        RemoteWebDriver driver = webDriver();
         String expectedTitle = "Permissions - Environmental Information Data Centre";
 
         //when
@@ -182,6 +181,7 @@ public class IntegrationTest {
     @SneakyThrows
     public void searchResults() {
         //given
+        RemoteWebDriver driver = webDriver();
         int minRecords = 0;
 
         //when
