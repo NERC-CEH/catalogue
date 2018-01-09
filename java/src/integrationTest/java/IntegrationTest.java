@@ -4,6 +4,7 @@ import com.palantir.docker.compose.connection.DockerPort;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.core.IsEqual;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -21,17 +22,18 @@ import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class IntegrationTest {
-    private final int webPort;
-    private final RestTemplate template;
-    private final RemoteWebDriver driver;
+    private static int webPort;
+    private static RestTemplate template;
+    private static RemoteWebDriver driver;
 
     @ClassRule
     public static DockerComposeRule docker  = DockerComposeRule.builder()
         .file("../docker-compose.yml")
         .build();
 
+    @BeforeClass
     @SneakyThrows
-    public IntegrationTest() {
+    public static void setupClass() {
         webPort = docker.containers()
             .container("web")
             .port(8080)
