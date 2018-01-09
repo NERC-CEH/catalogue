@@ -259,6 +259,10 @@ then in `configureContentNegotiation` you need to add
 
 `.put(YOUR_DOCUMENT_SHORT, MediaType.parseMediaType(YOUR_DOCUMENT_JSON_VALUE))` 
 
+then in `ServiceConfig` in `metadataRepresentationService` you need to add
+
+`.register(YOUR_DOCUMENT_SHORT, YourDocument.class);`
+
 # Step 4e: Controller
 
 You need this to save and view a file
@@ -297,9 +301,9 @@ public class YourController extends AbstractDocumentController {
 
   @PreAuthorize("@permission.userCanEdit(#file)")
   @RequestMapping(value = "documents/observable/{file}", method = RequestMethod.PUT, consumes = YOUR_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> updateSampleArchive(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
+  public ResponseEntity<MetadataDocument> saveYourDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
       @RequestBody YourDocument document) throws DocumentRepositoryException {
-    return saveYourDocument(user, file, document);
+    return saveMetadataDocument(user, file, document);
   }
 }
 ```

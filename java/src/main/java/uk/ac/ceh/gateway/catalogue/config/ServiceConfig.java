@@ -32,6 +32,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.converters.*;
 import uk.ac.ceh.gateway.catalogue.ef.*;
+import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
@@ -107,6 +108,7 @@ public class ServiceConfig {
     private static final String CEH_MODEL = "CEH_MODEL";
     private static final String CEH_MODEL_APPLICATION = "CEH_MODEL_APPLICATION";
     private static final String LINK_DOCUMENT = "LINK_DOCUMENT";
+    private static final String ELTER_SENSOR_DOCUMENT = "ELTER_SENSOR_DOCUMENT";
     
     @Bean
     public CatalogueService catalogueService() {
@@ -185,6 +187,11 @@ public class ServiceConfig {
         DocumentType sampleArchive = DocumentType.builder()
             .title("Sample Archive")
             .type(SAMPLE_ARCHIVE_SHORT)
+            .build();
+        
+        DocumentType elterSensor = DocumentType.builder()
+            .title("eLTER Sensor")
+            .type(ELTER_SENSOR_DOCUMENT)
             .build();
 
         return new InMemoryCatalogueService(
@@ -318,6 +325,14 @@ public class ServiceConfig {
                 .facetKey("resourceType")
                 .documentType(gemini)
                 .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
+                .id("elter")
+                .title("eLTER")
+                .url("http://www.ceh.ac.uk")
+                .documentType(elterSensor)
+                .fileUpload(false)
                 .build()
         );
     }
@@ -443,6 +458,11 @@ public class ServiceConfig {
         converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
         converters.add(new WmsFeatureInfo2XmlMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
+
+
+        // eLTER converters
+        converters.add(new Object2TemplatedMessageConverter<>(SensorDocument.class, freemarkerConfiguration()));
+
         return new MessageConvertersHolder(converters);
     }
     
@@ -535,7 +555,8 @@ public class ServiceConfig {
                 .register(OSDP_MONITORING_PROGRAMME_SHORT, MonitoringProgramme.class)
                 .register(OSDP_PUBLICATION_SHORT, Publication.class)
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
-                .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class);
+                .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
+                .register(ELTER_SENSOR_DOCUMENT_SHORT, SensorDocument.class);
     }
     
     @Bean
