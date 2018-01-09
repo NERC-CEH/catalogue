@@ -193,7 +193,7 @@ public class ServiceConfig {
             Catalogue.builder()
                 .id("sa")
                 .title("Sample Archive")
-                .url("http://www.ceh.ac.uk")
+                .url("")
                 .documentType(sampleArchive)
                 .fileUpload(false)
                 .build(),
