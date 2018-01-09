@@ -175,6 +175,7 @@ define [
               westBoundLongitude: -180.00
           helpText: """
                     <p>A bounding box showing the area that the archive covers. It will encompass the remit of the archive, which may be larger than that represented by the samples actually in the archive. It is represented by north, south, east and west in decimal degrees (WGS84).</p>
+                    <p>If you don't know the bounding box values, click on the map to place a rectangle at the approximate location and adjust by dragging it or changing its shape using the handles on the rectangle.</p>
                     """
 
         new TextareaView
