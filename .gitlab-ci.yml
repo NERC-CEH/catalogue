@@ -42,7 +42,6 @@ java:
       -v /var/run/docker.sock:/var/run/docker.sock
       -v "$(pwd)":"$(pwd)"
       -w "$(pwd)"
-      -u 0:0
       registry.gitlab.ceh.ac.uk/eip/catalogue-builder:0.0.1 ./gradlew -g ./cache/gradle :java:clean prepFixtures :java:build :web:grunt_default
   artifacts:
     when: always

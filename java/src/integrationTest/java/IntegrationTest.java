@@ -1,5 +1,6 @@
 import com.jayway.jsonpath.JsonPath;
 import com.palantir.docker.compose.DockerComposeRule;
+import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.DockerPort;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class IntegrationTest {
 
     @ClassRule
     public static DockerComposeRule docker  = DockerComposeRule.builder()
-        .file("../docker-compose.yml")
+        .files(DockerComposeFiles.from("../docker-compose.yml", "../docker-compose-chrome.yml"))
         .build();
 
     private int webPort() {
