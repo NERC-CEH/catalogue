@@ -108,7 +108,6 @@ public class ServiceConfig {
     private static final String CEH_MODEL = "CEH_MODEL";
     private static final String CEH_MODEL_APPLICATION = "CEH_MODEL_APPLICATION";
     private static final String LINK_DOCUMENT = "LINK_DOCUMENT";
-    private static final String ELTER_SENSOR_DOCUMENT = "ELTER_SENSOR_DOCUMENT";
     
     @Bean
     public CatalogueService catalogueService() {
@@ -191,7 +190,7 @@ public class ServiceConfig {
         
         DocumentType elterSensor = DocumentType.builder()
             .title("eLTER Sensor")
-            .type(ELTER_SENSOR_DOCUMENT)
+            .type(ELTER_SENSOR_DOCUMENT_SHORT)
             .build();
 
         return new InMemoryCatalogueService(
@@ -331,6 +330,7 @@ public class ServiceConfig {
                 .id("elter")
                 .title("eLTER")
                 .url("http://www.ceh.ac.uk")
+                .facetKey("resourceType")
                 .documentType(elterSensor)
                 .fileUpload(false)
                 .build()

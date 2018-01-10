@@ -200,7 +200,16 @@ which should have
 ```html
 <#import "../skeleton.html.tpl" as skeleton>
 
-<@skeleton.master title=title>
+<!-- You need catalogue=catalogues.retrieve(metadata.catalogue) to load your css file -->
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+
+<!-- You need id="metadata" to wrap the whole document so that everything works e.g. _admin.html.tpl buttons will work -->
+<div id="metadata">
+  <div class="container">
+    <!-- put data here e.g. -->
+    <h1>${title}</h1>
+  </div>
+</div>
 </@skeleton.master>
 ```
 
@@ -208,20 +217,31 @@ you can get access to your values of the focument on the root level, in the abov
 
 Anything else is up to you
 
-# Step 4c: ServiceConfig
+# Step 4c: WebConfig
 
-add this to the top of this file
+you need to add this to the top
 
 ```java
-private static final String YOUR_DOCUMENT = "YOUR_DOCUMENT";
+public static final String YOUR_DOCUMENT_JSON_VALUE = "application/vnd.your-document+json";
+public static final String YOUR_DOCUMENT_SHORT = "your-document";
 ```
+
+then in `configureContentNegotiation` you need to add
+
+`.put(YOUR_DOCUMENT_SHORT, MediaType.parseMediaType(YOUR_DOCUMENT_JSON_VALUE))` 
+
+then in `ServiceConfig` in `metadataRepresentationService` you need to add
+
+`.register(YOUR_DOCUMENT_SHORT, YourDocument.class);`
+
+# Step 4d: ServiceConfig
 
 in `catalogueService` you need to create a document e.g.
 
 ```java
 DocumentType yourDocument = DocumentType.builder()
     .title("Document Title")
-    .type(YOUR_DOCUMENT)
+    .type(YOUR_DOCUMENT_SHORT)
     .build();
 ```
 
@@ -245,23 +265,6 @@ converters.add(new Object2TemplatedMessageConverter<>(YourNewDocument.class, fre
 ```
 
 Now your document will render as per `html/your-id/your-document.html.tpl`
-
-# Step 4d: WebConfig
-
-you need to add this to the top
-
-```java
-public static final String YOUR_DOCUMENT_JSON_VALUE = "application/vnd.your-document+json";
-public static final String YOUR_DOCUMENT_SHORT = "your-document";
-```
-
-then in `configureContentNegotiation` you need to add
-
-`.put(YOUR_DOCUMENT_SHORT, MediaType.parseMediaType(YOUR_DOCUMENT_JSON_VALUE))` 
-
-then in `ServiceConfig` in `metadataRepresentationService` you need to add
-
-`.register(YOUR_DOCUMENT_SHORT, YourDocument.class);`
 
 # Step 4e: Controller
 
@@ -313,7 +316,7 @@ public class YourController extends AbstractDocumentController {
 in `Main.coffee` in `initEditor` you need to add
 
 ```coffee
-YOUR_DOCUMENT:
+'your-document':
     View: YourDocumentView
     Model: EditorMetadata
     mediaType: 'application/vnd.your-document+json'
@@ -394,7 +397,7 @@ then in `html/your-id/your-document.html.tpl`
 ```html
 <#import "../skeleton.html.tpl" as skeleton>
 
-<@skeleton.master title=title>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
 <div id="metadata">
    <div class="container">

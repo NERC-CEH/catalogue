@@ -30,7 +30,7 @@ public class ElterController extends AbstractDocumentController {
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
-  @RequestMapping(value = "documents/observable/{file}", method = RequestMethod.PUT, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
+  @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
   public ResponseEntity<MetadataDocument> saveSensorDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file, @RequestBody SensorDocument document) throws DocumentRepositoryException {
     return saveMetadataDocument(user, file, document);
   }

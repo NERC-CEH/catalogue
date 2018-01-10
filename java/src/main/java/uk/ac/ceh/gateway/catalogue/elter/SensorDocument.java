@@ -1,5 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -17,4 +20,12 @@ import lombok.experimental.Accessors;
     @Template(called="html/elter/sensor.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class SensorDocument extends AbstractMetadataDocument {
+
+    private String description;
+    private String shortName;
+    private String serialNumber;
+    private String documentation;
+    private String manufacturer;
+    private List<Map<String, String>> defaultParameters;
+    private ProcessType processType;
 }

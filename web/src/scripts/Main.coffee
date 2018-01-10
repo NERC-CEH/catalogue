@@ -176,7 +176,7 @@ define [
         View: SampleArchiveEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.sample-archive+json'
-      ELTER_SENSOR_DOCUMENT:
+      'elter-sensor-document':
         View: ElterSensorEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.elter-sensor-document+json'
