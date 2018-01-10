@@ -85,6 +85,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     public static final String ELTER_SENSOR_DOCUMENT_JSON_VALUE = "application/vnd.elter-sensor-document+json";
     public static final String ELTER_SENSOR_DOCUMENT_SHORT = "elter-sensor-document";
+    public static final String ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE = "application/vnd.elter-manufacturer-document+json";
+    public static final String ELTER_MANUFACTURER_DOCUMENT_SHORT = "elter-manufacturer-document";
     
     @Autowired MessageConvertersHolder messageConvertersHolder;
     @Autowired freemarker.template.Configuration freemarkerConfiguration;
@@ -154,6 +156,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(OSDP_SAMPLE_SHORT, MediaType.parseMediaType(OSDP_SAMPLE_JSON_VALUE))
                         .put(SAMPLE_ARCHIVE_SHORT, MediaType.parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE))
                         .put(ELTER_SENSOR_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_SENSOR_DOCUMENT_JSON_VALUE))
+                        .put(ELTER_MANUFACTURER_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE))
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo

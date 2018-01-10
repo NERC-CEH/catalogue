@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import uk.ac.ceh.gateway.catalogue.elter.ManufacturerDocument;
 import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -22,11 +23,13 @@ public class ElterController extends AbstractDocumentController {
     super(documentRepository);
   }
 
+  // Sensor
+
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
   @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
   public ResponseEntity<MetadataDocument> newSensorDocument(@ActiveUser CatalogueUser user, @RequestBody SensorDocument document,
       @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
-    return saveNewMetadataDocument(user, document, catalogue, "new Your Document");
+    return saveNewMetadataDocument(user, document, catalogue, "new eLTER Sensor Document");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
@@ -34,4 +37,19 @@ public class ElterController extends AbstractDocumentController {
   public ResponseEntity<MetadataDocument> saveSensorDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file, @RequestBody SensorDocument document) throws DocumentRepositoryException {
     return saveMetadataDocument(user, file, document);
   }
+
+    // Manufacturer
+
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newManufacturerDocument(@ActiveUser CatalogueUser user, @RequestBody ManufacturerDocument document,
+        @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
+      return saveNewMetadataDocument(user, document, catalogue, "new eLTER Manufacturer Document");
+    }
+  
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> saveManufacturerDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file, @RequestBody ManufacturerDocument document) throws DocumentRepositoryException {
+      return saveMetadataDocument(user, file, document);
+    }
 }

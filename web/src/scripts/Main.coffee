@@ -41,6 +41,7 @@ define [
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
   'cs!views/ElterSensorEditorView'
+  'cs!views/ElterManufacturerEditorView'
   'bootstrap'
   'dropzone'
 ], (
@@ -49,7 +50,7 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView,
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView, ElterSensorEditorView
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView, ElterSensorEditorView, ElterManufacturerEditorView
 ) ->
 
   ###
@@ -180,6 +181,10 @@ define [
         View: ElterSensorEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.elter-sensor-document+json'
+      'elter-manufacturer-document':
+        View: ElterManufacturerEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.elter-manufacturer-document+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'

@@ -32,6 +32,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.converters.*;
 import uk.ac.ceh.gateway.catalogue.ef.*;
+import uk.ac.ceh.gateway.catalogue.elter.ManufacturerDocument;
 import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
@@ -192,6 +193,11 @@ public class ServiceConfig {
             .title("eLTER Sensor")
             .type(ELTER_SENSOR_DOCUMENT_SHORT)
             .build();
+        
+        DocumentType elterManufacturer = DocumentType.builder()
+            .title("eLTER Manufacturer")
+            .type(ELTER_MANUFACTURER_DOCUMENT_SHORT)
+            .build();
 
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
@@ -332,6 +338,7 @@ public class ServiceConfig {
                 .url("http://www.ceh.ac.uk")
                 .facetKey("resourceType")
                 .documentType(elterSensor)
+                .documentType(elterManufacturer)
                 .fileUpload(false)
                 .build()
         );
@@ -462,6 +469,7 @@ public class ServiceConfig {
 
         // eLTER converters
         converters.add(new Object2TemplatedMessageConverter<>(SensorDocument.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(ManufacturerDocument.class, freemarkerConfiguration()));
 
         return new MessageConvertersHolder(converters);
     }
@@ -556,7 +564,8 @@ public class ServiceConfig {
                 .register(OSDP_PUBLICATION_SHORT, Publication.class)
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
-                .register(ELTER_SENSOR_DOCUMENT_SHORT, SensorDocument.class);
+                .register(ELTER_SENSOR_DOCUMENT_SHORT, SensorDocument.class)
+                .register(ELTER_MANUFACTURER_DOCUMENT_SHORT, ManufacturerDocument.class);
     }
     
     @Bean

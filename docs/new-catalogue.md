@@ -230,11 +230,11 @@ then in `configureContentNegotiation` you need to add
 
 `.put(YOUR_DOCUMENT_SHORT, MediaType.parseMediaType(YOUR_DOCUMENT_JSON_VALUE))` 
 
-then in `ServiceConfig` in `metadataRepresentationService` you need to add
+# Step 4d: ServiceConfig
+
+in `metadataRepresentationService` you need to add
 
 `.register(YOUR_DOCUMENT_SHORT, YourDocument.class);`
-
-# Step 4d: ServiceConfig
 
 in `catalogueService` you need to create a document e.g.
 
