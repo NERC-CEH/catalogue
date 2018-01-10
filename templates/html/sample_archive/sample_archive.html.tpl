@@ -60,7 +60,7 @@
           </@b.key>
         </#if>
         <#if website?? && website?has_content>
-          <@b.key "Website" "">${website}</@b.key>
+          <@b.key "Website" ""><a href="${website}">${website}</a></@b.key>
         </#if>
         <#if keywords?? && keywords?has_content>
           <@b.key "Keywords" ""><@b.keywords keywords/></@b.key>
@@ -128,7 +128,7 @@ Resource Locators
   <@b.repeatRow>
     <#if res.href?? && res.href?has_content>
       <@b.basicRow>
-        <@b.keyContent "${res.title}" "">${res.href}</@b.keyContent>
+        <@b.keyContent "${res.title}" ""><a href="${res.href}">${res.href}</a></@b.keyContent>
       </@b.basicRow>
     </#if>
   </@b.repeatRow>

@@ -107,6 +107,7 @@ public class DocumentUploadService {
         archive(guid, documentUpload -> {
             try {
                 zipIt(documentUpload);
+                save(documentUpload);
             } catch (IOException ioe) {
                 throw new UncheckedIOException(ioe);
             }
@@ -172,7 +173,10 @@ public class DocumentUploadService {
             val documentUpload = getDocumentUpload(guid);
             consumer.accept(documentUpload);
             save(documentUpload);
-            if (wasZipped) zipIt(documentUpload);
+            if (wasZipped) {
+                zipIt(documentUpload);
+                save(documentUpload);
+            }
             return documentUpload;
         } catch (IOException ioe) {
             throw new UncheckedIOException(ioe);
