@@ -8,9 +8,6 @@ variables:
   NODE_KEY: catalogue_version
   NODE_VALUE: $CI_BUILD_REF_NAME
 
-services:
-  - docker:dind
-
 cache:
   paths:
     - cache/gradle
@@ -29,7 +26,7 @@ mirror:
 
 java:
   stage: build
-  image: docker
+  image: gitlab/dind
   before_script:
     - echo jira.username=$JIRA_USERNAME > secrets.env
     - echo jira.password=$JIRA_PASSWORD >> secrets.env
@@ -38,7 +35,7 @@ java:
     - echo doi.password= >> secrets.env
   script:
     - >
-      docker run -t --rm
+      docker run --rm
       -v /var/run/docker.sock:/var/run/docker.sock
       -v "$(pwd)":"$(pwd)"
       -w "$(pwd)"
