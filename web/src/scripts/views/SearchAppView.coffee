@@ -30,10 +30,11 @@ define [
 
   ###
   The Sample Archive (and possibly other catalogues) does not have any facets
-  to filter by.  So make the Map Search the default and remove the Filter search
+  to filter by.  So make the Map Search the default tab when there are no facets
+  and hide the Filter search
   ###
   updateFilters: ->
-    if ($('html').data('catalogue') == 'sa')
+    if (!$($('.facet-filter')[0]).has("h3").length)
       do @enableSearchMap
       do @$('.facet-heading').hide
       @$('.map-filter').css('top', @$('.map-heading').css('height'))
