@@ -42,6 +42,8 @@ define [
   'cs!views/DepositRequestView'
   'cs!views/ElterSensorEditorView'
   'cs!views/ElterManufacturerEditorView'
+  'cs!models/ElterManufacturerSensorsModel'
+  'cs!views/ElterManufacturerSensorsView'
   'bootstrap'
   'dropzone'
 ], (
@@ -50,7 +52,8 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView,
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView, ElterSensorEditorView, ElterManufacturerEditorView
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
+    ElterSensorEditorView, ElterManufacturerEditorView, ElterManufacturerSensorsModel, ElterManufacturerSensorsView
 ) ->
 
   ###
@@ -69,9 +72,14 @@ define [
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
+    do @initManufacturerSensors if $('#manufacturer-sensors').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
+
+  initManufacturerSensors: ->
+    app = new ElterManufacturerSensorsModel $('#manufacturer-sensors').data('manufactuer')
+    view = new ElterManufacturerSensorsView model: app
 
   initDepositRequest: ->
     app = new DepositRequestModel

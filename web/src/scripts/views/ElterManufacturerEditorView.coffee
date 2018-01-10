@@ -15,7 +15,7 @@ define [
 ) -> EditorView.extend
 
   initialize: ->
-    @model.set('type', 'collectionHardware') unless @model.has('agent')
+    @model.set('type', 'agent')
 
     @sections = [
       label: 'Basic Info'

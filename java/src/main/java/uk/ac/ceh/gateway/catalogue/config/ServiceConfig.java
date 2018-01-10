@@ -359,6 +359,11 @@ public class ServiceConfig {
     }
 
     @Bean
+    public ElterService elterService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new ElterService(documentRepository(), solrServer);
+    }
+
+    @Bean
     public DocumentUploadService documentsUploadService() throws XPathExpressionException, IOException, TemplateModelException {
         return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
     }

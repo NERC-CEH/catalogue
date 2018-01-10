@@ -9,7 +9,7 @@ define [
   optionTemplate: _.template('<option value="<%= value %>"><%= label %></option>')
 
   initialize: (options) ->
-    @options = options.options
+    @options = options.options || []
     InputView.prototype.initialize.call @, options
 
   render: ->

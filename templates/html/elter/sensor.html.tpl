@@ -15,11 +15,18 @@
                         <dt>Process Type</dt>
                         <dd>${processType!"<b class='text-muted'>No Process Type</b>"}</dd>
                         <dt>Manufacturer</dt>
-                        <dd><a href='${manufacturer!"#"}'>${manufacturer!"<b class='text-muted'>No Manufacturer</b>"}</a></dd>
+                        <#if manufacturerName??>
+                            <dd><a href='/documents/${manufacturer!"#"}'>${manufacturerName}</a></dd>
+                        <#elseif manufacturer??>
+                            <dd><a href='/documents/${manufacturer!"#"}'>${manufacturer!""}</a></dd>
+                        <#else>
+                            <b class='text-muted'>No Manufacturer</b>
+                        </#if>
+                        
                         <dt>Default Parameters</dt>
                         <dd>
                         <#if defaultParameters??>
-                            <ul>
+                            <ul class="list-unstyled">
                             <#list defaultParameters as param>
                                 <li>${param['value']}</li>
                             </#list>

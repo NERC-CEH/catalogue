@@ -43,14 +43,10 @@ define [
             model: @model
             modelAttribute: 'documentation'
             label: 'Documentation'
-
-
           new ManufacturerView
             model: @model
             modelAttribute: 'manufacturer'
             label: 'Manufacturer'
-
-
           new SelectView
             model: @model
             modelAttribute: 'processType'

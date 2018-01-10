@@ -9,6 +9,8 @@
                     <dl class="dl-horizontal">
                         <dt>Website</dt>
                         <dd><a href='${website!"#"}'>${website!"<b class='text-muted'>No Website</b>"}</a></dd>
+                        <dt>Sensors</dt>
+                        <dd id='manufacturer-sensors' data-manufactuer="${id}">Retrieving</dd>
                     </dl>
                 </div>
             </div>
