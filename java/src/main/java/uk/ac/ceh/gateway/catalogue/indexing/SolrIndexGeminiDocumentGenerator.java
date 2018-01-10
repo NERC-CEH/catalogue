@@ -19,11 +19,11 @@ import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
  * @author cjohn
  */
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
-    private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
-    private static final String CEH_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/cehOGL";
-    private static final String OTHER_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence";
-    private static final String OTHER_OGL_URL_1 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGLnonceh";
-    
+    private static final String OGL_URL_1 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/cehOGL";
+    private static final String OGL_URL_2 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL";
+    private static final String OGL_URL_3 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence";
+
+
     private final TopicIndexer topicIndexer;
     private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;
     private final SolrGeometryService geometryService;
@@ -44,10 +44,11 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setTopic(topicIndexer.index(document))
             .setAltTitle(document.getAlternateTitles())
             .setLineage(document.getLineage())
-            .setResourceStatus(document.getResourceStatus())
+            .setResourceStatus(codeLookupService.lookup("metadata.resourceStatus", document.getResourceStatus()))
             .setLicence(getLicence(document))
             .setOrganisation(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
             .setIndividual(grab(document.getResponsibleParties(), ResponsibleParty::getIndividualName))
+            .setOrcid(grab(document.getResponsibleParties(), ResponsibleParty::getNameIdentifier))
             .setOnlineResourceName(grab(document.getOnlineResources(), OnlineResource::getName))
             .setOnlineResourceDescription(grab(document.getOnlineResources(), OnlineResource::getDescription))
             .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
@@ -66,10 +67,9 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .filter(k -> !k.getUri().isEmpty())
             .anyMatch(k -> {
                 String uri = k.getUri();
-                return uri.startsWith(OTHER_OGL_URL)
-                    || uri.startsWith(OTHER_OGL_URL_1)
-                    || uri.startsWith(CEH_OGL_URL)
-                    || uri.startsWith(OGL_URL);  
+                return uri.startsWith(OGL_URL_1)
+                    || uri.startsWith(OGL_URL_2)
+                    || uri.startsWith(OGL_URL_3);  
             });
     }
 }

@@ -28,6 +28,7 @@ public class SolrIndex {
     private @Field String resourceStatus;
     private @Field List<String> organisation;
     private @Field List<String> individual;
+    private @Field List<String> orcid;
     private @Field List<String> onlineResourceName;
     private @Field List<String> onlineResourceDescription;
     private @Field List<String> resourceIdentifier;
