@@ -125,6 +125,15 @@
       .resultTitle { margin:0 0 0.3em 0; font-size:1.6em;}
       .resultDescription { margin:0;}
     }
+    .result-withdrawn {
+      .label-withdrawn {
+        .text-danger;
+        margin-left: .75em;
+        font-weight: bold; 
+      };
+      .resultTitle a{color: lighten(@brand-success, 15%);}
+      .resultDescription {color: @gray;}
+    }
     @media (min-width: @screen-md-min) {
       .result {
         border-left:  8px solid @body-bg;

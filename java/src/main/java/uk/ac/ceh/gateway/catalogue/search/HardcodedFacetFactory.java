@@ -25,6 +25,13 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .hierarchical(false)
                     .build();
                 
+            case "status":
+                return Facet.builder()
+                    .fieldName("resourceStatus")
+                    .displayName("Status")
+                    .hierarchical(false)
+                    .build();
+                
             case "topic":        
                 return Facet.builder()
                     .fieldName("topic")

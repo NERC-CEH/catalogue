@@ -279,6 +279,7 @@ public class ServiceConfig {
                 .url("http://eidc.ceh.ac.uk")
                 .facetKey("topic")
                 .facetKey("resourceType")
+                .facetKey("status")
                 .facetKey("licence")
                 .documentType(gemini)
                 .fileUpload(false)

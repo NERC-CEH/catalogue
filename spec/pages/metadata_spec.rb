@@ -14,7 +14,6 @@ describe "Metadata page" do
         visit bmsPage
         # expect(find('#document-title')).to have_content "United Kingdom Butterfly Monitoring Scheme (UKBMS) data"
         expect(find('#document-description')).to have_content "This is a series of datasets available"
-        # expect(find('#resource-type')).to have_content('Series')
         expect(find('#section-spatial')).to have_content "OSGB 1936 / British National Grid"
         expect(find('.extentBegin')).to have_content "1976-04-01"
       end
