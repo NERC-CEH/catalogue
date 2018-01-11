@@ -17,7 +17,7 @@ define [
 ) -> EditorView.extend
 
   initialize: ->
-    @model.set('type', 'collectionHardware') unless @model.has('type')
+    @model.set('type', 'dataset') unless @model.has('type')
 
     @sections = [
       label: 'Basic Info'
@@ -43,14 +43,10 @@ define [
             model: @model
             modelAttribute: 'documentation'
             label: 'Documentation'
-
-
           new ManufacturerView
             model: @model
             modelAttribute: 'manufacturer'
             label: 'Manufacturer'
-
-
           new SelectView
             model: @model
             modelAttribute: 'processType'

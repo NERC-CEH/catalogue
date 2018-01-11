@@ -27,6 +27,7 @@ public class SensorDocument extends AbstractMetadataDocument {
     private String documentation;
     private String manufacturer;
     private String manufacturerName;
+    private String manufacturerWebsite;
     private List<Map<String, String>> defaultParameters;
     private ProcessType processType;
 }

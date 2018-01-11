@@ -41,7 +41,9 @@ public class ElterService {
     }
 
     public List<SensorDocument> getSensors (String manufacturer) {
-        return getSensors(getManufacturer(manufacturer));
+        val sensors = getSensors(getManufacturer(manufacturer));
+        sensors.removeIf(sensor -> !sensor.getManufacturer().equals(manufacturer));
+        return sensors;
     }
 
     public List<ManufacturerDocument> getManufacturers () {

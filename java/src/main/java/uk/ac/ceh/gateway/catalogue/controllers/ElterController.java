@@ -38,25 +38,34 @@ public class ElterController extends AbstractDocumentController {
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
   @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
   public ResponseEntity<MetadataDocument> newSensor(@ActiveUser CatalogueUser user, @RequestBody SensorDocument document, @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
-
-    if (!document.getManufacturer().equalsIgnoreCase("other")) {
-      val manufacturer = elterService.getManufacturer(document.getManufacturer());
-      document.setManufacturerName(manufacturer.getTitle());
-    }
-
+    setSensorManufacturer(document, user);
     return saveNewMetadataDocument(user, document, catalogue, "new eLTER Sensor Document");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
   @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
   public ResponseEntity<MetadataDocument> saveSensor(@ActiveUser CatalogueUser user, @PathVariable("file") String file, @RequestBody SensorDocument document) throws DocumentRepositoryException {
+    setSensorManufacturer(document, user);
+    return saveMetadataDocument(user, file, document);
+  }
 
+  private void setSensorManufacturer(SensorDocument document, CatalogueUser user) {
     if (!document.getManufacturer().equalsIgnoreCase("other")) {
       val manufacturer = elterService.getManufacturer(document.getManufacturer());
       document.setManufacturerName(manufacturer.getTitle());
+      document.setManufacturerWebsite(manufacturer.getWebsite());
+    } else {
+      val manufacturer = new ManufacturerDocument();
+      manufacturer.setType("dataset");
+      manufacturer.setTitle(document.getManufacturerName());
+      manufacturer.setWebsite(document.getManufacturerWebsite());
+      try {
+        saveNewMetadataDocument(user, manufacturer, "elter", "new eLTER Manufacturer Document");
+        document.setManufacturer(manufacturer.getId());
+      } catch (DocumentRepositoryException err) {
+        throw new RuntimeException(err);
+      }
     }
-
-    return saveMetadataDocument(user, file, document);
   }
 
   @PreAuthorize("@permission.userCanView(#manufacturer)")

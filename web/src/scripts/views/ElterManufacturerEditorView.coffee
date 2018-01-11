@@ -15,7 +15,7 @@ define [
 ) -> EditorView.extend
 
   initialize: ->
-    @model.set('type', 'agent')
+    @model.set('type', 'dataset')
 
     @sections = [
       label: 'Basic Info'
