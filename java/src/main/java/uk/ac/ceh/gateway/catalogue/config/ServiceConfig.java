@@ -337,6 +337,8 @@ public class ServiceConfig {
                 .title("eLTER")
                 .url("http://www.ceh.ac.uk")
                 .facetKey("documentType")
+                .facetKey("manufacturer")
+                .facetKey("manufacturerName")
                 .documentType(elterSensor)
                 .documentType(elterManufacturer)
                 .fileUpload(false)
@@ -662,6 +664,7 @@ public class ServiceConfig {
             .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
             .register(MonitoringFacility.class, new SolrIndexOsdpMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
             .register(SampleArchive.class, new SolrIndexSaMonitoringFacilityGenerator(metadataDocument, solrGeometryService()))
+            .register(SensorDocument.class, new SensorManufacturerIndexGenerator(metadataDocument))
             .register(MetadataDocument.class, metadataDocument);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry(mappings);

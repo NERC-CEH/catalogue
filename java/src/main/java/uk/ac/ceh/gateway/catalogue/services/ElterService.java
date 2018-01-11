@@ -41,9 +41,8 @@ public class ElterService {
     }
 
     public List<SensorDocument> getSensors (String manufacturer) {
-        val sensors = getSensors();
-        sensors.removeIf(sensor -> !sensor.getManufacturer().equals(manufacturer));
-        return sensors;
+        val finder = new SolrDocumentFinder<SensorDocument>(solrServer, documentRepository);
+        return finder.find(String.format("documentType:%s AND manufacturer:%s", ELTER_SENSOR_DOCUMENT_SHORT, manufacturer));
     }
 
     public List<ManufacturerDocument> getManufacturers () {
