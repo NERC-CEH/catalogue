@@ -87,6 +87,13 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Model Type")
                     .hierarchical(false)
                     .build();
+
+            case "documentType":
+                return Facet.builder()
+                    .fieldName("documentType")
+                    .displayName("Document Type")
+                    .hierarchical(false)
+                    .build();
         }
         return null;
     }
