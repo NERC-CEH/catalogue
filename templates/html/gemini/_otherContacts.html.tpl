@@ -9,9 +9,9 @@
       <dd>
         <div class="responsibleParty">      
         <#if otherContact.role == 'pointOfContact'>
-          ${func.displayContact(otherContact, true)}
+          ${func.displayContact(otherContact, true, false)}
         <#else>
-          ${func.displayContact(otherContact, false)}
+          ${func.displayContact(otherContact, false, false)}
         </#if>
         </div>
   	 </dd>
@@ -22,7 +22,7 @@
     <#list distributorContacts as distributorContact>
       <dt>${distributorContact.roleDisplayName?html}</dt>
       <dd>
-        ${func.displayContact(distributorContact, true)}
+        ${func.displayContact(distributorContact, true, false)}
       </dd>
     </#list>
   </#if>
