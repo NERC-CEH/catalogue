@@ -21,6 +21,7 @@ public class SolrDocumentFinder<T> {
     public List<T> find(String query) {
         List<T> found = Lists.newArrayList();
         SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setRows(500);
         solrQuery.setQuery(query);
         try {
             QueryResponse qr = solrServer.query(solrQuery);
