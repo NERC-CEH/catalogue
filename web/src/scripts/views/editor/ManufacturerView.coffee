@@ -20,6 +20,7 @@ define [
     SelectView.prototype.initialize.call @, options
 
     @model.on 'change', =>
+      console.log @model.attributes.manufacturer
       known = false
       for key, value of @options
         if value.value == @model.attributes.manufacturer

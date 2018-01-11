@@ -84,9 +84,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String SAMPLE_ARCHIVE_JSON_VALUE         = "application/vnd.sample-archive+json";
 
     public static final String ELTER_SENSOR_DOCUMENT_JSON_VALUE = "application/vnd.elter-sensor-document+json";
-    public static final String ELTER_SENSOR_DOCUMENT_SHORT = "elter-sensor-document";
+    public static final String ELTER_SENSOR_DOCUMENT_SHORT = "Sensor";
     public static final String ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE = "application/vnd.elter-manufacturer-document+json";
-    public static final String ELTER_MANUFACTURER_DOCUMENT_SHORT = "elter-manufacturer-document";
+    public static final String ELTER_MANUFACTURER_DOCUMENT_SHORT = "Manufacturer";
     
     @Autowired MessageConvertersHolder messageConvertersHolder;
     @Autowired freemarker.template.Configuration freemarkerConfiguration;

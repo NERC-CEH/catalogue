@@ -185,11 +185,11 @@ define [
         View: SampleArchiveEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.sample-archive+json'
-      'elter-sensor-document':
+      'Sensor':
         View: ElterSensorEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.elter-sensor-document+json'
-      'elter-manufacturer-document':
+      'Manufacturer':
         View: ElterManufacturerEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.elter-manufacturer-document+json'
