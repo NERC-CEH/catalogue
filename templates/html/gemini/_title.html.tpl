@@ -44,7 +44,7 @@
     </div>
   </#if>
   
-  <#if resourceStatus?has_content && resourceStatus == "historicalArchive">
+  <#if resourceStatus?has_content && (resourceStatus == "historicalArchive"  || resourceStatus == "obsolete")>
     <div id="not-current" role="alert">
       <p>
         <i class="fa fa-exclamation-circle fa-lg"></i> <b>THIS ${resourceType.value?upper_case} HAS BEEN WITHDRAWN</b>
