@@ -19,9 +19,14 @@ public class SolrDocumentFinder<T> {
     private final DocumentRepository documentRepository;
 
     public List<T> find(String query) {
+        return find(query, 0, 500);
+    }
+
+    public List<T> find(String query, int start, int rows) {
         List<T> found = Lists.newArrayList();
         SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setRows(500);
+        solrQuery.setRows(rows);
+        solrQuery.setStart(start);
         solrQuery.setQuery(query);
         try {
             QueryResponse qr = solrServer.query(solrQuery);
