@@ -336,7 +336,6 @@ public class ServiceConfig {
                 .id("elter")
                 .title("eLTER")
                 .url("http://www.ceh.ac.uk")
-                .facetKey("resourceType")
                 .facetKey("documentType")
                 .documentType(elterSensor)
                 .documentType(elterManufacturer)

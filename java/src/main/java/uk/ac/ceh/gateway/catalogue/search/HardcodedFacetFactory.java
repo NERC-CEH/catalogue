@@ -56,7 +56,7 @@ public class HardcodedFacetFactory implements FacetFactory {
             case "impTopic":
                 return Facet.builder()
                     .fieldName("impTopic")
-                    .displayName("Topic")
+                    .displayName("TPopic")
                     .hierarchical(false)
                     .build();
                 
