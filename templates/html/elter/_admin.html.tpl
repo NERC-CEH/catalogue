@@ -1,7 +1,7 @@
 <#if permission.userCanEdit(id)>
 <div class="container">
-    <div class="col-md-6">
-        <a href="/elter/documents" class="btn btn-lg btn-link">
+    <div class="sensor-admin col-md-6">
+        <a href="/elter/documents" class="btn btn-success">
             <i class="fa fa-files-o" aria-hidden="true"></i>
             <span>eLTER Documents</span>
         </a>

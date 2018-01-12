@@ -9,8 +9,48 @@
 .sensor-admin {
     padding: 0 !important;
     margin: 0 !important;
-
     .fa {
         margin-right: 3px;
+    }
+}
+
+.sensor-title-block {
+    display: inline-block;
+    & .fa-pencil {
+        vertical-align: middle;
+    }
+}
+
+.sensor-title .fa-pencil {
+    font-size: 18px;
+}
+
+.sensor-title-small .fa-pencil {
+    font-size: 14px;
+}
+
+.form-editable {
+    &:hover {
+        cursor: pointer;
+        color: @brand-success !important;
+        & .text-muted {
+            color: @brand-success !important;
+        }
+    }
+}
+
+.sensor-rows {
+    margin: 0;
+    margin-bottom: 2em;
+    padding: 0;
+}
+
+.sensor-row {
+    text-align: left !important;
+    &-key {
+        width: 175px !important;
+    }
+    &-value {
+        margin-left: 0 !important;
     }
 }
