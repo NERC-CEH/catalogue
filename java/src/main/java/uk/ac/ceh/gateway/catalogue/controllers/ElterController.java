@@ -5,7 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.elter.ManufacturerDocument;
 import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
@@ -18,6 +21,7 @@ import java.util.List;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
+@Slf4j
 @Controller
 public class ElterController extends AbstractDocumentController {
 
@@ -31,18 +35,26 @@ public class ElterController extends AbstractDocumentController {
 
   // Sensor
 
-  @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newSensor(@ActiveUser CatalogueUser user, @RequestBody SensorDocument document, @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
-    setSensorManufacturer(document, user);
-    return saveNewMetadataDocument(user, document, catalogue, "new eLTER Sensor Document");
+  @PreAuthorize("@permission.userCanCreate('elter')")
+  @RequestMapping(value = "documents/new/elter", method = RequestMethod.POST)
+  public RedirectView newSensor(
+    @ActiveUser CatalogueUser user,
+    @ModelAttribute SensorDocument document) throws DocumentRepositoryException {
+    // setSensorManufacturer(document, user);
+     saveNewMetadataDocument(user, document, "elter", "new eLTER Sensor Document");
+    return new RedirectView(String.format("/documents/%s", document.getId()));
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
-  @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> saveSensor(@ActiveUser CatalogueUser user, @PathVariable("file") String file, @RequestBody SensorDocument document) throws DocumentRepositoryException {
-    setSensorManufacturer(document, user);
-    return saveMetadataDocument(user, file, document);
+  @RequestMapping(value = "documents/{file}/submit", method = RequestMethod.POST)
+  public RedirectView saveSensor(
+      @ActiveUser CatalogueUser user,
+      @PathVariable("file") String file,
+      @ModelAttribute SensorDocument document
+  ) throws DocumentRepositoryException {
+    // setSensorManufacturer(document, user);
+    saveMetadataDocument(user, file, document);
+    return new RedirectView(String.format("/documents/%s", document.getId()));
   }
 
   private void setSensorManufacturer(SensorDocument document, CatalogueUser user) {

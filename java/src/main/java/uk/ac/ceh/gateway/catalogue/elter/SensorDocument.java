@@ -21,7 +21,6 @@ import lombok.experimental.Accessors;
 })
 public class SensorDocument extends AbstractMetadataDocument {
 
-    private String description;
     private String shortName;
     private String serialNumber;
     private String documentation;

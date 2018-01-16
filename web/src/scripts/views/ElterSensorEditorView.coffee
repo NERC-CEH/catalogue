@@ -1,69 +1,93 @@
 define [
-  'cs!views/EditorView'
-  'cs!views/editor/InputView'
-  'cs!views/editor/TextareaView'
-  'cs!views/editor/SelectView'
-  'cs!views/editor/KeywordValueInputView'
-  'cs!views/editor/ParentView'
-  'cs!views/editor/ManufacturerView'
+  'underscore'
+  'backbone'
+  'tpl!templates/sensor.tpl'
 ], (
-  EditorView
-  InputView
-  TextareaView
-  SelectView
-  KeywordValueInputView
-  ParentView
-  ManufacturerView
-) -> EditorView.extend
+  _
+  Backbone
+  sensorTpl
+) -> Backbone.View.extend
+  templates:
+    text: '<input id="update" class="form-control" type="text" name="<%= field %>" value="<%= value %>" <%= required %> >'
+    link: '<input id="update" class="form-control" type="text" name="<%= field %>" value="<%= value %>" <%= required %> >'
+    textarea: '<textarea id="update" class="form-control" name="<%= field %>" <%= required %> ><%= value %></textarea>'
 
   initialize: ->
-    @model.set('type', 'dataset') unless @model.has('type')
+    do @initSync
+    if $('.new-form').length == 0
+      do @saveNew
+    else
+      do @initForm
+    do @initEdit
+  
+  initSync: ->
+    @model.on 'sync', =>
+      for key, value of @model.attributes
+        $('#' + key + '-value').html(value)
+        if @editable and @editable.data('field') == key
+          @editable.find('input').attr('disabled', no)
+          @editable.find('input').val(value)
+          @editable.data('value', value)
+          if @editable.data('type') == 'link'
+            $('#' + key + '-value').attr('href', value)
+          @editable = null
+      
+      if @editable != null
+        $('#' + @editable.data('field') + '-value').html(@editable.data('defatulValue'))
+        if @editable.data('type') == 'link'
+            $('#' + key + '-value').attr('href', '#')
+        @editable.find('input').attr('disabled', no)
+        @editable.find('input').val('')
+        @editable.data('value', '')
+        @editable = null
 
-    @sections = [
-      label: 'Basic Info'
-      title: 'Basic Info'
-      views: [
-          new InputView
-            model: @model
-            modelAttribute: 'title'
-            label: 'Long Name'
-          new InputView
-            model: @model
-            modelAttribute: 'shortName'
-            label: 'Short Name'
-          new TextareaView
-            model: @model
-            modelAttribute: 'description'
-            label: 'Description'
-          new InputView
-            model: @model
-            modelAttribute: 'serialNumber'
-            label: 'Serial Number'
-          new InputView
-            model: @model
-            modelAttribute: 'documentation'
-            label: 'Documentation'
-          new ManufacturerView
-            model: @model
-            modelAttribute: 'manufacturer'
-            label: 'Manufacturer'
-          new SelectView
-            model: @model
-            modelAttribute: 'processType'
-            label: 'Process Type'
-            options: [
-              { value: 'Simulation', label: 'Simulation' }
-              { value: 'Manual', label: 'Manual' }
-              { value: 'Sensor', label: 'Sensor' }
-              { value: 'Algorithm', label: 'Algorithm' }
-              { value: 'Unknown', label: 'Unknown' }
-            ]
-          new ParentView
-            model: @model
-            modelAttribute: 'defaultParameters'
-            label: 'Default Parameters'
-            ObjectInputView: KeywordValueInputView
-      ]
-    ]
+  saveNew: ->
+    $('.search').html(sensorTpl())
 
-    EditorView.prototype.initialize.apply @
+  initForm: ->
+    $('form').submit (event) =>
+      $.ajax(
+        type: 'POST'
+        url: $('form').attr('action')
+        data: $('form').serialize()
+        success: =>
+          do $('#update').remove
+          if @editable
+            field = @editable.data('field')
+            do $('#form-value-' + field).show
+          do @model.fetch
+          do @initEdit
+      )
+      do event.preventDefault
+
+  initEdit: ->
+    $('.form-editable').click (evt) =>
+      $('.form-editable').unbind 'click'
+      @editable = @getEditable(evt.target)
+      @editable.find('input').attr('disabled', 'disabled')
+
+      field = @editable.data('field')
+      type = @editable.data('type')
+      value = @editable.data('value')
+      required = @editable.data('isRequired')
+
+      do $('#form-value-' + field).hide
+
+      @editable.append(_.template(@templates[type])(
+        field: field
+        value: value
+        required: required
+      ))
+      do $('#update').focus
+      $('#update').blur ->
+        newValue = $('#update').val()
+        $('#update').val(value) if newValue == ''
+        $('form').submit()
+      
+
+  getEditable: (el) ->
+    el = $(el)
+    if !el.hasClass('form-editable')
+      @getEditable(el.parent())
+    else
+      el

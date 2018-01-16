@@ -41,6 +41,7 @@ define [
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
   'cs!views/ElterSensorEditorView'
+  'cs!models/ElterSensorEditorModel'
   'cs!views/ElterManufacturerEditorView'
   'cs!models/ElterManufacturerSensorsModel'
   'cs!views/ElterManufacturerSensorsView'
@@ -53,7 +54,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ElterSensorEditorView, ElterManufacturerEditorView, ElterManufacturerSensorsModel, ElterManufacturerSensorsView
+    ElterSensorEditorView, ElterSensorEditorModel, ElterManufacturerEditorView, ElterManufacturerSensorsModel, ElterManufacturerSensorsView
 ) ->
 
   ###
@@ -73,9 +74,25 @@ define [
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
     do @initManufacturerSensors if $('#manufacturer-sensors').length
+    do @newForm if $('.new-form').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
+
+  newForm: ->
+    formMap =
+      sensor:
+        view: ElterSensorEditorView
+        model: ElterSensorEditorModel
+
+    document = $('.new-form').data('document')
+    guid = $('.new-form').data('guid')
+
+    form = formMap[document]
+    if form
+      app = new form.model
+      app.url = "/documents/" + guid
+      view = new form.view model: app
 
   initManufacturerSensors: ->
     app = new ElterManufacturerSensorsModel $('#manufacturer-sensors').data('manufactuer')
