@@ -3,6 +3,7 @@ plugins {
     id 'idea'
     id 'com.github.ben-manes.versions' version '0.15.0'
     id 'org.unbroken-dome.test-sets' version '1.4.2'
+    id 'com.avast.gradle.docker-compose' version '0.6.11'
 }
 
 ext {
@@ -22,6 +23,8 @@ war {
 }
 
 sourceCompatibility = javaVersion
+
+composeUp.dependsOn war
 
 repositories {
     mavenLocal()
@@ -49,6 +52,16 @@ testSets {
 
 check.dependsOn(integrationTest)
 integrationTest.mustRunAfter(test)
+
+dockerCompose {
+    useComposeFiles = ['../docker-compose.yml', '../docker-compose-chrome.yml']
+}
+
+dockerCompose.isRequiredBy(integrationTest)
+
+integrationTest.doFirst {
+    dockerCompose.exposeAsSystemProperties(integrationTest)
+}
 
 dependencies {
     implementation "uk.ac.ceh.components:datastore-git:${cehComponentsVersion}"

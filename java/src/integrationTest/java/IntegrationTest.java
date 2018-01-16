@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.core.IsEqual;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -21,9 +22,9 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 @Slf4j
+@Ignore
 public class IntegrationTest {
     private final RestTemplate template = new RestTemplate();
-
     @ClassRule
     public static DockerComposeRule docker  = DockerComposeRule.builder()
         .files(DockerComposeFiles.from("../docker-compose.yml", "../docker-compose-chrome.yml"))
@@ -39,7 +40,7 @@ public class IntegrationTest {
     @SneakyThrows
     private RemoteWebDriver webDriver() {
         DockerPort chromePort = docker.containers().container("chrome").port(4444);
-        URL url = new URL("http", "172.17.0.1", chromePort.getExternalPort(), "/wd/hub");
+        URL url = new URL("http", "localhost", chromePort.getExternalPort(), "/wd/hub");
         ChromeOptions options = new ChromeOptions();
         return new RemoteWebDriver(url, options);
     }
@@ -48,7 +49,7 @@ public class IntegrationTest {
     @SneakyThrows
     public void getCapabilities() {
         ResponseEntity<String> response = template.getForEntity(
-            "http://172.17.0.1:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
+            "http://localhost:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1",
             String.class,
             webPort(),
             "mapserver-shapefile"
@@ -61,7 +62,7 @@ public class IntegrationTest {
     @SneakyThrows
     public void getTmsImage() {
         ResponseEntity<String> response = template.getForEntity(
-            "http://172.17.0.1:{port}/documents/{id}/onlineResources/0/tms/1.0.0/{layer}/3/3/5.png",
+            "http://localhost:{port}/documents/{id}/onlineResources/0/tms/1.0.0/{layer}/3/3/5.png",
             String.class,
             webPort(),
             "mapserver-shapefile",
@@ -75,7 +76,7 @@ public class IntegrationTest {
     @SneakyThrows
     public void getMapImage() {
         ResponseEntity<String> response = template.getForEntity(
-            "http://172.17.0.1:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS={layers}&STYLES=&FORMAT=image/png&HEIGHT=256&WIDTH=256&SRS={srs}&BBOX=0,0,700000,1300000",
+            "http://localhost:{port}/maps/{id}?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS={layers}&STYLES=&FORMAT=image/png&HEIGHT=256&WIDTH=256&SRS={srs}&BBOX=0,0,700000,1300000",
             String.class,
             webPort(),
             "mapserver-raster",
@@ -95,7 +96,7 @@ public class IntegrationTest {
 
         //When
         ResponseEntity<String> response = template.exchange(
-            "http://172.17.0.1:{port}/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/publication",
+            "http://localhost:{port}/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/publication",
             HttpMethod.GET,
             new HttpEntity<>(headers),
             String.class,
@@ -116,7 +117,7 @@ public class IntegrationTest {
 
         //When
         ResponseEntity<String> response = template.exchange(
-            "http://172.17.0.1:{port}/eidc/documents?term=land",
+            "http://localhost:{port}/eidc/documents?term=land",
             HttpMethod.GET,
             new HttpEntity<>(headers),
             String.class,
