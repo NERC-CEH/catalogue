@@ -10,9 +10,8 @@
 <#assign custodianEIDC = filter(filter(otherContacts, "role", "custodian"), "organisationName", "Environmental Information Data Centre") >
 
 <#if permission.userCanEdit(id)>
-  <div class="row">
+  <div class="row" id="adminPanel">
     <div class="col-sm-5 col-sm-offset-7 col-xs-12 col-xs-offset-0">
-      <div id="adminPanel">    
         <div class="btn-group btn-group-sm btn-group-justified" role="group">
           <a href="#" class="btn btn-default edit-control" data-document-type="${metadata.documentType}"><i class="fa fa-pencil"></i> Edit</a>
           <div class="btn-group btn-group-sm" role="group">
@@ -79,7 +78,6 @@
             </div>
           </#if>
         </div>         
-      </div>
     </div>
   </div>
 </#if>

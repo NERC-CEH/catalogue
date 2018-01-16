@@ -49,6 +49,7 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
+import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
@@ -102,6 +103,11 @@ public class ServiceConfig {
     @Bean
     public PermissionService permission() {
         return new PermissionService(dataRepository, documentInfoMapper(), groupStore);
+    }
+
+    @Bean
+    public DepositRequestService depositRequestService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new DepositRequestService(documentRepository(), solrServer);
     }
 
     @Bean
@@ -190,6 +196,9 @@ public class ServiceConfig {
         converters.add(new Object2TemplatedMessageConverter<>(MonitoringProgramme.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(Publication.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration()));
+
+        //Sample Archive
+        converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration()));
         
         // Gemini Message Converters
         converters.add(new Object2TemplatedMessageConverter<>(GeminiDocument.class,       freemarkerConfiguration()));
@@ -284,6 +293,7 @@ public class ServiceConfig {
     @Bean
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
+                .register(DEPOSIT_REQUEST_DOCUMENT, DepositRequestDocument.class)
                 .register(GEMINI_DOCUMENT, GeminiDocument.class)
                 .register(EF_DOCUMENT, BaseMonitoringType.class)
                 .register(IMP_DOCUMENT, ImpDocument.class)
@@ -297,7 +307,8 @@ public class ServiceConfig {
                 .register(OSDP_MONITORING_FACILITY_SHORT, MonitoringFacility.class)
                 .register(OSDP_MONITORING_PROGRAMME_SHORT, MonitoringProgramme.class)
                 .register(OSDP_PUBLICATION_SHORT, Publication.class)
-                .register(OSDP_SAMPLE_SHORT, Sample.class);
+                .register(OSDP_SAMPLE_SHORT, Sample.class)
+                .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class);
     }
     
     @Bean
@@ -453,9 +464,7 @@ public class ServiceConfig {
                         new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService(), geminiSchema),
                         html
                 )))
-                .register(MetadataDocument.class, new ValidationIndexGenerator(Arrays.asList(
-                        html
-                )));
+                .register(MetadataDocument.class, new ValidationIndexGenerator(Collections.singletonList(html)));
         
         return new ValidationIndexingService<>(
                 bundledReaderService(),

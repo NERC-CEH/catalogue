@@ -7,7 +7,7 @@
         <#list metadataPointsOfContact as metadataPointOfContact>
           <dd>
           <div class="responsibleParty">
-             ${func.displayContact(metadataPointOfContact, false)}
+             ${func.displayContact(metadataPointOfContact, false, false)}
           </div>
           </dd>
         </#list>

@@ -84,7 +84,7 @@ public class DownloadOrderDetailsServiceTest {
         String orderUrl = "SomewhereElse";
         String orderMessage = "Message";
         OnlineResource onlineResource = OnlineResource.builder()
-                .function("order").url(orderUrl).description(orderMessage).build();
+                .function("offlineAccess").url(orderUrl).description(orderMessage).build();
         List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
         
         //When

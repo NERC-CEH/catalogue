@@ -75,7 +75,7 @@ Row of a metadata document
 The basic structure of a metadata item that has a key (title) and content.
 A row of information in the document.
 -->
-<#macro key key description>
+<#macro key key description auto_esc=false>
   <@basicRow "key-value">
     <@keyContent key description>
       <#nested>
@@ -257,13 +257,13 @@ A list of Keywords
           <#if keyword.uri?? && keyword.uri?has_content>
             <a href="${keyword.uri}">
               <#if keyword.value?? && keyword.value?has_content>
-                ${keyword.value}
+                ${keyword.value?cap_first}
               <#else>
                   ${keyword.uri}
               </#if>
             </a>
           <#elseif keyword.value?? && keyword.value?has_content>
-            ${keyword.value}
+            ${keyword.value?cap_first}
           <#else>
             <span class="text-muted">missing</span>
           </#if>

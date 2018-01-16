@@ -15,7 +15,6 @@ define [
         @trigger 'loaded'
 
       error: (model) =>
-        console.log "Error loading permission for: #{model.id}"
         @trigger 'error', "Unable to load permission for: #{model.id}"
 
   getPermission: ->

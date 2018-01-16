@@ -262,11 +262,16 @@ define [
               name: 'Online ordering'
               description: 'This resource is under embargo and will be made available by {dd/mm/yyyy} at the latest'
               function: 'order'
-            'Embargoed documentation':
-              url: 'http://eidc.ceh.ac.uk/administration-folder/tools/embargo'
-              name: 'Supporting information'
-              description: 'This resource is under embargo and will be made available by {dd/mm/yyyy} at the latest'
-              function: 'information'
+            'Resource superseded (ERRATUM)':
+              url: 'http://eidc.ceh.ac.uk/administration-folder/tools/superseded'
+              name: 'Request the data'
+              description: 'This dataset has been superseded. If you need access to this version of the data, please email eidc@ceh.ac.uk'
+              function: 'offlineAccess'
+            'Resource withdrawn':
+              url: 'http://eidc.ceh.ac.uk/administration-folder/tools/Withdrawn'
+              name: 'Request the data'
+              description: 'This dataset has been withdrawn. If you need access to this version of the data, please email eidc@ceh.ac.uk'
+              function: 'offlineAccess'
           helpText: """
                     <p>Include addresses of web services used to access the data (e.g. order manager) and supporting information.</p>
                     <p>Other links such as project websites or related journal articles should NOT be included here. You can add them to "Additional links"</p>
@@ -336,6 +341,14 @@ define [
             'Registration required':
               value: 'Registration is required to access this data'
               uri: 'https://eip.ceh.ac.uk/catalogue/help/faq/registration'
+              code: 'otherRestrictions'
+            'Resource superseded (ERRATUM)':
+              value: 'This dataset has been superseded. If you need access to this version of the data, please email eidc@ceh.ac.uk'
+              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/superseded'
+              code: 'otherRestrictions'
+            'Resource withdrawn':
+              value: 'This dataset has been withdrawn. If you need access to this version of the data, please email eidc@ceh.ac.uk'
+              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/Withdrawn'
               code: 'otherRestrictions'
             'no limitations':
               value: 'no limitations'
@@ -501,6 +514,15 @@ define [
                     <p>Information about the source data used in the construction of this data resource.</p>
                     <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>
                     <p>See <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank">guidance for metadata authors</a>.</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'erratum'
+          label: 'Erratum'
+          rows: 7
+          helpText: """
+                    <p>If this record is being retracted, the reasons for withdrawal should be explained here.</p>
                     """
 
         new ParentView

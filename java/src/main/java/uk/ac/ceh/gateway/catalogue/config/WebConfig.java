@@ -80,6 +80,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String OSDP_PUBLICATION_SHORT       = "osdp-publication";
     public static final String OSDP_SAMPLE_JSON_VALUE       = "application/vnd.osdp.sample+json";
     public static final String OSDP_SAMPLE_SHORT            = "osdp-sample";
+    public static final String SAMPLE_ARCHIVE_SHORT         = "sample-archive";
+    public static final String SAMPLE_ARCHIVE_JSON_VALUE         = "application/vnd.sample-archive+json";
     
     @Autowired MessageConvertersHolder messageConvertersHolder;
     @Autowired freemarker.template.Configuration freemarkerConfiguration;
@@ -147,6 +149,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(OSDP_MONITORING_PROGRAMME_SHORT, MediaType.parseMediaType(OSDP_MONITORING_PROGRAMME_JSON_VALUE))
                         .put(OSDP_PUBLICATION_SHORT, MediaType.parseMediaType(OSDP_PUBLICATION_JSON_VALUE))
                         .put(OSDP_SAMPLE_SHORT, MediaType.parseMediaType(OSDP_SAMPLE_JSON_VALUE))
+                        .put(SAMPLE_ARCHIVE_SHORT, MediaType.parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE))
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo

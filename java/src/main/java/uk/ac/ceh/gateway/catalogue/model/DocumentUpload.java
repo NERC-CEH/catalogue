@@ -75,6 +75,6 @@ public class DocumentUpload {
     }
 
     public enum Type {
-        DOCUMENTS, INVALID_HASH, MISSING_FILE, UNKNOWN_FILE
+        DOCUMENTS, INVALID_HASH, MISSING_FILE, UNKNOWN_FILE, INVALID
     }
 }

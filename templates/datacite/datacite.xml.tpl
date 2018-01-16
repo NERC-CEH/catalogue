@@ -63,7 +63,9 @@
 
   <descriptions>
     <description descriptionType="Abstract">${doc.description}</description>
-    <description descriptionType="Methods">${doc.lineage}</description>
+    <#if doc.lineage?has_content && doc.lineage??>
+      <description descriptionType="Methods">${doc.lineage}</description>
+    </#if>
   </descriptions>
   <#if doc.boundingBoxes?has_content && doc.boundingBoxes??>
   <geoLocations>

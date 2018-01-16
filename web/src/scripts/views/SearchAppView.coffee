@@ -25,6 +25,20 @@ define [
 
     do @render
     @listenTo @model, 'change:mapsearch', @updateSearchMap
+    do @updateFilters
+
+
+  ###
+  The Sample Archive (and possibly other catalogues) does not have any facets
+  to filter by.  So make the Map Search the default tab when there are no facets
+  and hide the Filter search
+  ###
+  updateFilters: ->
+    if (!$($('.facet-filter')[0]).has("h3").length)
+      do @enableSearchMap
+      do @$('.facet-heading').hide
+      @$('.map-filter').css('top', @$('.map-heading').css('height'))
+      @$('.map-heading').css('margin-top', '0px')
 
   ###
   Grab the query state from the anchors clicked href. Use this to update the

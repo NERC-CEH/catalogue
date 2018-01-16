@@ -50,7 +50,6 @@ java:
       - web/src/vendor/
       - web/src/css/
       - web/src/scripts/main-out.js
-      - java/build/reports/tests/
 
 .deployment_template: &deployment_definition # Hidden deployment definition for docker builds
   stage: docker

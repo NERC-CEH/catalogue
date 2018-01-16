@@ -1,7 +1,7 @@
-<div class="navbar navbar-default document-upload-footer">
+<div class="document-upload-footer clearfix">
     <div class="container">
-        <div class="navbar-right">
-            <a class="btn btn-default navbar-btn" href="/documents/${documents.guid}">Return to metadata</a>
+        <div class="pull-right">
+        <a class="btn btn-default" href="/documents/${documents.guid}">&laquo; Return to metadata</a>
         </div>
     </div>
 </div>

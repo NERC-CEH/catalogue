@@ -72,11 +72,11 @@ public class DownloadOrderDetailsService {
             isOrderable = !orderResources.isEmpty();
 
             if (!isOrderable) {
-                // No DOWNLOADs or order manager ORDERs were found. Does an 
-                // embargoed message exist as a dummy order?
+                // No DOWNLOADs or order manager ORDERs were found. Does a 
+                // message exist as a dummy order?
                 onlineResources
                         .stream()
-                        .filter(r -> r.getFunction().equals("order"))
+                        .filter(r -> r.getFunction().equals("offlineAccess"))
                         .forEach(orderResources::add);
             }
         }

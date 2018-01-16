@@ -107,6 +107,7 @@ public class DocumentUploadService {
         archive(guid, documentUpload -> {
             try {
                 zipIt(documentUpload);
+                save(documentUpload);
             } catch (IOException ioe) {
                 throw new UncheckedIOException(ioe);
             }
@@ -126,6 +127,7 @@ public class DocumentUploadService {
                 }
                 val checksums = new File(documentUpload.getPath(), "checksums.hash");
                 zipFile.addFile(checksums, new ZipParameters());
+                FileUtils.write(checksums, String.format("%s *%s", hash(zipRawFile),  zipFilename), Charset.defaultCharset());
             } catch(ZipException ze) {
                 throw new RuntimeException(ze);
             }
@@ -171,7 +173,10 @@ public class DocumentUploadService {
             val documentUpload = getDocumentUpload(guid);
             consumer.accept(documentUpload);
             save(documentUpload);
-            if (wasZipped) zipIt(documentUpload);
+            if (wasZipped) {
+                zipIt(documentUpload);
+                save(documentUpload);
+            }
             return documentUpload;
         } catch (IOException ioe) {
             throw new UncheckedIOException(ioe);

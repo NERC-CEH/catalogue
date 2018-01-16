@@ -43,7 +43,7 @@ public class PermissionService {
             );
         } catch (DataRepositoryException ex) {
             throw new PermissionDeniedException(
-                String.format(
+                format(
                     "No document found for: %s",
                     file
                 ),
@@ -89,7 +89,7 @@ public class PermissionService {
             }
         } catch (DataRepositoryException ex) {
             throw new PermissionDeniedException(
-                String.format(
+                format(
                     "No document found for: %s",
                     file
                 ),
@@ -105,9 +105,13 @@ public class PermissionService {
             MetadataInfo document = getMetadataInfo(file, latestRevision.getRevisionID());
             return !user.isPublic() && toAccess(user, document, "UPLOAD");
         } catch (DataRepositoryException ex) {
-            String message = String.format("No document found for: %s", file);
+            String message = format("No document found for: %s", file);
             throw new PermissionDeniedException(message, ex);
         }
+    }
+
+    public boolean userCanViewOrIsInGroup(@NonNull String file, @NonNull String group) {
+        return userInGroup(group) || userCanView(file);
     }
 
     public boolean userCanView(@NonNull String file) {
@@ -117,7 +121,7 @@ public class PermissionService {
             MetadataInfo document = getMetadataInfo(file, latestRevision.getRevisionID());
             return !user.isPublic() && toAccess(user, document, "VIEW");
         } catch (DataRepositoryException ex) {
-            String message = String.format("No document found for: %s", file);
+            String message = format("No document found for: %s", file);
             throw new PermissionDeniedException(message, ex);
         }
     }
@@ -136,6 +140,10 @@ public class PermissionService {
     
     public boolean userCanDatacite() {
         return userCan((String name) -> name.equalsIgnoreCase(DataciteController.DATACITE_ROLE));
+    }
+
+    public boolean userInGroup (String group) {
+        return userCan((String name) -> name.equalsIgnoreCase(group));
     }
     
     private List<Group> getGroupsForUser(CatalogueUser user) {
@@ -170,7 +178,7 @@ public class PermissionService {
             return documentInfoMapper.readInfo(dataDocument.getInputStream());
         } catch (IOException ex) {
             throw new PermissionDeniedException(
-                String.format(
+                format(
                     "No document found for: %s at revision: %s",
                     file,
                     revision

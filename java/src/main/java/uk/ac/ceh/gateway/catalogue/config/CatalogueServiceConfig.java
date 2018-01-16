@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
 
@@ -10,6 +11,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
 @Configuration
 public class CatalogueServiceConfig {
+    public static final String DEPOSIT_REQUEST_DOCUMENT = "DEPOSIT_REQUEST_DOCUMENT";
     public static final String GEMINI_DOCUMENT = "GEMINI_DOCUMENT";
     public static final String EF_DOCUMENT = "EF_DOCUMENT";
     public static final String IMP_DOCUMENT = "IMP_DOCUMENT";
@@ -21,78 +23,91 @@ public class CatalogueServiceConfig {
     public CatalogueService catalogueService() {
         String defaultCatalogueKey = "eidc";
 
-        Catalogue.DocumentType gemini = Catalogue.DocumentType.builder()
+        DocumentType gemini = DocumentType.builder()
             .title("Data Resource")
             .type(GEMINI_DOCUMENT)
             .build();
 
-        Catalogue.DocumentType ef = Catalogue.DocumentType.builder()
+        DocumentType ef = DocumentType.builder()
             .title("Monitoring")
             .type(EF_DOCUMENT)
             .build();
 
-        Catalogue.DocumentType imp = Catalogue.DocumentType.builder()
+        DocumentType imp = DocumentType.builder()
             .title("Model")
             .type(IMP_DOCUMENT)
             .build();
 
-        Catalogue.DocumentType cehModel = Catalogue.DocumentType.builder()
+        DocumentType cehModel = DocumentType.builder()
             .title("Model")
             .type(CEH_MODEL)
             .build();
 
-        Catalogue.DocumentType cehModelApplication = Catalogue.DocumentType.builder()
+        DocumentType cehModelApplication = DocumentType.builder()
             .title("Model Application")
             .type(CEH_MODEL_APPLICATION)
             .build();
 
-        Catalogue.DocumentType link = Catalogue.DocumentType.builder()
+        DocumentType link = DocumentType.builder()
             .title("Link")
             .type(LINK_DOCUMENT)
             .build();
 
-        Catalogue.DocumentType agent = Catalogue.DocumentType.builder()
+        DocumentType agent = DocumentType.builder()
             .title("Agent")
             .type(OSDP_AGENT_SHORT)
             .build();
 
-        Catalogue.DocumentType dataset = Catalogue.DocumentType.builder()
+        DocumentType dataset = DocumentType.builder()
             .title("Dataset")
             .type(OSDP_DATASET_SHORT)
             .build();
 
-        Catalogue.DocumentType model = Catalogue.DocumentType.builder()
+        DocumentType model = DocumentType.builder()
             .title("Model")
             .type(OSDP_MODEL_SHORT)
             .build();
 
-        Catalogue.DocumentType monitoringActivity = Catalogue.DocumentType.builder()
+        DocumentType monitoringActivity = DocumentType.builder()
             .title("Monitoring Activity")
             .type(OSDP_MONITORING_ACTIVITY_SHORT)
             .build();
 
-        Catalogue.DocumentType monitoringFacility = Catalogue.DocumentType.builder()
+        DocumentType monitoringFacility = DocumentType.builder()
             .title("Monitoring Facility")
             .type(OSDP_MONITORING_FACILITY_SHORT)
             .build();
 
-        Catalogue.DocumentType monitoringProgramme = Catalogue.DocumentType.builder()
+        DocumentType monitoringProgramme = DocumentType.builder()
             .title("Monitoring Programme")
             .type(OSDP_MONITORING_PROGRAMME_SHORT)
             .build();
 
-        Catalogue.DocumentType publication = Catalogue.DocumentType.builder()
+        DocumentType publication = DocumentType.builder()
             .title("Publication")
             .type(OSDP_PUBLICATION_SHORT)
             .build();
 
-        Catalogue.DocumentType sample = Catalogue.DocumentType.builder()
+        DocumentType sample = DocumentType.builder()
             .title("Sample")
             .type(OSDP_SAMPLE_SHORT)
             .build();
 
+        DocumentType sampleArchive = DocumentType.builder()
+            .title("Sample Archive")
+            .type(SAMPLE_ARCHIVE_SHORT)
+            .build();
+
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            Catalogue.builder()
+                .id("sa")
+                .title("Sample Archive")
+                .url("")
+                .documentType(sampleArchive)
+                .fileUpload(false)
+                .build(),
 
             Catalogue.builder()
                 .id("osdp")

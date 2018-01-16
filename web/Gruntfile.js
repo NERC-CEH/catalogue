@@ -89,6 +89,11 @@ module.exports = function(grunt) {
         files: {
           'src/css/style-osdp.css': 'src/less/style-osdp.less'
         }
+      },
+      sa: {
+        files: {
+          'src/css/style-sa.css': 'src/less/style-sa.less'
+        }
       }
     },
     cssmin: {
@@ -140,6 +145,11 @@ module.exports = function(grunt) {
       osdp: {
         files: {
           'src/css/style-osdp.css': 'src/css/style-osdp.css'
+        }
+      },
+      sa: {
+        files: {
+          'src/css/style-sa.css': 'src/css/style-sa.css'
         }
       }
     },

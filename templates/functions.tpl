@@ -18,7 +18,7 @@
     <#return result>
 </#function>
 
-<#function displayContact contact showPostal>
+<#function displayContact contact showPostal showOrcid>
   <#local lcontact = "", displayAddress = "", concatAddress="">
 
   <#if contact.address?has_content>
@@ -61,7 +61,7 @@
     </#if>
     <#local displayAddress = displayAddress + '</div>'>
   </#if>
-
+  
   <#if contact.organisationName?has_content>
     <#if contact.organisationName?matches("unaffiliated(|.+)", "i")>
       <#assign orgName = "">
@@ -70,17 +70,19 @@
     </#if>
 
     <#if contact.email?has_content>
-      <#if contact.individualName?has_content>
-        <#local lcontact = lcontact + "<div class='individualName' title='"+ concatAddress + "'><a href='mailto:" + contact.email + "&amp;subject=RE: " + title + "'>" + contact.individualName + "</a></div>">
-        <#local lcontact = lcontact + "<div class='organisationName'>" + orgName  + "</div>">
-      <#else>
-        <#local lcontact = lcontact + "<div class='organisationName' title='"+ concatAddress + "'><a href='mailto:" + contact.email + "&amp;subject=RE: " + title + "'>" + orgName + "</a></div>">
-      </#if>
+      <#assign mailIcon = " <a class='fa fa-envelope-o contactEmail' title='Email this contact' href='mailto:" + contact.email + "?subject=RE: " + title + "'></a>">
     <#else>
-      <#if contact.individualName?has_content>
-        <#local lcontact = lcontact + "<div class='individualName' title='"+ concatAddress + "'>" + contact.individualName + "</div>">
-      </#if>
-      <#local lcontact = lcontact + "<div class='organisationName' title='"+ concatAddress + "'>" + orgName + "</div>">
+      <#assign mailIcon = "">
+    </#if>
+
+    <#if contact.individualName?has_content>
+      <#local lcontact = "<div class='individualName' title='"+ concatAddress + "'>" + contact.individualName + mailIcon + "</div><div class='organisationName'>" + orgName + "</div>">
+    <#else>
+      <#local lcontact = "<div class='organisationName' title='"+ concatAddress + "'>" + orgName + mailIcon + "</div>">
+    </#if>
+
+    <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$") && showOrcid =  true>
+        <#local lcontact = lcontact + "<div class='nameIdentifier'><a <a href='" + contact.nameIdentifier + "' target='_blank' title='View this authors record on ORCID.org'><img src='/static/img/orcid_16x16.png' alt='ORCID iD icon' title='ORCID iD'> " + contact.nameIdentifier + "</a></div>">
     </#if>
   </#if>
 
