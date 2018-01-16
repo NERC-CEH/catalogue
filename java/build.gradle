@@ -50,9 +50,6 @@ testSets {
     integrationTest
 }
 
-check.dependsOn(integrationTest)
-integrationTest.mustRunAfter(test)
-
 dockerCompose {
     useComposeFiles = ['../docker-compose.yml', '../docker-compose-chrome.yml']
 }
