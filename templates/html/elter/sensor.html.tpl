@@ -54,16 +54,16 @@
                 </dd>
             </div>
 
-            <div class="form-editable" data-field="proccessType" data-value="${proccessType!''}" data-type="text" data-default-value="<b class='text-muted'>No Process Type</b>">
-                <input name="proccessType" type="hidden" value="${proccessType!''}">
+            <div class="form-editable" data-field="processType" data-value="${processType!''}" data-type="processType" data-default-value="<b class='text-muted'>No Process Type</b>">
+                <input name="processType" type="hidden" value="${processType!''}">
                 <dt class="sensor-row sensor-row-key">
                     <i class="fa fa-pencil"></i>
                     <span>Process Type</span>
                 </dt>
             </div>
-            <div id="form-value-proccessType">
+            <div id="form-value-processType">
                 <dd class="sensor-row sensor-row-value">
-                    <span id="proccessType-value">${proccessType!"<b class='text-muted'>No Process Type</b>"}</span>
+                    <span id="processType-value">${processType!"<b class='text-muted'>No Process Type</b>"}</span>
                 </dd>
             </div>
         </dl>

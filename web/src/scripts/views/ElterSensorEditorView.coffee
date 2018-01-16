@@ -11,6 +11,7 @@ define [
     text: '<input id="update" class="form-control" type="text" name="<%= field %>" value="<%= value %>" <%= required %> >'
     link: '<input id="update" class="form-control" type="text" name="<%= field %>" value="<%= value %>" <%= required %> >'
     textarea: '<textarea id="update" class="form-control" name="<%= field %>" <%= required %> ><%= value %></textarea>'
+    processType: '<select id="update" class="form-control" name="processType"><option value="Simulation">Simulation</option><option value="Manual">Manual</option><option value="Sensor">Sensor</option><option value="Algorithm">Algorithm</option><option value="Unknown">Unknown</option></select>'
 
   initialize: ->
     do @initSync
