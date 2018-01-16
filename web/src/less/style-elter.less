@@ -30,11 +30,16 @@
 }
 
 .form-editable {
+    & .fa-pencil {
+        display: none;
+        color: @brand-success !important;
+    }
+
     &:hover {
         cursor: pointer;
-        color: @brand-success !important;
-        & .text-muted {
-            color: @brand-success !important;
+
+        & .fa-pencil {
+            display: inline-block;
         }
     }
 

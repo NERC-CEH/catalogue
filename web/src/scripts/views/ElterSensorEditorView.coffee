@@ -8,12 +8,16 @@ define [
   sensorTpl
 ) -> Backbone.View.extend
   templates:
-    text: '<input id="update" class="form-control" type="text" name="<%= field %>" value="<%= value %>" <%= required %> >'
-    link: '<input id="update" class="form-control" type="text" name="<%= field %>" value="<%= value %>" <%= required %> >'
-    textarea: '<textarea id="update" class="form-control" name="<%= field %>" <%= required %> ><%= value %></textarea>'
-    processType: '<select id="update" class="form-control" name="processType"><option value="Simulation">Simulation</option><option value="Manual">Manual</option><option value="Sensor">Sensor</option><option value="Algorithm">Algorithm</option><option value="Unknown">Unknown</option></select>'
+    text: '<<%= wrapper %>><input id="update" class="form-control" type="text" name="<%= field %>" value="<%= value %>" <%= required %> ></<%= wrapper %>>'
+    link: '<<%= wrapper %>><input id="update" class="form-control" type="text" name="<%= field %>" value="<%= value %>" <%= required %> ></<%= wrapper %>>'
+    textarea: '<<%= wrapper %>><textarea id="update" class="form-control" name="<%= field %>" <%= required %> ><%= value %></textarea></<%= wrapper %>>'
+    processType: '<<%= wrapper %>><select id="update" class="form-control" name="processType"><option value="Simulation">Simulation</option><option value="Manual">Manual</option><option value="Sensor">Sensor</option><option value="Algorithm">Algorithm</option><option value="Unknown">Unknown</option></select></<%= wrapper %>>'
+    staticlist: '<<%= wrapper %>><% for(var i = 0; i < value.length; i++) { %><div><input id="update" class="form-control form-list" type="text" name="<%= field %>[0][\'<%= key %>\']" value="<%= value[i].value %>" <%= required %> > </div><% } %></<%= wrapper %>>'
+
+  editable: null
 
   initialize: ->
+    do @model.fetch
     do @initSync
     if $('.new-form').length == 0
       do @saveNew
@@ -68,22 +72,28 @@ define [
       @editable.find('input').attr('disabled', 'disabled')
 
       field = @editable.data('field')
+      key = @editable.data('key')
       type = @editable.data('type')
-      value = @editable.data('value')
+      wrapper = @editable.data('wrapper') || 'div'
+      value = @model.attributes[field]
       required = @editable.data('isRequired')
 
       do $('#form-value-' + field).hide
 
+      console.log value
+
       @editable.append(_.template(@templates[type])(
+        wrapper: wrapper
         field: field
         value: value
         required: required
+        key: key
       ))
       do $('#update').focus
-      $('#update').blur ->
-        newValue = $('#update').val()
-        $('#update').val(value) if newValue == ''
-        $('form').submit()
+      # $('#update').blur ->
+      #   newValue = $('#update').val()
+      #   $('#update').val(value) if newValue == ''
+      #   $('form').submit()
       
 
   getEditable: (el) ->
