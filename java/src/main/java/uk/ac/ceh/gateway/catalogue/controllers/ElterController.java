@@ -53,6 +53,9 @@ public class ElterController extends AbstractDocumentController {
       @ModelAttribute SensorDocument document
   ) throws DocumentRepositoryException {
     // setSensorManufacturer(document, user);
+    if (document.getDefaultParameters() != null)
+      document.getDefaultParameters().removeIf(value -> value == null || value.get("value") == null || value.get("value").equals(""));
+    log.error("doc {}", document);
     saveMetadataDocument(user, file, document);
     return new RedirectView(String.format("/documents/%s", document.getId()));
   }
