@@ -23,7 +23,12 @@ define [
       do @saveNew
     else
       do @initForm
+    do @initEditable
     do @initEdit
+
+  initEdit: ->
+    $('.toggle-edit').click ->
+      $('.form-editable').toggleClass('is-active')
   
   initSync: ->
     @model.on 'sync', =>
@@ -61,11 +66,11 @@ define [
             field = @editable.data('field')
             do $('#form-value-' + field).show
           do @model.fetch
-          do @initEdit
+          do @initEditable
       )
       do event.preventDefault
 
-  initEdit: ->
+  initEditable: ->
     $('.form-editable').click (evt) =>
       $('.form-editable').unbind 'click'
       @editable = @getEditable(evt.target)
