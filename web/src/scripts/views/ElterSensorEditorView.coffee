@@ -23,12 +23,19 @@ define [
       do @saveNew
     else
       do @initForm
+      do @initDelete
     do @initEditable
     do @initEdit
 
   initEdit: ->
     $('.toggle-edit').click ->
       $('.form-editable').toggleClass('is-active')
+      if $('.form-editable').hasClass('is-active')
+        $('.toggle-edit .edit').hide()
+        $('.toggle-edit .cancel').show()
+      else
+        $('.toggle-edit .edit').show()
+        $('.toggle-edit .cancel').hide()
   
   initSync: ->
     @model.on 'sync', =>
@@ -56,7 +63,7 @@ define [
 
   initForm: ->
     $('form').submit (event) =>
-      $.ajax(
+      $.ajax
         type: 'POST'
         url: $('form').attr('action')
         data: $('form').serialize()
@@ -67,8 +74,13 @@ define [
             do $('#form-value-' + field).show
           do @model.fetch
           do @initEditable
-      )
       do event.preventDefault
+  
+  initDelete: ->
+    $('.delete').click =>
+      @model.destroy
+        success: ->
+          Backbone.history.location.replace "/elter/documents"
 
   initEditable: ->
     $('.form-editable').click (evt) =>

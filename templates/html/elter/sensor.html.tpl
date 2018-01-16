@@ -72,8 +72,6 @@
                     <#list defaultParameters as param>
                         <input type="hidden" name="defaultParameters[${param_index}]['value']" value="${param['value']}">
                     </#list>
-                <#else>
-                    no default
                 </#if>
                 <dt class="sensor-row sensor-row-key">
                     <i class="fa fa-pencil"></i>
