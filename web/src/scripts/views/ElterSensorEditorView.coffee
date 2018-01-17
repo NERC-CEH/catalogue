@@ -1,39 +1,51 @@
 define [
   'underscore'
   'backbone'
-  'tpl!templates/sensor.tpl'
+  'tpl!templates/Sensor.tpl'
   'tpl!templates/DefaultParameter.tpl'
   'tpl!templates/Manufacturer.tpl'
 ], (
   _
   Backbone
-  sensorTpl
+  Sensor
   DefaultParameter
   Manufacturer
 ) -> Backbone.View.extend
   timeout: null
+  shouldSave: false
+  shouldRedirect: false
   initialize: ->
-    do @model.fetch
+    if $('.new-form').length == 0
+      $('.search').hide()
+      $('.search').after(Sensor())
+      @shouldRedirect = true
+    else
+      do @model.fetch
+
     @model.on 'sync', =>
       $('#loading').hide()
       do @renderDefaultParameters
       do @initInputs
       do @updateManufacturers
       do @updateLinks
+      window.location.href = '/documents/' + @model.get('id') if @shouldRedirect
 
-    $('form').submit (event) =>
-      do event.preventDefault
+    $('form').submit (evt) =>
+      do evt.preventDefault
+      evt.stopImmediatePropagation()
       do $('#form input, #form textarea, #form select').blur
-      shouldSave = true
       $('input:required').each (index, input) ->
-        shouldSave = false if input.value == ''
-       if shouldSave
+        @shouldSave = false if input.value == ''
+
+      if @shouldSave
+        @shouldSave = false
         do @model.save
         do $('#saved').show
         clearTimeout @timeout
         @timeout = setTimeout (-> $('#saved').hide()), 2000
 
     do @initInputs
+    return false
   
   updateLinks: ->
     $('.value-link').each (index, link) =>
@@ -100,6 +112,7 @@ define [
           do @save
 
   save: ->
+    @shouldSave = true
     $('#form').submit()
 
   updateManufacturers: ->
@@ -126,4 +139,5 @@ define [
         $('#manufacturer').parent().after(Manufacturer())
         do @initInputs
       else
+        console.log 'line 3'
         do @save

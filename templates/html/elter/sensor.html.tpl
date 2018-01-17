@@ -17,29 +17,24 @@
                 <input name="serialNumber" type="text" value="${serialNumber!''}" placeholder="Serial Number">
             </div>
             <div class='value value-link' data-name="documentation">
-                <#if documentation??>
-                    <label><a href="${documentation}">Documentation</a></label>
-                <#else>
-                    <label>Documentation</label>
-                </#if>
+                <label><a href="${documentation!'#'}">Documentation</a></label>
                 <input name="documentation" type="text" value="${documentation!''}" placeholder="Documentation">
             </div>
             <div class='value'>
                 <label>Process Type</label>
                 <select name="processType">
-                    <option <#if processType == "Unknown"> selected="selected"</#if> value="Unknown">Unknown</option>
-                    <option <#if processType == "Simulation"> selected="selected"</#if> value="Simulation">Simulation</option>
-                    <option <#if processType == "Manual"> selected="selected"</#if> value="Manual">Manual</option>
-                    <option <#if processType == "Sensor"> selected="selected"</#if> value="Sensor">Sensor</option>
-                    <option <#if processType == "Algorithm"> selected="selected"</#if> value="Algorithm">Algorithm</option>
+                    <#if !processType??>
+                        <option value=""></option>
+                    </#if>
+                    <option <#if processType?? && processType == "Unknown"> selected="selected"</#if> value="Unknown">Unknown</option>
+                    <option <#if processType?? && processType == "Simulation"> selected="selected"</#if> value="Simulation">Simulation</option>
+                    <option <#if processType?? && processType == "Manual"> selected="selected"</#if> value="Manual">Manual</option>
+                    <option <#if processType?? && processType == "Sensor"> selected="selected"</#if> value="Sensor">Sensor</option>
+                    <option <#if processType?? && processType == "Algorithm"> selected="selected"</#if> value="Algorithm">Algorithm</option>
                 </select>
             </div>
             <div class='value value-link' data-name="manufacturer" data-format="/documents/{manufacturer}">
-                <#if manufacturer??>
-                    <label><a href="/documents/${manufacturer}">Manufacturer</a></label>
-                <#else>
-                    <label>Manufacturer</label>
-                </#if>
+                <label><a href="/documents/${manufacturer!'#'}">Manufacturer</a></label>
                 <select id="manufacturer" name="manufacturer">
                     <#if manufacturer??>
                         <option value="${manufacturer}">${manufacturerName}</option>

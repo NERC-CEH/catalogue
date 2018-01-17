@@ -24,7 +24,6 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 @Slf4j
 @Controller
 public class ElterController extends AbstractDocumentController {
-
   private ElterService elterService;
 
   @Autowired
@@ -35,34 +34,29 @@ public class ElterController extends AbstractDocumentController {
 
   // Sensor
 
-  @PreAuthorize("@permission.userCanEdit(#file)")
-  @RequestMapping(value = "documents/{file}", method = RequestMethod.POST, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newSensor(
-      @ActiveUser CatalogueUser user,
-      @PathVariable("file") String file,
-      @RequestBody SensorDocument document,
-      @RequestParam("catalogue") String catalogue
-  ) throws DocumentRepositoryException {
+  @PreAuthorize("@permission.userCanCreate(#catalogue)")
+  @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<MetadataDocument> newSampleArchive(@ActiveUser CatalogueUser user, @RequestBody SensorDocument document, @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
     setSensorManufacturer(document, user);
-    if (document.getDefaultParameters() != null)
-      document.getDefaultParameters().removeIf(value -> value == null || value.get("value") == null || value.get("value").equals(""));
-    return saveNewMetadataDocument(user, document, catalogue, "new Sensor");
+    cleanDefaultParameters(document);
+    return saveNewMetadataDocument(user, document, catalogue, "new Sample Archive");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
   @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> saveSensor(
-      @ActiveUser CatalogueUser user,
-      @PathVariable("file") String file,
-      @RequestBody SensorDocument document
-  ) throws DocumentRepositoryException {
+  public ResponseEntity<MetadataDocument> saveSensor(@ActiveUser CatalogueUser user, @PathVariable("file") String file, @RequestBody SensorDocument document) throws DocumentRepositoryException {
     setSensorManufacturer(document, user);
-    if (document.getDefaultParameters() != null)
-      document.getDefaultParameters().removeIf(value -> value == null || value.get("value") == null || value.get("value").equals(""));
+    cleanDefaultParameters(document);
     return saveMetadataDocument(user, file, document);
   }
 
+  private void cleanDefaultParameters (SensorDocument document) {
+    if (document.getDefaultParameters() != null)
+      document.getDefaultParameters().removeIf(value -> value == null || value.get("value") == null || value.get("value").equals(""));
+  }
+
   private void setSensorManufacturer(SensorDocument document, CatalogueUser user) {
+    if (document.getManufacturer() == null) return;
     if (!document.getManufacturer().equalsIgnoreCase("other")) {
       val manufacturer = elterService.getManufacturer(document.getManufacturer());
       document.setManufacturerName(manufacturer.getTitle());
@@ -84,25 +78,31 @@ public class ElterController extends AbstractDocumentController {
   @PreAuthorize("@permission.userCanView(#manufacturer)")
   @RequestMapping(value = "elter/sensors/{manufacturer}", method = RequestMethod.GET)
   @ResponseBody
-  public List<SensorDocument> getSensorsFor(@ActiveUser CatalogueUser user, @PathVariable("manufacturer") String manufacturer) throws DocumentRepositoryException {
+  public List<SensorDocument> getSensorsFor(@ActiveUser CatalogueUser user,
+      @PathVariable("manufacturer") String manufacturer) throws DocumentRepositoryException {
     return this.elterService.getSensors(manufacturer);
   }
 
   // Manufacturer
 
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newManufacturer(@ActiveUser CatalogueUser user, @RequestBody ManufacturerDocument document,
+  @RequestMapping(value = "documents", method = RequestMethod.POST,
+      consumes = ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<MetadataDocument>
+  newManufacturer(@ActiveUser CatalogueUser user, @RequestBody ManufacturerDocument document,
       @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
     return saveNewMetadataDocument(user, document, catalogue, "new eLTER Manufacturer Document");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
-  @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> saveManufacturer(@ActiveUser CatalogueUser user, @PathVariable("file") String file, @RequestBody ManufacturerDocument document) throws DocumentRepositoryException {
+  @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT,
+      consumes = ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<MetadataDocument>
+  saveManufacturer(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
+      @RequestBody ManufacturerDocument document) throws DocumentRepositoryException {
     saveMetadataDocument(user, file, document);
     val sensors = elterService.getSensors(document.getId());
-    for(val sensor : sensors) {
+    for (val sensor : sensors) {
       sensor.setManufacturerName(document.getTitle());
       sensor.setManufacturerWebsite(document.getWebsite());
       saveMetadataDocument(user, sensor.getId(), sensor);
@@ -113,7 +113,8 @@ public class ElterController extends AbstractDocumentController {
   @PreAuthorize("@permission.userCanCreate('elter')")
   @RequestMapping(value = "elter/manufacturers", method = RequestMethod.GET)
   @ResponseBody
-  public List<ManufacturerDocument> getManufacturers(@ActiveUser CatalogueUser user) throws DocumentRepositoryException {
+  public List<ManufacturerDocument> getManufacturers(@ActiveUser CatalogueUser user)
+      throws DocumentRepositoryException {
     return this.elterService.getManufacturers();
   }
 }
