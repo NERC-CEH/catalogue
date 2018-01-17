@@ -139,5 +139,4 @@ define [
         $('#manufacturer').parent().after(Manufacturer())
         do @initInputs
       else
-        console.log 'line 3'
         do @save
