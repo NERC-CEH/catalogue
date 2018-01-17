@@ -64,10 +64,10 @@ define [
           ObjectInputView: RelationshipView
           multiline: true
           options: [
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/associatedWith', label: 'AssociatedWith'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/creates', label: 'Creates'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/knows', label: 'Knows'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/responsibleFor', label: 'Responsible For'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/associatedWith', label: 'Associated with'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/creates', label: 'Creates'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/knows', label: 'Knows'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/responsibleFor', label: 'Responsible for'}
           ]
           helpText: """
                     <p>Relationships to other OSDP document types</p>

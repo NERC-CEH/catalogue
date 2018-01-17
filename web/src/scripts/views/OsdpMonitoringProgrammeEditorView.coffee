@@ -90,8 +90,8 @@ define [
           ObjectInputView: RelationshipView
           multiline: true
           options: [
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/associatedWith', label: 'Associated with'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/owns', label: 'Owns'},
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/associatedWith', label: 'Associated with'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/owns', label: 'Owns'}
             {value: 'http://onto.nerc.ac.uk/CEHMD/rels/setupFor', label: 'Setup for'}
           ]
           helpText: """

@@ -12,6 +12,6 @@
   </#if>
   <@o.relationships "Creates" "Research Artifacts created by this Agent" "http://onto.nerc.ac.uk/CEHMD/rels/creates" />
   <@o.relationships "Knows" "Agents known by this Agent" "http://onto.nerc.ac.uk/CEHMD/rels/knows" />
-  <@o.relationships "Associated With" "Monitoring Activities associated with this Agent" "http://onto.nerc.ac.uk/CEHMD/rels/associatedWith" />
+  <@o.relationships "Associated With" "Monitoring Activities & Programmes associated with this Agent" "http://onto.nerc.ac.uk/CEHMD/rels/associatedWith" />
   <@o.relationships "Responsible For" "Monitoring Facilities the repsonsiblity of this Agent" "http://onto.nerc.ac.uk/CEHMD/rels/responsibleFor" />
 </@o.base>
