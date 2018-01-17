@@ -197,14 +197,26 @@ public class DevelopmentUserStoreConfig {
     @Bean
     @Qualifier("elter-publisher")
     public CatalogueUser elterPublisher() throws UsernameAlreadyTakenException {
-        CatalogueUser publisher = new CatalogueUser()
+        CatalogueUser user = new CatalogueUser()
             .setUsername("elter-publisher")
             .setEmail("elter-publisher@ceh.ac.uk");
 
-        groupStore().grantGroupToUser(publisher, ELTER_PUBLISHER);
-        groupStore().grantGroupToUser(publisher, ELTER_EDITOR);
-        userStore().addUser(publisher, "publisherpassword");
-        return publisher;
+        groupStore().grantGroupToUser(user, ELTER_PUBLISHER);
+        groupStore().grantGroupToUser(user, ELTER_EDITOR);
+        userStore().addUser(user, "publisherpassword");
+        return user;
+    }
+
+    @Bean
+    @Qualifier("elter-publisher")
+    public CatalogueUser elterEditor() throws UsernameAlreadyTakenException {
+        CatalogueUser user = new CatalogueUser()
+            .setUsername("elter-editor")
+            .setEmail("elter-editor@ceh.ac.uk");
+
+        groupStore().grantGroupToUser(user, ELTER_EDITOR);
+        userStore().addUser(user, "editorpassword");
+        return user;
     }
 
     @Bean
