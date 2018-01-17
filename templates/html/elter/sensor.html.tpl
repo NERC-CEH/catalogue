@@ -4,7 +4,7 @@
 <div class="container">
     <span id="loading">LOADING ...</span>
     <span id="saved" style="display: none;">SAVED</span>
-    <form id="form" class="new-form" data-document="sensor" data-guid="${id}" method="post" action="/documents/${id}/submit">
+    <form id="form" class="new-form" data-document="sensor" data-guid="${id}">
         <input name="type" type="hidden" value="dataset">
         <div class='head'>
             <input name="title" type="text" class='title' value="${title}" placeholder="Title" required>
@@ -39,22 +39,22 @@
             </div>
             <div class='value'>
                 <label>Default Parameters</label>
-                <ul class="list-unstyled">
+                <ul id="defaultParameters" class="list-unstyled">
                     <#if defaultParameters??>
                     <#list defaultParameters as defaultParameter>
                         <li>
-                            <button class="delete"><i class="fa fa-times"></i></button>
-                            <input name="defaultParameters[${defaultParameter_index}]['value']" class="deleteable" type="text" value="${defaultParameter['value']}" placeholder="Default Parameter">
+                            <a href='#' class="delete"><i class="fa fa-times"></i></a>
+                            <input name="defaultParameters[${defaultParameter_index}]['value']" type="text" value="${defaultParameter['value']}" placeholder="Default Parameter">
                         </li>
                     </#list>
                         <li>
-                            <button class="delete"><i class="fa fa-times"></i></button>
-                            <input name="defaultParameters[${defaultParameters?size}]['value']" class="deleteable" type="text" value="" placeholder="Default Parameter">
+                            <a href='#' class="delete"><i class="fa fa-times"></i></a>
+                            <input name="defaultParameters[${defaultParameters?size}]['value']" type="text" value="" placeholder="Default Parameter">
                         </li>
                     <#else>
                         <li>
-                            <button class="delete"><i class="fa fa-times"></i></button>
-                            <input name="defaultParameters[0]['value']" class="deleteable" type="text" value="" placeholder="Default Parameter">
+                            <a href='#' class="delete"><i class="fa fa-times"></i></a>
+                            <input name="defaultParameters[0]['value']" type="text" value="" placeholder="Default Parameter">
                         </li>
                     </#if>
                 </ul>
