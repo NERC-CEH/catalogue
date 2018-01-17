@@ -4,5 +4,5 @@
 </div>
 <div class="value other-manufacturer">
     <label>Manufacturer Website</label>
-    <input name="manufacturerWebsite" placeholder="Manufacturer Website" required>
+    <input name="manufacturerWebsite" placeholder="Manufacturer Website">
 </div>

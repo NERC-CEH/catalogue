@@ -116,7 +116,7 @@ define [
           for index, manufacturer of manufacturers
             $('#manufacturer').append('<option value="' + manufacturer.id + '">' + manufacturer.title + '</option>')
           $('#manufacturer').append('<option id="other-manufacturer" value="other"">Other</option>')
-          $('#manufacturer').val(@model.get('manufacturer') || 'other')
+          $('#manufacturer').val(@model.get('manufacturer'))
 
     $('#manufacturer').unbind 'change'
     $('#manufacturer').change =>

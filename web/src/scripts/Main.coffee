@@ -92,8 +92,8 @@ define [
     if form
       app = new EditorMetadata null,
         mediaType: form.mediaType
-      app.id = '60eb438a-7ad1-4a39-aaf0-10b7b10c458f'
-      app.set('id', '60eb438a-7ad1-4a39-aaf0-10b7b10c458f')
+      app.id = guid
+      app.set('id', guid)
       view = new form.view model: app
 
   initManufacturerSensors: ->
