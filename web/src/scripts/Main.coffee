@@ -83,15 +83,17 @@ define [
     formMap =
       sensor:
         view: ElterSensorEditorView
-        model: ElterSensorEditorModel
+        mediaType: 'application/vnd.elter-sensor-document+json'
 
     document = $('.new-form').data('document')
     guid = $('.new-form').data('guid')
 
     form = formMap[document]
     if form
-      app = new form.model
-      app.url = "/documents/" + guid
+      app = new EditorMetadata null,
+        mediaType: form.mediaType
+      app.id = '60eb438a-7ad1-4a39-aaf0-10b7b10c458f'
+      app.set('id', '60eb438a-7ad1-4a39-aaf0-10b7b10c458f')
       view = new form.view model: app
 
   initManufacturerSensors: ->

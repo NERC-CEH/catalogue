@@ -2,7 +2,9 @@
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 <div class="container">
-    <form class="new-form" data-document="sensor" data-guid="${id}" method="post" action="/documents/${id}/submit">
+    <span id="loading">LOADING ...</span>
+    <span id="saved" style="display: none;">SAVED</span>
+    <form id="form" class="new-form" data-document="sensor" data-guid="${id}" method="post" action="/documents/${id}/submit">
         <input name="type" type="hidden" value="dataset">
         <div class='head'>
             <input name="title" type="text" class='title' value="${title}" placeholder="Title" required>
@@ -26,6 +28,13 @@
                     <option <#if processType == "Manual"> selected="selected"</#if> value="Manual">Manual</option>
                     <option <#if processType == "Sensor"> selected="selected"</#if> value="Sensor">Sensor</option>
                     <option <#if processType == "Algorithm"> selected="selected"</#if> value="Algorithm">Algorithm</option>
+                </select>
+            </div>
+            <div class='value'>
+                <label>Manufacturer</label>
+                <select id="manufacturer" name="manufacturer">
+                    <option value=""></option>
+                    <option value="other">Other</option>
                 </select>
             </div>
             <div class='value'>

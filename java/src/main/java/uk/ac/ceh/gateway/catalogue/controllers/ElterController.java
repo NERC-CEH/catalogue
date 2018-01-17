@@ -35,29 +35,31 @@ public class ElterController extends AbstractDocumentController {
 
   // Sensor
 
-  @PreAuthorize("@permission.userCanCreate('elter')")
-  @RequestMapping(value = "documents/new/elter", method = RequestMethod.POST)
-  public RedirectView newSensor(
-    @ActiveUser CatalogueUser user,
-    @ModelAttribute SensorDocument document) throws DocumentRepositoryException {
-    // setSensorManufacturer(document, user);
-     saveNewMetadataDocument(user, document, "elter", "new eLTER Sensor Document");
-    return new RedirectView(String.format("/documents/%s", document.getId()));
+  @PreAuthorize("@permission.userCanEdit(#file)")
+  @RequestMapping(value = "documents/{file}", method = RequestMethod.POST, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<MetadataDocument> newSensor(
+      @ActiveUser CatalogueUser user,
+      @PathVariable("file") String file,
+      @RequestBody SensorDocument document,
+      @RequestParam("catalogue") String catalogue
+  ) throws DocumentRepositoryException {
+    setSensorManufacturer(document, user);
+    if (document.getDefaultParameters() != null)
+      document.getDefaultParameters().removeIf(value -> value == null || value.get("value") == null || value.get("value").equals(""));
+    return saveNewMetadataDocument(user, document, catalogue, "new Sensor");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
-  @RequestMapping(value = "documents/{file}/submit", method = RequestMethod.POST)
-  public RedirectView saveSensor(
+  @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<MetadataDocument> saveSensor(
       @ActiveUser CatalogueUser user,
       @PathVariable("file") String file,
-      @ModelAttribute SensorDocument document
+      @RequestBody SensorDocument document
   ) throws DocumentRepositoryException {
-    // setSensorManufacturer(document, user);
+    setSensorManufacturer(document, user);
     if (document.getDefaultParameters() != null)
       document.getDefaultParameters().removeIf(value -> value == null || value.get("value") == null || value.get("value").equals(""));
-    log.error("doc {}", document);
-    saveMetadataDocument(user, file, document);
-    return new RedirectView(String.format("/documents/%s", document.getId()));
+    return saveMetadataDocument(user, file, document);
   }
 
   private void setSensorManufacturer(SensorDocument document, CatalogueUser user) {
