@@ -97,10 +97,10 @@ define [
           ObjectInputView: RelationshipView
           multiline: true
           options: [
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/cites', label: 'Cites'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/supercedes', label: 'Supercedes'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces'},
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/cites', label: 'Cites'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/supercedes', label: 'Supercedes'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces'}
             {value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses'}
           ]
           helpText: """

@@ -111,6 +111,7 @@ define [
           multiline: true
           options: [
             {value: 'http://onto.nerc.ac.uk/CEHMD/rels/partOf', label: 'Part of'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces'}
           ]
           helpText: """
                     <p>Relationships to other OSDP document types</p>

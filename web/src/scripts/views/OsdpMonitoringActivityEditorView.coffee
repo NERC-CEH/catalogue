@@ -102,7 +102,8 @@ define [
           ObjectInputView: RelationshipView
           multiline: true
           options: [
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces'},
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/setupFor', label: 'Setup for'}
             {value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses'}
           ]
           helpText: """
