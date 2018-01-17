@@ -3,26 +3,46 @@ define [
   'backbone'
   'tpl!templates/sensor.tpl'
   'tpl!templates/DefaultParameter.tpl'
+  'tpl!templates/Manufacturer.tpl'
 ], (
   _
   Backbone
   sensorTpl
   DefaultParameter
+  Manufacturer
 ) -> Backbone.View.extend
   timeout: null
   initialize: ->
     do @model.fetch
     @model.on 'sync', =>
-      do @updateManufacturers
       $('#loading').hide()
       do @renderDefaultParameters
       do @initInputs
+      do @updateManufacturers
+      do @updateLinks
 
-    $('form').submit (event) ->
-      do $('#form input, #form textarea, #form select').blur
+    $('form').submit (event) =>
       do event.preventDefault
-    
+      do $('#form input, #form textarea, #form select').blur
+      shouldSave = true
+      $('input:required').each (index, input) ->
+        shouldSave = false if input.value == ''
+       if shouldSave
+        do @model.save
+        do $('#saved').show
+        clearTimeout @timeout
+        @timeout = setTimeout (-> $('#saved').hide()), 2000
+
     do @initInputs
+  
+  updateLinks: ->
+    $('.value-link').each (index, link) =>
+      link = $(link)
+      name = link.data('name')
+      format = link.data('format')
+      value = @model.get(name) || '#'
+      value = format.replace('{' + name + '}', value) if format
+      link.find('a').attr('href', value)
   
   renderDefaultParameters: ->
     $('#form input, #form textarea, #form select').unbind 'change'
@@ -80,13 +100,11 @@ define [
           do @save
 
   save: ->
-    do @model.save
-    $('#saved').show()
-    clearTimeout @timeout
-    @timeout = setTimeout (-> $('#saved').hide()), 2000
-
+    $('#form').submit()
 
   updateManufacturers: ->
+    $('.other-manufacturer').remove()
+
     if $('#manufacturer').length
       $.ajax
         type: 'GET'
@@ -97,5 +115,15 @@ define [
           $('#manufacturer').html('<option value=""></option>')
           for index, manufacturer of manufacturers
             $('#manufacturer').append('<option value="' + manufacturer.id + '">' + manufacturer.title + '</option>')
-          $('#manufacturer').append('<option value="other"">Other</option>')
+          $('#manufacturer').append('<option id="other-manufacturer" value="other"">Other</option>')
           $('#manufacturer').val(@model.get('manufacturer') || 'other')
+
+    $('#manufacturer').unbind 'change'
+    $('#manufacturer').change =>
+      value = $('#manufacturer').val()
+      @model.set('manufacturer', value)
+      if value == 'other'
+        $('#manufacturer').parent().after(Manufacturer())
+        do @initInputs
+      else
+        do @save

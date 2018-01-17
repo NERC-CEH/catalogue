@@ -16,8 +16,12 @@
                 <label>Serial Number</label>
                 <input name="serialNumber" type="text" value="${serialNumber!''}" placeholder="Serial Number">
             </div>
-            <div class='value'>
-                <label>Documentation</label>
+            <div class='value value-link' data-name="documentation">
+                <#if documentation??>
+                    <label><a href="${documentation}">Documentation</a></label>
+                <#else>
+                    <label>Documentation</label>
+                </#if>
                 <input name="documentation" type="text" value="${documentation!''}" placeholder="Documentation">
             </div>
             <div class='value'>
@@ -30,11 +34,18 @@
                     <option <#if processType == "Algorithm"> selected="selected"</#if> value="Algorithm">Algorithm</option>
                 </select>
             </div>
-            <div class='value'>
-                <label>Manufacturer</label>
+            <div class='value value-link' data-name="manufacturer" data-format="/documents/{manufacturer}">
+                <#if manufacturer??>
+                    <label><a href="/documents/${manufacturer}">Manufacturer</a></label>
+                <#else>
+                    <label>Manufacturer</label>
+                </#if>
                 <select id="manufacturer" name="manufacturer">
-                    <option value=""></option>
-                    <option value="other">Other</option>
+                    <#if manufacturer??>
+                        <option value="${manufacturer}">${manufacturerName}</option>
+                    <#else>
+                        <option value=""></option>
+                    </#if>
                 </select>
             </div>
             <div class='value'>
