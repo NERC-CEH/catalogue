@@ -1,38 +1,35 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.util.Arrays;
-import java.util.List;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.ArgumentMatchers.any;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
-/**
- *
- * @author cjohn
- */
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
 public class SolrIndexGeminiDocumentGeneratorTest {
     @Mock SolrIndexMetadataDocumentGenerator documentIndexer;
-    @Mock SolrGeometryService geometryService;
     @Mock CodeLookupService codeLookupService;
     private SolrIndexGeminiDocumentGenerator generator;
     
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(this);
         when(documentIndexer.generateIndex(any(MetadataDocument.class))).thenReturn(new SolrIndex());
-        generator = new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), documentIndexer, geometryService, codeLookupService);
+        generator = new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), documentIndexer, codeLookupService);
     }
     
     @Test
@@ -40,7 +37,6 @@ public class SolrIndexGeminiDocumentGeneratorTest {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getTopics()).thenReturn(Arrays.asList("http://onto.nerc.ac.uk/CEHMD/topic/2","http://onto.nerc.ac.uk/CEHMD/topic/3"));
-        when(document.getId()).thenReturn("123");
         List<String> expected = Arrays.asList("0/Biodiversity/", "0/Phenology/");
         
         //When
@@ -66,7 +62,6 @@ public class SolrIndexGeminiDocumentGeneratorTest {
                 .value("More use limitations")
                 .build()
         ));
-        when(document.getId()).thenReturn("123");
         when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
         
         //When
@@ -88,7 +83,6 @@ public class SolrIndexGeminiDocumentGeneratorTest {
                 .value("More use limitations")
                 .build()
         ));
-        when(document.getId()).thenReturn("123");
         when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
         
         //When
@@ -110,7 +104,6 @@ public class SolrIndexGeminiDocumentGeneratorTest {
                 .value("More use limitations")
                 .build()
         ));
-        when(document.getId()).thenReturn("123");
         when(codeLookupService.lookup("licence.isOgl", true)).thenReturn("IS OGL");
         
         //When
@@ -132,7 +125,6 @@ public class SolrIndexGeminiDocumentGeneratorTest {
                 .value("More use limitations")
                 .build()
         ));
-        when(document.getId()).thenReturn("123");
         when(codeLookupService.lookup("licence.isOgl", false)).thenReturn("ISNT OGL");
         
         //When

@@ -1,24 +1,23 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import org.junit.Test;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Optional;
+
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import uk.ac.ceh.gateway.catalogue.model.Citation;
-import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 /**
  *
@@ -32,7 +31,7 @@ public class CitationServiceTest {
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUri()).thenReturn("https://example.com/id/30ce7be8-deab-4608-bc2a-1774921423f0");
         when(document.getId()).thenReturn("30ce7be8-deab-4608-bc2a-1774921423f0");
-        CitationService service = new CitationService();
+        CitationService service = new CitationService("doi:", "10.5285/");
         
         //When
         URI url = service.getInAlternateFormat(document, format);
@@ -54,7 +53,7 @@ public class CitationServiceTest {
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
             author(), publisher()
         ));
-        CitationService service = new CitationService();
+        CitationService service = new CitationService("doi:", "10.5285/");
         
         //When
         Citation citation = service.getCitation(document).get();
@@ -81,7 +80,7 @@ public class CitationServiceTest {
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
             author()
         ));
-        CitationService service = new CitationService();
+        CitationService service = new CitationService("doi:", "10.5285/");
         
         //When
         Optional<Citation> citation = service.getCitation(document);
@@ -101,7 +100,7 @@ public class CitationServiceTest {
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
             author(), publisher()
         ));
-        CitationService service = new CitationService();
+        CitationService service = new CitationService("doi:", "10.5285/");
         
         //When
         Optional<Citation> citation = service.getCitation(document);
@@ -125,7 +124,7 @@ public class CitationServiceTest {
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
             author(), publisher()
         ));
-        CitationService service = new CitationService();
+        CitationService service = new CitationService("doi:", "10.5285/");
         
         //When
         Optional<Citation> citation = service.getCitation(document);
@@ -138,7 +137,7 @@ public class CitationServiceTest {
     public void doesntCreateCitationIfNoDOI() throws URISyntaxException {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        CitationService service = new CitationService();
+        CitationService service = new CitationService("doi:", "10.5285/");
         
         //When
         Optional<Citation> citation = service.getCitation(document);

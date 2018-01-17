@@ -174,6 +174,12 @@ Temporal Extent
   </div>
 </#macro>
 
+<#macro geometry geometry>
+  <div id="geometry-map">
+      <span content="${geometry?html}" datatype="geo:wktLiteral"/>
+  </div>
+</#macro>
+
 <#--
 ObservationCapability
 -->

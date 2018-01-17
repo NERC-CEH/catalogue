@@ -7,20 +7,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.*;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The following class represents the state at which a document is in
@@ -31,7 +24,7 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class MetadataInfo {
     private final String rawType, state;
-    private final String documentType, catalogue;;
+    private final String documentType, catalogue;
     @Getter(AccessLevel.NONE)
     private final Multimap<Permission, String> permissions;
     public static final String PUBLIC_GROUP = "public";

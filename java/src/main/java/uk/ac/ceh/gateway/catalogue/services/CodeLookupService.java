@@ -1,7 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import lombok.AllArgsConstructor;
+
 import java.util.Properties;
-import lombok.Data;
 
 /**
  * The following service will lookup a property from a properties file where the
@@ -9,9 +10,8 @@ import lombok.Data;
  * 
  * This service is useful for looking up the English textual value for some 
  * internal code
- * @author cjohn
  */
-@Data
+@AllArgsConstructor
 public class CodeLookupService {
     private final Properties properties;
     

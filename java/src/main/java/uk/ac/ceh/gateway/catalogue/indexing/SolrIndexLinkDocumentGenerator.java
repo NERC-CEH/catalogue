@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -9,19 +8,11 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
-@Slf4j
 public class SolrIndexLinkDocumentGenerator implements IndexGenerator<LinkDocument, SolrIndex> {
-    private final DocumentRepository repository;
+    @Setter(onMethod = @__({@Autowired}))
+    private DocumentRepository repository;
+    @Setter(onMethod = @__({@Autowired}))
     private IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry;
-
-    @Autowired
-    public SolrIndexLinkDocumentGenerator(DocumentRepository repository) {
-        this.repository = repository;
-    }
-    
-    public void setIndexGeneratorRegistry(@NonNull IndexGeneratorRegistry indexGeneratorRegistry) {
-        this.indexGeneratorRegistry = indexGeneratorRegistry;
-    }
 
     @Override
     public SolrIndex generateIndex(LinkDocument linkDocument) throws DocumentIndexingException {

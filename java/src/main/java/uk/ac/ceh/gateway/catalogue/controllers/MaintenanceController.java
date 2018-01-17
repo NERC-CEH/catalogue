@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -18,6 +17,8 @@ import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Christopher Johnson
@@ -34,11 +35,12 @@ public class MaintenanceController {
     
     @Autowired
     public MaintenanceController(
-            DataRepositoryOptimizingService repoService, 
-            @Qualifier("solr-index") DocumentIndexingService solrIndex, 
-            @Qualifier("jena-index") DocumentIndexingService linkingService, 
-            @Qualifier("validation-index") DocumentIndexingService validationService,
-            @Qualifier("mapserver-index") MapServerIndexingService mapserverService) {
+        DataRepositoryOptimizingService repoService,
+        @Qualifier("solr-index") DocumentIndexingService solrIndex,
+        @Qualifier("jena-index") DocumentIndexingService linkingService,
+        @Qualifier("validation-index") DocumentIndexingService validationService,
+        @Qualifier("mapserver-index") MapServerIndexingService mapserverService
+    ) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
@@ -72,7 +74,7 @@ public class MaintenanceController {
             toReturn.addMessage(ex.getMessage());
         }
         try {
-            toReturn.setLatestRevision(repoService.getRepo().getLatestRevision());
+            toReturn.setLatestRevision(repoService.getLatestRevision());
         } catch(DataRepositoryException dre) {
             toReturn.addMessage(dre.getMessage());
         }

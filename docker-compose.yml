@@ -1,10 +1,12 @@
-version: "2"
+version: "3"
 services:
   web:
     build: .
     depends_on:
       - solr
       - mapserver
+    ports:
+      - 8080
     volumes:
       - ./datastore:/var/ceh-catalogue/datastore
       - ./plone:/var/ceh-catalogue/plone
@@ -12,10 +14,10 @@ services:
       - ./eidchub-rw:/var/ceh-catalogue/eidchub-rw
       - mapfiles:/var/ceh-catalogue/mapfiles
     environment:
-      JIRA_ADDRESS: https://jira-test.nerc-lancaster.ac.uk/rest/api/2
-      PLONE_ADDRESS: http://eidctest.ceh.ac.uk/administration-folder/eidc-data-inventory/adddatadeposit
-      BASE_URI: https://catalogue.ceh.ac.uk
-      SPRING_PROFILES: development
+      - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
+      - plone.address=http://eidctest.ceh.ac.uk/administration-folder/eidc-data-inventory/adddatadeposit
+      - documents.baseUri=https://catalogue.ceh.ac.uk
+      - spring.profiles.active=development
     env_file:
       - secrets.env
   solr:
@@ -24,6 +26,7 @@ services:
     build: "mapserver"
     volumes:
       - mapfiles:/mapserver/maps
+      - ./fixtures/mapserver-data:/mapserver/data
 
 volumes:
   mapfiles:

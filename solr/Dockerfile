@@ -16,4 +16,6 @@ ADD https://repo1.maven.org/maven2/com/vividsolutions/jts/1.13/jts-1.13.jar /usr
 
 COPY config /var/solr
 
+EXPOSE 8080
+
 HEALTHCHECK CMD curl --fail http://localhost:8080/documents/select?q=*%3A* || exit 1

@@ -1,10 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -13,28 +10,23 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The following is a cacheable metadata file lister. It will scan the data 
  * repository for metadata files of a particular type which are accessible by a 
  * particular user.
- * 
- * @author cjohn
+
  */
 @Slf4j
+@AllArgsConstructor
 public class MetadataListingService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentListingService listingService;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private static final String WAF_CATALOGUE = "eidc";
-
-    @Autowired
-    public MetadataListingService(DataRepository<CatalogueUser> repo,
-        DocumentListingService listingService, 
-        BundledReaderService<MetadataDocument> documentBundleReader) {
-        this.repo = repo;
-        this.listingService = listingService;
-        this.documentBundleReader = documentBundleReader;
-    }
     
     /**
      * Returns a list of metadata ids of documents which are:

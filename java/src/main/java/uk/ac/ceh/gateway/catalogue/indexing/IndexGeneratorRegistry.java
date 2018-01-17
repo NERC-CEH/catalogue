@@ -1,15 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 
-/**
- *
- * @author cjohn
- * @param <D>
- * @param <I>
- */
-@Data
+@AllArgsConstructor
 public class IndexGeneratorRegistry<D, I> implements IndexGenerator<D, I> {
     private final ClassMap<IndexGenerator<?, I>> lookup;
         

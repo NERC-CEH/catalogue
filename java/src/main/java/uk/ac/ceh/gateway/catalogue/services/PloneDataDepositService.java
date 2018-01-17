@@ -24,7 +24,7 @@ public class PloneDataDepositService {
         locations.put("documents", "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\dropbox\\");
         locations.put("data", "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\eidchub\\");
     }
-    
+
     public String addOrUpdate(DocumentUpload documentsUpload, DocumentUpload datastoreUpload) {
         List<String> validFiles = getValidFiles(documentsUpload, locations.get("documents"), documentsUpload.isZipped());
         validFiles.addAll(getValidFiles(datastoreUpload, locations.get("data"), datastoreUpload.isZipped()));
@@ -35,14 +35,14 @@ public class PloneDataDepositService {
 
     private List<String> getValidFiles(DocumentUpload upload, String location, boolean isZipped) {
         return upload.getDocuments().entrySet().stream()
-                .map(f -> String.format("%s;%s;%s%s%s", f.getKey(), f.getValue().getHash(), location, upload.getGuid(), (isZipped ? String.format("\\%s.zip", upload.getGuid()) : "")))
-                .collect(Collectors.toList());
+            .map(f -> String.format("%s;%s;%s%s%s", f.getKey(), f.getValue().getHash(), location, upload.getGuid(), (isZipped ? String.format("\\%s.zip", upload.getGuid()) : "")))
+            .collect(Collectors.toList());
     }
 
     private List<String> getInvalidFiles(DocumentUpload upload) {
         return upload.getInvalid().entrySet().stream()
-                .map(f -> f.getKey())
-                .collect(Collectors.toList());
+            .map(f -> f.getKey())
+            .collect(Collectors.toList());
     }
 
     private String addOrUpdate(List<String> validFiles, List<String> invalidFiles, String guid, String title) {

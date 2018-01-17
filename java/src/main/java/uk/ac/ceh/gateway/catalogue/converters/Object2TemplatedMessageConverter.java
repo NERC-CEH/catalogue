@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.converters;
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -18,10 +19,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author cjohn
- */
+@Slf4j
 public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConverter<T> {
     
     private final Configuration configuration;
@@ -74,6 +72,7 @@ public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConv
                 }
             }
         } catch(TemplateException | ParseException e) {
+            log.error(t.toString());
             throw new HttpMessageNotWritableException("There was an error in the template", e);
         }
     }

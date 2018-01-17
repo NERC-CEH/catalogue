@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 services:
   web:
     ports:
@@ -18,7 +18,6 @@ services:
     # Mount working directories for mapserver
     volumes:
       - ./mapserver/helpers:/mapserver/helpers
-      - ./fixtures/mapserver-data:/mapserver/data
     # Expose mapserver port during development
     ports:
       - "9000:80"

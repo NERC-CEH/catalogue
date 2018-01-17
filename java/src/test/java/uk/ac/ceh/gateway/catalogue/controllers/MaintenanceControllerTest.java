@@ -1,15 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Answers.RETURNS_DEEP_STUBS;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
@@ -18,10 +13,14 @@ import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
-/**
- *
- * @author jcoop, cjohn
- */
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
 public class MaintenanceControllerTest {
     @Mock(answer=RETURNS_DEEP_STUBS) DataRepositoryOptimizingService repoService;
     @Mock DocumentIndexingService indexService;
@@ -33,7 +32,6 @@ public class MaintenanceControllerTest {
     
     @Before
     public void createMaintenanceController() {
-        MockitoAnnotations.initMocks(this);
         controller = new MaintenanceController(repoService, indexService, linkingService, validationService, mapserverService);
     }
     
@@ -99,7 +97,7 @@ public class MaintenanceControllerTest {
     public void checkThatCanLoadMaintenancePageWhenThereRepoIsBroken() throws DataRepositoryException {
         //Given
         String errorMessage = "Something has gone wrong";
-        when(repoService.getRepo().getLatestRevision()).thenThrow(new DataRepositoryException(errorMessage));
+        when(repoService.getLatestRevision()).thenThrow(new DataRepositoryException(errorMessage));
         
         //When
         MaintenanceResponse response = controller.loadMaintenancePage();

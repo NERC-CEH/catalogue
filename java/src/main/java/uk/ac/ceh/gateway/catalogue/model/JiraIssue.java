@@ -16,5 +16,5 @@ public class JiraIssue {
         Map<String, Object> status = (Map<String, Object>) fields.get("status");
         String name = (String) status.get("name");
         return name.toLowerCase();
-    };
+    }
 }

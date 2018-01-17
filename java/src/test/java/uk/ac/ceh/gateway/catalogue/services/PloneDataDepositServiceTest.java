@@ -44,16 +44,16 @@ OK - follow these steps to check all is working as expected:
 
  */
 public class PloneDataDepositServiceTest {
-    
+
     @Mock
     private DocumentRepository documentRepository;
 
     @Mock
     private MetadataDocument document;
-    
+
     @Mock
     private DocumentUpload documentUpload;
-    
+
     private PloneDataDepositService pdds;
     private DocumentUploadService documentsUploadService;
     private DocumentUploadService dataUploadService;
@@ -65,7 +65,7 @@ public class PloneDataDepositServiceTest {
     public void before() {
         FileUtils.forceMkdir(documents);
         FileUtils.forceMkdir(data);
-        
+
         initMocks(this);
 
         doReturn(document).when(documentRepository).read(anyString());
@@ -79,7 +79,7 @@ public class PloneDataDepositServiceTest {
         dataUploadService = new DocumentUploadService(data, documentRepository);
         pdds = new PloneDataDepositService(ploneClient);
     }
-    
+
     @After
     @SneakyThrows
     public void after() {
@@ -148,7 +148,7 @@ public class PloneDataDepositServiceTest {
         String actual = pdds.addOrUpdate(documentsUploadService.get("ploneTestGuid"), dataUploadService.get("ploneTestGuid"));
         assertTrue(actual.contains("Success"));
     }
-   
+
     // Get a secret from secrets.env
     private String getSecret(String secret) throws IOException{
         try(Stream<String> stream = Files.lines(Paths.get("../secrets.env"))){

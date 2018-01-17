@@ -2,6 +2,8 @@ plugins {
     id 'war'
     id 'idea'
     id 'com.github.ben-manes.versions' version '0.15.0'
+    id 'org.unbroken-dome.test-sets' version '1.4.2'
+    id 'com.avast.gradle.docker-compose' version '0.6.11'
 }
 
 ext {
@@ -12,15 +14,22 @@ ext {
     jacksonVersion = '2.9.0'
 }
 
+compileJava {
+    options.compilerArgs << "-Xlint:deprecation"
+}
+
 war {
     archiveName 'ROOT.war'
 }
 
 sourceCompatibility = javaVersion
 
+composeUp.dependsOn war
+
 repositories {
     mavenLocal()
     maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
+    maven { url 'https://dl.bintray.com/palantir/releases' }
     mavenCentral()
 }
 
@@ -35,6 +44,20 @@ dependencyUpdates.resolutionStrategy = {
             }
         }
     }
+}
+
+testSets {
+    integrationTest
+}
+
+dockerCompose {
+    useComposeFiles = ['../docker-compose.yml', '../docker-compose-chrome.yml']
+}
+
+dockerCompose.isRequiredBy(integrationTest)
+
+integrationTest.doFirst {
+    dockerCompose.exposeAsSystemProperties(integrationTest)
 }
 
 dependencies {
@@ -81,4 +104,7 @@ dependencies {
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
     compileOnly 'org.projectlombok:lombok:1.16.18'
     testImplementation 'org.projectlombok:lombok:1.16.18'
+    integrationTestImplementation 'org.seleniumhq.selenium:selenium-remote-driver:3.8.1'
+    integrationTestImplementation 'org.seleniumhq.selenium:selenium-chrome-driver:3.8.1'
+    integrationTestImplementation 'com.jayway.jsonpath:json-path:2.3.0'
 }

@@ -41,6 +41,6 @@ public class WmsFormatContentNegotiationStrategy implements ContentNegotiationSt
             }
             catch(InvalidMediaTypeException imte) {}
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 }

@@ -1,14 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.base.Strings;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -17,11 +11,18 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * The following class is responsible for taking a metadata document and creating 
  * beans which are solr indexable
  */
+@AllArgsConstructor
+@Slf4j
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
     public static final String IMP_CAMMP_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/ci/";
     public static final String IMP_DATA_TYPE_URL = "http://vocabs.ceh.ac.uk/imp/dt/";
@@ -37,17 +38,11 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
-    
-    public SolrIndexMetadataDocumentGenerator(
-        CodeLookupService codeLookupService,
-        DocumentIdentifierService identifierService
-    ) {
-        this.codeLookupService = codeLookupService;
-        this.identifierService = identifierService;
-    }
+    private final SolrGeometryService geometryService;
 
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
+        log.info("{} is a {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()));
         return new SolrIndex()
             .setDescription(document.getDescription())
             .setTitle(document.getTitle())
@@ -63,7 +58,16 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setImpTopic(grab(getKeywordsFilteredByUrlFragment(document, IMP_TOPIC_URL, INMS_TOPIC_URL), Keyword::getValue))
             .setImpWaterPollutant(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_POLLUTANT_URL, INMS_WATER_POLLUTANT_URL), Keyword::getValue))
             .setInmsDemonstrationRegion(grab(getKeywordsFilteredByUrlFragment(document, INMS_REGION_URL), Keyword::getValue))
-            .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue));
+            .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue))
+            .setLocations(getLocations(document));
+    }
+
+    private List<String> getLocations(MetadataDocument document) {
+        if (document instanceof WellKnownText) {
+            return geometryService.toSolrGeometry(((WellKnownText) document).getWKTs());
+        } else {
+            return Collections.emptyList();
+        }
     }
     
     private String getState(MetadataDocument document) {
@@ -100,7 +104,11 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                         .filter(Objects::nonNull)
                         .distinct()
                         .collect(Collectors.toList());
-    }  
+    }
+
+    public static <T> List<String> grab(T item, Function<? super T, String> mapper ) {
+        return grab(Arrays.asList(item), mapper);
+    }
     
     private List<Keyword> getKeywordsFilteredByUrlFragment(MetadataDocument document, String... urlFragments) {
         return Optional.ofNullable(document.getAllKeywords())

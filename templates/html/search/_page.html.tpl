@@ -16,9 +16,11 @@
   <div class="result ${statusClass}" data-location="${(result.locations?join(','))!}" id="${result.identifier}">
     <h2 class="resultTitle">
       <small>
-        <span>${result.resourceType}</span>
+        <#if result.resourceType??>
+          <span>${result.resourceType}</span>
+        </#if>
         <#if (result.state == 'draft' || result.state == 'pending') >
-        <span class="text-danger"><b>${codes.lookup('publication.state', result.state)?upper_case!''}</b> </span>
+          <span class="text-danger"><b>${codes.lookup('publication.state', result.state)?upper_case!''}</b> </span>
         </#if>
       <#if result.resourceStatus?? && (result.resourceStatus == 'Withdrawn')>
           <span class="label-withdrawn">(withdrawn)</span>

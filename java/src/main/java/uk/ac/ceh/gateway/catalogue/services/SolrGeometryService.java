@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -14,29 +15,26 @@ import java.util.stream.Collectors;
  * The following service allows us to process well known text geometries into 
  * either bounding boxes or points. These are presented in the native spatial 
  * solr format.
- * @author cjohn
  */
 public class SolrGeometryService {
-    private final WKTReader reader;
-    
-    public SolrGeometryService(WKTReader reader) {
-        this.reader = reader;
-    }
+    private final WKTReader reader = new WKTReader();
     
     public String toSolrGeometry(String wkt) {
         try {
-            Geometry geom = reader.read(wkt).getEnvelope();
+            Geometry geom = reader.read(wkt);
             if(geom.isEmpty()) {
                 return null;
             }
-            else if (geom instanceof Point) {
-                Coordinate coordinate = geom.getCoordinate();
+
+            Geometry envelope = geom.getEnvelope();
+            if (envelope instanceof Point) {
+                Coordinate coordinate = envelope.getCoordinate();
                 return new StringBuilder()
                         .append(coordinate.x).append(" ")
                         .append(coordinate.y).toString();
             }
-            else if (geom instanceof LineString) {
-                Coordinate[] coordinates = geom.getCoordinates();
+            else if (envelope instanceof LineString) {
+                Coordinate[] coordinates = envelope.getCoordinates();
                 return new StringBuilder()
                         .append(coordinates[0].x).append(" ")
                         .append(coordinates[0].y).append(" ")
@@ -44,7 +42,7 @@ public class SolrGeometryService {
                         .append(coordinates[1].y).toString();
             }
             else {
-                Coordinate[] coordinates = geom.getCoordinates();
+                Coordinate[] coordinates = envelope.getCoordinates();
                 return new StringBuilder()
                         .append(coordinates[0].x).append(" ")
                         .append(coordinates[0].y).append(" ")
@@ -52,7 +50,7 @@ public class SolrGeometryService {
                         .append(coordinates[2].y).toString();
             }
         }
-        catch(ParseException pe) {
+        catch(NullPointerException | ParseException e) {
             return null;
         }
     }
