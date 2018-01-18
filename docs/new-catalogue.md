@@ -4,7 +4,7 @@
 
 First: `catalogue` not `catalog`, we are not American
 
-# Step 1: ServiceConfig
+# Step 1: CatalogueServiceConfig
 
 You need to add your new Catalogue to the catalogue service config
 
@@ -109,7 +109,7 @@ public CatalogueUser yourCataloguePublisher() throws lreadyTakenException {
 }
 ```
 
-You also need to add the new user to the group store in `groupStore`, using the title from `Step 1: ServiceConfig`
+You also need to add the new user to the group store in `groupStore`, using the title from `Step 1: CatalogueServiceConfig`
 
 ```java
 toReturn.createGroup(YOUR_CATALOGUE_PUBLISHER, "Your Title Publisher Role");
@@ -236,6 +236,8 @@ in `metadataRepresentationService` you need to add
 
 `.register(YOUR_DOCUMENT_SHORT, YourDocument.class);`
 
+# Step 4e: CatalogueService
+
 in `catalogueService` you need to create a document e.g.
 
 ```java
@@ -266,7 +268,7 @@ converters.add(new Object2TemplatedMessageConverter<>(YourNewDocument.class, fre
 
 Now your document will render as per `html/your-id/your-document.html.tpl`
 
-# Step 4e: Controller
+# Step 4f: Controller
 
 You need this to save and view a file
 
@@ -311,7 +313,7 @@ public class YourController extends AbstractDocumentController {
 }
 ```
 
-# Step 4f: View
+# Step 4g: View
 
 in `Main.coffee` in `initEditor` you need to add
 
@@ -365,7 +367,7 @@ new SingleObjectView
     ObjectInputView: ResourceTypeView
 ```
 
-# Step 4g: Admin
+# Step 4h: Admin
 
 you don't have to do this step if you don't want to. It lets you let users edit and publish the document
 
