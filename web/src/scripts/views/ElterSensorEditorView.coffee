@@ -43,10 +43,14 @@ define [
         do $('#saved').show
         clearTimeout @timeout
         @timeout = setTimeout (-> $('#saved').hide()), 1000
-
     do @initInputs
-    return false
+    do @initDelete
   
+  initDelete: ->
+    $('.delete-document').click =>
+      do @model.destroy
+        success: -> window.location.href = '/elter/documents'
+
   updateLinks: ->
     $('.value-link').each (index, link) =>
       link = $(link)
@@ -91,10 +95,10 @@ define [
         @model.set name, value
       do @save
 
-    $('#defaultParameters .delete').unbind 'click'
-    $('#defaultParameters .delete').on 'click', (evt) =>
+    $('#defaultParameters .delete-defaultParameter').unbind 'click'
+    $('#defaultParameters .delete-defaultParameter').on 'click', (evt) =>
       target = $(evt.target)
-      target = target.parent() if !target.hasClass('delete')
+      target = target.parent() if !target.hasClass('delete-defaultParameter')
       input = target.parent().find('input')
 
       name = input.attr('name')

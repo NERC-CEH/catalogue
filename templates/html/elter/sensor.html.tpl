@@ -62,21 +62,21 @@
                     <#list defaultParameters as defaultParameter>
                         <li>
                             <#if readonly == "">
-                                <a href='#' class="delete"><i class="fa fa-times"></i></a>
+                                <a href='#' class="delete delete-defaultParameter"><i class="fa fa-times"></i></a>
                             </#if>
                             <input ${readonly} name="defaultParameters[${defaultParameter_index}]['value']" type="text" value="${defaultParameter['value']}" placeholder="Default Parameter">
                         </li>
                     </#list>
                         <#if readonly == "">
                         <li>
-                            <a href='#' class="delete"><i class="fa fa-times"></i></a>
+                            <a href='#' class="delete delete-defaultParameter"><i class="fa fa-times"></i></a>
                             <input ${readonly} name="defaultParameters[${defaultParameters?size}]['value']" type="text" value="" placeholder="Default Parameter">
                         </li>
                         </#if>
                     <#else>
                         <#if readonly == "">
                         <li>
-                            <a href='#' class="delete"><i class="fa fa-times"></i></a>
+                            <a href='#' class="delete delete-defaultParameter"><i class="fa fa-times"></i></a>
                             <input ${readonly} name="defaultParameters[0]['value']" type="text" value="" placeholder="Default Parameter">
                         </li>
                         </#if>
