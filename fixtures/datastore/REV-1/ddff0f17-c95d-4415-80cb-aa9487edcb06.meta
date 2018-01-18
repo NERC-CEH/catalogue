@@ -1,1 +1,1 @@
-{"rawType":"application/xml","state":"published","documentType":"GEMINI_DOCUMENT","permissions":{"EDIT":["clamw"],"VIEW":["public","clamw"],"DELETE":["clamw"]},"catalogue":"eidc"}
+{"rawType":"application/gemini+json","state":"published","documentType":"GEMINI_DOCUMENT","permissions":{"EDIT":["clamw"],"VIEW":["public","clamw"],"DELETE":["clamw"]},"catalogue":"eidc"}
