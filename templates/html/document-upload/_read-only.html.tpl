@@ -18,7 +18,16 @@ datastore.getFiles()?size != 0 || documents.getFiles()?size != 0 || datastore.ge
         <div class="container-fluid folders read-only">
                 <div class="folder clearfix">
                     <div class="folder-title">
-                        <h2 class="folder-name"><i class="fa fa-lock"></i> Data</h2>
+                        <h2 class="folder-name">
+                            <i class="fa fa-lock"></i> Data
+                            <#if datastore.isZipped()>
+                                <small class="zip" style="display: none"></small>
+                                <small class="unzip">ZIPPED <i class="fa fa-file-archive-o"></i></small>
+                            <#else>
+                                <small class="zip"></small>
+                                <small class="unzip" style="display: none">ZIPPED <i class="fa fa-file-archive-o"></i></small>
+                            </#if>
+                        </h2>
                     </div>
                     <div class="files">
                         <#if datastore.getFiles()?size == 0 && documents.getFiles()?size == 0 && datastore.getInvalid()?values?size == 0 && documents.getInvalid()?values?size == 0>
@@ -54,6 +63,13 @@ datastore.getFiles()?size != 0 || documents.getFiles()?size != 0 || datastore.ge
                             </#list>
                             <div class="folder-options clearfix">
                                 <a class="btn btn-success downloadChecksum" href="data:text/csv;charset=utf-8,${csvList}" download="${guid}.csv">Download checksum report</a>
+                               <#if datastore.isZipped()>
+                                    <button class="btn btn-success btn-zip zip" disabled style="display: none">Zip</button>
+                                    <button class="btn btn-success btn-zip unzip" disabled>Unzip</button>
+                                <#else>
+                                    <button class="btn btn-success btn-zip zip" disabled>Zip</button>
+                                    <button class="btn btn-success btn-zip unzip" disabled style="display: none">Unzip</button>
+                                </#if>
                             </div>
                         </#if>
                     </div>

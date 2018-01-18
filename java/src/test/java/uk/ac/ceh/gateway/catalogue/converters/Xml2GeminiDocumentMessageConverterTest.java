@@ -269,21 +269,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
     }
     
     @Test
-    public void canGetResourceStatus() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceStatus.xml"));
-        String expected = "onGoing";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getResourceStatus();
-        
-        //Then
-        assertThat("resourceStatus 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
-    @Test
     public void canNotGetResourceStatus() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);

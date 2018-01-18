@@ -80,16 +80,25 @@
 		</gmd:citation>
 		<gmd:abstract>
 			<gco:CharacterString>
-				<#if resourceStatus?has_content && resourceStatus == "historicalArchive">THIS ${resourceType.value?upper_case} HAS BEEN WITHDRAWN. </#if>
-				<#if erratum??>${erratum}. </#if>
-				${description!''}
+				<#assign statusMsg ="">
+				<#if resourceStatus?has_content >
+					<#if resourceStatus == "Withdrawn" || resourceStatus == "Superseded" >
+						<#assign statusMsg = "This " + resourceType.value + " has been withdrawn">
+						<#if erratum??>
+							<#assign statusMsg = statusMsg + " - " + erratum >
+						</#if>
+					</#if>
+					<#if resourceStatus == "Embargoed" >
+						<#assign statusMsg = "This " + resourceType.value + " is embargoed ">
+						<#if datasetReferenceDate.releasedDate??>
+							<#assign statusMsg = statusMsg + "until "+ datasetReferenceDate.releasedDate?date?string.long>
+						</#if>
+					</#if>
+					<#assign statusMsg = statusMsg + ". ">
+				</#if>
+			${statusMsg?upper_case} ${description!''}
 			</gco:CharacterString>
 		</gmd:abstract>
-    <#if resourceStatus??>
-      <gmd:status>
-	  <MD_ProgressCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="${resourceStatus}">${resourceStatus}</MD_ProgressCode>
-      </gmd:status>
-    </#if>
 		<#if responsibleParties?has_content>
 		<#list responsibleParties as responsibleParty>
 		<gmd:pointOfContact>

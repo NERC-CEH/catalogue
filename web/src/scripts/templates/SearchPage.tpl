@@ -9,11 +9,7 @@
 </div>
 <% _.each(results, function(result) { %>
 
-  <% if(result.resourceStatus == 'Withdrawn' ) { %>
-    <% var statusClass='result-withdrawn'%>
-   <% } %>
-
-  <div class="result <%=statusClass%>" id="<%=result.identifier%>">
+  <div class="result" id="<%=result.identifier%>">
     <h2 class="resultTitle">
       <small>
       <span><%=result.resourceType%></span>
@@ -21,9 +17,6 @@
         <span class="text-danger"><b>DRAFT</b></span>
       <% } else if(result.state == 'pending') { %>
         <span class="text-danger"><b>PENDING PUBLICATION</b></span>
-      <% } %>
-      <% if(result.resourceStatus == 'Withdrawn' ) { %>
-      <span class="label-withdrawn">(withdrawn)</span> 
       <% } %>
       </small><br>
       <a href="/documents/<%=result.identifier%>" class="title"><%=result.title%></a>
