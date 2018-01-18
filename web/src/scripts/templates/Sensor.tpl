@@ -1,8 +1,10 @@
 <div class="container">
-    <span id="saved" style="display: none;">SAVED</span>
+    <h3 id="saved" class="alert alert-info" style="display: none;">
+        <i class="fa fa-save"></i> Saved
+    </h3>
     <form id="form" class="new-form" data-document="sensor">
         <input name="type" type="hidden" value="dataset">
-        <input name="resourveType" type="hidden" value="dataset">
+        <input name="resourceType" type="hidden" value="dataset">
         <div class='head'>
             <input name="title" type="text" class='title' placeholder="Title" required>
             <input name="shortName" type="text" class='subtitle' placeholder="Short Name">
@@ -45,4 +47,8 @@
         </div>
         <input type="submit" style="display: none;">
     </form>
+    <a href="/elter/documents" class="btn btn-link">
+        <i class="fa fa-files-o" aria-hidden="true"></i>
+        <span>eLTER Documents</span>
+    </a>
 </div>

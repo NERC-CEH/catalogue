@@ -1,40 +1,43 @@
 define [
   'underscore'
   'backbone'
-  'tpl!templates/Sensor.tpl'
   'tpl!templates/DefaultParameter.tpl'
   'tpl!templates/Manufacturer.tpl'
 ], (
   _
   Backbone
-  Sensor
   DefaultParameter
   Manufacturer
 ) -> Backbone.View.extend
   timeout: null
   shouldSave: false
   shouldRedirect: false
-  initialize: ->
+  initialize: (options) ->
     if $('.new-form').length == 0
+      $('#loading').hide()
       $('.search').hide()
-      $('.search').after(Sensor())
+      $('.search').after(options.template())
       @shouldRedirect = true
     else
       do @model.fetch
 
     @model.on 'sync', =>
       $('#loading').hide()
-      do @renderDefaultParameters
       do @initInputs
-      do @updateManufacturers
       do @updateLinks
+
+      do @renderDefaultParameters
+      do @updateManufacturers
+      do @updateSensors
+
       window.location.href = '/documents/' + @model.get('id') if @shouldRedirect
 
     $('form').submit (evt) =>
       do evt.preventDefault
       evt.stopImmediatePropagation()
       do $('#form input, #form textarea, #form select').blur
-      $('input:required').each (index, input) ->
+      inputs = document.querySelectorAll 'input:required, textarea:required, select:required'
+      for index, input of inputs
         @shouldSave = false if input.value == ''
 
       if @shouldSave
@@ -118,6 +121,20 @@ define [
   save: ->
     @shouldSave = true
     $('#form').submit()
+  
+  updateSensors: ->
+    if $('#sensors').length
+      $.ajax
+        type: 'GET'
+        url: '/elter/sensors/' + @model.get('id')
+        headers:
+          Accept: "application/json"
+        success: (sensors) ->
+          $('#sensors').html('')
+          if sensors.length == 0
+            $('#sensors').append('<li>No Sensors</li>')
+          for index, sensor of sensors
+            $('#sensors').append('<li><a href="/documents/' + sensor.id + '">' + sensor.title + '</a></li>')
 
   updateManufacturers: ->
     $('.other-manufacturer').remove()

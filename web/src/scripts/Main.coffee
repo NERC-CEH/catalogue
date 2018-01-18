@@ -40,11 +40,9 @@ define [
   'cs!views/SampleArchiveEditorView'
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
-  'cs!views/ElterSensorEditorView'
-  'cs!models/ElterSensorEditorModel'
-  'cs!views/ElterManufacturerEditorView'
-  'cs!models/ElterManufacturerSensorsModel'
-  'cs!views/ElterManufacturerSensorsView'
+  'cs!views/ElterEditorView'
+  'tpl!templates/Sensor.tpl'
+  'tpl!templates/Manufacturer.tpl'
   'bootstrap'
   'dropzone'
 ], (
@@ -54,7 +52,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ElterSensorEditorView, ElterSensorEditorModel, ElterManufacturerEditorView, ElterManufacturerSensorsModel, ElterManufacturerSensorsView
+    ElterEditorView, SensorTpl, ManufacturerTpl
 ) ->
 
   ###
@@ -73,7 +71,6 @@ define [
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
-    do @initManufacturerSensors if $('#manufacturer-sensors').length
     do @newForm if $('.new-form').length
 
     $('.chart').each (i, e) -> new ChartView el: e
@@ -82,8 +79,13 @@ define [
   newForm: ->
     formMap =
       sensor:
-        view: ElterSensorEditorView
+        view: ElterEditorView
+        template: SensorTpl
         mediaType: 'application/vnd.elter-sensor-document+json'
+      manufacturer:
+        view: ElterEditorView
+        template: ManufacturerTpl
+        mediaType: 'application/vnd.elter-manufacturer-document+json'
 
     document = $('.new-form').data('document')
     guid = $('.new-form').data('guid')
@@ -94,11 +96,9 @@ define [
         mediaType: form.mediaType
       app.id = guid
       app.set('id', guid)
-      view = new form.view model: app
-
-  initManufacturerSensors: ->
-    app = new ElterManufacturerSensorsModel $('#manufacturer-sensors').data('manufactuer')
-    view = new ElterManufacturerSensorsView model: app
+      view = new form.view
+        model: app
+        template: form.template
 
   initDepositRequest: ->
     app = new DepositRequestModel
@@ -205,12 +205,14 @@ define [
         Model: EditorMetadata
         mediaType: 'application/vnd.sample-archive+json'
       'Sensor':
-        View: ElterSensorEditorView
+        View: ElterEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.elter-sensor-document+json'
+        template: SensorTpl
       'Manufacturer':
-        View: ElterManufacturerEditorView
+        View: ElterEditorView
         Model: EditorMetadata
+        template: ManufacturerTpl
         mediaType: 'application/vnd.elter-manufacturer-document+json'
 
     # the create document dropdown
@@ -226,6 +228,7 @@ define [
         new documentType.View
           model: new documentType.Model null, documentType
           el: '#search'
+          template: documentType.template
       else
         $.ajax
           url: $(location).attr('href')
@@ -236,6 +239,7 @@ define [
             new documentType.View
               model: new documentType.Model data, documentType
               el: '#metadata'
+              template: documentType.template
 
   ###
   Initialize the permission application
