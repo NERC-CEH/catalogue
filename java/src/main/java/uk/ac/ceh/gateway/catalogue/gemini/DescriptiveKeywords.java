@@ -2,11 +2,13 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import static com.google.common.base.Strings.nullToEmpty;
-import java.util.Collections;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
+
+import java.util.Collections;
+import java.util.List;
+
+import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
 public class DescriptiveKeywords {
@@ -18,7 +20,7 @@ public class DescriptiveKeywords {
     private DescriptiveKeywords(@JsonProperty("keywords") List<Keyword> keywords,
         @JsonProperty("type") String type) {
         if (keywords == null) {
-            this.keywords = Collections.EMPTY_LIST;
+            this.keywords = Collections.emptyList();
         } else {
             this.keywords = keywords;
         }

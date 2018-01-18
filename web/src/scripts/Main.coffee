@@ -66,6 +66,7 @@ define [
     do @initReadOnly if $('#documents-upload .read-only').length
     do @initDepositRequest if $('#deposit-request').length
     do @initStudyAreaMap if $('#studyarea-map').length
+    do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
     do @initEditor if $('.edit-control').length
@@ -116,7 +117,12 @@ define [
     view = new DocumentsUploadInProgressView model: app
 
   initStudyAreaMap: ->
-    view = new StudyAreaView()
+    view = new StudyAreaView
+      el: '#studyarea-map'
+
+  initGeometryMap: ->
+    view = new StudyAreaView
+      el: '#geometry-map'
 
   ###
   Initialize the map viewer app, view and router

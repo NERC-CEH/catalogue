@@ -262,10 +262,15 @@ define [
               name: 'Online ordering'
               description: 'This resource is under embargo and will be made available by {dd/mm/yyyy} at the latest'
               function: 'order'
-            'Erratum':
+            'Resource superseded (ERRATUM)':
               url: 'http://eidc.ceh.ac.uk/administration-folder/tools/superseded'
               name: 'Request the data'
               description: 'This dataset has been superseded. If you need access to this version of the data, please email eidc@ceh.ac.uk'
+              function: 'offlineAccess'
+            'Resource withdrawn':
+              url: 'http://eidc.ceh.ac.uk/administration-folder/tools/Withdrawn'
+              name: 'Request the data'
+              description: 'This dataset has been withdrawn. If you need access to this version of the data, please email eidc@ceh.ac.uk'
               function: 'offlineAccess'
           helpText: """
                     <p>Include addresses of web services used to access the data (e.g. order manager) and supporting information.</p>
@@ -337,9 +342,13 @@ define [
               value: 'Registration is required to access this data'
               uri: 'https://eip.ceh.ac.uk/catalogue/help/faq/registration'
               code: 'otherRestrictions'
-            'Erratum':
+            'Resource superseded (ERRATUM)':
               value: 'This dataset has been superseded. If you need access to this version of the data, please email eidc@ceh.ac.uk'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/superseded'
+              code: 'otherRestrictions'
+            'Resource withdrawn':
+              value: 'This dataset has been withdrawn. If you need access to this version of the data, please email eidc@ceh.ac.uk'
+              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/Withdrawn'
               code: 'otherRestrictions'
             'no limitations':
               value: 'no limitations'

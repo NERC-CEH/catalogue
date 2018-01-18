@@ -13,6 +13,7 @@ define [
   'cs!views/editor/BoundingBoxView'
   'cs!models/editor/BoundingBox'
   'cs!views/editor/ObservationCapabilityView'
+  'cs!views/editor/GeometryView'
 ], (
   EditorView,
   SingleObjectView,
@@ -27,7 +28,8 @@ define [
   ResourceIdentifierView,
   BoundingBoxView,
   BoundingBox,
-  ObservationCapabilityView
+  ObservationCapabilityView,
+  GeometryView
 ) -> EditorView.extend
 
   initialize: ->
@@ -93,6 +95,14 @@ define [
                     <p>Bounding Box of Monitoring Facility</p>
                     """
 
+        new GeometryView
+          model: @model
+          modelAttribute: 'geometry'
+          label: 'Geometry'
+          helpText: """
+                    <p>Geometry of Monitoring Facility</p>
+                    """
+
         new ParentView
           model: @model
           modelAttribute: 'relationships'
@@ -101,6 +111,7 @@ define [
           multiline: true
           options: [
             {value: 'http://onto.nerc.ac.uk/CEHMD/rels/partOf', label: 'Part of'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces'}
           ]
           helpText: """
                     <p>Relationships to other OSDP document types</p>

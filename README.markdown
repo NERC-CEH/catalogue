@@ -21,16 +21,18 @@ The CEH metadata catalogue project.
 you will need to create a `secrets.env` file with the following
 
 ```
-JIRA_USERNAME=jira_username
-JIRA_PASSWORD=jira_password
-CROWD_USERNAME=eip-ro
-CROWD_PASSWORD=FindMeInK33Pa55
+jira.username=jira_username
+jira.password=jira_password
+crowd.password=FindMeInK33Pa55
+plone.password=plone_password
+doi.password=
 ```
 
 ## Getting started
 
 The catalogue requires a few tools:
 
+- Java (OpenJDK)
 - Git
 - Docker
 - Docker Compose
@@ -81,15 +83,6 @@ Run single tests:
 Can use package names and * in the name
 
 [More info](https://stackoverflow.com/questions/22505533/how-to-run-only-one-test-class-on-gradle) about single file tests
-
-## Selenium Testing
-
-The project contains an `rspec` suite of selenium tests.
-These can be executed using
-
-    SELENIUM_TEST=true ./gradlew selenium
-
-This will create the browsers required for testing in docker containers and run through the test suite.
 
 ## Multiple Catalogues
 

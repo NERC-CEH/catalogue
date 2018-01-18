@@ -28,7 +28,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 @AllArgsConstructor
 public class DocumentUploadService {
-    
+
     private static final Pattern regex = Pattern.compile("([a-f0-9]{32})\\ \\*(.*)");
 
     private final File directory;
@@ -107,6 +107,7 @@ public class DocumentUploadService {
         archive(guid, documentUpload -> {
             try {
                 zipIt(documentUpload);
+                save(documentUpload);
             } catch (IOException ioe) {
                 throw new UncheckedIOException(ioe);
             }
@@ -143,7 +144,7 @@ public class DocumentUploadService {
             } catch(IOException ioe) {
                 throw new UncheckedIOException(ioe);
             } catch (ZipException ze) {
-                throw new RuntimeException(ze);   
+                throw new RuntimeException(ze);
             }
         }
     }
@@ -165,14 +166,17 @@ public class DocumentUploadService {
 
     private DocumentUpload archive (String guid, Consumer<DocumentUpload> consumer) {
         if (StringUtils.isBlank(guid)) throw new IllegalArgumentException("guid can not be blank");
-        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));        
+        val zipFile = new File(directory, String.format("%s/%s.zip", guid, guid));
         val wasZipped = zipFile.exists();
         unzip(guid);
         try {
             val documentUpload = getDocumentUpload(guid);
             consumer.accept(documentUpload);
             save(documentUpload);
-            if (wasZipped) zipIt(documentUpload);
+            if (wasZipped) {
+                zipIt(documentUpload);
+                save(documentUpload);
+            }
             return documentUpload;
         } catch (IOException ioe) {
             throw new UncheckedIOException(ioe);
@@ -193,7 +197,7 @@ public class DocumentUploadService {
     private void updateWithChecksumsFile(DocumentUpload documentUpload) throws IOException {
         val folder = new File(documentUpload.getPath());
         val checksums = new File(folder, "checksums.hash");
-        
+
         if (checksums.exists()) {
             val lines = FileUtils.readLines(checksums, Charset.defaultCharset());
             for(val line : lines) {
@@ -287,8 +291,8 @@ public class DocumentUploadService {
         val folder = new File(path);
         val files = folder.listFiles(file -> {
             return !file.getName().equals("_data.json") &&
-            !file.getName().equals("checksums.hash") &&
-            !file.getName().equals(String.format("%s.zip", documentUpload.getGuid()));
+                !file.getName().equals("checksums.hash") &&
+                !file.getName().equals(String.format("%s.zip", documentUpload.getGuid()));
         });
         for(val file : files) {
             val name = file.getName();
@@ -333,14 +337,14 @@ public class DocumentUploadService {
         val file = new File(folder, "_data.json");
         if (!file.exists()) {
             try {
-            val document = documentRepository.read(guid);
-            val documentUpload = new DocumentUpload(
-                document.getTitle(),
-                document.getType(),
-                guid,
-                folder.getAbsolutePath()
-            );
-            saveJson(documentUpload);
+                val document = documentRepository.read(guid);
+                val documentUpload = new DocumentUpload(
+                    document.getTitle(),
+                    document.getType(),
+                    guid,
+                    folder.getAbsolutePath()
+                );
+                saveJson(documentUpload);
             } catch (DocumentRepositoryException dre) {
                 throw new RuntimeException(dre);
             }

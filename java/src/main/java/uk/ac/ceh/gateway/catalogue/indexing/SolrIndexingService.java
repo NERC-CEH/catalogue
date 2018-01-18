@@ -1,8 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -12,11 +9,14 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * This is the Solr Indexing Service. Instances of this can read documents from
  * a DataRepository and index them with the supplied IndexGenerator. The indexes
- * will then go into an instance of Solr for speedy text based searches. 
- * @author cjohn
+ * will then go into an instance of Solr for speedy text based searches.
  * @param <D> type of documents to be read from the DataRepository
  */
 public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex> {

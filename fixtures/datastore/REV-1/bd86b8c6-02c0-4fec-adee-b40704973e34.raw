@@ -1,0 +1,14 @@
+{
+  "uri": "https://catalogue.ceh.ac.uk/id/bd86b8c6-02c0-4fec-adee-b40704973e34",
+  "id": "bd86b8c6-02c0-4fec-adee-b40704973e34",
+  "type": "monitoringProgramme",
+  "title": "OSDP Monitoring Programme",
+  "description": "A description of a Monitoring Programme\nWith line breaks.",
+  "temporalExtent": {"begin": "1998-02-19", "end": "2010-08-23"},
+  "relationships": [
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/setupFor", "target": "47194076-899c-473f-b7bb-430ccd230670"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/setupFor", "target": "ff55462e-38a4-4f30-b562-f82ff263d9c3"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/associatedWith", "target": "986d3df3-d9bf-42eb-8e18-850b8d54f37b"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/owns", "target": "571a676f-6c32-489b-b7ec-18dcc617a9f1"}   
+  ]
+}

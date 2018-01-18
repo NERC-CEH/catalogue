@@ -1,0 +1,16 @@
+{
+  "uri": "https://catalogue.ceh.ac.uk/id/c057fceb-215d-455b-80f9-5e5a47095db3",
+  "id": "c057fceb-215d-455b-80f9-5e5a47095db3",
+  "type": "monitoringActivity",
+  "title": "OSDP Monitoring Activity",
+  "description": "A description of a Monitoring Activity\nWith line breaks.",
+  "format": "text/csv",
+  "version": "2",
+  "temporalExtent": {"begin": "1998-02-19"},
+  "relationships": [
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/produces", "target": "47194076-899c-473f-b7bb-430ccd230670"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/produces", "target": "ff55462e-38a4-4f30-b562-f82ff263d9c3"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/uses", "target": "f06fae42-1bac-4c57-b1b9-7abafd0447ff"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/uses", "target": "571a676f-6c32-489b-b7ec-18dcc617a9f1"}   
+  ]
+}

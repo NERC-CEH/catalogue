@@ -1,22 +1,23 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import static com.google.common.base.Strings.emptyToNull;
+import lombok.AllArgsConstructor;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import lombok.Data;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+
+import static com.google.common.base.Strings.emptyToNull;
 import static org.apache.jena.rdf.model.ResourceFactory.*;
-import java.util.Collections;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 /**
  * The following class extracts semantic details from a GeminiDocument and 
  * returns these as Jena Statements (triples)
- * @author cjohn
  */
-@Data
+@AllArgsConstructor
 public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;
 

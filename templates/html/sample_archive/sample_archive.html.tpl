@@ -53,7 +53,7 @@
                 <#list archiveContacts as contact>
                   <#noescape>
                     <div class="responsibleParty">      
-                      ${func.displayContact(contact, true)}
+                      ${func.displayContact(contact, true, false)}
                     </div>
                   </#noescape>
                 </#list>
@@ -86,7 +86,7 @@
                 <#list metadataContacts as contact>
                   <#noescape>
                     <div class="responsibleParty">      
-                      ${func.displayContact(contact, true)}
+                      ${func.displayContact(contact, true, false)}
                     </div>
                   </#noescape>
                 </#list>

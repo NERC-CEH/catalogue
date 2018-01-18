@@ -1,41 +1,32 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.util.Collections;
-import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+import lombok.AllArgsConstructor;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+
+import java.util.Collections;
+import java.util.Optional;
+
+import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
 
 /**
  * Processes a GeminiDocument and populates a SolrIndex object will all of the
  * bits of the document transferred. Ready to be indexed by Solr
- * @author cjohn
  */
+@AllArgsConstructor
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
-    private static final String OGL_URL = "http://www.nationalarchives.gov.uk/doc/open-government-licence";
-    private static final String CEH_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/cehOGL";
-    private static final String OTHER_OGL_URL = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence";
-    private static final String OTHER_OGL_URL_1 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGLnonceh";
-    
+    private static final String OGL_URL_1 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/cehOGL";
+    private static final String OGL_URL_2 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL";
+    private static final String OGL_URL_3 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence";
+
+
     private final TopicIndexer topicIndexer;
     private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;
-    private final SolrGeometryService geometryService;
     private final CodeLookupService codeLookupService;
-
-    @Autowired
-    public SolrIndexGeminiDocumentGenerator(TopicIndexer topicIndexer, SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex, SolrGeometryService geometryService, CodeLookupService codeLookupService) {
-        this.topicIndexer = topicIndexer;
-        this.metadataDocumentSolrIndex = metadataDocumentSolrIndex;
-        this.geometryService = geometryService;
-        this.codeLookupService = codeLookupService;
-    }
     
     @Override
     public SolrIndex generateIndex(GeminiDocument document) {
@@ -44,15 +35,15 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setTopic(topicIndexer.index(document))
             .setAltTitle(document.getAlternateTitles())
             .setLineage(document.getLineage())
-            .setResourceStatus(document.getResourceStatus())
+            .setResourceStatus(codeLookupService.lookup("metadata.resourceStatus", document.getResourceStatus()))
             .setLicence(getLicence(document))
             .setOrganisation(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
             .setIndividual(grab(document.getResponsibleParties(), ResponsibleParty::getIndividualName))
+            .setOrcid(grab(document.getResponsibleParties(), ResponsibleParty::getNameIdentifier))
             .setOnlineResourceName(grab(document.getOnlineResources(), OnlineResource::getName))
             .setOnlineResourceDescription(grab(document.getOnlineResources(), OnlineResource::getDescription))
             .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
-            .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
-            .addLocations(geometryService.toSolrGeometry(grab(document.getBoundingBoxes(), BoundingBox::getWkt)));
+            .setKeyword(grab(document.getAllKeywords(), Keyword::getValue));
     }
 
     private String getLicence(GeminiDocument document){
@@ -66,10 +57,9 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .filter(k -> !k.getUri().isEmpty())
             .anyMatch(k -> {
                 String uri = k.getUri();
-                return uri.startsWith(OTHER_OGL_URL)
-                    || uri.startsWith(OTHER_OGL_URL_1)
-                    || uri.startsWith(CEH_OGL_URL)
-                    || uri.startsWith(OGL_URL);  
+                return uri.startsWith(OGL_URL_1)
+                    || uri.startsWith(OGL_URL_2)
+                    || uri.startsWith(OGL_URL_3);  
             });
     }
 }

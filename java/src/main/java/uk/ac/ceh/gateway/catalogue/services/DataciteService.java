@@ -3,15 +3,9 @@ package uk.ac.ceh.gateway.catalogue.services;
 import com.google.common.base.Strings;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,12 +21,19 @@ import uk.ac.ceh.gateway.catalogue.model.DataciteException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * A service which interacts with the datacite rest api to obtain a DOI for a 
  * GeminiMetadata record
- * @author cjohn
  */
 @Slf4j
+@AllArgsConstructor
 public class DataciteService {
     private final static String DATACITE_API = "https://mds.datacite.org";
     private final String doiPrefix;
@@ -40,28 +41,9 @@ public class DataciteService {
     private final String username;
     private final String password;
     private final DocumentIdentifierService identifierService;
-    private final Template dataciteRequest;
+    private final Template template;
     private final RestTemplate rest;
 
-    @Autowired
-    public DataciteService(
-        String doiPrefix,
-        String publisher,
-        String username,
-        String password,
-        DocumentIdentifierService identifierService,
-        Template dataciteRequest,
-        RestTemplate rest
-    ) {
-        this.doiPrefix = doiPrefix;
-        this.publisher = publisher;
-        this.username = username;
-        this.password = password;
-        this.identifierService = identifierService;
-        this.dataciteRequest = dataciteRequest;
-        this.rest = rest;
-    }
-    
     /**
      * Contacts the DATACITE rest api and uploads a datacite requests and then
      * gets the that request minted
@@ -244,7 +226,7 @@ public class DataciteService {
             data.put("doc", document);
             data.put("resourceType", getDataciteResourceType(document));
             data.put("doi", doi);
-            return FreeMarkerTemplateUtils.processTemplateIntoString(dataciteRequest, data);
+            return FreeMarkerTemplateUtils.processTemplateIntoString(template, data);
         }
         catch(IOException | TemplateException ex) {
             throw new DataciteException(ex);

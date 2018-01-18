@@ -10,6 +10,8 @@ define [
   'cs!models/editor/MultipleDate'
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/ResourceIdentifierView'
+  'cs!models/editor/BoundingBox'
+  'cs!views/editor/BoundingBoxView'
 ], (
   EditorView,
   SingleObjectView,
@@ -21,7 +23,9 @@ define [
   LinkView,
   MultipleDate,
   TemporalExtentView,
-  ResourceIdentifierView
+  ResourceIdentifierView,
+  BoundingBox,
+  BoundingBoxView
 ) -> EditorView.extend
 
   initialize: ->
@@ -60,6 +64,16 @@ define [
                     <p>Temporal Extent of Monitoring Programme</p>
                     """
 
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'boundingBox'
+          ModelType: BoundingBox
+          label: 'Bounding Box'
+          ObjectInputView: BoundingBoxView,
+          helpText: """
+                    <p>Bounding Box of Monitoring Programme</p>
+                    """
+
         new ParentView
           model: @model
           modelAttribute: 'keywords'
@@ -76,8 +90,8 @@ define [
           ObjectInputView: RelationshipView
           multiline: true
           options: [
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/associatedWith', label: 'Associated with'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/owns', label: 'Owns'},
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/associatedWith', label: 'Associated with'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/owns', label: 'Owns'}
             {value: 'http://onto.nerc.ac.uk/CEHMD/rels/setupFor', label: 'Setup for'}
           ]
           helpText: """

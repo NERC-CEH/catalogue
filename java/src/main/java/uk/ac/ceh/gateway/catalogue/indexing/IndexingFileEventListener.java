@@ -1,22 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.eventbus.Subscribe;
-import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataDeletedEvent;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataSubmittedEvent;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
+import java.util.List;
+
 @Slf4j
+@AllArgsConstructor
 public class IndexingFileEventListener {
     private final DocumentIndexingService service;
     private final DocumentListingService listingService;
-
-    public IndexingFileEventListener(DocumentIndexingService service,  DocumentListingService listingService) {
-        this.service = service;
-        this.listingService = listingService;
-    }
     
     @Subscribe
     public void indexDocument(DataSubmittedEvent<?> event) throws DocumentIndexingException, DataRepositoryException {

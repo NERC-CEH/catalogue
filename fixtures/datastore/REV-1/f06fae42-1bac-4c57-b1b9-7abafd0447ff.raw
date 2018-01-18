@@ -1,0 +1,39 @@
+{
+  "uri": "https://catalogue.ceh.ac.uk/id/f06fae42-1bac-4c57-b1b9-7abafd0447ff",
+  "id": "f06fae42-1bac-4c57-b1b9-7abafd0447ff",
+  "type": "monitoringFacility",
+  "title": "OSDP Monitoring Facility",
+  "description": "Monitoring Facility description",
+  "facilityType": "A type of monitoring facility",
+  "keywords": [
+    {"value": "Keyword 0", "uri": "http://example.com/keyword0"},
+    {"value": "Keyword 1", "uri": "http://example.com/keyword1"},
+    {"value": "Keyword 2", "uri": "http://example.com/keyword2"}
+  ],
+  "relationships": [
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/partOf", "target": "47194076-899c-473f-b7bb-430ccd230670"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/located", "target": "ff55462e-38a4-4f30-b562-f82ff263d9c3"}
+  ],
+  "boundingBox": {
+    "westBoundLongitude": -3.4,
+    "eastBoundLongitude": 2.5,
+    "northBoundLatitude": 56.6,
+    "southBoundLatitude": 54.8
+  },
+  "observationCapabilities": [
+    {
+      "observingTime": "some observing time",
+      "observedPropertyName": {"title": "some observing property name", "href": "http://example.com"},
+      "observedPropertyDefinition": {"title": "some definition"},
+      "observedPropertyUnitOfMeasure": {"title": "⅘m"},
+      "procedureName": {"title": "procedure name"}
+    },
+    {
+      "observingTime": "another observing time",
+      "observedPropertyName": {"title": "another observing property name"},
+      "observedPropertyDefinition": {"title": "another definition"},
+      "observedPropertyUnitOfMeasure": {"title": "℃"},
+      "procedureName": {"title": "another procedure name"}
+    }
+  ]
+}

@@ -106,9 +106,9 @@
     }
   }
 
-  .mintDOI{margin:0 1em;};
+  #studyarea-map, #geometry-map { height: 300px; width: 300px; }
 
-  #studyarea-map { height: 300px; width: 300px; }
+  .mintDOI{margin:0 1em;};
 
   // If the current metadata document is a historic archive, a warning is
   // displayed to the user at the top of the metadata page with
@@ -141,8 +141,26 @@
  .panel-title { font-size:100%;}
 
  .responsibleParty {
-    margin-bottom:1em;
-	address{margin-bottom:0;}
+    a.contactEmail {
+      margin-left: 0.5em;
+      font-size:75%;
+    };
+    a.contactEmail:hover {
+      background-color: #99aefd;
+      color:#FFF;
+      text-decoration: none;
+    };
+    .nameIdentifier {
+      font-size:90%;
+      span {
+        font-size:80%;
+        margin-left:0.75em;
+      }
+    };
+    margin-bottom:1.5em;
+	  address{
+      margin-bottom:0;
+    };
   }
 
  #section-onlineResources {

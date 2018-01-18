@@ -1,16 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.util.Arrays;
-import java.util.List;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -19,26 +15,95 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.osdp.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 
-/**
- *
- * @author cjohn
- */
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
 public class SolrIndexMetadataDocumentGeneratorTest {
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
+    @Mock SolrGeometryService solrGeometryService;
     private SolrIndexMetadataDocumentGenerator generator;
     
     @Before
     public void createGeminiDocumentSolrIndexGenerator() {
-        MockitoAnnotations.initMocks(this);
         generator = new SolrIndexMetadataDocumentGenerator(
             codeLookupService,
-            documentIdentifierService
+            documentIdentifierService,
+            solrGeometryService
         );
     }
+
+    @Test
+    @SneakyThrows
+    public void boundingBoxAndGeometryLocationsAddedToIndex() {
+        //Given
+        MonitoringFacility document = new MonitoringFacility();
+        document.setBoundingBox(BoundingBox.builder()
+            .northBoundLatitude("59.4")
+            .eastBoundLongitude("2.4")
+            .southBoundLatitude("53.3")
+            .westBoundLongitude("-0.5")
+            .build()
+        );
+        document.setGeometry("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))");
+        given(solrGeometryService.toSolrGeometry(anyList())).willReturn(Arrays.asList("WKT", "WKT"));
+
+        //When
+        SolrIndex actual = generator.generateIndex(document);
+
+        //Then
+        assertThat("locations transferred to index", actual.getLocations(), hasItem("WKT"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void geometryLocationsAddedToIndex() {
+        //Given
+        MonitoringFacility document = new MonitoringFacility();
+        document.setGeometry("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))");
+        given(solrGeometryService.toSolrGeometry(anyList())).willReturn(Arrays.asList("WKT"));
+
+        //When
+        SolrIndex actual = generator.generateIndex(document);
+
+        //Then
+        assertThat("locations transferred to index", actual.getLocations(), hasItem("WKT"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void boundingBoxLocationsAddedToIndex() {
+        //Given
+        MonitoringFacility document = new MonitoringFacility();
+        document.setBoundingBox(BoundingBox.builder()
+            .northBoundLatitude("59.4")
+            .eastBoundLongitude("2.4")
+            .southBoundLatitude("53.3")
+            .westBoundLongitude("-0.5")
+            .build()
+        );
+        given(solrGeometryService.toSolrGeometry(anyList())).willReturn(Arrays.asList("WKT"));
+
+        //When
+        SolrIndex actual = generator.generateIndex(document);
+
+        //Then
+        assertThat("locations transferred to index", actual.getLocations(), hasItem("WKT"));
+    }
+
     @Test
     public void applicationScaleAddedToIndex() throws Exception {
         //Given

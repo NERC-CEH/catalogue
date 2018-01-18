@@ -18,4 +18,6 @@ RUN a2enmod fcgid rewrite; \
 
 CMD sh -c "rm -f /var/run/apache2/apache2.pid; apache2ctl -D FOREGROUND"
 
+EXPOSE 80
+
 HEALTHCHECK CMD curl --fail http://localhost || exit 1

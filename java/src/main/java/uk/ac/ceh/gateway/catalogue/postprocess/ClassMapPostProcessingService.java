@@ -1,15 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 
 /**
  * A post processing service which delegates to an other post processing service
  * which is located from the given ClassMap Lookup
  * @see ClassMap
- * @author cjohn
  */
-@Data
+@AllArgsConstructor
 public class ClassMapPostProcessingService implements PostProcessingService<Object> {
     private final ClassMap<PostProcessingService> lookup;
     

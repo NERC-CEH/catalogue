@@ -7,9 +7,10 @@
       <field name="altTitle" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>
       <field name="lineage" type="text_general" indexed="true" stored="true" multiValued="false"/>
-      <field name="resourceStatus" type="text_general" indexed="true" stored="true" multiValued="false"/>
-      <field name="organisation" type="text_general" indexed="true" stored="true" multiValued="true"/>
-      <field name="individual" type="text_general" indexed="true" stored="true" multiValued="true"/>
+      <field name="resourceStatus" type="keyword" indexed="true" stored="true" multiValued="false"/>
+      <field name="organisation" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
+      <field name="individual" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
+      <field name="orcid" type="orcid" indexed="true" stored="true" multiValued="true"/>
       <field name="onlineResourceName" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="onlineResourceDescription" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="resourceIdentifier" type="keyword" indexed="true" stored="true" multiValued="true"/>
@@ -42,6 +43,12 @@
             <analyzer>
                 <tokenizer class="solr.WhitespaceTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
+        <fieldType name="orcid" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+            <analyzer>
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.PatternCaptureGroupFilterFactory" pattern="^https?:\/\/orcid.org\/(0000-\d{4}-\d{4}-\d{3}[\d|X])$" preserve_original="false"/>
             </analyzer>
         </fieldType>
         <fieldType name="keyword" class="solr.TextField" sortMissingLast="true" omitNorms="true">

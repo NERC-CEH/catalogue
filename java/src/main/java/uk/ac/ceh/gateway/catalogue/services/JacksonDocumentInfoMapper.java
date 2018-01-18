@@ -1,22 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- *
- * @author cjohn
- */
+@AllArgsConstructor
 public class JacksonDocumentInfoMapper<T> implements DocumentInfoMapper<T> {
     private final ObjectMapper mapper;
     private final Class<T> clazz;
-    
-    public JacksonDocumentInfoMapper(ObjectMapper mapper, Class<T> clazz) {
-        this.mapper = mapper;
-        this.clazz = clazz;
-    }
 
     @Override
     public void writeInfo(T info, OutputStream stream) throws IOException {

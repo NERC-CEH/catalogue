@@ -40,11 +40,11 @@
   <#if citation?has_content>
     <div class="doi">
       <a href="${citation.url?html}">${citation.url?html}</a>
-      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><i class="fa fa-bookmark"></i> Cite this ${resourceType.value}</a>
+      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><i class="fa fa-bookmark"></i> Cite this ${codes.lookup('metadata.resourceType',type)?lower_case!''}</a>
     </div>
   </#if>
   
-  <#if resourceStatus?has_content && resourceStatus == "historicalArchive">
+  <#if resourceStatus?has_content && (resourceStatus == "historicalArchive"  || resourceStatus == "obsolete")>
     <div id="not-current" role="alert">
       <p>
         <i class="fa fa-exclamation-circle fa-lg"></i> <b>THIS ${resourceType.value?upper_case} HAS BEEN WITHDRAWN</b>

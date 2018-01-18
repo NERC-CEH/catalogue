@@ -64,7 +64,7 @@ public class SearchQuery {
         this.spatialOperation = spatialOperation;
         this.page = page;
         this.rows = rows;
-        this.facetFilters = new ArrayList(facetFilters);
+        this.facetFilters = new ArrayList<>(facetFilters);
         this.groupStore = groupStore;
         this.facets = facets;
         this.catalogue = catalogue;
@@ -74,9 +74,10 @@ public class SearchQuery {
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setParam("defType", "edismax")
-                .setParam("qf", "title^50 description^25 lineage^5 organisation^2 " +
-                                "individual^2 onlineResourceName onlineResourceDescription " +
-                                "altTitle resourceIdentifier identifier keyword")
+                .setParam("qf", "title^50 description^25 keyword^2 lineage organisation individual onlineResourceName onlineResourceDescription altTitle resourceIdentifier identifier")
+                .setParam("bq", "resourceStatus:Current state:published")
+                .setParam("ps", "5")
+                .setParam("pf", "title^50 description^25 keyword^2")
                 .setStart((page-1)*rows)
                 .setRows(rows);
         setSpatialFilter(query);

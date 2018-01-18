@@ -1,17 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import org.junit.Test;
+import lombok.SneakyThrows;
 import org.junit.Before;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
@@ -19,42 +13,41 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
-import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.services.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+@RunWith(MockitoJUnitRunner.class)
 public class GitDocumentRepositoryTest {
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock DocumentReadingService documentReader;
-    @Mock DocumentInfoMapper documentInfoMapper;
     @Mock BundledReaderService<MetadataDocument> documentBundleReader;
-    @Mock PostProcessingService postProcessingService;
     @Mock DocumentWritingService documentWritingService;
-    @Mock ObjectMapper mapper;
     @Mock DocumentTypeLookupService documentTypeLookupService;
     @Mock GitRepoWrapper repo;
     
     private GitDocumentRepository documentRepository;
     
     @Before
-    public void initMocks() throws IOException {
-        MockitoAnnotations.initMocks(this);
+    public void setup() {
         documentRepository = new GitDocumentRepository(
                             documentTypeLookupService, 
                             documentReader,
                             documentIdentifierService,
                             documentWritingService,
-                            documentBundleReader,   
-                            postProcessingService,
+                            documentBundleReader,
                             repo);
     }
     
     @Test
-    public void readLatestDocument() throws Exception {        
+    @SneakyThrows
+    public void readLatestDocument() {
         //When
         documentRepository.read("file");
         
@@ -63,7 +56,8 @@ public class GitDocumentRepositoryTest {
     }
     
     @Test
-    public void readDocumentAtRevision() throws Exception {       
+    @SneakyThrows
+    public void readDocumentAtRevision() {
         //When
         documentRepository.read("file", "special");
         
@@ -72,7 +66,8 @@ public class GitDocumentRepositoryTest {
     }
 
     @Test
-    public void savingMultipartFileStoresInputStreamIntoRepo() throws Exception {
+    @SneakyThrows
+    public void savingMultipartFileStoresInputStreamIntoRepo() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
         InputStream inputStream = new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes());
@@ -84,8 +79,7 @@ public class GitDocumentRepositoryTest {
         given(documentReader.read(any(), any(), any())).willReturn(document);
         given(documentIdentifierService.generateFileId()).willReturn("test");
         given(documentIdentifierService.generateUri("test")).willReturn("http://localhost:8080/id/test");
-        given(documentBundleReader.readBundle(eq("test"))).willReturn(document);
-       
+
         //When
         documentRepository.save(user, inputStream, MediaType.TEXT_XML, documentType, catalogue, message);
         
@@ -95,7 +89,8 @@ public class GitDocumentRepositoryTest {
     }
     
     @Test
-    public void saveNewGeminiDocument() throws Exception {
+    @SneakyThrows
+    public void saveNewGeminiDocument() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
         GeminiDocument document = new GeminiDocument();
@@ -113,7 +108,8 @@ public class GitDocumentRepositoryTest {
     }
     
     @Test
-    public void saveEditedGeminiDocument() throws Exception {
+    @SneakyThrows
+    public void saveEditedGeminiDocument() {
         //Given
         String id = "tulips";
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
@@ -132,7 +128,8 @@ public class GitDocumentRepositoryTest {
     }
     
     @Test
-    public void checkCanDeleteAFile() throws Exception {
+    @SneakyThrows
+    public void checkCanDeleteAFile() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");        
         
@@ -144,7 +141,8 @@ public class GitDocumentRepositoryTest {
     }
     
     @Test
-    public void checkMetadataInfoUpdated() throws Exception {
+    @SneakyThrows
+    public void checkMetadataInfoUpdated() {
         //Given
         CatalogueUser editor = new CatalogueUser()
             .setUsername("editor")

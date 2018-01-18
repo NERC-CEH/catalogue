@@ -11,6 +11,7 @@ define [
   'cs!models/editor/MultipleDate'
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/ResourceIdentifierView'
+  'cs!views/editor/GeometryView'
 ], (
   EditorView,
   SingleObjectView,
@@ -23,7 +24,8 @@ define [
   DatasetReferenceDateView,
   MultipleDate,
   TemporalExtentView,
-  ResourceIdentifierView
+  ResourceIdentifierView,
+  GeometryView
 ) -> EditorView.extend
 
   initialize: ->
@@ -80,6 +82,14 @@ define [
                     <p>Temporal Extent of model</p>
                     """
 
+        new GeometryView
+          model: @model
+          modelAttribute: 'geometry'
+          label: 'Geometry'
+          helpText: """
+                    <p>Geometry of Sample</p>
+                    """
+
         new SingleObjectView
           model: @model
           modelAttribute: 'access'
@@ -105,10 +115,10 @@ define [
           ObjectInputView: RelationshipView
           multiline: true
           options: [
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/cites', label: 'Cites'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/supercedes', label: 'Supercedes'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces'},
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/cites', label: 'Cites'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/supercedes', label: 'Supercedes'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces'}
             {value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses'}
           ]
           helpText: """
