@@ -10,8 +10,12 @@
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 <div class="container">
-    <span id="loading">LOADING ...</span>
-    <span id="saved" style="display: none;">SAVED</span>
+    <h3 id="loading" class="alert alert-info">
+        <i class='fa fa-circle-o-notch fa-spin '></i> Loading ...
+    </h3>
+    <h3 id="saved" class="alert alert-info" style="display: none;">
+        <i class="fa fa-save"></i> Saved
+    </h3>
     <form id="form" class="new-form ${readonly}" data-document="sensor" data-guid="${id}">
         <input ${readonly} name="type" type="hidden" value="dataset">
         <div class='head'>

@@ -42,7 +42,7 @@ define [
         do @model.save
         do $('#saved').show
         clearTimeout @timeout
-        @timeout = setTimeout (-> $('#saved').hide()), 2000
+        @timeout = setTimeout (-> $('#saved').hide()), 1000
 
     do @initInputs
     return false
