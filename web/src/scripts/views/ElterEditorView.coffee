@@ -2,7 +2,7 @@ define [
   'underscore'
   'backbone'
   'tpl!templates/DefaultParameter.tpl'
-  'tpl!templates/Manufacturer.tpl'
+  'tpl!templates/ManufacturerSelect.tpl'
 ], (
   _
   Backbone
@@ -23,9 +23,8 @@ define [
 
     @model.on 'sync', =>
       $('#loading').hide()
-      do @initInputs
       do @updateLinks
-
+      do @initInputs
       do @renderDefaultParameters
       do @updateManufacturers
       do @updateSensors
@@ -46,6 +45,7 @@ define [
         do $('#saved').show
         clearTimeout @timeout
         @timeout = setTimeout (-> $('#saved').hide()), 1000
+
     do @initInputs
     do @initDelete
   
@@ -64,7 +64,6 @@ define [
       link.find('a').attr('href', value)
   
   renderDefaultParameters: ->
-    $('#form input, #form textarea, #form select').unbind 'change'
     defaultParameters = @model.get('defaultParameters') || []
     $('#defaultParameters').html('')
     for index, defaultParameter of defaultParameters
@@ -76,10 +75,11 @@ define [
       index: defaultParameters.length
       value: ''
     )
+    do @initInputs
   
   initInputs: ->
     $('#form input, #form textarea, #form select').unbind 'change'
-    $('#form input, #form textarea, #form select').on 'change', (evt) =>
+    $('#form input, #form textarea, #form select').change (evt) =>
       value = evt.target.value
       name = evt.target.name
 
@@ -98,8 +98,8 @@ define [
         @model.set name, value
       do @save
 
-    $('#defaultParameters .delete-defaultParameter').unbind 'click'
-    $('#defaultParameters .delete-defaultParameter').on 'click', (evt) =>
+    $('.delete-defaultParameter').unbind 'click'
+    $('.delete-defaultParameter').click (evt) =>
       target = $(evt.target)
       target = target.parent() if !target.hasClass('delete-defaultParameter')
       input = target.parent().find('input')
