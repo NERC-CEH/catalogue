@@ -60,7 +60,7 @@ define [
       name = link.data('name')
       format = link.data('format')
       value = @model.get(name) || '#'
-      value = format.replace('{' + name + '}', value) if format
+      value = format.replace('{' + name + '}', value) if format and format != '' and format != '#'
       link.find('a').attr('href', value)
   
   renderDefaultParameters: ->
