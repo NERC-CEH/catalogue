@@ -2,11 +2,11 @@
     <h3 id="saved" class="alert alert-info" style="display: none;">
         <i class="fa fa-save"></i> Saved
     </h3>
-    <form id="form" class="new-form" data-document="sensor">
+    <form id="form" class="new-form" data-document="sensor" novalidate>
         <input name="type" type="hidden" value="dataset">
         <input name="resourceType" type="hidden" value="dataset">
         <div class='head'>
-            <input name="title" type="text" class='title' placeholder="Title" required>
+            <input name="title" type="text" class='title' placeholder="Title" required data-error-message="Title is required" data-error-name="title">
             <input name="shortName" type="text" class='subtitle' placeholder="Short Name">
             <textarea name="description" type="text" class='description' placeholder="Description"></textarea>
         </div>
@@ -17,7 +17,7 @@
             </div>
             <div class='value value-link' data-name="documentation">
                 <label><a href="#">Documentation</a></label>
-                <input name="documentation" type="text" placeholder="Documentation">
+                <input name="documentation" type="text" placeholder="Documentation" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$" data-error-name="documentation" data-error-message="Not a valid url, needs to be http(s)://url">
             </div>
             <div class='value'>
                 <label>Process Type</label>

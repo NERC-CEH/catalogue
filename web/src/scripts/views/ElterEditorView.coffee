@@ -70,6 +70,7 @@ define [
             message: errorMessage
       else if typeof input == 'object'
         $input = $(input)
+        $input.removeClass('error')
         errorMessage = $input.data('errorMessage')
         errorName = $input.data('errorName')
         $('#' + errorName + '-error').remove()
