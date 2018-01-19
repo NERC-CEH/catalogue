@@ -12,6 +12,8 @@ define [
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/ParametersMeasuredView'
+  'cs!models/editor/BoundingBox'
+  'cs!views/editor/BoundingBoxView'
 ], (
   EditorView,
   SingleObjectView,
@@ -25,7 +27,9 @@ define [
   MultipleDate,
   TemporalExtentView,
   ResourceIdentifierView,
-  ParametersMeasuredView
+  ParametersMeasuredView,
+  BoundingBox,
+  BoundingBoxView
 ) -> EditorView.extend
 
   initialize: ->
@@ -109,6 +113,16 @@ define [
                     <p>Access to dataset</p>
                     """
 
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'boundingBox'
+          ModelType: BoundingBox
+          label: 'Bounding Box'
+          ObjectInputView: BoundingBoxView,
+          helpText: """
+                    <p>Bounding Box of Dataset</p>
+                    """
+
         new ParentView
           model: @model
           modelAttribute: 'keywords'
@@ -125,10 +139,10 @@ define [
           ObjectInputView: RelationshipView
           multiline: true
           options: [
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/cites', label: 'Cites'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/supercedes', label: 'Supercedes'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces'},
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/cites', label: 'Cites'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/supercedes', label: 'Supercedes'}
+            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces'}
             {value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses'}
           ]
           helpText: """

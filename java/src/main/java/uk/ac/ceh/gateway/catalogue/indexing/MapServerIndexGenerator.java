@@ -1,15 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import freemarker.template.Configuration;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
+import java.util.List;
+
 /**
  * The following IndexGenerator is responsible for creating MapFile definitions
- * for given MetadataDocuments. 
- * @author cjohn
+ * for given MetadataDocuments.
  */
 @AllArgsConstructor
 public class MapServerIndexGenerator implements IndexGenerator<MetadataDocument, MapFile> {

@@ -1,0 +1,25 @@
+{
+  "uri": "https://catalogue.ceh.ac.uk/id/47194076-899c-473f-b7bb-430ccd230670",
+  "id": "47194076-899c-473f-b7bb-430ccd230670",
+  "type": "dataset",
+  "title": "OSDP Dataset",
+  "format": "text/csv",
+  "version": "2",
+  "parametersMeasured": [
+    {"name": {"title": "Parameter 0", "href": "http://example.com"}, "unitOfMeasure": {"title": "m/s²/kg", "href": "http://example.com"}},
+    {"name": {"title": "Parameter 1"}, "unitOfMeasure": {"title": "℃/m"}},
+    {"name": {"title": "Snowman Index"}, "unitOfMeasure": {"title": "⛄/m²/y"}}
+  ],
+  "keywords": [
+    {"value": "Keyword 0", "uri": "http://example.com/keyword0"},
+    {"value": "Keyword 1", "uri": "http://example.com/keyword1"},
+    {"value": "Keyword 2", "uri": "http://example.com/keyword2"}
+  ],
+  "relationships": [
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/dependencies", "target": "47194076-899c-473f-b7bb-430ccd230670"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/supercedes", "target": "ff55462e-38a4-4f30-b562-f82ff263d9c3"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/cites", "target": "986d3df3-d9bf-42eb-8e18-850b8d54f37b"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/revises", "target": "571a676f-6c32-489b-b7ec-18dcc617a9f1"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/related", "target": "ff55462e-38a4-4f30-b562-f82ff263d9c3"}
+  ]
+}

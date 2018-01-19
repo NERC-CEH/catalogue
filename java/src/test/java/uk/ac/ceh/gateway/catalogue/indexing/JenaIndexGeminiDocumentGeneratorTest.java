@@ -6,31 +6,30 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import org.apache.jena.rdf.model.Statement;
-import java.util.Arrays;
-import java.util.List;
-import static org.hamcrest.Matchers.equalTo;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Before;
-import static org.mockito.BDDMockito.given;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
-/**
- *
- * @author rjsc
- */
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
+@RunWith(MockitoJUnitRunner.class)
 public class JenaIndexGeminiDocumentGeneratorTest {
   @Mock private DocumentIdentifierService service;
   private JenaIndexGeminiDocumentGenerator generator;
   
   @Before
   public void setup() {
-    MockitoAnnotations.initMocks(this);
     generator = new JenaIndexGeminiDocumentGenerator(new JenaIndexMetadataDocumentGenerator(service));
   }
   

@@ -1,18 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.io.IOException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -23,10 +10,21 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer.Feature;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
 
 /**
  *
@@ -36,12 +34,11 @@ public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConve
     private static final String LAYERS = "//msGMLOutput/*";
     private static final String FEATURES = "*[substring(name(),string-length(name())-7) = '_feature']";
     private static final String ATTRIBUTES = "*[not(*)]";
-    private final XPath xpath;
     private final XPathExpression layers, features, attributes;
     
     public Gml2WmsFeatureInfoMessageConverter() throws XPathExpressionException {
         super(MediaType.parseMediaType(MAPSERVER_GML_VALUE));
-        xpath = XPathFactory.newInstance().newXPath();
+        XPath xpath = XPathFactory.newInstance().newXPath();
 
         this.layers = xpath.compile(LAYERS);
         this.features = xpath.compile(FEATURES);

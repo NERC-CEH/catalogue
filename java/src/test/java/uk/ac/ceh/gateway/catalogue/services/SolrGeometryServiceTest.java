@@ -1,18 +1,18 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import com.vividsolutions.jts.io.WKTReader;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 public class SolrGeometryServiceTest {
     private SolrGeometryService service;
     
     @Before
     public void init() {
-        service = new SolrGeometryService(new WKTReader());
+        service = new SolrGeometryService();
     }
     
     @Test

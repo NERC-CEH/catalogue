@@ -1,8 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
@@ -10,26 +8,19 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.PublicationServiceException;
-import uk.ac.ceh.gateway.catalogue.publication.PublishingRole;
-import uk.ac.ceh.gateway.catalogue.publication.State;
-import uk.ac.ceh.gateway.catalogue.publication.StateResource;
-import uk.ac.ceh.gateway.catalogue.publication.Transition;
-import uk.ac.ceh.gateway.catalogue.publication.Workflow;
+import uk.ac.ceh.gateway.catalogue.publication.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
+@AllArgsConstructor
 public class GitPublicationService implements PublicationService {
     private final GroupStore<CatalogueUser> groupStore;
     private final Workflow workflow;
     private final DocumentRepository documentRepository;
-
-    @Autowired
-    public GitPublicationService(GroupStore<CatalogueUser> groupStore, Workflow workflow, DocumentRepository documentRepository) {
-        this.groupStore = groupStore;
-        this.workflow = workflow;
-        this.documentRepository = documentRepository;
-    }
 
     @Override
     public StateResource current(CatalogueUser user, String fileIdentifier) {

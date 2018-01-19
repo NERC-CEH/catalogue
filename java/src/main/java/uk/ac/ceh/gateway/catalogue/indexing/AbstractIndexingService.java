@@ -1,12 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.io.IOException;
-import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * The following abstract class defines the common structure for a 
@@ -24,25 +26,12 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
  * @param <I> indexable representation of a given document
  */
 @Slf4j
+@AllArgsConstructor
 public abstract class AbstractIndexingService<D, I> implements DocumentIndexingService {
     private final BundledReaderService<D> reader;
     private final DocumentListingService listingService;
     private final DataRepository<?> repo;
     private final IndexGenerator<D, I> indexGenerator;
-
-    public AbstractIndexingService(
-        BundledReaderService<D> reader,
-        DocumentListingService listingService,
-        DataRepository<?> repo,
-        IndexGenerator<D, I> indexGenerator
-    ) {
-        this.reader = reader;
-        this.listingService = listingService;
-        this.repo = repo;
-        this.indexGenerator = indexGenerator;
-    }
-    
-    
     
     protected abstract void clearIndex() throws DocumentIndexingException;
     protected abstract void index(I toIndex) throws Exception;
@@ -71,16 +60,25 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
                 index(indexGenerator.generateIndex(readDocument(document, revision)));
             }
             catch(Exception ex) {
-                log.error("Failed to index: {}", document, ex);
                 joinedException.addSuppressed(document, new DocumentIndexingException(
                     String.format("Failed to index %s : %s", document, ex.getMessage()), ex));
-                log.error("Suppressed indexing errors", (Object[]) joinedException.getSuppressed());
             }
         });
 
         //If an exception was supressed, then throw
         if(joinedException.getSuppressed().length != 0) {
             throw joinedException;
+        }
+    }
+
+    public void initialIndex() {
+        try {
+            if(this.isIndexEmpty()) {
+                this.rebuildIndex();
+            }
+        } catch (Exception ex) {
+            log.error("There were records that did not index successfully at container creation. This does not stop the container starting");
+            log.error("Suppressed indexing errors", (Object[]) ex.getSuppressed());
         }
     }
     

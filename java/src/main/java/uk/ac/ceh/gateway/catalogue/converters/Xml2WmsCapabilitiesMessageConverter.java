@@ -29,13 +29,12 @@ public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConv
     private static final String FEATURE_INFO_URL = "//wms:GetFeatureInfo/*/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href";
     
     private final LayerConverter layerConverter;
-    private final XPath xpath;
     private final XPathExpression map, featureInfo;
     
     public Xml2WmsCapabilitiesMessageConverter() throws XPathExpressionException {
         super(MediaType.TEXT_XML, MediaType.APPLICATION_XML);
-        
-        xpath = XPathFactory.newInstance().newXPath();
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(new HardcodedOGCNamespaceResolver());
         this.layerConverter = new LayerConverter(xpath);
         this.map = xpath.compile(MAP_URL);

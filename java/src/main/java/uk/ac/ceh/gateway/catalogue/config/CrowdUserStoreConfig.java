@@ -21,9 +21,9 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 @Configuration
 @Profile("production")
 public class CrowdUserStoreConfig {
-    @Value("${userstore.crowd.address}") String address;
-    @Value("${userstore.crowd.username}") String username;
-    @Value("${userstore.crowd.password}") String password;
+    @Value("${crowd.address}") String address;
+    @Value("${crowd.username}") String username;
+    @Value("${crowd.password}") String password;
     
     @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
     

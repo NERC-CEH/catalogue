@@ -1,13 +1,10 @@
 import org.ajoberstar.grgit.Person
 
 plugins {
-  id 'com.avast.gradle.docker-compose' version '0.5.1'
   id 'org.ajoberstar.grgit' version '2.0.0'
 }
 
-defaultTasks 'composeDown', 'clean', 'prepFixtures', 'build', ':web:grunt_default', 'composeUp'
-
-composeUp.dependsOn ':java:war'
+defaultTasks ':java:forDefaultComposeDown', 'clean', 'prepFixtures', 'build', ':web:grunt_default', ':java:forDefaultComposeUp'
 
 task prepFixtures {
   description 'Prepare development environment with test fixtures'
@@ -27,19 +24,6 @@ task prepFixtures {
   }
 }
 
-if (System.getenv("SELENIUM_TEST") ?: false) {
-  dockerCompose {
-    useComposeFiles = ['docker-compose.yml', 'docker-compose.selenium.yml']
-    startedServices = ['chrome', 'firefox']
-  }
-}
-
-// Run as:
-// SELENIUM_TEST=true ./gradlew selenium
-task selenium(type: Exec, dependsOn: prepFixtures) {
-  commandLine 'docker-compose', '--file=docker-compose.yml', '--file=docker-compose.selenium.yml', 'run', 'ruby_test'
-}
-
 task unzipWeb(type: Exec, dependsOn: ':java:build') {
   commandLine 'docker-compose', 'exec', '-T', 'web', 'unzip', '-od', '/usr/local/tomcat/webapps/ROOT', '/opt/ceh-catalogue/libs/ROOT.war'
 }
@@ -49,5 +33,3 @@ task web(type: Exec, dependsOn: unzipWeb) {
   description 'Builds the java files, unzips ROOT.war then restarts service'
   commandLine 'docker-compose', 'restart', 'web'
 }
-
-dockerCompose.isRequiredBy(selenium)

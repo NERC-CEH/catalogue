@@ -1,21 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.Calendar;
-import java.util.Date;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
+import java.util.Calendar;
+import java.util.Date;
+
 @Slf4j
-@Data
 public class DataRepositoryOptimizingService {
     private final DataRepository<CatalogueUser> repo;
     private Date lastOptimized;
-    
+
+    public DataRepositoryOptimizingService(DataRepository<CatalogueUser> repo) {
+        this.repo = repo;
+    }
+
     @Scheduled(cron="0 0 0 * * ?")
     public void performOptimization() throws DataRepositoryException {
         if(repo instanceof GitDataRepository) {
@@ -26,5 +30,17 @@ public class DataRepositoryOptimizingService {
         else {
             log.info("Ignoring request to optimize: Not using a git repository");
         }
+    }
+
+    public Date getLastOptimized() {
+        if (this.lastOptimized != null) {
+            return new Date(this.lastOptimized.getTime());
+        } else {
+            return null;
+        }
+    }
+
+    public DataRevision<CatalogueUser> getLatestRevision() throws DataRepositoryException {
+        return this.repo.getLatestRevision();
     }
 }

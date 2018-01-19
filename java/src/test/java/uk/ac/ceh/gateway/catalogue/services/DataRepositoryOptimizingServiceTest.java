@@ -1,26 +1,34 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
-/**
- *
- * @author cjohn
- */
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+@RunWith(MockitoJUnitRunner.class)
 public class DataRepositoryOptimizingServiceTest {
+
+    @Mock
+    private GitDataRepository<CatalogueUser> repo;
+    private DataRepositoryOptimizingService service;
+
+    @Before
+    public void setup() {
+        this.service = new DataRepositoryOptimizingService(this.repo);
+    }
     
     @Test
     public void checkThatDateGetsSetOnOptimization() throws DataRepositoryException {
-        //Given
-        GitDataRepository repo = mock(GitDataRepository.class);
-        DataRepositoryOptimizingService service = new DataRepositoryOptimizingService(repo);
-        
         //When
         service.performOptimization();
         
@@ -31,7 +39,7 @@ public class DataRepositoryOptimizingServiceTest {
     @Test
     public void checkThatDateDoesntPersistIfNotUsingAGitRepo()throws DataRepositoryException {
         //Given
-        DataRepository repo = mock(DataRepository.class);
+        DataRepository<CatalogueUser> repo = mock(DataRepository.class); // Not a Git repository
         DataRepositoryOptimizingService service = new DataRepositoryOptimizingService(repo);
         
         //When
@@ -43,10 +51,6 @@ public class DataRepositoryOptimizingServiceTest {
     
     @Test
     public void checkThatOptimizesWhenCalled() throws DataRepositoryException {
-        //Given
-        GitDataRepository repo = mock(GitDataRepository.class);
-        DataRepositoryOptimizingService service = new DataRepositoryOptimizingService(repo);
-        
         //When
         service.performOptimization();
         

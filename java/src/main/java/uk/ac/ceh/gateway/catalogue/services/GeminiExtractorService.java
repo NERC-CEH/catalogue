@@ -5,24 +5,23 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 /**
  * The following service defines some methods which help in extracting details
  * from Gemini Documents and returning these as easy to use entities. Designed
  * to be freemarker friendly.
- * @author cjohn
  */
-@AllArgsConstructor
 public class GeminiExtractorService {    
+
     public List<String> getKeywords(GeminiDocument document) {
         return document.getDescriptiveKeywords().stream()
                 .map(DescriptiveKeywords::getKeywords)

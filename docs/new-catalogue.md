@@ -6,7 +6,7 @@ First: `catalogue` not `catalog`, we are not American
 
 # Step 1: ServiceConfig
 
-You need to add you rnew Catalogue to the service config
+You need to add your new Catalogue to the catalogue service config
 
 In the function `catalogueService`
 

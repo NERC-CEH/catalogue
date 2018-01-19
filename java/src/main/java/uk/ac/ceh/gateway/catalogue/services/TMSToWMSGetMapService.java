@@ -3,20 +3,19 @@ package uk.ac.ceh.gateway.catalogue.services;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 
 /**
  * The following service will take a wms url, layer and tms coordiantes then
  * return a WMS GetMap Request url for the desired tile.
- * @author cjohn
  */
-@AllArgsConstructor
 public class TMSToWMSGetMapService {
     private final DecimalFormat bboxPartFormat;
     private final int height, width;
-    
+
     public TMSToWMSGetMapService() {
-        this(new DecimalFormat("#.##"), 256, 256);
+        this. bboxPartFormat = new DecimalFormat("#.##");
+        this.height = 256;
+        this.width = 256;
     }
     
     public String getWMSMapRequest(String url, String layer, int z, int x, int y) {

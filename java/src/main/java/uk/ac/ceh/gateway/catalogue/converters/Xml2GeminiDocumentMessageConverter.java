@@ -1,17 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import static com.google.common.base.Strings.emptyToNull;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.NodeListConverter;
-import java.io.IOException;
-import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -22,27 +10,21 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.BoundingBoxesConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ConformanceResultConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DatasetReferenceDatesConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DescriptiveKeywordsConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.DistributionInfoConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.OnlineResourceConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceIdentifierConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResourceMaintenanceConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ResponsiblePartyConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.RevisionOfConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.ServiceConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialReferenceSystemConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.SpatialResolutionConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TemporalExtentConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.TopicCategoriesConverter;
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.LegalConstraintsWithAnchorConverter;
+import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.*;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.*;
+import java.io.IOException;
+import java.util.List;
+
+import static com.google.common.base.Strings.emptyToNull;
 
 /**
  *
@@ -50,12 +32,21 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
  */
 @Slf4j
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
-    private final XPathExpression id, title, description, alternateTitle, resourceType, 
-        browseGraphicUrl, resourceStatus, metadataDate, lineage, 
-        metadataStandardName, metadataStandardVersion, 
-        spatialRepresentationType, datasetLanguage, 
-        accessConstraints, securityConstraints, parentIdentifier;
-    private final XPath xpath;
+    private final XPathExpression id;
+    private final XPathExpression title;
+    private final XPathExpression description;
+    private final XPathExpression alternateTitle;
+    private final XPathExpression resourceType;
+    private final XPathExpression browseGraphicUrl;
+    private final XPathExpression resourceStatus;
+    private final XPathExpression metadataDate;
+    private final XPathExpression lineage;
+    private final XPathExpression metadataStandardName;
+    private final XPathExpression metadataStandardVersion;
+    private final XPathExpression spatialRepresentationType;
+    private final XPathExpression datasetLanguage;
+    private final XPathExpression securityConstraints;
+    private final XPathExpression parentIdentifier;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
     private final ResponsiblePartyConverter distributorConverter;
@@ -78,8 +69,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     
     public Xml2GeminiDocumentMessageConverter(CodeLookupService codeLookupService) throws XPathExpressionException {
         super(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
-        
-        xpath = XPathFactory.newInstance().newXPath();
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(new HardcodedGeminiNamespaceResolver());
         this.id = xpath.compile(XPaths.ID);
         this.title = xpath.compile(XPaths.TITLE);
@@ -108,7 +99,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.metadataStandardVersion = xpath.compile(XPaths.METADATA_VERSION);
         this.spatialRepresentationType = xpath.compile(XPaths.SPATIAL_REPRESENTATION_TYPE);
         this.datasetLanguage = xpath.compile(XPaths.DATASET_LANGUAGE);
-        this.accessConstraints = xpath.compile(XPaths.ACCESS_CONSTRAINT);
         this.securityConstraints = xpath.compile(XPaths.SECURITY_CONSTRAINT);
         this.parentIdentifier = xpath.compile(XPaths.PARENT_IDENTIFIER);
         this.revisionOfConverter = new RevisionOfConverter(xpath);

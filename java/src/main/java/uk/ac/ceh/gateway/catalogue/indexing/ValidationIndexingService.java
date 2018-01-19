@@ -1,11 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
@@ -14,17 +8,18 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 
+import java.util.*;
+
 
 /**
  * The following ValidationIndexingService checks a document against some 
  * validation checks.
- * @author cjohn
  * @param <D>
  */
 public class ValidationIndexingService<D extends MetadataDocument> extends AbstractIndexingService<D, ValidationReport> {
     private final Map<String, ValidationReport> results;
     private final Set<String> failed;
-    private final PostProcessingService postProcessingService;
+    private final PostProcessingService<D> postProcessingService;
     private final DocumentIdentifierService documentIdentifierService;
 
     public ValidationIndexingService(

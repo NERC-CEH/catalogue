@@ -1,17 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.model.Link;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.ac.ceh.gateway.catalogue.model.Citation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -19,16 +9,18 @@ import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_TTL_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_SCHEMAORG_VALUE;
+import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
-/**
- *
- * @author cjohn
- */
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
+
 @Data 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -39,7 +31,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
     @Template(called="rdf/ttl.tpl",   whenRequestedAs=RDF_TTL_VALUE),
     @Template(called="schema.org/schema.org.tpl",   whenRequestedAs=RDF_SCHEMAORG_VALUE)
 })
-public class GeminiDocument extends AbstractMetadataDocument {
+public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, browseGraphicUrl, resourceStatus, lineage, erratum,
         metadataStandardName, metadataStandardVersion, parentIdentifier, revisionOfIdentifier;
@@ -188,5 +180,13 @@ public class GeminiDocument extends AbstractMetadataDocument {
         return Optional.ofNullable(responsibleParties)
             .orElse(Collections.emptyList());
     }
-    
+
+    @Override
+    public List<String> getWKTs() {
+        return Optional.ofNullable(boundingBoxes)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(BoundingBox::getWkt)
+            .collect(Collectors.toList());
+    }
 }

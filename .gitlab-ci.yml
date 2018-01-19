@@ -3,13 +3,20 @@ variables:
   CONTAINER_SOLR_IMAGE:        registry.gitlab.ceh.ac.uk/eip/catalogue:solr-$CI_BUILD_REF_NAME
   CONTAINER_MAPSERVER_IMAGE:   registry.gitlab.ceh.ac.uk/eip/catalogue:mapserver-$CI_BUILD_REF_NAME
   DOCKER_DAEMON_ARGS:          -g /cache/docker
+  DOCKER_DRIVER: overlay2
   DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
   NODE_KEY: catalogue_version
   NODE_VALUE: $CI_BUILD_REF_NAME
 
+services:
+  - docker:dind
+
+cache:
+  paths:
+    - cache/gradle
+
 stages:
   - build
-  - test
   - docker
   - deploy
 
@@ -21,9 +28,20 @@ mirror:
 
 java:
   stage: build
-  image: openjdk:8
+  image: docker
+  before_script:
+    - echo jira.username=$JIRA_USERNAME > secrets.env
+    - echo jira.password=$JIRA_PASSWORD >> secrets.env
+    - echo plone.username=$PLONE_USERNAME >> secrets.env
+    - echo plone.password=$PLONE_PASSWORD >> secrets.env
+    - echo doi.password= >> secrets.env
   script:
-    - ./gradlew --build-cache :java:clean :java:build :web:grunt_default
+    - >
+      docker run -t --rm
+      -v /var/run/docker.sock:/var/run/docker.sock
+      -v "$(pwd)":"$(pwd)"
+      -w "$(pwd)"
+      registry.gitlab.ceh.ac.uk/eip/catalogue-builder:0.0.1 ./gradlew -g ./cache/gradle clean prepFixtures build grunt_default integrationTest
   artifacts:
     when: always
     expire_in: 2 hrs
@@ -32,35 +50,6 @@ java:
       - web/src/vendor/
       - web/src/css/
       - web/src/scripts/main-out.js
-
-rspec:
-  stage: test
-  image: gitlab/dind
-  before_script:
-    - echo JIRA_USERNAME=$JIRA_USERNAME > secrets.env
-    - echo JIRA_PASSWORD=$JIRA_PASSWORD >> secrets.env
-    - echo PLONE_USERNAME=$PLONE_USERNAME >> secrets.env
-    - echo PLONE_PASSWORD=$PLONE_PASSWORD >> secrets.env
-    - rm -rf datastore
-    - mkdir datastore
-    - cp fixtures/datastore/REV-1/* datastore
-    - cd datastore
-    - git init
-    - git config user.name 'CI'
-    - git config user.email ci@localhost
-    - git add --all
-    - git commit --message 'test data'
-    - cd -
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml up --force-recreate -d firefox chrome
-  script:
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml run ruby_test
-  after_script:
-    - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) docker/compose:1.16.1 -f docker-compose.yml -f docker-compose.selenium.yml down --volumes
-  artifacts:
-    when: always
-    expire_in: 2 days
-    paths:
-      - test-reports
 
 .deployment_template: &deployment_definition # Hidden deployment definition for docker builds
   stage: docker

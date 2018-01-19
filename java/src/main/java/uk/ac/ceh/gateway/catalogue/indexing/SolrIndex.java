@@ -1,11 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.base.Strings;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -33,7 +34,7 @@ public class SolrIndex {
     private @Field List<String> onlineResourceDescription;
     private @Field List<String> resourceIdentifier;
     private @Field String resourceType;
-    private @Field List<String> locations;
+    private @Field List<String> locations = new ArrayList<>();
     private @Field String licence;
     private @Field String state;
     private @Field List<String> topic;
@@ -50,12 +51,15 @@ public class SolrIndex {
     private @Field List<String> inmsDemonstrationRegion;
 
     public SolrIndex addLocations(List<String> locations) {
-        if(this.locations == null) {
-            this.locations = new ArrayList<>();
-        }
         this.locations.addAll(locations);
         return this;
     }
+
+    public SolrIndex addLocation(String location) {
+        this.locations.add(location);
+        return this;
+    }
+
     public String getShortenedDescription(){
         return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);
     }

@@ -1,23 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import freemarker.template.Template;
-import java.net.URISyntaxException;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.Arrays;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,26 +15,43 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
-/**
- *
- * @author cjohn
- */
+import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.Arrays;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
+
+@RunWith(MockitoJUnitRunner.class)
 public class DataciteServiceTest {
     private DataciteService service;
-    
-    @Mock Template dataciteRequest;
+
     @Mock RestTemplate rest;
     @Mock DocumentIdentifierService identifierService;
+    @Mock Template template;
     
     @Before
+    @SneakyThrows
     public void init() {
-        MockitoAnnotations.initMocks(this);
-        service = new DataciteService("10.8268/", "Test publisher", "username", "password", identifierService, dataciteRequest, rest);
+        service = new DataciteService(
+            "10.8268/",
+            "Test publisher",
+            "username",
+            "password",
+            identifierService,
+            template,
+            rest
+        );
     }
     
     @Test
@@ -145,7 +152,7 @@ public class DataciteServiceTest {
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
-        
+
         //When
         ResourceIdentifier dataciteUpdatable = service.updateDoiMetadata(document);
         

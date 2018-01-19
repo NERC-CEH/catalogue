@@ -1,7 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
+
+import java.util.UUID;
 
 /**
  * This application hosts metadata documents on paths which take the form:
@@ -14,21 +16,11 @@ import lombok.NonNull;
  * As such, it is important that we are able to produce a internal identifier
  * which can be used to create a valid url in the above scheme. This class is
  * responsible for doing just that.
- * @author cjohn
  */
+@AllArgsConstructor
 public class DocumentIdentifierService {
     private final String baseUri;
     private final char replacement;
-
-    public DocumentIdentifierService(
-        @NonNull String baseUri,
-        char replacement
-    ) {
-        this.baseUri = baseUri;
-        this.replacement = replacement;
-    }
-    
-    
     
     /**
      * Takes a document describing identifier and derives a new one which 

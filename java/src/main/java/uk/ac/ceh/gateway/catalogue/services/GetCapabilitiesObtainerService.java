@@ -1,8 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import static java.lang.String.format;
-import java.net.URI;
-import java.net.URISyntaxException;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestClientException;
@@ -12,10 +9,11 @@ import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.NotAGetCapabilitiesResourceException;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 
-/**
- *
- * @author cjohn
- */
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static java.lang.String.format;
+
 @AllArgsConstructor
 public class GetCapabilitiesObtainerService {
     private final RestTemplate rest;

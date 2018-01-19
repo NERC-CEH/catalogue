@@ -1,19 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A Document Reading Service which delegates reading to Springs 
  * HttpMessageConverters
- * @author cjohn
  */
 public class MessageConverterReadingService implements DocumentReadingService {
     private final List<HttpMessageConverter<?>> messageConverters;

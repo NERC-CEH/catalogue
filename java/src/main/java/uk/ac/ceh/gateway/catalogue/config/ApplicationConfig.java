@@ -6,12 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.common.eventbus.EventBus;
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -22,11 +20,12 @@ import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
-/**
- *
- * @author cjohn
- */
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+
 @Configuration
+@PropertySource("classpath:application.properties")
 public class ApplicationConfig {
     @Value("${data.repository.location}") private String dataRespository;
     
@@ -42,8 +41,8 @@ public class ApplicationConfig {
     
     @Bean
     public DataRepository<CatalogueUser> catalogDataRepository() throws IOException, UsernameAlreadyTakenException {
-        return new GitDataRepository<>(new File(dataRespository), 
-                                        new InMemoryUserStore(), 
+        return new GitDataRepository<>(new File(dataRespository),
+                                        new InMemoryUserStore<>(),
                                         phantomUserBuilderFactory(), 
                                         communicationBus());
     }
@@ -59,9 +58,9 @@ public class ApplicationConfig {
     
     @Bean
     public AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory() {
-        return new AnnotatedUserHelper(CatalogueUser.class);
+        return new AnnotatedUserHelper<>(CatalogueUser.class);
     }
-    
+
     @Bean
     public CodeLookupService codeNameLookupService() throws IOException {
         Properties properties = PropertiesLoaderUtils.loadAllProperties("codelist.properties");
