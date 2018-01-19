@@ -62,6 +62,14 @@ define [
                     <p>The medium of the sample being described</p>
                     """
 
+        new GeometryView
+          model: @model
+          modelAttribute: 'geometry'
+          label: 'Geometry'
+          helpText: """
+                    <p>Geometry of Sample</p>
+                    """
+
         new SingleObjectView
           model: @model
           modelAttribute: 'referenceDate'
@@ -80,14 +88,6 @@ define [
           ObjectInputView: TemporalExtentView,
           helpText: """
                     <p>Temporal Extent of model</p>
-                    """
-
-        new GeometryView
-          model: @model
-          modelAttribute: 'geometry'
-          label: 'Geometry'
-          helpText: """
-                    <p>Geometry of Sample</p>
                     """
 
         new SingleObjectView
