@@ -147,11 +147,11 @@
             </div>
             <div class="folder-options text-right">
                 <#if datastore.isZipped()>
-                    <button class="btn btn-success zip" disabled style="display: none">Zip</button>
-                    <button class="btn btn-success unzip" disabled>Unzip</button>
+                    <button class="btn btn-success btn-zip zip" disabled style="display: none">Zip</button>
+                    <button class="btn btn-success btn-zip unzip" disabled>Unzip</button>
                 <#else>
-                    <button class="btn btn-success zip" disabled>Zip</button>
-                    <button class="btn btn-success unzip" disabled style="display: none">Unzip</button>
+                    <button class="btn btn-success btn-zip zip" disabled>Zip</button>
+                    <button class="btn btn-success btn-zip unzip" disabled style="display: none">Unzip</button>
                 </#if>
                 <#if (documents.getFiles()?size = 0 && documents.getInvalid()?size = 0) 
                 && (datastore.getFiles()?size != 0 || datastore.getInvalid()?size != 0) >&nbsp;

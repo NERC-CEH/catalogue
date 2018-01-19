@@ -87,22 +87,10 @@ define [
                     <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure - see <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank">guidance for metadata authors</a></p>
                     """
 
-        new ParentView
-          model: @model
-          modelAttribute: 'resourceIdentifiers'
-          label: 'Resource identifiers'
-          ObjectInputView: ResourceIdentifierView
-          helpText: """
-                    <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
-                    """
-
         new ResourceStatusView
           model: @model
           modelAttribute: 'resourceStatus'
           label: 'Resource status'
-          helpText: """
-                    <p>The current status of the data resource.  For data curated by the EIDC, <strong>Completed</strong> is the usual expected value.  <strong>Historical archive</strong> is acceptable if the data have been withdrawn or replaced (e.g. due to corrections/updated data published elsewhere).  <strong>Obsolete</strong> may be used in exceptional circumstances.</p>
-                    """
 
         new SingleObjectView
           model: @model
@@ -111,10 +99,10 @@ define [
           label: 'Reference dates'
           ObjectInputView: DatasetReferenceDateView,
           helpText: """
-                    <p><u>Created</u> date is the date on which the data resource was originally created.</p>
-                    <p><u>Published</u> date is the date when this metadata record is made available publicly.</p>
-                    <p>For embargoed resources, the <u>Released</u> date is the date on which the embargo was lifted.</p>
-                    <p><u>Superseded</u> date is the date on which the resource was superseded by another resource (where relevant).</p>
+                    <p><b>Created</b> is the date on which the data resource was originally created.</p>
+                    <p><b>Published</b> is the date when this metadata record is made available publicly.</p>
+                    <p>For embargoed resources, <b>Release(d)</b> is the date on which the embargo was lifted <i class='text-red'><b>or is due to be lifted</b></i>.</p>
+                    <p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>
                     """
 
         new ParentView
@@ -126,7 +114,6 @@ define [
           helpText: """
                     <p>The time period(s) the data resource covers.  This is often the same as the data capture period but it need not be so.</p>
                     """
-
       ]
     ,
       label: 'Authors & contacts'
@@ -247,11 +234,16 @@ define [
           ObjectInputView: OnlineResourceView
           multiline: true
           predefined:
-            'Order manager resource':
+            'Order manager data':
               url: 'https://catalogue.ceh.ac.uk/download?fileIdentifier={fileIdentifier}'
               name: 'Download the data'
               description: 'Download a copy of this data'
               function: 'order'
+            'Direct access data':
+              url: 'https://catalogue.ceh.ac.uk/datastore/eidchub/{fileIdentifier}'
+              name: 'Download the data'
+              description: 'Download a copy of this data'
+              function: 'download'
             'Supporting information':
               url: 'http://eidc.ceh.ac.uk/metadata/{fileIdentifier}/zip_export/'
               name: 'Supporting information'
@@ -342,14 +334,6 @@ define [
               value: 'Registration is required to access this data'
               uri: 'https://eip.ceh.ac.uk/catalogue/help/faq/registration'
               code: 'otherRestrictions'
-            'Resource superseded (ERRATUM)':
-              value: 'This dataset has been superseded. If you need access to this version of the data, please email eidc@ceh.ac.uk'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/superseded'
-              code: 'otherRestrictions'
-            'Resource withdrawn':
-              value: 'This dataset has been withdrawn. If you need access to this version of the data, please email eidc@ceh.ac.uk'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/Withdrawn'
-              code: 'otherRestrictions'
             'no limitations':
               value: 'no limitations'
               code:  'otherRestrictions'
@@ -376,9 +360,18 @@ define [
                     """
       ]
     ,
-      label: 'Relationships'
-      title: 'Links to other resources'
+      label: 'ID & relationships'
+      title: 'Identifiers and links to related resources'
       views: [
+        new ParentView
+          model: @model
+          modelAttribute: 'resourceIdentifiers'
+          label: 'Resource identifiers'
+          ObjectInputView: ResourceIdentifierView
+          helpText: """
+                    <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
+                    """
+
         new InputView
           model: @model
           modelAttribute: 'parentIdentifier'

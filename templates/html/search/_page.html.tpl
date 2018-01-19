@@ -9,11 +9,7 @@
   <span id="num-records">${numFound}</span> records found
 </div>
 <#list results as result>
-  <#assign statusClass="">
-  <#if result.resourceStatus?? && (result.resourceStatus == 'Withdrawn') >
-    <#assign statusClass="result-withdrawn">
-  </#if>
-  <div class="result ${statusClass}" data-location="${(result.locations?join(','))!}" id="${result.identifier}">
+  <div class="result" data-location="${(result.locations?join(','))!}" id="${result.identifier}">
     <h2 class="resultTitle">
       <small>
         <#if result.resourceType??>
@@ -22,9 +18,6 @@
         <#if (result.state == 'draft' || result.state == 'pending') >
           <span class="text-danger"><b>${codes.lookup('publication.state', result.state)?upper_case!''}</b> </span>
         </#if>
-      <#if result.resourceStatus?? && (result.resourceStatus == 'Withdrawn')>
-          <span class="label-withdrawn">(withdrawn)</span>
-      </#if>
       </small><br>
       <a href="/${docroot}/${result.identifier}" class="title">${result.title}</a>
     </h2>

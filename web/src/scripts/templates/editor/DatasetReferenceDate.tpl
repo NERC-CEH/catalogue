@@ -11,7 +11,7 @@
     <input data-name="publicationDate" id="input-publicationDate" class="editor-input" value="<%= data.publicationDate %>">
   </div>
   <div class="col-md-1">
-    <label for="input-releasedDate">Released</label><br>
+    <label for="input-releasedDate">Release(d)</label><br>
   </div>
   <div class="col-md-2">
     <input data-name="releasedDate" id="input-releasedDate" class="editor-input" value="<%= data.releasedDate %>">

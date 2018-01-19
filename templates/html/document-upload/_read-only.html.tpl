@@ -18,7 +18,9 @@ datastore.getFiles()?size != 0 || documents.getFiles()?size != 0 || datastore.ge
         <div class="container-fluid folders read-only">
                 <div class="folder clearfix">
                     <div class="folder-title">
-                        <h2 class="folder-name"><i class="fa fa-lock"></i> Data</h2>
+                        <h2 class="folder-name">
+                            <i class="fa fa-lock"></i> Data
+                        </h2>
                     </div>
                     <div class="files">
                         <#if datastore.getFiles()?size == 0 && documents.getFiles()?size == 0 && datastore.getInvalid()?values?size == 0 && documents.getInvalid()?values?size == 0>

@@ -29,7 +29,7 @@ public class HardcodedFacetFactory implements FacetFactory {
             case "status":
                 return Facet.builder()
                     .fieldName("resourceStatus")
-                    .displayName("Status")
+                    .displayName("Availability")
                     .hierarchical(false)
                     .build();
                 
