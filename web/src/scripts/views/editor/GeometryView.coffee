@@ -68,7 +68,10 @@ define [
     setModel: ->
       features = geometryLayer.features
       if features.length > 0
-        @model.set('geometry', @wktFactory.write(features[0]))
+        if features[0].geometry.getArea() == 0 # prevent points being added
+          geometryLayer.removeFeatures(features[0])
+        else
+          @model.set('geometry', @wktFactory.write(features[0]))
       else
         @model.unset 'geometry'
 
