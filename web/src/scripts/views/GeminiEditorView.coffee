@@ -75,11 +75,6 @@ define [
                     <p>Alternative titles allow you to add multiple titles and non-English translations of titles (e.g. Welsh).</p>
                     <p>Only the leading letter and proper nouns of titles should be capitalised. If the title includes acronyms, include both the acronym (in parentheses) and its definition. Acronyms should not include full-stops between each letter.</p>
                     """
-        new ResourceStatusView
-          model: @model
-          modelAttribute: 'resourceStatus'
-          label: 'Resource status'
-
 
         new TextareaView
           model: @model
@@ -92,14 +87,10 @@ define [
                     <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure - see <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank">guidance for metadata authors</a></p>
                     """
 
-        new ParentView
+        new ResourceStatusView
           model: @model
-          modelAttribute: 'resourceIdentifiers'
-          label: 'Resource identifiers'
-          ObjectInputView: ResourceIdentifierView
-          helpText: """
-                    <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
-                    """
+          modelAttribute: 'resourceStatus'
+          label: 'Resource status'
 
         new SingleObjectView
           model: @model
@@ -123,7 +114,6 @@ define [
           helpText: """
                     <p>The time period(s) the data resource covers.  This is often the same as the data capture period but it need not be so.</p>
                     """
-
       ]
     ,
       label: 'Authors & contacts'
@@ -370,9 +360,18 @@ define [
                     """
       ]
     ,
-      label: 'Relationships'
-      title: 'Links to other resources'
+      label: 'ID & relationships'
+      title: 'Identifiers and links to related resources'
       views: [
+        new ParentView
+          model: @model
+          modelAttribute: 'resourceIdentifiers'
+          label: 'Resource identifiers'
+          ObjectInputView: ResourceIdentifierView
+          helpText: """
+                    <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
+                    """
+
         new InputView
           model: @model
           modelAttribute: 'parentIdentifier'

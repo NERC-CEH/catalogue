@@ -13,12 +13,7 @@
         <#elseif resourceStatus == "Retired" && parent?has_content>
           <p>See other resources in this series: <a href="${parent.href?html}">${parent.title?html}</a></p>
         <#elseif resourceStatus == "Embargoed">
-            <p>This ${resourceType.value} is embargoed
-            <#if datasetReferenceDate.releasedDate?has_content>
-            and will be made available by ${datasetReferenceDate.releasedDate?date?string.long} at the latest
-            </#if>
-            <a href="http://eidc.ceh.ac.uk/help/faq/embargos"><i class="fa fa-question-circle text-info"></i></a>
-            </p>
+           <#include "_embargo.html.tpl">
         </#if>
     </div>
 <#else>
