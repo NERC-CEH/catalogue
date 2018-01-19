@@ -3,7 +3,7 @@ plugins {
     id 'idea'
     id 'com.github.ben-manes.versions' version '0.15.0'
     id 'org.unbroken-dome.test-sets' version '1.4.2'
-    id 'com.avast.gradle.docker-compose' version '0.6.11'
+    id 'com.avast.gradle.docker-compose' version '0.6.12'
 }
 
 ext {
@@ -50,9 +50,12 @@ dependencyUpdates.resolutionStrategy = {
 //     integrationTest
 // }
 
-// dockerCompose {
-//     useComposeFiles = ['../docker-compose.yml', '../docker-compose-chrome.yml']
-// }
+dockerCompose {
+    useComposeFiles = ['../docker-compose.yml', '../docker-compose-chrome.yml']
+    forDefault {
+        useComposeFiles = ['../docker-compose.yml', '../docker-compose.override.yml']
+    }
+}
 
 // dockerCompose.isRequiredBy(integrationTest)
 

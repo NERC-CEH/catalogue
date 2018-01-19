@@ -4,7 +4,7 @@ plugins {
   id 'org.ajoberstar.grgit' version '2.0.0'
 }
 
-defaultTasks ':java:composeDown', 'clean', 'prepFixtures', 'build', ':web:grunt_default', ':java:composeUp'
+defaultTasks ':java:forDefaultComposeDown', 'clean', 'prepFixtures', 'build', ':web:grunt_default', ':java:forDefaultComposeUp'
 
 task prepFixtures {
   description 'Prepare development environment with test fixtures'

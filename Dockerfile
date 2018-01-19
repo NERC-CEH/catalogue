@@ -1,5 +1,5 @@
 FROM tomcat:8.5-jre8
-MAINTAINER oss@ceh.ac.uk
+LABEL maintainer="oss@ceh.ac.uk"
 
 RUN rm -Rf /usr/local/tomcat/webapps/*
 COPY schemas              /opt/ceh-catalogue/schemas
