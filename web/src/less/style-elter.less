@@ -2,12 +2,18 @@
 @brand-success: #3498DB;
 @gray-lighter: @brand-success;
 @header-text: #ECF0F1;
+@brand-error: #c9302c;
 .text-red {
-    color: #E74C3C;
+    color: @brand-error;
 }
 
 .new-form {
     margin-top: 20px;
+    & .error-message {
+        color: @brand-error;
+        padding: 0 10px;
+        width: 100%;
+    }
     & input,
     & textarea,
     & select {
@@ -28,6 +34,11 @@
         }
         &:focus {
             cursor: initial;
+        }
+
+        &.error {
+            border: solid 1px @brand-error;
+            outline-color: @brand-error;
         }
     }
     select::-ms-expand {
@@ -58,9 +69,14 @@
         & .value {
             display: flex;
             flex-flow: row;
+            flex-wrap: wrap;
             justify-content: space-around;
             align-items: baseline;
             margin-bottom: 5px;
+
+            & .error-message {
+                margin-left: 20%;
+            }
         }
         label {
             width: 20%;
@@ -72,7 +88,7 @@
             background: none;
             color: #d9534f;
             &:hover {
-                color: #c9302c;
+                color: @brand-error;
             }
         }
         input,

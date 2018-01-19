@@ -1,11 +1,13 @@
 define [
   'underscore'
   'backbone'
+  'tpl!templates/NewFormError.tpl'
   'tpl!templates/DefaultParameter.tpl'
   'tpl!templates/ManufacturerSelect.tpl'
 ], (
   _
   Backbone
+  NewFormError
   DefaultParameter
   Manufacturer
 ) -> Backbone.View.extend
@@ -33,12 +35,12 @@ define [
 
     $('form').submit (evt) =>
       do evt.preventDefault
-      evt.stopImmediatePropagation()
       do $('#form input, #form textarea, #form select').blur
+
       inputs = document.querySelectorAll 'input, textarea, select'
       for index, input of inputs
         @shouldSave = false if input.value == '' and input.required
-        @shouldSave = false if input.pattern and !new RegExp(input.pattern).test(input.value)
+        @shouldSave = false if input.value != '' and input.pattern and !new RegExp(input.pattern).test(input.value)
 
       if @shouldSave
         @shouldSave = false
@@ -46,10 +48,38 @@ define [
         do $('#saved').show
         clearTimeout @timeout
         @timeout = setTimeout (-> $('#saved').hide()), 1000
+      else
+        do @formValidation
 
     do @initInputs
     do @initDelete
   
+  formValidation: ->
+    inputs = document.querySelectorAll 'input, textarea, select'
+    for index, input of inputs
+      failRequired = input.value == '' and input.required
+      failMatch = input.value != '' and input.pattern and !new RegExp(input.pattern).test(input.value)
+      if failRequired or failMatch
+        $input = $(input)
+        errorMessage = $input.data('errorMessage')
+        errorName = $input.data('errorName')
+        $input.addClass('error') if !$input.hasClass('error')
+        if $('#' + errorName + '-error').length == 0
+          $input.after NewFormError
+            name: errorName
+            message: errorMessage
+      else if typeof input == 'object'
+        $input = $(input)
+        errorMessage = $input.data('errorMessage')
+        errorName = $input.data('errorName')
+        $('#' + errorName + '-error').remove()
+    for index, input of inputs
+      failRequired = input.value == '' and input.required
+      failMatch = input.value != '' and input.pattern and !new RegExp(input.pattern).test(input.value)
+      if failRequired or failMatch
+        $(input).focus()
+        break
+
   initDelete: ->
     $('.delete-document').click =>
       do @model.destroy

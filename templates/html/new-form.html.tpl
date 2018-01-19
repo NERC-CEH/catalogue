@@ -14,7 +14,7 @@
         <h3 id="saved" class="alert alert-info" style="display: none;">
             <i class="fa fa-save"></i> Saved
         </h3>
-        <form id="form" class="new-form ${readonly}" data-document="${document}" data-guid="${id}">
+        <form id="form" class="new-form ${readonly}" data-document="${document}" data-guid="${id}" novalidate>
             <#nested>
             <input type="submit" style="display: none;">
         </form>
@@ -32,7 +32,7 @@
     </div>
 </#macro>
 <#macro title title="">
-    <input ${readonly} name="title" type="text" class='title' placeholder="Title" value="${title}" required>
+    <input ${readonly} name="title" type="text" class='title' placeholder="Title" value="${title}" required data-error-name="title" data-error-message="Title is required">
 </#macro>
 <#macro description description="">
     <textarea ${disabled} name="description" type="text" class='description' placeholder="Description">${description}</textarea>
@@ -49,8 +49,8 @@
     </#if>
 </#macro>
 
-<#macro input name type="text" class="" value="" placeholder="" id="" pattern="">
-    <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}" <#if pattern != "">pattern="${pattern}"</#if>>
+<#macro input name type="text" class="" value="" placeholder="" id="" pattern="" errorName="" errorMessage="">
+    <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}" <#if pattern != "">pattern="${pattern}"</#if> data-error-name="${errorName}" data-error-message="${errorMessage}">
 </#macro>
 <#macro select name id="">
     <select ${disabled} id="${id}" name="${name}">
