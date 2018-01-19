@@ -31,6 +31,8 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.converters.*;
 import uk.ac.ceh.gateway.catalogue.ef.*;
+import uk.ac.ceh.gateway.catalogue.elter.ManufacturerDocument;
+import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
@@ -108,6 +110,11 @@ public class ServiceConfig {
     @Bean
     public DepositRequestService depositRequestService() throws XPathExpressionException, IOException, TemplateModelException {
         return new DepositRequestService(documentRepository(), solrServer);
+    }
+
+    @Bean
+    public ElterService elterService() throws XPathExpressionException, IOException, TemplateModelException {
+        return new ElterService(documentRepository(), solrServer);
     }
 
     @Bean
@@ -217,6 +224,12 @@ public class ServiceConfig {
         converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
         converters.add(new WmsFeatureInfo2XmlMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
+
+
+        // eLTER converters
+        converters.add(new Object2TemplatedMessageConverter<>(SensorDocument.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(ManufacturerDocument.class, freemarkerConfiguration()));
+
         return new MessageConvertersHolder(converters);
     }
     
@@ -308,7 +321,9 @@ public class ServiceConfig {
                 .register(OSDP_MONITORING_PROGRAMME_SHORT, MonitoringProgramme.class)
                 .register(OSDP_PUBLICATION_SHORT, Publication.class)
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
-                .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class);
+                .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
+                .register(ELTER_SENSOR_DOCUMENT_SHORT, SensorDocument.class)
+                .register(ELTER_MANUFACTURER_DOCUMENT_SHORT, ManufacturerDocument.class);
     }
     
     @Bean
@@ -396,6 +411,7 @@ public class ServiceConfig {
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
             .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
+            .register(SensorDocument.class, new SensorManufacturerIndexGenerator(metadataDocumentGenerator))
             .register(MetadataDocument.class, metadataDocumentGenerator);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry<>(mappings);

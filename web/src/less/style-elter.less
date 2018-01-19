@@ -1,0 +1,114 @@
+@import "style-ceh";
+@brand-success: #3498DB;
+@gray-lighter: @brand-success;
+@header-text: #ECF0F1;
+@brand-error: #c9302c;
+.text-red {
+    color: @brand-error;
+}
+
+.new-form {
+    margin-top: 20px;
+    & .error-message {
+        color: @brand-error;
+        padding: 0 10px;
+        width: 100%;
+    }
+    & input,
+    & textarea,
+    & select {
+        border-radius: 4px;
+        padding: 5px 10px;
+        border: solid 1px transparent;
+        font-size: 18px;
+        resize: none;
+        background: none;
+        &:hover,
+        &:focus,
+        &.is-active {
+            border: solid 1px #ccc;
+            resize: both;
+        }
+        &:hover {
+            cursor: pointer;
+        }
+        &:focus {
+            cursor: initial;
+        }
+
+        &.error {
+            border: solid 1px @brand-error;
+            outline-color: @brand-error;
+        }
+    }
+    select::-ms-expand {
+        display: none;
+    }
+    select {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    & .title {
+        font-size: 28px;
+    }
+    & .subtitle {
+        font-size: 16px;
+    }
+    & .description {
+        margin: 5px 0;
+    }
+    & .head {
+        margin-bottom: 10px;
+        & input,
+        & textarea {
+            display: block;
+            width: 100%;
+        }
+    }
+    & .body {
+        & .value {
+            display: flex;
+            flex-flow: row;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: baseline;
+            margin-bottom: 5px;
+
+            & .error-message {
+                margin-left: 20%;
+            }
+        }
+        label {
+            width: 20%;
+            padding: 0 10px;
+            text-align: right;
+        }
+        .delete .fa-times {
+            border: none;
+            background: none;
+            color: #d9534f;
+            &:hover {
+                color: @brand-error;
+            }
+        }
+        input,
+        select,
+        ul {
+            width: 80%;
+        }
+        label,
+        input,
+        select {
+            font-size: 14px;
+        }
+    }
+}
+
+.new-form.readonly {
+    & input,
+    & textarea,
+    & select {
+        border: solid 1px transparent !important;
+        cursor: initial !important;
+    }
+}

@@ -97,6 +97,16 @@ public class CatalogueServiceConfig {
             .title("Sample Archive")
             .type(SAMPLE_ARCHIVE_SHORT)
             .build();
+        
+        DocumentType elterSensor = DocumentType.builder()
+            .title("eLTER Sensor")
+            .type(ELTER_SENSOR_DOCUMENT_SHORT)
+            .build();
+        
+        DocumentType elterManufacturer = DocumentType.builder()
+            .title("eLTER Manufacturer")
+            .type(ELTER_MANUFACTURER_DOCUMENT_SHORT)
+            .build();
 
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
@@ -228,6 +238,18 @@ public class CatalogueServiceConfig {
                 .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
                 .facetKey("resourceType")
                 .documentType(gemini)
+                .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
+                .id("elter")
+                .title("eLTER")
+                .url("http://www.ceh.ac.uk")
+                .facetKey("documentType")
+                .facetKey("manufacturer")
+                .facetKey("manufacturerName")
+                .documentType(elterSensor)
+                .documentType(elterManufacturer)
                 .fileUpload(false)
                 .build()
         );

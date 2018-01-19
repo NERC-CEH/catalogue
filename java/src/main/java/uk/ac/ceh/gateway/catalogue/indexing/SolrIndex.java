@@ -49,6 +49,8 @@ public class SolrIndex {
     private @Field List<String> impWaterPollutant;
     private @Field List<String> modelType;
     private @Field List<String> inmsDemonstrationRegion;
+    private @Field String manufacturer;
+    private @Field String manufacturerName;
 
     public SolrIndex addLocations(List<String> locations) {
         this.locations.addAll(locations);

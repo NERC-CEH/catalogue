@@ -4,7 +4,7 @@
 
 First: `catalogue` not `catalog`, we are not American
 
-# Step 1: ServiceConfig
+# Step 1: CatalogueServiceConfig
 
 You need to add your new Catalogue to the catalogue service config
 
@@ -109,7 +109,7 @@ public CatalogueUser yourCataloguePublisher() throws lreadyTakenException {
 }
 ```
 
-You also need to add the new user to the group store in `groupStore`, using the title from `Step 1: ServiceConfig`
+You also need to add the new user to the group store in `groupStore`, using the title from `Step 1: CatalogueServiceConfig`
 
 ```java
 toReturn.createGroup(YOUR_CATALOGUE_PUBLISHER, "Your Title Publisher Role");
@@ -200,7 +200,16 @@ which should have
 ```html
 <#import "../skeleton.html.tpl" as skeleton>
 
-<@skeleton.master title=title>
+<!-- You need catalogue=catalogues.retrieve(metadata.catalogue) to load your css file -->
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+
+<!-- You need id="metadata" to wrap the whole document so that everything works e.g. _admin.html.tpl buttons will work -->
+<div id="metadata">
+  <div class="container">
+    <!-- put data here e.g. -->
+    <h1>${title}</h1>
+  </div>
+</div>
 </@skeleton.master>
 ```
 
@@ -208,20 +217,33 @@ you can get access to your values of the focument on the root level, in the abov
 
 Anything else is up to you
 
-# Step 4c: ServiceConfig
+# Step 4c: WebConfig
 
-add this to the top of this file
+you need to add this to the top
 
 ```java
-private static final String YOUR_DOCUMENT = "YOUR_DOCUMENT";
+public static final String YOUR_DOCUMENT_JSON_VALUE = "application/vnd.your-document+json";
+public static final String YOUR_DOCUMENT_SHORT = "your-document";
 ```
+
+then in `configureContentNegotiation` you need to add
+
+`.put(YOUR_DOCUMENT_SHORT, MediaType.parseMediaType(YOUR_DOCUMENT_JSON_VALUE))` 
+
+# Step 4d: ServiceConfig
+
+in `metadataRepresentationService` you need to add
+
+`.register(YOUR_DOCUMENT_SHORT, YourDocument.class);`
+
+# Step 4e: CatalogueService
 
 in `catalogueService` you need to create a document e.g.
 
 ```java
 DocumentType yourDocument = DocumentType.builder()
     .title("Document Title")
-    .type(YOUR_DOCUMENT)
+    .type(YOUR_DOCUMENT_SHORT)
     .build();
 ```
 
@@ -246,20 +268,7 @@ converters.add(new Object2TemplatedMessageConverter<>(YourNewDocument.class, fre
 
 Now your document will render as per `html/your-id/your-document.html.tpl`
 
-# Step 4d: WebConfig
-
-you need to add this to the top
-
-```java
-public static final String YOUR_DOCUMENT_JSON_VALUE = "application/vnd.your-document+json";
-public static final String YOUR_DOCUMENT_SHORT = "your-document";
-```
-
-then in `configureContentNegotiation` you need to add
-
-`.put(YOUR_DOCUMENT_SHORT, MediaType.parseMediaType(YOUR_DOCUMENT_JSON_VALUE))` 
-
-# Step 4e: Controller
+# Step 4f: Controller
 
 You need this to save and view a file
 
@@ -297,19 +306,19 @@ public class YourController extends AbstractDocumentController {
 
   @PreAuthorize("@permission.userCanEdit(#file)")
   @RequestMapping(value = "documents/observable/{file}", method = RequestMethod.PUT, consumes = YOUR_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> updateSampleArchive(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
+  public ResponseEntity<MetadataDocument> saveYourDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
       @RequestBody YourDocument document) throws DocumentRepositoryException {
-    return saveYourDocument(user, file, document);
+    return saveMetadataDocument(user, file, document);
   }
 }
 ```
 
-# Step 4f: View
+# Step 4g: View
 
 in `Main.coffee` in `initEditor` you need to add
 
 ```coffee
-YOUR_DOCUMENT:
+'your-document':
     View: YourDocumentView
     Model: EditorMetadata
     mediaType: 'application/vnd.your-document+json'
@@ -358,7 +367,7 @@ new SingleObjectView
     ObjectInputView: ResourceTypeView
 ```
 
-# Step 4g: Admin
+# Step 4h: Admin
 
 you don't have to do this step if you don't want to. It lets you let users edit and publish the document
 
@@ -390,7 +399,7 @@ then in `html/your-id/your-document.html.tpl`
 ```html
 <#import "../skeleton.html.tpl" as skeleton>
 
-<@skeleton.master title=title>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
 <div id="metadata">
    <div class="container">

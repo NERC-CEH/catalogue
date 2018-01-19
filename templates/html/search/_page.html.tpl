@@ -12,9 +12,7 @@
   <div class="result" data-location="${(result.locations?join(','))!}" id="${result.identifier}">
     <h2 class="resultTitle">
       <small>
-        <#if result.resourceType??>
-          <span>${result.resourceType}</span>
-        </#if>
+        <span>${result.resourceType!""}</span>
         <#if (result.state == 'draft' || result.state == 'pending') >
           <span class="text-danger"><b>${codes.lookup('publication.state', result.state)?upper_case!''}</b> </span>
         </#if>

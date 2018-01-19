@@ -40,15 +40,19 @@ define [
   'cs!views/SampleArchiveEditorView'
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
+  'cs!views/ElterEditorView'
+  'tpl!templates/Sensor.tpl'
+  'tpl!templates/Manufacturer.tpl'
   'bootstrap'
   'dropzone'
 ], (
-  _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter,
-    SearchRouter, EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter,
-    PermissionAppView, Catalogue, CatalogueView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
-    DocumentsUploadScheduledView, DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView,
-    OsdpAgentEditorView, OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView,
-    OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView, OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView
+  _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
+    EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
+    ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView,
+    DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
+    OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
+    ElterEditorView, SensorTpl, ManufacturerTpl
 ) ->
 
   ###
@@ -68,9 +72,34 @@ define [
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
+    do @newForm if $('.new-form').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
+
+  newForm: ->
+    formMap =
+      sensor:
+        view: ElterEditorView
+        template: SensorTpl
+        mediaType: 'application/vnd.elter-sensor-document+json'
+      manufacturer:
+        view: ElterEditorView
+        template: ManufacturerTpl
+        mediaType: 'application/vnd.elter-manufacturer-document+json'
+
+    document = $('.new-form').data('document')
+    guid = $('.new-form').data('guid')
+
+    form = formMap[document]
+    if form
+      app = new EditorMetadata null,
+        mediaType: form.mediaType
+      app.id = guid
+      app.set('id', guid)
+      view = new form.view
+        model: app
+        template: form.template
 
   initDepositRequest: ->
     app = new DepositRequestModel
@@ -181,6 +210,16 @@ define [
         View: SampleArchiveEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.sample-archive+json'
+      'Sensor':
+        View: ElterEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.elter-sensor-document+json'
+        template: SensorTpl
+      'Manufacturer':
+        View: ElterEditorView
+        Model: EditorMetadata
+        template: ManufacturerTpl
+        mediaType: 'application/vnd.elter-manufacturer-document+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
@@ -195,6 +234,7 @@ define [
         new documentType.View
           model: new documentType.Model null, documentType
           el: '#search'
+          template: documentType.template
       else
         $.ajax
           url: $(location).attr('href')
@@ -205,6 +245,7 @@ define [
             new documentType.View
               model: new documentType.Model data, documentType
               el: '#metadata'
+              template: documentType.template
 
   ###
   Initialize the permission application
