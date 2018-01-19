@@ -54,7 +54,7 @@
                         </@form.ifReadonly>
                     <#else>
                         <@form.ifReadonly>
-                        <li>                        <input ${readonly} name="defaultParameters[0]['value']" type="text" value="" placeholder="Default Parameter">
+                        <li>
                             <@form.delete name="defaultParameter"></@form.delete>
                             <@form.input name="defaultParameters[0]['value']" placeholder="Default Parameter" value=""></@form.input>
                         </li>
