@@ -49,8 +49,8 @@
     </#if>
 </#macro>
 
-<#macro input name type="text" class="" value="" placeholder="" id="">
-    <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}">
+<#macro input name type="text" class="" value="" placeholder="" id="" pattern="">
+    <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}" <#if pattern != "">pattern="${pattern}"</#if>>
 </#macro>
 <#macro select name id="">
     <select ${disabled} id="${id}" name="${name}">

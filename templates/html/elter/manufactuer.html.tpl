@@ -17,7 +17,7 @@
         </@form.head>
         <@form.body>
             <@form.valueLink label="Website" name="website">
-                <@form.input name="website" placeholder="Website" value="${website!''}"></@form.input>
+                <@form.input name="website" placeholder="Website" value="${website!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$"></@form.input>
             </@form.valueLink>
             <@form.value label="Sensors">
                 <ul id="sensors" class="list-unstyled">

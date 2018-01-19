@@ -14,7 +14,7 @@
                 <@form.input name="serialNumber" placeholder="Serial Number" value="${serialNumber!''}"></@form.input>
             </@form.value>
             <@form.valueLink label="Documentation" name="documentation">
-                <@form.input name="documentation" placeholder="Documentation" value="${documentation!''}"></@form.input>
+                <@form.input name="documentation" placeholder="Documentation" value="${documentation!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$"></@form.input>
             </@form.valueLink>
             <@form.value label="Process Type">
                 <@form.select name="processType">

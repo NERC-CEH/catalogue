@@ -35,9 +35,10 @@ define [
       do evt.preventDefault
       evt.stopImmediatePropagation()
       do $('#form input, #form textarea, #form select').blur
-      inputs = document.querySelectorAll 'input:required, textarea:required, select:required'
+      inputs = document.querySelectorAll 'input, textarea, select'
       for index, input of inputs
-        @shouldSave = false if input.value == ''
+        @shouldSave = false if input.value == '' and input.required
+        @shouldSave = false if input.pattern and !new RegExp(input.pattern).test(input.value)
 
       if @shouldSave
         @shouldSave = false
