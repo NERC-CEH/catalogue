@@ -46,9 +46,9 @@ dependencyUpdates.resolutionStrategy = {
     }
 }
 
-// testSets {
-//     integrationTest
-// }
+testSets {
+    integrationTest
+}
 
 dockerCompose {
     useComposeFiles = ['../docker-compose.yml', '../docker-compose-chrome.yml']
@@ -57,11 +57,11 @@ dockerCompose {
     }
 }
 
-// dockerCompose.isRequiredBy(integrationTest)
+dockerCompose.isRequiredBy(integrationTest)
 
-// integrationTest.doFirst {
-//     dockerCompose.exposeAsSystemProperties(integrationTest)
-// }
+integrationTest.doFirst {
+    dockerCompose.exposeAsSystemProperties(integrationTest)
+}
 
 dependencies {
     implementation "uk.ac.ceh.components:datastore-git:${cehComponentsVersion}"
