@@ -476,6 +476,15 @@ public class DocumentUploadServiceTest {
         hasData(dusSecond.get("guid"), "valid-checksum.txt");
     }
 
+    @Test
+    @SneakyThrows
+    public void canBeAnyNamedChecksumFile () {
+       checksums.renameTo(new File(documentUploadTestFolder, "guid/anything.hash"));
+
+        val actual = dus.get("guid");
+        hasData(actual, "valid-checksum.txt");
+    }
+
     private void hasData(DocumentUpload actual, String name) {
         assertThat(actual.getDocuments().keySet(), hasItem(equalTo(name)));
         doesNotHaveInvalid(actual, name);

@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -125,7 +127,7 @@ public class DocumentUploadService {
                     zipFile.addFile(file, new ZipParameters());
                     FileUtils.forceDelete(file);
                 }
-                val checksums = new File(documentUpload.getPath(), "checksums.hash");
+                val checksums = getChecksumsFile(documentUpload);
                 zipFile.addFile(checksums, new ZipParameters());
                 FileUtils.write(checksums, String.format("%s *%s", hash(zipRawFile),  zipFilename), Charset.defaultCharset());
             } catch(ZipException ze) {
@@ -196,7 +198,7 @@ public class DocumentUploadService {
 
     private void updateWithChecksumsFile(DocumentUpload documentUpload) throws IOException {
         val folder = new File(documentUpload.getPath());
-        val checksums = new File(folder, "checksums.hash");
+        val checksums = getChecksumsFile(documentUpload);
 
         if (checksums.exists()) {
             val lines = FileUtils.readLines(checksums, Charset.defaultCharset());
@@ -291,7 +293,7 @@ public class DocumentUploadService {
         val folder = new File(path);
         val files = folder.listFiles(file -> {
             return !file.getName().equals("_data.json") &&
-                !file.getName().equals("checksums.hash") &&
+                !file.getName().endsWith(".hash") &&
                 !file.getName().equals(String.format("%s.zip", documentUpload.getGuid()));
         });
         for(val file : files) {
@@ -355,7 +357,7 @@ public class DocumentUploadService {
     private void save(DocumentUpload documentUpload) throws IOException {
         saveJson(documentUpload);
 
-        val checksums = new File(documentUpload.getPath(), "checksums.hash");
+        val checksums = getChecksumsFile(documentUpload);
         if (documentUpload.isZipped()) {
             val zipFilename = String.format("%s.zip", documentUpload.getGuid());
             val zipRawFile = new File(documentUpload.getPath(), zipFilename);
@@ -382,5 +384,14 @@ public class DocumentUploadService {
         val hash = DigestUtils.md5Hex(input);
         input.close();
         return hash;
+    }
+
+    private File getChecksumsFile (DocumentUpload documentUpload) {
+        File dir = new File(documentUpload.getPath());
+        FileFilter fileFilter = new WildcardFileFilter("*.hash");
+        File[] files = dir.listFiles(fileFilter);
+        File checksums = new File(documentUpload.getPath(), "checksums.hash");
+        if (files.length == 1) checksums = files[0];
+        return checksums;
     }
 }
