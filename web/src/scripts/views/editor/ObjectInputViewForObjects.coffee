@@ -8,6 +8,8 @@ define [
   # The template <input data-name="objectName.attributeName" …
   modify: (event) ->  
     $target = $(event.target)
+    # TODO: Need to decide if there is an object, then split name, else carry on as 
+    # in prototype method 
     [objectName, attributeName] = $target.data('name').split('.')
     value = $target.val()
 

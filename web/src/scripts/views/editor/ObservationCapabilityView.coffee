@@ -4,3 +4,15 @@ define [
 ], (ObjectInputViewForObjects, template) -> ObjectInputViewForObjects.extend
 
   template:  template
+
+  render: ->
+    unless 'observedPropertyName' in @data 
+      @data.observedProperty = {}
+
+    unless 'observedPropertyUnitOfMeasure' in @data 
+      @data.observedPropertyUnitOfMeasure = {}
+
+    unless 'procedureName' in @data 
+      @data.procedureName = {}
+
+    ObjectInputViewForObjects.prototype.render.apply @
