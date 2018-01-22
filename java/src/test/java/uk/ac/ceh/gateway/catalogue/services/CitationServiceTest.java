@@ -31,7 +31,7 @@ public class CitationServiceTest {
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUri()).thenReturn("https://example.com/id/30ce7be8-deab-4608-bc2a-1774921423f0");
         when(document.getId()).thenReturn("30ce7be8-deab-4608-bc2a-1774921423f0");
-        CitationService service = new CitationService("doi:", "10.5285/");
+        CitationService service = new CitationService("10.5285/");
         
         //When
         URI url = service.getInAlternateFormat(document, format);
@@ -53,7 +53,7 @@ public class CitationServiceTest {
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
             author(), publisher()
         ));
-        CitationService service = new CitationService("doi:", "10.5285/");
+        CitationService service = new CitationService("10.5285/");
         
         //When
         Citation citation = service.getCitation(document).get();
@@ -80,7 +80,7 @@ public class CitationServiceTest {
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
             author()
         ));
-        CitationService service = new CitationService("doi:", "10.5285/");
+        CitationService service = new CitationService("10.5285/");
         
         //When
         Optional<Citation> citation = service.getCitation(document);
@@ -100,7 +100,7 @@ public class CitationServiceTest {
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
             author(), publisher()
         ));
-        CitationService service = new CitationService("doi:", "10.5285/");
+        CitationService service = new CitationService("10.5285/");
         
         //When
         Optional<Citation> citation = service.getCitation(document);
@@ -124,7 +124,7 @@ public class CitationServiceTest {
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
             author(), publisher()
         ));
-        CitationService service = new CitationService("doi:", "10.5285/");
+        CitationService service = new CitationService("10.5285/");
         
         //When
         Optional<Citation> citation = service.getCitation(document);
@@ -137,7 +137,7 @@ public class CitationServiceTest {
     public void doesntCreateCitationIfNoDOI() throws URISyntaxException {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
-        CitationService service = new CitationService("doi:", "10.5285/");
+        CitationService service = new CitationService("10.5285/");
         
         //When
         Optional<Citation> citation = service.getCitation(document);

@@ -2,7 +2,7 @@
   <div class="panel panel-default hidden-print" id="document-reuse">
     <div class="panel-heading"><p class="panel-title">Access and use conditions</p></div>
     <div class="panel-body">
-        <#if resourceStatus == "Embargoed">
+        <#if resourceStatus?? && resourceStatus == "Embargoed">
             <#include "_embargo.html.tpl">
         </#if>
     <#include "_licence.html.tpl">

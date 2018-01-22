@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.lang.String.format;
+
 /**
  * A service which interacts with the datacite rest api to obtain a DOI for a 
  * GeminiMetadata record
@@ -125,7 +127,7 @@ public class DataciteService {
     public void mintDoiRequest(GeminiDocument document) {
         if(isDataciteMintable(document)) {
             String doi = generateDoiString(document);
-            String request = String.format("doi=%s\nurl=%s", doi, identifierService.generateUri(document.getId()));
+            String request = format("doi=%s\nurl=%s", doi, identifierService.generateUri(document.getId()));
             log.info("Requesting mint of doi: {}", request);
             try {
                 HttpHeaders headers = getBasicAuth();

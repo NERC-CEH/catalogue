@@ -78,7 +78,6 @@ public class ServiceConfig {
     @Value("${template.location}") private File templates;
     @Value("${maps.location}") private File mapsLocation;
     @Value("${doi.prefix}") private String doiPrefix;
-    @Value("${doi.codespace") private String doiCodespace;
     @Value("${doi.username}") private String doiUsername;
     @Value("${doi.password}") private String doiPassword;
     @Value("${jira.username}") private String jiraUsername;
@@ -150,7 +149,7 @@ public class ServiceConfig {
     
     @Bean
     public CitationService citationService() {
-        return new CitationService(doiCodespace, doiPrefix);
+        return new CitationService(doiPrefix);
     }
     
     @Bean

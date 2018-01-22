@@ -1,29 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.ParameterizedSparqlString;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.ReadWrite;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Property;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Link;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 /**
  * Defines a post processing service which can be used adding additional 
  * information to a Gemini Document
  * @author cjohn
  */
-@Slf4j
 public class GeminiDocumentPostProcessingService implements PostProcessingService<GeminiDocument> {
     private final CitationService citationService;
     private final DataciteService dataciteService;
@@ -46,7 +42,6 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     public void postProcess(GeminiDocument document) throws PostProcessingException {
         Optional.ofNullable(document.getId()).ifPresent(u -> {
             String uri = documentIdentifierService.generateUri(u);
-            log.debug(uri);
             if (jenaTdb.isInTransaction()) {
                 process(document, uri);
             } else {
@@ -74,7 +69,6 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         document.setChildren(findLinksWhere(id, children(), IS_PART_OF));  
         document.setDocumentLinks(findLinksWhere(id, connectedBy(), RELATION));
         document.setComposedOf(findLinksWhere(id, isComposedOf(), IS_PART_OF));
-        log.debug("about to get models for: {}", id);
         document.setModelLinks(findLinksWhere(id, models(), REFERENCES));
 
         findLinksWhere(id, has(), REPLACES).stream()

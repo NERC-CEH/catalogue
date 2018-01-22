@@ -1,68 +1,71 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
-import uk.ac.ceh.gateway.catalogue.model.Citation;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.services.CitationService;
 
-/**
- *
- * @author cjohn
- */
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
 public class CitationControllerTest {
     @Mock DocumentRepository documentRespository;
+    @Mock CitationService citationService;
     private CitationController controller;
     
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        controller = spy(new CitationController(documentRespository));
+        controller = new CitationController(documentRespository, citationService);
     }
     
     @Test
     public void checkThatGettingCitationDelegatesToDocumentControllerREV() throws Exception {
         //Given
-        MetadataDocument document = mock(MetadataDocument.class);
+        GeminiDocument document = new GeminiDocument();
         String file = "file";
         String revision = "revision";
-        doReturn(null).when(controller).getCitation(document);
         when(documentRespository.read(file, revision))
                 .thenReturn(document);
+        when(citationService.getCitation(document)).thenReturn(
+            Optional.ofNullable(Citation.builder().build())
+        );
         
         //When
         controller.getCitation(CatalogueUser.PUBLIC_USER, file, revision);
         
         //Then
         verify(documentRespository).read(file, revision);
+        verify(citationService).getCitation(document);
     }
     
     @Test
     public void checkThatGettingCitationDelegatesToDocumentController() throws Exception {
         //Given
-        MetadataDocument document = mock(MetadataDocument.class);
+        GeminiDocument document = new GeminiDocument();
         String file = "file";
-        doReturn(null).when(controller).getCitation(document);
-        when(documentRespository.read(file))
-                .thenReturn(document);
+        when(documentRespository.read(file)).thenReturn(document);
+        when(citationService.getCitation(document)).thenReturn(
+            Optional.ofNullable(Citation.builder().build())
+        );
         
         //When
         controller.getCitation(CatalogueUser.PUBLIC_USER, file);
         
         //Then
         verify(documentRespository).read(file);
+        verify(citationService).getCitation(document);
     }
     
     @Test(expected=ResourceNotFoundException.class)
@@ -80,8 +83,8 @@ public class CitationControllerTest {
     @Test(expected=ResourceNotFoundException.class)
     public void checkThatResourceNotFoundIfGeminiDocumentDoesntHaveCitation() {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getCitation()).thenReturn(null);
+        GeminiDocument document = new GeminiDocument();
+        when(citationService.getCitation(document)).thenReturn(Optional.empty());
         
         //When
         controller.getCitation(document);
@@ -95,7 +98,7 @@ public class CitationControllerTest {
         //Given
         Citation citation = Citation.builder().build();
         GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getCitation()).thenReturn(citation);
+        when(citationService.getCitation(document)).thenReturn(Optional.of(citation));
         
         //When
         Citation obtained = controller.getCitation(document);
