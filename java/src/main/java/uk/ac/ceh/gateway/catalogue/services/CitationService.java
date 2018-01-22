@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class CitationService {
-    public final String doiCodeSpace;
     public final String nercDoiPrefix;
     
     /**
@@ -35,7 +34,7 @@ public class CitationService {
             .map(GeminiDocument::getResourceIdentifiers)
             .orElse(Collections.emptyList())
             .stream()
-            .filter((r)->r.getCodeSpace().equals(doiCodeSpace))
+            .filter((r)->r.getCodeSpace().equals("doi:"))
             .filter((r)->r.getCode().startsWith(nercDoiPrefix))
             .findFirst();
         
