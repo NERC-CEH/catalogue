@@ -19,11 +19,10 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Confirm exit without saving</h4>
+        <h4 class="modal-title">Are you sure?</h4>
       </div>
       <div class="modal-body">
-        <p>There are unsaved changes to this record.</p>
-        <p>Do you want to exit without saving these changes?</p>
+        <p>There are unsaved changes to this record<br>Do you want to exit without saving?</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
@@ -35,11 +34,8 @@
 <div id="confirmDelete" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Confirm record deletion</h4>
-      </div>
       <div class="modal-body">
-        <p>Delete this record?</p>
+        <h2 class="text-red"><i class="fa fa-exclamation-triangle"></i> <strong>Are you sure?</strong></h2>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>

@@ -47,7 +47,7 @@ define [
       if begin > end
         errors.push
           message:
-            "Collection of this data finished before it started! Sort it out you numpty."
+            "Collection of this data finished before it started!"
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate
