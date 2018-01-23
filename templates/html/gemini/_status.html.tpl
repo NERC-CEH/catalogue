@@ -1,4 +1,4 @@
-<#if resourceStatus?has_content && (resourceStatus != "Current")>
+<#if resourceStatus?? && resourceStatus?has_content && (resourceStatus != "Current")>
     <div id="resourceStatus" class="alert alert-${resourceStatus}" role="alert">
         <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
             <p>
