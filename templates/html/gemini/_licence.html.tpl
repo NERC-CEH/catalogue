@@ -3,7 +3,7 @@
     <#if licence.code == 'license'>
       <p class="licenceText">
 
-       <#if resourceStatus == "Embargoed">
+       <#if resourceStatus?? && resourceStatus == "Embargoed">
         <#assign licenceText = licence.value?replace("is made available","will be available") >
        <#else> 
         <#assign licenceText = licence.value >

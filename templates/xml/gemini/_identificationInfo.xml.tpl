@@ -81,7 +81,7 @@
 		<gmd:abstract>
 			<gco:CharacterString>
 				<#assign statusMsg ="">
-				<#if resourceStatus?has_content >
+				<#if resourceStatus?? && resourceStatus?has_content >
 					<#if resourceStatus == "Withdrawn" || resourceStatus == "Superseded" >
 						<#assign statusMsg = "This " + resourceType.value + " has been withdrawn">
 						<#if erratum??>
