@@ -28,10 +28,6 @@ define [
     errors = []
     unless attrs?.title?
       errors.push 'A title is mandatory'
-    unless attrs?.resourceStatus?
-      errors.push 'A resource status is mandatory'
-    unless attrs?.resourceType?
-      errors.push 'A resource type is mandatory'
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate because returning something signals a validation error.
