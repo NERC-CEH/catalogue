@@ -7,7 +7,7 @@ define [
 
   render: ->
     unless 'observedPropertyName' in @data 
-      @data.observedProperty = {}
+      @data.observedPropertyName = {}
 
     unless 'observedPropertyUnitOfMeasure' in @data 
       @data.observedPropertyUnitOfMeasure = {}
