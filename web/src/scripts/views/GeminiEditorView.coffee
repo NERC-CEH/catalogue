@@ -249,21 +249,6 @@ define [
               name: 'Supporting information'
               description: 'Supporting information available to assist in re-use of this dataset'
               function: 'information'
-            'Embargoed data':
-              url: 'http://eidc.ceh.ac.uk/administration-folder/tools/embargo'
-              name: 'Online ordering'
-              description: 'This resource is under embargo and will be made available by {dd/mm/yyyy} at the latest'
-              function: 'order'
-            'Resource superseded (ERRATUM)':
-              url: 'http://eidc.ceh.ac.uk/administration-folder/tools/superseded'
-              name: 'Request the data'
-              description: 'This dataset has been superseded. If you need access to this version of the data, please email eidc@ceh.ac.uk'
-              function: 'offlineAccess'
-            'Resource withdrawn':
-              url: 'http://eidc.ceh.ac.uk/administration-folder/tools/Withdrawn'
-              name: 'Request the data'
-              description: 'This dataset has been withdrawn. If you need access to this version of the data, please email eidc@ceh.ac.uk'
-              function: 'offlineAccess'
           helpText: """
                     <p>Include addresses of web services used to access the data (e.g. order manager) and supporting information.</p>
                     <p>Other links such as project websites or related journal articles should NOT be included here. You can add them to "Additional links"</p>

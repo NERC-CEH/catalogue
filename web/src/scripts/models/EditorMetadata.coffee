@@ -27,7 +27,7 @@ define [
   validate: (attrs) ->
     errors = []
     unless attrs?.title?
-      errors.push 'Title required.'
+      errors.push 'A title is mandatory'
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate because returning something signals a validation error.

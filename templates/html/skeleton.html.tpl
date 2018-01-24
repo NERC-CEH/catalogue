@@ -9,6 +9,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <#if description??>
+        <meta name="description" content="${description?html?replace("\n", " ")}">
+    </#if>
     <title>${title?html}<#if catalogue?has_content> - ${catalogue.title?html}</#if></title>
     <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id?html}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
     <#if canonical?has_content>

@@ -4,7 +4,8 @@
   <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
 <#if responsibleParties?has_content>
-  <#assign authors = func.filter(responsibleParties, "role", "author")>
+  <#assign  authors = func.filter(responsibleParties, "role", "author")
+            publishers = func.filter(responsibleParties, "role", "publisher") >
 </#if>
 <#if onlineResources?has_content>
   <#assign
@@ -43,6 +44,7 @@
   </#if>
 
   <#if datacitable?string == "true" && citation?has_content>
+    "@id": "${citation.url}",
     "identifier": {
           "@type":"PropertyValue",
           "propertyID": "doi",
@@ -50,6 +52,7 @@
         },
     "url": "${citation.url}",
   <#else>
+  "@id": "${uri}",
   "url":"${uri}",
   </#if>
 
@@ -163,6 +166,18 @@
         </#list>
       ],
     </#if>
+  
+  <#if publishers?has_content>
+    <#assign publisher = publishers?first>
+    "publisher":
+        {
+        "@type":"Organization","name":"${publisher.organisationName}"
+        <#if publisher.organisationName?has_content>
+        ,"email": "${publisher.email}"
+        </#if>
+        },
+    </#if>
+  "provider" : {"@type":"Organization","name":"NERC Environmental Data Centre"},
   "includedInDataCatalog":{"@type":"DataCatalog", "name":"Environmental Information Data Centre", "alternatename":"EIDC", "url":"https://catalogue.ceh.ac.uk/eidc/documents"},
   </#if>
   "@context":"http://schema.org/"

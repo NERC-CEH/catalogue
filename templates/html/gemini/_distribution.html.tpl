@@ -15,7 +15,7 @@
               <#if revised??>
                 and superseded by <a href="${revised.href}">${revised.title}</a>
               </#if>
-              .</p>
+              </p>
               <#if erratum??>
                 <p class="errataDescription">${erratum?html?replace("\n", "<br>")}</p>
               </#if>

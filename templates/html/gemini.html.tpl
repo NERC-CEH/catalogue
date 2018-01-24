@@ -53,4 +53,8 @@
 	    <#include "gemini/_footer.html.tpl">
 	  </div>
   </div>
+  <script type="application/ld+json">
+	  <#include "../schema.org/schema.org.tpl">
+  </script>
+
 </@skeleton.master>
