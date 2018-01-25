@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -64,6 +66,29 @@ public class MetadataListingService {
             }
             catch(RuntimeException ex) {
                 log.error("Failed to read " + file + " @ " + revision);
+            }
+        }
+        return toReturn;
+    }
+
+    @SneakyThrows
+    public List<String> getPublicDocumentsOfCatalogue(String catalogue) {
+        List<String> toReturn = Lists.newArrayList();
+        String currentRevision = repo.getLatestRevision().getRevisionID();
+        List<String> documents = listingService.filterFilenames(repo.getFiles(currentRevision));
+
+        for(String file : documents) {
+            try {
+                MetadataDocument doc = documentBundleReader.readBundle(file, currentRevision);
+                if(
+                        doc.getMetadata().isPubliclyViewable(Permission.VIEW) &&
+                        doc.getCatalogue().equalsIgnoreCase(catalogue)
+                    ) {
+                    toReturn.add(doc.getId());
+                }
+            }
+            catch(RuntimeException ex) {
+                log.error("Failed to read " + file + " @ " + currentRevision);
             }
         }
         return toReturn;
