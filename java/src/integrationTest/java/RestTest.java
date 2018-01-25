@@ -4,11 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static com.google.common.collect.ImmutableList.of;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 @Slf4j
 public class RestTest {
@@ -21,6 +23,42 @@ public class RestTest {
         template = new RestTemplate();
         webHost = System.getProperty("web.host");
         webPort = System.getProperty("web.tcp.8080");
+    }
+
+    @Test
+    @SneakyThrows
+    public void getRobots() {
+        ResponseEntity<String> response = template.getForEntity(
+            "http://{host}:{port}/robots.txt",
+            String.class,
+            webHost,
+            webPort
+        );
+        assertThat("Response should be OK", response.getStatusCode().is2xxSuccessful(), is(true));
+    }
+
+    @Test
+    @SneakyThrows
+    public void getEidcSitemap() {
+        ResponseEntity<String> response = template.getForEntity(
+            "http://{host}:{port}/eidc/sitemap.txt",
+            String.class,
+            webHost,
+            webPort
+        );
+        assertThat("Response should be OK", response.getStatusCode().is2xxSuccessful(), is(true));
+    }
+
+    @Test(expected = HttpClientErrorException.class)
+    @SneakyThrows
+    public void getUnknownSitemap() {
+        ResponseEntity<String> response = template.getForEntity(
+            "http://{host}:{port}/unknown/sitemap.txt",
+            String.class,
+            webHost,
+            webPort
+        );
+        fail("Response should be Not Found");
     }
 
     @Test

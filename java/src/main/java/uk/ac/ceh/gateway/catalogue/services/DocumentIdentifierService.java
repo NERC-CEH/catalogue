@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NonNull;
 
 import java.util.UUID;
@@ -19,6 +20,7 @@ import java.util.UUID;
  */
 @AllArgsConstructor
 public class DocumentIdentifierService {
+    @Getter
     private final String baseUri;
     private final char replacement;
     

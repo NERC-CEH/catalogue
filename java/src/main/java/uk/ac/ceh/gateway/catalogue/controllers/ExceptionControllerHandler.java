@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.net.URISyntaxException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
@@ -15,15 +14,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.model.DataciteException;
-import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
-import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
-import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
-import uk.ac.ceh.gateway.catalogue.model.MapServerException;
-import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
-import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
-import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
+
+import java.net.URISyntaxException;
 
 /**
  *
