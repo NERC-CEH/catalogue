@@ -43,7 +43,7 @@
 			</gmd:otherConstraints>
 		</gmd:MD_LegalConstraints>
 	</gmd:resourceConstraints>
-<#elseif resourceStatus == "Superseded" || resourceStatus = "Withdrawn" >
+<#elseif resourceStatus?? && (resourceStatus == "Superseded" || resourceStatus = "Withdrawn") >
 	<gmd:resourceConstraints>
 		<gmd:MD_LegalConstraints>
 			<gmd:accessConstraints>
