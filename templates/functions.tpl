@@ -82,7 +82,7 @@
     </#if>
 
     <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$") && showOrcid =  true>
-        <#local lcontact = lcontact + "<div class='nameIdentifier'><a <a href='" + contact.nameIdentifier + "' target='_blank' title='View this authors record on ORCID.org'><img src='/static/img/orcid_16x16.png' alt='ORCID iD icon' title='ORCID iD'> " + contact.nameIdentifier + "</a></div>">
+        <#local lcontact = lcontact + "<div class='nameIdentifier'><a href='" + contact.nameIdentifier + "' target='_blank' rel="noopener" title='View this authors record on ORCID.org'><img src='/static/img/orcid_16x16.png' alt='ORCID iD icon' title='ORCID iD'> " + contact.nameIdentifier + "</a></div>">
     </#if>
   </#if>
 
