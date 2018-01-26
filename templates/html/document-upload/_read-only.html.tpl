@@ -4,7 +4,7 @@ datastore.getFiles()?size != 0 || documents.getFiles()?size != 0 || datastore.ge
     <section class="section">
         <div class="intro">
             <h2>These are the data and metadata files that have been deposited.</h2>
-            <p>We use MD5 checksums to verify data integrity and to ensure no errors occur during the files' transmission or storage. You can download a copy of the checksums for the data below.  For more information about checksums visit <a href="http://eidc.ceh.ac.uk/deposit/checksums" target="_blank">http://eidc.ceh.ac.uk/deposit/checksums/</a></p>
+            <p>We use MD5 checksums to verify data integrity and to ensure no errors occur during the files' transmission or storage. You can download a copy of the checksums for the data below.  For more information about checksums visit <a href="http://eidc.ceh.ac.uk/deposit/checksums" target="_blank" rel="noopener">http://eidc.ceh.ac.uk/deposit/checksums/</a></p>
         </div>
         <div class="messages alert alert-info" role="alert">
             <div class="message loading">

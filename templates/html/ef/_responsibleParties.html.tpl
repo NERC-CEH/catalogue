@@ -31,7 +31,7 @@
           </#if>
 
           <#if (rp.onlineResource.href)?has_content>
-            <address><a href="${rp.onlineResource.href}" target="_blank">${rp.onlineResource.href}</a></address>
+            <address><a href="${rp.onlineResource.href}" target="_blank" rel="noopener">${rp.onlineResource.href}</a></address>
           </#if>
         </dd>
       </#list>
