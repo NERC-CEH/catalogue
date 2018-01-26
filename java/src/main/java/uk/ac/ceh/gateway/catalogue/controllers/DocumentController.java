@@ -25,7 +25,6 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;

@@ -35,6 +35,7 @@ public class RestTest {
             webPort
         );
         assertThat("Response should be OK", response.getStatusCode().is2xxSuccessful(), is(true));
+        assertThat("Media Type should be 'text/plain'", response.getHeaders().getContentType().isCompatibleWith(MediaType.TEXT_PLAIN), is(true));
     }
 
     @Test
@@ -47,6 +48,7 @@ public class RestTest {
             webPort
         );
         assertThat("Response should be OK", response.getStatusCode().is2xxSuccessful(), is(true));
+        assertThat("Media Type should be 'text/plain'", response.getHeaders().getContentType().isCompatibleWith(MediaType.TEXT_PLAIN), is(true));
     }
 
     @Test(expected = HttpClientErrorException.class)
