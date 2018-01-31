@@ -1,8 +1,8 @@
 build
 secrets.env
-dropbox
-plone
-eidchub-rw
+/dropbox
+/plone
+/eidchub-rw
 /datastore/
 mapfiles
 cache
