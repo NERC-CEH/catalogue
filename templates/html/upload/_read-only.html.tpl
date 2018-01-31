@@ -36,28 +36,28 @@
                             <#list uploadFiles['datastore'].documents?values as document>
                                 <div class="file file-readonly is-inactive">
                                     <div class="filename">
-                                        <i class="fa fa-file-text-o"></i> <span>${document.name}</span>
+                                        <i class="fa fa-file-<#if document.name?ends_with('.zip')>archive<#else>text</#if>-o"></i> <span>${document.name}</span>
                                     </div>
                                 </div>
                             </#list>
                             <#list uploadFiles['datastore'].documents?values as document>
                                 <div class="file file-readonly is-inactive">
                                     <div class="filename">
-                                        <i class="fa fa-file-text-o"></i> <span>${document.name}</span>
+                                        <i class="fa fa-file-<#if document.name?ends_with('.zip')>archive<#else>text</#if>-o"></i> <span>${document.name}</span>
                                     </div>
                                 </div>
                             </#list>
                             <#list uploadFiles['documents'].invalid?values as document>
                                 <div class="file file-readonly is-inactive">
                                     <div class="filename">
-                                        <i class="fa fa-file-text-o"></i> <span>${document.name}</span>
+                                        <i class="fa fa-file-<#if document.name?ends_with('.zip')>archive<#else>text</#if>-o"></i> <span>${document.name}</span>
                                     </div>
                                 </div>
                             </#list>
                             <#list uploadFiles['documents'].documents?values as document>
                                 <div class="file file-readonly is-inactive">
                                     <div class="filename">
-                                        <i class="fa fa-file-text-o"></i> <span>${document.name}</span>
+                                        <i class="fa fa-file-<#if document.name?ends_with('.zip')>archive<#else>text</#if>-o"></i> <span>${document.name}</span>
                                     </div>
                                 </div>
                             </#list>
@@ -71,17 +71,17 @@
                         </div>
                         <div class="files">
                             <div class="empty-message"></div>
-                            <#list uploadFiles['plone'].invalid?values as file>
-                                <div id="plone-invalid-${file.id}" class="file file-readonly is-inactive">
+                            <#list uploadFiles['plone'].invalid?values as document>
+                                <div id="plone-invalid-${document.id}" class="file file-readonly is-inactive">
                                     <div class="filename">
-                                        <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
+                                        <i class="fa fa-file-<#if document.name?ends_with('.zip')>archive<#else>text</#if>-o"></i> <span>${document.name}</span>
                                     </div>
                                 </div>
                             </#list>
-                            <#list uploadFiles['plone'].documents?values as file>
-                                <div id="plone-${file.id}" class="file file-readonly is-inactive">
+                            <#list uploadFiles['plone'].documents?values as document>
+                                <div id="plone-${document.id}" class="file file-readonly is-inactive">
                                     <div class="filename">
-                                        <i class="fa fa-file-text-o"></i> <span>${file.name}</span>
+                                        <i class="fa fa-file-<#if document.name?ends_with('.zip')>archive<#else>text</#if>-o"></i> <span>${document.name}</span>
                                     </div>
                                 </div>
                             </#list>

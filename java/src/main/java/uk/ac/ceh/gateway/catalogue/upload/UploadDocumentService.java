@@ -150,7 +150,7 @@ public class UploadDocumentService {
         keys.addAll(invalid.keySet());
 
         filenames.stream()
-        .filter(filename -> { return !keys.contains(filename); })
+        .filter(filename -> { return !keys.contains(filename) && !filename.endsWith(".hash"); })
         .forEach(filename -> {
             val file = new File(filename);
             val hash = HashUtils.hash(file);
