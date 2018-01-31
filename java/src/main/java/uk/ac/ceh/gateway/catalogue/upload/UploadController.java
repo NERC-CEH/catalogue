@@ -55,15 +55,17 @@ public class UploadController  {
     @ResponseBody
     public RedirectView createOrGetUploadDocument(@ActiveUser CatalogueUser user, @PathVariable("id") String id) throws DocumentRepositoryException {
         val geminiDocument = (GeminiDocument) documentRepository.read(id);
-        val uploadId = geminiDocument.getUploadId();
         val canUpload = permissionService.userCanUpload(id);
         val canView = permissionService.userCanView(id);
+        val uploadId = geminiDocument.getUploadId();
         val exists = uploadId != null;
+
         if (canUpload && !exists) {
             val uploadDocument = uploadDocumentService.create(user, geminiDocument);
             return new RedirectView(String.format("/documents/%s", uploadDocument.getId()));
-        } else if (canView || canUpload && exists) {
+        } else if ((canView || canUpload) && exists) {
             val uploadDocument = documentRepository.read(uploadId);
+            System.out.println(String.format("upload document %s", uploadDocument));
             return new RedirectView(String.format("/documents/%s", uploadDocument.getId()));
         } else {
             throw new PermissionDeniedException("Permissions denied");

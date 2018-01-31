@@ -170,6 +170,31 @@ public class GitDocumentRepository implements DocumentRepository {
             );
         }
     }
+
+    @Override
+    public MetadataDocument save(
+        CatalogueUser user,
+        MetadataDocument document,
+        String message
+    ) throws DocumentRepositoryException {
+        try {
+            return save(user,
+                document, 
+                retrieveMetadataInfoUpdatingRawType(document),
+                document.getId(), 
+                message
+            );
+        } catch (DocumentRepositoryException | IOException | PostProcessingException | UnknownContentTypeException ex) {
+            throw new DocumentRepositoryException(
+                String.format(
+                    "Saving file: %s failed for user: %s",
+                    document.getId(),
+                    user.getUsername()
+                ),
+                ex
+            );
+        }
+    }
     
     private MetadataDocument save(
         CatalogueUser user,

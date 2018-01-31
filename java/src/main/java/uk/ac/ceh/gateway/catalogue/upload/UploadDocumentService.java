@@ -44,13 +44,19 @@ public class UploadDocumentService {
             val invalid = new HashMap<String, UploadFile>();
             createDocumentsAndInvalid(directory, documents, invalid);
             boolean isZipped = isZipped(directory);
-            uploadFiles.put(key, new UploadFiles(directory.getAbsolutePath(), documents, invalid, isZipped));
+            val uploadFilesValue = new UploadFiles(directory.getAbsolutePath(), isZipped);
+            uploadFilesValue.setDocuments(documents);
+            uploadFilesValue.setInvalid(invalid);
+            uploadFiles.put(key, uploadFilesValue);
         });
         val uploadDocument = new UploadDocument(guid, uploadFiles);
+        uploadDocument.setType("dataset");
+        uploadDocument.setTitle(geminiDocument.getTitle());
 
         documentRepository.saveNew(user, uploadDocument, "eidc", "creating new upload document");
         geminiDocument.setUploadId(uploadDocument.getId());
-        documentRepository.save(user, geminiDocument, "eidc", String.format("updating upload id: %s", uploadDocument.getId()));
+        documentRepository.save(user, geminiDocument, String.format("updating upload id: %s", uploadDocument.getId()));
+        System.out.println(String.format("uploadId %s", geminiDocument.getUploadId()));
         return uploadDocument;
     }
 

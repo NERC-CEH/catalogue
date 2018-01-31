@@ -122,7 +122,7 @@ public class ServiceConfig {
     @Bean
     public UploadDocumentService uploadDocumentService() throws XPathExpressionException, IOException, TemplateModelException {
         Map<String, File> folders = Maps.newHashMap();
-        folders.put("documents", new File("/var/ceh-catalogue/documents"));
+        folders.put("documents", new File("/var/ceh-catalogue/dropbox"));
         folders.put("datastore", new File("/var/ceh-catalogue/eidchub-rw"));
         folders.put("plone", new File("/var/ceh-catalogue/plone"));
         return new UploadDocumentService(documentRepository(), folders);
@@ -253,6 +253,7 @@ public class ServiceConfig {
         shared.put("codes", codeLookupService);
         shared.put("downloadOrderDetails", downloadOrderDetailsService());
         shared.put("permission", permission());
+        shared.put("jira", jiraService());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
         shared.put("catalogues", catalogueService);

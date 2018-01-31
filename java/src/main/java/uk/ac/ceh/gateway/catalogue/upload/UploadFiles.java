@@ -1,12 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
 import java.util.Map;
+
+import com.google.common.collect.Maps;
+
 import lombok.Data;
 
 @Data
 public class UploadFiles {
     private final String path;
-    private final Map<String, UploadFile> documents;
-    private final Map<String, UploadFile> invalid;
+    private Map<String, UploadFile> documents = Maps.newHashMap();
+    private Map<String, UploadFile> invalid = Maps.newHashMap();
     private final boolean zipped;
 }

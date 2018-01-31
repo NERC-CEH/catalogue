@@ -1,6 +1,5 @@
 <section class="section">
     <h1 class="document-title">
-        <small class="resource-type">${documents.type}</small><br>
-        ${documents.title} 
+        ${title} 
     </h1>
 </section>
