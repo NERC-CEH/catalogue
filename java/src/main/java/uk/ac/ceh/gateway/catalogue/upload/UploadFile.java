@@ -13,5 +13,4 @@ public class UploadFile {
     private long bytes;
     private String hash;
     private UploadType type;
-    private String zipName;
 }

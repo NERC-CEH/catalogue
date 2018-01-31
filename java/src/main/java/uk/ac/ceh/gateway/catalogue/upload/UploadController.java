@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.upload;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
