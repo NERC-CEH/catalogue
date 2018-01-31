@@ -20,7 +20,7 @@ import static org.mockito.Matchers.anyString;
 import org.mockito.Mock;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.MockitoAnnotations.initMocks;
-import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
+// import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -45,118 +45,118 @@ OK - follow these steps to check all is working as expected:
  */
 public class PloneDataDepositServiceTest {
 
-    @Mock
-    private DocumentRepository documentRepository;
+    // @Mock
+    // private DocumentRepository documentRepository;
 
-    @Mock
-    private MetadataDocument document;
+    // @Mock
+    // private MetadataDocument document;
 
-    @Mock
-    private DocumentUpload documentUpload;
+    // @Mock
+    // private DocumentUpload documentUpload;
 
-    private PloneDataDepositService pdds;
-    private DocumentUploadService documentsUploadService;
-    private DocumentUploadService dataUploadService;
-    private static final File documents = new File("../dropbox");
-    private static final File data = new File("../data");
+    // private PloneDataDepositService pdds;
+    // private DocumentUploadService documentsUploadService;
+    // private DocumentUploadService dataUploadService;
+    // private static final File documents = new File("../dropbox");
+    // private static final File data = new File("../data");
 
-    @Before
-    @SneakyThrows
-    public void before() {
-        FileUtils.forceMkdir(documents);
-        FileUtils.forceMkdir(data);
+    // @Before
+    // @SneakyThrows
+    // public void before() {
+    //     FileUtils.forceMkdir(documents);
+    //     FileUtils.forceMkdir(data);
 
-        initMocks(this);
+    //     initMocks(this);
 
-        doReturn(document).when(documentRepository).read(anyString());
-        doReturn("Demonstration upload").when(document).getTitle();
-        doReturn("type").when(document).getType();
+    //     doReturn(document).when(documentRepository).read(anyString());
+    //     doReturn("Demonstration upload").when(document).getTitle();
+    //     doReturn("type").when(document).getType();
 
-        Client client = Client.create();
-        client.addFilter(new HTTPBasicAuthFilter(getSecret("PLONE_USERNAME"), getSecret("PLONE_PASSWORD")));
-        WebResource ploneClient = client.resource(getSecret("PLONE_ADDRESS"));
-        documentsUploadService = new DocumentUploadService(documents, documentRepository);
-        dataUploadService = new DocumentUploadService(data, documentRepository);
-        pdds = new PloneDataDepositService(ploneClient);
-    }
+    //     Client client = Client.create();
+    //     client.addFilter(new HTTPBasicAuthFilter(getSecret("PLONE_USERNAME"), getSecret("PLONE_PASSWORD")));
+    //     WebResource ploneClient = client.resource(getSecret("PLONE_ADDRESS"));
+    //     documentsUploadService = new DocumentUploadService(documents, documentRepository);
+    //     dataUploadService = new DocumentUploadService(data, documentRepository);
+    //     pdds = new PloneDataDepositService(ploneClient);
+    // }
 
-    @After
-    @SneakyThrows
-    public void after() {
-        FileUtils.forceDelete(new File(documents, "ploneTestGuid"));
-        FileUtils.forceDelete(new File(data, "ploneTestGuid"));
-    }
+    // @After
+    // @SneakyThrows
+    // public void after() {
+    //     FileUtils.forceDelete(new File(documents, "ploneTestGuid"));
+    //     FileUtils.forceDelete(new File(data, "ploneTestGuid"));
+    // }
 
-    /*
-    Add 6 files to dropbox location and update Plone
-    */
-    @Ignore
-    @Test
-    @SneakyThrows
-    public void testCreateDataDeposit() {
-        for (int i = 0; i < 6; i++) {
-            File file = new File(documents, String.format("test_file_%s.txt", i));
-            FileUtils.write(file, String.format("something %s", i));
-            documentsUploadService.add("ploneTestGuid", String.format("file%s.txt", i), new FileInputStream(file));
-        }
-        String actual = pdds.addOrUpdate(documentsUploadService.get("ploneTestGuid"), dataUploadService.get("ploneTestGuid"));
-        assertTrue(actual.contains("Success"));
-    }
+    // /*
+    // Add 6 files to dropbox location and update Plone
+    // */
+    // @Ignore
+    // @Test
+    // @SneakyThrows
+    // public void testCreateDataDeposit() {
+    //     for (int i = 0; i < 6; i++) {
+    //         File file = new File(documents, String.format("test_file_%s.txt", i));
+    //         FileUtils.write(file, String.format("something %s", i));
+    //         documentsUploadService.add("ploneTestGuid", String.format("file%s.txt", i), new FileInputStream(file));
+    //     }
+    //     String actual = pdds.addOrUpdate(documentsUploadService.get("ploneTestGuid"), dataUploadService.get("ploneTestGuid"));
+    //     assertTrue(actual.contains("Success"));
+    // }
 
-    /*
-    Move 3 files to documents location
-    */
-    @Ignore
-    @Test
-    @SneakyThrows
-    public void testCreateMoveSomeFilesToData() {
-        //Add the same files as in a, but put 3 in the Data folder
-        for (int i = 0; i < 3; i++) {
-            File file = new File(documents, String.format("test_file_%s.txt", i));
-            FileUtils.write(file, String.format("something %s", i));
-            documentsUploadService.add("ploneTestGuid", String.format("file%s.txt", i), new FileInputStream(file));
-        }
-        for (int i = 3; i < 6; i++) {
-            File file = new File(documents, String.format("test_file_%s.txt", i));
-            FileUtils.write(file, String.format("something %s", i));
-            dataUploadService.add("ploneTestGuid", String.format("file%s.txt", i), new FileInputStream(file));
-        }
-        String actual = pdds.addOrUpdate(documentsUploadService.get("ploneTestGuid"), dataUploadService.get("ploneTestGuid"));
-        assertTrue(actual.contains("Success"));
-    }
+    // /*
+    // Move 3 files to documents location
+    // */
+    // @Ignore
+    // @Test
+    // @SneakyThrows
+    // public void testCreateMoveSomeFilesToData() {
+    //     //Add the same files as in a, but put 3 in the Data folder
+    //     for (int i = 0; i < 3; i++) {
+    //         File file = new File(documents, String.format("test_file_%s.txt", i));
+    //         FileUtils.write(file, String.format("something %s", i));
+    //         documentsUploadService.add("ploneTestGuid", String.format("file%s.txt", i), new FileInputStream(file));
+    //     }
+    //     for (int i = 3; i < 6; i++) {
+    //         File file = new File(documents, String.format("test_file_%s.txt", i));
+    //         FileUtils.write(file, String.format("something %s", i));
+    //         dataUploadService.add("ploneTestGuid", String.format("file%s.txt", i), new FileInputStream(file));
+    //     }
+    //     String actual = pdds.addOrUpdate(documentsUploadService.get("ploneTestGuid"), dataUploadService.get("ploneTestGuid"));
+    //     assertTrue(actual.contains("Success"));
+    // }
 
-    /*
-    When files are moved to the plone metadata store they simply cease to exist in the Documents and Data upload services.
-    So just have 2 files per list and check that the data deposit in Plone shows just those files.
-    You should see the data deposit has 4 files, where file0.txt and file1.txt have physical location = <documentLocation>, and file3.txt and file4.txt have physical location = <dataLocation>.  There should no longer be file3.txt or file5.txt
-    */
-    @Ignore
-    @Test
-    @SneakyThrows
-    public void testCreateMoveSomeFilesToPlone() {
+    // /*
+    // When files are moved to the plone metadata store they simply cease to exist in the Documents and Data upload services.
+    // So just have 2 files per list and check that the data deposit in Plone shows just those files.
+    // You should see the data deposit has 4 files, where file0.txt and file1.txt have physical location = <documentLocation>, and file3.txt and file4.txt have physical location = <dataLocation>.  There should no longer be file3.txt or file5.txt
+    // */
+    // @Ignore
+    // @Test
+    // @SneakyThrows
+    // public void testCreateMoveSomeFilesToPlone() {
 
-        for (int i = 0; i < 2; i++) {
-            File file = new File(documents, String.format("test_file_%s.txt", i));
-            FileUtils.write(file, String.format("something %s", i));
-            documentsUploadService.add("ploneTestGuid", String.format("file%s.txt", i), new FileInputStream(file));
-        }
-        for (int i = 3; i < 5; i++) {
-            File file = new File(documents, String.format("test_file_%s.txt", i));
-            FileUtils.write(file, String.format("something %s", i));
-            dataUploadService.add("ploneTestGuid", String.format("file%s.txt", i), new FileInputStream(file));
-        }
-        String actual = pdds.addOrUpdate(documentsUploadService.get("ploneTestGuid"), dataUploadService.get("ploneTestGuid"));
-        assertTrue(actual.contains("Success"));
-    }
+    //     for (int i = 0; i < 2; i++) {
+    //         File file = new File(documents, String.format("test_file_%s.txt", i));
+    //         FileUtils.write(file, String.format("something %s", i));
+    //         documentsUploadService.add("ploneTestGuid", String.format("file%s.txt", i), new FileInputStream(file));
+    //     }
+    //     for (int i = 3; i < 5; i++) {
+    //         File file = new File(documents, String.format("test_file_%s.txt", i));
+    //         FileUtils.write(file, String.format("something %s", i));
+    //         dataUploadService.add("ploneTestGuid", String.format("file%s.txt", i), new FileInputStream(file));
+    //     }
+    //     String actual = pdds.addOrUpdate(documentsUploadService.get("ploneTestGuid"), dataUploadService.get("ploneTestGuid"));
+    //     assertTrue(actual.contains("Success"));
+    // }
 
-    // Get a secret from secrets.env
-    private String getSecret(String secret) throws IOException{
-        try(Stream<String> stream = Files.lines(Paths.get("../secrets.env"))){
-            String[] toReturn = stream
-                .filter(k -> secret.equals(k.split("=")[0]))
-                .map(k -> k.split("=")[1])
-                .toArray(String[]::new);
-            return toReturn[0];
-        }
-    }
+    // // Get a secret from secrets.env
+    // private String getSecret(String secret) throws IOException{
+    //     try(Stream<String> stream = Files.lines(Paths.get("../secrets.env"))){
+    //         String[] toReturn = stream
+    //             .filter(k -> secret.equals(k.split("=")[0]))
+    //             .map(k -> k.split("=")[1])
+    //             .toArray(String[]::new);
+    //         return toReturn[0];
+    //     }
+    // }
 }

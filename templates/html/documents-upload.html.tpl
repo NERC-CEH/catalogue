@@ -1,6 +1,6 @@
 <#import "skeleton.html.tpl" as skeleton>
 
-<@skeleton.master title="Manage Documents">
+<#--  <@skeleton.master title="Manage Documents">
     <div id="documents-upload" class="container documents-upload">
         <#include "document-upload/_title.html.tpl">
         <#if (canUpload && isScheduled)>
@@ -12,4 +12,6 @@
         </#if>
     </div>
     <#include "document-upload/_footer.html.tpl">
-</@skeleton.master>
+</@skeleton.master>  -->
+
+welcome

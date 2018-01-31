@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -56,6 +57,8 @@ import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.*;
+import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
+import uk.ac.ceh.gateway.catalogue.upload.UploadDocumentService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
@@ -117,18 +120,12 @@ public class ServiceConfig {
     }
 
     @Bean
-    public DocumentUploadService documentsUploadService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new DocumentUploadService(new File("/var/ceh-catalogue/dropbox"), documentRepository());
-    }
-
-    @Bean
-    public DocumentUploadService datastoreUploadService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new DocumentUploadService(new File("/var/ceh-catalogue/eidchub-rw"), documentRepository());
-    }
-
-    @Bean
-    public DocumentUploadService ploneUploadService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new DocumentUploadService(new File("/var/ceh-catalogue/plone"), documentRepository());
+    public UploadDocumentService uploadDocumentService() throws XPathExpressionException, IOException, TemplateModelException {
+        Map<String, File> folders = Maps.newHashMap();
+        folders.put("documents", new File("/var/ceh-catalogue/documents"));
+        folders.put("datastore", new File("/var/ceh-catalogue/eidchub-rw"));
+        folders.put("plone", new File("/var/ceh-catalogue/plone"));
+        return new UploadDocumentService(documentRepository(), folders);
     }
     
     @Bean
@@ -224,10 +221,11 @@ public class ServiceConfig {
         converters.add(new WmsFeatureInfo2XmlMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
 
-
         // eLTER converters
         converters.add(new Object2TemplatedMessageConverter<>(SensorDocument.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(ManufacturerDocument.class, freemarkerConfiguration()));
+
+        converters.add(new Object2TemplatedMessageConverter<>(UploadDocument.class, freemarkerConfiguration()));
 
         return new MessageConvertersHolder(converters);
     }
@@ -322,6 +320,7 @@ public class ServiceConfig {
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
                 .register(ELTER_SENSOR_DOCUMENT_SHORT, SensorDocument.class)
+                .register(ELTER_SENSOR_DOCUMENT_SHORT, UploadDocument.class)
                 .register(ELTER_MANUFACTURER_DOCUMENT_SHORT, ManufacturerDocument.class);
     }
     

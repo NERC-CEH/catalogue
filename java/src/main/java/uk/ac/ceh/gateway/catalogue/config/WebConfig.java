@@ -87,6 +87,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String ELTER_SENSOR_DOCUMENT_SHORT = "Sensor";
     public static final String ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE = "application/vnd.elter-manufacturer-document+json";
     public static final String ELTER_MANUFACTURER_DOCUMENT_SHORT = "Manufacturer";
+
+    public static final String UPLOAD_DOCUMENT_JSON_VALUE = "application/vnd.upload-document+json";
+    public static final String UPLOAD_DOCUMENT_SHORT = "Upload";
     
     @Autowired MessageConvertersHolder messageConvertersHolder;
     @Autowired freemarker.template.Configuration freemarkerConfiguration;
@@ -157,6 +160,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(SAMPLE_ARCHIVE_SHORT, MediaType.parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE))
                         .put(ELTER_SENSOR_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_SENSOR_DOCUMENT_JSON_VALUE))
                         .put(ELTER_MANUFACTURER_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE))
+                        .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo
