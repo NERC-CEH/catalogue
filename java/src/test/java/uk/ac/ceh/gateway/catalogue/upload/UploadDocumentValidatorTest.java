@@ -9,6 +9,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -28,6 +31,10 @@ public class UploadDocumentValidatorTest {
     private final File dropboxFolder = new File(directory, "dropbox");
     private final File ploneFolder = new File(directory, "plone");
     private final File datastoreFolder = new File(directory, "eidchub-rw");
+
+    private final File manuallyAdded = new File(dropboxFolder, "guid/added_manually.txt");
+    private final File changed = new File(dropboxFolder, "guid/file.txt");
+    private final File removed = new File(dropboxFolder, "guid/folder/sub-a.txt");
 
     private UploadDocumentService service;
 
@@ -55,13 +62,37 @@ public class UploadDocumentValidatorTest {
         geminiDocument.setId("guid");
         uploadDocument = service.create(CatalogueUser.PUBLIC_USER, geminiDocument);
 
-        FileUtils.write(new File(dropboxFolder, "guid/added_manually.txt"), "added manually", Charset.defaultCharset());
-        FileUtils.write(new File(dropboxFolder, "guid/file.txt"), "changed the contents of known file", Charset.defaultCharset());
-        FileUtils.forceDelete(new File(dropboxFolder, "guid/folder/sub-a.txt"));
+        FileUtils.write(manuallyAdded, "added manually", Charset.defaultCharset());
+        FileUtils.write(changed, "changed the contents of known file", Charset.defaultCharset());
+        FileUtils.forceDelete(removed);
+
+        UploadDocumentValidator.validate(documentRepository, uploadDocument);
     }
 
     @Test
-    public void validate() {
-        UploadDocumentValidator.validate(documentRepository, uploadDocument);
+    public void validate_addsUknownFiles() {
+        val uploadFile = uploadDocument.getUploadFiles().get("documents").getInvalid().get(manuallyAdded.getAbsolutePath());
+
+        assertThat(uploadFile.getType(), is(UploadType.UNKNOWN_FILE));
+    }
+
+    @Test
+    public void validate_addMissingFiles() {
+        val uploadFile = uploadDocument.getUploadFiles().get("documents").getInvalid().get(removed.getAbsolutePath());
+        val documents = uploadDocument.getUploadFiles().get("documents").getDocuments().keySet();
+
+        assertThat(uploadFile.getType(), is(UploadType.MISSING_FILE));
+        assertThat(documents, not(hasItem(is(removed.getAbsolutePath()))));
+    }
+
+    @Test
+    public void validate_invalidHashes() {
+        val uploadFile = uploadDocument.getUploadFiles().get("documents").getInvalid().get(changed.getAbsolutePath());
+        val documents = uploadDocument.getUploadFiles().get("documents").getDocuments().keySet();
+
+        assertThat(uploadFile.getType(), is(UploadType.INVALID_HASH));
+        assertThat(documents, not(hasItem(is(changed.getAbsolutePath()))));
     }
 }
+
+
