@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import net.lingala.zip4j.core.ZipFile;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -24,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.util.HashUtils;
+import uk.ac.ceh.gateway.catalogue.util.ZipFileUtils;
 
 @AllArgsConstructor
 public class UploadDocumentService {
@@ -56,32 +54,14 @@ public class UploadDocumentService {
         documentRepository.saveNew(user, uploadDocument, "eidc", "creating new upload document");
         geminiDocument.setUploadId(uploadDocument.getId());
         documentRepository.save(user, geminiDocument, String.format("updating upload id: %s", uploadDocument.getId()));
-        System.out.println(String.format("uploadId %s", geminiDocument.getUploadId()));
         return uploadDocument;
     }
 
     private void createDocumentsAndInvalid(File directory, Map<String, UploadFile> documents, Map<String, UploadFile> invalid) {
-        extractAll(directory);
-        updateFromHashFiles(directory, documents, invalid);
-        updateWithUknownFiles(directory, documents, invalid);
-        cleanExtracted(directory);
-    }
-
-    private void extractAll(File directory) {
-        if (directory.exists()) {
-            Lists.newArrayList(directory.listFiles())
-                .stream()
-                .filter(file -> isZipFile(file))
-                .forEach(file -> extract(file));
-        }
-    }
-
-    @SneakyThrows
-    private void extract(File file) {
-        val zipFile = new ZipFile(file);
-        val extracted = new File(file.getParentFile(), String.format("_extracted-%s", file.getName().replace(".zip", "")));
-        zipFile.extractAll(extracted.getAbsolutePath());
-        extractAll(extracted);
+        ZipFileUtils.archive(directory, folder -> {
+            updateFromHashFiles(directory, documents, invalid);
+            updateWithUknownFiles(directory, documents, invalid);
+        });
     }
 
     private boolean isZipFile(File file) {
@@ -178,13 +158,6 @@ public class UploadDocumentService {
         }
 
         return uploadFile;
-    }
-
-    private void cleanExtracted(File directory) {
-        val files = treeOfFileNames(directory, null);
-        files.stream()
-            .filter(filename -> { return filename.contains("_extracted-"); })
-            .forEach(filename -> removeFile(filename));
     }
 
     @SneakyThrows

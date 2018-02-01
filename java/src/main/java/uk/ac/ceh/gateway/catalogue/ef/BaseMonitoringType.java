@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -67,6 +68,9 @@ import java.util.stream.Collectors;
 @XmlSeeAlso({Activity.class, Programme.class, Network.class, Facility.class})
 public class BaseMonitoringType implements MetadataDocument, WellKnownText {
     
+    @Override
+    public void validate(DocumentRepository documentRepository) {}
+
     private Set<Relationship> relationships;
     
     @NotNull

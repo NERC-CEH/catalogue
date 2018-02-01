@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -40,5 +41,10 @@ public class UploadDocument extends AbstractMetadataDocument {
         for (val uploadFile : uploadFiles.values()) {
             csv.add(String.format("%s,%s", uploadFile.getName(), uploadFile.getHash()));
         }
+    }
+
+    @Override
+    public void validate(DocumentRepository documentRepository) {
+        UploadDocumentValidator.validate(documentRepository, this);
     }
 }

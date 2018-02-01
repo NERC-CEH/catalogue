@@ -10,6 +10,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,6 +32,9 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private MetadataInfo metadata;
     private Set<Relationship> relationships;
     private List<Keyword> keywords;
+
+    @Override
+    public void validate(DocumentRepository documentRepository) {}
     
     @Override
     @JsonIgnore
