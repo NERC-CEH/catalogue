@@ -1,7 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -9,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.val;
 import lombok.experimental.Accessors;
 
 @Data
@@ -21,4 +25,20 @@ import lombok.experimental.Accessors;
 public class UploadDocument extends AbstractMetadataDocument {
     private final String parentId;
     private final Map<String, UploadFiles> uploadFiles;
+
+    public String getCsv(String ...names) {
+        List<String> csv = Lists.newArrayList();
+        for (val name : names) {
+            val uploadFiles = this.uploadFiles.get(name);
+            appendToCsv(uploadFiles.getDocuments(), csv);
+            appendToCsv(uploadFiles.getInvalid(), csv);
+        }
+        return StringUtils.join(csv, "\n");
+    }
+
+    private void appendToCsv(Map<String, UploadFile> uploadFiles, List<String> csv) {
+        for (val uploadFile : uploadFiles.values()) {
+            csv.add(String.format("%s,%s", uploadFile.getName(), uploadFile.getHash()));
+        }
+    }
 }
