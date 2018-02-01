@@ -1,17 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.HashMap;;
+import java.util.HashMap;
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -135,15 +131,5 @@ public class UploadDocumentServiceTest {
         val dropbox = uploadDocument.getUploadFiles().get("documents");
 
         assertThat(dropbox.isZipped(), is(true));
-    }
-
-    @Test
-    public void create_removesAllKeywordFilesMatching_extracted () {
-        val files = FileUtils.listFiles(
-            new File(directory, "dropbox/guid"),
-            FilenameContainsFilterUtils.contains("_extracted"),
-            FilenameContainsFilterUtils.contains("_extracted"));
-
-        assertThat(files.size(), is(0));
     }
 }

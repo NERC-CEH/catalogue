@@ -20,6 +20,7 @@ import lombok.val;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.util.FileListUtils;
 import uk.ac.ceh.gateway.catalogue.util.HashUtils;
 import uk.ac.ceh.gateway.catalogue.util.ZipFileUtils;
 
@@ -124,7 +125,7 @@ public class UploadDocumentService {
     }
 
     private void updateWithUknownFiles (File directory, Map<String, UploadFile> documents, Map<String, UploadFile> invalid) {
-        val filenames = treeOfFileNames(directory, null);
+        val filenames = FileListUtils.absolutePathsTree(directory);
         val keys = new ArrayList<String>();
         keys.addAll(documents.keySet());
         keys.addAll(invalid.keySet());
@@ -167,19 +168,6 @@ public class UploadDocumentService {
             val parent = file.getParentFile();
             FileUtils.forceDelete(parent);
         }
-    }
-
-    private List<String> treeOfFileNames (File directory, List<String> filenames) {
-        if (directory.exists()) {
-            val files = FileUtils.listFiles(
-                directory,
-                FileFilterUtils.trueFileFilter(),
-                FileFilterUtils.trueFileFilter());
-            return files.stream()
-                .map(file -> { return file.getAbsolutePath(); })
-                .collect(Collectors.toList());
-        }
-        return Lists.newArrayList();
     }
 
     private boolean isZipped(File directory) {
