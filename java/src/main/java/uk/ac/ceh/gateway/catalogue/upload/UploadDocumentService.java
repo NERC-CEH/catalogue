@@ -76,15 +76,15 @@ public class UploadDocumentService {
             val file = checksum.getFile();
             val exists = file.exists();
             if (!exists) {
-                val uploadFile = createUploadFile(checksum, UploadType.MISSING_FILE, expectedHash);
+                val uploadFile = UploadFileBuilder.create(checksum, UploadType.MISSING_FILE, expectedHash);
                 invalid.put(uploadFile.getPath(), uploadFile);
             } else {
                 val actualHash = HashUtils.hash(file);
                 if (!expectedHash.equals(actualHash)) {
-                    val uploadFile = createUploadFile(checksum, UploadType.INVALID_HASH, actualHash);
+                    val uploadFile = UploadFileBuilder.create(checksum, UploadType.INVALID_HASH, actualHash);
                     invalid.put(uploadFile.getPath(), uploadFile);
                 } else {
-                    val uploadFile = createUploadFile(checksum, UploadType.DOCUMENTS, actualHash);
+                    val uploadFile = UploadFileBuilder.create(checksum, UploadType.DOCUMENTS, actualHash);
                     documents.put(uploadFile.getPath(), uploadFile);
                 }
             }
@@ -134,31 +134,9 @@ public class UploadDocumentService {
         .filter(filename -> { return !keys.contains(filename) && !filename.endsWith(".hash"); })
         .forEach(filename -> {
             val file = new File(filename);
-            val hash = HashUtils.hash(file);
-            val uploadFile = createUploadFile(new Checksum(hash, file), UploadType.UNKNOWN_FILE, hash);
+            val uploadFile = UploadFileBuilder.create(file, UploadType.UNKNOWN_FILE);
             invalid.put(filename, uploadFile);
         });
-    }
-
-    @SneakyThrows
-    private UploadFile createUploadFile (Checksum checksum, UploadType type, String hash) {
-        val file = checksum.getFile();
-        val uploadFile = new UploadFile();
-        val name = file.getName();
-        uploadFile.setPath(file.getAbsolutePath());
-        uploadFile.setType(type);
-        uploadFile.setHash(hash);
-        uploadFile.setId(name.replaceAll("[^\\w?]","-"));
-        uploadFile.setName(name);
-        uploadFile.setEncoding("utf-8");
-
-        if (file.exists()) {
-            uploadFile.setFormat(FilenameUtils.getExtension(name));
-            uploadFile.setMediatype(Files.probeContentType(file.toPath()));
-            uploadFile.setBytes(file.length());
-        }
-
-        return uploadFile;
     }
 
     @SneakyThrows
