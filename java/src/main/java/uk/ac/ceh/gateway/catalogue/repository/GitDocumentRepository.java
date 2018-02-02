@@ -42,7 +42,7 @@ public class GitDocumentRepository implements DocumentRepository {
                     )
                 );
             }
-            if (document != null) document.validate(this);
+            if (document != null) document.validate();
             return document;
         } catch (IOException | UnknownContentTypeException | PostProcessingException ex) {
             throw new DocumentRepositoryException(
@@ -69,7 +69,7 @@ public class GitDocumentRepository implements DocumentRepository {
                     )
                 );
             }
-            if (document != null) document.validate(this);
+            if (document != null) document.validate();
             return document;
         } catch (IOException | PostProcessingException | UnknownContentTypeException ex) {
             throw new DocumentRepositoryException(

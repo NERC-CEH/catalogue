@@ -44,7 +44,7 @@ public class UploadDocument extends AbstractMetadataDocument {
     }
 
     @Override
-    public void validate(DocumentRepository documentRepository) {
-        UploadDocumentValidator.validate(documentRepository, this);
+    public void validate() {
+        UploadDocumentValidator.validate(this);
     }
 }

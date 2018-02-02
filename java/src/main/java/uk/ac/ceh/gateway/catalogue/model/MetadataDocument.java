@@ -37,7 +37,7 @@ public interface MetadataDocument {
     MetadataDocument addAdditionalKeywords(List<Keyword> additionalKeywords);
     Set<Relationship> getRelationships();
     MetadataDocument setRelationships(Set<Relationship> relationships);
-    void validate(DocumentRepository documentRepository);
+    void validate();
     
     @JsonIgnore
     default String getCatalogue() {

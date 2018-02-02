@@ -34,7 +34,7 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private List<Keyword> keywords;
 
     @Override
-    public void validate(DocumentRepository documentRepository) {}
+    public void validate() {}
     
     @Override
     @JsonIgnore

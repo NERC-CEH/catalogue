@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 public class BaseMonitoringType implements MetadataDocument, WellKnownText {
     
     @Override
-    public void validate(DocumentRepository documentRepository) {}
+    public void validate() {}
 
     private Set<Relationship> relationships;
     

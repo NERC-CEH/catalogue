@@ -9,16 +9,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.util.FilenameContainsFilterUtils;
-
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -66,7 +61,7 @@ public class UploadDocumentValidatorTest {
         FileUtils.write(changed, "changed the contents of known file", Charset.defaultCharset());
         FileUtils.forceDelete(removed);
 
-        UploadDocumentValidator.validate(documentRepository, uploadDocument);
+        UploadDocumentValidator.validate(uploadDocument);
     }
 
     @Test

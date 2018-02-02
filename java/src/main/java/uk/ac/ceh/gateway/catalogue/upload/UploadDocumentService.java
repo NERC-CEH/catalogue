@@ -41,7 +41,7 @@ public class UploadDocumentService {
             val directory = new File(value, guid);
             val documents = new HashMap<String, UploadFile>();
             val invalid = new HashMap<String, UploadFile>();
-            createDocumentsAndInvalid(directory, documents, invalid);
+            createDocuments(directory, documents);
             boolean isZipped = isZipped(directory);
             val uploadFilesValue = new UploadFiles(directory.getAbsolutePath(), isZipped);
             uploadFilesValue.setDocuments(documents);
@@ -58,10 +58,9 @@ public class UploadDocumentService {
         return uploadDocument;
     }
 
-    private void createDocumentsAndInvalid(File directory, Map<String, UploadFile> documents, Map<String, UploadFile> invalid) {
+    private void createDocuments(File directory, Map<String, UploadFile> documents) {
         ZipFileUtils.archive(directory, folder -> {
-            updateFromHashFiles(directory, documents, invalid);
-            updateWithUknownFiles(directory, documents, invalid);
+            updateFromHashFiles(directory, documents);
         });
     }
 
@@ -69,24 +68,15 @@ public class UploadDocumentService {
         return file.getPath().endsWith(".zip");
     }
 
-    private void updateFromHashFiles (File directory, Map<String, UploadFile> documents, Map<String, UploadFile> invalid) {
+    private void updateFromHashFiles (File directory, Map<String, UploadFile> documents) {
         val checksums = getChecksums(directory, null);
         checksums.stream().forEach(checksum -> {
-            val expectedHash = checksum.getHash();
+            val hash = checksum.getHash();
             val file = checksum.getFile();
             val exists = file.exists();
-            if (!exists) {
-                val uploadFile = UploadFileBuilder.create(checksum, UploadType.MISSING_FILE, expectedHash);
-                invalid.put(uploadFile.getPath(), uploadFile);
-            } else {
-                val actualHash = HashUtils.hash(file);
-                if (!expectedHash.equals(actualHash)) {
-                    val uploadFile = UploadFileBuilder.create(checksum, UploadType.INVALID_HASH, actualHash);
-                    invalid.put(uploadFile.getPath(), uploadFile);
-                } else {
-                    val uploadFile = UploadFileBuilder.create(checksum, UploadType.DOCUMENTS, actualHash);
-                    documents.put(uploadFile.getPath(), uploadFile);
-                }
+            if (exists) {
+                val uploadFile = UploadFileBuilder.create(checksum, UploadType.DOCUMENTS, hash);
+                documents.put(uploadFile.getPath(), uploadFile);
             }
         });
     }
@@ -122,21 +112,6 @@ public class UploadDocumentService {
         val name = matches.group(2);
         val hashFile = new File(file.getParentFile().getAbsolutePath(), name);
         return new Checksum(hash, hashFile);
-    }
-
-    private void updateWithUknownFiles (File directory, Map<String, UploadFile> documents, Map<String, UploadFile> invalid) {
-        val filenames = FileListUtils.absolutePathsTree(directory);
-        val keys = new ArrayList<String>();
-        keys.addAll(documents.keySet());
-        keys.addAll(invalid.keySet());
-
-        filenames.stream()
-        .filter(filename -> { return !keys.contains(filename) && !filename.endsWith(".hash"); })
-        .forEach(filename -> {
-            val file = new File(filename);
-            val uploadFile = UploadFileBuilder.create(file, UploadType.UNKNOWN_FILE);
-            invalid.put(filename, uploadFile);
-        });
     }
 
     @SneakyThrows
