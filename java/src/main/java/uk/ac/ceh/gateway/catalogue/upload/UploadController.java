@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.upload;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,10 +66,26 @@ public class UploadController  {
             return new RedirectView(String.format("/documents/%s", uploadDocument.getId()));
         } else if ((canView || canUpload) && exists) {
             val uploadDocument = documentRepository.read(uploadId);
-            System.out.println(String.format("upload document %s", uploadDocument));
             return new RedirectView(String.format("/documents/%s", uploadDocument.getId()));
         } else {
             throw new PermissionDeniedException("Permissions denied");
         }
+    }
+    
+    @RequestMapping(value = "documents/{id}/add-upload-document", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<UploadDocument> addFile(
+        @PathVariable("id") String id,
+        @RequestParam("file") MultipartFile file
+    ) throws IOException, DocumentRepositoryException {
+        val document = (UploadDocument) documentRepository.read(id);
+        if (!permissionService.userCanUpload(document.getParentId())) {
+            throw new PermissionDeniedException("Invalid Permissions");
+        }
+        try (InputStream in = file.getInputStream()) {        
+            val filename = file.getOriginalFilename();
+            System.out.println(String.format("save %s to %s", filename, id));
+        }
+        return ResponseEntity.ok(document);
     }
 }

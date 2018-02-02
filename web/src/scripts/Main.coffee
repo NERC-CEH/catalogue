@@ -109,11 +109,19 @@ define [
     view = new DocumentsUploadReadOnlyView()
 
   initScheduled: ->
-    app = new DocumentsUploadScheduledModel()
+    id = $('#documents-upload').data('guid')
+    app = new DocumentsUploadScheduledModel null,
+        mediaType: 'application/vnd.upload-document+json'
+    app.id = id
+    app.set('id', id)
     view = new DocumentsUploadScheduledView model: app
 
   initInProgress: ->
-    app = new DocumentsUploadInProgressModel()
+    id = $('#documents-upload').data('guid')
+    app = new DocumentsUploadInProgressModel null,
+        mediaType: 'application/vnd.upload-document+json'
+    app.id = id
+    app.set('id', id)
     view = new DocumentsUploadInProgressView model: app
 
   initStudyAreaMap: ->

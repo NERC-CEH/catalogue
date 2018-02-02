@@ -6,16 +6,15 @@ define [
   'tpl!templates/InvalidFile.tpl'
 ], (Backbone, message, dropzoneFileTpl, deleteableFileTpl, invalidFileTpl) -> Backbone.View.extend
   initialize: ->
-    @model.on 'sync', => do @render
+    @model.on 'sync', =>
+      do @render
+      do $('.loading').remove
+      $('.messages').hide 'fast'
+
+      # do @initFinish
+      do @initDropzone
     @model.on 'change', => do @render
-    @model.save null,
-      url: window.location.href + '/get'
-
-    do $('.loading').remove
-    $('.messages').hide 'fast'
-
-    do @initFinish
-    do @initDropzone
+    do @model.fetch
 
   initFinish: ->
     $('.finish').attr 'disabled', off
@@ -42,7 +41,7 @@ define [
     render = @render.bind @
 
     @dropzone = new Dropzone '.dropzone-files',
-      url: window.location.href + '/add/documents'
+      url: model.url() + '/add-upload-document'
       maxFilesize: 1250
       autoQueue: yes
       previewTemplate: dropzoneFileTpl()
@@ -100,8 +99,9 @@ define [
     $('.finish').attr 'disabled', off if $('.uploading').length == 0
 
   renderEmptyMessage: ->
+    documents = @model.get('uploadFiles').documents || {}
     emptyMessage = 'Drag files here to upload'
-    emptyMessage = '' if @model.get('documents').files
+    emptyMessage = '' if documents.documents
     $('.empty-message').html emptyMessage
 
   renderModal: (modal) ->
@@ -117,7 +117,9 @@ define [
   renderFiles: ->
     do $('.file:not(".uploading")').remove
 
-    for index, file of @model.get('documents').files
+    documents = @model.get('uploadFiles').documents || {}
+    files = documents.documents || {}
+    for index, file of files
       do $('.uploading-' + file.id).remove
       newFile = $(deleteableFileTpl
         name: file.name,
@@ -130,7 +132,7 @@ define [
       filename = target.find('.filename-label').text()
       @model.set 'modal',
         title: 'Delete <b>' + filename + '</b>'
-        body: 'Are you sure you want to permanently delete ' + filename 
+        body: 'Are you sure you want to permanently delete ' + filename
         dismiss: 'No'
         accept: 'Yes'
         onAccept: =>
