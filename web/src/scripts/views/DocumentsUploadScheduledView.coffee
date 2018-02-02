@@ -12,14 +12,15 @@ define [
       do @render
       do $('.loading').remove
       $('.messages').hide 'fast'
-
-      # do @initFinish
       do @initDropzone if @dropzone == null
+      do @initFinish
+
     @model.on 'change', => do @render
     do @model.fetch
 
   initFinish: ->
     $('.finish').attr 'disabled', off
+    $('.finish').unbind 'click'
     $('.finish').click =>
       @model.set 'modal',
         title: 'Finish'
@@ -55,7 +56,7 @@ define [
         $('.file .delete, .fileinput-button').attr 'disabled', off
 
         @on 'addedfile', (file) ->
-          $('.finish').attr('disabled', on)
+          $('.finish').attr 'disabled', on
           $('.documents .empty-message').text('')
           last = $('.uploading').length - 1
           uploading = $($('.uploading')[last])
@@ -65,6 +66,7 @@ define [
         
         @on 'success', (file, res) ->
           model.set res
+          do render
         
         @on 'error', (file, errorMessage, xhr) ->
           id = file.name.replace(/[^\w?]/g, '-')

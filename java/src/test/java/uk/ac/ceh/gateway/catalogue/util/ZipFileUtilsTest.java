@@ -3,10 +3,7 @@ package uk.ac.ceh.gateway.catalogue.util;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import lombok.SneakyThrows;
 import lombok.val;
 import net.lingala.zip4j.exception.ZipException;
