@@ -104,9 +104,13 @@ public class UploadController  {
         userCanUpload(document);
         val parentId = document.getParentId();
         transitionIssueToStartProgress(user, parentId);
-        removeUploadPermission(user, document.getParentId());
-        // updatePlone(id);
+        removeUploadPermission(user, parentId);
+        updatePlone(document);
         return ResponseEntity.ok(document);
+    }
+
+    private void updatePlone(UploadDocument document) {
+        ploneDataDepositService.addOrUpdate(document);
     }
 
     private void transitionIssueToStartProgress(CatalogueUser user, String guid) {
