@@ -2,8 +2,11 @@ package uk.ac.ceh.gateway.catalogue.util;
 
 import java.io.File;
 import java.util.function.Consumer;
+
+
 import org.apache.commons.io.FileUtils;
 import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
@@ -19,15 +22,19 @@ public class ZipFileUtils {
                 .forEach(file -> extract(file));
         }
     }
-
+    
     @SneakyThrows
-    private static void extract(File file) {
-        val zipFile = new ZipFile(file);
+    private static File extract(File file) {
         val extracted = new File(file.getParentFile(), String.format("_extracted-%s", file.getName().replace(".zip", "")));
-        zipFile.extractAll(extracted.getAbsolutePath());
-        // i think I need to do this but not sure :s
-        // FileUtils.forceDelete(file);
-        extractAll(extracted);
+        try {
+            val zipFile = new ZipFile(file);
+            zipFile.extractAll(extracted.getAbsolutePath());
+            extractAll(extracted);
+        } catch (ZipException ze) {
+            FileUtils.forceDelete(extracted);
+            throw ze;
+        }
+        return extracted;
     }
 
     private static boolean isZipFile(File file) {
@@ -67,8 +74,24 @@ public class ZipFileUtils {
     }
 
     public static void archive(File directory, Consumer<File> consumer) {
-        extractAll(directory);
-        consumer.accept(directory);
-        compressAll(directory);
+        try {
+            extractAll(directory);
+            consumer.accept(directory);
+        } finally {
+            compressAll(directory);
+        }
+    }
+
+    @SneakyThrows
+    public static void archiveZip(File file, Consumer<File> consumer) {
+        File extracted = null;
+        try {
+            extracted = extract(file);
+            if (extracted.exists()) consumer.accept(extracted);
+        } finally {
+            if (extracted != null && extracted.exists()) {
+                compressAll(extracted);
+            }
+        }
     }
 }

@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
@@ -22,7 +20,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.util.FileListUtils;
-import uk.ac.ceh.gateway.catalogue.util.HashUtils;
 import uk.ac.ceh.gateway.catalogue.util.ZipFileUtils;
 
 @AllArgsConstructor
@@ -140,6 +137,15 @@ public class UploadDocumentService {
         ZipFileUtils.archive(directory, unarchived -> {
             val file = new File(directory, filename);
             saveInputStream(unarchived, file, in);
+            if (isZipFile(file)) {
+                ZipFileUtils.archiveZip(file, unarchivedZip -> {
+                    val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
+                    for (val innerFilename : filenames) {
+                        val uploadFile = UploadFileBuilder.create(new File(innerFilename), UploadType.DOCUMENTS);
+                        documents.getDocuments().put(uploadFile.getPath(), uploadFile);
+                    }
+                });
+            }
             val uploadFile = UploadFileBuilder.create(file, UploadType.DOCUMENTS);
             documents.getDocuments().put(uploadFile.getPath(), uploadFile);
             saveUploadDocument(user, document, String.format("adding file: %s", file.getPath()));
@@ -153,6 +159,9 @@ public class UploadDocumentService {
 
     @SneakyThrows
     private void saveUploadDocument(CatalogueUser user, UploadDocument document, String message) {
+        for (val uploadFiles : document.getUploadFiles().values()) {
+            uploadFiles.setInvalid(Maps.newHashMap());
+        }
         documentRepository.save(user, document, message);
     }
 
