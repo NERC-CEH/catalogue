@@ -18,6 +18,7 @@ public class ZipFileUtilsTest {
 
     private final File dataDirectory = new File("../file-test-data");
     private final File directory = new File("../file-test-data-test");
+    private final File zipDataDirectory = new File(directory, "zip-utils");
 
     @Before
     @SneakyThrows
@@ -28,7 +29,7 @@ public class ZipFileUtilsTest {
 
     @Test
     public void archive () {
-        ZipFileUtils.archive(new File(directory, "zip-utils"), unarchived -> {
+        ZipFileUtils.archive(zipDataDirectory, unarchived -> {
             val fileNames = FileListUtils.relativePathsTree(unarchived);
             assertThat(fileNames, containsInAnyOrder(
                 "changed.txt",
@@ -49,8 +50,23 @@ public class ZipFileUtilsTest {
     }
 
     @Test
+    @SneakyThrows
+    public void archive_doesNotAddZipAfterItHasBeenRemoved () {
+        ZipFileUtils.archive(zipDataDirectory, unarchived -> {
+            deleteZip();
+        });
+        assertThat("zip should not exist", new File(zipDataDirectory, "zip.zip").exists(), is(false));
+    }
+
+
+    @SneakyThrows
+    private void deleteZip () {
+        FileUtils.forceDelete(new File(zipDataDirectory, "zip.zip"));
+    }
+
+    @Test
     public void archiveZip () {
-        ZipFileUtils.archiveZip(new File(directory, "zip-utils/zip.zip"), unarchived -> {
+        ZipFileUtils.archiveZip(new File(zipDataDirectory, "zip.zip"), unarchived -> {
             val fileNames = FileListUtils.relativePathsTree(unarchived);
             assertThat(fileNames, containsInAnyOrder(
                 "z.txt",

@@ -165,13 +165,16 @@ public class UploadDocumentService {
     public void delete(CatalogueUser user, UploadDocument document, String filename) {
         document.validate();
         val documents = document.getUploadFiles().get("documents");
-        val uploadFile = documents.getDocuments().get(filename);
+        UploadFile uploadFile = documents.getDocuments().get(filename);
+        if (uploadFile == null) uploadFile = documents.getInvalid().get(filename);
+
         if (uploadFile != null) {
             val directory = new File(documents.getPath());
             ZipFileUtils.archive(directory, unarchived -> {
                 forceDelete(filename);
             });
             documents.getDocuments().remove(filename);
+            document.validate();
             saveUploadDocument(user, document, String.format("removing file: %s", uploadFile.getPath()));
         }
     }
@@ -197,7 +200,6 @@ public class UploadDocumentService {
             uploadFiles.setInvalid(Maps.newHashMap());
         }
         document.setMetadata(documentRepository.read(document.getId()).getMetadata());
-        System.out.println(String.format("META DATA %s", document.getMetadata()));
         documentRepository.save(user, document, message);
     }
 }

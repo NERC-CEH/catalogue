@@ -60,8 +60,10 @@ public class ZipFileUtils {
         val parameters = new ZipParameters();
         if (isExtracted(file)) {
             val zipFile = new File(file.getParentFile(), file.getName().replace("_extracted-", "") + ".zip");
-            compressAll(file, new ZipFile(zipFile));
-            if (zip != null) zip.addFile(zipFile, parameters);
+            if (zipFile.exists()) {
+                compressAll(file, new ZipFile(zipFile));
+                if (zip != null) zip.addFile(zipFile, parameters);
+            }
             FileUtils.forceDelete(file);
         } else if (zip != null) {
             if (file.isDirectory()) zip.addFolder(file, parameters);
