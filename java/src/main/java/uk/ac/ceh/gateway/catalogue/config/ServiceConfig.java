@@ -321,7 +321,7 @@ public class ServiceConfig {
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
                 .register(ELTER_SENSOR_DOCUMENT_SHORT, SensorDocument.class)
-                .register(ELTER_SENSOR_DOCUMENT_SHORT, UploadDocument.class)
+                .register(UPLOAD_DOCUMENT_SHORT, UploadDocument.class)
                 .register(ELTER_MANUFACTURER_DOCUMENT_SHORT, ManufacturerDocument.class);
     }
     

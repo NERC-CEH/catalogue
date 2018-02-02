@@ -34,7 +34,6 @@ public abstract class AbstractDocumentController {
         return ResponseEntity
             .created(URI.create(data.getUri()))
             .body(data);
-
     }
 
     protected ResponseEntity<MetadataDocument> saveMetadataDocument(

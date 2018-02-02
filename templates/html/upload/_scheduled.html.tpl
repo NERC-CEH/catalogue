@@ -16,15 +16,14 @@
     <div class="container-fluid folders scheduled">
         <div class="row">
             <div class="documents folder">
-                
                 <div class="dropzone-files files connectedSortable">
                     <#if uploadFiles['documents'].documents?size == 0>
                         <div class="empty-message">Drag files here to upload</div>
                     </#if>
                     <#list uploadFiles['documents'].documents?values as document>
-                        <div id="documents-${document.id}" class="file">
+                        <div id="documents-${document.path?replace('/', '-', 'r')?replace('\\.', '-', 'r')}" class="file">
                             <div class="file-options">
-                                <button class="btn btn-xs btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal">Delete</button>
+                                <button class="btn btn-xs btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal" data-filename="${document.path}">Delete</button>
                             </div>
                             <div class="filename">
                                 <i class="fa fa-file-text-o"></i> <span class="filename-label">${document.name}</span>

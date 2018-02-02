@@ -5,6 +5,8 @@ define [
   'tpl!templates/DeleteableFile.tpl'
   'tpl!templates/InvalidFile.tpl'
 ], (Backbone, message, dropzoneFileTpl, deleteableFileTpl, invalidFileTpl) -> Backbone.View.extend
+  dropzone: null
+
   initialize: ->
     @model.on 'sync', =>
       do @render
@@ -12,7 +14,7 @@ define [
       $('.messages').hide 'fast'
 
       # do @initFinish
-      do @initDropzone
+      do @initDropzone if @dropzone == null
     @model.on 'change', => do @render
     do @model.fetch
 
@@ -121,17 +123,19 @@ define [
     for index, file of files
       do $('.uploading-' + file.id).remove
       newFile = $(deleteableFileTpl
+        path: file.path
         name: file.name,
-        id: 'documents-' + file.id)
+        id: 'documents-' + file.path.replace(/\//g, '-').replace(/\./g, '-'))
       $('.files').append(newFile)
-    
+
     $('.delete').unbind 'click'
     $('.delete').click (evt) =>
+      filename = $(evt.target).data('filename')
       target = $(evt.target).parent().parent()
-      filename = target.find('.filename-label').text()
+      name = target.find('.filename-label').text()
       @model.set 'modal',
         title: 'Delete <b>' + filename + '</b>'
-        body: 'Are you sure you want to permanently delete ' + filename
+        body: 'Are you sure you want to permanently delete ' + name
         dismiss: 'No'
         accept: 'Yes'
         onAccept: =>

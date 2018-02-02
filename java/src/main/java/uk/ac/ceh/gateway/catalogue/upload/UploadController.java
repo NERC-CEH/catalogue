@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,7 +48,6 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 @AllArgsConstructor
 public class UploadController  {
     private final UploadDocumentService uploadDocumentService;
-    private final JiraService jiraService;
     private final PermissionService permissionService;
     private final DocumentRepository documentRepository;
     private final PloneDataDepositService ploneDataDepositService;
@@ -83,13 +83,26 @@ public class UploadController  {
         @RequestParam("file") MultipartFile file
     ) throws IOException, DocumentRepositoryException {
         val document = (UploadDocument) documentRepository.read(id);
-        if (!permissionService.userCanUpload(document.getParentId())) {
-            throw new PermissionDeniedException("Invalid Permissions");
-        }
+        userCanUpload(document);
         try (InputStream in = file.getInputStream()) {        
             val filename = file.getOriginalFilename();
             uploadDocumentService.add(user, document, filename, in);
         }
         return ResponseEntity.ok(document);
+    }
+
+    @RequestMapping(value = "documents/{id}/delete-upload-file", method = RequestMethod.PUT, consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> deleteFile(
+        @ActiveUser CatalogueUser user,
+        @RequestParam("filename") String filename,
+        @RequestBody UploadDocument document
+    ) throws DocumentRepositoryException {
+        userCanUpload(document);
+        uploadDocumentService.delete(user, document, filename);
+        return ResponseEntity.ok(document);
+    }
+
+    private void userCanUpload (UploadDocument document) {
+        if (!permissionService.userCanUpload(document.getParentId())) throw new PermissionDeniedException("Invalid Permissions");
     }
 }

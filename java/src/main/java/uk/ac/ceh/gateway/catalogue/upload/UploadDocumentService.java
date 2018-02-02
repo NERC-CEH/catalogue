@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ext.com.google.common.collect.Lists;
+import org.hibernate.validator.internal.metadata.aggregated.rule.ParallelMethodsMustNotDefineGroupConversionForCascadedReturnValue;
+
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -141,8 +143,8 @@ public class UploadDocumentService {
                 ZipFileUtils.archiveZip(file, unarchivedZip -> {
                     val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
                     for (val innerFilename : filenames) {
-                        val uploadFile = UploadFileBuilder.create(new File(innerFilename), UploadType.DOCUMENTS);
-                        documents.getDocuments().put(uploadFile.getPath(), uploadFile);
+                        val zippedUploadFile = UploadFileBuilder.create(new File(innerFilename), UploadType.DOCUMENTS);
+                        documents.getDocuments().put(zippedUploadFile.getPath(), zippedUploadFile);
                     }
                 });
             }
@@ -157,18 +159,27 @@ public class UploadDocumentService {
         FileUtils.copyInputStreamToFile(in, file);
     }
 
-    @SneakyThrows
-    private void saveUploadDocument(CatalogueUser user, UploadDocument document, String message) {
-        for (val uploadFiles : document.getUploadFiles().values()) {
-            uploadFiles.setInvalid(Maps.newHashMap());
-        }
-        documentRepository.save(user, document, message);
-    }
-
     public void move() {
     }
 
-    public void delete() {
+    public void delete(CatalogueUser user, UploadDocument document, String filename) {
+        document.validate();
+        val documents = document.getUploadFiles().get("documents");
+        val uploadFile = documents.getDocuments().get(filename);
+        if (uploadFile != null) {
+            val directory = new File(documents.getPath());
+            ZipFileUtils.archive(directory, unarchived -> {
+                forceDelete(filename);
+            });
+            documents.getDocuments().remove(filename);
+            saveUploadDocument(user, document, String.format("removing file: %s", uploadFile.getPath()));
+        }
+    }
+
+    @SneakyThrows
+    private void forceDelete(String filename) {
+        val file = new File(filename);
+        if (file.exists()) FileUtils.forceDelete(file);
     }
 
     public void zip() {
@@ -178,5 +189,15 @@ public class UploadDocumentService {
     }
 
     public void acceptInvalid() {
+    }
+
+    @SneakyThrows
+    private void saveUploadDocument(CatalogueUser user, UploadDocument document, String message) {
+        for (val uploadFiles : document.getUploadFiles().values()) {
+            uploadFiles.setInvalid(Maps.newHashMap());
+        }
+        document.setMetadata(documentRepository.read(document.getId()).getMetadata());
+        System.out.println(String.format("META DATA %s", document.getMetadata()));
+        documentRepository.save(user, document, message);
     }
 }
