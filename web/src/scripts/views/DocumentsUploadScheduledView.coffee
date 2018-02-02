@@ -62,8 +62,7 @@ define [
           uploading.find('.cancel').click => @removeFile file
         
         @on 'success', (file, res) ->
-          model.uploaded file, res
-          do render
+          model.set res
         
         @on 'error', (file, errorMessage, xhr) ->
           id = file.name.replace(/[^\w?]/g, '-')

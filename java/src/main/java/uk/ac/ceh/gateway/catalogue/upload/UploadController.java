@@ -54,7 +54,10 @@ public class UploadController  {
 
     @RequestMapping(value = "upload/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public RedirectView createOrGetUploadDocument(@ActiveUser CatalogueUser user, @PathVariable("id") String id) throws DocumentRepositoryException {
+    public RedirectView createOrGetUploadDocument(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id
+    ) throws DocumentRepositoryException {
         val geminiDocument = (GeminiDocument) documentRepository.read(id);
         val canUpload = permissionService.userCanUpload(id);
         val canView = permissionService.userCanView(id);
@@ -75,6 +78,7 @@ public class UploadController  {
     @RequestMapping(value = "documents/{id}/add-upload-document", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<UploadDocument> addFile(
+        @ActiveUser CatalogueUser user,
         @PathVariable("id") String id,
         @RequestParam("file") MultipartFile file
     ) throws IOException, DocumentRepositoryException {
@@ -84,7 +88,7 @@ public class UploadController  {
         }
         try (InputStream in = file.getInputStream()) {        
             val filename = file.getOriginalFilename();
-            System.out.println(String.format("save %s to %s", filename, id));
+            uploadDocumentService.add(user, document, filename, in);
         }
         return ResponseEntity.ok(document);
     }

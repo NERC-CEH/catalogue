@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -59,8 +60,8 @@ public class UploadDocumentService {
     }
 
     private void createDocuments(File directory, Map<String, UploadFile> documents) {
-        ZipFileUtils.archive(directory, folder -> {
-            updateFromHashFiles(directory, documents);
+        ZipFileUtils.archive(directory, unarchived -> {
+            updateFromHashFiles(unarchived, documents);
         });
     }
 
@@ -131,7 +132,28 @@ public class UploadDocumentService {
         return files.size() == 0;
     }
 
-    public void add() {
+    public void add(CatalogueUser user, UploadDocument document, String filename, InputStream in) {
+        document.validate();
+        val documents = document.getUploadFiles().get("documents");
+        val directory = new File(documents.getPath());
+
+        ZipFileUtils.archive(directory, unarchived -> {
+            val file = new File(directory, filename);
+            saveInputStream(unarchived, file, in);
+            val uploadFile = UploadFileBuilder.create(file, UploadType.DOCUMENTS);
+            documents.getDocuments().put(uploadFile.getPath(), uploadFile);
+            saveUploadDocument(user, document, String.format("adding file: %s", file.getPath()));
+        });
+    }
+
+    @SneakyThrows
+    private void saveInputStream(File directory, File file, InputStream in) {
+        FileUtils.copyInputStreamToFile(in, file);
+    }
+
+    @SneakyThrows
+    private void saveUploadDocument(CatalogueUser user, UploadDocument document, String message) {
+        documentRepository.save(user, document, message);
     }
 
     public void move() {
