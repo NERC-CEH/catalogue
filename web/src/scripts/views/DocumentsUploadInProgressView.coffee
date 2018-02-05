@@ -113,10 +113,16 @@ define [
 
   renderValidFiles: (folder) ->
     files = @model.get('uploadFiles')[folder].documents || {}
+    files = (value for own prop, value of files)
+    files.sort (left, right) ->
+      return -1 if left.name < right.name
+      return 1 if left.name > right.name
+      return 0
+
     for path, file of files
       id = folder + '-' + file.id
       newFile = $(fileTpl
-        path: path
+        path: file.path
         name: file.name,
         hash: file.hash,
         id: id)
@@ -124,10 +130,16 @@ define [
   
   renderInvalidFiles: (folder) ->
     files = @model.get('uploadFiles')[folder].invalid || {}
+    files = (value for own prop, value of files)
+    files.sort (left, right) ->
+      return -1 if left.name < right.name
+      return 1 if left.name > right.name
+      return 0
+
     for path, file of files
       id = folder + '-' + file.id
       invalidFile = $(invalidFileTpl
-        path: path
+        path: file.path
         comment: file.type
         type: file.type,
         name: file.name,

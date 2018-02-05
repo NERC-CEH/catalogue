@@ -3,8 +3,7 @@ define [
   'cs!views/DocumentUploadMessage'
   'tpl!templates/DropzoneFile.tpl'
   'tpl!templates/DeleteableFile.tpl'
-  'tpl!templates/InvalidFile.tpl'
-], (Backbone, message, dropzoneFileTpl, deleteableFileTpl, invalidFileTpl) -> Backbone.View.extend
+], (Backbone, message, dropzoneFileTpl, deleteableFileTpl) -> Backbone.View.extend
   dropzone: null
 
   initialize: ->
@@ -122,6 +121,12 @@ define [
 
     documents = @model.get('uploadFiles').documents || {}
     files = documents.documents || {}
+    files = (value for own prop, value of files)
+    files.sort (left, right) ->
+      return -1 if left.name < right.name
+      return 1 if left.name > right.name
+      return 0
+
     for index, file of files
       do $('.uploading-' + file.id).remove
       newFile = $(deleteableFileTpl
