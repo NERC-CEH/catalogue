@@ -10,7 +10,10 @@ define [
     $target = $(event.target)
     [objectName, attributeName] = $target.data('name').split('.')
     value = $target.val()
+    @._setObject objectName, attributeName, value
+    return false # disable bubbling
 
+  _setObject: (objectName, attributeName, value) ->
     if not value
       @model.unset objectName
     else
@@ -20,5 +23,3 @@ define [
         @model.set objectName, obj
       else
         @model.set objectName, value
-
-    return false # disable bubbling

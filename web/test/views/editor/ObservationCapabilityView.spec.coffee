@@ -22,12 +22,30 @@ define [
       it 'should exist', ->
         expect(view).toBeDefined()
 
-    # Cannot trigger 'change' in input value to check modify method works :( 
-    # Modify method should really work with a plain object rather than manipulate a DOM element
-    xdescribe 'modify ObservationCapability', ->     
-      it 'modify', ->
-        view.$el.find('#observedCapabilities0NameTitle').val('test text').trigger('change')
-        propertyName = model.get('observedPropertyName')
+    describe '_setObject', ->     
+      
+      it '_setObject for object', ->
+        objectName = 'test'
+        attributeName = 'green'
+        value = 'hot'
 
-        expect(propertyName.title).toEqual 'test text'
+        view._setObject objectName, attributeName, value
+
+        expect(model.has objectName).toBe true
+        obj = model.get objectName
+        expect(_.isObject obj).toBe true
+        expect(_.has obj, attributeName).toBe true
+        expect(obj[attributeName]).toBe 'hot'
+
+      it '_setObject for string', ->
+        objectName = 'text'
+        attributeName = undefined
+        value = 'black'
+
+        view._setObject objectName, attributeName, value 
+
+        expect(model.has objectName).toBe true
+        attribute = model.get objectName
+        expect(_.isObject attribute).toBe false
+        expect(attribute).toBe 'black'
         
