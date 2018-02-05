@@ -10,6 +10,8 @@ define [
       url: @url() + '/delete-upload-file?name=' + name + '&filename=' + encodeURIComponent(file)
 
   ignore: (name, file) ->
+    @save @attributes,
+      url: @url() + '/delete-upload-file?name=' + name + '&filename=' + encodeURIComponent(file)
 
   move: (file, from, to) ->
     @save @attributes,
@@ -20,5 +22,9 @@ define [
       url: @url() + '/move-to-datastore'
 
   zip: ->
+    @save @attributes,
+      url: @url() + '/zip-upload-files'
 
   unzip: ->
+    @save @attributes,
+      url: @url() + '/unzip-upload-files'

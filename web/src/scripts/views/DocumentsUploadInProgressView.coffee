@@ -191,7 +191,15 @@ define [
       return -1 if left.name < right.name
       return 1 if left.name > right.name
       return 0
+    for index, file of files
+      checksums.push file.name + ',' + file.hash
 
+    files = @model.get('uploadFiles').datastore.invalid || {}
+    files = (value for own prop, value of files)
+    files.sort (left, right) ->
+      return -1 if left.name < right.name
+      return 1 if left.name > right.name
+      return 0
     for index, file of files
       checksums.push file.name + ',' + file.hash
 

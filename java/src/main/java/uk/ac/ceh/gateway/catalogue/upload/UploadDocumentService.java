@@ -1,11 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +10,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ext.com.google.common.collect.Lists;
-import org.hibernate.validator.internal.metadata.aggregated.rule.ParallelMethodsMustNotDefineGroupConversionForCascadedReturnValue;
-
-import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -44,8 +41,9 @@ public class UploadDocumentService {
             val documents = new HashMap<String, UploadFile>();
             val invalid = new HashMap<String, UploadFile>();
             createDocuments(directory, documents);
-            boolean isZipped = isZipped(directory);
-            val uploadFilesValue = new UploadFiles(directory.getAbsolutePath(), isZipped);
+            boolean zipped = isZipped(directory);
+            val uploadFilesValue = new UploadFiles(directory.getAbsolutePath());
+            uploadFilesValue.setZipped(zipped);
             uploadFilesValue.setDocuments(documents);
             uploadFilesValue.setInvalid(invalid);
             uploadFiles.put(key, uploadFilesValue);
@@ -127,10 +125,8 @@ public class UploadDocumentService {
 
     private boolean isZipped(File directory) {
         if (!directory.exists()) return false;
-        val files = Lists.newArrayList(directory.listFiles());
-        if (files.size() != 2) return false;
-        files.removeIf(file -> { return isZipFile(file) || isHashFile(file); });
-        return files.size() == 0;
+        val files = FileListUtils.relativePathsTree(directory);
+        return files.contains(directory.getName() + ".zip");
     }
 
     public void add(CatalogueUser user, UploadDocument document, String filename, InputStream in) {
@@ -248,18 +244,98 @@ public class UploadDocumentService {
         saveUploadDocument(user, document, "moving all files from documents to datastore");
     }
 
-    public void zip() {
+    @SneakyThrows
+    public void zip(CatalogueUser user, UploadDocument document) {
+        document.validate();
+        val uploadFiles = document.getUploadFiles().get("datastore");
+
+        val directory = new File(uploadFiles.getPath());
+        if (!isZipped(directory)) {
+            val zipname = String.format("%s.zip", document.getParentId());
+            val zipFile = new File(directory, zipname);
+            val zip = new ZipFile(zipFile.getAbsolutePath());
+            val parameters = new ZipParameters();
+            val filesnames = FileListUtils.absolutePathsTree(directory);
+            for (val filename : filesnames) {
+                if (!filename.equals(zipname)) {
+                    addToZip(new File(filename), zip, parameters);
+                }
+            }
+
+            uploadFiles.setDocuments(Maps.newHashMap());
+            
+            ZipFileUtils.archiveZip(zipFile, unarchivedZip -> {
+                val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
+                for (val innerFilename : filenames) {
+                    if (!innerFilename.endsWith(".hash")) {
+                        val zippedUploadFile = UploadFileBuilder.create(directory, new File(innerFilename), UploadType.DOCUMENTS);
+                        uploadFiles.getDocuments().put(zippedUploadFile.getPath(), zippedUploadFile);
+                    }
+                }
+            });
+
+            val uploadFile = UploadFileBuilder.create(directory, zipFile, UploadType.DOCUMENTS);
+            uploadFiles.getDocuments().put(uploadFile.getPath(), uploadFile);
+        }
+
+        uploadFiles.setZipped(true);
+        saveUploadDocument(user, document, "zipping datastore");
     }
 
-    public void unzip() {
+    @SneakyThrows
+    private void addToZip(File file, ZipFile zipFile, ZipParameters parameters) {
+        if (file.isDirectory()) zipFile.addFolder(file, parameters);
+        else zipFile.addFile(file, parameters);
+        FileUtils.forceDelete(file);
+    }
+
+    @SneakyThrows
+    public void unzip(CatalogueUser user, UploadDocument document) {
+        document.validate();
+        val uploadFiles = document.getUploadFiles().get("datastore");
+
+        val directory = new File(uploadFiles.getPath());
+        if (isZipped(directory)) {
+            val zipname = String.format("%s.zip", document.getParentId());
+            val zipFile = new File(directory, zipname);
+            val zip = new ZipFile(zipFile.getAbsolutePath());
+            zip.extractAll(directory.getAbsolutePath());
+            FileUtils.forceDelete(zipFile);
+
+            uploadFiles.setDocuments(Maps.newHashMap());
+
+            ZipFileUtils.archive(directory, unarchived -> {
+                val filenames = FileListUtils.absolutePathsTree(unarchived);
+                for (val innerFilename : filenames) {
+                    if (!innerFilename.endsWith(".hash")) {
+                        val zippedUploadFile = UploadFileBuilder.create(directory, new File(innerFilename), UploadType.DOCUMENTS);
+                        uploadFiles.getDocuments().put(zippedUploadFile.getPath(), zippedUploadFile);
+                    }
+                }
+            });
+
+        }
+
+        uploadFiles.setZipped(false);
+        saveUploadDocument(user, document, "unzipping datastore");
     }
 
     public void acceptInvalid(CatalogueUser user, UploadDocument document, String name, String filename) {
         document.validate();
         val uploadFiles = document.getUploadFiles().get(name);
+        val directory = new File(uploadFiles.getPath());
         val uploadFile = uploadFiles.getInvalid().get(filename);
-        uploadFile.setType(UploadType.DOCUMENTS);
         uploadFiles.getInvalid().remove(filename);
+
+        ZipFileUtils.archive(directory, unarchived -> {
+            val filenames = FileListUtils.absolutePathsTree(unarchived);
+            for (val innerFilename : filenames) {
+                if (innerFilename.equals(filename)) {
+                    UploadFileBuilder.update(uploadFile, directory, new File(innerFilename), UploadType.DOCUMENTS);
+                }
+            }
+        });
+
         uploadFiles.getDocuments().put(filename, uploadFile);
         saveUploadDocument(user, document, String.format("accepting invalid file %s", filename));
     }

@@ -13,8 +13,6 @@ import lombok.val;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.util.FilenameContainsFilterUtils;
-
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;

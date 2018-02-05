@@ -20,6 +20,7 @@ public class UploadDocumentValidator {
                     unknown(unarchived, uploadFiles);
                     missing(unarchived, uploadFiles);
                     invalidHash(uploadFiles);
+                    validateParentZip(uploadFiles, document.getParentId());
                 });
             });
     }
@@ -86,6 +87,23 @@ public class UploadDocumentValidator {
         val invalid = uploadFiles.getInvalid();
         for (val filename : invalid.keySet()) {
             documents.remove(filename);
+        }
+    }
+
+    private static void validateParentZip (UploadFiles uploadFiles, String guid) {
+        val invalid = uploadFiles.getInvalid();
+        val documents = uploadFiles.getDocuments();
+        UploadFile uploadFile = null;
+        for (val entry : invalid.entrySet()) {
+            val filename = entry.getKey();
+            if (filename.endsWith(String.format("%s.zip", guid))) {
+                uploadFile = entry.getValue();
+            }
+        }
+        if (uploadFile != null) {
+            invalid.remove(uploadFile.getPath());
+            uploadFile.setType(UploadType.DOCUMENTS);
+            documents.put(uploadFile.getPath(), uploadFile);
         }
     }
 }

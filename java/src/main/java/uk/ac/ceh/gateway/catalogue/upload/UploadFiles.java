@@ -11,5 +11,5 @@ public class UploadFiles {
     private final String path;
     private Map<String, UploadFile> documents = Maps.newHashMap();
     private Map<String, UploadFile> invalid = Maps.newHashMap();
-    private final boolean zipped;
+    private boolean zipped;
 }

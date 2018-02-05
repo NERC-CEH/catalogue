@@ -91,7 +91,7 @@ public class UploadController  {
         @RequestParam("name") String name,
         @RequestParam("filename") String filename,
         @RequestBody UploadDocument document
-    ) throws DocumentRepositoryException {
+    ) {
         userCanUpload(document);
         uploadDocumentService.delete(user, document, name, filename);
         document.validate();
@@ -155,7 +155,8 @@ public class UploadController  {
         @RequestParam("name") String name,
         @RequestParam("filename") String filename,
         @RequestBody UploadDocument document
-    ) throws DocumentRepositoryException {
+    ) {
+        userCanUpload(document);
         uploadDocumentService.acceptInvalid(user, document, name, filename);   
         document.validate();
         return ResponseEntity.ok(document);
@@ -169,7 +170,8 @@ public class UploadController  {
         @RequestParam("to") String to,
         @RequestParam("filename") String filename,
         @RequestBody UploadDocument document
-    ) throws DocumentRepositoryException {
+    ){
+        userCanUpload(document);
         uploadDocumentService.move(user, document, from, to, filename);
         document.validate();
         return ResponseEntity.ok(document);
@@ -180,8 +182,33 @@ public class UploadController  {
         @ActiveUser CatalogueUser user,
         @PathVariable("id") String id,
         @RequestBody UploadDocument document
-    ) throws DocumentRepositoryException {
+    ) {
+        userCanUpload(document);
         uploadDocumentService.moveToDatastore(user, document);
+        document.validate();
+        return ResponseEntity.ok(document);
+    }
+
+    @RequestMapping(value = "documents/{id}/zip-upload-files", method = RequestMethod.PUT, consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> zip(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestBody UploadDocument document
+    ) {
+        userCanUpload(document);
+        uploadDocumentService.zip(user, document);
+        document.validate();
+        return ResponseEntity.ok(document);
+    }
+
+    @RequestMapping(value = "documents/{id}/unzip-upload-files", method = RequestMethod.PUT, consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> unzip(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestBody UploadDocument document
+    ) {
+        userCanUpload(document);
+        uploadDocumentService.unzip(user, document);
         document.validate();
         return ResponseEntity.ok(document);
     }
