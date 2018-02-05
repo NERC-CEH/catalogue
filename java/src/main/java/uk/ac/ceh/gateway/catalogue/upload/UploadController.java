@@ -88,11 +88,12 @@ public class UploadController  {
     public ResponseEntity<MetadataDocument> deleteFile(
         @ActiveUser CatalogueUser user,
         @PathVariable("id") String id,
+        @RequestParam("name") String name,
         @RequestParam("filename") String filename,
         @RequestBody UploadDocument document
     ) throws DocumentRepositoryException {
         userCanUpload(document);
-        uploadDocumentService.delete(user, document, filename);
+        uploadDocumentService.delete(user, document, name, filename);
         document.validate();
         return ResponseEntity.ok(document);
     }

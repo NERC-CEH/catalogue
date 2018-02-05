@@ -162,9 +162,9 @@ public class UploadDocumentService {
     public void move() {
     }
 
-    public void delete(CatalogueUser user, UploadDocument document, String filename) {
+    public void delete(CatalogueUser user, UploadDocument document, String name, String filename) {
         document.validate();
-        val documents = document.getUploadFiles().get("documents");
+        val documents = document.getUploadFiles().get(name);
         UploadFile uploadFile = documents.getDocuments().get(filename);
         if (uploadFile == null) uploadFile = documents.getInvalid().get(filename);
 

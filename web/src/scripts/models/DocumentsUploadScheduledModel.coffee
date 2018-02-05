@@ -3,7 +3,7 @@ define [
 ], (DocumentUploadModel) -> DocumentUploadModel.extend
   delete: (file) ->
     @save @attributes,
-      url: @url() + '/delete-upload-file?filename=' + encodeURIComponent(file)
+      url: @url() + '/delete-upload-file?name=documents&filename=' + encodeURIComponent(file)
   
   finish: ->
     @save @attributes,

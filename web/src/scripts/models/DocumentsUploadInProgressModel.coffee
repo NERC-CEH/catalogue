@@ -6,11 +6,8 @@ define [
       url: @url() + '/accept-upload-file?name=' + name + '&filename=' + encodeURIComponent(file)
 
   delete: (name, file) ->
-    # baseMessage = '<b>' + file + '</b>'
-    # @postWithFormData window.location.href + '/delete/' + name,
-    #   'Deleted: ' + baseMessage,
-    #   'Could not delete: ' + baseMessage,
-    #   file: file
+    @save @attributes,
+      url: @url() + '/delete-upload-file?name=' + name + '&filename=' + encodeURIComponent(file)
 
   ignore: (name, file) ->
     console.log 'ignore', name, file
