@@ -14,8 +14,7 @@ define [
     if not value
       @model.unset objectName
     else
-      attribute = @model.get(objectName)
-      if _.isObject(attribute)
+      if not _.isUndefined(attributeName)
         obj = _.extend({}, @model.get(objectName))
         obj[attributeName] = value
         @model.set objectName, obj
