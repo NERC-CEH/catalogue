@@ -160,4 +160,18 @@ public class UploadController  {
         document.validate();
         return ResponseEntity.ok(document);
     }
+
+    @RequestMapping(value = "documents/{id}/move-upload-file", method = RequestMethod.PUT, consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> acceptFile(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestParam("from") String from,
+        @RequestParam("to") String to,
+        @RequestParam("filename") String filename,
+        @RequestBody UploadDocument document
+    ) throws DocumentRepositoryException {
+        uploadDocumentService.move(user, document, from, to, filename);
+        document.validate();
+        return ResponseEntity.ok(document);
+    }
 }

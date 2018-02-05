@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -14,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.hibernate.validator.internal.metadata.aggregated.rule.ParallelMethodsMustNotDefineGroupConversionForCascadedReturnValue;
 
+import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -138,7 +140,7 @@ public class UploadDocumentService {
 
         ZipFileUtils.archive(directory, unarchived -> {
             val file = new File(directory, filename);
-            saveInputStream(unarchived, file, in);
+            saveInputStream(file, in);
             if (isZipFile(file)) {
                 ZipFileUtils.archiveZip(file, unarchivedZip -> {
                     val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
@@ -155,11 +157,45 @@ public class UploadDocumentService {
     }
 
     @SneakyThrows
-    private void saveInputStream(File directory, File file, InputStream in) {
+    private void saveInputStream(File file, InputStream in) {
         FileUtils.copyInputStreamToFile(in, file);
     }
 
-    public void move() {
+    @SneakyThrows
+    public void move(CatalogueUser user, UploadDocument document, String from, String to, String filename) {
+        document.validate();
+        val fromUploadFiles = document.getUploadFiles().get(from);
+        val fromDirectory = new File(fromUploadFiles.getPath());
+
+        
+        val uploadFile = fromUploadFiles.getDocuments().get(filename);
+        val fromPath = uploadFile.getPath();
+
+        val toUploadFiles = document.getUploadFiles().get(to);
+        val toDirectory = new File(toUploadFiles.getPath());
+
+        ZipFileUtils.archive(fromDirectory, unarchivedFrom -> {
+            ZipFileUtils.archive(toDirectory, unarchivedTo -> {
+                val fromFile = new File(uploadFile.getPath());
+                val file = new File(
+                    uploadFile.getPath()
+                        .replace(fromDirectory.getAbsolutePath(), toDirectory.getAbsolutePath())
+                );
+                moveFile(fromFile, file);
+                UploadFileBuilder.update(uploadFile, toDirectory, file, UploadType.DOCUMENTS);
+            });
+        });        
+
+        fromUploadFiles.getDocuments().remove(filename);
+        toUploadFiles.getDocuments().put(uploadFile.getPath(), uploadFile);
+
+        saveUploadDocument(user, document, String.format("moving file from: %s, to: %s", fromPath, uploadFile.getPath()));
+    }
+
+    @SneakyThrows
+    private void moveFile(File from, File to) {
+        forceDelete(to.getAbsolutePath());
+        FileUtils.moveFile(from, to);
     }
 
     public void delete(CatalogueUser user, UploadDocument document, String name, String filename) {
@@ -174,7 +210,6 @@ public class UploadDocumentService {
                 forceDelete(filename);
             });
             documents.getDocuments().remove(filename);
-            document.validate();
             saveUploadDocument(user, document, String.format("removing file: %s", uploadFile.getPath()));
         }
     }

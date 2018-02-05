@@ -127,7 +127,7 @@ define [
       newFile = $(deleteableFileTpl
         path: file.path
         name: file.name,
-        id: 'documents-' + file.path.replace(/\//g, '-').replace(/\./g, '-'))
+        id: 'documents-' + file.id)
       $('.files').append(newFile)
 
     $('.delete').unbind 'click'

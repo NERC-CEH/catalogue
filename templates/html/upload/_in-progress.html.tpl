@@ -18,14 +18,14 @@
             <div class="files connectedSortable">
                 <div class="empty-message"></div>
                 <#list uploadFiles['documents'].documents?values as file>
-                    <div id="documents-${file.path?replace('/', '-', 'r')?replace('\\.', '-', 'r')}" class="file">
+                    <div id="documents-${file.id}" class="file">
                         <div class="filename">
                             <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
                         </div>
                     </div>
                 </#list>
                 <#list uploadFiles['documents'].invalid?values as file>
-                    <div id="documents-${file.path?replace('/', '-', 'r')?replace('\\.', '-', 'r')}" class="file file-invalid">
+                    <div id="documents-${file.id}" class="file file-invalid">
                         <div class="filename">
                             <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
                         </div>
@@ -59,14 +59,14 @@
                         <div class="empty-message">No files in <span>Metadata</span> drag from <span>Datastore</span></div>
                     </#if>
                     <#list uploadFiles['plone'].documents?values as file>
-                        <div id="plone-${file.path?replace('/', '-', 'r')?replace('\\.', '-', 'r')}" class="file">
+                        <div id="plone-${file.id}" class="file">
                             <div class="filename">
                                 <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
                             </div>
                         </div>
                     </#list>
                     <#list uploadFiles['plone'].invalid?values as file>
-                        <div id="plone-${file.path?replace('/', '-', 'r')?replace('\\.', '-', 'r')}" class="file file-invalid ">
+                        <div id="plone-${file.id}" class="file file-invalid ">
                             <div class="filename">
                                 <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
                             </div>
@@ -105,14 +105,14 @@
                         <div class="empty-message">No files in <span>Metadata</span> drag from <span>Datastore</span></div>
                     </#if>
                 <#list uploadFiles['datastore'].documents?values as file>
-                    <div id="datastore-${file.path?replace('/', '-', 'r')?replace('\\.', '-', 'r')}" class="file">
+                    <div id="datastore-${file.id}" class="file">
                         <div  class="filename">
                             <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
                         </div >
                     </div>
                 </#list>
                 <#list uploadFiles['datastore'].invalid?values as file>
-                    <div id="datastore-${file.path?replace('/', '-', 'r')?replace('\\.', '-', 'r')}" class="file file-invalid">
+                    <div id="datastore-${file.id}" class="file file-invalid">
                         <div  class="filename">
                             <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
                         </div >

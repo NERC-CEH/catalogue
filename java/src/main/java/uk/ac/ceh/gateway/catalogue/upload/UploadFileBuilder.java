@@ -16,10 +16,13 @@ import uk.ac.ceh.gateway.catalogue.util.HashUtils;
 public class UploadFileBuilder {
 
     @SneakyThrows
-    public static UploadFile create(File directory, Checksum checksum, UploadType type, String hash) {
-        val file = checksum.getFile();
-        val uploadFile = new UploadFile();
+    public static void update (UploadFile uploadFile, File directory, File file, UploadType type) {
+        val hash = HashUtils.hash(file);
+        update(uploadFile, directory, file, type, hash);
+    }
 
+    @SneakyThrows
+    public static void update (UploadFile uploadFile, File directory, File file, UploadType type, String hash) {
         String name = extractName(directory, file);
 
         uploadFile.setPath(file.getAbsolutePath());
@@ -34,6 +37,13 @@ public class UploadFileBuilder {
             uploadFile.setMediatype(Files.probeContentType(file.toPath()));
             uploadFile.setBytes(file.length());
         }
+    }
+
+    @SneakyThrows
+    public static UploadFile create(File directory, Checksum checksum, UploadType type, String hash) {
+        val file = checksum.getFile();
+        val uploadFile = new UploadFile();
+        update(uploadFile, directory, file, type, hash);
         return uploadFile;
     }
 

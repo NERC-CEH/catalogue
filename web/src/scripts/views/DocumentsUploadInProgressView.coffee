@@ -114,7 +114,7 @@ define [
   renderValidFiles: (folder) ->
     files = @model.get('uploadFiles')[folder].documents || {}
     for path, file of files
-      id = folder + '-' + file.path.replace(/\//g, '-').replace(/\./g, '-')
+      id = folder + '-' + file.id
       newFile = $(fileTpl
         path: path
         name: file.name,
@@ -125,7 +125,7 @@ define [
   renderInvalidFiles: (folder) ->
     files = @model.get('uploadFiles')[folder].invalid || {}
     for path, file of files
-      id = folder + '-' + file.path.replace(/\//g, '-').replace(/\./g, '-')
+      id = folder + '-' + file.id
       invalidFile = $(invalidFileTpl
         path: path
         comment: file.type

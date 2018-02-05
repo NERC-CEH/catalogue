@@ -21,7 +21,7 @@
                         <div class="empty-message">Drag files here to upload</div>
                     </#if>
                     <#list uploadFiles['documents'].documents?values as document>
-                        <div id="documents-${document.path?replace('/', '-', 'r')?replace('\\.', '-', 'r')}" class="file">
+                        <div id="documents-${document.id}" class="file">
                             <div class="file-options">
                                 <button class="btn btn-xs btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal" data-filename="${document.path}">Delete</button>
                             </div>
