@@ -191,7 +191,14 @@ public class UploadDocumentService {
     public void unzip() {
     }
 
-    public void acceptInvalid() {
+    public void acceptInvalid(CatalogueUser user, UploadDocument document, String name, String filename) {
+        document.validate();
+        val uploadFiles = document.getUploadFiles().get(name);
+        val uploadFile = uploadFiles.getInvalid().get(filename);
+        uploadFile.setType(UploadType.DOCUMENTS);
+        uploadFiles.getInvalid().remove(filename);
+        uploadFiles.getDocuments().put(filename, uploadFile);
+        saveUploadDocument(user, document, String.format("accepting invalid file %s", filename));
     }
 
     @SneakyThrows

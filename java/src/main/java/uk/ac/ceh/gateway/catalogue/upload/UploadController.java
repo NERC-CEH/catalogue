@@ -80,6 +80,7 @@ public class UploadController  {
             val filename = file.getOriginalFilename();
             uploadDocumentService.add(user, document, filename, in);
         }
+        document.validate();
         return ResponseEntity.ok(document);
     }
 
@@ -92,6 +93,7 @@ public class UploadController  {
     ) throws DocumentRepositoryException {
         userCanUpload(document);
         uploadDocumentService.delete(user, document, filename);
+        document.validate();
         return ResponseEntity.ok(document);
     }
 
@@ -106,6 +108,7 @@ public class UploadController  {
         transitionIssueToStartProgress(user, parentId);
         removeUploadPermission(user, parentId);
         updatePlone(document);
+        document.validate();
         return ResponseEntity.ok(document);
     }
 
@@ -142,5 +145,18 @@ public class UploadController  {
 
     private void userCanUpload (UploadDocument document) {
         if (!permissionService.userCanUpload(document.getParentId())) throw new PermissionDeniedException("Invalid Permissions");
+    }
+
+    @RequestMapping(value = "documents/{id}/accept-upload-file", method = RequestMethod.PUT, consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> acceptFile(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestParam("name") String name,
+        @RequestParam("filename") String filename,
+        @RequestBody UploadDocument document
+    ) throws DocumentRepositoryException {
+        uploadDocumentService.acceptInvalid(user, document, name, filename);   
+        document.validate();
+        return ResponseEntity.ok(document);
     }
 }

@@ -2,11 +2,8 @@ define [
   'cs!models/DocumentUploadModel'
 ], (DocumentUploadModel) -> DocumentUploadModel.extend
   accept: (name, file) ->
-    # baseMessage = '<b>' + file + '</b>'
-    # @postWithFormData window.location.href + '/accept-invalid/' + name,
-    #   'Accepted: ' + baseMessage,
-    #   'Could not accept: ' + baseMessage,
-    #   file: file
+    @save @attributes,
+      url: @url() + '/accept-upload-file?name=' + name + '&filename=' + encodeURIComponent(file)
 
   delete: (name, file) ->
     # baseMessage = '<b>' + file + '</b>'
