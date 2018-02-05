@@ -65,6 +65,8 @@ define [
     do @renderZip
     do @renderAllFiles
     do @renderEmptyMessages
+    do @renderChecksums
+
     $('.documents .files, .plone .files, .datastore .files').sortable 'cancel' if @model.get 'cancel'
     $('.move-to-datastore').attr 'disabled', off
     @renderModal @model.get 'modal' if @model.get 'modal'
@@ -75,7 +77,6 @@ define [
         message: off
         cancel: no
         modal: off
-    return this
     
   renderZip: ->
     $('.zip, .unzip').attr 'disabled', off
@@ -180,3 +181,21 @@ define [
     $('.modal-accept').click ->
       do modal.onAccept
       $('.modal-accept').unbind 'click'
+  
+  renderChecksums: ->
+    checksums = []
+
+    files = @model.get('uploadFiles').datastore.documents || {}
+    files = (value for own prop, value of files)
+    files.sort (left, right) ->
+      return -1 if left.name < right.name
+      return 1 if left.name > right.name
+      return 0
+
+    for index, file of files
+      checksums.push file.name + ',' + file.hash
+
+    href = 'data:text/csv;charset=utf-8,' + checksums.join('\n')
+
+    $('.downloadChecksum').attr('href', href)
+
