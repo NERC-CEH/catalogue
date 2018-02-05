@@ -174,4 +174,16 @@ public class UploadController  {
         document.validate();
         return ResponseEntity.ok(document);
     }
+
+    @RequestMapping(value = "documents/{id}/move-to-datastore", method = RequestMethod.PUT, consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> moveToDatastore(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestBody UploadDocument document
+    ) throws DocumentRepositoryException {
+        uploadDocumentService.moveToDatastore(user, document);
+        document.validate();
+        return ResponseEntity.ok(document);
+    }
+
 }

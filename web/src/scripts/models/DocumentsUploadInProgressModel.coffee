@@ -16,6 +16,8 @@ define [
       url: @url() + '/move-upload-file?from=' + from + '&to=' + to + '&filename=' + encodeURIComponent(file)
 
   moveToDatastore: (files) ->
+    @save @attributes,
+      url: @url() + '/move-to-datastore'
 
   zip: ->
 

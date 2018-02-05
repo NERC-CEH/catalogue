@@ -166,7 +166,6 @@ public class UploadDocumentService {
         document.validate();
         val fromUploadFiles = document.getUploadFiles().get(from);
         val fromDirectory = new File(fromUploadFiles.getPath());
-
         
         val uploadFile = fromUploadFiles.getDocuments().get(filename);
         val fromPath = uploadFile.getPath();
@@ -184,7 +183,7 @@ public class UploadDocumentService {
                 moveFile(fromFile, file);
                 UploadFileBuilder.update(uploadFile, toDirectory, file, UploadType.DOCUMENTS);
             });
-        });        
+        });
 
         fromUploadFiles.getDocuments().remove(filename);
         toUploadFiles.getDocuments().put(uploadFile.getPath(), uploadFile);
@@ -218,6 +217,35 @@ public class UploadDocumentService {
     private void forceDelete(String filename) {
         val file = new File(filename);
         if (file.exists()) FileUtils.forceDelete(file);
+    }
+
+    public void moveToDatastore(CatalogueUser user, UploadDocument document) {
+        document.validate();
+        val fromUploadFiles = document.getUploadFiles().get("documents");
+        val fromDirectory = new File(fromUploadFiles.getPath());
+
+        val toUploadFiles = document.getUploadFiles().get("datastore");
+        val toDirectory = new File(toUploadFiles.getPath());
+
+        ZipFileUtils.archive(fromDirectory, unarchivedFrom -> {
+            ZipFileUtils.archive(toDirectory, unarchivedTo -> {
+                for (val fromEntry : fromUploadFiles.getDocuments().entrySet()) {
+                    val uploadFile = fromEntry.getValue();
+
+                    val fromFile = new File(uploadFile.getPath());
+                    val file = new File(
+                        uploadFile.getPath()
+                            .replace(fromDirectory.getAbsolutePath(), toDirectory.getAbsolutePath())
+                    );
+                    moveFile(fromFile, file);
+                    UploadFileBuilder.update(uploadFile, toDirectory, file, UploadType.DOCUMENTS);
+                    toUploadFiles.getDocuments().put(file.getPath(), uploadFile);
+                }
+            });
+        });
+
+        fromUploadFiles.setDocuments(Maps.newHashMap());
+        saveUploadDocument(user, document, "moving all files from documents to datastore");
     }
 
     public void zip() {
