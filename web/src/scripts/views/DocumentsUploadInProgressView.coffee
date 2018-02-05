@@ -96,9 +96,11 @@ define [
     @renderEmptyMessage 'datastore', 'Move files here from <span>Dropbox</span> or <span>Metadata</span>'
 
   renderEmptyMessage: (folder, message) ->
-    documens = @model.get('uploadFiles')[folder].documents
-    invalid = @model.get('uploadFiles')[folder].invalid
-    message = '' if documens && invalid
+    documens = @model.get('uploadFiles')[folder].documents || {}
+    documens = (value for own prop, value of documens)
+    invalid = @model.get('uploadFiles')[folder].invalid || {}
+    invalid = (value for own prop, value of invalid)
+    message = '' if documens.length > 0 || invalid.length > 0
     $('.' + folder + ' .empty-message').html message
 
   renderAllFiles: ->
