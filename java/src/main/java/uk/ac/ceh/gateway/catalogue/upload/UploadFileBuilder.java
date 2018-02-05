@@ -2,6 +2,10 @@ package uk.ac.ceh.gateway.catalogue.upload;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Lists;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -12,10 +16,12 @@ import uk.ac.ceh.gateway.catalogue.util.HashUtils;
 public class UploadFileBuilder {
 
     @SneakyThrows
-    public static UploadFile create(Checksum checksum, UploadType type, String hash) {
+    public static UploadFile create(File directory, Checksum checksum, UploadType type, String hash) {
         val file = checksum.getFile();
         val uploadFile = new UploadFile();
-        val name = file.getName();
+
+        String name = extractName(directory, file);
+
         uploadFile.setPath(file.getAbsolutePath());
         uploadFile.setType(type);
         uploadFile.setHash(hash);
@@ -31,13 +37,25 @@ public class UploadFileBuilder {
         return uploadFile;
     }
 
-    public static UploadFile create(File file, UploadType type, String hash) {
-        return create(new Checksum(hash, file), type, hash);        
+    public static UploadFile create(File directory, File file, UploadType type, String hash) {
+        return create(directory, new Checksum(hash, file), type, hash);        
     }
 
-    public static UploadFile create(File file, UploadType type) {
+    public static UploadFile create(File directory, File file, UploadType type) {
         val hash = HashUtils.hash(file);
-        return create(new Checksum(hash, file), type, hash);        
+        return create(directory, new Checksum(hash, file), type, hash);        
+    }
+
+    private static String extractName(File directory, File file) {
+        String name = file.getAbsolutePath().replace(directory.getAbsolutePath(), "");
+        if (name.charAt(0) == '/') name = name.replaceFirst("/", "");
+        return Lists.newArrayList(name.split("/"))
+            .stream()
+            .filter(chunk -> !chunk.equals(""))
+            .map(chunk -> {
+                if (chunk.contains("_extracted-")) return chunk.replace("_extracted-", "") + ".zip";
+                return chunk;
+            }).collect(Collectors.joining("/"));
     }
 }
 

@@ -1,4 +1,4 @@
-<div id='<%= id %>' class='file file-invalid'>
+<div id='<%= id %>' class='file file-invalid' data-filename="<%= path %>">
     <div class='filename'>
         <i class='fa fa-file-text-o'></i> <span class='filename-label'><%= name %></span>
     </div>
@@ -14,6 +14,6 @@
                 <button class="btn btn-xs btn-danger delete" data-toggle="modal" data-target="#documentUploadModal">Delete</button>
             <% } %>
         </div>
-        </div><i class="fa fa-warning text-danger"></i> <%= comment %></div>
+        </div><i class="fa fa-warning"></i> <%= comment %></div>
     </div>
 </div>

@@ -75,14 +75,14 @@
                         <div class="files">
                             <div class="empty-message"></div>
                             <#list uploadFiles['plone'].invalid?values as document>
-                                <div id="plone-invalid-${document.id}" class="file file-readonly is-inactive">
+                                <div class="file file-readonly is-inactive">
                                     <div class="filename">
                                         <i class="fa fa-file-<#if document.name?ends_with('.zip')>archive<#else>text</#if>-o"></i> <span>${document.name}</span>
                                     </div>
                                 </div>
                             </#list>
                             <#list uploadFiles['plone'].documents?values as document>
-                                <div id="plone-${document.id}" class="file file-readonly is-inactive">
+                                <div class="file file-readonly is-inactive">
                                     <div class="filename">
                                         <i class="fa fa-file-<#if document.name?ends_with('.zip')>archive<#else>text</#if>-o"></i> <span>${document.name}</span>
                                     </div>

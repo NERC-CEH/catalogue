@@ -6,17 +6,16 @@ define [
 ], (Backbone, message, fileTpl, invalidFileTpl) -> Backbone.View.extend
   el: '.folders'
   initialize: ->
-    do @initFolders
-    do @initZip
-    do @initMoveToDatastore
+    @model.on 'sync', =>
+      do @initFolders
+      do @initZip
+      do @initMoveToDatastore
+      do @render
+      do $('.loading').remove
+      $('.messages').hide 'fast'
 
-    @model.on 'sync', => do @render
     @model.on 'change', => do @render
-    @model.save null,
-      url: window.location.href + '/get'
-
-    do $('.loading').remove
-    $('.messages').hide 'fast'
+    do @model.fetch
 
   initFolders: ->
     $('.documents .files, .plone .files, .datastore .files').sortable
@@ -36,7 +35,7 @@ define [
         to = 'plone' if isPlone
 
         if from != to and to != 'documents'
-          file = item.find('.filename-label').text()
+          file = item.data('filename')
           item.addClass('moving')
           item.attr('disabled', on)
           @model.move file, from, to
@@ -45,11 +44,13 @@ define [
             cancel: yes
 
   initZip: ->
+    $('.zip, .unzip').unbind 'click'
     $('.zip, .unzip').click -> $('.zip, .unzip').attr('disabled', on)
     $('.zip').click => do @model.zip
     $('.unzip').click => do @model.unzip
 
   initMoveToDatastore: ->
+    $('.move-to-datastore').unbind 'click'
     $('.move-to-datastore').attr 'disabled', off
     $('.move-to-datastore').click =>
       files = []
@@ -78,7 +79,7 @@ define [
     
   renderZip: ->
     $('.zip, .unzip').attr 'disabled', off
-    if @model.attributes.datastore.zipped
+    if @model.get('uploadFiles').datastore && @model.get('uploadFiles').datastore.zipped
       $('.datastore-icon .fa').removeClass('fa-file-o')
       $('.datastore-icon .fa').addClass('fa-file-archive-o')
       do $('.zip').hide
@@ -95,7 +96,9 @@ define [
     @renderEmptyMessage 'datastore', 'Move files here from <span>Dropbox</span> or <span>Metadata</span>'
 
   renderEmptyMessage: (folder, message) ->
-    message = '' if @model.get(folder).files
+    documens = @model.get('uploadFiles')[folder].documents
+    invalid = @model.get('uploadFiles')[folder].invalid
+    message = '' if documens && invalid
     $('.' + folder + ' .empty-message').html message
 
   renderAllFiles: ->
@@ -109,22 +112,23 @@ define [
     @renderInvalidFiles folder
 
   renderValidFiles: (folder) ->
-    files = @model.get(folder).files || []
-    for index, file of files
-      id = folder + '-' + file.id
+    files = @model.get('uploadFiles')[folder].documents || {}
+    for path, file of files
+      id = folder + '-' + file.path.replace(/\//g, '-').replace(/\./g, '-')
       newFile = $(fileTpl
+        path: path
         name: file.name,
         hash: file.hash,
         id: id)
       $('.' + folder + ' .files').append(newFile) if $('#' + id).length == 0
   
   renderInvalidFiles: (folder) ->
-    files = @model.get(folder).invalid || {}
-    files = (value for own prop, value of files)
-    for index, file of files
-      id = folder + '-' + file.id
+    files = @model.get('uploadFiles')[folder].invalid || {}
+    for path, file of files
+      id = folder + '-' + file.path.replace(/\//g, '-').replace(/\./g, '-')
       invalidFile = $(invalidFileTpl
-        comment: file.comments[file.comments.length - 1]
+        path: path
+        comment: file.type
         type: file.type,
         name: file.name,
         hash: file.hash,
@@ -139,7 +143,7 @@ define [
     $('.' + action).unbind 'click'
     $('.' + action).click (evt) =>
       file = $(evt.target).parent().parent().parent()
-      filename = file.find('.filename-label').text()
+      filename = file.data('filename')
       folder = file.attr('id').split('-')[0]
       @model.modal
       if action != 'delete'

@@ -28,7 +28,7 @@ public class UploadDocumentValidator {
         val found = FileListUtils.absolutePathsTree(folder, doesNotContain(".hash"), doesNotContain(".hash"));
         for (val filename : found) {
             if (!uploadFiles.getDocuments().containsKey(filename) && !uploadFiles.getInvalid().containsKey(filename)) {
-                uploadFiles.getInvalid().put(filename, UploadFileBuilder.create(new File(filename), UploadType.UNKNOWN_FILE)); 
+                uploadFiles.getInvalid().put(filename, UploadFileBuilder.create(folder, new File(filename), UploadType.UNKNOWN_FILE)); 
             }
         }
     }

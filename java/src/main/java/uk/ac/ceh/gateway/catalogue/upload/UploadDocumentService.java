@@ -75,7 +75,7 @@ public class UploadDocumentService {
             val file = checksum.getFile();
             val exists = file.exists();
             if (exists) {
-                val uploadFile = UploadFileBuilder.create(checksum, UploadType.DOCUMENTS, hash);
+                val uploadFile = UploadFileBuilder.create(directory, checksum, UploadType.DOCUMENTS, hash);
                 documents.put(uploadFile.getPath(), uploadFile);
             }
         });
@@ -143,12 +143,12 @@ public class UploadDocumentService {
                 ZipFileUtils.archiveZip(file, unarchivedZip -> {
                     val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
                     for (val innerFilename : filenames) {
-                        val zippedUploadFile = UploadFileBuilder.create(new File(innerFilename), UploadType.DOCUMENTS);
+                        val zippedUploadFile = UploadFileBuilder.create(directory, new File(innerFilename), UploadType.DOCUMENTS);
                         documents.getDocuments().put(zippedUploadFile.getPath(), zippedUploadFile);
                     }
                 });
             }
-            val uploadFile = UploadFileBuilder.create(file, UploadType.DOCUMENTS);
+            val uploadFile = UploadFileBuilder.create(directory, file, UploadType.DOCUMENTS);
             documents.getDocuments().put(uploadFile.getPath(), uploadFile);
             saveUploadDocument(user, document, String.format("adding file: %s", file.getPath()));
         });
