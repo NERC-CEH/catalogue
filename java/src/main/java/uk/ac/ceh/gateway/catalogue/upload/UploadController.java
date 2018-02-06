@@ -94,6 +94,7 @@ public class UploadController  {
     ) {
         userCanUpload(document);
         uploadDocumentService.delete(user, document, name, filename);
+        updatePlone(document);
         document.validate();
         return ResponseEntity.ok(document);
     }
@@ -157,7 +158,8 @@ public class UploadController  {
         @RequestBody UploadDocument document
     ) {
         userCanUpload(document);
-        uploadDocumentService.acceptInvalid(user, document, name, filename);   
+        uploadDocumentService.acceptInvalid(user, document, name, filename);
+        updatePlone(document); 
         document.validate();
         return ResponseEntity.ok(document);
     }
@@ -173,6 +175,7 @@ public class UploadController  {
     ){
         userCanUpload(document);
         uploadDocumentService.move(user, document, from, to, filename);
+        updatePlone(document);
         document.validate();
         return ResponseEntity.ok(document);
     }
@@ -197,6 +200,7 @@ public class UploadController  {
     ) {
         userCanUpload(document);
         uploadDocumentService.zip(user, document);
+        updatePlone(document);
         document.validate();
         return ResponseEntity.ok(document);
     }
@@ -209,6 +213,7 @@ public class UploadController  {
     ) {
         userCanUpload(document);
         uploadDocumentService.unzip(user, document);
+        updatePlone(document);
         document.validate();
         return ResponseEntity.ok(document);
     }
