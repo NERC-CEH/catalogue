@@ -162,7 +162,6 @@ public class UploadDocumentServiceTest {
         assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
     }
 
-
     @Test
     @SneakyThrows
     public void delete_onlyAddsTheFileToDocuments () {
@@ -184,7 +183,6 @@ public class UploadDocumentServiceTest {
         assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
     }
 
-
     @Test
     @SneakyThrows
     public void delete_invalidFile () {
@@ -193,6 +191,70 @@ public class UploadDocumentServiceTest {
 
         assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/unknown.txt");
         assertThatInvalidDoesNotHaveFile("documents", dropboxFolder, "guid/unknown.txt");
+    }
+
+    @Test
+    @SneakyThrows
+    public void acceptInvalid () {
+        val file = new File(dropboxFolder, "guid/unknown.txt");
+        service.acceptInvalid(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
+
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/unknown.txt");
+        assertThatInvalidDoesNotHaveFile("documents", dropboxFolder, "guid/unknown.txt");
+    }
+
+    @Test
+    @SneakyThrows
+    public void zip () {
+        val file = new File(dropboxFolder, "guid/zip.zip");
+        service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
+
+        service.zip(CatalogueUser.PUBLIC_USER, uploadDocument);
+
+        val datastore = uploadDocument.getUploadFiles().get("datastore");
+        assertTrue("should be zipped", datastore.isZipped());
+        assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/guid.zip");
+    }
+
+    @Test
+    @SneakyThrows
+    public void zip_doesNothingIfAlreadyZipped () {
+        val file = new File(dropboxFolder, "guid/zip.zip");
+        service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
+
+        service.zip(CatalogueUser.PUBLIC_USER, uploadDocument);
+        service.zip(CatalogueUser.PUBLIC_USER, uploadDocument);
+
+        val datastore = uploadDocument.getUploadFiles().get("datastore");
+        assertTrue("should be zipped", datastore.isZipped());
+        assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/guid.zip");
+    }
+
+    @Test
+    @SneakyThrows
+    public void unzip () {
+        val file = new File(dropboxFolder, "guid/zip.zip");
+        service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
+
+        service.zip(CatalogueUser.PUBLIC_USER, uploadDocument);
+        service.unzip(CatalogueUser.PUBLIC_USER, uploadDocument);
+
+        val datastore = uploadDocument.getUploadFiles().get("datastore");
+        assertFalse("should not be zipped", datastore.isZipped());
+        assertThatDocumentsDoesNotHaveFile("datastore", datastoreFolder, "guid/guid.zip");
+    }
+
+    @Test
+    @SneakyThrows
+    public void unzip_doesNothingIfNotCorrectlyZipped () {
+        val file = new File(dropboxFolder, "guid/zip.zip");
+        service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
+        
+        service.unzip(CatalogueUser.PUBLIC_USER, uploadDocument);
+
+        val datastore = uploadDocument.getUploadFiles().get("datastore");
+        assertFalse("should not be zipped", datastore.isZipped());
+        assertThatDocumentsDoesNotHaveFile("datastore", datastoreFolder, "guid/guid.zip");
     }
 
     private void assertThatDocumentsDoesNotHaveFile(String name, File folder, String filename) {

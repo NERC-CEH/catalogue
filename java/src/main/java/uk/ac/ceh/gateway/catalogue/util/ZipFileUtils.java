@@ -93,6 +93,7 @@ public class ZipFileUtils {
         } finally {
             if (extracted != null && extracted.exists()) {
                 compressAll(extracted);
+                if (extracted.exists()) FileUtils.forceDelete(extracted);
             }
         }
     }
