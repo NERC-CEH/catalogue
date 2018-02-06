@@ -13,7 +13,7 @@
     <h2 class="resultTitle">
       <small>
         <span>${result.resourceType!""}</span>
-        <#if (result.resourceStatus?? && result.resourceStatus == 'Current') >
+        <#if (result.resourceStatus?? && result.resourceStatus != 'Current') >
           <span class="label-${result.resourceStatus}">(${result.resourceStatus})</span>
         </#if>
         <#if (result.state == 'draft' || result.state == 'pending') >
