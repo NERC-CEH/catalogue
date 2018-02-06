@@ -22,9 +22,9 @@ public class UploadDocumentServiceTest {
     private final File dataDirectory = new File("../file-test-data");
     private final File directory = new File("../file-test-data-test");
 
-    private final File dropboxFolder = new File(directory, "dropbox");
-    private final File ploneFolder = new File(directory, "plone");
-    private final File datastoreFolder = new File(directory, "eidchub-rw");
+    private final File dropboxFolder = new File(directory, "upload-service/dropbox");
+    private final File ploneFolder = new File(directory, "upload-service/plone");
+    private final File datastoreFolder = new File(directory, "upload-service/eidchub-rw");
 
     private UploadDocumentService service;
 
@@ -57,49 +57,49 @@ public class UploadDocumentServiceTest {
     public void create_addsTopLevelFile() {
         val dropbox = uploadDocument.getUploadFiles().get("documents");
         val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "dropbox/guid/file.txt").getAbsolutePath())));
+        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "upload-service/dropbox/guid/file.txt").getAbsolutePath())));
     }
 
     @Test
     public void create_addsFileInFolderUsingHashFromParentFolder() {
         val dropbox = uploadDocument.getUploadFiles().get("documents");
         val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "dropbox/guid/folder/sub-a.txt").getAbsolutePath())));
+        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "upload-service/dropbox/guid/folder/sub-a.txt").getAbsolutePath())));
     }
 
     @Test
     public void create_addsFileInFolderUsingHashFromContainingFolder() {
         val dropbox = uploadDocument.getUploadFiles().get("documents");
         val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "dropbox/guid/folder/sub-b.txt").getAbsolutePath())));
+        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "upload-service/dropbox/guid/folder/sub-b.txt").getAbsolutePath())));
     }
 
     @Test
     public void create_addsZipFiles() {
         val dropbox = uploadDocument.getUploadFiles().get("documents");
         val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "dropbox/guid/zip.zip").getAbsolutePath())));
+        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "upload-service/dropbox/guid/zip.zip").getAbsolutePath())));
     }
 
     @Test
     public void create_addsFilesInZipFileUsingKeyword_extracted() {
         val dropbox = uploadDocument.getUploadFiles().get("documents");
         val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "dropbox/guid/_extracted-zip/z.txt").getAbsolutePath())));
+        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "upload-service/dropbox/guid/_extracted-zip/z.txt").getAbsolutePath())));
     }
 
     @Test
     public void create_addsSubZipFilesUsingKeyword_extracted() {
         val dropbox = uploadDocument.getUploadFiles().get("documents");
         val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "dropbox/guid/_extracted-zip/sub-zip.zip").getAbsolutePath())));
+        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "upload-service/dropbox/guid/_extracted-zip/sub-zip.zip").getAbsolutePath())));
     }
 
     @Test
     public void create_addsFilesFromSubZipFileUsingKeyword_extracted() {
         val dropbox = uploadDocument.getUploadFiles().get("documents");
         val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "dropbox/guid/_extracted-zip/_extracted-sub-zip/sz.txt").getAbsolutePath())));
+        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(directory, "upload-service/dropbox/guid/_extracted-zip/_extracted-sub-zip/sz.txt").getAbsolutePath())));
     }
 
     @Test
