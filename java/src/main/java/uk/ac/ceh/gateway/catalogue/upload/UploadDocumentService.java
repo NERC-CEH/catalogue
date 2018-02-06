@@ -10,6 +10,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ext.com.google.common.collect.Lists;
+
+import ch.qos.logback.core.net.SyslogOutputStream;
+
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -163,27 +166,50 @@ public class UploadDocumentService {
         val fromDirectory = new File(fromUploadFiles.getPath());
         
         val uploadFile = fromUploadFiles.getDocuments().get(filename);
-        val fromPath = uploadFile.getPath();
+        if (uploadFile != null) {
+            val fromPath = uploadFile.getPath();
 
-        val toUploadFiles = document.getUploadFiles().get(to);
-        val toDirectory = new File(toUploadFiles.getPath());
+            val toUploadFiles = document.getUploadFiles().get(to);
+            val toDirectory = new File(toUploadFiles.getPath());
 
-        ZipFileUtils.archive(fromDirectory, unarchivedFrom -> {
-            ZipFileUtils.archive(toDirectory, unarchivedTo -> {
-                val fromFile = new File(uploadFile.getPath());
-                val file = new File(
-                    uploadFile.getPath()
-                        .replace(fromDirectory.getAbsolutePath(), toDirectory.getAbsolutePath())
-                );
-                moveFile(fromFile, file);
-                UploadFileBuilder.update(uploadFile, toDirectory, file, UploadType.DOCUMENTS);
+            ZipFileUtils.archive(fromDirectory, unarchivedFrom -> {
+                ZipFileUtils.archive(toDirectory, unarchivedTo -> {
+                    val fromFile = new File(uploadFile.getPath());
+                    val toFile = new File(
+                        uploadFile.getPath()
+                            .replace(fromDirectory.getAbsolutePath(), toDirectory.getAbsolutePath())
+                    );
+
+                    if (isZipFile(fromFile)) {
+                        ZipFileUtils.archiveZip(fromFile, unarchivedZip -> {
+                            val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
+                            for (val innerFilename : filenames) {
+                                fromUploadFiles.getDocuments().remove(innerFilename);
+                            }
+                        });
+                    }
+
+                    moveFile(fromFile, toFile);
+
+                    if (isZipFile(toFile)) {
+                        ZipFileUtils.archiveZip(toFile, unarchivedZip -> {
+                            val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
+                            for (val innerFilename : filenames) {
+                                val innerUploadFile = UploadFileBuilder.create(toDirectory, new File(innerFilename), UploadType.DOCUMENTS);
+                                toUploadFiles.getDocuments().put(innerFilename, innerUploadFile);
+                            }
+                        });
+                    }
+
+                    UploadFileBuilder.update(uploadFile, toDirectory, toFile, UploadType.DOCUMENTS);
+                });
             });
-        });
 
-        fromUploadFiles.getDocuments().remove(filename);
-        toUploadFiles.getDocuments().put(uploadFile.getPath(), uploadFile);
+            fromUploadFiles.getDocuments().remove(filename);
+            toUploadFiles.getDocuments().put(uploadFile.getPath(), uploadFile);
 
-        saveUploadDocument(user, document, String.format("moving file from: %s, to: %s", fromPath, uploadFile.getPath()));
+            saveUploadDocument(user, document, String.format("moving file from: %s, to: %s", fromPath, uploadFile.getPath()));
+        }
     }
 
     @SneakyThrows

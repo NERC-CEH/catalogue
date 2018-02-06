@@ -96,7 +96,7 @@ public class UploadDocumentValidator {
         UploadFile uploadFile = null;
         for (val entry : invalid.entrySet()) {
             val filename = entry.getKey();
-            if (filename.endsWith(String.format("%s.zip", guid))) {
+            if (filename.endsWith(".zip")) {
                 uploadFile = entry.getValue();
             }
         }
