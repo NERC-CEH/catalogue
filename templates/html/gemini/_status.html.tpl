@@ -7,8 +7,8 @@
                 and superseded by <a href="${revised.href}">${revised.title}</a>
                 </#if>
             </p>
-            <#if erratum??>
-            <p class="errataDescription">${erratum?html?replace("\n", "<br>")}</p>
+            <#if reasonChanged??>
+            <p class="reasonChangedDescription">${reasonChanged?html?replace("\n", "<br>")}</p>
             </#if>
         <#elseif resourceStatus == "Retired" && parent?has_content>
           <p>See other resources in this series: <a href="${parent.href?html}">${parent.title?html}</a></p>

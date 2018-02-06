@@ -16,8 +16,8 @@
                 and superseded by <a href="${revised.href}">${revised.title}</a>
               </#if>
               </p>
-              <#if erratum??>
-                <p class="errataDescription">${erratum?html?replace("\n", "<br>")}</p>
+              <#if reasonChanged??>
+                <p class="reasonChangedDescription">${reasonChanged?html?replace("\n", "<br>")}</p>
               </#if>
               <p>If you need access to the archived version, please <a href="#">contact EIDC</a></p>
         <#elseif resourceStatus == "Current" || resourceStatus == "Retired" >
@@ -52,12 +52,20 @@
     </div>
   </#if>
 <#elseif resourceType?? && resourceType.value == 'service' && mapViewable>
+    <#assign mapservices = func.filterRegex(onlineResources, "url", "https://catalogue.ceh.ac.uk/maps/")>
     <div class="panel panel-default hidden-print" id="document-distribution">
       <div class="panel-heading">
-          <p class="panel-title">View the data</p>
+          <p class="panel-title">Use this service</p>
       </div>
       <div class="panel-body">
         <p><a href="${mapViewerUrl?html}"><i class="fa fa-map-o text-info"></i> Open in map viewer</a></p>
+  
+      <#if mapservices??>
+        <#list mapservices as wms>
+          <p><i class="fa fa-link"></i> URL: <span class="wmsurl">${wms.url?html}</span></p>
+        </#list>
+      </#if>
+      
       </div>
     </div>
 <#else>

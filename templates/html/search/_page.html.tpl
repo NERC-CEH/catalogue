@@ -13,12 +13,15 @@
     <h2 class="resultTitle">
       <small>
         <span>${result.resourceType!""}</span>
+        <#if (result.resourceStatus?? && result.resourceStatus == 'Current') >
+          <span class="label-${result.resourceStatus}">(${result.resourceStatus})</span>
+        </#if>
         <#if (result.state == 'draft' || result.state == 'pending') >
           <span class="text-danger"><b>${codes.lookup('publication.state', result.state)?upper_case!''}</b> </span>
         </#if>
       </small><br>
       <a href="/${docroot}/${result.identifier}" class="title">${result.title}</a>
-    </h2>
+    </h2> 
     <div class="resultDescription">${result.shortenedDescription}</div>
   </div>
 </#list>

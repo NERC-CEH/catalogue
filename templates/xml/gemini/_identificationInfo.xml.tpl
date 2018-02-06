@@ -84,8 +84,8 @@
 				<#if resourceStatus?? && resourceStatus?has_content >
 					<#if resourceStatus == "Withdrawn" || resourceStatus == "Superseded" >
 						<#assign statusMsg = "This " + resourceType.value + " has been withdrawn">
-						<#if erratum??>
-							<#assign statusMsg = statusMsg + " - " + erratum >
+						<#if reasonChanged??>
+							<#assign statusMsg = statusMsg + " - " + reasonChanged >
 						</#if>
 					</#if>
 					<#if resourceStatus == "Embargoed" >

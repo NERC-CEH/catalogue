@@ -35,14 +35,15 @@
   
   #document-description { margin-bottom:1em; }
 
-  #section-supplemental {
-    p {
-      margin-bottom:1.75em;
-      small {
-        a {color:#99aefd;}
-      }
-    }
+ .supplemental-item {
+   padding: 1.5em 0 1.25em 0;
+   border-bottom: 1px solid #eee;
   }
+
+  .supplemental-item:last-child {
+    border-bottom: none;
+   }
+ 
 
   #document-otherContacts {
     dl.dl-horizontal {
@@ -122,7 +123,7 @@
     a:hover {
       text-decoration: none;
     };
-    .errataDescription {
+    .reasonChangedDescription {
       margin-top: 1em;
       margin-left:2em;
     }

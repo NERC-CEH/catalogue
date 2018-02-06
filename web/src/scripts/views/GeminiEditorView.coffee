@@ -496,11 +496,11 @@ define [
 
         new TextareaView
           model: @model
-          modelAttribute: 'erratum'
-          label: 'Erratum'
+          modelAttribute: 'reasonChanged'
+          label: 'Reason for change'
           rows: 7
           helpText: """
-                    <p>If this record is being retracted, the reasons for withdrawal should be explained here.</p>
+                    <p>If this record is being retracted, the reasons for withdrawal or replacement should be explained here.</p>
                     """
 
         new ParentView
