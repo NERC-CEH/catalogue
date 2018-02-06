@@ -23,9 +23,9 @@ public class UploadDocumentValidatorTest {
     private final File dataDirectory = new File("../file-test-data");
     private final File directory = new File("../file-test-data-test");
 
-    private final File dropboxFolder = new File(directory, "dropbox");
-    private final File ploneFolder = new File(directory, "plone");
-    private final File datastoreFolder = new File(directory, "eidchub-rw");
+    private final File dropboxFolder = new File(directory, "upload-document-validator/dropbox");
+    private final File ploneFolder = new File(directory, "upload-document-validator/plone");
+    private final File datastoreFolder = new File(directory, "upload-document-validator/eidchub-rw");
 
     private final File manuallyAdded = new File(dropboxFolder, "guid/added_manually.txt");
     private final File changed = new File(dropboxFolder, "guid/file.txt");
