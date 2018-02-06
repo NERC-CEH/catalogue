@@ -16,7 +16,6 @@ import lombok.SneakyThrows;
 import lombok.val;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -345,7 +344,8 @@ public class UploadDocumentService {
         for (val uploadFiles : document.getUploadFiles().values()) {
             uploadFiles.setInvalid(Maps.newHashMap());
         }
-        document.setMetadata(documentRepository.read(document.getId()).getMetadata());
+        val found = documentRepository.read(document.getId());
+        document.setMetadata(found.getMetadata());
         documentRepository.save(user, document, message);
     }
 }

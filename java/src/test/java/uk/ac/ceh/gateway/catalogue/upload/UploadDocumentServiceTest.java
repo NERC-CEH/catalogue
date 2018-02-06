@@ -7,15 +7,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import static org.mockito.MockitoAnnotations.initMocks;
+
+import static org.mockito.MockitoAnnotations.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UploadDocumentServiceTest {
@@ -46,11 +50,16 @@ public class UploadDocumentServiceTest {
         folders.put("documents", dropboxFolder);
         folders.put("datastore", datastoreFolder);
         folders.put("plone", ploneFolder);
-
+        
         service = new UploadDocumentService(documentRepository, folders);
         val geminiDocument = new GeminiDocument();
         geminiDocument.setId("guid");
         uploadDocument = service.create(CatalogueUser.PUBLIC_USER, geminiDocument);
+        
+        val metadata = MetadataInfo.builder().build();
+        uploadDocument.setId("id");
+        uploadDocument.setMetadata(metadata);
+        doReturn(uploadDocument).when(documentRepository).read(anyString());
     }
 
     @Test
@@ -129,5 +138,29 @@ public class UploadDocumentServiceTest {
         val dropbox = uploadDocument.getUploadFiles().get("documents");
 
         assertThat(dropbox.isZipped(), is(true));
+    }
+
+    @Test
+    @SneakyThrows
+    public void add_onlyAddsTheFileToDocuments () {
+        val in = new FileInputStream(new File(directory, "upload-service/new-file.txt"));
+        service.add(CatalogueUser.PUBLIC_USER, uploadDocument, "new-file.txt", in);
+
+        val documents = uploadDocument.getUploadFiles().get("documents").getDocuments();
+
+        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/new-file.txt").getAbsolutePath())));
+    }
+
+    @Test
+    @SneakyThrows
+    public void add_getAllZipFilesFromAZip () {
+        val in = new FileInputStream(new File(directory, "upload-service/zippy.zip"));
+        service.add(CatalogueUser.PUBLIC_USER, uploadDocument, "zippy.zip", in);
+
+        val documents = uploadDocument.getUploadFiles().get("documents").getDocuments();
+
+        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/zippy.zip").getAbsolutePath())));
+        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/_extracted-zippy/zip-1.txt").getAbsolutePath())));
+        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/_extracted-zippy/zip-2.txt").getAbsolutePath())));
     }
 }
