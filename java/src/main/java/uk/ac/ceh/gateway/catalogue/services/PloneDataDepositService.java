@@ -10,48 +10,62 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import lombok.AllArgsConstructor;
+import lombok.val;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import uk.ac.ceh.gateway.catalogue.model.DocumentUpload;
+import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
+import uk.ac.ceh.gateway.catalogue.upload.UploadFiles;
 
 @AllArgsConstructor
 public class PloneDataDepositService {
     private final WebResource ploneWebResource;
 
-    private static final Map<String, String> locations = new HashMap<>();
-    static {
-        locations.put("documents", "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\dropbox\\");
-        locations.put("data", "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\eidchub\\");
+    private static String DOCUMENTS_LOCATION = "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\dropbox\\";
+    private static String DATASTORE_LOCATION = "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\eidchub\\";
+
+    public String addOrUpdate(UploadDocument document) {
+        document.validate();
+        val parentId = document.getParentId();
+        val documents = document.getUploadFiles().get("documents");
+        val datastore = document.getUploadFiles().get("datastore");
+
+        val validFiles = getValidFiles(parentId, documents, DOCUMENTS_LOCATION);
+        validFiles.addAll(getValidFiles(parentId, datastore, DATASTORE_LOCATION));
+
+        val invalidFiles = getInvalidFiles(documents);
+        invalidFiles.addAll(getInvalidFiles(datastore));
+
+        return addOrUpdate(validFiles, invalidFiles, document.getParentId(), document.getTitle());
     }
 
-    public String addOrUpdate(DocumentUpload documentsUpload, DocumentUpload datastoreUpload) {
-        List<String> validFiles = getValidFiles(documentsUpload, locations.get("documents"), documentsUpload.isZipped());
-        validFiles.addAll(getValidFiles(datastoreUpload, locations.get("data"), datastoreUpload.isZipped()));
-        List<String> invalidFiles = getInvalidFiles(documentsUpload);
-        invalidFiles.addAll(getInvalidFiles(datastoreUpload));
-        return addOrUpdate(validFiles, invalidFiles, documentsUpload.getGuid(), documentsUpload.getTitle());
+    private List<String> getValidFiles(String id, UploadFiles uploadFiles, String location) {
+        return uploadFiles.getDocuments().values().stream()
+            .map(f -> String.format(
+                "%s;%s;%s%s%s",
+                f.getName(),
+                f.getHash(),
+                location,
+                id,
+                uploadFiles.isZipped() ? String.format("\\%s.zip", id) : "")
+            ).collect(Collectors.toList());
     }
 
-    private List<String> getValidFiles(DocumentUpload upload, String location, boolean isZipped) {
-        return upload.getDocuments().entrySet().stream()
-            .map(f -> String.format("%s;%s;%s%s%s", f.getKey(), f.getValue().getHash(), location, upload.getGuid(), (isZipped ? String.format("\\%s.zip", upload.getGuid()) : "")))
-            .collect(Collectors.toList());
-    }
-
-    private List<String> getInvalidFiles(DocumentUpload upload) {
-        return upload.getInvalid().entrySet().stream()
-            .map(f -> f.getKey())
+    private List<String> getInvalidFiles(UploadFiles files) {
+        return files
+            .getInvalid()
+            .values()
+            .stream()
+            .map(f -> f.getName())
             .collect(Collectors.toList());
     }
 
     private String addOrUpdate(List<String> validFiles, List<String> invalidFiles, String guid, String title) {
-        MultivaluedMap formData = new MultivaluedMapImpl();
+        MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
         formData.add("fileIdentifier", guid);
         formData.add("title", title);
         formData.add("files", String.join(",", validFiles));
         formData.add("invalidFiles", String.join(",", invalidFiles));
-
 
         ClientResponse response = ploneWebResource
             .type(MediaType.APPLICATION_FORM_URLENCODED)
@@ -62,7 +76,6 @@ public class PloneDataDepositService {
             throw new PloneUpdateFailure();
         }
         return response.getEntity(String.class);
-
     }
 
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR , reason = "Can not finish your file upload or file move, there was a problem updating a backend service (Plone).")

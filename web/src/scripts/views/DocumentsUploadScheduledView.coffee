@@ -3,22 +3,23 @@ define [
   'cs!views/DocumentUploadMessage'
   'tpl!templates/DropzoneFile.tpl'
   'tpl!templates/DeleteableFile.tpl'
-  'tpl!templates/InvalidFile.tpl'
-], (Backbone, message, dropzoneFileTpl, deleteableFileTpl, invalidFileTpl) -> Backbone.View.extend
+], (Backbone, message, dropzoneFileTpl, deleteableFileTpl) -> Backbone.View.extend
+  dropzone: null
+
   initialize: ->
-    @model.on 'sync', => do @render
+    @model.on 'sync', =>
+      do @render
+      do $('.loading').remove
+      $('.messages').hide 'fast'
+      do @initDropzone if @dropzone == null
+      do @initFinish
+
     @model.on 'change', => do @render
-    @model.save null,
-      url: window.location.href + '/get'
-
-    do $('.loading').remove
-    $('.messages').hide 'fast'
-
-    do @initFinish
-    do @initDropzone
+    do @model.fetch
 
   initFinish: ->
     $('.finish').attr 'disabled', off
+    $('.finish').unbind 'click'
     $('.finish').click =>
       @model.set 'modal',
         title: 'Finish'
@@ -42,7 +43,7 @@ define [
     render = @render.bind @
 
     @dropzone = new Dropzone '.dropzone-files',
-      url: window.location.href + '/add/documents'
+      url: model.url() + '/add-upload-document'
       maxFilesize: 1250
       autoQueue: yes
       previewTemplate: dropzoneFileTpl()
@@ -54,7 +55,7 @@ define [
         $('.file .delete, .fileinput-button').attr 'disabled', off
 
         @on 'addedfile', (file) ->
-          $('.finish').attr('disabled', on)
+          $('.finish').attr 'disabled', on
           $('.documents .empty-message').text('')
           last = $('.uploading').length - 1
           uploading = $($('.uploading')[last])
@@ -63,7 +64,7 @@ define [
           uploading.find('.cancel').click => @removeFile file
         
         @on 'success', (file, res) ->
-          model.uploaded file, res
+          model.set res
           do render
         
         @on 'error', (file, errorMessage, xhr) ->
@@ -100,8 +101,9 @@ define [
     $('.finish').attr 'disabled', off if $('.uploading').length == 0
 
   renderEmptyMessage: ->
+    documents = @model.get('uploadFiles').documents || {}
     emptyMessage = 'Drag files here to upload'
-    emptyMessage = '' if @model.get('documents').files
+    emptyMessage = '' if documents.documents
     $('.empty-message').html emptyMessage
 
   renderModal: (modal) ->
@@ -117,20 +119,30 @@ define [
   renderFiles: ->
     do $('.file:not(".uploading")').remove
 
-    for index, file of @model.get('documents').files
+    documents = @model.get('uploadFiles').documents || {}
+    files = documents.documents || {}
+    files = (value for own prop, value of files)
+    files.sort (left, right) ->
+      return -1 if left.name < right.name
+      return 1 if left.name > right.name
+      return 0
+
+    for index, file of files
       do $('.uploading-' + file.id).remove
       newFile = $(deleteableFileTpl
+        path: file.path
         name: file.name,
         id: 'documents-' + file.id)
       $('.files').append(newFile)
-    
+
     $('.delete').unbind 'click'
     $('.delete').click (evt) =>
+      filename = $(evt.target).data('filename')
       target = $(evt.target).parent().parent()
-      filename = target.find('.filename-label').text()
+      name = target.find('.filename-label').text()
       @model.set 'modal',
         title: 'Delete <b>' + filename + '</b>'
-        body: 'Are you sure you want to permanently delete ' + filename 
+        body: 'Are you sure you want to permanently delete ' + name
         dismiss: 'No'
         accept: 'Yes'
         onAccept: =>

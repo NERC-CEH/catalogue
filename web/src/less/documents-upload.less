@@ -1,8 +1,4 @@
 #documents-upload {
-    .folders {
-        margin-bottom: 3em;
-    };
-
     .folder {
         margin: 1em;
         padding:0;
@@ -61,8 +57,15 @@
     };
 
     .file-invalid {
-        border: 2px solid #F00;
+        border: 1px solid #F00 !important;
         background-color:rgba(255,0,0,0.1);
+        margin-bottom: 3px;
+
+        button {
+            float: right;
+            margin-left: 5px;
+        }
+
         .error-message {
             .text-danger; 
         };
@@ -135,10 +138,6 @@
     .messages {
         max-height: 300px;
         overflow: auto;
-    };
-
-    .downloadChecksum, .btn-zip {
-        float: right;
     };
 
     .modal-body {

@@ -38,6 +38,12 @@ public interface DocumentRepository {
         String message
     ) throws DocumentRepositoryException;
     
+    MetadataDocument save(
+        CatalogueUser user,
+        MetadataDocument document,
+        String message
+    ) throws DocumentRepositoryException;
+
     MetadataDocument saveNew(
         CatalogueUser user,
         MetadataDocument document,

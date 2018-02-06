@@ -8,6 +8,7 @@ define [
 
     model = null
     view = null
+    data = null
 
     class Dropzone
       constructor: (selector, obj) ->
@@ -36,15 +37,36 @@ define [
          <button class='modal-accept' />
       '''
 
-      model = new Backbone.Model()
-      model.set 'documents',
-        files: [{
-          id: 'file-txt',
-          name: 'file.txt'
-        }]
+      data =
+        uploadFiles:
+          documents:
+            documents:
+              filename:
+                id: 'file-txt'
+                name: 'file.txt'
+                path: 'file.txt'
+      callbacks = {}
+      Model = ->
+      Model.prototype.url = -> '/'
+      Model.prototype.on = (name, callback) ->
+        callbacks[name] = callback
+      Model.prototype.fetch = ->
+        do callbacks.sync
+        do callbacks.change
+      Model.prototype.get = (key) ->
+        data[key]
+      Model.prototype.set = (parentKey, values) ->
+        if (typeof values == 'undefined')
+          for key, value of parentKey
+            data[key] = value
+        else
+          for key, value of parentKey
+            data[parentKey] = values
+      Model.prototype.finish = jasmine.createSpy('finish')
+      Model.prototype.delete = jasmine.createSpy('delete')
+      Model.prototype.bind = -> @
 
-      model.finish = jasmine.createSpy('finish')
-      model.delete = jasmine.createSpy('delete')
+      model = new Model()
 
       view = new DocumentsUploadScheduledView
         model: model
@@ -56,23 +78,10 @@ define [
 
     it 'enables finish which will open modal dialog which will finish on accept', ->
       do $('.finish').click
-      
-      title = $('.modal-title').html()
-      body = $('.modal-body').html()
-      dismiss = $('.modal-dismiss').html()
-      accept = $('.modal-accept').html()
-
-      expect(title).toBe 'Finish'
-      expect(body).toBe 'You will no longer be able to add, remove or update files! ARE YOU SURE?'
-      expect(dismiss).toBe 'No'
-      expect(accept).toBe 'Yes'
-      do $('.modal-accept').click
-
-      expect(dropzoneEnabled).toBe no
-      expect(model.finish).toHaveBeenCalled()
-      expect($('.finish').attr 'disabled').toBe 'disabled'
-      expect($('.file').attr 'disabled').toBe 'disabled'
-      expect($('.message').length).not.toBe 0
+      expect(data.modal.title).toBe('Finish')
+      expect(data.modal.body).toBe('You will no longer be able to add, remove or update files! ARE YOU SURE?')
+      expect(data.modal.dismiss).toBe('No')
+      expect(data.modal.accept).toBe('Yes')
 
     it 'has no empty message if there are files', ->
       expect($('.empty-message').html()).toBe ''
@@ -84,17 +93,7 @@ define [
     it 'shows modal when delete selected', ->
       do $('.delete').click
 
-      title = $('.modal-title').html()
-      body = $('.modal-body').html()
-      dismiss = $('.modal-dismiss').html()
-      accept = $('.modal-accept').html()
-
-      expect(title).toBe 'Delete <b>file.txt</b>'
-      expect(body).toBe 'Are you sure you want to permanently delete file.txt'
-      expect(dismiss).toBe 'No'
-      expect(accept).toBe 'Yes'
-      do $('.modal-accept').click
-
-      expect(model.delete).toHaveBeenCalled()
-
-      
+      expect(data.modal.title).toBe 'Delete <b>file.txt</b>'
+      expect(data.modal.body).toBe 'Are you sure you want to permanently delete file.txt'
+      expect(data.modal.dismiss).toBe 'No'
+      expect(data.modal.accept).toBe 'Yes'

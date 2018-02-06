@@ -42,6 +42,7 @@ public class GitDocumentRepository implements DocumentRepository {
                     )
                 );
             }
+            if (document != null) document.validate();
             return document;
         } catch (IOException | UnknownContentTypeException | PostProcessingException ex) {
             throw new DocumentRepositoryException(
@@ -68,6 +69,7 @@ public class GitDocumentRepository implements DocumentRepository {
                     )
                 );
             }
+            if (document != null) document.validate();
             return document;
         } catch (IOException | PostProcessingException | UnknownContentTypeException ex) {
             throw new DocumentRepositoryException(
@@ -164,6 +166,31 @@ public class GitDocumentRepository implements DocumentRepository {
                 String.format(
                     "Saving file: %s failed for user: %s",
                     id,
+                    user.getUsername()
+                ),
+                ex
+            );
+        }
+    }
+
+    @Override
+    public MetadataDocument save(
+        CatalogueUser user,
+        MetadataDocument document,
+        String message
+    ) throws DocumentRepositoryException {
+        try {
+            return save(user,
+                document, 
+                retrieveMetadataInfoUpdatingRawType(document),
+                document.getId(), 
+                message
+            );
+        } catch (DocumentRepositoryException | IOException | PostProcessingException | UnknownContentTypeException ex) {
+            throw new DocumentRepositoryException(
+                String.format(
+                    "Saving file: %s failed for user: %s",
+                    document.getId(),
                     user.getUsername()
                 ),
                 ex
