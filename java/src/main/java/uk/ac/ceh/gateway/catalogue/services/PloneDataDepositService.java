@@ -22,9 +22,10 @@ public class PloneDataDepositService {
     private final WebResource ploneWebResource;
 
     private static String DOCUMENTS_LOCATION = "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\dropbox\\";
-    private static String DATASTORE_LOCATION = "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\dropbox\\";
+    private static String DATASTORE_LOCATION = "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\eidchub\\";
 
     public String addOrUpdate(UploadDocument document) {
+        document.validate();
         val parentId = document.getParentId();
         val documents = document.getUploadFiles().get("documents");
         val datastore = document.getUploadFiles().get("datastore");
