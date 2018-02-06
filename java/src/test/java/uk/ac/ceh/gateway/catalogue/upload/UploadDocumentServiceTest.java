@@ -64,51 +64,25 @@ public class UploadDocumentServiceTest {
 
     @Test
     public void create_addsTopLevelFile() {
-        val dropbox = uploadDocument.getUploadFiles().get("documents");
-        val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(dropboxFolder, "guid/file.txt").getAbsolutePath())));
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/file.txt");
     }
 
     @Test
     public void create_addsFileInFolderUsingHashFromParentFolder() {
-        val dropbox = uploadDocument.getUploadFiles().get("documents");
-        val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(dropboxFolder, "guid/folder/sub-a.txt").getAbsolutePath())));
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/folder/sub-a.txt");
     }
 
     @Test
     public void create_addsFileInFolderUsingHashFromContainingFolder() {
-        val dropbox = uploadDocument.getUploadFiles().get("documents");
-        val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(dropboxFolder, "guid/folder/sub-b.txt").getAbsolutePath())));
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/folder/sub-b.txt");
     }
 
     @Test
-    public void create_addsZipFiles() {
-        val dropbox = uploadDocument.getUploadFiles().get("documents");
-        val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(dropboxFolder, "guid/zip.zip").getAbsolutePath())));
-    }
-
-    @Test
-    public void create_addsFilesInZipFileUsingKeyword_extracted() {
-        val dropbox = uploadDocument.getUploadFiles().get("documents");
-        val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(dropboxFolder, "guid/_extracted-zip/z.txt").getAbsolutePath())));
-    }
-
-    @Test
-    public void create_addsSubZipFilesUsingKeyword_extracted() {
-        val dropbox = uploadDocument.getUploadFiles().get("documents");
-        val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(dropboxFolder, "guid/_extracted-zip/sub-zip.zip").getAbsolutePath())));
-    }
-
-    @Test
-    public void create_addsFilesFromSubZipFileUsingKeyword_extracted() {
-        val dropbox = uploadDocument.getUploadFiles().get("documents");
-        val dropboxDocuments = dropbox.getDocuments();
-        assertThat(dropboxDocuments.keySet(), hasItem(is(new File(dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt").getAbsolutePath())));
+    public void create_addsZipFilesAndAllZipFiles() {
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/zip.zip");
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/_extracted-zip/z.txt");
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
     }
 
     @Test
@@ -146,9 +120,7 @@ public class UploadDocumentServiceTest {
         val in = new FileInputStream(new File(directory, "upload-service/new-file.txt"));
         service.add(CatalogueUser.PUBLIC_USER, uploadDocument, "new-file.txt", in);
 
-        val documents = uploadDocument.getUploadFiles().get("documents").getDocuments();
-
-        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/new-file.txt").getAbsolutePath())));
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/new-file.txt");
     }
 
     @Test
@@ -157,46 +129,89 @@ public class UploadDocumentServiceTest {
         val in = new FileInputStream(new File(directory, "upload-service/zippy.zip"));
         service.add(CatalogueUser.PUBLIC_USER, uploadDocument, "zippy.zip", in);
 
-        val documents = uploadDocument.getUploadFiles().get("documents").getDocuments();
-
-        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/zippy.zip").getAbsolutePath())));
-        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/_extracted-zippy/zip-1.txt").getAbsolutePath())));
-        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/_extracted-zippy/zip-2.txt").getAbsolutePath())));
-        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/_extracted-zippy/sub-zippy.zip").getAbsolutePath())));
-        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/_extracted-zippy/_extracted-sub-zippy/zip-1.txt").getAbsolutePath())));
-        assertThat(documents.keySet(), hasItem(is(new File(dropboxFolder, "guid/_extracted-zippy/_extracted-sub-zippy/zip-2.txt").getAbsolutePath())));
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/zippy.zip");
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/_extracted-zippy/zip-1.txt");
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/_extracted-zippy/zip-2.txt");
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/_extracted-zippy/sub-zippy.zip");
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/_extracted-zippy/_extracted-sub-zippy/zip-1.txt");
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/_extracted-zippy/_extracted-sub-zippy/zip-2.txt");
     }
 
     @Test
     public void move_fromOnePlaceToAnother () {
         val file = new File(dropboxFolder, "guid/file.txt");
-
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
 
-        val documents = uploadDocument.getUploadFiles().get("documents").getDocuments();
-        val datastore = uploadDocument.getUploadFiles().get("datastore").getDocuments();
-
-        assertThat(documents.keySet(), not(hasItem(is(new File(dropboxFolder, "guid/file.txt").getAbsolutePath()))));
-        assertThat(datastore.keySet(), hasItem(is(new File(datastoreFolder, "guid/file.txt").getAbsolutePath())));
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/file.txt");
+        assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/file.txt");
     }
 
     @Test
     public void move_zipFromOnePlaceToAnotherTakesAllFilesWithIt () {
         val file = new File(dropboxFolder, "guid/zip.zip");
-
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
 
-        val documents = uploadDocument.getUploadFiles().get("documents").getDocuments();
-        val datastore = uploadDocument.getUploadFiles().get("datastore").getDocuments();
-        
-        assertThat(documents.keySet(), not(hasItem(is(new File(dropboxFolder, "guid/zip.zip").getAbsolutePath()))));
-        assertThat(documents.keySet(), not(hasItem(is(new File(dropboxFolder, "guid/_extracted-zip/z.txt").getAbsolutePath()))));
-        assertThat(documents.keySet(), not(hasItem(is(new File(dropboxFolder, "guid/_extracted-zip/sub-zip.zip").getAbsolutePath()))));
-        assertThat(documents.keySet(), not(hasItem(is(new File(dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt").getAbsolutePath()))));
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/zip.zip");
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/z.txt");
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
 
-        assertThat(datastore.keySet(), hasItem(is(new File(datastoreFolder, "guid/zip.zip").getAbsolutePath())));
-        assertThat(datastore.keySet(), hasItem(is(new File(datastoreFolder, "guid/_extracted-zip/z.txt").getAbsolutePath())));
-        assertThat(datastore.keySet(), hasItem(is(new File(datastoreFolder, "guid/_extracted-zip/sub-zip.zip").getAbsolutePath())));
-        assertThat(datastore.keySet(), hasItem(is(new File(datastoreFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt").getAbsolutePath())));
+        assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/zip.zip");
+        assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/_extracted-zip/z.txt");
+        assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/_extracted-zip/sub-zip.zip");
+        assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
+    }
+
+
+    @Test
+    @SneakyThrows
+    public void delete_onlyAddsTheFileToDocuments () {
+        val file = new File(dropboxFolder, "guid/file.txt");
+        service.delete(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
+
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/file.txt");
+    }
+
+    @Test
+    @SneakyThrows
+    public void delete_allZipFilesFromAZip () {
+        val file = new File(dropboxFolder, "guid/zip.zip");
+        service.delete(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
+
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/zip.zip");
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/z.txt");
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
+    }
+
+
+    @Test
+    @SneakyThrows
+    public void delete_invalidFile () {
+        val file = new File(dropboxFolder, "guid/unknown.txt");
+        service.delete(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
+
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/unknown.txt");
+        assertThatInvalidDoesNotHaveFile("documents", dropboxFolder, "guid/unknown.txt");
+    }
+
+    private void assertThatDocumentsDoesNotHaveFile(String name, File folder, String filename) {
+        val documents = uploadDocument.getUploadFiles().get(name).getDocuments();
+        assertThat(documents.keySet(), not(hasItem(is(new File(folder, filename).getAbsolutePath()))));
+    }
+
+    private void assertThatDocumentsHasFile(String name, File folder, String filename) {
+        val documents = uploadDocument.getUploadFiles().get(name).getDocuments();
+        assertThat(documents.keySet(), hasItem(is(new File(folder, filename).getAbsolutePath())));
+    }
+
+    private void assertThatInvalidDoesNotHaveFile(String name, File folder, String filename) {
+        val documents = uploadDocument.getUploadFiles().get(name).getInvalid();
+        assertThat(documents.keySet(), not(hasItem(is(new File(folder, filename).getAbsolutePath()))));
+    }
+
+    private void assertThatInvalidHasFile(String name, File folder, String filename) {
+        val documents = uploadDocument.getUploadFiles().get(name).getInvalid();
+        assertThat(documents.keySet(), hasItem(is(new File(folder, filename).getAbsolutePath())));
     }
 }

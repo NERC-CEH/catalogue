@@ -220,16 +220,25 @@ public class UploadDocumentService {
 
     public void delete(CatalogueUser user, UploadDocument document, String name, String filename) {
         document.validate();
-        val documents = document.getUploadFiles().get(name);
-        UploadFile uploadFile = documents.getDocuments().get(filename);
-        if (uploadFile == null) uploadFile = documents.getInvalid().get(filename);
+        val uploadFiles = document.getUploadFiles().get(name);
+        UploadFile uploadFile = uploadFiles.getDocuments().get(filename);
+        if (uploadFile == null) uploadFile = uploadFiles.getInvalid().get(filename);
 
         if (uploadFile != null) {
-            val directory = new File(documents.getPath());
+            val directory = new File(uploadFiles.getPath());
             ZipFileUtils.archive(directory, unarchived -> {
+                val file = new File(filename);
+                if (isZipFile(file)) {
+                    ZipFileUtils.archiveZip(file, unarchivedZip -> {
+                        val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
+                        for (val innerFilename : filenames) {
+                            uploadFiles.getDocuments().remove(innerFilename);
+                        }
+                    });
+                }
                 forceDelete(filename);
             });
-            documents.getDocuments().remove(filename);
+            uploadFiles.getDocuments().remove(filename);
             saveUploadDocument(user, document, String.format("removing file: %s", uploadFile.getPath()));
         }
     }
