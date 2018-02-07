@@ -4,7 +4,7 @@
 <#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false>
 <#compress>
 <!DOCTYPE html>
-<html <#if catalogue?has_content>data-catalogue=${catalogue.id}</#if>>
+<html lang="en-GB" <#if catalogue?has_content>data-catalogue=${catalogue.id}</#if>>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
