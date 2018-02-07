@@ -1,14 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -59,7 +61,9 @@ public class UploadDocumentServiceTest {
         val metadata = MetadataInfo.builder().build();
         uploadDocument.setId("id");
         uploadDocument.setMetadata(metadata);
+
         doReturn(uploadDocument).when(documentRepository).read(anyString());
+
     }
 
     @Test
@@ -164,21 +168,35 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void delete_onlyAddsTheFileToDocuments () {
-        val file = new File(dropboxFolder, "guid/file.txt");
-        service.delete(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
+    public void move_subZip () {
+        val file = new File(dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
+        service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
 
-        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/file.txt");
+        assertThatDocumentsHasFile("documents", dropboxFolder, "guid/zip.zip");
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
+
+        assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/zip.zip");
+        assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/_extracted-zip/sub-zip.zip");
+        assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
+    }
+
+    @Test
+    @SneakyThrows
+    public void delete_onlyAddsTheFileToDocuments () {
+        val file = new File(dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
+        service.delete(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
+        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
+        assertThatInvalidDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
+        assertThatInvalidDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
     }
 
     @Test
     @SneakyThrows
     public void delete_allZipFilesFromAZip () {
-        val file = new File(dropboxFolder, "guid/zip.zip");
+        val file = new File(dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
         service.delete(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
 
-        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/zip.zip");
-        assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/z.txt");
         assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
         assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
     }

@@ -65,17 +65,6 @@ public class UploadDocumentValidatorTest {
     }
 
     @Test
-    public void ignoreGuidZipFile () {
-        val geminiDocument = new GeminiDocument();
-        geminiDocument.setId("guid-changed-zipped");
-        uploadDocument = service.create(CatalogueUser.PUBLIC_USER, geminiDocument);
-        UploadDocumentValidator.validate(uploadDocument);
-        assertThat(uploadDocument.getUploadFiles().get("documents").getInvalid().size(), is(0));
-        assertThat(uploadDocument.getUploadFiles().get("datastore").getInvalid().size(), is(0));
-        assertThat(uploadDocument.getUploadFiles().get("plone").getInvalid().size(), is(0));
-    }
-
-    @Test
     public void validate_addsUknownFiles() {
         val uploadFile = uploadDocument.getUploadFiles().get("documents").getInvalid().get(manuallyAdded.getAbsolutePath());
 

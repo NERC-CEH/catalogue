@@ -12,11 +12,21 @@ import com.google.common.collect.Lists;
 
 public class FileListUtils {
 
+    public static List<File> listFilesAndDirs (File directory, IOFileFilter fileFilter, IOFileFilter directoryFilter) {
+        return FileUtils.listFilesAndDirs(directory, fileFilter, fileFilter)
+            .stream()
+            .collect(Collectors.toList());
+    }
+
     public static List<File> listFiles (File directory, IOFileFilter fileFilter, IOFileFilter directoryFilter) {
         return FileUtils.listFiles(directory, fileFilter, fileFilter)
             .stream()
             .collect(Collectors.toList());
     }
+
+    public static List<File> listFilesAndDirs (File directory) {
+        return listFilesAndDirs(directory, FileFilterUtils.trueFileFilter(), FileFilterUtils.trueFileFilter());
+    };
 
     public static List<File> listFiles (File directory) {
         return listFiles(directory, FileFilterUtils.trueFileFilter(), FileFilterUtils.trueFileFilter());
@@ -30,12 +40,32 @@ public class FileListUtils {
             .collect(Collectors.toList());
     }
 
+    public static List<String> absolutePathsTreeAndDirs (File directory, IOFileFilter fileFilter, IOFileFilter directoryFilter) {
+        if (!directory.exists()) return Lists.newArrayList();
+        return listFilesAndDirs(directory, fileFilter, fileFilter)
+            .stream()
+            .map(file -> { return file.getAbsolutePath(); })
+            .collect(Collectors.toList());
+    }
+
     public static List<String> absolutePathsTree (File directory) {
         return absolutePathsTree(directory, FileFilterUtils.trueFileFilter(), FileFilterUtils.trueFileFilter());
     }
 
+    public static List<String> absolutePathsTreeAndDirs (File directory) {
+        return absolutePathsTreeAndDirs(directory, FileFilterUtils.trueFileFilter(), FileFilterUtils.trueFileFilter());
+    }
+
     public static List<String> relativePathsTree (File directory, IOFileFilter fileFilter, IOFileFilter directoryFilter) {
         return absolutePathsTree(directory, fileFilter, directoryFilter)
+            .stream()
+            .map(filename -> { return relativePath(directory, filename); })
+            .filter(filename -> { return !filename.equals(""); })
+            .collect(Collectors.toList());
+    }
+
+    public static List<String> relativePathsTreeAndDirs (File directory, IOFileFilter fileFilter, IOFileFilter directoryFilter) {
+        return absolutePathsTreeAndDirs(directory, fileFilter, directoryFilter)
             .stream()
             .map(filename -> { return relativePath(directory, filename); })
             .filter(filename -> { return !filename.equals(""); })
@@ -50,5 +80,9 @@ public class FileListUtils {
 
     public static List<String> relativePathsTree (File directory) {
         return relativePathsTree(directory, FileFilterUtils.trueFileFilter(), FileFilterUtils.trueFileFilter());
+    }
+
+    public static List<String> relativePathsTreeAndDirs (File directory) {
+        return relativePathsTreeAndDirs(directory, FileFilterUtils.trueFileFilter(), FileFilterUtils.trueFileFilter());
     }
 }
