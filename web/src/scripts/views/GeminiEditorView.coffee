@@ -64,7 +64,7 @@ define [
                     <p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
                     <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
                     <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
-                    <p>Please refer to <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank">guidance for metadata authors</a></p>
+                    <p>Please refer to <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank" rel="noopener">guidance for metadata authors</a></p>
                     """
 
         new ParentStringView
@@ -84,7 +84,7 @@ define [
           helpText: """
                     <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
                     <p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
-                    <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure - see <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank">guidance for metadata authors</a></p>
+                    <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure - see <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank" rel="noopener">guidance for metadata authors</a></p>
                     """
 
         new ResourceStatusView
@@ -491,7 +491,7 @@ define [
           helpText: """
                     <p>Information about the source data used in the construction of this data resource.</p>
                     <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>
-                    <p>See <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank">guidance for metadata authors</a>.</p>
+                    <p>See <a href="https://eip.ceh.ac.uk/catalogue/help/editing/metadataauthorguide" target="_blank" rel="noopener">guidance for metadata authors</a>.</p>
                     """
 
         new TextareaView

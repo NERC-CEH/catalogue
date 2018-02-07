@@ -8,11 +8,11 @@
             <div>
             <#if supplement.name?has_content>
               <#if supplement.url?has_content>
-                <a href="${supplement.url?html}" target="_blank" title="${supplement.url}">${supplement.name?html}</a>
+                <a href="${supplement.url?html}" target="_blank" rel="noopener" title="${supplement.url}">${supplement.name?html}</a>
               </#if>
             <#else>
               <#if supplement.url?has_content>
-                <a href="${supplement.url?html}" target="_blank">${supplement.url}</a>
+                <a href="${supplement.url?html}" target="_blank" rel="noopener">${supplement.url}</a>
               </#if>
             </#if>
             </div>
@@ -24,7 +24,7 @@
                 <div>${supplement.description?html}</div>
               </#if>
               <#if supplement.url?has_content>
-                <div><a href="${supplement.url?html}" target="_blank">${supplement.url}</a></div>
+                <div><a href="${supplement.url?html}" target="_blank" rel="noopener">${supplement.url}</a></div>
               </#if>
           </#if>
         </div>
