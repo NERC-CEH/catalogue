@@ -8,7 +8,6 @@ import org.apache.commons.io.FileUtils;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
-import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -16,7 +15,7 @@ public class ZipFileUtils {
 
     private static void extractAll (File directory) {
         if (directory.exists()) {
-            Lists.newArrayList(directory.listFiles())
+            FileListUtils.listFiles(directory)
                 .stream()
                 .filter(file -> isZipFile(file))
                 .forEach(file -> extract(file));
@@ -47,7 +46,7 @@ public class ZipFileUtils {
 
     private static void compressAll (File directory, ZipFile zip) {
         if (directory.exists()) {
-            Lists.newArrayList(directory.listFiles())
+            FileListUtils.listFiles(directory)
                 .stream()
                 .forEach(file -> {
                     compress(file, zip);
