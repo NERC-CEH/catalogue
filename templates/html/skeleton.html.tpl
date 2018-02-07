@@ -9,8 +9,20 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="dcterms.language" content="en">
+    <meta name="dcterms.title" content="${title?html}">
+    <meta name="og.title" content="${title?html}">
+    <#if catalogue?has_content>
+      <meta name="og.site_name" content="${catalogue.title?html}">
+    </#if>
+    <#if canonical?has_content>
+      <meta name="og.identifier" content="${canonical}">
+      <meta name="og.url" content="${canonical}">
+    </#if>
     <#if description??>
         <meta name="description" content="${description?html?replace("\n", " ")}">
+        <meta name="dcterms.description" content="${description?html?replace("\n", " ")}">
+        <meta name="og.description" content="${description?html?replace("\n", " ")}">
     </#if>
     <title>${title?html}<#if catalogue?has_content> - ${catalogue.title?html}</#if></title>
     <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id?html}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
