@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
@@ -218,7 +219,11 @@ public class UploadDocumentService {
             updateZipHashes(fromUploadFiles, fromCompressList, fromDirectory);
             updateZipHashes(toUploadFiles, toCompressList, toDirectory);
             saveUploadDocument(user, uploadDocument, String.format("moving file from: %s, to: %s", fromFilename, toFilename));
+
         }
+        
+        removeEmptyFolders(fromDirectory);
+
         uploadDocument.validate();
     }
 
@@ -254,6 +259,7 @@ public class UploadDocumentService {
 
             uploadFiles.getDocuments().remove(filename);
             saveUploadDocument(user, uploadDocument, String.format("removing file: %s", uploadFile.getPath()));
+            removeEmptyFolders(directory);
         }
         uploadDocument.validate();
     }
@@ -302,6 +308,8 @@ public class UploadDocumentService {
         fromUploadFiles.setDocuments(Maps.newHashMap());
 
         updateZipHashes(toUploadFiles, toCompresList, toDirectory);
+
+        removeEmptyFolders(fromDirectory);
 
         saveUploadDocument(user, uploadDocument, "moving all files from documents to datastore");
         uploadDocument.validate();
@@ -441,5 +449,21 @@ public class UploadDocumentService {
         val found = documentRepository.read(document.getId());
         document.setMetadata(found.getMetadata());
         documentRepository.save(user, document, message);
+    }
+
+    private void removeEmptyFolders (File directory) {
+        val files = FileListUtils.listFilesAndDirs(directory);
+        files.remove(directory);
+        for (val file : files) {
+            if (file.isDirectory()) {
+                val subFiles = FileListUtils.listFilesAndDirs(file);
+                subFiles.remove(file);
+                if (subFiles.size() == 0) forceDelete(file.getAbsolutePath());
+            }
+        }
+
+        val postDeleteFiles = FileListUtils.listFilesAndDirs(directory);
+        postDeleteFiles.remove(directory);
+        if (files.size() == 0) forceDelete(directory.getAbsolutePath());
     }
 }
