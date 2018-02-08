@@ -30,9 +30,11 @@ public class ZipFileUtils {
     private static File extract(File file) {
         val extracted = new File(file.getParentFile(), String.format("_extracted-%s", file.getName().replace(".zip", "")));
         try {
-            val zipFile = new ZipFile(file);
-            zipFile.extractAll(extracted.getAbsolutePath());
-            extractAll(extracted);
+            if (file.exists()) {
+                val zipFile = new ZipFile(file);
+                zipFile.extractAll(extracted.getAbsolutePath());
+                extractAll(extracted);
+            }
         } catch (ZipException ze) {
             FileUtils.forceDelete(extracted);
             throw ze;

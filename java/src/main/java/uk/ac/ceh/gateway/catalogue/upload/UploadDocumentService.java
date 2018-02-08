@@ -167,20 +167,28 @@ public class UploadDocumentService {
         val fromUploadFiles = uploadDocument.getUploadFiles().get(from);
         val fromDirectory = new File(fromUploadFiles.getPath());
         
+        val isTheZippedFile = fromFilename.endsWith("/" + uploadDocument.getParentId() + ".zip");
+
         val uploadFile = fromUploadFiles.getDocuments().get(fromFilename);
-        if (uploadFile != null) {
+        if (!isTheZippedFile && uploadFile != null) {
             val toUploadFiles = uploadDocument.getUploadFiles().get(to);
             val toDirectory = new File(toUploadFiles.getPath());
-            val toFilename = fromFilename.replace(fromDirectory.getAbsolutePath(), toDirectory.getAbsolutePath());
+
+            val extractedZipname = "_extracted-" + uploadDocument.getParentId();
+            File toFileDirectory = toDirectory;
+            if (toUploadFiles.isZipped()) toFileDirectory = new File(toDirectory, extractedZipname);
+
+            String toFilename = fromFilename.replace(fromDirectory.getAbsolutePath(), toFileDirectory.getAbsolutePath());
+            if (!toUploadFiles.isZipped()) toFilename = toFilename.replace(extractedZipname, "").replace("//", "/");
 
             val fromCompressList = ZipFileUtils.filenameToCompessList(fromFilename);
             val toCompressList = ZipFileUtils.filenameToCompessList(toFilename);
 
+            val fromFile = new File(fromFilename);
+            val toFile = new File(toFilename);
+
             ZipFileUtils.archive(fromCompressList, fromDirectory, unarchivedFrom -> {
                 ZipFileUtils.archive(toCompressList, toDirectory, unarchivedTo -> {
-                    val fromFile = new File(fromFilename);
-                    val toFile = new File(toFilename);
-
                     if (isZipFile(fromFile)) {
                         ZipFileUtils.archiveZip(fromCompressList, fromFile, unarchivedZip -> {
                             val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
@@ -207,6 +215,7 @@ public class UploadDocumentService {
             });
 
             fromUploadFiles.getDocuments().remove(fromFilename);
+            System.out.println(String.format("filename %s uf %s", toFilename, uploadFile));
             toUploadFiles.getDocuments().put(toFilename, uploadFile);
 
             updateZipHashes(fromUploadFiles, fromCompressList, fromDirectory);
@@ -307,19 +316,20 @@ public class UploadDocumentService {
             }
 
             uploadFiles.setDocuments(Maps.newHashMap());
-            
-            ZipFileUtils.archiveZip(zipFile, unarchivedZip -> {
-                val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
-                for (val innerFilename : filenames) {
-                    if (!innerFilename.endsWith(".hash")) {
-                        val zippedUploadFile = UploadFileBuilder.create(directory, new File(innerFilename), UploadType.DOCUMENTS);
-                        uploadFiles.getDocuments().put(zippedUploadFile.getPath(), zippedUploadFile);
+            if (zipFile.exists()) {
+                ZipFileUtils.archiveZip(zipFile, unarchivedZip -> {
+                    val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
+                    for (val innerFilename : filenames) {
+                        if (!innerFilename.endsWith(".hash")) {
+                            val zippedUploadFile = UploadFileBuilder.create(directory, new File(innerFilename), UploadType.DOCUMENTS);
+                            uploadFiles.getDocuments().put(zippedUploadFile.getPath(), zippedUploadFile);
+                        }
                     }
-                }
-            });
+                });
 
-            val uploadFile = UploadFileBuilder.create(directory, zipFile, UploadType.DOCUMENTS);
-            uploadFiles.getDocuments().put(uploadFile.getPath(), uploadFile);
+                val uploadFile = UploadFileBuilder.create(directory, zipFile, UploadType.DOCUMENTS);
+                uploadFiles.getDocuments().put(uploadFile.getPath(), uploadFile);
+            }
         }
 
         uploadFiles.setZipped(true);
@@ -376,14 +386,19 @@ public class UploadDocumentService {
         val zips = ZipFileUtils.compressListToZipFiles(compressList);
         for (val zipname : zips) {
             val zipFile = new File(zipname);
-            UploadFile uploadFile = uploadFiles.getDocuments().get(zipname);
-            if (uploadFile == null) uploadFile = uploadFiles.getInvalid().get(zipname);
+            if (zipFile.exists()) {
+                UploadFile uploadFile = uploadFiles.getDocuments().get(zipname);
+                if (uploadFile == null) uploadFile = uploadFiles.getInvalid().get(zipname);
 
-            if (uploadFile == null) uploadFile = UploadFileBuilder.create(directory, zipFile, UploadType.DOCUMENTS);
-            else UploadFileBuilder.update(uploadFile, directory, zipFile, UploadType.DOCUMENTS);
+                if (uploadFile == null) uploadFile = UploadFileBuilder.create(directory, zipFile, UploadType.DOCUMENTS);
+                else UploadFileBuilder.update(uploadFile, directory, zipFile, UploadType.DOCUMENTS);
 
-            uploadFiles.getInvalid().remove(zipname);
-            uploadFiles.getDocuments().put(zipname, uploadFile);
+                uploadFiles.getInvalid().remove(zipname);
+                uploadFiles.getDocuments().put(zipname, uploadFile);
+            } else {
+                uploadFiles.getInvalid().remove(zipname);
+                uploadFiles.getDocuments().remove(zipname);
+            }
         }
     }
 
