@@ -72,7 +72,10 @@ public class ZipFileUtils {
         } else if (isExtracted(file)) {
             FileUtils.forceDelete(file);
         } else if (zip != null) {
-            if (file.isDirectory()) zip.addFolder(file, parameters);
+            if (file.isDirectory() ) {
+                val fileCount = FileListUtils.absolutePathsTree(file).size();
+                if (fileCount > 0) zip.addFolder(file, parameters);
+            }
             else zip.addFile(file, parameters);
         }
     }

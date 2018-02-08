@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ext.com.google.common.collect.Lists;
-
-import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -22,7 +20,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.util.FileListUtils;
-import uk.ac.ceh.gateway.catalogue.util.HashUtils;
 import uk.ac.ceh.gateway.catalogue.util.ZipFileUtils;
 
 @AllArgsConstructor
