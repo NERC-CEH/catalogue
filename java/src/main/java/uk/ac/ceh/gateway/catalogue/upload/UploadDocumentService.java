@@ -275,24 +275,37 @@ public class UploadDocumentService {
         val toUploadFiles = uploadDocument.getUploadFiles().get("datastore");
         val toDirectory = new File(toUploadFiles.getPath());
 
+        val extractedZipname = "_extracted-" + uploadDocument.getParentId();
+        List<String> tempCompresList = Lists.newArrayList();
+        if (toUploadFiles.isZipped()) tempCompresList = ZipFileUtils.filenameToCompessList(new File(toDirectory, extractedZipname).getAbsolutePath());
+        val toCompresList = tempCompresList;
+
         ZipFileUtils.archive(fromDirectory, unarchivedFrom -> {
-            ZipFileUtils.archive(toDirectory, unarchivedTo -> {
+            ZipFileUtils.archive(toCompresList, toDirectory, unarchivedTo -> {
                 for (val fromEntry : fromUploadFiles.getDocuments().entrySet()) {
                     val uploadFile = fromEntry.getValue();
 
-                    val fromFile = new File(uploadFile.getPath());
-                    val file = new File(
-                        uploadFile.getPath()
-                            .replace(fromDirectory.getAbsolutePath(), toDirectory.getAbsolutePath())
-                    );
-                    moveFile(fromFile, file);
-                    UploadFileBuilder.update(uploadFile, toDirectory, file, UploadType.DOCUMENTS);
-                    toUploadFiles.getDocuments().put(file.getPath(), uploadFile);
+                    val fromFilename = uploadFile.getPath();
+                    val fromFile = new File(fromFilename);
+
+                    File toFileDirectory = toDirectory;
+                    if (toUploadFiles.isZipped()) toFileDirectory = new File(toDirectory, extractedZipname);
+
+                    String toFilename = fromFilename.replace(fromDirectory.getAbsolutePath(), toFileDirectory.getAbsolutePath());
+                    if (!toUploadFiles.isZipped()) toFilename = toFilename.replace(extractedZipname, "").replace("//", "/");
+                    val toFile = new File(toFilename);
+
+                    moveFile(fromFile, toFile);
+                    UploadFileBuilder.update(uploadFile, toDirectory, toFile, UploadType.DOCUMENTS);
+                    toUploadFiles.getDocuments().put(toFile.getPath(), uploadFile);
                 }
             });
         });
 
         fromUploadFiles.setDocuments(Maps.newHashMap());
+
+        updateZipHashes(toUploadFiles, toCompresList, toDirectory);
+
         saveUploadDocument(user, uploadDocument, "moving all files from documents to datastore");
         uploadDocument.validate();
     }
