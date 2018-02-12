@@ -6,6 +6,7 @@ import lombok.Data;
 public class UploadFile {
     private String name;
     private String path;
+    private String physicalLocation;
     private String id;    
     private String format;
     private String mediatype;

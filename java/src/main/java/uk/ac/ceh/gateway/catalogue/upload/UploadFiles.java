@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class UploadFiles {
     private final String path;
+    private final String physicalLocation;
     private Map<String, UploadFile> documents = Maps.newHashMap();
     private Map<String, UploadFile> invalid = Maps.newHashMap();
     private boolean zipped;
