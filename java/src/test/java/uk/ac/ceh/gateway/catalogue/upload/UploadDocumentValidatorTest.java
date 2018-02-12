@@ -52,7 +52,13 @@ public class UploadDocumentValidatorTest {
         folders.put("datastore", datastoreFolder);
         folders.put("plone", ploneFolder);
 
-        service = new UploadDocumentService(documentRepository, folders);
+
+        val physicalLocations = new HashMap<String, String>();
+        physicalLocations.put("documents", "\\\\physical\\location");
+        physicalLocations.put("datastore", "\\\\physical\\location");
+        physicalLocations.put("plone", "\\\\physical\\location");
+
+        service = new UploadDocumentService(documentRepository, folders, physicalLocations);
         val geminiDocument = new GeminiDocument();
         geminiDocument.setId("guid");
         uploadDocument = service.create(CatalogueUser.PUBLIC_USER, geminiDocument);

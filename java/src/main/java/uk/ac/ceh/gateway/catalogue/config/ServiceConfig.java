@@ -125,7 +125,13 @@ public class ServiceConfig {
         folders.put("documents", new File("/var/ceh-catalogue/dropbox"));
         folders.put("datastore", new File("/var/ceh-catalogue/eidchub-rw"));
         folders.put("plone", new File("/var/ceh-catalogue/plone"));
-        return new UploadDocumentService(documentRepository(), folders);
+
+        Map<String, String> physicalLocations = Maps.newHashMap();
+        physicalLocations.put("documents", "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\dropbox");
+        physicalLocations.put("datastore", "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\eidchub");
+        physicalLocations.put("plone", "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\plone");
+
+        return new UploadDocumentService(documentRepository(), folders, physicalLocations);
     }
     
     @Bean
@@ -134,14 +140,6 @@ public class ServiceConfig {
         client.addFilter(new HTTPBasicAuthFilter(jiraUsername, jiraPassword));
         WebResource jira = client.resource(jiraAddress);
         return new JiraService(jira);
-    }
-
-    @Bean
-    public PloneDataDepositService ploneDataDepositService() throws XPathExpressionException, IOException, TemplateModelException {
-        Client client = Client.create();
-        client.addFilter(new HTTPBasicAuthFilter(ploneUsername, plonePassword));
-        WebResource plone = client.resource(ploneAddress);
-        return new PloneDataDepositService(plone);
     }
     
     @Bean

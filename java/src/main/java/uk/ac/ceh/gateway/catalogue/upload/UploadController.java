@@ -27,7 +27,6 @@ import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 import java.io.IOException;
 import java.io.InputStream;
-import uk.ac.ceh.gateway.catalogue.services.PloneDataDepositService;
 import uk.ac.ceh.gateway.catalogue.upload.UploadDocumentService;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
@@ -42,7 +41,6 @@ public class UploadController  {
     private final PermissionService permissionService;
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
-    private final PloneDataDepositService ploneDataDepositService;
 
     @RequestMapping(value = "upload/{id}", method = RequestMethod.GET)
     @ResponseBody
@@ -93,7 +91,6 @@ public class UploadController  {
     ) {
         userCanUpload(document);
         uploadDocumentService.delete(user, document, name, filename);
-        updatePlone(document);
         return ResponseEntity.ok(document);
     }
 
@@ -107,7 +104,6 @@ public class UploadController  {
         val parentId = document.getParentId();
         transitionIssueToStartProgress(user, parentId);
         removeUploadPermission(user, parentId);
-        updatePlone(document);
         return ResponseEntity.ok(document);
     }
 
@@ -152,7 +148,6 @@ public class UploadController  {
     ) {
         userCanUpload(document);
         uploadDocumentService.acceptInvalid(user, document, name, filename);
-        updatePlone(document); 
         return ResponseEntity.ok(document);
     }
 
@@ -167,7 +162,6 @@ public class UploadController  {
     ){
         userCanUpload(document);
         uploadDocumentService.move(user, document, from, to, filename);
-        updatePlone(document);
         return ResponseEntity.ok(document);
     }
 
@@ -190,7 +184,6 @@ public class UploadController  {
     ) {
         userCanUpload(document);
         uploadDocumentService.zip(user, document);
-        updatePlone(document);
         return ResponseEntity.ok(document);
     }
 
@@ -202,13 +195,6 @@ public class UploadController  {
     ) {
         userCanUpload(document);
         uploadDocumentService.unzip(user, document);
-        updatePlone(document);
         return ResponseEntity.ok(document);
-    }
-
-    private void updatePlone(UploadDocument document) {
-        try {
-            ploneDataDepositService.addOrUpdate(document);
-        } catch(Exception e) {}
     }
 }
