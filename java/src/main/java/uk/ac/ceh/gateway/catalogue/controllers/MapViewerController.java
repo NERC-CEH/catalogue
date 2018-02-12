@@ -11,6 +11,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
  * templates
  * @author cjohn
  */
+@CrossOrigin
 @Controller
 @RequestMapping(value="maps")
 public class MapViewerController {
