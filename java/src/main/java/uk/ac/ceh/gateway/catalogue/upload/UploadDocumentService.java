@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
@@ -218,7 +217,7 @@ public class UploadDocumentService {
             });
 
             fromUploadFiles.getDocuments().remove(fromFilename);
-            System.out.println(String.format("filename %s uf %s", toFilename, uploadFile));
+
             toUploadFiles.getDocuments().put(toFilename, uploadFile);
 
             updateZipHashes(fromUploadFiles, fromCompressList, fromDirectory, fromPhysicalLocation);
@@ -250,7 +249,7 @@ public class UploadDocumentService {
             val compressList = ZipFileUtils.filenameToCompessList(filename);
             ZipFileUtils.archive(compressList, directory, unarchived -> {
                 val file = new File(filename);
-                if (isZipFile(file)) {
+                if (file.exists() && isZipFile(file)) {
                     ZipFileUtils.archiveZip(file, unarchivedZip -> {
                         val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
                         for (val innerFilename : filenames) {
@@ -264,6 +263,7 @@ public class UploadDocumentService {
             updateZipHashes(uploadFiles, compressList, directory, phyisicalLocation);
 
             uploadFiles.getDocuments().remove(filename);
+            uploadFiles.getInvalid().remove(filename);
             saveUploadDocument(user, uploadDocument, String.format("removing file: %s", uploadFile.getPath()));
             removeEmptyFolders(directory);
         }
@@ -326,41 +326,42 @@ public class UploadDocumentService {
     public void zip(CatalogueUser user, UploadDocument uploadDocument) {
         uploadDocument.validate();
         val uploadFiles = uploadDocument.getUploadFiles().get("datastore");
+        if (uploadFiles.getInvalid().size() == 0) {
+            val directory = new File(uploadFiles.getPath());
+            val physicalLocation = uploadFiles.getPhysicalLocation();
+            if (!isZipped(directory)) {
+                val zipname = String.format("%s.zip", uploadDocument.getParentId());
+                val zipFile = new File(directory, zipname);
+                val zip = new ZipFile(zipFile.getAbsolutePath());
+                val parameters = new ZipParameters();
+                val filesnames = FileListUtils.absolutePathsTree(directory);
+                for (val filename : filesnames) {
+                    if (!filename.equals(zipname)) {
+                        addToZip(new File(filename), zip, parameters);
+                    }
+                }
 
-        val directory = new File(uploadFiles.getPath());
-        val physicalLocation = uploadFiles.getPhysicalLocation();
-        if (!isZipped(directory)) {
-            val zipname = String.format("%s.zip", uploadDocument.getParentId());
-            val zipFile = new File(directory, zipname);
-            val zip = new ZipFile(zipFile.getAbsolutePath());
-            val parameters = new ZipParameters();
-            val filesnames = FileListUtils.absolutePathsTree(directory);
-            for (val filename : filesnames) {
-                if (!filename.equals(zipname)) {
-                    addToZip(new File(filename), zip, parameters);
+                uploadFiles.setDocuments(Maps.newHashMap());
+                if (zipFile.exists()) {
+                    ZipFileUtils.archiveZip(zipFile, unarchivedZip -> {
+                        val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
+                        for (val innerFilename : filenames) {
+                            if (!innerFilename.endsWith(".hash")) {
+                                val zippedUploadFile = UploadFileBuilder.create(directory, physicalLocation, new File(innerFilename), UploadType.DOCUMENTS);
+                                uploadFiles.getDocuments().put(zippedUploadFile.getPath(), zippedUploadFile);
+                            }
+                        }
+                    });
+
+                    val uploadFile = UploadFileBuilder.create(directory, physicalLocation, zipFile, UploadType.DOCUMENTS);
+                    uploadFiles.getDocuments().put(uploadFile.getPath(), uploadFile);
                 }
             }
 
-            uploadFiles.setDocuments(Maps.newHashMap());
-            if (zipFile.exists()) {
-                ZipFileUtils.archiveZip(zipFile, unarchivedZip -> {
-                    val filenames = FileListUtils.absolutePathsTree(unarchivedZip);
-                    for (val innerFilename : filenames) {
-                        if (!innerFilename.endsWith(".hash")) {
-                            val zippedUploadFile = UploadFileBuilder.create(directory, physicalLocation, new File(innerFilename), UploadType.DOCUMENTS);
-                            uploadFiles.getDocuments().put(zippedUploadFile.getPath(), zippedUploadFile);
-                        }
-                    }
-                });
-
-                val uploadFile = UploadFileBuilder.create(directory, physicalLocation, zipFile, UploadType.DOCUMENTS);
-                uploadFiles.getDocuments().put(uploadFile.getPath(), uploadFile);
-            }
+            uploadFiles.setZipped(true);
+            saveUploadDocument(user, uploadDocument, "zipping datastore");
+            uploadDocument.validate();
         }
-
-        uploadFiles.setZipped(true);
-        saveUploadDocument(user, uploadDocument, "zipping datastore");
-        uploadDocument.validate();
     }
 
     @SneakyThrows
@@ -375,31 +376,33 @@ public class UploadDocumentService {
         uploadDocument.validate();
         val uploadFiles = uploadDocument.getUploadFiles().get("datastore");
 
-        val directory = new File(uploadFiles.getPath());
-        val physicalLocation = uploadFiles.getPhysicalLocation();
-        if (isZipped(directory)) {
-            val zipname = String.format("%s.zip", uploadDocument.getParentId());
-            val zipFile = new File(directory, zipname);
-            val zip = new ZipFile(zipFile.getAbsolutePath());
-            zip.extractAll(directory.getAbsolutePath());
-            FileUtils.forceDelete(zipFile);
+        if (uploadFiles.getInvalid().size() == 0) {
+            val directory = new File(uploadFiles.getPath());
+            val physicalLocation = uploadFiles.getPhysicalLocation();
+            if (isZipped(directory)) {
+                val zipname = String.format("%s.zip", uploadDocument.getParentId());
+                val zipFile = new File(directory, zipname);
+                val zip = new ZipFile(zipFile.getAbsolutePath());
+                zip.extractAll(directory.getAbsolutePath());
+                FileUtils.forceDelete(zipFile);
 
-            uploadFiles.setDocuments(Maps.newHashMap());
+                uploadFiles.setDocuments(Maps.newHashMap());
 
-            ZipFileUtils.archive(directory, unarchived -> {
-                val filenames = FileListUtils.absolutePathsTree(unarchived);
-                for (val innerFilename : filenames) {
-                    if (!innerFilename.endsWith(".hash")) {
-                        val zippedUploadFile = UploadFileBuilder.create(directory, physicalLocation, new File(innerFilename), UploadType.DOCUMENTS);
-                        uploadFiles.getDocuments().put(zippedUploadFile.getPath(), zippedUploadFile);
+                ZipFileUtils.archive(directory, unarchived -> {
+                    val filenames = FileListUtils.absolutePathsTree(unarchived);
+                    for (val innerFilename : filenames) {
+                        if (!innerFilename.endsWith(".hash")) {
+                            val zippedUploadFile = UploadFileBuilder.create(directory, physicalLocation, new File(innerFilename), UploadType.DOCUMENTS);
+                            uploadFiles.getDocuments().put(zippedUploadFile.getPath(), zippedUploadFile);
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
 
-        uploadFiles.setZipped(false);
-        saveUploadDocument(user, uploadDocument, "unzipping datastore");
-        uploadDocument.validate();
+            uploadFiles.setZipped(false);
+            saveUploadDocument(user, uploadDocument, "unzipping datastore");
+            uploadDocument.validate();
+        }
     }
 
     private void updateZipHashes (UploadFiles uploadFiles, List<String> compressList, File directory, String physicalLocation) {
@@ -454,7 +457,13 @@ public class UploadDocumentService {
     @SneakyThrows
     private void saveUploadDocument(CatalogueUser user, UploadDocument document, String message) {
         for (val uploadFiles : document.getUploadFiles().values()) {
-            uploadFiles.setInvalid(Maps.newHashMap());
+            HashMap<String, UploadFile> invalid = Maps.newHashMap();
+            val values = uploadFiles.getInvalid().values();
+            values.removeIf(value -> !value.getType().equals(UploadType.MISSING_FILE));
+            for (val value : values) {
+                invalid.put(value.getPath(), value);
+            }
+            uploadFiles.setInvalid(invalid);
         }
         val found = documentRepository.read(document.getId());
         document.setMetadata(found.getMetadata());
@@ -462,18 +471,20 @@ public class UploadDocumentService {
     }
 
     private void removeEmptyFolders (File directory) {
-        val files = FileListUtils.listFilesAndDirs(directory);
-        files.remove(directory);
-        for (val file : files) {
-            if (file.isDirectory()) {
-                val subFiles = FileListUtils.listFilesAndDirs(file);
-                subFiles.remove(file);
-                if (subFiles.size() == 0) forceDelete(file.getAbsolutePath());
+        if (directory.exists()) {
+            val files = FileListUtils.listFilesAndDirs(directory);
+            files.remove(directory);
+            for (val file : files) {
+                if (file.isDirectory()) {
+                    val subFiles = FileListUtils.listFilesAndDirs(file);
+                    subFiles.remove(file);
+                    if (subFiles.size() == 0) forceDelete(file.getAbsolutePath());
+                }
             }
-        }
 
-        val postDeleteFiles = FileListUtils.listFilesAndDirs(directory);
-        postDeleteFiles.remove(directory);
-        if (files.size() == 0) forceDelete(directory.getAbsolutePath());
+            val postDeleteFiles = FileListUtils.listFilesAndDirs(directory);
+            postDeleteFiles.remove(directory);
+            if (files.size() == 0) forceDelete(directory.getAbsolutePath());
+        }
     }
 }
