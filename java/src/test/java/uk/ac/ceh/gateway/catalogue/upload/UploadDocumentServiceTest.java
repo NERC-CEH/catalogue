@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Maps;
 
 import lombok.SneakyThrows;
 import lombok.val;
@@ -17,7 +17,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-
 import static org.mockito.MockitoAnnotations.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -230,8 +229,11 @@ public class UploadDocumentServiceTest {
     @Test
     @SneakyThrows
     public void zip () {
-        val file = new File(dropboxFolder, "guid/zip.zip");
+        val file = new File(dropboxFolder, "guid/zip.zip");        
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
+        
+        uploadDocument.getUploadFiles().get("datastore").setInvalid(Maps.newHashMap());
+        uploadDocument.getUploadFiles().get("documents").setInvalid(Maps.newHashMap());
 
         service.zip(CatalogueUser.PUBLIC_USER, uploadDocument);
 
@@ -245,6 +247,9 @@ public class UploadDocumentServiceTest {
     public void zip_doesNothingIfAlreadyZipped () {
         val file = new File(dropboxFolder, "guid/zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
+
+        uploadDocument.getUploadFiles().get("datastore").setInvalid(Maps.newHashMap());
+        uploadDocument.getUploadFiles().get("documents").setInvalid(Maps.newHashMap());
 
         service.zip(CatalogueUser.PUBLIC_USER, uploadDocument);
         service.zip(CatalogueUser.PUBLIC_USER, uploadDocument);
@@ -294,10 +299,5 @@ public class UploadDocumentServiceTest {
     private void assertThatInvalidDoesNotHaveFile(String name, File folder, String filename) {
         val documents = uploadDocument.getUploadFiles().get(name).getInvalid();
         assertThat(documents.keySet(), not(hasItem(is(new File(folder, filename).getAbsolutePath()))));
-    }
-
-    private void assertThatInvalidHasFile(String name, File folder, String filename) {
-        val documents = uploadDocument.getUploadFiles().get(name).getInvalid();
-        assertThat(documents.keySet(), hasItem(is(new File(folder, filename).getAbsolutePath())));
     }
 }
