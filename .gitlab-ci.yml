@@ -35,7 +35,6 @@ java:
     - echo plone.username=$PLONE_USERNAME >> secrets.env
     - echo plone.password=$PLONE_PASSWORD >> secrets.env
     - echo doi.password= >> secrets.env
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.ceh.ac.uk
   
   script:
     - >
