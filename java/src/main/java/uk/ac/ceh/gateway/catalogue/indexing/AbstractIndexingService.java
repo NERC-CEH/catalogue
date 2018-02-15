@@ -1,11 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.AllArgsConstructor;
+import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
 
 import java.io.IOException;
 import java.util.List;
@@ -56,7 +58,8 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         documents.stream().forEach((document) -> {
             try {
                 log.debug("Indexing: {}, revision: {}", document, revision);
-                index(indexGenerator.generateIndex(readDocument(document, revision)));
+                val doc = readDocument(document, revision);
+                if (!(doc instanceof UploadDocument)) index(indexGenerator.generateIndex(doc));
             }
             catch(Exception ex) {
                 joinedException.addSuppressed(document, new DocumentIndexingException(
