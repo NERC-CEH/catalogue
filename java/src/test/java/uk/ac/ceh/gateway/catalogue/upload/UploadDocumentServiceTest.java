@@ -73,25 +73,21 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     public void create_addsTopLevelFile() {
         assertThatDocumentsHasFile("documents", dropboxFolder, "guid/file.txt");
     }
 
     @Test
-    @Ignore
     public void create_addsFileInFolderUsingHashFromParentFolder() {
         assertThatDocumentsHasFile("documents", dropboxFolder, "guid/folder/sub-a.txt");
     }
 
     @Test
-    @Ignore
     public void create_addsFileInFolderUsingHashFromContainingFolder() {
         assertThatDocumentsHasFile("documents", dropboxFolder, "guid/folder/sub-b.txt");
     }
 
     @Test
-    @Ignore
     public void create_addsZipFilesAndAllZipFiles() {
         assertThatDocumentsHasFile("documents", dropboxFolder, "guid/zip.zip");
         assertThatDocumentsHasFile("documents", dropboxFolder, "guid/_extracted-zip/z.txt");
@@ -100,7 +96,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     public void create_emptyListOfNoFolder () {
         val datastoreDocuments = uploadDocument.getUploadFiles().get("datastore").getDocuments();
         assertThat(datastoreDocuments.size(), is(0));
@@ -113,14 +108,12 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     public void create_isNotZipped_unlessSeeNextText() {
         val dropbox = uploadDocument.getUploadFiles().get("documents");
         assertThat(dropbox.isZipped(), is(false));
     }
 
     @Test
-    @Ignore
     public void create_isZipped_ifThereIsAZipFileAndAHashFileOnly() {
         val geminiDocument = new GeminiDocument();
         geminiDocument.setId("guid-zipped");
@@ -132,7 +125,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     @SneakyThrows
     public void add_onlyAddsTheFileToDocuments () {
         val in = new FileInputStream(new File(directory, "upload-service/new-file.txt"));
@@ -142,7 +134,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     @SneakyThrows
     public void add_getAllZipFilesFromAZip () {
         val in = new FileInputStream(new File(directory, "upload-service/zippy.zip"));
@@ -157,7 +148,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     public void move_fromOnePlaceToAnother () {
         cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/file.txt");
@@ -168,7 +158,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     public void move_zipFromOnePlaceToAnotherTakesAllFilesWithIt () {
         cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/zip.zip");
@@ -186,7 +175,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     @SneakyThrows
     public void move_subZip () {
         cleanDefaultInvalid();
@@ -203,7 +191,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     @SneakyThrows
     public void delete_onlyAddsTheFileToDocuments () {
         val file = new File(dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
@@ -214,7 +201,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     @SneakyThrows
     public void delete_allZipFilesFromAZip () {
         val file = new File(dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
@@ -225,7 +211,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     @SneakyThrows
     public void delete_invalidFile () {
         val file = new File(dropboxFolder, "guid/unknown.txt");
@@ -236,7 +221,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     @SneakyThrows
     public void acceptInvalid () {
         val file = new File(dropboxFolder, "guid/unknown.txt");
@@ -278,7 +262,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     @SneakyThrows
     public void unzip () {
         cleanDefaultInvalid();
@@ -294,7 +277,6 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    @Ignore
     @SneakyThrows
     public void unzip_doesNothingIfNotCorrectlyZipped () {
         cleanDefaultInvalid();
