@@ -50,7 +50,7 @@ public class UploadDocumentService {
             uploadFiles.put(key, uploadFilesValue);
         });
         val uploadDocument = new UploadDocument(guid, uploadFiles);
-        uploadDocument.setType("dataset");
+        uploadDocument.setType("dataResource");
         uploadDocument.setTitle(geminiDocument.getTitle());
 
         documentRepository.saveNew(user, uploadDocument, "eidc", "creating new upload document");

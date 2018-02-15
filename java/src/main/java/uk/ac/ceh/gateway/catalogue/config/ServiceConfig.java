@@ -127,9 +127,9 @@ public class ServiceConfig {
         folders.put("plone", new File("/var/ceh-catalogue/plone"));
 
         Map<String, String> physicalLocations = Maps.newHashMap();
-        physicalLocations.put("documents", "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\dropbox");
-        physicalLocations.put("datastore", "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\eidchub");
-        physicalLocations.put("plone", "\\\\nerclactdb.nerc-lancaster.ac.uk\\appdev\\appdev\\datastore\\plone");
+        physicalLocations.put("documents", "datastore/dropbox");
+        physicalLocations.put("datastore", "datastore/eidchub");
+        physicalLocations.put("plone", "datastore/plone");
 
         return new UploadDocumentService(documentRepository(), folders, physicalLocations);
     }

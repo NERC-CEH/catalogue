@@ -25,7 +25,7 @@ public class UploadFileBuilderTest {
         if (directory.exists()) FileUtils.forceDelete(directory);
         FileUtils.copyDirectory(dataDirectory, directory);
         file = new File(directory, "upload-file-builder/_extracted-folder/folder/_extracted-sub-folder/file.txt");
-        uploadFile = UploadFileBuilder.create(new File(directory, "upload-file-builder"), "\\\\phyisical\\location", file, UploadType.DOCUMENTS);
+        uploadFile = UploadFileBuilder.create(new File(directory, "upload-file-builder"), "phyisical/location", file, UploadType.DOCUMENTS);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class UploadFileBuilderTest {
 
     @Test
     public void stesPhysicalLocation () {
-        assertThat(uploadFile.getPhysicalLocation(), is("\\\\phyisical\\location\\folder.zip\\folder\\sub-folder.zip\\file.txt"));
+        assertThat(uploadFile.getPhysicalLocation(), is("phyisical\\location\\folder.zip\\folder\\sub-folder.zip\\file.txt"));
     }
 
 }
