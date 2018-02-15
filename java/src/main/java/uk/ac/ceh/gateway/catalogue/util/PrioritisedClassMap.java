@@ -11,7 +11,6 @@ import lombok.Data;
  * 
  * This implementation will favour the first compatible instance which has been 
  * registered. 
- * @author cjohn
  * @param <T> type of elements the classes are mapped to
  */
 public class PrioritisedClassMap<T> implements ClassMap<T> {

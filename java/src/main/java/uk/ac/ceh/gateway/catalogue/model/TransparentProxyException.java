@@ -6,9 +6,9 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 /**
  * An exception thrown when transparent proxying fails. The original request will
  * be attached to this exception
- * @author cjohn
  */
 public class TransparentProxyException extends HttpMessageNotReadableException {
+    static final long serialVersionUID = 1L;
     private final @Getter TransparentProxy request;
 
     public TransparentProxyException(String mess, TransparentProxy request) {

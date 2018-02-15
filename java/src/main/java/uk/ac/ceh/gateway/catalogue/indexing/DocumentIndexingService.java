@@ -2,10 +2,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.List;
 
-/**
- *
- * @author cjohn
- */
 public interface DocumentIndexingService {
     boolean isIndexEmpty() throws DocumentIndexingException;
     void rebuildIndex() throws DocumentIndexingException;

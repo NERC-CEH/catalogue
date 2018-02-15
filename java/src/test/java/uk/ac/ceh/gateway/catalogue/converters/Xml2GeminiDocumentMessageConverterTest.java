@@ -37,10 +37,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
-/**
- *
- * @author cjohn
- */
+
 public class Xml2GeminiDocumentMessageConverterTest {
     private Xml2GeminiDocumentMessageConverter geminiReader;
     

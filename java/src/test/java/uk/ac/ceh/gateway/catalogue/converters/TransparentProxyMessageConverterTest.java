@@ -28,10 +28,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
-/**
- *
- * @author cjohn
- */
+
 public class TransparentProxyMessageConverterTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) CloseableHttpClient httpClient;
     TransparentProxyMessageConverter converter;

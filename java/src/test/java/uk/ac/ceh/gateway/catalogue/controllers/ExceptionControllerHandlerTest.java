@@ -20,10 +20,6 @@ import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
 
-/**
- *
- * @author cjohn
- */
 public class ExceptionControllerHandlerTest {
     private ExceptionControllerHandler controller;
     

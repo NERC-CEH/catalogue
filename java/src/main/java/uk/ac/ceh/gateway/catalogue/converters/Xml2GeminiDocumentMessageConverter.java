@@ -26,10 +26,6 @@ import java.util.List;
 
 import static com.google.common.base.Strings.emptyToNull;
 
-/**
- *
- * @author jcoop, cjohn
- */
 @Slf4j
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id;

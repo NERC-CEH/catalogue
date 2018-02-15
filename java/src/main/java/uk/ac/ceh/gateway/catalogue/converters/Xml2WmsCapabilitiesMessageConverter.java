@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import uk.ac.ceh.gateway.catalogue.converters.xml2GeminiDocument.NodeListConverter;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -20,10 +19,6 @@ import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.converters.wmsCapabilities.LayerConverter;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 
-/**
- *
- * @author cjohn
- */
 public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConverter<WmsCapabilities> {
     private static final String MAP_URL = "//wms:GetMap/*/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href";
     private static final String FEATURE_INFO_URL = "//wms:GetFeatureInfo/*/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href";

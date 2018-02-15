@@ -9,9 +9,9 @@ import org.springframework.http.ResponseEntity;
 /**
  * If an issue occurs when talking to the mapserver (for getfeatureinfo requests)
  * we will want to proxy that error back to the end user.
- * @author cjohn
  */
 public class MapServerException extends RuntimeException {
+    static final long serialVersionUID = 1L;
     @Getter private final MediaType contentType;
     @Getter private final HttpStatus statusCode;
     

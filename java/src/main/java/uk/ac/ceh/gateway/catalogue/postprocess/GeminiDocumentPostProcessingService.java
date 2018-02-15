@@ -18,7 +18,6 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 /**
  * Defines a post processing service which can be used adding additional 
  * information to a Gemini Document
- * @author cjohn
  */
 public class GeminiDocumentPostProcessingService implements PostProcessingService<GeminiDocument> {
     private final CitationService citationService;

@@ -9,13 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author cjohn
- */
-/**
 * The following represents the elements of a gemini document which can be indexed
 * by solr
-* @author cjohn
 */
 @Data
 @Accessors(chain=true)

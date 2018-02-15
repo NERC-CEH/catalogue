@@ -4,10 +4,6 @@ import java.io.IOException;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 
-/**
- *
- * @author cjohn
- */
 public interface BundledReaderService<D> {
     /**
      * Get the latest version of D (some file)

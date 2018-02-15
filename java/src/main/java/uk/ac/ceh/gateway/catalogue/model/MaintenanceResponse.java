@@ -9,10 +9,6 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 
-/**
- *
- * @author cjohn
- */
 @ConvertUsing({
     @Template(called="html/maintenance.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })

@@ -21,10 +21,6 @@ import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.NotAGetCapabilitiesResourceException;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 
-/**
- *
- * @author cjohn
- */
 public class GetCapabilitiesObtainerServiceTest {
     @Mock RestTemplate rest;
     @Mock MapServerDetailsService mapServerDetailsService;

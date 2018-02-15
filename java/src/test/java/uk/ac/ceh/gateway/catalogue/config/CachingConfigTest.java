@@ -9,15 +9,11 @@ import org.springframework.cache.annotation.Cacheable;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 
-/**
- *
- * @author cjohn
- */
 public class CachingConfigTest {
     private CachingConfig config;
     
     @Before
-    public void CachingConfigTest() {
+    public void cachingConfigTest() {
         config = new CachingConfig();
     }
     

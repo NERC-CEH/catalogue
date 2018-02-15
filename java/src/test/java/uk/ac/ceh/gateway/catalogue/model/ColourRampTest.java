@@ -8,10 +8,6 @@ import java.util.stream.IntStream;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-/**
- *
- * @author cjohn
- */
 public class ColourRampTest {
     @Test
     public void checkThatCanGenerateColourRamp() {

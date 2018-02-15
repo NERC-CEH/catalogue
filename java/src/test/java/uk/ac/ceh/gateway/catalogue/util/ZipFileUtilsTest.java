@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.util;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
-import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import lombok.SneakyThrows;

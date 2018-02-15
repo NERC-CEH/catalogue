@@ -14,10 +14,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 
-/**
- *
- * @author cjohn
- */
 public class MediaTypeValidatorTest {
     @Mock DocumentWritingService writer;
     

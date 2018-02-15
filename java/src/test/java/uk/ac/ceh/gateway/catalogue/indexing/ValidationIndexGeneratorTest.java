@@ -8,10 +8,6 @@ import static org.mockito.Mockito.verify;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.validation.Validator;
 
-/**
- *
- * @author cjohn
- */
 public class ValidationIndexGeneratorTest {
     @Test
     public void checkThatValidationDelegatesToValidator() {

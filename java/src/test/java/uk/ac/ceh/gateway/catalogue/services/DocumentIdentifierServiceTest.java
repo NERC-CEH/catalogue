@@ -8,10 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 
-/**
- *
- * @author cjohn
- */
 public class DocumentIdentifierServiceTest {
     private DocumentIdentifierService service;
     private Catalogue ceh;

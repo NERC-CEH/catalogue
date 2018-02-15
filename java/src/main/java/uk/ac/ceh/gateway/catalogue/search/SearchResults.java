@@ -15,7 +15,6 @@ import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 
 /**
  * A search results object for documents
- * @author jcoop, cjohn
  */
 @ConvertUsing({
     @Template(called = "/html/search.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)

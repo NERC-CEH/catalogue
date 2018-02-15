@@ -16,7 +16,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
  * with a in memory user store. This is useful when developing the application
  * in an environment which can not contact Crowd
  * @see CrowdUserStoreConfig
- * @author cjohn
+
  */
 @Configuration
 @Profile("development")

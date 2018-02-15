@@ -5,10 +5,6 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @author cjohn
- */
 public class HardcodedNamespaceResolverTest {
     private HardcodedGeminiNamespaceResolver resolver;
     
@@ -107,7 +103,7 @@ public class HardcodedNamespaceResolverTest {
         String prefix = null;
         
         //When
-        String uri = resolver.getNamespaceURI(prefix);
+        resolver.getNamespaceURI(prefix);
         
         //Then
         fail("Expected to fail");

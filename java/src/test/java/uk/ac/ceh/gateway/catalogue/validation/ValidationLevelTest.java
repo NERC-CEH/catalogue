@@ -6,10 +6,6 @@ import org.junit.Test;
 import static uk.ac.ceh.gateway.catalogue.validation.ValidationLevel.FAILED_TO_READ;
 import static uk.ac.ceh.gateway.catalogue.validation.ValidationLevel.VALID;
 
-/**
- *
- * @author cjohn
- */
 public class ValidationLevelTest {
     @Test
     public void checkThatFailedIsMoreSevere() {

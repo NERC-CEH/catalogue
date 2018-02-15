@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
  * The following spring JavaConfig defines the beans required for the interacting
  * with an external solr server whose url is defined as a property in the application
  * properties file
- * @author cjohn
  */
 @Configuration
 public class HttpSolrServerConfig {

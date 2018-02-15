@@ -36,10 +36,6 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
-/**
- *
- * @author cjohn
- */
 public class MapViewerControllerTest {
     @Mock RestTemplate rest;
     @Mock MapServerDetailsService mapServerDetailsService;

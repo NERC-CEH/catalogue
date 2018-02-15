@@ -70,7 +70,6 @@ public class PermissionControllerTest {
         MetadataDocument original = new GeminiDocument()
             .setMetadata(info);
         original.setUri("/documents/" + file);
-        PermissionResource expected = new PermissionResource(original);
         
         MetadataInfo mi = MetadataInfo.builder().build();
         mi.addPermission(Permission.VIEW, "public");

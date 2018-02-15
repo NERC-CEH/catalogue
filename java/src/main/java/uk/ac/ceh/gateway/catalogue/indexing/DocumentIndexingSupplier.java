@@ -8,7 +8,6 @@ package uk.ac.ceh.gateway.catalogue.indexing;
  * performing a task inside a jena transaction.
  * 
  * @see java.util.function.Supplier
- * @author cjohn
  * @param <T> The return type of this supplier
  */ 
 @FunctionalInterface

@@ -19,10 +19,6 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
-/**
- *
- * @author cjohn
- */
 public class MapFileTest {
     @Mock Configuration templateConfig;
     @Mock MetadataDocument document;
@@ -46,7 +42,8 @@ public class MapFileTest {
         mapfile.writeTo("27700", writer);
         
         //Then
-        ArgumentCaptor<Map> captor = ArgumentCaptor.forClass(Map.class);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
         verify(template).process(captor.capture(), eq(writer));
         assertThat(captor.getValue().get("epsgCode"), is("27700"));
         assertThat(captor.getValue().get("doc"), is(document));

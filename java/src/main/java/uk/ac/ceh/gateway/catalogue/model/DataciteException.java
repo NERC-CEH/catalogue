@@ -1,10 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-/**
- *
- * @author Christopher Johnson
- */
 public class DataciteException extends RuntimeException {
+    static final long serialVersionUID = 1L;
+    
     public DataciteException() {
         super();
     }

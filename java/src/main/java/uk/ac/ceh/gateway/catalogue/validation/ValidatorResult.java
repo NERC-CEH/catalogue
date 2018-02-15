@@ -10,7 +10,6 @@ import lombok.Data;
  * Since a document can only be in one validation state, we can group the 
  * documents in a similar state together. This is useful when presented an 
  * overview of the entire catalogue.
- * @author cjohn
  */
 @Data
 public class ValidatorResult {

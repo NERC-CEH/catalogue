@@ -9,10 +9,6 @@ import lombok.Builder;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.OTHER;
 
-/**
- *
- * @author cjohn
- */
 @Value
 public class OnlineResource {
     private static final Pattern GET_CAPABILITIES_URL_PATTERN = Pattern.compile("[\\?\\&]request=getcapabilities");

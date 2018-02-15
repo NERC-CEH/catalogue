@@ -7,10 +7,6 @@ import uk.ac.ceh.components.userstore.User;
 import uk.ac.ceh.components.userstore.UserAttribute;
 import static uk.ac.ceh.components.userstore.UserAttribute.*;
 
-/**
- *
- * @author cjohn
- */
 @Data
 @Accessors(chain = true)
 public class CatalogueUser implements User, DataAuthor {

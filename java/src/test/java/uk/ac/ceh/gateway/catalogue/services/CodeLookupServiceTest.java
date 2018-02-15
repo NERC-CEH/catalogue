@@ -6,10 +6,6 @@ import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @author cjohn
- */
 public class CodeLookupServiceTest {
     private Properties properties;
     private CodeLookupService service;

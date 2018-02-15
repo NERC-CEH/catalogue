@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 /**
  * The following class represents the state at which a document is in
- * @author Christopher Johnson
  */
 @Value
 // N.B. JsonAutoDetect needed to get 'permissions' written to file

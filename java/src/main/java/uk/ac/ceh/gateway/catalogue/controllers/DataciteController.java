@@ -22,7 +22,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 /**
  * The following controller will handle the generation of Datacite requests.
- * @author cjohn
  */
 @Controller
 public class DataciteController {

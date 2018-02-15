@@ -17,10 +17,6 @@ import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
-/**
- *
- * @author cjohn
- */
 public class ValidationIndexingServiceTest {
     
     @Mock BundledReaderService reader;

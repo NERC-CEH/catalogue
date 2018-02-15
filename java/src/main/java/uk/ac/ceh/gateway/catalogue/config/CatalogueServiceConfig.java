@@ -28,11 +28,6 @@ public class CatalogueServiceConfig {
             .type(GEMINI_DOCUMENT)
             .build();
 
-        DocumentType ef = DocumentType.builder()
-            .title("Monitoring")
-            .type(EF_DOCUMENT)
-            .build();
-
         DocumentType imp = DocumentType.builder()
             .title("Model")
             .type(IMP_DOCUMENT)

@@ -9,10 +9,6 @@ import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 
-/**
- *
- * @author cjohn
- */
 @Value
 @Builder
 @ConvertUsing({

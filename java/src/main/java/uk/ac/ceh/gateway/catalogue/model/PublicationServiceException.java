@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
 public class PublicationServiceException extends RuntimeException {
+    static final long serialVersionUID = 1L;
+
     public PublicationServiceException() {
         super();
     }

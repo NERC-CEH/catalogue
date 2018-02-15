@@ -3,10 +3,6 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-/**
- *
- * @author cjohn
- */
 public class OnlineResourceTest {
     @Test
     public void checkThatWMSURLReturnsGetCapabilitiesType() {

@@ -1,10 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-/**
- *
- * @author cjohn
- */
 public class LegendGraphicMissingException extends IllegalArgumentException {
+    static final long serialVersionUID = 1L;
 
     public LegendGraphicMissingException(String mess) {
         super(mess);

@@ -8,10 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 
-/**
- *
- * @author cjohn
- */
 public class IndexGeneratorRegistryTest {
     @Test(expected = DocumentIndexingException.class)
     public void checkThatThrowsExceptionIfNoClassIsFound() throws DocumentIndexingException {

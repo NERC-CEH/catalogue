@@ -11,10 +11,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
-/**
- *
- * @author cjohn
- */
 public class OnlineResourceConverter {
     private static final String ONLINE_RESOURCE = "/*/gmd:distributionInfo/*/gmd:transferOptions/*/gmd:onLine/*";    
     private static final String URL = "gmd:linkage/gmd:URL";

@@ -11,7 +11,6 @@ import lombok.Data;
  * The object is composed of a metadata documents id and a list of validation 
  * summaries from validators which have been run against the document represented
  * by that ID
- * @author cjohn
  */
 @Data
 public class ValidationReport {

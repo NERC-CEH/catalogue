@@ -9,10 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 
-/**
- *
- * @author cjohn
- */
 public class ClassMapPostProcessingServiceTest {
     @Test
     public void checkThatDelegatesToClassMapPostProcessingService() throws PostProcessingException {

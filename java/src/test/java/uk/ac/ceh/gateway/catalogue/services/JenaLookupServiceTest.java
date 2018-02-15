@@ -25,10 +25,6 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 
-/**
- *
- * @author cjohn
- */
 public class JenaLookupServiceTest {
     private Dataset jenaTdb;
     private JenaLookupService service;

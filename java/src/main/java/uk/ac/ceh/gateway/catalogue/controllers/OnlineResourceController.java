@@ -28,10 +28,6 @@ import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
-/**
- *
- * @author cjohn
- */
 @Controller
 public class OnlineResourceController {
     private final BundledReaderService<MetadataDocument> documentBundleReader;

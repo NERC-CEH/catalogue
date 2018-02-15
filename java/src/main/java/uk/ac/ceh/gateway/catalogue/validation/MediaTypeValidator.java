@@ -9,7 +9,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 
 /**
  * This is an example of a validator. This will should be removed
- * @author cjohn
  */
 public class MediaTypeValidator extends AbstractDocumentValidator {
 

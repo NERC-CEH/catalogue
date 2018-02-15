@@ -15,10 +15,6 @@ import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer.Feature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-/**
- *
- * @author cjohn
- */
 public class Gml2WmsFeatureInfoMessageConverterTest {
     private Gml2WmsFeatureInfoMessageConverter reader;
     

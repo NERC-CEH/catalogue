@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
  * 
  * If a layer is specified within a DataSource, this indicates that ogr should
  * be used as the connection type.
- * @author cjohn
  */
 @Data
 public class MapDataDefinition {

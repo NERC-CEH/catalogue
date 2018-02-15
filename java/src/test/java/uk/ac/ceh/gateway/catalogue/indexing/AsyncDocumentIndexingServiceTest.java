@@ -12,10 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- *
- * @author cjohn
- */
 public class AsyncDocumentIndexingServiceTest {
     @Mock ExecutorService executor;
     @Mock DocumentIndexingService proxy;

@@ -12,10 +12,6 @@ import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer.Feature;
 
-/**
- *
- * @author cjohn
- */
 public class WmsFeatureInfo2XmlMessageConverterTest {
     private WmsFeatureInfo2XmlMessageConverter converter;
     

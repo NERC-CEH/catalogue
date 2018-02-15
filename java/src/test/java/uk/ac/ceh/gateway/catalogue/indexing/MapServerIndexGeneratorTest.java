@@ -14,10 +14,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
-/**
- *
- * @author cjohn
- */
 public class MapServerIndexGeneratorTest {
     
     @Mock Configuration templateConfig;

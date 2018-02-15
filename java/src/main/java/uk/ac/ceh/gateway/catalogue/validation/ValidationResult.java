@@ -10,7 +10,6 @@ import lombok.Data;
  * Initially the result starts off in the VALID state. If the reject methods are
  * not called then the validation was successful. If a reject occurs, then we 
  * keep track of the worst severity level which we can then return as a summary.
- * @author cjohn
  */
 @Data
 public class ValidationResult {
