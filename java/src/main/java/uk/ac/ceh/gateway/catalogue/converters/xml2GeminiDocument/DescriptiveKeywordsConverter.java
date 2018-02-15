@@ -12,7 +12,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 
 public class DescriptiveKeywordsConverter {
     private static final String DESCRIPTIVE_KEYWORDS = "/*/gmd:identificationInfo/*/gmd:descriptiveKeywords/*";

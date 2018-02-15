@@ -8,7 +8,6 @@ import javax.xml.namespace.NamespaceContext;
  * Hardcode the namespaces you need
  * 
  * @see http://www.ibm.com/developerworks/xml/library/x-nmspccontext/index.html
- * @author cjohn
  */
 public class HardcodedOGCNamespaceResolver implements NamespaceContext {
 
@@ -31,7 +30,7 @@ public class HardcodedOGCNamespaceResolver implements NamespaceContext {
     }
 
     @Override
-    public Iterator getPrefixes(String namespaceURI) {
+    public Iterator<Object> getPrefixes(String namespaceURI) {
         return Collections.emptyIterator();
     }
 }

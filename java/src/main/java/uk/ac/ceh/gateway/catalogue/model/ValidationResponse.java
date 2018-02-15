@@ -7,10 +7,6 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.validation.ValidatorResult;
 
-/**
- *
- * @author cjohn
- */
 @ConvertUsing({
     @Template(called="html/validation.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })

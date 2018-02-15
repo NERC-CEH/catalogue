@@ -16,7 +16,6 @@ import org.springframework.util.ClassUtils;
  * subclass.
  * 
  * This class therefore adheres the @XmlAlsoSee annotation
- * @author Christopher Johnson
  */
 public class Jaxb2HttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
     private final String namespace, schemaLocation;
@@ -41,7 +40,7 @@ public class Jaxb2HttpMessageConverter extends Jaxb2RootElementHttpMessageConver
     @Override
     protected void writeToResult(Object o, HttpHeaders headers, Result result) throws IOException {
         try {
-            Class clazz = ClassUtils.getUserClass(o);
+            Class<?> clazz = ClassUtils.getUserClass(o);
             Marshaller marshaller = createMarshaller(clazz);
             marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, String.format("%s %s", namespace, schemaLocation));
             setCharset(headers.getContentType(), marshaller);

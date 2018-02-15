@@ -23,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 /**
  * The following emulates a Web accessible Folder of metadata records 
  * for NERC from the current catalogue
- * @author cjohn
  */
 @Controller
 @RequestMapping("documents/nerc/waf")

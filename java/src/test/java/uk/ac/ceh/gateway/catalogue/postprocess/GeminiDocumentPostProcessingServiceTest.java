@@ -25,10 +25,6 @@ import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
-/**
- *
- * @author cjohn
- */
 public class GeminiDocumentPostProcessingServiceTest {    
     @Mock CitationService citationService;
     @Mock DataciteService dataciteService;

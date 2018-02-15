@@ -30,7 +30,6 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
  * information to a BaseMonitoringType.
  * 
  * The logic in here is based upon: uk.ac.ceh.ukeof.linkstore.guava.LinkWrapper
- * @author cjohn
  */
 @Data
 public class BaseMonitoringTypePostProcessingService implements PostProcessingService<BaseMonitoringType> {

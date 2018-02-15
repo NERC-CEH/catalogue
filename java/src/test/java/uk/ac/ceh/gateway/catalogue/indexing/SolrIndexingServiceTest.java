@@ -32,10 +32,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
-/**
- *
- * @author cjohn
- */
 public class SolrIndexingServiceTest {
     
     @Mock BundledReaderService<GeminiDocument> reader;

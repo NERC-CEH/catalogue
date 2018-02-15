@@ -19,10 +19,6 @@ import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
 import java.util.Arrays;
 
-/**
- *
- * @author Christopher Johnson
- */
 @Controller
 @RequestMapping("maintenance")
 @Secured(DocumentController.MAINTENANCE_ROLE)

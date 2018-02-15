@@ -11,10 +11,6 @@ import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 
-/**
- *
- * @author cjohn
- */
 public class WmsFormatContentNegotiationStrategyTest {
     @Test
     public void checkThatCanReadMediaTypeFromQueryParameter() throws HttpMediaTypeNotAcceptableException {

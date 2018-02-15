@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.Arrays;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
@@ -11,13 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 
-/**
- *
- * @author cjohn
- */
 public class GeminiExtractorServiceTest {
     private GeminiExtractorService service;
     

@@ -5,7 +5,6 @@ import java.util.List;
 
 /**
  * The following defines a list of validation values from least severe to most.
- * @author cjohn
  */
 public enum ValidationLevel {
     VALID("Valid"), WARNING("Warning"), ERROR("Error"), FAILED_TO_READ("Failed to read");

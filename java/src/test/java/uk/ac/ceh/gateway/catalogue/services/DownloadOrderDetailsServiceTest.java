@@ -11,10 +11,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- * @author cjohn
- */
 public class DownloadOrderDetailsServiceTest {
     private final String eidchub = "http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*";
     private final String orderMan = "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*";

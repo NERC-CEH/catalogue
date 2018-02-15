@@ -14,10 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.xml.sax.SAXException;
 
-/**
- *
- * @author cjohn
- */
 @Configuration
 public class SchemaConfig {
     @Value("${schemas.location}") String schemas;

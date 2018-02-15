@@ -14,10 +14,6 @@ import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 
-/**
- *
- * @author cjohn
- */
 public class Xml2UKEOFDocumentMessageConverterTest {
     private UkeofXml2EFDocumentMessageConverter ukeofReader;
     

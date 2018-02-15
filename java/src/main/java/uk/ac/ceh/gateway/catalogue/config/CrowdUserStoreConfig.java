@@ -16,7 +16,6 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 /**
  * The following spring JavaConfig defines the beans required for the interacting
  * with a crowd userstore
- * @author cjohn
  */
 @Configuration
 @Profile("production")

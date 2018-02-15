@@ -23,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
  * The following HttpMessageConverter is responsible for transforming the
  * WmsFeatureInfo in to the xml format which a client would expect to be 
  * returned from an esri powered WMS GetFeatureInfo request (with type text/xml)
- * @author cjohn
  */
 public class WmsFeatureInfo2XmlMessageConverter extends AbstractHttpMessageConverter<WmsFeatureInfo> {
     public WmsFeatureInfo2XmlMessageConverter() {

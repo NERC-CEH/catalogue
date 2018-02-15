@@ -22,10 +22,6 @@ import uk.ac.ceh.gateway.catalogue.ef.Link;
 import uk.ac.ceh.gateway.catalogue.ef.Link.TimedLink;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SET_UP_FOR;
 
-/**
- *
- * @author cjohn
- */
 public class JenaIndexBaseMonitoringTypeGeneratorTest {
     @Mock JenaIndexMetadataDocumentGenerator generator;
     private JenaIndexBaseMonitoringTypeGenerator service;

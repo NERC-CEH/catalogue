@@ -13,10 +13,6 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.datastore.DataDocument;
 
-/**
- *
- * @author cjohn
- */
 public class DataDocumentResourceTest {
     @Mock DataDocument dataDocument;
     

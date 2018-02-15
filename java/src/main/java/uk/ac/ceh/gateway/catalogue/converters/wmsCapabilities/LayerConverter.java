@@ -12,10 +12,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 
-/**
- *
- * @author cjohn
- */
 public class LayerConverter {    
     private final XPathExpression layer, name, title, legendUrl;
     

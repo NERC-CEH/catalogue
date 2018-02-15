@@ -9,10 +9,6 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexingFileEventListener;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
-/**
- *
- * @author cjohn
- */
 @Configuration
 public class EventWiring {
     @Autowired EventBus bus;

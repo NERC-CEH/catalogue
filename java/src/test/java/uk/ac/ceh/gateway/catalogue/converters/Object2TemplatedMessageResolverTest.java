@@ -28,10 +28,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
-/**
- *
- * @author cjohn
- */
 public class Object2TemplatedMessageResolverTest {
     @Mock Configuration configuration;
     

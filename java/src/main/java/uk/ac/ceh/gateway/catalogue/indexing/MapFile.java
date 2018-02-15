@@ -15,7 +15,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 /**
  * The following defines a map file representation of a metadata document.
  * It provides the method for writing a map file to a given output writer.
- * @author cjohn
  */
 @AllArgsConstructor(access=AccessLevel.PACKAGE)
 public class MapFile {

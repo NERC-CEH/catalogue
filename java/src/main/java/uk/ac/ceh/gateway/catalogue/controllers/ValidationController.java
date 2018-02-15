@@ -20,10 +20,6 @@ import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 import uk.ac.ceh.gateway.catalogue.validation.ValidatorResult;
 import uk.ac.ceh.gateway.catalogue.validation.ValidatorResult.ValidatorState;
 
-/**
- *
- * @author cjohn
- */
 @Controller
 @Slf4j
 @RequestMapping("maintenance/validation")

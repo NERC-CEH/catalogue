@@ -26,10 +26,6 @@ import java.util.Map;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
 
-/**
- *
- * @author cjohn
- */
 public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConverter<WmsFeatureInfo> {
     private static final String LAYERS = "//msGMLOutput/*";
     private static final String FEATURES = "*[substring(name(),string-length(name())-7) = '_feature']";

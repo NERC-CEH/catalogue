@@ -4,10 +4,6 @@ import java.util.Map;
 import java.util.List;
 import lombok.Data;
 
-/**
- *
- * @author cjohn
- */
 @Data
 public class WmsFeatureInfo {
     private List<Layer> layers;

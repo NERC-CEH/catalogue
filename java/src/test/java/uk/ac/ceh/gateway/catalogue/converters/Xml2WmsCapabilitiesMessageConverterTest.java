@@ -16,10 +16,6 @@ import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 
-/**
- *
- * @author cjohn
- */
 public class Xml2WmsCapabilitiesMessageConverterTest {
     private Xml2WmsCapabilitiesMessageConverter capabilitiesReader;
     

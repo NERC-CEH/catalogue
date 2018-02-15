@@ -19,10 +19,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- *
- * @author cjohn
- */
 public class CitationServiceTest {
     @Test
     public void getLinkToCitationWithFormat() throws URISyntaxException {

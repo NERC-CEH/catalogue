@@ -8,7 +8,6 @@ import lombok.Data;
 /**
  * This class defines the a colour ramp which generates arbitary colours from 
  * the range. 
- * @author cjohn
  */
 public class ColourRamp {
     private final List<Range> steps;

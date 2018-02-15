@@ -7,10 +7,6 @@ import static org.mockito.Mockito.mock;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
-/**
- *
- * @author cjohn
- */
 public class HashMapDocumentTypeLookupServiceTest {
     @Test
     public void checkThatGeminiDocumentIsAssignedCorrectType() {

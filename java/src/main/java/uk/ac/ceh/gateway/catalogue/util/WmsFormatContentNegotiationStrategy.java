@@ -19,7 +19,6 @@ import org.springframework.web.context.request.NativeWebRequest;
  * This logic defined here is designed to support WMS style requests which state
  * that 'Parameter names shall not be case sensitive'
  * @see http://cite.opengeospatial.org/OGCTestData/wms/1.1.1/spec/wms1.1.1.html
- * @author cjohn
  */
 @Data
 @AllArgsConstructor

@@ -10,10 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ceh.components.userstore.crowd.CrowdEhCacheSupport;
 
-/**
- *
- * @author cjohn
- */
 @Configuration
 public class CachingConfig extends CachingConfigurerSupport {
     @Bean(destroyMethod="shutdown")

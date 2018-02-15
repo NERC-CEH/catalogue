@@ -23,10 +23,6 @@ import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
-/**
- *
- * @author cjohn
- */
 public class DataciteIndexingServiceTest {
     @Mock BundledReaderService<MetadataDocument> bundleReader;
     @Mock DataciteService datacite;

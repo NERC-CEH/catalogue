@@ -7,10 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.MediaType;
 
-/**
- * 
- * @author cjohn
- */
 @Data
 @AllArgsConstructor
 public class TransparentProxy {

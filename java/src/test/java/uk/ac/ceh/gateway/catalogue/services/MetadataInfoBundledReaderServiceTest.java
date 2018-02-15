@@ -22,14 +22,10 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 
-/**
- *
- * @author cjohn
- */
 public class MetadataInfoBundledReaderServiceTest {    
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DataRepository<CatalogueUser> repo;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService documentReader;
-    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper documentInfoMapper;
+    @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentTypeLookupService representationService;
     @Mock PostProcessingService postProcessingService;
     @Mock DocumentIdentifierService documentIdentifierService;

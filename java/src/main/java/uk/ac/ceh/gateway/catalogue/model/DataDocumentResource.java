@@ -7,10 +7,6 @@ import lombok.EqualsAndHashCode;
 import org.springframework.core.io.AbstractResource;
 import uk.ac.ceh.components.datastore.DataDocument;
 
-/**
- *
- * @author cjohn
- */
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class DataDocumentResource extends AbstractResource {

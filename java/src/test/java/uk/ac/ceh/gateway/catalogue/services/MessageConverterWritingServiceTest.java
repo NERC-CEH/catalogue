@@ -13,10 +13,6 @@ import static org.mockito.Mockito.when;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 
-/**
- *
- * @author cjohn
- */
 public class MessageConverterWritingServiceTest {
     private MessageConverterWritingService service;
     
@@ -34,7 +30,7 @@ public class MessageConverterWritingServiceTest {
         service.addMessageConverter(converter);
         
         //When
-        InputStream in = service.write(test, MediaType.TEXT_HTML);
+        service.write(test, MediaType.TEXT_HTML);
         
         //Then
         verify(converter).write(eq(test), eq(MediaType.TEXT_HTML), any());
@@ -44,10 +40,10 @@ public class MessageConverterWritingServiceTest {
     public void checkThatThrowsExceptionIfNoConverterIsAMatch() throws Exception {
         //Given
         String test = "TestObject";
-        HttpMessageConverter converter = mock(HttpMessageConverter.class);
+        mock(HttpMessageConverter.class);
         
         //When
-        InputStream in = service.write(test, MediaType.TEXT_HTML);
+        service.write(test, MediaType.TEXT_HTML);
         
         //Then
         fail("Expected to fail");

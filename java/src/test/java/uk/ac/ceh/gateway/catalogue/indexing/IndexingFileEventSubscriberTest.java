@@ -13,13 +13,26 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataSubmittedEvent;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
 public class IndexingFileEventSubscriberTest {
-    @Mock private SolrIndexingService<MetadataDocument> service;
-    @Mock private DataSubmittedEvent<?> event;
-    @Mock private DocumentListingService listingService;
+    @Mock
+    private SolrIndexingService<MetadataDocument> service;
+
+    @Mock
+    private DataSubmittedEvent<DataRepository<CatalogueUser>> event;
+
+    @Mock
+    private DocumentListingService listingService;
+
+    @Mock
+    private DataRepository<CatalogueUser> repo;
+
+    @Mock
+    private DataRevision<CatalogueUser> latestRevision;
+
     private IndexingFileEventListener eventSubscriber; 
     
     @Before
@@ -36,8 +49,6 @@ public class IndexingFileEventSubscriberTest {
         List<String> processedFilenames = Arrays.asList("asd", "trd");
         given(event.getFilenames()).willReturn(originalFilenames);
         given(listingService.filterFilenamesEitherExtension(originalFilenames)).willReturn(processedFilenames);
-        DataRepository repo = mock(DataRepository.class);
-        DataRevision latestRevision = mock(DataRevision.class);
         given(latestRevision.getRevisionID()).willReturn(revisionId);
         given(repo.getLatestRevision()).willReturn(latestRevision);
         given(event.getDataRepository()).willReturn(repo);

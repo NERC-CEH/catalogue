@@ -19,10 +19,6 @@ import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 
 import java.net.URISyntaxException;
 
-/**
- *
- * @author cjohn
- */
 @ControllerAdvice
 public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     

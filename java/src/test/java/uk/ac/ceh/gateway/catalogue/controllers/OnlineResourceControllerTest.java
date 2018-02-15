@@ -37,10 +37,6 @@ import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
-/**
- *
- * @author cjohn
- */
 public class OnlineResourceControllerTest {
     @Mock BundledReaderService<MetadataDocument> documentBundleReader;
     @Mock GetCapabilitiesObtainerService getCapabilitiesObtainerService;

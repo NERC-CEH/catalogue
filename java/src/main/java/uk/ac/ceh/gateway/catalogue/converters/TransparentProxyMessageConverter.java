@@ -20,9 +20,6 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
 
-/**
- * @author cjohn
- */
 @Data
 public class TransparentProxyMessageConverter implements HttpMessageConverter<TransparentProxy> {
     private final CloseableHttpClient httpClient;

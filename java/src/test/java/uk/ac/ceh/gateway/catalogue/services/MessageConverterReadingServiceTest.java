@@ -18,10 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
 
-/**
- *
- * @author cjohn
- */
 public class MessageConverterReadingServiceTest {
     @Spy List<HttpMessageConverter<?>> httpConverters;
     

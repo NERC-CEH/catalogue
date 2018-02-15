@@ -10,7 +10,6 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
  * The following is a validator which will read a document from the 
  * documentWritingService as a specified mediatype. It will then delegate the 
  * read InputStream to the subclasses #validate(InputStream) method.
- * @author cjohn
  */
 @Data
 @Slf4j

@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import static org.eclipse.jgit.util.HttpSupport.response;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -17,10 +16,6 @@ import org.springframework.http.client.ClientHttpResponse;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
 import uk.ac.ceh.gateway.catalogue.model.MapServerException;
 
-/**
- *
- * @author cjohn
- */
 public class MapServerGetFeatureInfoErrorHandlerTest {
     private MapServerGetFeatureInfoErrorHandler handler;
     

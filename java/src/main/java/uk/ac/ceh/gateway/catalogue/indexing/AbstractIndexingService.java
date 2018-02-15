@@ -21,7 +21,6 @@ import java.util.List;
  * Implementations of this class need to define the way in which the generated
  * index (I) gets indexed.
  * 
- * @author cjohn
  * @param <D> type of documents which get indexed
  * @param <I> indexable representation of a given document
  */

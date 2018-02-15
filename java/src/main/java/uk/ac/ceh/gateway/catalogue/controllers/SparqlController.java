@@ -19,10 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
 
-/**
- *
- * @author cjohn
- */
 @Controller
 @RequestMapping("maintenance/sparql")
 @Secured(DocumentController.MAINTENANCE_ROLE)

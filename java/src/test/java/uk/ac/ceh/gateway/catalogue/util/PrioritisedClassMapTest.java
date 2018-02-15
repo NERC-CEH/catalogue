@@ -11,10 +11,6 @@ import static org.hamcrest.Matchers.nullValue;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- *
- * @author cjohn
- */
 public class PrioritisedClassMapTest {
     @Test
     public void canFindExactMatch() {

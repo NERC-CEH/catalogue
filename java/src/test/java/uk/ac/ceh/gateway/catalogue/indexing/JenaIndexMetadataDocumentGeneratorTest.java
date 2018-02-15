@@ -13,10 +13,6 @@ import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
-/**
- *
- * @author rjsc
- */
 public class JenaIndexMetadataDocumentGeneratorTest {
   private JenaIndexMetadataDocumentGenerator generator;
   @Mock private DocumentIdentifierService service;

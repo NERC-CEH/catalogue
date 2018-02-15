@@ -13,7 +13,6 @@ import org.springframework.web.context.request.NativeWebRequest;
  * 
  * This is useful when proxying wms services, as it allows the format parameter 
  * to just passthrough. 
- * @author cjohn
  */
 public class ForgivingParameterContentNegotiationStrategy extends ParameterContentNegotiationStrategy {
     

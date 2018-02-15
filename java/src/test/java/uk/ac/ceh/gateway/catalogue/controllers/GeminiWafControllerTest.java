@@ -22,10 +22,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
-/**
- *
- * @author cjohn
- */
 public class GeminiWafControllerTest {
     @Mock(answer=RETURNS_DEEP_STUBS) DataRepository repo;
     @Mock(answer=RETURNS_DEEP_STUBS) MetadataListingService listingService;

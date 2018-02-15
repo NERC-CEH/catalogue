@@ -22,10 +22,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.Projection;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService.MapBucketDetails;
 
-/**
- *
- * @author cjohn
- */
 public class MapServerDetailsServiceTest {
     private @Mock CatalogueService catalogueService;
     private MapServerDetailsService service;

@@ -9,10 +9,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.Before;
 
-/**
- *
- * @author rjsc
- */
 public class ServiceTest {
     private ObjectMapper mapper;
     

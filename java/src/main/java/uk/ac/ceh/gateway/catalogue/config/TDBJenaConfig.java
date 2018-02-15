@@ -6,10 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- *
- * @author cjohn
- */
 @Configuration
 public class TDBJenaConfig {
     @Value("${jena.location}") String location;

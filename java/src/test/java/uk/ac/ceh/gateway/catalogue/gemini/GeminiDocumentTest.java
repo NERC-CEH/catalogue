@@ -13,10 +13,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- *
- * @author cjohn
- */
 public class GeminiDocumentTest {
     @Test
     public void checkIfIsMapViewableIfGetCapabilitiesOnlineResourceExists() {

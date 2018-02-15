@@ -25,7 +25,6 @@ import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 /**
  * The following simple controller just hands off a request to on of our 
  * templates
- * @author cjohn
  */
 @CrossOrigin
 @Controller

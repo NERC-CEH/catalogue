@@ -17,10 +17,6 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 
-/**
- *
- * @author cjohn
- */
 public class MetadataInfoTest {
     @Test
     public void checkThatMetadataInfoCanParseMediaType() {

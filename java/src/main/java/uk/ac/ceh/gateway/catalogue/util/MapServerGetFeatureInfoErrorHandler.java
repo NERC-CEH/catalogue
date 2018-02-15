@@ -11,7 +11,6 @@ import uk.ac.ceh.gateway.catalogue.model.MapServerException;
 /**
  * If the response from the MapServer does not use the GML media type, then we
  * can assume that the request is in error.
- * @author cjohn
  */
 public class MapServerGetFeatureInfoErrorHandler implements ResponseErrorHandler {
     @Override
