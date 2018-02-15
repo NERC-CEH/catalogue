@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
  * @author cjohn
  */
 public class MapServerException extends RuntimeException {
+    static final long serialVersionUID = 1L;
     @Getter private final MediaType contentType;
     @Getter private final HttpStatus statusCode;
     

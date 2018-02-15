@@ -7,6 +7,7 @@ package uk.ac.ceh.gateway.catalogue.model;
  * @author cjohn
  */
 public class UpstreamInvalidMediaTypeException extends TransparentProxyException {
+    static final long serialVersionUID = 1L;
     
     public UpstreamInvalidMediaTypeException(String mess, TransparentProxy request) {
         this(mess, null, request);

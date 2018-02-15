@@ -17,7 +17,7 @@ public class CachingConfigTest {
     private CachingConfig config;
     
     @Before
-    public void CachingConfigTest() {
+    public void cachingConfigTest() {
         config = new CachingConfig();
     }
     

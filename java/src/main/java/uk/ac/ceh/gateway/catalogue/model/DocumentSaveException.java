@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
 public class DocumentSaveException extends RuntimeException {
+    static final long serialVersionUID = 1L;
 
     public DocumentSaveException() {
         super();

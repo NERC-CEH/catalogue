@@ -23,8 +23,9 @@ public class DataRepositoryOptimizingService {
     @Scheduled(cron="0 0 0 * * ?")
     public void performOptimization() throws DataRepositoryException {
         if(repo instanceof GitDataRepository) {
+            GitDataRepository<CatalogueUser> gitRepo =  (GitDataRepository<CatalogueUser>) repo;
             log.info("DataRepository Optimization Start");
-            ((GitDataRepository)repo).optimize();
+            gitRepo.optimize();
             this.lastOptimized = Calendar.getInstance().getTime();
         }
         else {

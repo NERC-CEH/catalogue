@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.Set;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 /**
  * This is the interface for a metadata document. Specific implementations such 

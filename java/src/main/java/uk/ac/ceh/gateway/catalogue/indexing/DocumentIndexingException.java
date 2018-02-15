@@ -3,11 +3,9 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author cjohn
- */
 public class DocumentIndexingException extends Exception {
+    static final long serialVersionUID = 1L;
+
     private final List<String> suppressedDocuments = new ArrayList<>();
     
     public DocumentIndexingException() {

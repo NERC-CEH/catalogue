@@ -9,6 +9,7 @@ public class IndexGeneratorRegistry<D, I> implements IndexGenerator<D, I> {
         
     @Override
     public I generateIndex(D toIndex) throws DocumentIndexingException {
+        @SuppressWarnings("unchecked")
         IndexGenerator<D, I> indexGenerator = (IndexGenerator<D, I>) lookup.get(toIndex.getClass());
         if(indexGenerator == null) {
             throw new DocumentIndexingException("No Index Generator registered to handle " + toIndex);

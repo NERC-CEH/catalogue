@@ -1,10 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-/**
- *
- * @author cjohn
- */
 public class ExternalResourceFailureException extends RuntimeException {
+    static final long serialVersionUID = 1L;
+
     public ExternalResourceFailureException(String mess) {
         super(mess);
     }

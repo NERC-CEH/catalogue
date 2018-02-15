@@ -9,6 +9,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
  * @author cjohn
  */
 public class TransparentProxyException extends HttpMessageNotReadableException {
+    static final long serialVersionUID = 1L;
     private final @Getter TransparentProxy request;
 
     public TransparentProxyException(String mess, TransparentProxy request) {
