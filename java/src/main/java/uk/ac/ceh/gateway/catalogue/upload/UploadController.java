@@ -54,7 +54,7 @@ public class UploadController  {
         val uploadId = geminiDocument.getUploadId();
         val exists = uploadId != null;
 
-        if (canUpload && !exists) {
+        if ((canView || canUpload) && !exists) {
             val uploadDocument = uploadDocumentService.create(user, geminiDocument);
             return new RedirectView(String.format("/documents/%s", uploadDocument.getId()));
         } else if ((canView || canUpload) && exists) {
