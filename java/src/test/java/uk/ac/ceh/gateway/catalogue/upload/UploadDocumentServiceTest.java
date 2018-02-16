@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 
 import lombok.SneakyThrows;
@@ -54,9 +55,9 @@ public class UploadDocumentServiceTest {
 
 
         val physicalLocations = new HashMap<String, String>();
-        physicalLocations.put("documents", "\\\\physical\\location");
-        physicalLocations.put("datastore", "\\\\physical\\location");
-        physicalLocations.put("plone", "\\\\physical\\location");
+        physicalLocations.put("documents", "\\physical\\location");
+        physicalLocations.put("datastore", "\\physical\\location");
+        physicalLocations.put("plone", "\\physical\\location");
         
         service = new UploadDocumentService(documentRepository, folders, physicalLocations);
         val geminiDocument = new GeminiDocument();
@@ -148,6 +149,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     public void move_fromOnePlaceToAnother () {
+        cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/file.txt");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
 
@@ -157,6 +159,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     public void move_zipFromOnePlaceToAnotherTakesAllFilesWithIt () {
+        cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
 
@@ -174,6 +177,7 @@ public class UploadDocumentServiceTest {
     @Test
     @SneakyThrows
     public void move_subZip () {
+        cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
 
@@ -229,11 +233,10 @@ public class UploadDocumentServiceTest {
     @Test
     @SneakyThrows
     public void zip () {
-        val file = new File(dropboxFolder, "guid/zip.zip");        
+        cleanDefaultInvalid();
+
+        val file = new File(dropboxFolder, "guid/zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
-        
-        uploadDocument.getUploadFiles().get("datastore").setInvalid(Maps.newHashMap());
-        uploadDocument.getUploadFiles().get("documents").setInvalid(Maps.newHashMap());
 
         service.zip(CatalogueUser.PUBLIC_USER, uploadDocument);
 
@@ -245,11 +248,10 @@ public class UploadDocumentServiceTest {
     @Test
     @SneakyThrows
     public void zip_doesNothingIfAlreadyZipped () {
+        cleanDefaultInvalid();
+
         val file = new File(dropboxFolder, "guid/zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
-
-        uploadDocument.getUploadFiles().get("datastore").setInvalid(Maps.newHashMap());
-        uploadDocument.getUploadFiles().get("documents").setInvalid(Maps.newHashMap());
 
         service.zip(CatalogueUser.PUBLIC_USER, uploadDocument);
         service.zip(CatalogueUser.PUBLIC_USER, uploadDocument);
@@ -262,6 +264,7 @@ public class UploadDocumentServiceTest {
     @Test
     @SneakyThrows
     public void unzip () {
+        cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
 
@@ -276,6 +279,7 @@ public class UploadDocumentServiceTest {
     @Test
     @SneakyThrows
     public void unzip_doesNothingIfNotCorrectlyZipped () {
+        cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
         
@@ -299,5 +303,13 @@ public class UploadDocumentServiceTest {
     private void assertThatInvalidDoesNotHaveFile(String name, File folder, String filename) {
         val documents = uploadDocument.getUploadFiles().get(name).getInvalid();
         assertThat(documents.keySet(), not(hasItem(is(new File(folder, filename).getAbsolutePath()))));
+    }
+
+    @SneakyThrows
+    private void cleanDefaultInvalid () {
+        val changedFile = new File(dropboxFolder, "guid/changed.txt");
+        service.acceptInvalid(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", changedFile.getAbsolutePath());
+        val unknownFile = new File(dropboxFolder, "guid/unknown.txt");
+        service.delete(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", unknownFile.getAbsolutePath());
     }
 }

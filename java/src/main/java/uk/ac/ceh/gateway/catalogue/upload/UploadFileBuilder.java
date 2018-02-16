@@ -22,7 +22,7 @@ public class UploadFileBuilder {
         String name = extractName(directory, file);
 
         uploadFile.setPath(file.getAbsolutePath());
-        uploadFile.setPhysicalLocation(String.format("%s\\%s", physicalLocation, name.replace("/", "\\")));
+        uploadFile.setPhysicalLocation(FilenameUtils.separatorsToWindows(String.format("%s/%s", physicalLocation, name)));
         uploadFile.setType(type);
         uploadFile.setHash(hash);
         uploadFile.setId(name.replaceAll("[^\\w?]", "-"));
