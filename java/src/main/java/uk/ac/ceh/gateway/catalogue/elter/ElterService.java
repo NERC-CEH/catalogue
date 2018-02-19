@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.services;
+package uk.ac.ceh.gateway.catalogue.elter;
 
 import java.util.List;
 import org.apache.solr.client.solrj.SolrServer;
@@ -8,6 +8,7 @@ import uk.ac.ceh.gateway.catalogue.elter.ManufacturerDocument;
 import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+import uk.ac.ceh.gateway.catalogue.services.SolrDocumentFinder;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 

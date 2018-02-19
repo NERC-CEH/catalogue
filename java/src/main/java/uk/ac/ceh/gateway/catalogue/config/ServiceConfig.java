@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.EventBus;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
@@ -32,8 +31,13 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.converters.*;
 import uk.ac.ceh.gateway.catalogue.ef.*;
+import uk.ac.ceh.gateway.catalogue.elter.ElterService;
+import uk.ac.ceh.gateway.catalogue.elter.FeatureOfInterestDocument;
+import uk.ac.ceh.gateway.catalogue.elter.InputDocument;
 import uk.ac.ceh.gateway.catalogue.elter.ManufacturerDocument;
+import uk.ac.ceh.gateway.catalogue.elter.ObservationPlaceholderDocument;
 import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
+import uk.ac.ceh.gateway.catalogue.elter.TemporalProcedureDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
@@ -94,7 +98,6 @@ public class ServiceConfig {
     @Autowired private DataRepository<CatalogueUser> dataRepository;
     @Autowired private Dataset jenaTdb;
     @Autowired private SolrServer solrServer;
-    @Autowired private EventBus bus;
     @Autowired private CodeLookupService codeLookupService;
     @Autowired private GroupStore<CatalogueUser> groupStore;
     @Autowired private CatalogueService catalogueService;
@@ -222,6 +225,10 @@ public class ServiceConfig {
         // eLTER converters
         converters.add(new Object2TemplatedMessageConverter<>(SensorDocument.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(ManufacturerDocument.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(FeatureOfInterestDocument.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(ObservationPlaceholderDocument.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(InputDocument.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(TemporalProcedureDocument.class, freemarkerConfiguration()));
 
         converters.add(new Object2TemplatedMessageConverter<>(UploadDocument.class, freemarkerConfiguration()));
 
@@ -318,9 +325,13 @@ public class ServiceConfig {
                 .register(OSDP_PUBLICATION_SHORT, Publication.class)
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
-                .register(ELTER_SENSOR_DOCUMENT_SHORT, SensorDocument.class)
                 .register(UPLOAD_DOCUMENT_SHORT, UploadDocument.class)
-                .register(ELTER_MANUFACTURER_DOCUMENT_SHORT, ManufacturerDocument.class);
+                .register(ELTER_SENSOR_DOCUMENT_SHORT, SensorDocument.class)
+                .register(ELTER_MANUFACTURER_DOCUMENT_SHORT, ManufacturerDocument.class)
+                .register(ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT, FeatureOfInterestDocument.class)
+                .register(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT, ObservationPlaceholderDocument.class)
+                .register(ELTER_INPUT_DOCUMENT_SHORT, InputDocument.class)
+                .register(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT, TemporalProcedureDocument.class);
     }
     
     @Bean

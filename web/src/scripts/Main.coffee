@@ -43,6 +43,7 @@ define [
   'cs!views/ElterEditorView'
   'tpl!templates/Sensor.tpl'
   'tpl!templates/Manufacturer.tpl'
+  'tpl!templates/FeatureOfInterest.tpl'
   'bootstrap'
   'dropzone'
 ], (
@@ -52,7 +53,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ElterEditorView, SensorTpl, ManufacturerTpl
+    ElterEditorView, SensorTpl, ManufacturerTpl, FeatureOfInterestTpl
 ) ->
 
   ###
@@ -82,11 +83,15 @@ define [
       sensor:
         view: ElterEditorView
         template: SensorTpl
-        mediaType: 'application/vnd.elter-sensor-document+json'
+        mediaType: 'application/vnd.sensor-document+json'
       manufacturer:
         view: ElterEditorView
         template: ManufacturerTpl
-        mediaType: 'application/vnd.elter-manufacturer-document+json'
+        mediaType: 'application/vnd.manufacturer-document+json'
+      'feature-of-interest':
+        view: ElterEditorView
+        template: FeatureOfInterestTpl
+        mediaType: 'application/vnd.feature-of-interest-document+json'
 
     document = $('.new-form').data('document')
     guid = $('.new-form').data('guid')
@@ -221,13 +226,18 @@ define [
       'Sensor':
         View: ElterEditorView
         Model: EditorMetadata
-        mediaType: 'application/vnd.elter-sensor-document+json'
+        mediaType: 'application/vnd.sensor-document+json'
         template: SensorTpl
       'Manufacturer':
         View: ElterEditorView
         Model: EditorMetadata
         template: ManufacturerTpl
-        mediaType: 'application/vnd.elter-manufacturer-document+json'
+        mediaType: 'application/vnd.manufacturer-document+json'
+      'Feature of Interest':
+        View: ElterEditorView
+        Model: EditorMetadata
+        template: FeatureOfInterestTpl
+        mediaType: 'application/vnd.feature-of-interest-document+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'

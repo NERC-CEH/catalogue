@@ -52,8 +52,8 @@
 <#macro input name type="text" class="" value="" placeholder="" id="" pattern="" errorName="" errorMessage="">
     <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}" <#if pattern != "">pattern="${pattern}"</#if> data-error-name="${errorName}" data-error-message="${errorMessage}">
 </#macro>
-<#macro select name id="">
-    <select ${disabled} id="${id}" name="${name}">
+<#macro select name id="" class="">
+    <select ${disabled} id="${id}" name="${name}" class="${class}">
         <#nested>
     </select>
 </#macro>
@@ -75,4 +75,8 @@
     <#if readonly == "">
         <a id="" href='#' class="delete delete-${name}"><i class="fa fa-times"></i></a>
     </#if>
+</#macro>
+
+<#macro link name label href="#">
+    <a id="" href="${href}" class="link link-${name}">${label}</a>
 </#macro>

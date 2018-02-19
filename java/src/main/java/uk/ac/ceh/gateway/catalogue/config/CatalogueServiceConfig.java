@@ -94,13 +94,33 @@ public class CatalogueServiceConfig {
             .build();
         
         DocumentType elterSensor = DocumentType.builder()
-            .title("eLTER Sensor")
+            .title("Sensor")
             .type(ELTER_SENSOR_DOCUMENT_SHORT)
             .build();
         
         DocumentType elterManufacturer = DocumentType.builder()
-            .title("eLTER Manufacturer")
+            .title("Manufacturer")
             .type(ELTER_MANUFACTURER_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterFeatureOfInterest = DocumentType.builder()
+            .title("Feature Of Interest")
+            .type(ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterObservationPlaceholder = DocumentType.builder()
+            .title("Oberstion Placeholder")
+            .type(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterTemporalProcedure = DocumentType.builder()
+            .title("Temporal Procedure")
+            .type(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterInput = DocumentType.builder()
+            .title("Input")
+            .type(ELTER_INPUT_DOCUMENT_SHORT)
             .build();
 
         return new InMemoryCatalogueService(
@@ -246,6 +266,10 @@ public class CatalogueServiceConfig {
                 .facetKey("manufacturerName")
                 .documentType(elterSensor)
                 .documentType(elterManufacturer)
+                .documentType(elterFeatureOfInterest)
+                .documentType(elterObservationPlaceholder)
+                .documentType(elterTemporalProcedure)
+                .documentType(elterInput)
                 .fileUpload(false)
                 .build()
         );
