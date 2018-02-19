@@ -8,12 +8,6 @@
         <div class='head'>
             <input name="title" type="text" class='title' placeholder="Title" required data-error-message="Title is required" data-error-name="title">
         </div>
-        <div class='body'>
-            <div class='value value-link' data-name="website">
-                <label><a href="#">Website</a></label>
-                <input name="website" placeholder="Manufacturer Website" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$" data-error-name="documentation" data-error-message="Not a valid url, needs to be http(s)://url">
-            </div>
-        </div>
     </form>
     <a href="/elter/documents" class="btn btn-link">
         <i class="fa fa-files-o" aria-hidden="true"></i>

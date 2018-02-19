@@ -41,10 +41,6 @@ define [
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
   'cs!views/ElterEditorView'
-  'tpl!templates/Sensor.tpl'
-  'tpl!templates/Manufacturer.tpl'
-  'tpl!templates/FeatureOfInterest.tpl'
-  'tpl!templates/ObservationPlaceholder.tpl'
   'bootstrap'
   'dropzone'
 ], (
@@ -54,7 +50,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ElterEditorView, SensorTpl, ManufacturerTpl, FeatureOfInterestTpl, ObservationPlaceholderTpl
+    ElterEditorView
 ) ->
 
   ###
@@ -80,36 +76,15 @@ define [
     do Backbone.history.start
 
   newForm: ->
-    formMap =
-      sensor:
-        view: ElterEditorView
-        template: SensorTpl
-        mediaType: 'application/vnd.sensor-document+json'
-      manufacturer:
-        view: ElterEditorView
-        template: ManufacturerTpl
-        mediaType: 'application/vnd.manufacturer-document+json'
-      'feature-of-interest':
-        view: ElterEditorView
-        template: FeatureOfInterestTpl
-        mediaType: 'application/vnd.feature-of-interest-document+json'
-      'observation-placeholder':
-        view: ElterEditorView
-        template: ObservationPlaceholderTpl
-        mediaType: 'application/vnd.observation-placeholder-document+json'
-
     document = $('.new-form').data('document')
     guid = $('.new-form').data('guid')
-
-    form = formMap[document]
     if form
       app = new EditorMetadata null,
-        mediaType: form.mediaType
+        mediaType: 'application/vnd.' + document + '-document+json'
       app.id = guid
       app.set('id', guid)
-      view = new form.view
+      view = new ElterEditorView
         model: app
-        template: form.template
 
   initDepositRequest: ->
     app = new DepositRequestModel
@@ -232,22 +207,22 @@ define [
         View: ElterEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.sensor-document+json'
-        template: SensorTpl
       'Manufacturer':
         View: ElterEditorView
         Model: EditorMetadata
-        template: ManufacturerTpl
         mediaType: 'application/vnd.manufacturer-document+json'
       'Feature of Interest':
         View: ElterEditorView
         Model: EditorMetadata
-        template: FeatureOfInterestTpl
         mediaType: 'application/vnd.feature-of-interest-document+json'
       'Observation Placeholder':
         View: ElterEditorView
         Model: EditorMetadata
-        template: ObservationPlaceholderTpl
         mediaType: 'application/vnd.observation-placeholder-document+json'
+      'Temporal Procedure':
+        View: ElterEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.temporal-procedure-document+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
@@ -262,7 +237,6 @@ define [
         new documentType.View
           model: new documentType.Model null, documentType
           el: '#search'
-          template: documentType.template
       else
         $.ajax
           url: $(location).attr('href')
@@ -273,7 +247,6 @@ define [
             new documentType.View
               model: new documentType.Model data, documentType
               el: '#metadata'
-              template: documentType.template
 
   ###
   Initialize the permission application

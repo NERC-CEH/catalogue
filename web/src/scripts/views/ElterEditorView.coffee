@@ -4,12 +4,14 @@ define [
   'tpl!templates/NewFormError.tpl'
   'tpl!templates/DefaultParameter.tpl'
   'tpl!templates/ManufacturerSelect.tpl'
+  'tpl!templates/NewFormTitle.tpl'
 ], (
   _
   Backbone
   NewFormError
   DefaultParameter
   Manufacturer
+  NewFormTitle
 ) -> Backbone.View.extend
   timeout: null
   shouldSave: false
@@ -18,7 +20,7 @@ define [
     if $('.new-form').length == 0
       $('#loading').hide()
       $('.search').hide()
-      $('.search').after(options.template())
+      $('.search').after(NewFormTitle())
       @shouldRedirect = true
     else
       do @model.fetch
