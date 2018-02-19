@@ -19,7 +19,7 @@
             <@form.valueLink label="Website" name="website">
                 <@form.input name="website" placeholder="Website" value="${website!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$" errorName="website" errorMessage="Not a valid url, needs to be http(s)://url"></@form.input>
             </@form.valueLink>
-            <@form.value label="Sensors">
+            <@form.value label="Manufactured">
                 <ul id="sensors" class="list-unstyled">
                     <li>Retriving</li>
                 </ul>

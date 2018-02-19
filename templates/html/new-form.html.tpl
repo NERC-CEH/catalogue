@@ -8,10 +8,10 @@
 
 <#macro master document>
     <div class="container">
-        <h3 id="loading" class="alert alert-info">
+        <h3 id="loading" class="alert alert-info static-message">
             <i class='fa fa-circle-o-notch fa-spin '></i> Loading ...
         </h3>
-        <h3 id="saved" class="alert alert-info" style="display: none;">
+        <h3 id="saved" class="alert alert-info static-message" style="display: none;">
             <i class="fa fa-save"></i> Saved
         </h3>
         <form id="form" class="new-form ${readonly}" data-document="${document}" data-guid="${id}" novalidate>
