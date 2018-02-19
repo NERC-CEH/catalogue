@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import lombok.SneakyThrows;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -22,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
+import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
 
 @Controller
 @RequestMapping(value = "documents/{file}/permission")
@@ -60,11 +64,24 @@ public class PermissionController {
             @RequestBody PermissionResource permissionResource) 
         throws DocumentRepositoryException {
         MetadataDocument document = documentRepository.read(file);
+        if (document instanceof GeminiDocument) {
+            GeminiDocument geminiDocument = (GeminiDocument) document;
+            String uploadId = geminiDocument.getUploadId();
+            if (uploadId != null) copyPermission(user, documentRepository.read(uploadId), permissionResource);
+        }
         document.setMetadata(removeAddedPublicGroupIfNotPublisher(document.getMetadata(), permissionResource));
         documentRepository.save(user, document, file, String.format("Permissions of %s changed.", file));
         return ResponseEntity.ok(new PermissionResource(document)); 
     }
     
+    @SneakyThrows
+    private void copyPermission (CatalogueUser user, MetadataDocument document, PermissionResource permissionResource) {
+        MetadataInfo metadataInfo = document.getMetadata();
+        metadataInfo = metadataInfo.replaceAllPermissions(permissionResource.getPermissions());
+        document.setMetadata(metadataInfo);
+        documentRepository.save(user, document, String.format("Permissions of %s changed.", document.getId()));
+    }
+
     private MetadataInfo removeAddedPublicGroupIfNotPublisher(MetadataInfo original, PermissionResource permissionResource) {
         MetadataInfo toReturn; 
         
