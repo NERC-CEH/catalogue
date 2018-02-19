@@ -16,6 +16,15 @@
             <@form.title title=title></@form.title>
         </@form.head>
         <@form.body>
+            <@form.value label="ID">
+                input
+            </@form.value>
+            <@form.value label="Parameter Value">
+                input
+            </@form.value>
+            <@form.value label="Temporal Anchor">
+                radio
+            </@form.value>
         </@form.body>
     </@form.master>
     <#include "_admin.html.tpl">

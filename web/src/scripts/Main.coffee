@@ -223,6 +223,10 @@ define [
         View: ElterEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.temporal-procedure-document+json'
+      'Input':
+        View: ElterEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.input-document+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
