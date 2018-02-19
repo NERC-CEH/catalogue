@@ -16,6 +16,41 @@
             <@form.title title=title></@form.title>
         </@form.head>
         <@form.body>
+            <@form.value label="Signature">
+                <ul class="list-unstyled">
+                    <li>
+                        temporal entity
+                    </li>
+                </ul>
+            </@form.value>
+            <@form.value label="Routed To">
+                <ul class="list-unstyled">
+                    <li>
+                        input string
+                    </li>
+                </ul>
+            </@form.value>
+            <@form.value label="User By">
+                <ul class="list-unstyled">
+                    <li>
+                        input string
+                    </li>
+                </ul>
+            </@form.value>
+            <@form.value label="Visible Through">
+                <ul class="list-unstyled">
+                    <li>
+                        temporal procedure string
+                    </li>
+                </ul>
+            </@form.value>
+            <@form.value label="Controls Frequency Of">
+                <ul class="list-unstyled">
+                    <li>
+                        input string
+                    </li>
+                </ul>
+            </@form.value>
         </@form.body>
     </@form.master>
     <#include "_admin.html.tpl">

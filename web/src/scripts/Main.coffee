@@ -44,6 +44,7 @@ define [
   'tpl!templates/Sensor.tpl'
   'tpl!templates/Manufacturer.tpl'
   'tpl!templates/FeatureOfInterest.tpl'
+  'tpl!templates/ObservationPlaceholder.tpl'
   'bootstrap'
   'dropzone'
 ], (
@@ -53,7 +54,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ElterEditorView, SensorTpl, ManufacturerTpl, FeatureOfInterestTpl
+    ElterEditorView, SensorTpl, ManufacturerTpl, FeatureOfInterestTpl, ObservationPlaceholderTpl
 ) ->
 
   ###
@@ -92,6 +93,10 @@ define [
         view: ElterEditorView
         template: FeatureOfInterestTpl
         mediaType: 'application/vnd.feature-of-interest-document+json'
+      'observation-placeholder':
+        view: ElterEditorView
+        template: ObservationPlaceholderTpl
+        mediaType: 'application/vnd.observation-placeholder-document+json'
 
     document = $('.new-form').data('document')
     guid = $('.new-form').data('guid')
@@ -238,6 +243,11 @@ define [
         Model: EditorMetadata
         template: FeatureOfInterestTpl
         mediaType: 'application/vnd.feature-of-interest-document+json'
+      'Observation Placeholder':
+        View: ElterEditorView
+        Model: EditorMetadata
+        template: ObservationPlaceholderTpl
+        mediaType: 'application/vnd.observation-placeholder-document+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
