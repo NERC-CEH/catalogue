@@ -3,20 +3,22 @@ define [
   'backbone'
   'tpl!templates/NewFormError.tpl'
   'tpl!templates/DefaultParameter.tpl'
-  'tpl!templates/ManufacturerSelect.tpl'
   'tpl!templates/NewFormTitle.tpl'
+  'cs!views/ElterEditorViewFunctions'
 ], (
   _
   Backbone
   NewFormError
   DefaultParameter
-  Manufacturer
   NewFormTitle
+  ElterEditorViewFunctions
 ) -> Backbone.View.extend
   timeout: null
   shouldSave: false
   shouldRedirect: false
   initialize: (options) ->
+    @elter = ElterEditorViewFunctions(@, @model)
+
     if $('.new-form').length == 0
       $('#loading').hide()
       $('.search').hide()
@@ -30,7 +32,8 @@ define [
       do @updateLinks
       do @initInputs
       do @renderDefaultParameters
-      do @updateManufacturers
+
+      do @elter.update
 
       window.location.href = '/documents/' + @model.get('id') if @shouldRedirect
 
@@ -83,9 +86,11 @@ define [
         break
 
   initDelete: ->
+    $('.delete-document').unbind 'click'
     $('.delete-document').click =>
       do @model.destroy
-        success: -> window.location.href = '/elter/documents'
+        success: => window.location.href = '/' + @model.get('catalogue') + '/documents'
+        error: => window.location.href = '/' + @model.get('catalogue') + '/documents'
 
   updateLinks: ->
     $('.value-link').each (index, link) =>
@@ -155,33 +160,3 @@ define [
     @shouldSave = true
     $('#form').submit()
 
-  initManufacturer: ->
-    $('#manufacturer').unbind 'change'
-    $('#manufacturer').change =>
-      $('.other-manufacturer').remove()
-      value = $('#manufacturer').val()
-      @model.set('manufacturer', value)
-      if value == 'other'
-        $('#manufacturer').parent().after(Manufacturer())
-        do @initInputs
-        do @initManufacturer
-      else
-        do @save
-
-  updateManufacturers: ->
-    $('.other-manufacturer').remove()
-
-    if $('#manufacturer').length
-      $.ajax
-        type: 'GET'
-        url: '/elter/manufacturers'
-        headers:
-          Accept: "application/json"
-        success: (manufacturers) =>
-          $('#manufacturer').html('')
-          for index, manufacturer of manufacturers
-            $('#manufacturer').append('<option value="' + manufacturer.id + '">' + manufacturer.title + '</option>')
-          $('#manufacturer').append('<option id="other-manufacturer" value="other"">Other</option>')
-          $('#manufacturer').val(@model.get('manufacturer'))
-    
-    do @initManufacturer

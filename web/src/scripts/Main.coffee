@@ -40,7 +40,7 @@ define [
   'cs!views/SampleArchiveEditorView'
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
-  'cs!views/ElterEditorView'
+  'cs!views/NewEditorView'
   'bootstrap'
   'dropzone'
 ], (
@@ -50,7 +50,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ElterEditorView
+    NewEditorView
 ) ->
 
   ###
@@ -77,13 +77,18 @@ define [
 
   newForm: ->
     document = $('.new-form').data('document')
+    catalogue = $('html').data('catalogue')
     guid = $('.new-form').data('guid')
+
     if form
       app = new EditorMetadata null,
         mediaType: 'application/vnd.' + document + '-document+json'
       app.id = guid
       app.set('id', guid)
-      view = new ElterEditorView
+      app.catalogue = catalogue
+      app.set('catalogue', catalogue)
+      
+      view = new NewEditorView
         model: app
 
   initDepositRequest: ->
@@ -204,27 +209,27 @@ define [
         Model: EditorMetadata
         mediaType: 'application/vnd.sample-archive+json'
       'Sensor':
-        View: ElterEditorView
+        View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.sensor-document+json'
       'Manufacturer':
-        View: ElterEditorView
+        View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.manufacturer-document+json'
       'Feature of Interest':
-        View: ElterEditorView
+        View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.feature-of-interest-document+json'
       'Observation Placeholder':
-        View: ElterEditorView
+        View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.observation-placeholder-document+json'
       'Temporal Procedure':
-        View: ElterEditorView
+        View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.temporal-procedure-document+json'
       'Input':
-        View: ElterEditorView
+        View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.input-document+json'
 
