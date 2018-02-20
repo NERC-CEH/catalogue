@@ -1,7 +1,6 @@
 variables:
   CONTAINER_APPLICATION_IMAGE: registry.gitlab.ceh.ac.uk/eip/catalogue:app-$CI_BUILD_REF_NAME
   CONTAINER_SOLR_IMAGE:        registry.gitlab.ceh.ac.uk/eip/catalogue:solr-$CI_BUILD_REF_NAME
-  CONTAINER_MAPSERVER_IMAGE:   registry.gitlab.ceh.ac.uk/eip/catalogue:mapserver-$CI_BUILD_REF_NAME
   DOCKER_DAEMON_ARGS:          -g /cache/docker
   DOCKER_DRIVER: overlay2
   DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
@@ -71,13 +70,6 @@ build_solr:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.ceh.ac.uk
     - docker build -t $CONTAINER_SOLR_IMAGE solr
     - docker push $CONTAINER_SOLR_IMAGE
-
-build_mapserver:
-  <<: *deployment_definition
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.ceh.ac.uk
-    - docker build -t $CONTAINER_MAPSERVER_IMAGE mapserver
-    - docker push $CONTAINER_MAPSERVER_IMAGE
 
 .puppet_deploy: &puppet_deployment_definition
   image: ruby:2
