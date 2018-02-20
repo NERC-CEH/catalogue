@@ -1,6 +1,8 @@
 <#import "../skeleton.html.tpl" as skeleton>
 <#import "../new-form.html.tpl" as form>
 
+<#assign manufacturers=elter.getManufacturers() >
+
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <@form.master document='sensor'>
         <@form.input name="type" type="hidden" value="dataset"></@form.input>
@@ -30,11 +32,13 @@
             </@form.value>
             <@form.valueLink label="Manufacturer" name="manufacturer" format="/documents/{manufacturer}">
                 <@form.select id="manufacturer" name="manufacturer">
-                    <#if manufacturer??>
-                        <option value="${manufacturer}">${manufacturerName!""}</option>
-                    <#else>
+                    <#if ! manufacturer??>
                         <option value=""></option>
                     </#if>
+                    <#list manufacturers as m>
+                        <option <#if manufacturer?? && manufacturer == m.id>selected</#if> value="${m.id}">${m.title}</option>
+                    </#list>
+                    <option value="other">Other</option>
                 </@form.select>
             </@form.valueLink>
             <@form.value label="Default Parameters">

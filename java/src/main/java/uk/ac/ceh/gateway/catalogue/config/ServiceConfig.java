@@ -118,8 +118,8 @@ public class ServiceConfig {
     }
 
     @Bean
-    public ElterService elterService() throws XPathExpressionException, IOException, TemplateModelException {
-        return new ElterService(documentRepository(), solrServer);
+    public ElterService elterService() {
+        return new ElterService(solrServer);
     }
 
     @Bean
@@ -259,6 +259,7 @@ public class ServiceConfig {
         shared.put("downloadOrderDetails", downloadOrderDetailsService());
         shared.put("permission", permission());
         shared.put("jira", jiraService());
+        shared.put("elter", elterService());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
         shared.put("catalogues", catalogueService);

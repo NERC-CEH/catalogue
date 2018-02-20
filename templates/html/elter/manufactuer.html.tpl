@@ -1,6 +1,8 @@
 <#import "../skeleton.html.tpl" as skeleton>
 <#import "../new-form.html.tpl" as form>
 
+<#assign sensors=elter.getSensors(id) >
+
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <@form.master document='manufacturer'>
         <@form.input name="type" type="hidden" value="dataset"></@form.input>
@@ -12,8 +14,14 @@
                 <@form.input name="website" placeholder="Website" value="${website!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$" errorName="website" errorMessage="Not a valid url, needs to be http(s)://url"></@form.input>
             </@form.valueLink>
             <@form.value label="Manufactured">
-                <ul id="sensors" class="list-unstyled">
-                    <li>Retriving</li>
+                <ul class="list-unstyled">
+                    <#if sensors?size == 0>
+                        <li>No Sensors</li>
+                    <#else>
+                        <#list sensors as sensor>
+                            <li><a href="/documents/${sensor.id}">${sensor.title}</a></li>
+                        </#list>
+                    </#if>
                 </ul>
             </@form.value>
         </@form.body>

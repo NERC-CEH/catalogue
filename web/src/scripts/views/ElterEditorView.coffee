@@ -31,7 +31,6 @@ define [
       do @initInputs
       do @renderDefaultParameters
       do @updateManufacturers
-      do @updateSensors
 
       window.location.href = '/documents/' + @model.get('id') if @shouldRedirect
 
@@ -155,20 +154,19 @@ define [
   save: ->
     @shouldSave = true
     $('#form').submit()
-  
-  updateSensors: ->
-    if $('#sensors').length
-      $.ajax
-        type: 'GET'
-        url: '/elter/sensors/' + @model.get('id')
-        headers:
-          Accept: "application/json"
-        success: (sensors) ->
-          $('#sensors').html('')
-          if sensors.length == 0
-            $('#sensors').append('<li>No Sensors</li>')
-          for index, sensor of sensors
-            $('#sensors').append('<li><a href="/documents/' + sensor.id + '">' + sensor.title + '</a></li>')
+
+  initManufacturer: ->
+    $('#manufacturer').unbind 'change'
+    $('#manufacturer').change =>
+      $('.other-manufacturer').remove()
+      value = $('#manufacturer').val()
+      @model.set('manufacturer', value)
+      if value == 'other'
+        $('#manufacturer').parent().after(Manufacturer())
+        do @initInputs
+        do @initManufacturer
+      else
+        do @save
 
   updateManufacturers: ->
     $('.other-manufacturer').remove()
@@ -180,18 +178,10 @@ define [
         headers:
           Accept: "application/json"
         success: (manufacturers) =>
-          $('#manufacturer').html('<option value=""></option>')
+          $('#manufacturer').html('')
           for index, manufacturer of manufacturers
             $('#manufacturer').append('<option value="' + manufacturer.id + '">' + manufacturer.title + '</option>')
           $('#manufacturer').append('<option id="other-manufacturer" value="other"">Other</option>')
           $('#manufacturer').val(@model.get('manufacturer'))
-
-    $('#manufacturer').unbind 'change'
-    $('#manufacturer').change =>
-      value = $('#manufacturer').val()
-      @model.set('manufacturer', value)
-      if value == 'other'
-        $('#manufacturer').parent().after(Manufacturer())
-        do @initInputs
-      else
-        do @save
+    
+    do @initManufacturer
