@@ -15,6 +15,7 @@ define [
   initialize: ->
     if arguments.length > 1
       @mediaType = arguments[1].mediaType
+      @title = arguments[2]
     else
       @mediaType = 'application/json'
 

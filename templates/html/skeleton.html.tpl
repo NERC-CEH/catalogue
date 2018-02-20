@@ -99,6 +99,30 @@
     </div>
     <#nested>
     <div id="message-panel"></div>
+
+<div class="modal fade" id="new-document-model" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Create new <span class='new-document-title'></span> document?</h4>
+      </div>
+      <div class="modal-body">
+        <form id="form" class="new-document-form" novalidate>
+          <label>What is the title?</label>
+          <input name="resourceType" type="hidden" value="dataset">
+          <div class='head'>
+              <input name="title" type="text" class='title new-document-title-input' placeholder="Title" required data-error-message="Title is required" data-error-name="title">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success save">Create <span class='new-document-title'></span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
     <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
   </body>
 </html></#compress></#macro>

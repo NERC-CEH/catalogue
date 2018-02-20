@@ -209,26 +209,32 @@ define [
         Model: EditorMetadata
         mediaType: 'application/vnd.sample-archive+json'
       'Sensor':
+        usesNewForm: true
         View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.sensor-document+json'
       'Manufacturer':
+        usesNewForm: true
         View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.manufacturer-document+json'
       'Feature of Interest':
+        usesNewForm: true
         View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.feature-of-interest-document+json'
       'Observation Placeholder':
+        usesNewForm: true
         View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.observation-placeholder-document+json'
       'Temporal Procedure':
+        usesNewForm: true
         View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.temporal-procedure-document+json'
       'Input':
+        usesNewForm: true
         View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.input-document+json'
@@ -238,13 +244,15 @@ define [
 
     $('.edit-control').on 'click', (event) ->
       do event.preventDefault
-      do $editorCreate.toggle
 
-      documentType = lookup[$(event.target).data('documentType')]
+      title = $(event.target).data('documentType')
+      documentType = lookup[title]
+
+      do $editorCreate.toggle if !documentType.usesNewForm
 
       if $editorCreate.length
         new documentType.View
-          model: new documentType.Model null, documentType
+          model: new documentType.Model null, documentType, title
           el: '#search'
       else
         $.ajax
@@ -254,7 +262,7 @@ define [
             json: documentType.mediaType
           success: (data) ->
             new documentType.View
-              model: new documentType.Model data, documentType
+              model: new documentType.Model data, documentType, title
               el: '#metadata'
 
   ###

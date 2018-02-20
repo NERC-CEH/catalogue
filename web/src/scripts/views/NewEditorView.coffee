@@ -3,39 +3,42 @@ define [
   'backbone'
   'tpl!templates/NewFormError.tpl'
   'tpl!templates/DefaultParameter.tpl'
-  'tpl!templates/NewFormTitle.tpl'
   'cs!views/ElterEditorViewFunctions'
 ], (
   _
   Backbone
   NewFormError
   DefaultParameter
-  NewFormTitle
   ElterEditorViewFunctions
 ) -> Backbone.View.extend
   timeout: null
   shouldSave: false
+  autoSave: false
   shouldRedirect: false
   initialize: (options) ->
     @elter = ElterEditorViewFunctions(@, @model)
-
     if $('.new-form').length == 0
-      $('#loading').hide()
-      $('.search').hide()
-      $('.search').after(NewFormTitle())
+      do $('#new-document-model').modal
+      $('.new-document-title').html(@model.title)
       @shouldRedirect = true
     else
+      $('.new-document-title-input').removeAttr 'required'
+      @autoSave = true
       do @model.fetch
 
     @model.on 'sync', =>
-      $('#loading').hide()
-      do @updateLinks
-      do @initInputs
-      do @renderDefaultParameters
+      if @shouldRedirect
+        if @model.get('id')
+          window.location.href = '/documents/' + @model.get('id')
+        else
+          window.location.reload()
+      else
+        $('#loading').hide()
+        do @updateLinks
+        do @initInputs
+        do @renderDefaultParameters
+        do @elter
 
-      do @elter
-
-      window.location.href = '/documents/' + @model.get('id') if @shouldRedirect
 
     $('form').submit (evt) =>
       do evt.preventDefault
@@ -55,9 +58,11 @@ define [
       else
         do @formValidation
 
-    do @initInputs
+    $('.save').click =>
+      do @save
     do @initDelete
-  
+    do @initInputs
+
   formValidation: ->
     inputs = document.querySelectorAll 'input, textarea, select'
     for index, input of inputs
@@ -134,7 +139,7 @@ define [
         @model.set name, toUpdate
       else
         @model.set name, value
-      do @save
+      do @save if @autoSave
 
     $('.delete-defaultParameter').unbind 'click'
     $('.delete-defaultParameter').click (evt) =>
