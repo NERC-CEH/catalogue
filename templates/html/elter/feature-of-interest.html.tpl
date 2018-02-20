@@ -18,7 +18,7 @@
                     <option <#if foiType?? && foiType == "Composite"> selected="selected"</#if> value="Composite">Composite</option>
                 </@form.select>
             </@form.value>
-            <div class='foi-data is-${foiType!"notype"?lower_case}'>
+            <div class='foi-data is-${(foiType!"notype")?lower_case}'>
                 <#include "_monitoring.html.tpl">
                 <#include "_veritcal-monitoring.html.tpl">
                 <#include "_composite.html.tpl">
