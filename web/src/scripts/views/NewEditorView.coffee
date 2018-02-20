@@ -33,7 +33,7 @@ define [
       do @initInputs
       do @renderDefaultParameters
 
-      do @elter.update
+      do @elter
 
       window.location.href = '/documents/' + @model.get('id') if @shouldRedirect
 

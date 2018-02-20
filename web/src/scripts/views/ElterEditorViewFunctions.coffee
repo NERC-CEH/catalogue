@@ -3,20 +3,20 @@ define [
 ], (
   Manufacturer
 ) -> (view, model) ->
-  initManufacturer: ->
+  initManufacturer = ->
     $('#manufacturer').unbind 'change'
-    $('#manufacturer').change =>
+    $('#manufacturer').change ->
       $('.other-manufacturer').remove()
       value = $('#manufacturer').val()
       model.set('manufacturer', value)
       if value == 'other'
         $('#manufacturer').parent().after(Manufacturer())
         do view.initInputs
-        do @initManufacturer
+        do initManufacturer
       else
         do view.save
 
-  update: ->
+  update = ->
     $('.other-manufacturer').remove()
 
     if $('#manufacturer').length
@@ -32,4 +32,6 @@ define [
           $('#manufacturer').append('<option id="other-manufacturer" value="other"">Other</option>')
           $('#manufacturer').val(model.get('manufacturer'))
     
-    do @initManufacturer
+    do initManufacturer
+
+  update
