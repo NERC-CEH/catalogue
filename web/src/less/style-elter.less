@@ -46,7 +46,6 @@
         &:focus {
             cursor: initial;
         }
-
         &.error {
             border: solid 1px @brand-error;
             outline-color: @brand-error;
@@ -84,7 +83,6 @@
             justify-content: space-around;
             align-items: baseline;
             margin-bottom: 5px;
-
             & .error-message {
                 margin-left: 20%;
             }
@@ -129,39 +127,28 @@
 }
 
 .foi-data {
-    &.is-monitoring {
-        & .monitoring {
-            display: flex;
-        }
-        & .verticalmonitoring {
-            display: none;
-        }
-        & .composite {
-            display: none;
-        }
+    & .monitoring {
+        display: none !important;
     }
-
-    &.is-verticalmonitoring {
-        & .monitoring {
-            display: none;
-        }
-        & .verticalmonitoring {
-            display: flex;
-        }
-        & .composite {
-            display: none;
-        }
+    & .verticalmonitoring {
+        display: none !important;
     }
-
-    &.is-composite {
-        & .monitoring {
-            display: none;
-        }
-        & .verticalmonitoring {
-            display: none;
-        }
-        & .composite {
-            display: flex;
-        }
+    & .composite {
+        display: none !important;
+    }
+    & .notype {
+        display: none !important;
+    }
+    &.is-notype .notype {
+        display: flex !important;
+    }
+    &.is-monitoring .monitoring {
+        display: flex !important;
+    }
+    &.is-verticalmonitoring .verticalmonitoring {
+        display: flex !important;
+    }
+    &.is-composite .composite {
+        display: flex !important;
     }
 }

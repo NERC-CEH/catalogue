@@ -5,28 +5,28 @@
     <@form.master document='feature-of-interest'>
         <@form.input name="type" type="hidden" value="dataset"></@form.input>
         <@form.head>
-            <#if !foiType??>
-                <div id="no-type" class="alert alert-danger" role="alert">
-                    This Feature Of Interest has no type
-                </div>
-            </#if>
             <@form.title title=title></@form.title>
         </@form.head>
         <@form.body>
             <@form.value label="Feature Of Interest Type">
                 <@form.select id="foi-type" name="foiType">
                     <#if !foiType??>
-                        <option value=""></option>
+                        <option id="blank-option" value=""></option>
                     </#if>
                     <option <#if foiType?? && foiType == "Monitoring"> selected="selected"</#if> value="Monitoring">Monitoring</option>
                     <option <#if foiType?? && foiType == "VerticalMonitoring"> selected="selected"</#if> value="VerticalMonitoring">Vertical Monitoring</option>
                     <option <#if foiType?? && foiType == "Composite"> selected="selected"</#if> value="Composite">Composite</option>
                 </@form.select>
             </@form.value>
-            <div class='foi-data is-${foiType?lower_case}'>
+            <div class='foi-data is-${foiType!"notype"?lower_case}'>
                 <#include "_monitoring.html.tpl">
                 <#include "_veritcal-monitoring.html.tpl">
                 <#include "_composite.html.tpl">
+                <#if !foiType??>
+                    <div id="no-type" class="alert alert-danger notype" role="alert">
+                        This Feature Of Interest has no type
+                    </div>
+                </#if>
             </div>
         </@form.body>
     </@form.master>

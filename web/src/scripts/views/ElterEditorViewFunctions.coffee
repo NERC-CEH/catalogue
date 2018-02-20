@@ -36,9 +36,11 @@ define [
   updateFoiType = ->
     $('#foi-type').unbind 'change'
     $('#foi-type').change ->
+        $('#blank-option').remove()
         value = $('#foi-type').val()
         model.set('foiType', value)
         do view.save
+        $('.foi-data').removeClass('is-notype')
         $('.foi-data').removeClass('is-monitoring')
         $('.foi-data').removeClass('is-verticalmonitoring')
         $('.foi-data').removeClass('is-composite')
