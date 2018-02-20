@@ -58,14 +58,14 @@
     </select>
 </#macro>
 
-<#macro value label>
-    <div class='value'>
+<#macro value label class="">
+    <div class='value ${class}'>
         <label>${label}</label>
         <#nested>
     </div>
 </#macro>
-<#macro valueLink label name format="#" href="#">
-    <div class='value value-link' data-name="${name}" data-format="${format}">
+<#macro valueLink label name format="#" href="#" class="">
+    <div class='value value-link ${class}' data-name="${name}" data-format="${format}">
         <label><a href="${href}">${label}</a></label>
         <#nested>
     </div>

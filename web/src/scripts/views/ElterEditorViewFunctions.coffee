@@ -16,9 +16,8 @@ define [
       else
         do view.save
 
-  update = ->
+  updateManufacturer = ->
     $('.other-manufacturer').remove()
-
     if $('#manufacturer').length
       $.ajax
         type: 'GET'
@@ -34,4 +33,18 @@ define [
     
     do initManufacturer
 
-  update
+  updateFoiType = ->
+    $('#foi-type').unbind 'change'
+    $('#foi-type').change ->
+        value = $('#foi-type').val()
+        model.set('foiType', value)
+        do view.save
+        $('.foi-data').removeClass('is-monitoring')
+        $('.foi-data').removeClass('is-verticalmonitoring')
+        $('.foi-data').removeClass('is-composite')
+        $('.foi-data').addClass('is-' + value.toLowerCase())
+    
+
+  ->
+    do updateManufacturer
+    do updateFoiType

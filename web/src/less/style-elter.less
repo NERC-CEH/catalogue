@@ -127,3 +127,41 @@
 .observation-placeholder {
     width: 60% !important;
 }
+
+.foi-data {
+    &.is-monitoring {
+        & .monitoring {
+            display: flex;
+        }
+        & .verticalmonitoring {
+            display: none;
+        }
+        & .composite {
+            display: none;
+        }
+    }
+
+    &.is-verticalmonitoring {
+        & .monitoring {
+            display: none;
+        }
+        & .verticalmonitoring {
+            display: flex;
+        }
+        & .composite {
+            display: none;
+        }
+    }
+
+    &.is-composite {
+        & .monitoring {
+            display: none;
+        }
+        & .verticalmonitoring {
+            display: none;
+        }
+        & .composite {
+            display: flex;
+        }
+    }
+}
