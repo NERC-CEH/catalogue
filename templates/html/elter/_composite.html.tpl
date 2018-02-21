@@ -1,6 +1,6 @@
 <#import "../new-form.html.tpl" as form>
 
-<@form.value label="Observation Placeholders" class="composite">
+<@form.value name="observationPlacholder" label="Observation Placeholders" class="composite">
     <ul class="list-unstyled">
         <li>
             <@form.delete name="observationPlacholder"></@form.delete>

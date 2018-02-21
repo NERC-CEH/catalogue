@@ -8,7 +8,7 @@
             <@form.title title=title></@form.title>
         </@form.head>
         <@form.body>
-            <@form.value label="Feature Of Interest Type">
+            <@form.value name="foiType" label="Feature Of Interest Type">
                 <@form.select id="foi-type" name="foiType">
                     <#if !foiType??>
                         <option id="blank-option" value=""></option>

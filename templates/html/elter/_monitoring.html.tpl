@@ -1,6 +1,6 @@
 <#import "../new-form.html.tpl" as form>
 
-<@form.value label="Property Attributes" class="monitoring">
+<@form.value name="propertyAttributes" label="Property Attributes" class="monitoring">
 <ul <@form.ifReadonly>id="propertyAttributes"</@form.ifReadonly> class="list-unstyled">
     <li>
         <@form.delete name="propertyAttribute"></@form.delete>
