@@ -171,6 +171,25 @@
     };
   }
 
+  #document-authors {
+    a.moreAuthors {
+      &:after{
+        content:"fewer ↑";
+      };
+      span {
+        display:none;
+      };
+    };
+    a.moreAuthors.collapsed {
+      &:after{
+        content:"more ↓";
+      };
+      span {
+        display:inline;
+      };
+    };
+  }
+
  #section-onlineResources {
 	p {margin-bottom:1.5em;}
  }

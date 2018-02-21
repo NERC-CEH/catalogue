@@ -83,9 +83,14 @@
 				<#assign statusMsg ="">
 				<#if resourceStatus?? && resourceStatus?has_content >
 					<#if resourceStatus == "Withdrawn" || resourceStatus == "Superseded" >
-						<#assign statusMsg = "This " + resourceType.value + " has been withdrawn">
+						<#assign statusMsg = "THIS " + resourceType.value?upper_case + " HAS BEEN WITHDRAWN ">
+						<#if revised??>
+							<#assign statusMsg = statusMsg + " and superseded by " + revised.title + " (" + revised.href + "). ">
+						<#else>
+							<#assign statusMsg = statusMsg + ". ">
+						</#if>
 						<#if reasonChanged??>
-							<#assign statusMsg = statusMsg + " - " + reasonChanged >
+							<#assign statusMsg = statusMsg + reasonChanged + ". " >
 						</#if>
 					</#if>
 					<#if resourceStatus == "Embargoed" >
@@ -94,9 +99,8 @@
 							<#assign statusMsg = statusMsg + "until "+ datasetReferenceDate.releasedDate?date?string.long>
 						</#if>
 					</#if>
-					<#assign statusMsg = statusMsg + ". ">
 				</#if>
-			${statusMsg?upper_case} ${description!''}
+			${statusMsg} ${description!''}
 			</gco:CharacterString>
 		</gmd:abstract>
 		<#if responsibleParties?has_content>
