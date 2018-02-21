@@ -17,7 +17,7 @@
             <@form.value name="serialNumber" label="Serial Number">
                 <@form.input name="serialNumber" placeholder="Serial Number" value="${serialNumber!''}"></@form.input>
             </@form.value>
-            <@form.value name="documentation" label="Documentation" href="${documentation!'/documents/${id}#'}" errorMessage="URL format http(s)://...">
+            <@form.value name="documentation" label="Documentation" href="${documentation!'/documents/${id}#'}" errorMessage="Not a valid url, needs to be http(s)://url">
                 <@form.input name="documentation" placeholder="Documentation" value="${documentation!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$"></@form.input>
             </@form.value>
             <@form.value name="processType" label="Process Type">

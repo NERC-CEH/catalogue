@@ -10,10 +10,10 @@
             <@form.title title=title></@form.title>
         </@form.head>
         <@form.body>
-            <@form.valueLink label="Website" name="website">
-                <@form.input name="website" placeholder="Website" value="${website!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$" errorName="website" errorMessage="Not a valid url, needs to be http(s)://url"></@form.input>
-            </@form.valueLink>
-            <@form.value label="Manufactured">
+            <@form.value name="website" label="Website" name="website" errorMessage="Not a valid url, needs to be http(s)://url">
+                <@form.input name="website" placeholder="Website" value="${website!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$"></@form.input>
+            </@form.value>
+            <@form.value name="manufactured" label="Manufactured">
                 <ul class="list-unstyled">
                     <#if sensors?size == 0>
                         <li><span class="static-value">No Sensors</span></li>

@@ -83,7 +83,7 @@
         <div class="value-children">
             <#nested>
         </div>
-        <div class="value-error is-hidden <#if label != "">is-labelled</#if>">
+        <div class="value-error <#if label != "">is-labelled</#if>">
             <span>${errorMessage}</span>
         </div>
     </div>
