@@ -3,9 +3,12 @@
 <@form.value label="Observation Placeholders" class="composite">
     <ul class="list-unstyled">
         <li>
-            <@form.link name="linky" label="9699d939-a9e0-4ca5-816a-c2581b1c0298" href="http://google.com"></@form.link>
+            <@form.delete name="observationPlacholder"></@form.delete>
+            <a class="static-value" href="/documents/9699d939-a9e0-4ca5-816a-c2581b1c0298">
+                <span class="fa fa-external-link-alt"></span><span>Go</span>
+            </a>
             <@form.select name="foiType" class="observation-placeholder">
-                <option value="id2">Second</option>
+                <option value="id2"><a href="#">Second</a></option>
             </@form.select>
         </li>
         <li>

@@ -1,14 +1,6 @@
 <#import "../skeleton.html.tpl" as skeleton>
 <#import "../new-form.html.tpl" as form>
 
-<#if permission.userCanEdit(id)>
-    <#assign readonly></#assign>
-    <#assign disabled></#assign>
-<#else>
-    <#assign readonly>readonly</#assign>
-    <#assign disabled>disabled</#assign>
-</#if>
-
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <@form.master document='observation-placeholder'>
         <@form.input name="type" type="hidden" value="dataset"></@form.input>

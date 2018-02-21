@@ -59,6 +59,11 @@ define [
   we like globally.
   ###
   initialize: ->
+    # shim
+    # http://stackoverflow.com/a/646643
+    String::startsWith ?= (s) -> @slice(0, s.length) == s
+    String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
+
     do @initScheduled if $('#documents-upload .scheduled').length
     do @initInProgress if $('#documents-upload .in-progress').length
     do @initReadOnly if $('#documents-upload .read-only').length

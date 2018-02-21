@@ -31,11 +31,22 @@
         <#nested>
     </div>
 </#macro>
-<#macro title title="">
-    <input ${readonly} name="title" type="text" class='title' placeholder="Title" value="${title}" required data-error-name="title" data-error-message="Title is required">
+<#macro title title="" class="">
+    <div id="value-title" class='value ${class}'>
+        <div class="value-children">
+            <input ${readonly} name="title" type="text" class='title' placeholder="Title" value="${title}" required>
+        </div>
+        <div class="value-error">
+            <span>Title is required</span>
+        </div>
+    </div>
 </#macro>
 <#macro description description="">
-    <textarea ${disabled} name="description" type="text" class='description' placeholder="Description">${description}</textarea>
+    <div id="value-title" class='value ${class}'>
+        <div class="value-children">
+            <textarea ${disabled} name="description" type="text" class='description' placeholder="Description">${description}</textarea>
+        </div>
+    </div>
 </#macro>
 
 <#macro ifReadonly>
@@ -49,8 +60,8 @@
     </#if>
 </#macro>
 
-<#macro input name type="text" class="" value="" placeholder="" id="" pattern="" errorName="" errorMessage="">
-    <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}" <#if pattern != "">pattern="${pattern}"</#if> data-error-name="${errorName}" data-error-message="${errorMessage}">
+<#macro input name type="text" class="" value="" placeholder="" id="" pattern="">
+    <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}" <#if pattern != "">pattern="${pattern}"</#if>>
 </#macro>
 <#macro select name id="" class="">
     <select ${disabled} id="${id}" name="${name}" class="${class}">
@@ -58,16 +69,23 @@
     </select>
 </#macro>
 
-<#macro value label class="">
-    <div class='value ${class}'>
-        <label>${label}</label>
-        <#nested>
-    </div>
-</#macro>
-<#macro valueLink label name format="#" href="#" class="">
-    <div class='value value-link ${class}' data-name="${name}" data-format="${format}">
-        <label><a href="${href}">${label}</a></label>
-        <#nested>
+<#macro value name label="" class="" hidden=false errorMessage="" href="">
+    <div id="value-${name}" class='value ${class} <#if href != "">value-link</#if> <#if hidden>is-hidden</#if>' data-name="${name}">
+        <#if label != "">
+            <label class="value-label">
+            <#if href != "">
+                <a class='value-href' href="${href}">${label}</a>
+            <#else>
+                ${label}
+            </#if>
+            </label>
+        </#if>
+        <div class="value-children">
+            <#nested>
+        </div>
+        <div class="value-error is-hidden <#if label != "">is-labelled</#if>">
+            <span>${errorMessage}</span>
+        </div>
     </div>
 </#macro>
 

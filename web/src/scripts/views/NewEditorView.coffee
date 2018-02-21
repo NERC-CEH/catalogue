@@ -1,13 +1,11 @@
 define [
   'underscore'
   'backbone'
-  'tpl!templates/NewFormError.tpl'
   'tpl!templates/DefaultParameter.tpl'
   'cs!views/ElterEditorViewFunctions'
 ], (
   _
   Backbone
-  NewFormError
   DefaultParameter
   ElterEditorViewFunctions
 ) -> Backbone.View.extend
@@ -44,51 +42,34 @@ define [
       do evt.preventDefault
       do $('#form input, #form textarea, #form select').blur
 
-      inputs = document.querySelectorAll 'input, textarea, select'
-      for index, input of inputs
-        @shouldSave = false if input.value == '' and input.required
-        @shouldSave = false if input.value != '' and input.pattern and !new RegExp(input.pattern).test(input.value)
+      inputs = document.querySelectorAll '.value input, .value textarea, .value select'
+      for input in inputs
+        failRequired = !input.disabled && input.value == '' and input.required
+        failMatch = !input.disabled && input.value != '' and input.pattern and !new RegExp(input.pattern).test(input.value)
+        $(input).removeClass('is-errored')
 
+        name = input.name
+        listMatcher = /(\w+)\[.*/
+        matched = name.match(listMatcher)
+        name = matched[1] if matched != null
+
+        $('#value-' + name).removeClass('is-errored')
+        if failRequired || failMatch
+          @shouldSave = false
+          $(input).addClass('is-errored')
+          $('#value-' + name).addClass('is-errored')
+      
       if @shouldSave
         @shouldSave = false
         do @model.save
         do $('#saved').show
         clearTimeout @timeout
         @timeout = setTimeout (-> $('#saved').hide()), 1000
-      else
-        do @formValidation
 
     $('.save').click =>
       do @save
     do @initDelete
     do @initInputs
-
-  formValidation: ->
-    inputs = document.querySelectorAll 'input, textarea, select'
-    for index, input of inputs
-      failRequired = input.value == '' and input.required
-      failMatch = input.value != '' and input.pattern and !new RegExp(input.pattern).test(input.value)
-      if failRequired or failMatch
-        $input = $(input)
-        errorMessage = $input.data('errorMessage')
-        errorName = $input.data('errorName')
-        $input.addClass('error') if !$input.hasClass('error')
-        if $('#' + errorName + '-error').length == 0
-          $input.after NewFormError
-            name: errorName
-            message: errorMessage
-      else if typeof input == 'object'
-        $input = $(input)
-        $input.removeClass('error')
-        errorMessage = $input.data('errorMessage')
-        errorName = $input.data('errorName')
-        $('#' + errorName + '-error').remove()
-    for index, input of inputs
-      failRequired = input.value == '' and input.required
-      failMatch = input.value != '' and input.pattern and !new RegExp(input.pattern).test(input.value)
-      if failRequired or failMatch
-        $(input).focus()
-        break
 
   initDelete: ->
     $('.delete-document').unbind 'click'
@@ -98,13 +79,11 @@ define [
         error: => window.location.href = '/' + @model.get('catalogue') + '/documents'
 
   updateLinks: ->
-    $('.value-link').each (index, link) =>
-      link = $(link)
-      name = link.data('name')
-      format = link.data('format')
-      value = @model.get(name) || '#'
-      value = format.replace('{' + name + '}', value) if format and format != '' and format != '#'
-      link.find('a').attr('href', value)
+      $('.value-link input, .value-link select').each (index, input) ->
+        href = window.location.href
+        href = href + '#' if (!href.endsWith('#'))
+        href = input.value || href
+        $('#value-' + input.name + ' .value-href').attr('href', href)
   
   renderDefaultParameters: ->
     defaultParameters = @model.get('defaultParameters') || []

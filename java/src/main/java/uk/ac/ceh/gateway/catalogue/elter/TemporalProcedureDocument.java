@@ -23,7 +23,7 @@ public class TemporalProcedureDocument extends AbstractMetadataDocument {
     private String commitCode;
     private String interpolationType;
     private long intendedObservationSpacing;
-    private long maxiumGap;
+    private long maximumGap;
     private long anchorTime;
     private String sampleMedium;
     private String loggerSensorName;

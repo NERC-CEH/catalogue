@@ -8,17 +8,19 @@
         <@form.input name="type" type="hidden" value="dataset"></@form.input>
         <@form.head>
             <@form.title title=title></@form.title>
-            <@form.input name="shortName" class="subtitle" placeholder="Short Name" value="${shortName!''}"></@form.input>
+            <@form.value name="shortName">
+                <@form.input name="shortName" class="subtitle" placeholder="Short Name" value="${shortName!''}"></@form.input>
+            </@form.value>
             <@form.description description=description></@form.description>
         </@form.head>
         <@form.body>
-            <@form.value label="Serial Number">
+            <@form.value name="serialNumber" label="Serial Number">
                 <@form.input name="serialNumber" placeholder="Serial Number" value="${serialNumber!''}"></@form.input>
             </@form.value>
-            <@form.valueLink label="Documentation" name="documentation">
-                <@form.input name="documentation" placeholder="Documentation" value="${documentation!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$" errorName="documentation" errorMessage="Not a valid url, needs to be http(s)://url"></@form.input>
-            </@form.valueLink>
-            <@form.value label="Process Type">
+            <@form.value name="documentation" label="Documentation" href="${documentation!'/documents/${id}#'}" errorMessage="URL format http(s)://...">
+                <@form.input name="documentation" placeholder="Documentation" value="${documentation!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$"></@form.input>
+            </@form.value>
+            <@form.value name="processType" label="Process Type">
                 <@form.select name="processType">
                     <#if !processType??>
                         <option value=""></option>
@@ -30,7 +32,7 @@
                     <option <#if processType?? && processType == "Algorithm"> selected="selected"</#if> value="Algorithm">Algorithm</option>
                 </@form.select>
             </@form.value>
-            <@form.valueLink label="Manufacturer" name="manufacturer" format="/documents/{manufacturer}">
+            <@form.value  name="manufacturer" label="Manufacturer" href="/documents/${manufacturer!'${id}#'}">
                 <@form.select id="manufacturer" name="manufacturer">
                     <#if ! manufacturer??>
                         <option value=""></option>
@@ -40,8 +42,11 @@
                     </#list>
                     <option value="other">Other</option>
                 </@form.select>
-            </@form.valueLink>
-            <@form.value label="Default Parameters">
+            </@form.value>
+            <@form.value name="manufacturerName" class="other-manufacturer" label="Manufacturer Name" hidden=true errorMessage="Name is required">
+                <input disabled name="manufacturerName" placeholder="Manufacturer Name" required>
+            </@form.value>
+            <@form.value name="defaultParameters" label="Default Parameters">
                 <ul <@form.ifReadonly>id="defaultParameters"</@form.ifReadonly> class="list-unstyled">
                     <#if defaultParameters??>
                     <#list defaultParameters as defaultParameter>

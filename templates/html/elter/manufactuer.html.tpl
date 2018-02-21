@@ -16,10 +16,10 @@
             <@form.value label="Manufactured">
                 <ul class="list-unstyled">
                     <#if sensors?size == 0>
-                        <li>No Sensors</li>
+                        <li><span class="static-value">No Sensors</span></li>
                     <#else>
                         <#list sensors as sensor>
-                            <li><a href="/documents/${sensor.id}">${sensor.title}</a></li>
+                            <li><a class="static-value" href="/documents/${sensor.id}">${sensor.title}</a></li>
                         </#list>
                     </#if>
                 </ul>
