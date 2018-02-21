@@ -94,10 +94,11 @@
         </#if>
         <div class="value-children">
             <#nested>
+            <div class="value-error">
+                <span>${errorMessage}</span>
+            </div>
         </div>
-        <div class="value-error <#if label != "">is-labelled</#if>">
-            <span>${errorMessage}</span>
-        </div>
+
     </div>
 </#macro>
 
@@ -105,8 +106,4 @@
     <#if readonly == "">
         <a id="" href='#' class="delete delete-${name}"><i class="fa fa-times"></i></a>
     </#if>
-</#macro>
-
-<#macro link name label href="#">
-    <a id="" href="${href}" class="link link-${name}">${label}</a>
 </#macro>

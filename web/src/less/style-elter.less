@@ -22,8 +22,7 @@
     display: none !important;
 }
 
-.new-form,
-.new-document-form {
+.new-form {
     margin-top: 20px;
     & input,
     & textarea,
@@ -74,10 +73,6 @@
         width: 100%;
         padding: 0 10px;
         margin-top: 0;
-        &.is-labelled {
-            margin-left: 20%;
-            padding: 0;
-        }
     }
     & .value {
         display: flex;
@@ -173,5 +168,20 @@
     }
     &.is-composite .composite {
         display: flex !important;
+    }
+}
+
+.new-admin {
+    margin-top: 10px;
+}
+
+.composite-observation-placholder {
+    width: 100%;
+    display: inline-flex;
+    margin-bottom: 5px;
+    &-value {
+        width: 100%;
+        display: inline-block;
+        margin: -5px 0 0 5px;
     }
 }
