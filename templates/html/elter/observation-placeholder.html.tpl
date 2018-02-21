@@ -8,35 +8,35 @@
             <@form.title title=title></@form.title>
         </@form.head>
         <@form.body>
-            <@form.value label="Signature">
+            <@form.value name="signature" label="Signature">
                 <ul class="list-unstyled">
                     <li>
                         temporal entity
                     </li>
                 </ul>
             </@form.value>
-            <@form.value label="Routed To">
+            <@form.value name="routedTo" label="Routed To">
                 <ul class="list-unstyled">
                     <li>
                         input string
                     </li>
                 </ul>
             </@form.value>
-            <@form.value label="User By">
+            <@form.value name="usedBy" label="Used By">
                 <ul class="list-unstyled">
                     <li>
                         input string
                     </li>
                 </ul>
             </@form.value>
-            <@form.value label="Visible Through">
+            <@form.value name="visibleThrough" label="Visible Through">
                 <ul class="list-unstyled">
                     <li>
                         temporal procedure string
                     </li>
                 </ul>
             </@form.value>
-            <@form.value label="Controls Frequency Of">
+            <@form.value name="controlsFrequencyOf" label="Controls Frequency Of">
                 <ul class="list-unstyled">
                     <li>
                         input string
