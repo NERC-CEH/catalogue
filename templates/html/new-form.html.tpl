@@ -1,13 +1,18 @@
-<#if permission.userCanEdit(id)>
-    <#assign readonly></#assign>
-    <#assign disabled></#assign>
+<#if id??>
+    <#if permission.userCanEdit(id)>
+        <#assign readonly></#assign>
+        <#assign disabled></#assign>
+    <#else>
+        <#assign readonly>readonly</#assign>
+        <#assign disabled>disabled</#assign>
+    </#if>
 <#else>
     <#assign readonly>readonly</#assign>
     <#assign disabled>disabled</#assign>
 </#if>
 
 <#macro master document>
-    <div class="container">
+    <div class="container beta-form">
         <h3 id="loading" class="alert alert-info static-message">
             <i class='fa fa-circle-o-notch fa-spin '></i> Loading ...
         </h3>
@@ -19,6 +24,13 @@
             <input type="submit" style="display: none;">
         </form>
     </div>
+</#macro>
+
+<#macro form document name overrideReadOnly=false>
+    <form id="form" class="new-form new-${name} <#if overrideReadOnly>override<#else>${readonly}</#if>" data-document="${document}" <#if id??>data-guid="${id}"</#if> novalidate>
+        <#nested>
+        <input type="submit" style="display: none;">
+    </form>
 </#macro>
 
 <#macro head>

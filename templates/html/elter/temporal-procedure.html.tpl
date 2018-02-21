@@ -3,7 +3,6 @@
 
 <#assign tps=elter.getTemporalProcedures()>
 
-
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <@form.master document='temporal-procedure'>
         <@form.input name="type" type="hidden" value="dataset"></@form.input>

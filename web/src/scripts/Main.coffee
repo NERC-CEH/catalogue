@@ -75,7 +75,7 @@ define [
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
-    do @newForm if $('.new-form').length
+    do @newForm if $('.beta-form').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
@@ -243,7 +243,7 @@ define [
         View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.input-document+json'
-
+    
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
 
