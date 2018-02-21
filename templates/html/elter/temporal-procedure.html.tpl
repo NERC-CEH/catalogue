@@ -11,9 +11,9 @@
             <@form.title title=title></@form.title>
         </@form.head>
         <@form.body>
-            <@form.value name="temporalProcedures" label="Replaced By">
+            <@form.value name="replaceBy" label="Replaced By">
                 <@form.delete name="deleteTemporalProcedure"></@form.delete>
-                <@form.select name="temporalProcedures">
+                <@form.select id="replaceBy" name="replaceBy">
                     <#if !(replacedBy??)>
                         <option value=""></option>
                     <#elseif replacedBy?? && replacedBy?size == 0>
@@ -26,6 +26,9 @@
                     </#list>
                         <option value="other">Other</option>
                 </@form.select>
+            </@form.value>
+            <@form.value name="replaceByName" class="other-replaceBy" label="Replace By Name" hidden=true errorMessage="Name is required">
+                <input disabled name="replaceByName" placeholder="Replace By Name" required>
             </@form.value>
             <@form.value name="commitCode" label="Commit Code">
                 <@form.input name="commitCode" placeholder="Commit Code" value="${commitCode!''}"></@form.input>

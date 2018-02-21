@@ -1,50 +1,52 @@
 define [], () -> (view, model) ->
-  showOtherManufacturer = ->
-    $('.other-manufacturer').removeClass('is-hidden')
-    $('.other-manufacturer').addClass('is-visible')
-    $('.other-manufacturer input').val('')
-    $('.other-manufacturer input').prop('disabled', no)
-    $('.other-manufacturer input').focus()
+  showOther = (name) ->
+    $('.other-' + name).removeClass('is-hidden')
+    $('.other-' + name).addClass('is-visible')
+    $('.other-' + name + ' input').val('')
+    $('.other-' + name + ' input').prop('disabled', no)
+    $('.other-' + name + ' input').focus()
 
-  hideOtherManufacturer = ->
-    $('.other-manufacturer').addClass('is-hidden')
-    $('.other-manufacturer').removeClass('is-visible')
-    $('.other-manufacturer input').val('')
-    $('.other-manufacturer input').prop('disabled', yes)
-    $('.other-manufacturer input').blur()
+  hideOther = (name) ->
+    $('.other-' + name).addClass('is-hidden')
+    $('.other-' + name).removeClass('is-visible')
+    $('.other-' + name + ' input').val('')
+    $('.other-' + name + ' input').prop('disabled', yes)
+    $('.other-' + name + ' input').blur()
 
-  initManufacturer = ->
-    $('#manufacturer').unbind 'change'
-    $('#manufacturer').change ->
-      do hideOtherManufacturer
-      value = $('#manufacturer').val()
-      model.set('manufacturer', value)
+  initOtherable = (name) ->
+    $('#' + name).unbind 'change'
+    $('#' + name).change ->
+      hideOther  name
+      value = $('#' + name).val()
+      model.set(name, value)
       if value == 'other'
-        do showOtherManufacturer
-        do view.initInputs
-        do initManufacturer
+        showOther name
       else
-        do hideOtherManufacturer
+        hideOther name
         do view.save
-
-  updateManufacturer = ->
-    do hideOtherManufacturer
-    if $('#manufacturer').length
+  
+  updateOtherable = (name, url, renderValue, renderOther) ->
+    if $('#' + name).length
       $.ajax
         type: 'GET'
-        url: '/elter/manufacturers'
+        url: url
         headers:
           Accept: "application/json"
-        success: (manufacturers) ->
-          $('.other-manufacturer').addClass('is-hidden')
-          $('.other-manufacturer').removeClass('is-visible')
-          $('#manufacturer').html('')
-          for index, manufacturer of manufacturers
-            $('#manufacturer').append('<option value="' + manufacturer.id + '">' + manufacturer.title + '</option>')
-          $('#manufacturer').append('<option id="other-manufacturer" value="other"">Other</option>')
-          $('#manufacturer').val(model.get('manufacturer'))
-    
-    do initManufacturer
+        success: (values) ->
+          hideOther name
+          $('#' + name).html('')
+          for index, value of values
+            renderValue(value)
+          renderOther()
+          $('#' + name).val(model.get(name))
+
+  updateManufacturer = ->
+    hideOther 'manufacturer'
+    updateOtherable 'manufacturer',
+      '/elter/manufacturers',
+      (manufacturer) -> $('#manufacturer').append('<option value="' + manufacturer.id + '">' + manufacturer.title + '</option>'),
+      -> $('#manufacturer').append('<option id="other-manufacturer" value="other"">Other</option>')
+    initOtherable 'manufacturer'
 
   updateFoiType = ->
     $('#foi-type').unbind 'change'
@@ -58,8 +60,12 @@ define [], () -> (view, model) ->
         $('.foi-data').removeClass('is-verticalmonitoring')
         $('.foi-data').removeClass('is-composite')
         $('.foi-data').addClass('is-' + value.toLowerCase())
-    
+
+  updateReplacedBy = ->
+    hideOther 'replaceBy'
+    initOtherable 'replaceBy'
 
   ->
     do updateManufacturer
     do updateFoiType
+    do updateReplacedBy

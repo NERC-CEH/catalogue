@@ -14,6 +14,8 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
+import java.util.List;
+
 @Controller
 public class TemporalProdecureController extends AbstractDocumentController {
   private ElterService elterService;
@@ -40,5 +42,13 @@ public class TemporalProdecureController extends AbstractDocumentController {
   saveDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
       @RequestBody TemporalProcedureDocument document) throws DocumentRepositoryException {
     return saveMetadataDocument(user, file, document);
+  }
+
+  @PreAuthorize("@permission.userCanCreate('elter')")
+  @RequestMapping(value = "elter/temporal-procedures", method = RequestMethod.GET)
+  @ResponseBody
+  public List<TemporalProcedureDocument> getTemporalProcedures(@ActiveUser CatalogueUser user)
+      throws DocumentRepositoryException {
+    return this.elterService.getTemporalProcedures();
   }
 }
