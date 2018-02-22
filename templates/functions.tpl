@@ -95,9 +95,27 @@
 </#function>
 
 
+<#function displaySupplemental supplement showName=false>
+  <#local lsupplement = "">
 
+  <#if showName = true &&  supplement.name?has_content>
+    <#local lsupplement = lsupplement + "<div class='supplemental-name'>" >
+        <#if supplement.url?has_content>
+          <#local lsupplement = lsupplement + "<a href='" + supplement.url + "' target='_blank' rel='noopener' title='" + supplement.url + "'>" + supplement.name + "</a>" >
+        <#else>
+          <#local lsupplement = lsupplement + supplement.name >
+        </#if>
+    <#local lsupplement = lsupplement + "</div>" >
+  </#if>
 
+  <#if supplement.description?has_content>
+    <#local lsupplement = lsupplement + "<div class='supplemental-description'>" + supplement.description + "</div>">
+  </#if>
 
+  <#if (showName = false && supplement.url?has_content) || (showName = true && supplement.url?has_content && !supplement.name?has_content)>
+    <#local lsupplement = lsupplement + "<div class='supplemental-url'><a href='" + supplement.url + " target='_blank' rel='noopener'>" + supplement.url + "</a></div>">
+  </#if>
 
-
-
+  <#local lsupplement = "<div class='supplemental-item'>" + lsupplement + "</div>">
+  <#return lsupplement>
+</#function>

@@ -35,15 +35,17 @@
   
   #document-description { margin-bottom:1em; }
 
- .supplemental-item {
-   padding: 1.5em 0 1.25em 0;
-   border-bottom: 1px solid #eee;
-  }
-
-  .supplemental-item:last-child {
-    border-bottom: none;
-   }
- 
+ #section-supplemental {
+   .supplemental-block{
+     h4 {
+        margin:2em 0 0 0;
+      };
+     .supplemental-item {
+       padding: 0.75em 0 0.75em 3em;
+       border-bottom: 1px solid #eee;
+      };
+    }
+}
 
   #document-otherContacts {
     dl.dl-horizontal {
@@ -119,9 +121,9 @@
     a {
       color:#00B;
       text-decoration: underline;
-    };
-    a:hover {
-      text-decoration: none;
+      &:hover {
+        text-decoration: none;
+      }
     };
     .reasonChangedDescription {
       margin-top: 1em;
