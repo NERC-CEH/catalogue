@@ -40,4 +40,13 @@
         </div>
     </div>
 </div>
+<#elseif permission.userCanView(id)>
+<div class="container new-admin">
+    <div class="admin col-md-6">
+        <a href="/elter/documents" class="btn btn-link">
+            <i class="fa fa-files-o" aria-hidden="true"></i>
+            <span>eLTER Documents</span>
+        </a>
+    </div>
+</div>
 </#if>

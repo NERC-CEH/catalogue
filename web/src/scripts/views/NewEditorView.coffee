@@ -105,16 +105,24 @@ define [
       value = evt.target.value
       name = evt.target.name
 
-      listOfMaps = /(\w+)\[(\d+)\]\[\'(\w+)\'\]/
-      matched = name.match(listOfMaps)
-      if matched != null
-        name = matched[1]
-        index = parseInt matched[2], 10
-        key = matched[3]
+      list = /(\w+)\[(\d+)\]/
+      listMatched = name.match(list)
+      keyValue = /(\w+)\[(\d+)\]\[\'(\w+)\'\]/
+      keyValueMatched = name.match(keyValue)
+      if keyValueMatched != null
+        name = keyValueMatched[1]
+        index = parseInt keyValueMatched[2], 10
+        key = keyValueMatched[3]
         toUpdate = @model.get name
         toUpdate = toUpdate || []
         toUpdate[index] = toUpdate[index] || {}
         toUpdate[index][key] = value
+        @model.set name, toUpdate
+      else if listMatched != null
+        name = listMatched[1]
+        index = parseInt listMatched[2], 10
+        toUpdate = (@model.get name) || []
+        toUpdate[index] = value
         @model.set name, toUpdate
       else
         @model.set name, value
@@ -125,7 +133,6 @@ define [
       target = $(evt.target)
       target = target.parent() if !target.hasClass('delete-defaultParameter')
       input = target.parent().find('input')
-
       name = input.attr('name')
       value = input.val()
       if value != ''
@@ -170,7 +177,7 @@ define [
         @hideOther name
         do @save
 
-  updateOtherable: (name, url, renderValue, renderOther) ->
+  updateOtherable: (name, url, renderValues, renderOther) ->
     @hideOther name
     if $('#' + name).length
       $.ajax
@@ -181,8 +188,7 @@ define [
         success: (values) =>
           @hideOther name
           $('#' + name).html('')
-          for index, value of values
-            renderValue(value)
+          renderValues(values)
           renderOther()
           $('#' + name).val(@model.get(name))
     @initOtherable name

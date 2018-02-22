@@ -2,7 +2,10 @@ define [], () -> (view, model) ->
   updateManufacturer = ->
     view.updateOtherable 'manufacturer',
       '/elter/manufacturers',
-      (manufacturer) -> $('#manufacturer').append('<option value="' + manufacturer.id + '">' + manufacturer.title + '</option>'),
+      (manufacturers) ->
+        for index, manufacturer of manufacturers
+          $('#manufacturer').append('<option value="' + manufacturer.id + '">' + manufacturer.title + '</option>')
+      ,
       -> $('#manufacturer').append('<option id="other-manufacturer" value="other"">Other</option>')
 
   updateFoiType = ->
@@ -20,9 +23,10 @@ define [], () -> (view, model) ->
 
   updateReplacedBy = ->
     view.updateOtherable 'replacedBy',
-      '/elter/temporalProcedures',
-      (temporalProcedure) -> temporalProcedure.id
-      -> $('#replacedBy').append('other')
+      '/elter/temporal-procedures',
+      (temporalProcedure) ->
+        console.log model.get 'replacedBy'
+      ->
 
   ->
     do updateManufacturer

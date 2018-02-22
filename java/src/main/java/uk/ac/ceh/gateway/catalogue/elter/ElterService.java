@@ -22,6 +22,11 @@ public class ElterService {
     return documentReader.read(guid, SensorDocument.class);
   }
 
+  public TemporalProcedureDocument getTemporalProcedure(String guid) {
+    val documentReader = new DocumentReader<TemporalProcedureDocument>();
+    return documentReader.read(guid, TemporalProcedureDocument.class);
+  }
+
   public List<SensorDocument> getSensors() {
     val finder = new SolrDocumentFinder<SensorDocument>(solrServer, SensorDocument.class);
     return finder.find(String.format("documentType:\"%s\"", ELTER_SENSOR_DOCUMENT_SHORT));
@@ -40,8 +45,6 @@ public class ElterService {
 
   public List<TemporalProcedureDocument> getTemporalProcedures() {
     val finder = new SolrDocumentFinder<TemporalProcedureDocument>(solrServer, TemporalProcedureDocument.class);
-    val found = finder.find(String.format("documentType:\"%s\"", ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT));
-    System.out.println(String.format("found %s", found));
-    return found;
+    return finder.find(String.format("documentType:\"%s\"", ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT));
   }
 }

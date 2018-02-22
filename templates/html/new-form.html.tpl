@@ -54,31 +54,60 @@
     </div>
 </#macro>
 <#macro description description="">
-    <div id="value-title" class='value ${class}'>
-        <div class="value-children">
-            <textarea ${disabled} name="description" type="text" class='description' placeholder="Description">${description}</textarea>
-        </div>
+    <div id="value-title" class='value'>
+        <#if readonly == "readonly">
+            <div class="value-children">
+                <span class="static-value is-blank">No Description</span>
+            </div>
+        <#else>
+            <div class="value-children">
+                <textarea ${disabled} name="description" type="text" class='description' placeholder="Description">${description}</textarea>
+            </div>
+        </#if>
     </div>
 </#macro>
 
 <#macro ifReadonly>
+    <#if readonly == "readonly">
+        <#nested>
+    </#if>
+</#macro>
+<#macro ifNotReadonly>
     <#if readonly == "">
         <#nested>
     </#if>
 </#macro>
 <#macro ifDisabled>
-    <#if disabled == "">
+    <#if disabled == "disabled">
+        <#nested>
+    </#if>
+</#macro>
+<#macro ifNotDisabled>
+    <#if disabled == "disabled">
         <#nested>
     </#if>
 </#macro>
 
-<#macro input name type="text" class="" value="" placeholder="" id="" pattern="">
-    <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}" <#if pattern != "">pattern="${pattern}"</#if>>
+<#macro input name type="text" class="" value="" placeholder="" id="" pattern="" readonlyValue="">
+    <#if readonly == "readonly">
+        <span class="static-value <#if value == "">is-blank</#if>">${readonlyValue}</span>
+    <#else>
+        <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}" <#if pattern != "">pattern="${pattern}"</#if>>
+    </#if>
 </#macro>
-<#macro select name id="" class="">
-    <select ${disabled} id="${id}" name="${name}" class="${class}">
+<#macro select name id="" class="" value="" readonlyValue="">
+    <#if readonly == "readonly">
+        <span class="static-value <#if value == "">is-blank</#if>">${readonlyValue}</span>
+    <#else>
+        <select ${disabled} id="${id}" name="${name}" class="${class}">
+            <#nested>
+        </select>
+    </#if>
+</#macro>
+<#macro static class="">
+    <span class="static-value ${class}">
         <#nested>
-    </select>
+    </span>
 </#macro>
 
 <#macro value name label="" class="" hidden=false errorMessage="" href="">
@@ -94,9 +123,11 @@
         </#if>
         <div class="value-children">
             <#nested>
-            <div class="value-error">
-                <span>${errorMessage}</span>
-            </div>
+            <#if readonly == "">
+                <div class="value-error">
+                    <span>${errorMessage}</span>
+                </div>
+            </#if>
         </div>
 
     </div>

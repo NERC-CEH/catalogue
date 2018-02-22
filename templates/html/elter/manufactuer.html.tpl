@@ -11,7 +11,7 @@
         </@form.head>
         <@form.body>
             <@form.value href="${website!'/documents/${id}#'}" name="website" label="Website" name="website" errorMessage="Not a valid url, needs to be http(s)://url">
-                <@form.input name="website" placeholder="Website" value="${website!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$"></@form.input>
+                <@form.input name="website" placeholder="Website" value="${website!''}" pattern="^(https?|ftp):\\/\\/(-\\.)?([^\\s\\/?\\.#-]+\\.?)+(\\/[^\\s]*)?$" readonlyValue="${website!'No Website'}"></@form.input>
             </@form.value>
             <@form.value name="manufactured" label="Manufactured">
                 <ul class="list-unstyled">

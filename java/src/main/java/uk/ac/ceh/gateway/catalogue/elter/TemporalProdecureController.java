@@ -41,6 +41,7 @@ public class TemporalProdecureController extends AbstractDocumentController {
   public ResponseEntity<MetadataDocument>
   saveDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
       @RequestBody TemporalProcedureDocument document) throws DocumentRepositoryException {
+        System.out.println(String.format("replaced by", document.getReplacedBy()));
     return saveMetadataDocument(user, file, document);
   }
 

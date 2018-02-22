@@ -4,9 +4,9 @@
     <@form.value name="observationPlacholders" label="Observation Placeholders">
         <ul class="list-unstyled">
             <li>
-                <div class='composite-observation-placholder'>
+                <div class='value-block'>
                     <@form.delete name="observationPlacholder"></@form.delete>
-                    <div class='composite-observation-placholder-value'>
+                    <div class='value-block-value'>
                         <@form.select name="foiType" class="observation-placeholder">
                             <option selected value="id2">First</option>
                             <option value="id2">Second</option>
@@ -19,9 +19,9 @@
                 </div>
             </li>
             <li>
-                <div class='composite-observation-placholder'>
+                <div class='value-block'>
                     <@form.delete name="observationPlacholder"></@form.delete>
-                    <div class='composite-observation-placholder-value'>
+                    <div class='value-block-value'>
                         <@form.select name="foiType" class="observation-placeholder">
                             <option value="id2">First</option>
                             <option selected value="id2">Second</option>
@@ -34,9 +34,9 @@
                 </div>
             </li>
             <li>
-                <div class='composite-observation-placholder'>
+                <div class='value-block'>
                     <@form.delete name="observationPlacholder"></@form.delete>
-                    <div class='composite-observation-placholder-value'>
+                    <div class='value-block-value'>
                         <@form.select name="foiType" class="observation-placeholder">
                             <option value="id2"></option>
                             <option value="id2">First</option>
