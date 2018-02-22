@@ -7,7 +7,7 @@
     <dd>
       <#list topicCategories as topic>
         <#if topic.uri?has_content>
-          <a href="${topic.uri?html}" target="_blank" rel="noopener">${codes.lookup('topicCategory', topic.value, 'name')!topic.value}</a>
+          <a href="${topic.uri?html}" target="_blank" rel="noopener noreferrer">${codes.lookup('topicCategory', topic.value, 'name')!topic.value}</a>
         <#else>
           <span>${codes.lookup('topicCategory', topic.value, 'name')!topic.value}</span>
         </#if>
@@ -33,7 +33,7 @@
         <dd class="descriptive-keywords">
           <#list descriptiveKeyword.keywords as keyword>
             <#if keyword.uri?has_content>
-              <a href="${keyword.uri?html}" target="_blank" rel="noopener">${keyword.value?html}</a>
+              <a href="${keyword.uri?html}" target="_blank" rel="noopener noreferrer">${keyword.value?html}</a>
             <#else>
               <span>${keyword.value?html}</span>
             </#if>

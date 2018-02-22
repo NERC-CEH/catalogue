@@ -50,7 +50,7 @@
                     <#else>
                       <#if !datacitable >
                         <li><div class="msg text-red"><i class="fa fa-exclamation"></i> Conditions for assigning a <br>DOI have not been met</div></li>
-                        <li><a href="http://eidc.ceh.ac.uk/administration-folder/eidc-operations-procedures/mintADOI" target="_blank" rel="noopener">Help</a></li>
+                        <li><a href="http://eidc.ceh.ac.uk/administration-folder/eidc-operations-procedures/mintADOI" target="_blank" rel="noopener noreferrer">Help</a></li>
                       </#if>
                     </#if>
                     <#if datacitable>
@@ -71,8 +71,8 @@
                     </#list>
                   </#if>
                   <#if custodianEIDC?size gte 1>
-                    <li><a href="https://jira.ceh.ac.uk/issues/?jql=labels%3D%22${id?html}%22" target="_blank" rel="noopener">Jira issues for this resource</a></li>
-                    <li><a href="http://eidc.ceh.ac.uk/metadata/${id?html}" target="_blank" rel="noopener">DRH folder</a></li>
+                    <li><a href="https://jira.ceh.ac.uk/issues/?jql=labels%3D%22${id?html}%22" target="_blank" rel="noopener noreferrer">Jira issues for this resource</a></li>
+                    <li><a href="http://eidc.ceh.ac.uk/metadata/${id?html}" target="_blank" rel="noopener noreferrer">DRH folder</a></li>
                   </#if>
                 </ul>
             </div>
