@@ -82,7 +82,7 @@
     </#if>
 
     <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$") && showOrcid =  true>
-        <#local lcontact = lcontact + "<div class='nameIdentifier'><a href='" + contact.nameIdentifier + "' target='_blank' rel='noopener' title='View this authors record on ORCID.org'><img src='/static/img/orcid_16x16.png' alt='ORCID iD icon' title='ORCID iD'> " + contact.nameIdentifier + "</a></div>">
+        <#local lcontact = lcontact + "<div class='nameIdentifier'><a href='" + contact.nameIdentifier + "' target='_blank' rel='noopener noreferrer' title='View this authors record on ORCID.org'><img src='/static/img/orcid_16x16.png' alt='ORCID iD icon' title='ORCID iD'> " + contact.nameIdentifier + "</a></div>">
     </#if>
   </#if>
 
@@ -95,9 +95,27 @@
 </#function>
 
 
+<#function displaySupplemental supplement showName=false>
+  <#local lsupplement = "">
 
+  <#if showName = true &&  supplement.name?has_content>
+    <#local lsupplement = lsupplement + "<div class='supplemental-name'>" >
+        <#if supplement.url?has_content>
+          <#local lsupplement = lsupplement + "<a href='" + supplement.url + "' target='_blank' rel='noopener noreferrer' title='" + supplement.url + "'>" + supplement.name + "</a>" >
+        <#else>
+          <#local lsupplement = lsupplement + supplement.name >
+        </#if>
+    <#local lsupplement = lsupplement + "</div>" >
+  </#if>
 
+  <#if supplement.description?has_content>
+    <#local lsupplement = lsupplement + "<div class='supplemental-description'>" + supplement.description + "</div>">
+  </#if>
 
+  <#if (showName = false && supplement.url?has_content) || (showName = true && supplement.url?has_content && !supplement.name?has_content)>
+    <#local lsupplement = lsupplement + "<div class='supplemental-url'><a href='" + supplement.url + " target='_blank' rel='noopener noreferrer'>" + supplement.url + "</a></div>">
+  </#if>
 
-
-
+  <#local lsupplement = "<div class='supplemental-item'>" + lsupplement + "</div>">
+  <#return lsupplement>
+</#function>

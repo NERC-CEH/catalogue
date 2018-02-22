@@ -33,7 +33,7 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 })
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
-    private String otherCitationDetails, browseGraphicUrl, resourceStatus, lineage, reasonChanged,
+    private String otherCitationDetails, browseGraphicUrl, resourceStatus, version, lineage, reasonChanged,
         metadataStandardName, metadataStandardVersion, parentIdentifier, revisionOfIdentifier;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
       securityConstraints;      

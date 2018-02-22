@@ -92,6 +92,12 @@ define [
           modelAttribute: 'resourceStatus'
           label: 'Resource status'
 
+        new InputView
+          model: @model
+          modelAttribute: 'version'
+          typeAttribute: 'number'
+          label: 'Version'
+
         new SingleObjectView
           model: @model
           modelAttribute: 'datasetReferenceDate'
