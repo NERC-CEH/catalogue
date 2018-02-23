@@ -197,7 +197,7 @@ this part is likly to change
 
 ## Bespoke Elements
 
-Add your own bespoke form elements which requires bespoke coffeescript. Update `NewEditorView.coffee` by requiring `'cs!views/MyDocumentViewFunctions'` which is a file containing
+Add your own bespoke form elements which requires bespoke coffeescript. Update `NewEditorView.coffee` by requiring `'cs!views/MyCatalogueViewFunctions'` which is a file containing
 
 ```coffeescript
 define [], () -> (view, model) ->
@@ -212,4 +212,4 @@ define [], () -> (view, model) ->
 
 the `view` is the `NewEditorView` and the `model` is `EditorMetadata` i.e. your document
 
-then update `NewEditorView.coffee` by updating `addedFns` with `@fns.myDoc = MyDocumentViewFunctions(@, @model)`
+then update `NewEditorView.coffee` by updating `addedFns` with `@fns.myCatalogue = MyCatalogueViewFunctions(@, @model)`
