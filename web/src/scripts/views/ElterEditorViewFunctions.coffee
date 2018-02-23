@@ -24,8 +24,15 @@ define [], () -> (view, model) ->
   updateReplacedBy = ->
     view.updateOtherable 'replacedBy',
       '/elter/temporal-procedures',
-      (temporalProcedure) ->
-        console.log model.get 'replacedBy'
+      (temporalProcedures) ->
+        tps = []
+        for temporalProcedure in temporalProcedures
+          tps.push temporalProcedure if temporalProcedure.id != model.get 'id'
+        replacedBy = model.get 'replacedBy'
+        console.log(tps)
+
+        for replacedById in replacedBy
+          $('#replacedBy').append('<div>' + replacedById + '</div>')
       ->
 
   ->

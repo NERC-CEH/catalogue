@@ -84,9 +84,9 @@
                     </ul>
                 </@form.value>
             </@form.ifReadonly>
-            <#--  <@form.value name="replacedByName" class="other-replacedBy" label="Replace By Name" hidden=true errorMessage="Name is required">
+            <@form.value name="replacedByName" class="other-replacedBy" label="Replace By Name" hidden=true errorMessage="Name is required">
                 <input disabled name="replacedByName" placeholder="Replace By Name" required>
-            </@form.value>  -->
+            </@form.value>
             <@form.value name="commitCode" label="Commit Code">
                 <@form.input name="commitCode" placeholder="Commit Code" value=commitCode!'' readonlyValue=commitCode!'No Commit Code'></@form.input>
             </@form.value>
