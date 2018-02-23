@@ -223,3 +223,7 @@ $('selector').unbnid 'click'
 $('selector').click ->
     # logic
 ```
+
+### updateOtherable
+
+still under construction but the idea that you want to add a new document or value as an alternative to a list of known documents or values i.e. the `Other` in a select
