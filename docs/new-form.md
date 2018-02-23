@@ -227,3 +227,11 @@ $('selector').click ->
 ### updateOtherable
 
 still under construction but the idea that you want to add a new document or value as an alternative to a list of known documents or values i.e. the `Other` in a select
+
+## Disable Auto Save
+
+under construction but you can disable the autosave feature by adding an element with `.save` in your form then the user will have to click this save button in order to save. Should be avoided as autosave is just the best
+
+# Missing and Thoughts
+
+* multi pages, some forms have multiple pages. This is an accessibility nightmare because you are hiding values in the form with no prompt how to resolve this. Prefered solution is to break document down into sub documents. Another solution is to let the form get long and break up the sections with `<hr />` and `<h4>Section Title<h4>`

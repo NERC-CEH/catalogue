@@ -39,7 +39,8 @@ define [
         do @updateLinks
         do @initInputs
         do @renderDefaultParameters
-        for fn in @fns
+
+        for index, fn of @fns
           do fn
 
     $('form').submit (evt) =>
