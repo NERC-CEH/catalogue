@@ -2,12 +2,12 @@ define [
   'underscore'
   'backbone'
   'tpl!templates/DefaultParameter.tpl'
-  'cs!views/ElterEditorViewFunctions'
+  'cs!views/ElterViewFunctions'
 ], (
   _
   Backbone
   DefaultParameter
-  ElterEditorViewFunctions
+  ElterViewFunctions
 ) -> Backbone.View.extend
   timeout: null
   shouldSave: false
@@ -15,7 +15,7 @@ define [
   shouldRedirect: false
   fns: {}
   addedFns: ->
-    @fns.elter = ElterEditorViewFunctions(@, @model)
+    @fns.elter = ElterViewFunctions(@, @model)
 
   initialize: (options) ->
     do @addedFns
