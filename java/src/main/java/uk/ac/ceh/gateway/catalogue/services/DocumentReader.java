@@ -20,11 +20,19 @@ public class DocumentReader<T extends MetadataDocument> {
   public T read(String guid, Class<T> clazz) {
     val mapper = new ObjectMapper();
     mapper.registerModule(new GuavaModule());
+    if (!exists(guid))
+      return null;
     val json = new File(datastore, String.format("%s.raw", guid));
-    val document = mapper.readValue(json, clazz);
     val meta = new File(datastore, String.format("%s.meta", guid));
+    val document = mapper.readValue(json, clazz);
     val metadataInfo = mapper.readValue(meta, MetadataInfo.class);
     document.setMetadata(metadataInfo);
     return document;
+  }
+
+  public static boolean exists(String guid) {
+    val json = new File(datastore, String.format("%s.raw", guid));
+    val meta = new File(datastore, String.format("%s.meta", guid));
+    return json.exists() && meta.exists();
   }
 }

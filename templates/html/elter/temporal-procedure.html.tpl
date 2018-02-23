@@ -28,7 +28,9 @@
                                                     <option value="other">Other</option>
                                             </@form.select>
                                             <div>
-                                                <a class="static-value" href="/documents/${temporalProcedure}">${elter.getTemporalProcedure(temporalProcedure).title}</a>
+                                                <#if elter.getTemporalProcedure(temporalProcedure)??>
+                                                    <a class="static-value" href="/documents/${temporalProcedure}">${elter.getTemporalProcedure(temporalProcedure).title}</a>
+                                                </#if>
                                             </div>
                                         </div>
                                     </div>
@@ -77,7 +79,9 @@
                         <#if replacedBy??>
                             <#list replacedBy as temporalProcedure>
                                 <li>
-                                    <a class="static-value" href="/documents/${temporalProcedure}">${elter.getTemporalProcedure(temporalProcedure).title}</a>
+                                    <#if elter.getTemporalProcedure(temporalProcedure)??>
+                                        <a class="static-value" href="/documents/${temporalProcedure}">${elter.getTemporalProcedure(temporalProcedure).title}</a>
+                                    </#if>
                                 </li>
                             </#list>
                         </#if>

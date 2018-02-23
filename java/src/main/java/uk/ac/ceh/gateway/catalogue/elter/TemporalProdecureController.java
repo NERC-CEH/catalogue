@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
+import org.apache.jena.ext.com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
@@ -21,7 +23,8 @@ public class TemporalProdecureController extends AbstractDocumentController {
   private ElterService elterService;
 
   @Autowired
-  public TemporalProdecureController(DocumentRepository documentRepository, ElterService elterService) {
+  public TemporalProdecureController(
+      DocumentRepository documentRepository, ElterService elterService) {
     super(documentRepository);
     this.elterService = elterService;
   }
@@ -32,7 +35,8 @@ public class TemporalProdecureController extends AbstractDocumentController {
   public ResponseEntity<MetadataDocument>
   newDocument(@ActiveUser CatalogueUser user, @RequestBody TemporalProcedureDocument document,
       @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
-    return saveNewMetadataDocument(user, document, catalogue, "new eLTER Temporal Procedure Document");
+    return saveNewMetadataDocument(
+        user, document, catalogue, "new eLTER Temporal Procedure Document");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
@@ -41,7 +45,7 @@ public class TemporalProdecureController extends AbstractDocumentController {
   public ResponseEntity<MetadataDocument>
   saveDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
       @RequestBody TemporalProcedureDocument document) throws DocumentRepositoryException {
-        System.out.println(String.format("replaced by", document.getReplacedBy()));
+    document.getReplacedBy().removeIf(id -> !DocumentReader.exists(id));
     return saveMetadataDocument(user, file, document);
   }
 

@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
-import java.util.List;
-
+import java.util.Set;
 import org.springframework.http.MediaType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,7 +18,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
     @Template(called="html/elter/temporal-procedure.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 public class TemporalProcedureDocument extends AbstractMetadataDocument {
-    private List<String> replacedBy;
+    private Set<String> replacedBy;
     private String replaceByName;
     private String commitCode;
     private String interpolationType;

@@ -39,7 +39,6 @@ define [
         do @updateLinks
         do @initInputs
         do @renderDefaultParameters
-
         for index, fn of @fns
           do fn
 
@@ -66,6 +65,7 @@ define [
       
       if @shouldSave
         @shouldSave = false
+        do @updateModel
         do @model.save
         do $('#saved').show
         clearTimeout @timeout
@@ -75,6 +75,33 @@ define [
       do @save
     do @initDelete
     do @initInputs
+  
+  updateModel: ->
+    $('#form input, #form textarea, #form select').each (index, element) =>
+      value = element.value
+      name = element.name
+      if name
+        list = /(\w+)\[(\d+)\]/
+        listMatched = name.match(list)
+        keyValue = /(\w+)\[(\d+)\]\[\'(\w+)\'\]/
+        keyValueMatched = name.match(keyValue)
+        if keyValueMatched != null
+          name = keyValueMatched[1]
+          index = parseInt keyValueMatched[2], 10
+          key = keyValueMatched[3]
+          toUpdate = @model.get name
+          toUpdate = toUpdate || []
+          toUpdate[index] = toUpdate[index] || {}
+          toUpdate[index][key] = value
+          @model.set name, toUpdate
+        else if listMatched != null
+          name = listMatched[1]
+          index = parseInt listMatched[2], 10
+          toUpdate = (@model.get name) || []
+          toUpdate[index] = value
+          @model.set name, toUpdate
+        else
+          @model.set name, value
 
   initDelete: ->
     $('.delete-document').unbind 'click'
@@ -107,50 +134,16 @@ define [
   initInputs: ->
     $('#form input, #form textarea, #form select').unbind 'change'
     $('#form input, #form textarea, #form select').change (evt) =>
-      value = evt.target.value
-      name = evt.target.name
-
-      list = /(\w+)\[(\d+)\]/
-      listMatched = name.match(list)
-      keyValue = /(\w+)\[(\d+)\]\[\'(\w+)\'\]/
-      keyValueMatched = name.match(keyValue)
-      if keyValueMatched != null
-        name = keyValueMatched[1]
-        index = parseInt keyValueMatched[2], 10
-        key = keyValueMatched[3]
-        toUpdate = @model.get name
-        toUpdate = toUpdate || []
-        toUpdate[index] = toUpdate[index] || {}
-        toUpdate[index][key] = value
-        @model.set name, toUpdate
-      else if listMatched != null
-        name = listMatched[1]
-        index = parseInt listMatched[2], 10
-        toUpdate = (@model.get name) || []
-        toUpdate[index] = value
-        @model.set name, toUpdate
-      else
-        @model.set name, value
       do @save if @autoSave
 
-    $('.delete-defaultParameter').unbind 'click'
-    $('.delete-defaultParameter').click (evt) =>
+    $('.delete').unbind 'click'
+    $('.delete').click (evt) =>
       target = $(evt.target)
       target = target.parent() if !target.hasClass('delete-defaultParameter')
-      input = target.parent().find('input')
+      input = target.parent().find('input, select')
       name = input.attr('name')
       value = input.val()
-      if value != ''
-        listOfMaps = /(\w+)\[(\d+)\]\[\'(\w+)\'\]/
-        matched = name.match(listOfMaps)
-        if matched != null
-          name = matched[1]
-          index = parseInt matched[2], 10
-          toUpdate = @model.get name
-          toUpdate = toUpdate || []
-          toUpdate.splice(index, 1)
-          @model.set name, toUpdate
-          do @save
+      console.log name, value, 'update the model'
 
   save: ->
     @shouldSave = true
@@ -171,18 +164,18 @@ define [
     $('.other-' + name + ' input').blur()
 
   initOtherable: (name) ->
-    $('#' + name).unbind 'change'
-    $('#' + name).change =>
+    $('#' + name + ' select').unbind 'change'
+    $('#' + name + ' select').change (evt) =>
+      target = $(evt.target)
       @hideOther  name
-      value = $('#' + name).val()
-      @model.set(name, value)
+      value = target.val()
       if value == 'other'
         @showOther name
       else
         @hideOther name
         do @save
 
-  updateOtherable: (name, url, renderValues, renderOther) ->
+  updateOtherable: (name, url, renderValues) ->
     @hideOther name
     if $('#' + name).length
       $.ajax
@@ -194,6 +187,5 @@ define [
           @hideOther name
           $('#' + name).html('')
           renderValues(values)
-          renderOther()
-          $('#' + name).val(@model.get(name))
+          @initOtherable name
     @initOtherable name
