@@ -90,13 +90,124 @@ A list of components you can how, with example usage
 
 ### Value
 
+this is a block which creates a "tabulated" experience with a `label` on the left and the `contents` on the right
+
 ```ftl
+<@form.value name="name" label="A Label" href="optional-url" class="optional class" hidden=false|true errorMessage="optional error message">
+    ${contents}
+</@form.value>
 ```
+
+* `name` used in the coffeescript for error validation and updating the `href`. This value should match the `name` of the `input`, `select` or `textarea` that is inside the value block e.g. `<input name="title">` then `name="title"`
+* `label` the value which users can see on the left
+* `href` to turn label into a hyperlink. Useful for linking documents or external documentation 
+* `class` added to default class
+* `hidden` to hide the value block. Example usage, in a `select` when selecting `Other` then change this to visible or selecting `no` in a radio button so to answer `Why no?`
+* `errorMessage` shown when input fails validation. Your input must have the same name as the value block for this to work. Validates on `pattern` and `required` no validation for `disabled` inputs.
 
 ### Input
 
+```ftl
+<@form.input name="input-name" type="text" class="optional class" value="optional value" placeholder="optional placeholder" id="optional id" pattern="optional pattern" readonlyValue="optional value">
+</@form.input
+```
+
+* `name` standard input `name`
+* `type` standard input `type`
+* `class` added to default class
+* `value` standard input `value`
+* `placeholder` standard input `value`
+* `id` standard input `id`
+* `pattern` standard input `pattern` for validation
+* `readonlyValue` if user has `view` permission and there is no `value` then this is the displayed value e.g. you might have `No Title`
+
 ### Select
+
+```ftl
+<@form.select name="name" id="optional id" class="optional class" value="optional value" readonlyValue="optional value">
+    <option value="1">One</option>
+    <option value="2">Two</option>
+</@form.select>
+```
+
+* `name` standard select `name`
+* `class` added to default class
+* `value` if this value is blank will change the color of the readonly value
+* `id` standard input `id`
+* `readonlyValue` if user has `view` permission and there is no `value` then this is the displayed value e.g. you might have `No Title`
 
 ### Static
 
+If you want to put static data in the document
+
+```ftl
+<@form.static class="optional class">
+    <span>Your content</span>
+</@form.static>
+```
+
 ### Delete
+
+a red times button
+
+```ftl
+<@form.delete name="delete-name"></@form.delete>
+```
+
+you can then use `$('.delete-${delete-name})` in order add events to the delete button, you are likly to have more than one of these
+
+### Read Only and Disabled
+
+Is `readonly` and `disabled` if the user has `view` permissions but no `edit` permissions
+
+```ftl
+<@form.ifReadOnly>Your Content</@form.ifReadOnly>
+<@form.ifNotReadOnly>Your Content</@form.ifNotReadOnly>
+<@form.ifDisabled>Your Content</@form.ifDisabled>
+<@form.ifNotDisabled>Your Content</@form.ifNotDisabled>
+```
+
+### Value Block and Value Block Value
+
+this part is still under construction but in your value you may want to do some flex styling, this should help keep elements in-line
+
+here is an example which has a delete button next to a select with a hyperlink underneath
+
+```ftl
+<div class='value-block'>
+<@form.delete name="deleteReplacedBy"></@form.delete>
+    <div class='value-block-value'>
+        <@form.select name="name[0]">
+            <#list linkedDocuments as doc>
+                    <option <#if doc.id == myLinkedDoc>selected</#if> value="${doc.id}">${doc.title}</option>
+                </#if>
+            </#list>
+            <option value="other">Other</option>
+        </@form.select>
+        <div>
+            <@form.static>
+                <a href="/documents/${myLinkedDoc.id}">${myService.getLinkedDocs(myLinkedDoc.id).title}</a>
+            </@form.static>
+        </div>
+    </div>
+</div>
+```
+
+this part is likly to change
+
+## Bespoke Elements
+
+Add your own bespoke form elements which requires bespoke coffeescript. Update `NewEditorView.coffee` by requiring `'cs!views/MyDocumentViewFunctions'` which is a file containing
+
+```coffeescript
+define [], () -> (view, model) ->
+  myFunc ->
+    # some logic
+  myOtherFunc ->
+    # some other logic
+  ->
+    do myFunc
+    do myOtherFunc
+```
+
+the `view` is the `NewEditorView` and the `model` is `EditorMetadata` i.e. your document
