@@ -211,3 +211,5 @@ define [], () -> (view, model) ->
 ```
 
 the `view` is the `NewEditorView` and the `model` is `EditorMetadata` i.e. your document
+
+then update `NewEditorView.coffee` by updating `addedFns` with `@fns.myDoc = MyDocumentViewFunctions(@, @model)`

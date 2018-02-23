@@ -13,8 +13,12 @@ define [
   shouldSave: false
   autoSave: false
   shouldRedirect: false
+  fns: {}
+  addedFns: ->
+    @fns.elter = ElterEditorViewFunctions(@, @model)
+
   initialize: (options) ->
-    @elter = ElterEditorViewFunctions(@, @model)
+    do addedFns
     if $('.new-document').length != 0
       do $('#new-document-modal').modal
       $('.new-document-title').html(@model.title)
@@ -35,8 +39,8 @@ define [
         do @updateLinks
         do @initInputs
         do @renderDefaultParameters
-        do @elter
-
+        for fn in @fns
+          do fn
 
     $('form').submit (evt) =>
       do evt.preventDefault
