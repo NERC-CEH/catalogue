@@ -1,4 +1,4 @@
-define [], () -> (view, model) ->
+define [], (view, model) ->
   updateManufacturer = ->
     view.updateOtherable 'manufacturer',
       '/elter/manufacturers',

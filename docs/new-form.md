@@ -205,11 +205,21 @@ define [], () -> (view, model) ->
     # some logic
   myOtherFunc ->
     # some other logic
-  ->
+  -> # NOTE
     do myFunc
     do myOtherFunc
 ```
 
-the `view` is the `NewEditorView` and the `model` is `EditorMetadata` i.e. your document
+**NOTE** A plain function returned and not an object, it is plain coffeescript, this means you don't need to reference `@`
 
-then update `NewEditorView.coffee` by updating `addedFns` with `@fns.myCatalogue = MyCatalogueViewFunctions(@, @model)`
+Tthe `view` is the `NewEditorView` and the `model` is `EditorMetadata` i.e. your document
+
+Then update `NewEditorView.coffee` by updating `addedFns` with `@fns.myCatalogue = MyCatalogueViewFunctions(@, @model)`
+
+Called everytime model updates. Good practice is to run `unbind` before you bindnig events such as, `click` e.g.
+
+```coffeescript
+$('selector').unbnid 'click'
+$('selector').click ->
+    # logic
+```
