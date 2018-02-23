@@ -18,7 +18,7 @@ define [
     @fns.elter = ElterEditorViewFunctions(@, @model)
 
   initialize: (options) ->
-    do addedFns
+    do @addedFns
     if $('.new-document').length != 0
       do $('#new-document-modal').modal
       $('.new-document-title').html(@model.title)
