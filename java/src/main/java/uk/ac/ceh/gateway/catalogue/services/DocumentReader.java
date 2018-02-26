@@ -5,6 +5,8 @@ import java.io.File;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 
+import org.apache.commons.lang3.StringUtils;
+
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -18,10 +20,9 @@ public class DocumentReader<T extends MetadataDocument> {
 
   @SneakyThrows
   public T read(String guid, Class<T> clazz) {
+    if (StringUtils.isBlank(guid) || !exists(guid)) return null;
     val mapper = new ObjectMapper();
     mapper.registerModule(new GuavaModule());
-    if (!exists(guid))
-      return null;
     val json = new File(datastore, String.format("%s.raw", guid));
     val meta = new File(datastore, String.format("%s.meta", guid));
     val document = mapper.readValue(json, clazz);

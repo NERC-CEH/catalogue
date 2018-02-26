@@ -23,9 +23,10 @@
             <@form.value name="processType" label="Process Type">
                 <@form.select name="processType" value=processType!"" readonlyValue="${processType!'No Process Type'}">
                     <#if !processType??>
-                        <option value=""></option>
+                        <option selected="selected" value="Unknown">Unknown</option>
+                    <#else>
+                        <option <#if processType?? && processType == "Unknown"> selected="selected"</#if> value="Unknown">Unknown</option>
                     </#if>
-                    <option <#if processType?? && processType == "Unknown"> selected="selected"</#if> value="Unknown">Unknown</option>
                     <option <#if processType?? && processType == "Simulation"> selected="selected"</#if> value="Simulation">Simulation</option>
                     <option <#if processType?? && processType == "Manual"> selected="selected"</#if> value="Manual">Manual</option>
                     <option <#if processType?? && processType == "Sensor"> selected="selected"</#if> value="Sensor">Sensor</option>
@@ -33,16 +34,24 @@
                 </@form.select>
             </@form.value>
             <@form.value name="manufacturer" label="Manufacturer" href="/documents/${manufacturer!'${id}#'}">
-                <div id="manufacturer"> 
-                    <@form.select name="manufacturer" value=manufacturer!"" readonlyValue="${elter.getManufacturer(manufacturer).title}">
-                        <#if ! manufacturer??>
+                <div id="manufacturer">
+                    <#if manufacturer??>
+                        <@form.select name="manufacturer" value=manufacturer!"">
                             <option value=""></option>
-                        </#if>
-                        <#list manufacturers as m>
-                            <option <#if manufacturer?? && manufacturer == m.id>selected</#if> value="${m.id}">${m.title}</option>
-                        </#list>
-                        <option value="other">Other</option>
-                    </@form.select>
+                            <#list manufacturers as m>
+                                <option <#if manufacturer?? && manufacturer == m.id>selected</#if> value="${m.id}">${m.title}</option>
+                            </#list>
+                            <option value="other">Other</option>
+                        </@form.select>
+                    <#else>
+                        <@form.select name="manufacturer" value=manufacturer!"">
+                            <option value=""></option>
+                            <#list manufacturers as m>
+                                <option <#if manufacturer?? && manufacturer == m.id>selected</#if> value="${m.id}">${m.title}</option>
+                            </#list>
+                            <option value="other">Other</option>
+                        </@form.select>
+                    </#if>
                 </div>
             </@form.value>
             <@form.value name="manufacturerName" class="other-manufacturer" label="Manufacturer Name" hidden=true errorMessage="Name is required">

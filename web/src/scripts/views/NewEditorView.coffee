@@ -143,7 +143,6 @@ define [
       input = target.parent().find('input, select')
       name = input.attr('name')
       value = input.val()
-      console.log name, value, 'update the model'
 
   save: ->
     @shouldSave = true
