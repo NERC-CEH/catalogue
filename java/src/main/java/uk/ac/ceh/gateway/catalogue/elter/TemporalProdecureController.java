@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.SneakyThrows;
@@ -37,7 +38,7 @@ public class TemporalProdecureController extends AbstractDocumentController {
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
   @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = ELTER_TEMPORAL_PROCEDURE_DOCUMENT_JSON_VALUE)
   @SneakyThrows
-  public ResponseEntity<MetadataDocument> newDocument(@ActiveUser CatalogueUser user, @RequestBody TemporalProcedureDocument document) {
+  public ResponseEntity<MetadataDocument> newDocument(@ActiveUser CatalogueUser user, @RequestParam("catalogue") String catalogue, @RequestBody TemporalProcedureDocument document) {
     return saveNewMetadataDocument(user, document, catalogue, "new eLTER Temporal Procedure Document");
   }
 
@@ -66,5 +67,6 @@ public class TemporalProdecureController extends AbstractDocumentController {
       saveNewMetadataDocument(user, temporalProcedure, "new eLTER Temporal Procedure Document");
       document.getReplacedBy().add(temporalProcedure.getId());
     }
+    document.setReplacedByName(null);
   }
 }

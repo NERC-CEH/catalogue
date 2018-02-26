@@ -29,7 +29,7 @@
                                             </@form.select>
                                             <div>
                                                 <#if elter.getTemporalProcedure(temporalProcedure)??>
-                                                    <a class="static-value" href="/documents/${temporalProcedure}">${elter.getTemporalProcedure(temporalProcedure).title}</a>
+                                                    <a class="static-value" href="/documents/${temporalProcedure}">${temporalProcedure}</a>
                                                 </#if>
                                             </div>
                                         </div>
@@ -80,7 +80,7 @@
                             <#list replacedBy as temporalProcedure>
                                 <li>
                                     <#if elter.getTemporalProcedure(temporalProcedure)??>
-                                        <a class="static-value" href="/documents/${temporalProcedure}">${elter.getTemporalProcedure(temporalProcedure).title}</a>
+                                        <a class="static-value" href="/documents/${temporalProcedure}">temporalProcedure</a>
                                     </#if>
                                 </li>
                             </#list>
