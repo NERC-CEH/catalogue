@@ -30,7 +30,7 @@ public class SensorController extends AbstractDocumentController {
 
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
   @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newSampleArchive(@ActiveUser CatalogueUser user, @RequestBody SensorDocument document, @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
+  public ResponseEntity<MetadataDocument> newDocument(@ActiveUser CatalogueUser user, @RequestBody SensorDocument document, @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
     setSensorManufacturer(document, user);
     cleanDefaultParameters(document);
     return saveNewMetadataDocument(user, document, catalogue, "new Sample Archive");
@@ -38,7 +38,7 @@ public class SensorController extends AbstractDocumentController {
 
   @PreAuthorize("@permission.userCanEdit(#file)")
   @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ELTER_SENSOR_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> saveSensor(@ActiveUser CatalogueUser user, @PathVariable("file") String file, @RequestBody SensorDocument document) throws DocumentRepositoryException {
+  public ResponseEntity<MetadataDocument> saveDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file, @RequestBody SensorDocument document) throws DocumentRepositoryException {
     setSensorManufacturer(document, user);
     cleanDefaultParameters(document);
     return saveMetadataDocument(user, file, document);

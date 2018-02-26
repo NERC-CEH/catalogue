@@ -19,7 +19,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 })
 public class TemporalProcedureDocument extends AbstractMetadataDocument {
     private Set<String> replacedBy;
-    private String replaceByName;
+    private String replacedByName;
     private String commitCode;
     private String interpolationType;
     private long intendedObservationSpacing;
