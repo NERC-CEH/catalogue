@@ -37,6 +37,7 @@ define [
       else
         $('#loading').hide()
         do @initInputs
+        do @initDeleteButtons
         do @renderDefaultParameters
         do @updateLinks
         for index, fn of @fns
@@ -65,6 +66,8 @@ define [
       
       if @shouldSave
         @shouldSave = false
+        for key of @model.attributes
+          @model.unset key if $('#value-' + key).length
         do @updateModel
         do @model.save
         do $('#saved').show
@@ -76,6 +79,7 @@ define [
       do @save
     do @initDelete
     do @initInputs
+    do @initDeleteButtons
   
   updateModel: ->
     $('#form input, #form textarea, #form select').each (index, element) =>
@@ -93,19 +97,18 @@ define [
           toUpdate = @model.get name
           toUpdate = toUpdate || []
           toUpdate[index] = toUpdate[index] || {}
-          toUpdate[index][key] = value
+          toUpdate[index][key] = value if value != "" or value != null or typeof value != 'undefined'
           value = toUpdate
         else if listMatched != null
           name = listMatched[1]
           index = parseInt listMatched[2], 10
           toUpdate = (@model.get name) || []
-          toUpdate[index] = value
+          toUpdate[index] = value if value != "" or value != null or typeof value != 'undefined'
           value = toUpdate
 
         if element.type == 'radio'
           $('input[name="' + name + '"').each (index, input) ->
             value = input.value if input.checked
-
         @model.set name, value
 
   initDelete: ->
@@ -141,13 +144,18 @@ define [
     $('#form input, #form textarea, #form select').change (evt) =>
       do @save if @autoSave
 
+  getDeleteParent: (current) ->
+    current = $(current)
+    return current if (current.hasClass('delete-parent'))
+    return current if current.length == 0
+    return @getDeleteParent(current.parent())
+
+  initDeleteButtons: ->
     $('.delete').unbind 'click'
     $('.delete').click (evt) =>
-      target = $(evt.target)
-      target = target.parent() if !target.hasClass('delete-defaultParameter')
-      input = target.parent().find('input, select')
-      name = input.attr('name')
-      value = input.val()
+      parent = @getDeleteParent(evt.target)
+      parent.remove() if (parent.length)
+      do @save
 
   save: ->
     @shouldSave = true
@@ -193,4 +201,5 @@ define [
           renderValues(values)
           @initOtherable name
           do @updateLinks
+          do @initDeleteButtons
     @initOtherable name

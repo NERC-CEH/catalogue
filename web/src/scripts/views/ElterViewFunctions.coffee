@@ -38,10 +38,14 @@ define [
         tps = []
         for temporalProcedure in temporalProcedures
           tps.push temporalProcedure if temporalProcedure.id != model.get 'id'
-        
-        replacedBy = model.get('replacedBy') || []
 
-        if (tps.length > 0)
+        replacedByTmp = model.get('replacedBy') || []
+        replacedBy = []
+        for r in replacedByTmp
+          if r != null and r != '' and typeof r != 'undefined'
+            replacedBy.push r
+
+        if (tps.length > 0 and replacedBy.length > 0)
           for index, replacedById of replacedBy
             title = replacedById
             options = []

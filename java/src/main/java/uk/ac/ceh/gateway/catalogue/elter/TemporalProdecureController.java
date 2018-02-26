@@ -47,7 +47,7 @@ public class TemporalProdecureController extends AbstractDocumentController {
   @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ELTER_TEMPORAL_PROCEDURE_DOCUMENT_JSON_VALUE)
   @SneakyThrows
   public ResponseEntity<MetadataDocument> saveDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file, @RequestBody TemporalProcedureDocument document) {
-    document.getReplacedBy().removeIf(id -> StringUtils.isBlank(id) || !DocumentReader.exists(id));
+    if (document.getReplacedBy() != null) document.getReplacedBy().removeIf(id -> StringUtils.isBlank(id) || !DocumentReader.exists(id));
     setReplacedBY(document, user);
     return saveMetadataDocument(user, file, document);
   }
@@ -66,7 +66,7 @@ public class TemporalProdecureController extends AbstractDocumentController {
       val temporalProcedure = new TemporalProcedureDocument();
       temporalProcedure.setTitle(replacedByName);
       saveNewMetadataDocument(user, temporalProcedure, "new eLTER Temporal Procedure Document");
-      document.getReplacedBy().add(temporalProcedure.getId());
+      if (document.getReplacedBy() != null)  document.getReplacedBy().add(temporalProcedure.getId());
     }
     document.setReplacedByName(null);
   }

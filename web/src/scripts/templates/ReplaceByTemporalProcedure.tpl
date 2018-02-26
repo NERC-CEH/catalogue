@@ -1,4 +1,4 @@
-<li>
+<li class='delete-parent'>
     <div class="value-block">
         <a id="" href="#" class="delete">
             <i class="fa fa-times"></i>
