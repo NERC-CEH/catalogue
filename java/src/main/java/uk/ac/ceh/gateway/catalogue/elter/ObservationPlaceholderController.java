@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.elter;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_JSON_VALUE;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,20 +51,27 @@ public class ObservationPlaceholderController extends AbstractDocumentController
   saveDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
       @RequestBody ObservationPlaceholderDocument document) throws DocumentRepositoryException {
     if (document.getRoutedTo() != null) document.getRoutedTo().removeIf(id -> StringUtils.isBlank(id) || !DocumentReader.exists(id));
-    setRoutedTo(document, user);
+    setInputLists(document, user, document.getRoutedToName(), document.getRoutedTo());
+    setInputLists(document, user, document.getUsedByName(), document.getUsedBy());
+    setInputLists(document, user, document.getControlsFrequencyOfName(), document.getControlsFrequencyOf());
+    cleanInputNames(document);
     return saveMetadataDocument(user, file, document);
   }
 
   @SneakyThrows
-  private void setRoutedTo(ObservationPlaceholderDocument document, CatalogueUser user) {
-    val routedToName = document.getRoutedToName();
-
-    if (!StringUtils.isBlank(routedToName)) {
+  private void setInputLists(ObservationPlaceholderDocument document, CatalogueUser user, String name, List<String> inputs) {
+    if (!StringUtils.isBlank(name)) {
       val input = new InputDocument();
-      input.setTitle(routedToName);
+      input.setTitle(name);
       saveNewMetadataDocument(user, input, "new eLTER Input Document");
-      if (document.getRoutedTo() != null)  document.getRoutedTo().add(input.getId());
+      if (inputs != null)  inputs.add(input.getId());
     }
-    document.setRoutedToName(null);
   }
+
+  private void cleanInputNames(ObservationPlaceholderDocument document) {
+    document.setRoutedToName(null);
+    document.setUsedByName(null);
+    document.setControlsFrequencyOfName(null);
+  }
+  
 }

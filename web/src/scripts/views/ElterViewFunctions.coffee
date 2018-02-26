@@ -31,9 +31,14 @@ define [
 
   updateReplacedBy = -> view.updateSelectList 'replacedBy', '/elter/temporal-procedures'
   updateRoutedTo = -> view.updateSelectList 'routedTo', '/elter/inputs'
+  updateUsedBy = -> view.updateSelectList 'usedBy', '/elter/inputs'
+  updateControlsFrequencyOf = -> view.updateSelectList 'controlsFrequencyOf', '/elter/inputs'
 
   ->
     do updateManufacturer
     do updateFoiType
     do updateReplacedBy
     do updateRoutedTo
+    do updateUsedBy
+    do updateControlsFrequencyOf
+

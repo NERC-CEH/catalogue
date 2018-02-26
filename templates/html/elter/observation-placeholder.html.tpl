@@ -25,24 +25,29 @@
             <@form.value name="routedToName" class="other-routedTo" label="Routed To Name" hidden=true errorMessage="Name is required">
                 <input disabled name="routedToName" placeholder="Routed To Name" required>
             </@form.value>
-            <@form.value name="usedBy" label="Used By">
-                <ul class="list-unstyled">
-                    <li>
-                        input string
-                    </li>
-                </ul>
+
+            <@form.ifNotReadonly>
+                <@form.value name="usedBy" label="Used By">
+                    <@form.selectList name="usedBy" documents=usedBy allDocuments=allInputs></@form.selectList>
+                </@form.value>
+            </@form.ifNotReadonly>
+            <@form.value name="usedByName" class="other-usedBy" label="Used By Name" hidden=true errorMessage="Name is required">
+                <input disabled name="usedByName" placeholder="Used By Name" required>
             </@form.value>
+
+            <@form.ifNotReadonly>
+                <@form.value name="controlsFrequencyOf" label="Controls Frequenct Of">
+                    <@form.selectList name="controlsFrequencyOf" documents=controlsFrequencyOf allDocuments=allInputs></@form.selectList>
+                </@form.value>
+            </@form.ifNotReadonly>
+            <@form.value name="controlsFrequencyOfName" class="other-controlsFrequencyOf" label="Controls Frequenct Of Name" hidden=true errorMessage="Name is required">
+                <input disabled name="controlsFrequencyOfName" placeholder="Controls Frequenct Of Name" required>
+            </@form.value>
+
             <@form.value name="visibleThrough" label="Visible Through">
                 <ul class="list-unstyled">
                     <li>
                         temporal procedure string
-                    </li>
-                </ul>
-            </@form.value>
-            <@form.value name="controlsFrequencyOf" label="Controls Frequency Of">
-                <ul class="list-unstyled">
-                    <li>
-                        input string
                     </li>
                 </ul>
             </@form.value>
