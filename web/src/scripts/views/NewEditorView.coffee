@@ -93,15 +93,19 @@ define [
           toUpdate = toUpdate || []
           toUpdate[index] = toUpdate[index] || {}
           toUpdate[index][key] = value
-          @model.set name, toUpdate
+          value = toUpdate
         else if listMatched != null
           name = listMatched[1]
           index = parseInt listMatched[2], 10
           toUpdate = (@model.get name) || []
           toUpdate[index] = value
-          @model.set name, toUpdate
-        else
-          @model.set name, value
+          value = toUpdate
+
+        if element.type == 'radio'
+          $('input[name="' + name + '"').each (index, input) ->
+            value = input.value if input.checked
+
+        @model.set name, value
 
   initDelete: ->
     $('.delete-document').unbind 'click'

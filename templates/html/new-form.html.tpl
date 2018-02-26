@@ -88,11 +88,11 @@
     </#if>
 </#macro>
 
-<#macro input name type="text" class="" value="" placeholder="" id="" pattern="" readonlyValue="">
+<#macro input name type="text" class="" value="" placeholder="" id="" pattern="" readonlyValue="" checked="false">
     <#if readonly == "readonly">
         <span class="static-value <#if value == "">is-blank</#if>">${readonlyValue}</span>
     <#else>
-        <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}" <#if pattern != "">pattern="${pattern}"</#if>>
+        <input ${readonly} id="${id}" name="${name}" type="${type}" class="${class}" placeholder="${placeholder}" value="${value}" <#if pattern != "">pattern="${pattern}"</#if> <#if checked == "true">checked</#if>>
     </#if>
 </#macro>
 <#macro select name id="" class="" value="" readonlyValue="">

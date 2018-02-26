@@ -8,14 +8,16 @@
             <@form.title title=title></@form.title>
         </@form.head>
         <@form.body>
-            <@form.value label="ID">
-                input
+            <@form.value label="Parameter Value" name="parameterValue">
+                <@form.input name="parameterValue" value=parameterValue></@form.input>
             </@form.value>
-            <@form.value label="Parameter Value">
-                input
-            </@form.value>
-            <@form.value label="Temporal Anchor">
-                radio
+            <@form.value label="Temporal Anchor" name="temporalAnchor">
+                <div class="value-block">
+                    <label for="temporalAnchorYes">Yes</label>
+                    <@form.input id="temporalAnchorYes" type="radio" name="temporalAnchor" value="true" checked="${temporalAnchor?string('true', 'false')}"></@form.input>
+                    <label for="temporalAnchorNo">No</label>
+                    <@form.input id="temporalAnchorNo" type="radio" name="temporalAnchor" value="false" checked="${temporalAnchor?string('false', 'true')}"></@form.input>
+                </div>
             </@form.value>
         </@form.body>
     </@form.master>
