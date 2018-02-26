@@ -71,6 +71,7 @@ define [
         clearTimeout @timeout
         @timeout = setTimeout (-> $('#saved').hide()), 1000
 
+    $('.save').unbind 'click'
     $('.save').click =>
       do @save
     do @initDelete

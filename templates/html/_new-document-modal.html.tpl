@@ -4,11 +4,10 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Create new <span class='new-document-title'></span> document?</h4>
+        <h4 class="modal-title">Create new <b class='new-document-title'></b> document?</h4>
       </div>
       <div class="modal-body">
         <@form.form document="" name="document" overrideReadOnly=true >
-            <@form.input name="type" type="hidden" value="dataset"></@form.input>
             <@form.head>
                 <@form.value name="title" errorMessage="Title is required">
                     <label>What is the title?</label>
