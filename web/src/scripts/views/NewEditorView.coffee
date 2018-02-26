@@ -3,11 +3,13 @@ define [
   'backbone'
   'tpl!templates/DefaultParameter.tpl'
   'cs!views/ElterViewFunctions'
+  'tpl!templates/SelectList.tpl'
 ], (
   _
   Backbone
   DefaultParameter
   ElterViewFunctions
+  SelectList
 ) -> Backbone.View.extend
   timeout: null
   shouldSave: false
@@ -203,3 +205,54 @@ define [
           do @updateLinks
           do @initDeleteButtons
     @initOtherable name
+  
+  updateSelectList: (name, url) ->
+    @updateOtherable name, url, (allDocuments) =>
+        allDocs = []
+        for allDoc in allDocuments
+          allDocs.push allDoc if allDoc.id != @model.get 'id'
+
+        documentsTmp = @model.get(name) || []
+        documents = []
+        for r in documentsTmp
+          if r != null and r != '' and typeof r != 'undefined'
+            documents.push r
+
+        if (allDocs.length > 0 and documents.length > 0)
+          for index, docId of documents
+            title = docId
+            options = []
+            for allDoc in allDocs
+              selected = allDoc.id == docId
+              options.push(
+                value: allDoc.id
+                label: allDoc.title
+                selected: selected
+              )
+              title = allDoc.title if selected
+
+            $('#' + name).append(SelectList(
+              name: name
+              index: index
+              id: docId
+              title: title
+              options: options
+              hasLink: true
+            ))
+
+        options = []
+        for allDoc in allDocs
+          selected = allDoc.id == docId
+          options.push(
+            value: allDoc.id
+            label: allDoc.title
+            selected: false
+          )
+        $('#' + name).append(SelectList(
+          name: name
+          index: documents.length
+          id: ''
+          title: ''
+          options: [{ value: '', label: '', selected: true }].concat(options)
+          hasLink: false
+        ))

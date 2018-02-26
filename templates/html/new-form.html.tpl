@@ -133,8 +133,67 @@
     </div>
 </#macro>
 
-<#macro delete name>
+<#macro delete>
     <#if readonly == "">
-        <a id="" href='#' class="delete delete-${name}"><i class="fa fa-times"></i></a>
+        <a id="" href='#' class="delete"><i class="fa fa-times"></i></a>
     </#if>
+</#macro>
+<#macro selectList name documents=[] allDocuments=[]>
+<ul id="${name}" class="list-unstyled">
+    <#if documents??>
+        <#list documents as doc>
+            <li class='delete-parent'>
+                <div class='value-block'>
+                <@delete></@delete>
+                    <div class='value-block-value'>
+                        <@select name="documents[${doc_index}]">
+                            <#list allDocuments as allDoc>
+                                <#if id != allDoc.id>
+                                    <option <#if doc == allDoc.id>selected</#if> value="${allDoc.id}">${allDoc.title}</option>
+                                </#if>
+                            </#list>
+                                <option value="other">Other</option>
+                        </@select>
+                        <div>
+                            <a class="static-value" href="/documents/${doc}">${doc}</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </#list>
+        <li class='delete-parent'>
+            <div class='value-block'>
+                <@delete></@delete>
+                <div class='value-block-value'>
+                    <@select name="${name}[${documents?size}]">
+                        <option value=""></option>
+                        <#list allDocuments as allDoc>
+                            <#if id != allDoc.id>
+                                <option value="${allDoc.id}">${allDoc.title}</option>
+                            </#if>
+                        </#list>
+                            <option value="other">Other</option>
+                    </@select>
+                </div>
+            </div>
+        </li>
+    <#else>
+        <li class='delete-parent'>
+            <div class='value-block'>
+                <@delete></@delete>
+                <div class='value-block-value'>
+                    <@select name="documents[0]">
+                        <option value=""></option>
+                        <#list allDocuments as allDoc>
+                            <#if id != allDoc.id>
+                                <option value="${allDoc.id}">${allDoc.title}</option>
+                            </#if>
+                        </#list>
+                            <option value="other">Other</option>
+                    </@select>
+                </div>
+            </div>
+        </li>
+    </#if>
+</ul>
 </#macro>

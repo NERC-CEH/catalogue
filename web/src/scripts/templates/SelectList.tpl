@@ -4,7 +4,7 @@
             <i class="fa fa-times"></i>
         </a>
         <div class="value-block-value">
-            <select name="replacedBy[<%= index %>]">
+            <select name="<%= name %>[<%= index %>]">
                 <% for (var i = 0; i < options.length; i++) { %>
                     <option <% if (options[i].selected) { %>selected<% } %> value="<%= options[i].value %>"><%= options[i].label %></option>                    
                 <% } %>

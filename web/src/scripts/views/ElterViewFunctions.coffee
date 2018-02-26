@@ -1,7 +1,5 @@
 define [
-  'tpl!templates/ReplaceByTemporalProcedure.tpl'
 ], (
-  ReplaceByTemporalProcedure
 ) -> (view, model) ->
   updateManufacturer = ->
     view.updateOtherable 'manufacturer',
@@ -32,55 +30,7 @@ define [
         $('.foi-data').addClass('is-' + value.toLowerCase())
 
   updateReplacedBy = ->
-    view.updateOtherable 'replacedBy',
-      '/elter/temporal-procedures',
-      (temporalProcedures) ->
-        tps = []
-        for temporalProcedure in temporalProcedures
-          tps.push temporalProcedure if temporalProcedure.id != model.get 'id'
-
-        replacedByTmp = model.get('replacedBy') || []
-        replacedBy = []
-        for r in replacedByTmp
-          if r != null and r != '' and typeof r != 'undefined'
-            replacedBy.push r
-
-        if (tps.length > 0 and replacedBy.length > 0)
-          for index, replacedById of replacedBy
-            title = replacedById
-            options = []
-            for tp in tps
-              selected = tp.id == replacedById
-              options.push(
-                value: tp.id
-                label: tp.title
-                selected: selected
-              )
-              title = tp.title if selected
-
-            $('#replacedBy').append(ReplaceByTemporalProcedure(
-              index: index
-              id: replacedById
-              title: title
-              options: options
-              hasLink: true
-            ))
-
-        options = []
-        for tp in tps
-          selected = tp.id == replacedById
-          options.push(
-            value: tp.id
-            label: tp.title
-            selected: false
-          )
-        $('#replacedBy').append(ReplaceByTemporalProcedure(
-          index: replacedBy.length
-          id: ''
-          title: ''
-          options: [{ value: '', label: '', selected: true }].concat(options)
-          hasLink: false
-        ))
+    view.updateSelectList 'replacedBy', '/elter/temporal-procedures'
 
   ->
     do updateManufacturer

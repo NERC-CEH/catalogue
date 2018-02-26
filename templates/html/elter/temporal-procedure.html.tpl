@@ -12,65 +12,7 @@
         <@form.body>
             <@form.ifNotReadonly>
                 <@form.value name="replacedBy" label="Replaced By">
-                    <ul id="replacedBy" class="list-unstyled">
-                        <#if replacedBy??>
-                            <#list replacedBy as temporalProcedure>
-                                <li>
-                                    <div class='value-block'>
-                                    <@form.delete name="deleteReplacedBy"></@form.delete>
-                                        <div class='value-block-value'>
-                                            <@form.select name="replacedBy[${temporalProcedure_index}]">
-                                                <#list tps as tp>
-                                                    <#if id != tp.id>
-                                                        <option <#if temporalProcedure == tp.id>selected</#if> value="${tp.id}">${tp.title}</option>
-                                                    </#if>
-                                                </#list>
-                                                    <option value="other">Other</option>
-                                            </@form.select>
-                                            <div>
-                                                <#if elter.getTemporalProcedure(temporalProcedure)??>
-                                                    <a class="static-value" href="/documents/${temporalProcedure}">${temporalProcedure}</a>
-                                                </#if>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            </#list>
-                            <li>
-                                <div class='value-block'>
-                                <@form.delete name="deleteReplacedBy"></@form.delete>
-                                    <div class='value-block-value'>
-                                        <@form.select name="replacedBy[${replacedBy?size}]">
-                                            <option value=""></option>
-                                            <#list tps as tp>
-                                                <#if id != tp.id>
-                                                    <option value="${tp.id}">${tp.title}</option>
-                                                </#if>
-                                            </#list>
-                                                <option value="other">Other</option>
-                                        </@form.select>
-                                    </div>
-                                </div>
-                            </li>
-                        <#else>
-                            <li>
-                                <div class='value-block'>
-                                <@form.delete name="deleteReplacedBy"></@form.delete>
-                                    <div class='value-block-value'>
-                                        <@form.select name="replacedBy[0]">
-                                            <option value=""></option>
-                                            <#list tps as tp>
-                                                <#if id != tp.id>
-                                                    <option value="${tp.id}">${tp.title}</option>
-                                                </#if>
-                                            </#list>
-                                                <option value="other">Other</option>
-                                        </@form.select>
-                                    </div>
-                                </div>
-                            </li>
-                        </#if>
-                    </ul>
+                    <@form.selectList name="replacedBy" documents=replacedBy allDocuments=tps></@form.selectList>
                 </@form.value>
             </@form.ifNotReadonly>
             <@form.ifReadonly>
