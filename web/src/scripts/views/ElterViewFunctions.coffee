@@ -7,9 +7,14 @@ define [
     view.updateOtherable 'manufacturer',
       '/elter/manufacturers',
       (manufacturers) ->
+        $('#manufacturer').append('<select name="manufacturer">')
+        manufacturerId = model.get('manufacturer')
         for index, manufacturer of manufacturers
-          $('#manufacturer').append('<option value="' + manufacturer.id + '">' + manufacturer.title + '</option>')
-        $('#manufacturer').append('<option id="other-manufacturer" value="other"">Other</option>')
+          if manufacturer.id == manufacturerId
+            $('#manufacturer select').append('<option value="' + manufacturer.id + '" selected>' + manufacturer.title + '</option>')
+          else
+            $('#manufacturer select').append('<option value="' + manufacturer.id + '">' + manufacturer.title + '</option>')
+        $('#manufacturer select').append('<option id="other-manufacturer" value="other"">Other</option>')
 
   updateFoiType = ->
     $('#foi-type').unbind 'change'

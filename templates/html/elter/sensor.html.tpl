@@ -32,16 +32,18 @@
                     <option <#if processType?? && processType == "Algorithm"> selected="selected"</#if> value="Algorithm">Algorithm</option>
                 </@form.select>
             </@form.value>
-            <@form.value  name="manufacturer" label="Manufacturer" href="/documents/${manufacturer!'${id}#'}">
-                <@form.select id="manufacturer" name="manufacturer" value=manufacturer!"" readonlyValue="${elter.getManufacturer(manufacturer).title}">
-                    <#if ! manufacturer??>
-                        <option value=""></option>
-                    </#if>
-                    <#list manufacturers as m>
-                        <option <#if manufacturer?? && manufacturer == m.id>selected</#if> value="${m.id}">${m.title}</option>
-                    </#list>
-                    <option value="other">Other</option>
-                </@form.select>
+            <@form.value name="manufacturer" label="Manufacturer" href="/documents/${manufacturer!'${id}#'}">
+                <div id="manufacturer"> 
+                    <@form.select name="manufacturer" value=manufacturer!"" readonlyValue="${elter.getManufacturer(manufacturer).title}">
+                        <#if ! manufacturer??>
+                            <option value=""></option>
+                        </#if>
+                        <#list manufacturers as m>
+                            <option <#if manufacturer?? && manufacturer == m.id>selected</#if> value="${m.id}">${m.title}</option>
+                        </#list>
+                        <option value="other">Other</option>
+                    </@form.select>
+                </div>
             </@form.value>
             <@form.value name="manufacturerName" class="other-manufacturer" label="Manufacturer Name" hidden=true errorMessage="Name is required">
                 <input disabled name="manufacturerName" placeholder="Manufacturer Name" required>

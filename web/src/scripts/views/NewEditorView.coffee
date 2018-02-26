@@ -36,9 +36,9 @@ define [
           window.location.reload()
       else
         $('#loading').hide()
-        do @updateLinks
         do @initInputs
         do @renderDefaultParameters
+        do @updateLinks
         for index, fn of @fns
           do fn
 
@@ -188,4 +188,5 @@ define [
           $('#' + name).html('')
           renderValues(values)
           @initOtherable name
+          do @updateLinks
     @initOtherable name
