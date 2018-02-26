@@ -29,10 +29,11 @@ define [
         $('.foi-data').removeClass('is-composite')
         $('.foi-data').addClass('is-' + value.toLowerCase())
 
-  updateReplacedBy = ->
-    view.updateSelectList 'replacedBy', '/elter/temporal-procedures'
+  updateReplacedBy = -> view.updateSelectList 'replacedBy', '/elter/temporal-procedures'
+  updateRoutedTo = -> view.updateSelectList 'routedTo', '/elter/inputs'
 
   ->
     do updateManufacturer
     do updateFoiType
     do updateReplacedBy
+    do updateRoutedTo

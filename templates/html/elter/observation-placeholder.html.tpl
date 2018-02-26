@@ -1,6 +1,8 @@
 <#import "../skeleton.html.tpl" as skeleton>
 <#import "../new-form.html.tpl" as form>
 
+<#assign allInputs=elter.getInputs()>
+
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <@form.master document='observation-placeholder'>
         <@form.input name="type" type="hidden" value="dataset"></@form.input>
@@ -15,12 +17,13 @@
                     </li>
                 </ul>
             </@form.value>
-            <@form.value name="routedTo" label="Routed To">
-                <ul class="list-unstyled">
-                    <li>
-                        input string
-                    </li>
-                </ul>
+            <@form.ifNotReadonly>
+                <@form.value name="routedTo" label="Routed To">
+                    <@form.selectList name="routedTo" documents=routedTo allDocuments=allInputs></@form.selectList>
+                </@form.value>
+            </@form.ifNotReadonly>
+            <@form.value name="routedToName" class="other-routedTo" label="Routed To Name" hidden=true errorMessage="Name is required">
+                <input disabled name="routedToName" placeholder="Routed To Name" required>
             </@form.value>
             <@form.value name="usedBy" label="Used By">
                 <ul class="list-unstyled">

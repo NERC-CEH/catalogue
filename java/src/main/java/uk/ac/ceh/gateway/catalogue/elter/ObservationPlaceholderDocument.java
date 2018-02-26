@@ -1,7 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
 import java.util.List;
+
 import org.springframework.http.MediaType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -20,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 public class ObservationPlaceholderDocument extends AbstractMetadataDocument {
     private List<TemporalEntity> signature;
     private List<String> routedTo;
+    private String routedToName;
     private List<String> usedBy;
     private List<String> controlsFrequencyOf;
     private List<String> visibleThrough;

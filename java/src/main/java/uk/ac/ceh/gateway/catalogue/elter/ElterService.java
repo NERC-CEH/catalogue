@@ -1,8 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_INPUT_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_MANUFACTURER_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT;
+
 import java.util.List;
+
 import org.apache.solr.client.solrj.SolrServer;
+
 import lombok.AllArgsConstructor;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
@@ -46,5 +52,10 @@ public class ElterService {
   public List<TemporalProcedureDocument> getTemporalProcedures() {
     val finder = new SolrDocumentFinder<TemporalProcedureDocument>(solrServer, TemporalProcedureDocument.class);
     return finder.find(String.format("documentType:\"%s\"", ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT));
+  }
+
+  public List<InputDocument> getInputs() {
+    val finder = new SolrDocumentFinder<InputDocument>(solrServer, InputDocument.class);
+    return finder.find(String.format("documentType:\"%s\"", ELTER_INPUT_DOCUMENT_SHORT));
   }
 }

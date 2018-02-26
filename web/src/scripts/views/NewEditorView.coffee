@@ -99,18 +99,19 @@ define [
           toUpdate = @model.get name
           toUpdate = toUpdate || []
           toUpdate[index] = toUpdate[index] || {}
-          toUpdate[index][key] = value if value != "" or value != null or typeof value != 'undefined'
+          toUpdate[index][key] = value if value != "" and value != null and typeof value != 'undefined'
           value = toUpdate
         else if listMatched != null
           name = listMatched[1]
           index = parseInt listMatched[2], 10
           toUpdate = (@model.get name) || []
-          toUpdate[index] = value if value != "" or value != null or typeof value != 'undefined'
+          toUpdate[index] = value if value != "" and value != null and typeof value != 'undefined'
           value = toUpdate
 
         if element.type == 'radio'
           $('input[name="' + name + '"').each (index, input) ->
             value = input.value if input.checked
+
         @model.set name, value
 
   initDelete: ->
