@@ -103,6 +103,11 @@ public class CatalogueServiceConfig {
             .type(ELTER_MANUFACTURER_DOCUMENT_SHORT)
             .build();
 
+        DocumentType dataType = DocumentType.builder()
+            .title("Data Type")
+            .type(DATA_TYPE_SHORT)
+            .build();
+
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
 
@@ -195,6 +200,7 @@ public class CatalogueServiceConfig {
                 .facetKey("resourceType")
                 .facetKey("status")
                 .facetKey("licence")
+                .documentType(dataType)
                 .documentType(gemini)
                 .fileUpload(false)
                 .build(),

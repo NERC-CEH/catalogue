@@ -43,6 +43,7 @@ define [
   'cs!views/ElterEditorView'
   'tpl!templates/Sensor.tpl'
   'tpl!templates/Manufacturer.tpl'
+  'cs!views/ClipboardCopyView'
   'bootstrap'
   'dropzone'
 ], (
@@ -52,7 +53,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ElterEditorView, SensorTpl, ManufacturerTpl
+    ElterEditorView, SensorTpl, ManufacturerTpl, ClipboardCopyView
 ) ->
 
   ###
@@ -73,6 +74,7 @@ define [
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
     do @newForm if $('.new-form').length
+    do @initClipboard if $('.clipboard-copy').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
@@ -87,6 +89,10 @@ define [
         view: ElterEditorView
         template: ManufacturerTpl
         mediaType: 'application/vnd.elter-manufacturer-document+json'
+      dataType:
+        view: ElterEditorView
+        template: ManufacturerTpl
+        mediaType: 'application/vnd.data-type+json'
 
     document = $('.new-form').data('document')
     guid = $('.new-form').data('guid')
@@ -131,6 +137,10 @@ define [
   initGeometryMap: ->
     view = new StudyAreaView
       el: '#geometry-map'
+
+  initClipboard: ->
+    view = new ClipboardCopyView
+      el: '.clipboard-copy'
 
   ###
   Initialize the map viewer app, view and router

@@ -65,9 +65,6 @@ import java.util.stream.Collectors;
 })
 @XmlSeeAlso({Activity.class, Programme.class, Network.class, Facility.class})
 public class BaseMonitoringType implements MetadataDocument, WellKnownText {
-    
-    @Override
-    public void validate() {}
 
     private Set<Relationship> relationships;
     
