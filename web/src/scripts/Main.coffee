@@ -44,6 +44,7 @@ define [
   'tpl!templates/Sensor.tpl'
   'tpl!templates/Manufacturer.tpl'
   'cs!views/ClipboardCopyView'
+  'cs!views/DataTypeEditorView'
   'bootstrap'
   'dropzone'
 ], (
@@ -53,7 +54,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ElterEditorView, SensorTpl, ManufacturerTpl, ClipboardCopyView
+    ElterEditorView, SensorTpl, ManufacturerTpl, ClipboardCopyView, DataTypeEditorView
 ) ->
 
   ###
@@ -89,10 +90,6 @@ define [
         view: ElterEditorView
         template: ManufacturerTpl
         mediaType: 'application/vnd.elter-manufacturer-document+json'
-      dataType:
-        view: ElterEditorView
-        template: ManufacturerTpl
-        mediaType: 'application/vnd.data-type+json'
 
     document = $('.new-form').data('document')
     guid = $('.new-form').data('guid')
@@ -238,6 +235,10 @@ define [
         Model: EditorMetadata
         template: ManufacturerTpl
         mediaType: 'application/vnd.elter-manufacturer-document+json'
+      'data-type':
+        View: DataTypeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.data-type+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
