@@ -2,7 +2,6 @@
   "name": "ceh-catalogue",
   "private": true,
   "dependencies": {
-    "bootstrap-theme-ceh": "1.0.5",
     "respond": "1.4.2",
     "isInViewport": "2.2.4",
     "jquery": "1.11.3",
