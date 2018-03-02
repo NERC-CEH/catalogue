@@ -43,6 +43,8 @@ define [
   'cs!views/ElterEditorView'
   'tpl!templates/Sensor.tpl'
   'tpl!templates/Manufacturer.tpl'
+  'cs!views/ClipboardCopyView'
+  'cs!views/DataTypeEditorView'
   'bootstrap'
   'dropzone'
 ], (
@@ -52,7 +54,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ElterEditorView, SensorTpl, ManufacturerTpl
+    ElterEditorView, SensorTpl, ManufacturerTpl, ClipboardCopyView, DataTypeEditorView
 ) ->
 
   ###
@@ -73,6 +75,7 @@ define [
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
     do @newForm if $('.new-form').length
+    do @initClipboard if $('.clipboard-copy').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
@@ -131,6 +134,10 @@ define [
   initGeometryMap: ->
     view = new StudyAreaView
       el: '#geometry-map'
+
+  initClipboard: ->
+    view = new ClipboardCopyView
+      el: '.clipboard-copy'
 
   ###
   Initialize the map viewer app, view and router
@@ -228,6 +235,10 @@ define [
         Model: EditorMetadata
         template: ManufacturerTpl
         mediaType: 'application/vnd.elter-manufacturer-document+json'
+      'data-type':
+        View: DataTypeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.data-type+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'

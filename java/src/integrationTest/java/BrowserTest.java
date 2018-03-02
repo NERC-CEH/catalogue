@@ -91,4 +91,20 @@ public class BrowserTest {
         int numRecords = parseInt(driver.findElementById("num-records").getText(), 10);
         assertThat("Should have found documents", numRecords, greaterThan(minRecords));
     }
+
+    @Test
+    @SneakyThrows
+    public void getDataTypePage() {
+        //given
+        String expectedTitle = "this time with a different type";
+
+        //when
+        driver.get(format("http://%s:%s/documents/2bb3aee6-9fac-4b36-869f-e63c3ec51d3b", webHost, webPort));
+
+        //then
+        String actualTitle = driver.getTitle();
+        log.info(driver.getPageSource());
+        assertThat("Title should be correct", actualTitle, containsString(expectedTitle));
+
+    }
 }

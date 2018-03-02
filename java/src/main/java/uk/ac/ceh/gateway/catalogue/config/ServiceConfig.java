@@ -225,6 +225,8 @@ public class ServiceConfig {
 
         converters.add(new Object2TemplatedMessageConverter<>(UploadDocument.class, freemarkerConfiguration()));
 
+        converters.add(new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration()));
+
         return new MessageConvertersHolder(converters);
     }
     
@@ -320,7 +322,8 @@ public class ServiceConfig {
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
                 .register(ELTER_SENSOR_DOCUMENT_SHORT, SensorDocument.class)
                 .register(UPLOAD_DOCUMENT_SHORT, UploadDocument.class)
-                .register(ELTER_MANUFACTURER_DOCUMENT_SHORT, ManufacturerDocument.class);
+                .register(ELTER_MANUFACTURER_DOCUMENT_SHORT, ManufacturerDocument.class)
+                .register(DATA_TYPE_SHORT, DataType.class);
     }
     
     @Bean
