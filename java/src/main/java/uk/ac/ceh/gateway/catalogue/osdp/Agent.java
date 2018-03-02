@@ -13,5 +13,5 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
     @Template(called="html/osdp/agent.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class Agent extends AbstractMetadataDocument {
-    private String role, address;
+    private String address;
 }

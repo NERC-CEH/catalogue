@@ -2,9 +2,6 @@
 <#import "osdp.html.tpl" as o>
 
 <@o.base>
-  <#if role?? && role?has_content>
-    <@b.key "Role" "Role of agent">${role}</@b.key>
-  </#if>
   <#if address?? && address?has_content>
     <@b.key "Address" "">
       <@b.linebreaks address />
