@@ -10,10 +10,8 @@
                 <#include "_read-only.html.tpl">
             <#elseif issues[0].status == 'scheduled'>
                 <#include "_scheduled.html.tpl">
-            <#elseif issues[0].status == 'in progress'>
-                <#include "_in-progress.html.tpl">
             <#else>
-                <#include "_read-only.html.tpl">
+                <#include "_in-progress.html.tpl">
             </#if>
         <#elseif permission.userCanView(parentId)>
             <#include "_read-only.html.tpl">
