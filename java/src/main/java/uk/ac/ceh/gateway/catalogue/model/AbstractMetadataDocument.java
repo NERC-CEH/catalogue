@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
-import lombok.NonNull;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Data
 @Accessors(chain = true)
@@ -32,9 +29,6 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private MetadataInfo metadata;
     private Set<Relationship> relationships;
     private List<Keyword> keywords;
-
-    @Override
-    public void validate() {}
     
     @Override
     @JsonIgnore

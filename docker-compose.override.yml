@@ -15,9 +15,6 @@ services:
       - "7000:8080"
 
   mapserver:
-    # Mount working directories for mapserver
-    volumes:
-      - ./mapserver/helpers:/mapserver/helpers
     # Expose mapserver port during development
     ports:
       - "9000:80"

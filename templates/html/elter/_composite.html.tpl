@@ -5,7 +5,7 @@
         <ul class="list-unstyled">
             <li>
                 <div class='value-block'>
-                    <@form.delete name="observationPlacholder"></@form.delete>
+                    <@form.delete></@form.delete>
                     <div class='value-block-value'>
                         <@form.select name="foiType" class="observation-placeholder">
                             <option selected value="id2">First</option>
@@ -20,7 +20,7 @@
             </li>
             <li>
                 <div class='value-block'>
-                    <@form.delete name="observationPlacholder"></@form.delete>
+                    <@form.delete></@form.delete>
                     <div class='value-block-value'>
                         <@form.select name="foiType" class="observation-placeholder">
                             <option value="id2">First</option>
@@ -35,7 +35,7 @@
             </li>
             <li>
                 <div class='value-block'>
-                    <@form.delete name="observationPlacholder"></@form.delete>
+                    <@form.delete></@form.delete>
                     <div class='value-block-value'>
                         <@form.select name="foiType" class="observation-placeholder">
                             <option value="id2"></option>

@@ -31,14 +31,6 @@ define [
                     <p>Name of agent</p>
                     """
 
-        new InputView
-          model: @model
-          modelAttribute: 'role'
-          label: 'Role'
-          helpText: """
-                    <p>Role of agent</p>
-                    """
-
         new TextareaView
           model: @model
           modelAttribute: 'address'

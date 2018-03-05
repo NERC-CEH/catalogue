@@ -1,12 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 
 /**
  * This is the interface for a metadata document. Specific implementations such 
@@ -35,7 +36,9 @@ public interface MetadataDocument {
     MetadataDocument addAdditionalKeywords(List<Keyword> additionalKeywords);
     Set<Relationship> getRelationships();
     MetadataDocument setRelationships(Set<Relationship> relationships);
-    void validate();
+
+    @JsonIgnore
+    default void validate() {}
     
     @JsonIgnore
     default String getCatalogue() {

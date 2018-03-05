@@ -1,13 +1,29 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATA_TYPE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_INPUT_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_MANUFACTURER_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_AGENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_DATASET_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MODEL_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_ACTIVITY_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_FACILITY_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_PROGRAMME_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_PUBLICATION_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_SAMPLE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_SHORT;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
-
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
 @Configuration
 public class CatalogueServiceConfig {
@@ -123,6 +139,11 @@ public class CatalogueServiceConfig {
             .type(ELTER_INPUT_DOCUMENT_SHORT)
             .build();
 
+        DocumentType dataType = DocumentType.builder()
+            .title("Data Type")
+            .type(DATA_TYPE_SHORT)
+            .build();
+
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
 
@@ -215,6 +236,7 @@ public class CatalogueServiceConfig {
                 .facetKey("resourceType")
                 .facetKey("status")
                 .facetKey("licence")
+                .documentType(dataType)
                 .documentType(gemini)
                 .fileUpload(false)
                 .build(),

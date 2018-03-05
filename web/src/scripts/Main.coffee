@@ -41,6 +41,8 @@ define [
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
   'cs!views/NewEditorView'
+  'cs!views/ClipboardCopyView'
+  'cs!views/DataTypeEditorView'
   'bootstrap'
   'dropzone'
 ], (
@@ -50,7 +52,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    NewEditorView
+    NewEditorView, ClipboardCopyView, DataTypeEditorView
 ) ->
 
   ###
@@ -76,6 +78,7 @@ define [
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
     do @newForm if $('.beta-form').length
+    do @initClipboard if $('.clipboard-copy').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
@@ -126,6 +129,10 @@ define [
   initGeometryMap: ->
     view = new StudyAreaView
       el: '#geometry-map'
+
+  initClipboard: ->
+    view = new ClipboardCopyView
+      el: '.clipboard-copy'
 
   ###
   Initialize the map viewer app, view and router
@@ -243,7 +250,11 @@ define [
         View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.input-document+json'
-    
+      'data-type':
+        View: DataTypeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.data-type+json'
+
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
 

@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -31,6 +32,7 @@ import uk.ac.ceh.gateway.catalogue.util.WmsFormatContentNegotiationStrategy;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebMvc
@@ -98,6 +100,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     
     public static final String UPLOAD_DOCUMENT_JSON_VALUE = "application/vnd.upload-document+json";
     public static final String UPLOAD_DOCUMENT_SHORT = "Upload";
+
+    public static final String DATA_TYPE_JSON_VALUE = "application/vnd.data-type+json";
+    public static final String DATA_TYPE_SHORT = "data-type";
     
     @Autowired MessageConvertersHolder messageConvertersHolder;
     @Autowired freemarker.template.Configuration freemarkerConfiguration;
@@ -173,6 +178,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_JSON_VALUE))
                         .put(ELTER_INPUT_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_INPUT_DOCUMENT_JSON_VALUE))
                         .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
+                        .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo
@@ -190,6 +196,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+        registry
+            .addResourceHandler("/static/**")
+            .addResourceLocations("/static/")
+            .setCacheControl(CacheControl.maxAge(2, TimeUnit.DAYS));
     }
 }

@@ -74,17 +74,17 @@
                         <#if defaultParameters??>
                             <#list defaultParameters as defaultParameter>
                                 <li>
-                                    <@form.delete name="defaultParameter"></@form.delete>
+                                    <@form.delete></@form.delete>
                                     <@form.input name="defaultParameters[${defaultParameter_index}]['value']" placeholder="Default Parameter" value="${defaultParameter['value']}"></@form.input>
                                 </li>
                             </#list>
                             <li>
-                                <@form.delete name="defaultParameter"></@form.delete>
+                                <@form.delete></@form.delete>
                                 <@form.input name="defaultParameters[${defaultParameters?size}]['value']" placeholder="Default Parameter" value=""></@form.input>
                             </li>
                         <#else>
                             <li>
-                                <@form.delete name="defaultParameter"></@form.delete>
+                                <@form.delete></@form.delete>
                                 <@form.input name="defaultParameters[0]['value']" placeholder="Default Parameter" value=""></@form.input>
                             </li>
                         </#if>

@@ -180,6 +180,39 @@ public class DocumentController extends AbstractDocumentController {
             document
         );
     }
+
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+        method = RequestMethod.POST,
+        consumes = DATA_TYPE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newDataType(
+        @ActiveUser CatalogueUser user,
+        @RequestBody DataType document,
+        @RequestParam("catalogue") String catalogue
+    ) throws DocumentRepositoryException  {
+        return saveNewMetadataDocument(
+            user,
+            document,
+            catalogue,
+            "new Data Type"
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+        method = RequestMethod.PUT,
+        consumes = DATA_TYPE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateDataType(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file,
+        @RequestBody DataType document
+    ) throws DocumentRepositoryException  {
+        return saveMetadataDocument(
+            user,
+            file,
+            document
+        );
+    }
     
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",

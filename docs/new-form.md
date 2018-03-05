@@ -151,7 +151,7 @@ If you want to put static data in the document
 a red times button
 
 ```ftl
-<@form.delete name="delete-name"></@form.delete>
+<@form.delete></@form.delete>
 ```
 
 you can then use `$('.delete-${delete-name})` in order add events to the delete button, you are likly to have more than one of these
@@ -175,7 +175,7 @@ here is an example which has a delete button next to a select with a hyperlink u
 
 ```ftl
 <div class='value-block'>
-<@form.delete name="deleteReplacedBy"></@form.delete>
+<@form.delete></@form.delete>
     <div class='value-block-value'>
         <@form.select name="name[0]">
             <#list linkedDocuments as doc>

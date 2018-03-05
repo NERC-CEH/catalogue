@@ -23,7 +23,7 @@ services:
   solr:
     build: "solr"
   mapserver:
-    build: "mapserver"
+    image: registry.gitlab.ceh.ac.uk/eip/mapserver:2
     volumes:
       - mapfiles:/mapserver/maps
       - ./fixtures/mapserver-data:/mapserver/data

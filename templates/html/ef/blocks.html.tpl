@@ -5,7 +5,7 @@ which frame the link should load in.
 -->
 <#macro link l target>
   <#if l.href??>
-    <a href="${l.href}" target="${target}" rel="noopener">${l.displayText}</a>
+    <a href="${l.href}" target="${target}" rel="noopener noreferrer">${l.displayText}</a>
   <#else>
     ${l.displayText}
   </#if>
