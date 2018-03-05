@@ -167,6 +167,28 @@ Is `readonly` and `disabled` if the user has `view` permissions but no `edit` pe
 <@form.ifNotDisabled>Your Content</@form.ifNotDisabled>
 ```
 
+### Select List
+
+A list of ids for other documents e.g. see sensor and manufacturer in the elter catalogue
+
+```html
+    <#assign aList=['1', '2']>
+    <@form.ifNotReadonly>
+        <@form.value name="otherDoc" label="Other Document">
+            <@form.selectList name="otherDoc" documents=otherDoc allDocuments=aList></@form.selectList>
+        </@form.value>
+    </@form.ifNotReadonly>
+    <@form.value name="tmpName" class="other-otherDoc" label="Other Document Name" hidden=true errorMessage="Name is required">
+        <input disabled name="tmpName" placeholder="Other Document Name" required>
+    </@form.value>
+```
+
+then in your coffee script functions, you will need to create an endpoint to get all documents
+
+```coffee
+updateSelectList = -> view.updateSelectList 'otherDoc', '/api/get-all'
+```
+
 ### Value Block and Value Block Value
 
 this part is still under construction but in your value you may want to do some flex styling, this should help keep elements in-line
