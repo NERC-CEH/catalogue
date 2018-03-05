@@ -1,14 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
 import java.util.List;
+
 import org.springframework.http.MediaType;
-import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
-import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
+import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -26,4 +28,5 @@ public class FeatureOfInterestDocument extends AbstractMetadataDocument {
     private List<TemporalEntity> propertyAttributes;
 
     private List<String> originalStream;
+    private String originalStreamName;
 }

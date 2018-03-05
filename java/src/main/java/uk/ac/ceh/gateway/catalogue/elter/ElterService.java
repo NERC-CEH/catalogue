@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.elter;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_INPUT_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_MANUFACTURER_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT;
 
@@ -57,5 +58,10 @@ public class ElterService {
   public List<InputDocument> getInputs() {
     val finder = new SolrDocumentFinder<InputDocument>(solrServer, InputDocument.class);
     return finder.find(String.format("documentType:\"%s\"", ELTER_INPUT_DOCUMENT_SHORT));
+  }
+
+  public List<ObservationPlaceholderDocument> getObservationPlaceholders() {
+    val finder = new SolrDocumentFinder<ObservationPlaceholderDocument>(solrServer, ObservationPlaceholderDocument.class);
+    return finder.find(String.format("documentType:\"%s\"", ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT));
   }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.SneakyThrows;
 import lombok.val;
@@ -59,6 +60,14 @@ public class ObservationPlaceholderController extends AbstractDocumentController
     cleanTempDocumentNames(document);
     return saveMetadataDocument(user, file, document);
   }
+
+  @PreAuthorize("@permission.userCanCreate('elter')")
+  @RequestMapping(value = "elter/observation-placeholders", method = RequestMethod.GET)
+  @ResponseBody
+  public List<ObservationPlaceholderDocument> getObservationPlaceholders(@ActiveUser CatalogueUser user) {
+    return this.elterService.getObservationPlaceholders();
+  }
+
 
   @SneakyThrows
   private void setInputList(ObservationPlaceholderDocument document, CatalogueUser user, String name, List<String> inputs) {
