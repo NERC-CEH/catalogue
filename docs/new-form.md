@@ -14,7 +14,7 @@ NOTE: Trying to make form "borderless" and create borders by aligning everything
 
 create a standard document following <./new-catalogue.md>
 
-in `WebConfig.json` your `DOCUMENT_${DOCUMENT_NAME}_JSON_VALUE` needs to be of the format `application/vnd.${document-name}-document+json` as the coffeescript works off this convention
+in `WebConfig.java` your `DOCUMENT_${DOCUMENT_NAME}_JSON_VALUE` needs to be of the format `application/vnd.${document-name}-document+json` as the coffeescript works off this convention
 
 ### Coffeescript
 
