@@ -2,6 +2,7 @@
 <#import "../new-form.html.tpl" as form>
 
 <#assign allInputs=elter.getInputs()>
+<#assign allTps=elter.getTemporalProcedures()>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <@form.master document='observation-placeholder'>
@@ -44,13 +45,16 @@
                 <input disabled name="controlsFrequencyOfName" placeholder="Controls Frequenct Of Name" required>
             </@form.value>
 
-            <@form.value name="visibleThrough" label="Visible Through">
-                <ul class="list-unstyled">
-                    <li>
-                        temporal procedure string
-                    </li>
-                </ul>
+            <@form.ifNotReadonly>
+                <@form.value name="visibleThrough" label="Visible Through">
+                    <@form.selectList name="visibleThrough" documents=visibleThrough allDocuments=allTps></@form.selectList>
+                </@form.value>
+            </@form.ifNotReadonly>
+            <@form.value name="visibleThroughName" class="other-visibleThrough" label="Visible Through Name" hidden=true errorMessage="Name is required">
+                <input disabled name="visibleThroughName" placeholder="Visible Through Name" required>
             </@form.value>
+
+            
         </@form.body>
     </@form.master>
     <#include "_admin.html.tpl">

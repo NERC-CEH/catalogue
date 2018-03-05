@@ -1,22 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_JSON_VALUE;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.controllers.AbstractDocumentController;
-import uk.ac.ceh.gateway.catalogue.elter.ManufacturerDocument;
-import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import java.util.List;
-
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
 @Controller
 public class SensorController extends AbstractDocumentController {
@@ -26,6 +31,7 @@ public class SensorController extends AbstractDocumentController {
   public SensorController(DocumentRepository documentRepository, ElterService elterService) {
     super(documentRepository);
     this.elterService = elterService;
+    this.catalogue = "elter";
   }
 
   @PreAuthorize("@permission.userCanCreate(#catalogue)")

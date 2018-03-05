@@ -33,6 +33,7 @@ define [
   updateRoutedTo = -> view.updateSelectList 'routedTo', '/elter/inputs'
   updateUsedBy = -> view.updateSelectList 'usedBy', '/elter/inputs'
   updateControlsFrequencyOf = -> view.updateSelectList 'controlsFrequencyOf', '/elter/inputs'
+  updateVisibleThrough = -> view.updateSelectList 'visibleThrough', '/elter/temporal-procedures'
 
   ->
     do updateManufacturer
@@ -41,4 +42,5 @@ define [
     do updateRoutedTo
     do updateUsedBy
     do updateControlsFrequencyOf
+    do updateVisibleThrough
 

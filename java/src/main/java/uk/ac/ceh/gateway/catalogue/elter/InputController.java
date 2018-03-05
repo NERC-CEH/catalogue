@@ -30,6 +30,7 @@ public class InputController extends AbstractDocumentController {
   public InputController(DocumentRepository documentRepository, ElterService elterService) {
     super(documentRepository);
     this.elterService = elterService;
+    this.catalogue = "elter";
   }
 
   @PreAuthorize("@permission.userCanCreate(#catalogue)")

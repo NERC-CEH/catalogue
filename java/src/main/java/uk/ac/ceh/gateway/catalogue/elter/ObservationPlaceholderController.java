@@ -33,6 +33,7 @@ public class ObservationPlaceholderController extends AbstractDocumentController
   public ObservationPlaceholderController(DocumentRepository documentRepository, ElterService elterService) {
     super(documentRepository);
     this.elterService = elterService;
+    this.catalogue = "elter";
   }
 
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
@@ -51,15 +52,16 @@ public class ObservationPlaceholderController extends AbstractDocumentController
   saveDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
       @RequestBody ObservationPlaceholderDocument document) throws DocumentRepositoryException {
     if (document.getRoutedTo() != null) document.getRoutedTo().removeIf(id -> StringUtils.isBlank(id) || !DocumentReader.exists(id));
-    setInputLists(document, user, document.getRoutedToName(), document.getRoutedTo());
-    setInputLists(document, user, document.getUsedByName(), document.getUsedBy());
-    setInputLists(document, user, document.getControlsFrequencyOfName(), document.getControlsFrequencyOf());
-    cleanInputNames(document);
+    setInputList(document, user, document.getRoutedToName(), document.getRoutedTo());
+    setInputList(document, user, document.getUsedByName(), document.getUsedBy());
+    setInputList(document, user, document.getControlsFrequencyOfName(), document.getControlsFrequencyOf());
+    setTemporalProcedureList(document, user, document.getVisibleThroughName(), document.getVisibleThrough());
+    cleanTempDocumentNames(document);
     return saveMetadataDocument(user, file, document);
   }
 
   @SneakyThrows
-  private void setInputLists(ObservationPlaceholderDocument document, CatalogueUser user, String name, List<String> inputs) {
+  private void setInputList(ObservationPlaceholderDocument document, CatalogueUser user, String name, List<String> inputs) {
     if (!StringUtils.isBlank(name)) {
       val input = new InputDocument();
       input.setTitle(name);
@@ -68,10 +70,21 @@ public class ObservationPlaceholderController extends AbstractDocumentController
     }
   }
 
-  private void cleanInputNames(ObservationPlaceholderDocument document) {
+  @SneakyThrows
+  private void setTemporalProcedureList(ObservationPlaceholderDocument document, CatalogueUser user, String name, List<String> inputs) {
+    if (!StringUtils.isBlank(name)) {
+      val input = new TemporalProcedureDocument();
+      input.setTitle(name);
+      saveNewMetadataDocument(user, input, "new eLTER Temporal Procedure Document");
+      if (inputs != null)  inputs.add(input.getId());
+    }
+  }
+
+  private void cleanTempDocumentNames(ObservationPlaceholderDocument document) {
     document.setRoutedToName(null);
     document.setUsedByName(null);
     document.setControlsFrequencyOfName(null);
+    document.setVisibleThroughName(null);
   }
   
 }

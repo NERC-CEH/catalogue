@@ -28,4 +28,5 @@ public class ObservationPlaceholderDocument extends AbstractMetadataDocument {
     private List<String> controlsFrequencyOf;
     private String controlsFrequencyOfName;
     private List<String> visibleThrough;
+    private String visibleThroughName;
 }
