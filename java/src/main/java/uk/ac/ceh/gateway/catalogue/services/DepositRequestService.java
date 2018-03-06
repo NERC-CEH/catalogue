@@ -33,12 +33,12 @@ public class DepositRequestService {
     }
 
     public List<DepositRequestDocument> getForUser(CatalogueUser user) {
-        val finder = new SolrDocumentFinder<DepositRequestDocument>(solrServer, documentRepository);
+        val finder = new SolrDocumentFinder<DepositRequestDocument>(solrServer, DepositRequestDocument.class);
         return finder.find(String.format("documentType:DEPOSIT_REQUEST_DOCUMENT AND view:%s", user.getUsername()));
     }
 
     public List<DepositRequestDocument> getAll() {
-        val finder = new SolrDocumentFinder<DepositRequestDocument>(solrServer, documentRepository);
+        val finder = new SolrDocumentFinder<DepositRequestDocument>(solrServer, DepositRequestDocument.class);
         return finder.find("documentType:DEPOSIT_REQUEST_DOCUMENT");
     }
 }

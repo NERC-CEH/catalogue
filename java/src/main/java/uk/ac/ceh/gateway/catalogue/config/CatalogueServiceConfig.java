@@ -1,13 +1,29 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATA_TYPE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_INPUT_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_MANUFACTURER_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_AGENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_DATASET_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MODEL_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_ACTIVITY_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_FACILITY_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_PROGRAMME_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_PUBLICATION_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_SAMPLE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_SHORT;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
-
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
 @Configuration
 public class CatalogueServiceConfig {
@@ -94,13 +110,33 @@ public class CatalogueServiceConfig {
             .build();
         
         DocumentType elterSensor = DocumentType.builder()
-            .title("eLTER Sensor")
+            .title("Sensor")
             .type(ELTER_SENSOR_DOCUMENT_SHORT)
             .build();
         
         DocumentType elterManufacturer = DocumentType.builder()
-            .title("eLTER Manufacturer")
+            .title("Manufacturer")
             .type(ELTER_MANUFACTURER_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterFeatureOfInterest = DocumentType.builder()
+            .title("Feature Of Interest")
+            .type(ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterObservationPlaceholder = DocumentType.builder()
+            .title("Oberstion Placeholder")
+            .type(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterTemporalProcedure = DocumentType.builder()
+            .title("Temporal Procedure")
+            .type(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterInput = DocumentType.builder()
+            .title("Input")
+            .type(ELTER_INPUT_DOCUMENT_SHORT)
             .build();
 
         DocumentType dataType = DocumentType.builder()
@@ -252,6 +288,10 @@ public class CatalogueServiceConfig {
                 .facetKey("manufacturerName")
                 .documentType(elterSensor)
                 .documentType(elterManufacturer)
+                .documentType(elterFeatureOfInterest)
+                .documentType(elterObservationPlaceholder)
+                .documentType(elterTemporalProcedure)
+                .documentType(elterInput)
                 .fileUpload(false)
                 .build()
         );

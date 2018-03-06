@@ -40,9 +40,7 @@ define [
   'cs!views/SampleArchiveEditorView'
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
-  'cs!views/ElterEditorView'
-  'tpl!templates/Sensor.tpl'
-  'tpl!templates/Manufacturer.tpl'
+  'cs!views/NewEditorView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'bootstrap'
@@ -54,7 +52,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ElterEditorView, SensorTpl, ManufacturerTpl, ClipboardCopyView, DataTypeEditorView
+    NewEditorView, ClipboardCopyView, DataTypeEditorView
 ) ->
 
   ###
@@ -63,6 +61,11 @@ define [
   we like globally.
   ###
   initialize: ->
+    # shim
+    # http://stackoverflow.com/a/646643
+    String::startsWith ?= (s) -> @slice(0, s.length) == s
+    String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
+
     do @initScheduled if $('#documents-upload .scheduled').length
     do @initInProgress if $('#documents-upload .in-progress').length
     do @initReadOnly if $('#documents-upload .read-only').length
@@ -74,35 +77,27 @@ define [
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
-    do @newForm if $('.new-form').length
+    do @newForm if $('.beta-form').length
     do @initClipboard if $('.clipboard-copy').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
 
   newForm: ->
-    formMap =
-      sensor:
-        view: ElterEditorView
-        template: SensorTpl
-        mediaType: 'application/vnd.elter-sensor-document+json'
-      manufacturer:
-        view: ElterEditorView
-        template: ManufacturerTpl
-        mediaType: 'application/vnd.elter-manufacturer-document+json'
-
     document = $('.new-form').data('document')
+    catalogue = $('html').data('catalogue')
     guid = $('.new-form').data('guid')
 
-    form = formMap[document]
     if form
       app = new EditorMetadata null,
-        mediaType: form.mediaType
+        mediaType: 'application/vnd.' + document + '-document+json'
       app.id = guid
       app.set('id', guid)
-      view = new form.view
+      app.catalogue = catalogue
+      app.set('catalogue', catalogue)
+      
+      view = new NewEditorView
         model: app
-        template: form.template
 
   initDepositRequest: ->
     app = new DepositRequestModel
@@ -226,15 +221,35 @@ define [
         Model: EditorMetadata
         mediaType: 'application/vnd.sample-archive+json'
       'Sensor':
-        View: ElterEditorView
+        usesNewForm: true
+        View: NewEditorView
         Model: EditorMetadata
-        mediaType: 'application/vnd.elter-sensor-document+json'
-        template: SensorTpl
+        mediaType: 'application/vnd.sensor-document+json'
       'Manufacturer':
-        View: ElterEditorView
+        usesNewForm: true
+        View: NewEditorView
         Model: EditorMetadata
-        template: ManufacturerTpl
-        mediaType: 'application/vnd.elter-manufacturer-document+json'
+        mediaType: 'application/vnd.manufacturer-document+json'
+      'Feature of Interest':
+        usesNewForm: true
+        View: NewEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.feature-of-interest-document+json'
+      'Observation Placeholder':
+        usesNewForm: true
+        View: NewEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.observation-placeholder-document+json'
+      'Temporal Procedure':
+        usesNewForm: true
+        View: NewEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.temporal-procedure-document+json'
+      'Input':
+        usesNewForm: true
+        View: NewEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.input-document+json'
       'data-type':
         View: DataTypeEditorView
         Model: EditorMetadata
@@ -245,15 +260,16 @@ define [
 
     $('.edit-control').on 'click', (event) ->
       do event.preventDefault
-      do $editorCreate.toggle
 
-      documentType = lookup[$(event.target).data('documentType')]
+      title = $(event.target).data('documentType')
+      documentType = lookup[title]
+
+      do $editorCreate.toggle if !documentType.usesNewForm
 
       if $editorCreate.length
         new documentType.View
-          model: new documentType.Model null, documentType
+          model: new documentType.Model null, documentType, title
           el: '#search'
-          template: documentType.template
       else
         $.ajax
           url: $(location).attr('href')
@@ -262,9 +278,8 @@ define [
             json: documentType.mediaType
           success: (data) ->
             new documentType.View
-              model: new documentType.Model data, documentType
+              model: new documentType.Model data, documentType, title
               el: '#metadata'
-              template: documentType.template
 
   ###
   Initialize the permission application

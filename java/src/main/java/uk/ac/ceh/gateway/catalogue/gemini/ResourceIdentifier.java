@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import static com.google.common.base.Strings.nullToEmpty;
@@ -25,6 +26,7 @@ public class ResourceIdentifier {
         this.version = nullToEmpty(version);
     }
     
+    @JsonIgnore
     public String getCoupledResource() {
         if (CEH_CODE_SPACE.equals(codeSpace)) {
             return format("%s#%s", codeSpace, code);

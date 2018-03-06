@@ -85,11 +85,19 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String SAMPLE_ARCHIVE_SHORT         = "sample-archive";
     public static final String SAMPLE_ARCHIVE_JSON_VALUE         = "application/vnd.sample-archive+json";
 
-    public static final String ELTER_SENSOR_DOCUMENT_JSON_VALUE = "application/vnd.elter-sensor-document+json";
+    public static final String ELTER_SENSOR_DOCUMENT_JSON_VALUE = "application/vnd.sensor-document+json";
     public static final String ELTER_SENSOR_DOCUMENT_SHORT = "Sensor";
-    public static final String ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE = "application/vnd.elter-manufacturer-document+json";
+    public static final String ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE = "application/vnd.manufacturer-document+json";
     public static final String ELTER_MANUFACTURER_DOCUMENT_SHORT = "Manufacturer";
-
+    public static final String ELTER_FEATURE_OF_INTEREST_DOCUMENT_JSON_VALUE = "application/vnd.feature-of-interest-document+json";
+    public static final String ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT = "Feature of Interest";
+    public static final String ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_JSON_VALUE = "application/vnd.observation-placeholder-document+json";
+    public static final String ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT = "Observation Placeholder";
+    public static final String ELTER_TEMPORAL_PROCEDURE_DOCUMENT_JSON_VALUE = "application/vnd.temporal-procedure-document+json";
+    public static final String ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT = "Temporal Procedure";
+    public static final String ELTER_INPUT_DOCUMENT_JSON_VALUE = "application/vnd.input-document+json";
+    public static final String ELTER_INPUT_DOCUMENT_SHORT = "Input";
+    
     public static final String UPLOAD_DOCUMENT_JSON_VALUE = "application/vnd.upload-document+json";
     public static final String UPLOAD_DOCUMENT_SHORT = "Upload";
 
@@ -165,6 +173,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(SAMPLE_ARCHIVE_SHORT, MediaType.parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE))
                         .put(ELTER_SENSOR_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_SENSOR_DOCUMENT_JSON_VALUE))
                         .put(ELTER_MANUFACTURER_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE))
+                        .put(ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_FEATURE_OF_INTEREST_DOCUMENT_JSON_VALUE))
+                        .put(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_JSON_VALUE))
+                        .put(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_JSON_VALUE))
+                        .put(ELTER_INPUT_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_INPUT_DOCUMENT_JSON_VALUE))
                         .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
                         .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
                         .build()

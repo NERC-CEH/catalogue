@@ -99,6 +99,9 @@
     </div>
     <#nested>
     <div id="message-panel"></div>
+    <#if ! id??>
+      <#include '_new-document-modal.html.tpl'>
+    </#if>
     <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
   </body>
 </html></#compress></#macro>

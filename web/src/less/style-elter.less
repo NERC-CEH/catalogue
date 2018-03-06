@@ -7,12 +7,27 @@
     color: @brand-error;
 }
 
+.static-message {
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 160px;
+    text-align: center;
+    top: 60px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 2px 10px;
+}
+
+.is-hidden {
+    display: none !important;
+}
+
+
 .new-form {
     margin-top: 20px;
-    & .error-message {
-        color: @brand-error;
-        padding: 0 10px;
-        width: 100%;
+    & .is-blank {
+        color: #BDBDBD;
+        fill: #BDBDBD;
     }
     & input,
     & textarea,
@@ -35,8 +50,7 @@
         &:focus {
             cursor: initial;
         }
-
-        &.error {
+        &.is-errored {
             border: solid 1px @brand-error;
             outline-color: @brand-error;
         }
@@ -57,6 +71,44 @@
     & .description {
         margin: 5px 0;
     }
+    & .value-error {
+        display: none;
+        font-weight: bold;
+        color: @brand-error;
+        width: 100%;
+        padding: 0 10px;
+        margin-top: 0;
+    }
+    & .value {
+        display: flex;
+        flex-flow: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: baseline;
+        margin-bottom: 5px;
+        width: 100%;
+        &.is-errored .value-error {
+            display: block;
+        }
+    }
+    & .value-label {
+        width: 20%;
+        padding: 0 10px;
+        text-align: right;
+    }
+    & .value-children {
+        width: 80%;
+    }
+    & .value-block {
+        width: 100%;
+        display: inline-flex;
+        margin-bottom: 5px;
+        &-value {
+            width: 100%;
+            display: inline-block;
+            margin: -5px 0 0 5px;
+        }
+    }
     & .head {
         margin-bottom: 10px;
         & input,
@@ -64,43 +116,40 @@
             display: block;
             width: 100%;
         }
+        & .value-children {
+            width: 100%;
+        }
     }
-    & .body {
-        & .value {
-            display: flex;
-            flex-flow: row;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            align-items: baseline;
-            margin-bottom: 5px;
-
-            & .error-message {
-                margin-left: 20%;
-            }
+    & .delete {
+        margin-left: 10px;
+    }
+    & .delete .fa-times {
+        border: none;
+        background: none;
+        color: #d9534f;
+        &:hover {
+            color: @brand-error;
         }
-        label {
-            width: 20%;
-            padding: 0 10px;
-            text-align: right;
-        }
-        .delete .fa-times {
-            border: none;
-            background: none;
-            color: #d9534f;
-            &:hover {
-                color: @brand-error;
-            }
-        }
-        input,
-        select,
-        ul {
-            width: 80%;
-        }
-        label,
-        input,
-        select {
-            font-size: 14px;
-        }
+    }
+    & .static-value,
+    & input,
+    & select,
+    & ul {
+        margin: 0;
+        width: 80%;
+    }
+    & .static-value,
+    & label,
+    & input,
+    & select {
+        font-size: 14px;
+    }
+    & .static-value {
+        padding: 0 10px;
+    }
+    & input[type="radio"] {
+        width: auto;
+        margin: 5px 10px;
     }
 }
 
@@ -111,4 +160,35 @@
         border: solid 1px transparent !important;
         cursor: initial !important;
     }
+}
+
+.foi-data {
+    & .monitoring {
+        display: none !important;
+    }
+    & .verticalmonitoring {
+        display: none !important;
+    }
+    & .composite {
+        display: none !important;
+    }
+    & .notype {
+        display: none !important;
+    }
+    &.is-notype .notype {
+        display: flex !important;
+    }
+    &.is-monitoring .monitoring {
+        display: flex !important;
+    }
+    &.is-verticalmonitoring .verticalmonitoring {
+        display: flex !important;
+    }
+    &.is-composite .composite {
+        display: flex !important;
+    }
+}
+
+.new-admin {
+    margin-top: 10px;
 }
