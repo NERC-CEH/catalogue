@@ -10,6 +10,9 @@ OSDP base template
         <#if title?? && title?has_content>
           <@b.key "Title" "Name">${title}</@b.key>
         </#if>
+        <#if id?? && id?has_content>
+          <@b.key "Id" "Id">${id}<span class="clipboard-copy pull-right"></span></@b.key>
+        </#if>
         <#if type?? && type?has_content>
           <@b.key "Type" "Type of record">${codes.lookup('metadata.resourceType', type)!''}</@b.key>
         </#if>

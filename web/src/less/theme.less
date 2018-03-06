@@ -1,0 +1,37 @@
+/*!
+ *
+ * Copyright 2014 Centre for Ecology & Hydrology, Application Development Team
+ * Licensed under the GNU Public License v2.0
+ * http://www.gnu.org/licenses/
+ *
+ * This theme was built using the Themestrap Bootstrap Theme Kit.
+ * https://github.com/divshot/themestrap
+ */
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+@import "bootstrap.less";
+@import "variables.less";
+
+// Add CSS Customizations to your theme here.
+
+.navbar-brand {
+  padding: 0 @navbar-padding-horizontal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  a {
+    color: @brand-success;
+    &:hover, &:focus {
+      color: darken(@brand-success, 15%);
+      text-decoration: none;
+    }
+  }
+}
+
+.jumbotron {
+  padding:1.5em;
+  h2 {font-size:2.5em;}
+  p {font-weight:bold; font-size:1.3em;}
+  a:link, a:visited {color: #FF0;}
+  a.btn:link, a.btn:visited {font-size:0.9em; color: #FFF;}
+}
