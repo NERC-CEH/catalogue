@@ -1,11 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATA_TYPE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_INPUT_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_MANUFACTURER_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_PERSON_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_AGENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_DATASET_SHORT;
@@ -137,6 +140,21 @@ public class CatalogueServiceConfig {
         DocumentType elterInput = DocumentType.builder()
             .title("Input")
             .type(ELTER_INPUT_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterSingleSystDocument = DocumentType.builder()
+            .title("Single System Deployment")
+            .type(ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterDeploymentRelatedProcessDuration = DocumentType.builder()
+            .title("Deployment Related Process Duration")
+            .type(ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT)
+            .build();
+
+        DocumentType elterPerson = DocumentType.builder()
+            .title("Person")
+            .type(ELTER_PERSON_DOCUMENT_SHORT)
             .build();
 
         DocumentType dataType = DocumentType.builder()
@@ -292,6 +310,9 @@ public class CatalogueServiceConfig {
                 .documentType(elterObservationPlaceholder)
                 .documentType(elterTemporalProcedure)
                 .documentType(elterInput)
+                .documentType(elterSingleSystDocument)
+                .documentType(elterDeploymentRelatedProcessDuration)
+                .documentType(elterPerson)
                 .fileUpload(false)
                 .build()
         );

@@ -1,6 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.xml.xpath.XPathExpressionException;
+
 import com.google.common.collect.ImmutableMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -22,17 +29,13 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
+
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.config.ServiceConfig.MessageConvertersHolder;
 import uk.ac.ceh.gateway.catalogue.converters.Gml2WmsFeatureInfoMessageConverter;
 import uk.ac.ceh.gateway.catalogue.util.ForgivingParameterContentNegotiationStrategy;
 import uk.ac.ceh.gateway.catalogue.util.MapServerGetFeatureInfoErrorHandler;
 import uk.ac.ceh.gateway.catalogue.util.WmsFormatContentNegotiationStrategy;
-
-import javax.xml.xpath.XPathExpressionException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebMvc
@@ -97,6 +100,12 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT = "Temporal Procedure";
     public static final String ELTER_INPUT_DOCUMENT_JSON_VALUE = "application/vnd.input-document+json";
     public static final String ELTER_INPUT_DOCUMENT_SHORT = "Input";
+    public static final String ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_JSON_VALUE = "application/vnd.single-system-deployment-document+json";
+    public static final String ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT = "Single System Deployment";
+    public static final String ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_JSON_VALUE = "application/vnd.deployment-related-process-duration-document+json";
+    public static final String ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT = "Deployment Related Process Duration";
+    public static final String ELTER_PERSON_DOCUMENT_JSON_VALUE = "application/vnd.person-document+json";
+    public static final String ELTER_PERSON_DOCUMENT_SHORT = "Person";
     
     public static final String UPLOAD_DOCUMENT_JSON_VALUE = "application/vnd.upload-document+json";
     public static final String UPLOAD_DOCUMENT_SHORT = "Upload";
@@ -177,6 +186,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_JSON_VALUE))
                         .put(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_JSON_VALUE))
                         .put(ELTER_INPUT_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_INPUT_DOCUMENT_JSON_VALUE))
+                        .put(ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_JSON_VALUE))
+                        .put(ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_JSON_VALUE))
+                        .put(ELTER_PERSON_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_PERSON_DOCUMENT_JSON_VALUE))
                         .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
                         .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
                         .build()

@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.elter;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_FEATURE_OF_INTEREST_DOCUMENT_JSON_VALUE;
 
-import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,7 @@ public class FeatureOfInterestController extends AbstractDocumentController {
 
   @SneakyThrows
   private void setObservationPlaceholder(FeatureOfInterestDocument document, CatalogueUser user, String name,
-      List<String> observationPlaceholders) {
+      Set<String> observationPlaceholders) {
     if (!StringUtils.isBlank(name)) {
       val observationPlaceholder = new ObservationPlaceholderDocument();
       observationPlaceholder.setTitle(name);

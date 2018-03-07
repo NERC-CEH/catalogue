@@ -250,6 +250,21 @@ define [
         View: NewEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.input-document+json'
+      'Single System Deployment':
+        usesNewForm: true
+        View: NewEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.single-system-deployment-document+json'
+      'Deployment Related Process Duration':
+        usesNewForm: true
+        View: NewEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.deployment-related-process-duration-document+json'
+      'Person':
+        usesNewForm: true
+        View: NewEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.person-document+json'
       'data-type':
         View: DataTypeEditorView
         Model: EditorMetadata

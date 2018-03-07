@@ -1,9 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_INPUT_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_MANUFACTURER_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_PERSON_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT;
 
 import java.util.List;
@@ -64,4 +67,20 @@ public class ElterService {
     val finder = new SolrDocumentFinder<ObservationPlaceholderDocument>(solrServer, ObservationPlaceholderDocument.class);
     return finder.find(String.format("documentType:\"%s\"", ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT));
   }
+
+  public List<DeploymentRelatedProcessDurationDocument> getDeploymentRelatedProcessDurations() {
+    val finder = new SolrDocumentFinder<DeploymentRelatedProcessDurationDocument>(solrServer, DeploymentRelatedProcessDurationDocument.class);
+    return finder.find(String.format("documentType:\"%s\"", ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT));
+  }
+
+  public List<PersonDocument> getPersons() {
+    val finder = new SolrDocumentFinder<PersonDocument>(solrServer, PersonDocument.class);
+    return finder.find(String.format("documentType:\"%s\"", ELTER_PERSON_DOCUMENT_SHORT));
+  }
+
+  public List<SingleSystemDeploymentDocument> getSingleSystemDeployments() {
+    val finder = new SolrDocumentFinder<SingleSystemDeploymentDocument>(solrServer, SingleSystemDeploymentDocument.class);
+    return finder.find(String.format("documentType:\"%s\"", ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT));
+  }
+
 }

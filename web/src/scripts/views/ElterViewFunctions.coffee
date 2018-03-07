@@ -35,6 +35,13 @@ define [
   updateControlsFrequencyOf = -> view.updateSelectList 'controlsFrequencyOf', '/elter/inputs'
   updateVisibleThrough = -> view.updateSelectList 'visibleThrough', '/elter/temporal-procedures'
   updateOriginalStream = -> view.updateSelectList 'originalStream', '/elter/observation-placeholders'
+  updatePowers = -> view.updateSelectList 'powers', '/elter/single-system-deployments'
+  updateDeploymentInstallation = -> view.updateSelectList 'deploymentInstallation', '/elter/deployment-related-process-durations'
+  updateDeploymentRemoval = -> view.updateSelectList 'deploymentRemoval', '/elter/deployment-related-process-durations'
+  updateDeploymentCleaning = -> view.updateSelectList 'deploymentCleaning', '/elter/deployment-related-process-durations'
+  updateDeploymentMaintenance = -> view.updateSelectList 'deploymentMaintenance', '/elter/deployment-related-process-durations'
+  updateDeploymentProgramUpdate = -> view.updateSelectList 'deploymentProgramUpdate', '/elter/deployment-related-process-durations'
+  updateCarriedOutBy = -> view.updateSelectList 'carriedOutBy', '/elter/persons'
 
   ->
     do updateManufacturer
@@ -44,4 +51,11 @@ define [
     do updateUsedBy
     do updateControlsFrequencyOf
     do updateOriginalStream
+    do updatePowers
+    do updateDeploymentInstallation
+    do updateDeploymentRemoval
+    do updateDeploymentCleaning
+    do updateDeploymentMaintenance
+    do updateDeploymentProgramUpdate
+    do updateCarriedOutBy
 

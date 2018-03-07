@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.http.MediaType;
@@ -18,16 +17,10 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/elter/feature-of-interest.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
+  @Template(called = "html/elter/deployment-related-process-duration.html.tpl",
+      whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
-public class FeatureOfInterestDocument extends AbstractMetadataDocument {
-    private FeatureOfInterestType foiType;
-
-    private String lowerPoint;
-    private String upperPoint;
-
-    private List<TemporalEntity> propertyAttributes;
-
-    private Set<String> originalStream;
-    private String originalStreamName;
+public class DeploymentRelatedProcessDurationDocument extends AbstractMetadataDocument {
+  private Set<String> carriedOutBy;
+  private String carriedOutByName;
 }

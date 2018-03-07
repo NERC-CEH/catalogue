@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.http.MediaType;
 
@@ -21,12 +22,12 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 })
 public class ObservationPlaceholderDocument extends AbstractMetadataDocument {
     private List<TemporalEntity> signature;
-    private List<String> routedTo;
+    private Set<String> routedTo;
     private String routedToName;
-    private List<String> usedBy;
+    private Set<String> usedBy;
     private String usedByName;
-    private List<String> controlsFrequencyOf;
+    private Set<String> controlsFrequencyOf;
     private String controlsFrequencyOfName;
-    private List<String> visibleThrough;
+    private Set<String> visibleThrough;
     private String visibleThroughName;
 }
