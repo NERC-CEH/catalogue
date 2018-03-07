@@ -53,16 +53,6 @@ public class ExceptionControllerHandlerTest {
     }
     
     @Test
-    public void checkThatAccessDeniedExceptionIsWrapped() {
-        
-        //When
-        String viewName = controller.handleAccessDeniedException().getViewName();
-        
-        //Then
-        assertThat("Expected message to be pulled of exception", viewName, equalTo("html/access-denied.html.tpl"));
-    }
-    
-    @Test
     public void checkThatURISyntaxExceptionReturnsImage() {
         //Given
         URISyntaxException ex = mock(URISyntaxException.class);
