@@ -10,7 +10,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
@@ -64,8 +66,9 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     }
     
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Object> handleAccessDeniedException(Exception ex) {
-        return handleExceptionInternal(ex, ex.getMessage(), HttpStatus.FORBIDDEN);
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ModelAndView handleAccessDeniedException(Exception ex) {
+        return new ModelAndView("html/access-denied.html.tpl");
     }
     
     @ExceptionHandler({DocumentIndexingException.class})
