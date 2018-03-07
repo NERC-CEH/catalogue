@@ -6,7 +6,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import uk.ac.ceh.gateway.catalogue.model.*;
 
 import java.net.URISyntaxException;
@@ -55,12 +54,9 @@ public class ExceptionControllerHandlerTest {
     
     @Test
     public void checkThatAccessDeniedExceptionIsWrapped() {
-        //Given
-        String mess = "Forbidden";
-        AccessDeniedException ex = new AccessDeniedException(mess);
         
         //When
-        String viewName = controller.handleAccessDeniedException(ex).getViewName();
+        String viewName = controller.handleAccessDeniedException().getViewName();
         
         //Then
         assertThat("Expected message to be pulled of exception", viewName, equalTo("html/access-denied.html.tpl"));

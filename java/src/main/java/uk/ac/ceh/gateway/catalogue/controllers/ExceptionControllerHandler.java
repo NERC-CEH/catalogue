@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -67,8 +68,10 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ModelAndView handleAccessDeniedException(Exception ex) {
-        return new ModelAndView("html/access-denied.html.tpl");
+    public ModelAndView handleAccessDeniedException() {
+        CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        boolean isPublic = user.isPublic();
+        return new ModelAndView("html/access-denied.html.tpl", "isPublic", isPublic);
     }
     
     @ExceptionHandler({DocumentIndexingException.class})
