@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.elter;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_JSON_VALUE;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class ObservationPlaceholderController extends AbstractDocumentController
 
 
   @SneakyThrows
-  private void setInputList(ObservationPlaceholderDocument document, CatalogueUser user, String name, List<String> inputs) {
+  private void setInputList(ObservationPlaceholderDocument document, CatalogueUser user, String name, Set<String> inputs) {
     if (!StringUtils.isBlank(name)) {
       val input = new InputDocument();
       input.setTitle(name);
@@ -80,7 +81,7 @@ public class ObservationPlaceholderController extends AbstractDocumentController
   }
 
   @SneakyThrows
-  private void setTemporalProcedureList(ObservationPlaceholderDocument document, CatalogueUser user, String name, List<String> inputs) {
+  private void setTemporalProcedureList(ObservationPlaceholderDocument document, CatalogueUser user, String name, Set<String> inputs) {
     if (!StringUtils.isBlank(name)) {
       val input = new TemporalProcedureDocument();
       input.setTitle(name);

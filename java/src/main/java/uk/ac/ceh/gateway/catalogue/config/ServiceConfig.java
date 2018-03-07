@@ -8,11 +8,14 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.GEMINI_D
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.IMP_DOCUMENT;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.LINK_DOCUMENT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATA_TYPE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_INPUT_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_MANUFACTURER_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_PERSON_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_AGENT_SHORT;
@@ -81,12 +84,15 @@ import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
+import uk.ac.ceh.gateway.catalogue.elter.DeploymentRelatedProcessDurationDocument;
 import uk.ac.ceh.gateway.catalogue.elter.ElterService;
 import uk.ac.ceh.gateway.catalogue.elter.FeatureOfInterestDocument;
 import uk.ac.ceh.gateway.catalogue.elter.InputDocument;
 import uk.ac.ceh.gateway.catalogue.elter.ManufacturerDocument;
 import uk.ac.ceh.gateway.catalogue.elter.ObservationPlaceholderDocument;
+import uk.ac.ceh.gateway.catalogue.elter.PersonDocument;
 import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
+import uk.ac.ceh.gateway.catalogue.elter.SingleSystemDeploymentDocument;
 import uk.ac.ceh.gateway.catalogue.elter.TemporalProcedureDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
@@ -331,6 +337,9 @@ public class ServiceConfig {
         converters.add(new Object2TemplatedMessageConverter<>(FeatureOfInterestDocument.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(ObservationPlaceholderDocument.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(InputDocument.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(SingleSystemDeploymentDocument.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(DeploymentRelatedProcessDurationDocument.class, freemarkerConfiguration()));
+        converters.add(new Object2TemplatedMessageConverter<>(PersonDocument.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(TemporalProcedureDocument.class, freemarkerConfiguration()));
 
         converters.add(new Object2TemplatedMessageConverter<>(UploadDocument.class, freemarkerConfiguration()));
@@ -437,6 +446,9 @@ public class ServiceConfig {
                 .register(ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT, FeatureOfInterestDocument.class)
                 .register(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT, ObservationPlaceholderDocument.class)
                 .register(ELTER_INPUT_DOCUMENT_SHORT, InputDocument.class)
+                .register(ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT, SingleSystemDeploymentDocument.class)
+                .register(ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT, DeploymentRelatedProcessDurationDocument.class)
+                .register(ELTER_PERSON_DOCUMENT_SHORT, PersonDocument.class)
                 .register(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT, TemporalProcedureDocument.class)
                 .register(DATA_TYPE_SHORT, DataType.class);
     }
