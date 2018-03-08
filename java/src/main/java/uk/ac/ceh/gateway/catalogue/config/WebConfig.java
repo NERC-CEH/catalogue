@@ -112,15 +112,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     public static final String DATA_TYPE_JSON_VALUE = "application/vnd.data-type+json";
     public static final String DATA_TYPE_SHORT = "data-type";
-
-    public static final String GRAPH_JSON_VALUE = "application/vnd.graph+json";
-    public static final String GRAPH_SHORT = "graph";
-    public static final String GRAPH_STYLE_JSON_VALUE = "application/vnd.graph-style+json";
-    public static final String GRAPH_STYLE_SHORT = "graph-style";
-    public static final String GRAPH_ELEMENTS_JSON_VALUE = "application/vnd.graph-elements+json";
-    public static final String GRAPH_ELEMENTS_SHORT = "graph-elements";
-    public static final String GRAPH_LAYOUT_JSON_VALUE = "application/vnd.graph-layout+json";
-    public static final String GRAPH_LAYOUT_SHORT = "graph-layout";
     
     @Autowired MessageConvertersHolder messageConvertersHolder;
     @Autowired freemarker.template.Configuration freemarkerConfiguration;
@@ -200,10 +191,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(ELTER_PERSON_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_PERSON_DOCUMENT_JSON_VALUE))
                         .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
                         .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
-                        .put(GRAPH_SHORT, MediaType.parseMediaType(GRAPH_JSON_VALUE))
-                        .put(GRAPH_STYLE_SHORT, MediaType.parseMediaType(GRAPH_STYLE_JSON_VALUE))
-                        .put(GRAPH_ELEMENTS_SHORT, MediaType.parseMediaType(GRAPH_ELEMENTS_JSON_VALUE))
-                        .put(GRAPH_LAYOUT_SHORT, MediaType.parseMediaType(GRAPH_LAYOUT_JSON_VALUE))
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo
