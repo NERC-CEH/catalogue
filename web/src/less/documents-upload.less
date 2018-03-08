@@ -1,4 +1,5 @@
 #documents-upload {
+
     .folder {
         margin: 1em;
         padding:0;
@@ -23,6 +24,7 @@
     .in-progress .folder {
         border:2px dashed #7F7FFF;
         padding:1em;
+        
     };
 
     .files {
@@ -30,16 +32,77 @@
         .file {
             display:block;
             padding:1em;
-            border-bottom:1px solid #EEE;
+            border-top:1px solid #EEE;
+            &:first-child {
+                border-style:none;
+            };
+            &:hover {
+                background-color: #EEE;
+            };
         };
-        .file:last-child {
-            border-style:none;
+        [id*='zip'] {
+            padding-top:3em;
+            padding-bottom: 0;
+        };
+        [id*='zip-'] {
+            border-top:none;
+            padding:0.35em 1em 0.35em 3em;
+            .small;
+            &:hover {
+                background-color: transparent;
+            };
+            .filename {
+                &::before {
+                    content:"»";
+                    font-weight:bold;
+                    margin-right: 1em;
+                };
+            };
+            .file-options {
+                display:none;
+            }
         };
     };
-    
-    .file:hover {
-        background-color: #EEE;
-    };
+
+    .read-only {
+        .files {
+            display:table;
+            .file {
+                display:table-row;
+                &:hover {
+                    background-color:transparent;
+                };
+                div {
+                    display:table-cell;
+                    padding: 0.8em 2em;
+                    border-bottom: 1px solid #eee;
+                };
+                .fileicon {
+                    padding-right: 0;
+                };
+            };
+            .fileHeader {
+                div {
+                    font-weight:bold;
+                    border-bottom: 2px solid #CCC;
+                }
+            };
+            [id*='zip'] {
+                div {
+                    padding-bottom: 0.2em ;
+                };
+            };
+            [id*='zip-'] {
+                .fa {
+                    display:none;
+                };
+                div {
+                    padding-top: 0.2em;
+                    padding-left: 2.4em
+                };
+            };
+        };
+    }
 
     .file-readonly {
         width: 100%;
@@ -154,6 +217,18 @@
             min-width: 7em;
         };
     };
+    
+    /* Unsure whether to keep this change
+    hides zip contents while moving
+    */
+    .in-progress {
+        [id*='zip'] {
+           padding: 1em; 
+        };
+        [id*='zip-'] {
+            display:none; 
+        };
+    };
 }
 
 .document-upload-footer {
@@ -164,7 +239,7 @@
 for the first few months of use while the ILs get
 used to the system.  It can then be deleted */
 .plone.folder .folder-name::after {
-    content: '(Plone)';
+    content: '(Supporting documents)';
     margin-left:1em;
     font-size: 70%;
     color:#bbb;

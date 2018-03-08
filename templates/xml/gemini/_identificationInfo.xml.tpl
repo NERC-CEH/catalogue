@@ -79,29 +79,27 @@
 			</gmd:CI_Citation>
 		</gmd:citation>
 		<gmd:abstract>
-			<gco:CharacterString>
-				<#assign statusMsg ="">
-				<#if resourceStatus?? && resourceStatus?has_content >
-					<#if resourceStatus == "Withdrawn" || resourceStatus == "Superseded" >
-						<#assign statusMsg = "THIS " + resourceType.value?upper_case + " HAS BEEN WITHDRAWN ">
-						<#if revised??>
-							<#assign statusMsg = statusMsg + " and superseded by " + revised.title + " (" + revised.href + "). ">
-						<#else>
-							<#assign statusMsg = statusMsg + ". ">
-						</#if>
-						<#if reasonChanged??>
-							<#assign statusMsg = statusMsg + reasonChanged + ". " >
-						</#if>
+			<#assign statusMsg ="">
+			<#if resourceStatus?? && resourceStatus?has_content >
+				<#if resourceStatus == "Withdrawn" || resourceStatus == "Superseded" >
+					<#assign statusMsg = "THIS " + resourceType.value?upper_case + " HAS BEEN WITHDRAWN ">
+					<#if revised??>
+						<#assign statusMsg = statusMsg + " and superseded by " + revised.title + " (" + revised.href + "). ">
+					<#else>
+						<#assign statusMsg = statusMsg + ". ">
 					</#if>
-					<#if resourceStatus == "Embargoed" >
-						<#assign statusMsg = "This " + resourceType.value + " is embargoed ">
-						<#if datasetReferenceDate.releasedDate??>
-							<#assign statusMsg = statusMsg + "until "+ datasetReferenceDate.releasedDate?date?string.long>
-						</#if>
+					<#if reasonChanged??>
+						<#assign statusMsg = statusMsg + reasonChanged + ". " >
 					</#if>
 				</#if>
-			${statusMsg} ${description!''}
-			</gco:CharacterString>
+				<#if resourceStatus == "Embargoed" >
+					<#assign statusMsg = "This " + resourceType.value + " is embargoed ">
+					<#if datasetReferenceDate.releasedDate??>
+						<#assign statusMsg = statusMsg + "until "+ datasetReferenceDate.releasedDate?date?string.long>
+					</#if>
+				</#if>
+			</#if>
+			<gco:CharacterString>${statusMsg}${description!''}</gco:CharacterString>
 		</gmd:abstract>
 		<#if responsibleParties?has_content>
 		<#list responsibleParties as responsibleParty>
