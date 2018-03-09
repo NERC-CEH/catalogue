@@ -1,19 +1,26 @@
-<#if metadata.catalogue == "eidc" && permission.userCanEdit(id) && metadata.documentType != 'LINK_DOCUMENT' && (resourceType.value == 'dataset' | resourceType.value == 'nonGeographicDataset' | resourceType.value == 'application')>
+<#if metadata.catalogue == "eidc" && (permission.userCanUpload(id) || permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")) && metadata.documentType != 'LINK_DOCUMENT' && (resourceType.value == 'dataset' | resourceType.value == 'nonGeographicDataset' | resourceType.value == 'application')>
   <div class="panel panel-default hidden-print" id="document-upload-panel">
     <div class="panel-body text-center">
+
       <#if permission.userCanUpload(id)>
-        <h4><b>
-        <a href="/upload/${id}">
-          <i class="fa fa-upload text-info"></i>
-          <span>Upload data</span>
-        </a>
-        </b></h4>
+        <#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
+          <#assign uploadText="Manage data" uploadIcon="wrench">
+        <#else>
+          <#assign uploadText="Upload data" uploadIcon="upload">
+        </#if>
       <#else>
-        <a href="/upload/${id}">
-          <i class="fa fa-files-o text-info"></i>
-           <span>View/manage data</span>
-        </a>
+        <#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
+          <#assign uploadText="View data" uploadIcon="eye">
+        </#if>
       </#if>
-      </div>
+
+      <p>
+        <a href="/upload/${id}">
+          <i class="fa fa-${uploadIcon}"></i>
+          <span>${uploadText}</span>
+        </a>
+      </p>
+
+    </div>
   </div>
 </#if>

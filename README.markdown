@@ -118,9 +118,17 @@ Other available users are:
 - superadmin
 - bamboo
 - readonly
-- editor
-- publisher
 - admin
+- eidc-editor
+- eidc-publisher
+- cmp-editor
+- cmp-publisher
+- m-publisher
+- inms-publisher
+- osdp-publisher
+- sa-publisher
+- elter-publisher
+
 
 Also, be sure to go to http://foo.ceh.ac.uk:8080/documents rather than http://localhost:8080/documents, which needs an edit to your hosts file:
 

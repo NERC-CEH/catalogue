@@ -1,8 +1,5 @@
 <section class="section">
     <div class="container">
-         <div class="intro">
-         <h2>Deposit in progress</h2>
-        </div>
         <div class="messages alert alert-info" role="alert">
             <div class="message loading">
                 <span class="fa fa-refresh fa-spin"></span>
