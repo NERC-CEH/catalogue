@@ -43,6 +43,8 @@ define [
   'cs!views/NewEditorView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
+  'cs!models/Graph'
+  'cs!views/GraphView'
   'bootstrap'
   'dropzone'
 ], (
@@ -52,7 +54,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    NewEditorView, ClipboardCopyView, DataTypeEditorView
+    NewEditorView, ClipboardCopyView, DataTypeEditorView, Graph, GraphView
 ) ->
 
   ###
@@ -79,9 +81,14 @@ define [
     do @initCatalogue if $('.catalogue-control').length
     do @newForm if $('.beta-form').length
     do @initClipboard if $('.clipboard-copy').length
+    do @initGrpah if $('#cy').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
+
+  initGrpah: ->
+    app = new Graph $('#cy').data('document')
+    view = new GraphView model: app
 
   newForm: ->
     document = $('.new-form').data('document')

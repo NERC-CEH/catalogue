@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.ext.com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +24,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.controllers.AbstractDocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
@@ -61,6 +63,7 @@ public class SingleSystemDeploymentController extends AbstractDocumentController
     setDeploymentRelatedProcessDuration(document, user, document.getDeploymentProgramUpdateName(), document.getDeploymentProgramUpdate());
 
     cleanTempDocumentNames(document);
+    updateRelationships(document);
     return saveMetadataDocument(user, file, document);
   }
 
@@ -104,5 +107,20 @@ private void setDeploymentRelatedProcessDuration(
   public List<SingleSystemDeploymentDocument> getSingleSystemDeploymentDocument(
       @ActiveUser CatalogueUser user) {
     return this.elterService.getSingleSystemDeployments();
+  }
+
+  private void updateRelationships (SingleSystemDeploymentDocument document) {
+    val docs = document.getDeploymentCleaning();
+    Set<Relationship> relationships = Sets.newHashSet();
+    for (val doc : docs) {
+      relationships.add(new Relationship("http://purl.org/dc/terms/references", doc));
+    }
+
+    val ps = document.getPowers();
+    for (val p : ps) {
+      relationships.add(new Relationship("http://purl.org/dc/terms/powers", p));
+    }
+
+    document.setRelationships(relationships);
   }
 }

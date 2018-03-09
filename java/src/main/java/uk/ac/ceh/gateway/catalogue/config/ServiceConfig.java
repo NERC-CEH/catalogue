@@ -95,6 +95,7 @@ import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
 import uk.ac.ceh.gateway.catalogue.elter.SingleSystemDeploymentDocument;
 import uk.ac.ceh.gateway.catalogue.elter.TemporalProcedureDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.graph.GraphService;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
@@ -229,6 +230,12 @@ public class ServiceConfig {
     @Bean
     public ElterService elterService() {
         return new ElterService(solrServer);
+    }
+
+
+    @Bean
+    public GraphService graphService() {
+        return new GraphService(jenaTdb);
     }
 
     @Bean
@@ -374,6 +381,7 @@ public class ServiceConfig {
         shared.put("permission", permission());
         shared.put("jira", jiraService());
         shared.put("elter", elterService());
+        shared.put("graph", graphService());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
         shared.put("catalogues", catalogueService);
