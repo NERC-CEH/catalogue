@@ -1,10 +1,10 @@
 define [
-  'underscore'
   'jquery'
   'backbone'
   'cytoscape'
   'cytoscape-cose-bilkent'
-], (_, $, Backbone, cytoscape, regCose) -> Backbone.View.extend
+  'file-saver'
+], ($, Backbone, cytoscape, regCose) -> Backbone.View.extend
   cose:
     name: 'cose-bilkent',
     nodeDimensionsIncludeLabels: true,
@@ -48,6 +48,7 @@ define [
     $('#cy-zoom-out').click => do @zoomOut
     $('#cy-fit').click => do @fit
     $('#cy-organise').click => do @shuffle
+    $('#cy-screenshot').click => do @screenshot
 
     @cy = cytoscape({
         container: document.getElementById('cy'),
@@ -95,9 +96,6 @@ define [
   fit: ->
     @cy.fit(10)
 
-#     screenshot () {
-#       const image = cy.jpg({ output: 'blob' })
-#       saveAs(image, `natural-capital-${new Date().getTime()}.jpg`)
-#     }
-#   }
-# }
+  screenshot: ->
+    image = @cy.jpg({ output: 'blob' })
+    saveAs image, 'network-' + @model.id + '-' + new Date().getTime() + '.jpg'

@@ -121,8 +121,6 @@ private void setDeploymentRelatedProcessDuration(
       relationships.add(new Relationship("http://purl.org/dc/terms/powers", p));
     }
 
-
-
     document.setRelationships(relationships);
   }
 }

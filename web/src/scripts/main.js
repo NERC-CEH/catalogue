@@ -36,7 +36,8 @@ require.config({
     'chartjs':                '../vendor/chartjs/Chart',
     'jquery-ui':              '../vendor/jquery-ui/ui',
     'cytoscape':              '../vendor/cytoscape/dist/cytoscape',
-    'cytoscape-cose-bilkent': '../vendor/cytoscape-cose-bilkent/cytoscape-cose-bilkent'
+    'cytoscape-cose-bilkent': '../vendor/cytoscape-cose-bilkent/cytoscape-cose-bilkent',
+    'file-saver':              '../vendor/file-saver/FileSaver'
   },
   waitSeconds:1000
 });
