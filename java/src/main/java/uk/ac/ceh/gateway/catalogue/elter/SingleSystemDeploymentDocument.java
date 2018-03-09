@@ -28,8 +28,8 @@ public class SingleSystemDeploymentDocument extends AbstractMetadataDocument {
     private String deploymentRemovalName;
     private Set<String> deploymentCleaning;
     private String deploymentCleaningName;
-    private Set<String> deploymentMaintenence;
-    private String deploymentMaintenenceName;
+    private Set<String> deploymentMaintenance;
+    private String deploymentMaintenanceName;
     private Set<String> deploymentProgramUpdate;
     private String deploymentProgramUpdateName;
 

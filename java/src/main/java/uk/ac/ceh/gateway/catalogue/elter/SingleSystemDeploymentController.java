@@ -33,56 +33,59 @@ public class SingleSystemDeploymentController extends AbstractDocumentController
   private ElterService elterService;
 
   @Autowired
-  public SingleSystemDeploymentController(
-      DocumentRepository documentRepository, ElterService elterService) {
+  public SingleSystemDeploymentController(DocumentRepository documentRepository, ElterService elterService) {
     super(documentRepository);
     this.elterService = elterService;
     this.catalogue = "elter";
   }
 
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @RequestMapping(value = "documents", method = RequestMethod.POST,
-      consumes = ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newDocument(@ActiveUser CatalogueUser user, @RequestBody SingleSystemDeploymentDocument document,
-      @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
-    return saveNewMetadataDocument(
-        user, document, catalogue, "new eLTER Single System Deployment Document");
+  @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<MetadataDocument> newDocument(@ActiveUser CatalogueUser user,
+      @RequestBody SingleSystemDeploymentDocument document, @RequestParam("catalogue") String catalogue)
+      throws DocumentRepositoryException {
+    return saveNewMetadataDocument(user, document, catalogue, "new eLTER Single System Deployment Document");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
-  @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT,
-      consumes = ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> saveDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
-      @RequestBody SingleSystemDeploymentDocument document) throws DocumentRepositoryException {
+  @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<MetadataDocument> saveDocument(@ActiveUser CatalogueUser user,
+      @PathVariable("file") String file, @RequestBody SingleSystemDeploymentDocument document)
+      throws DocumentRepositoryException {
     setSingleSystemDeployment(document, user, document.getPowersName(), document.getPowers());
 
-    setDeploymentRelatedProcessDuration(document, user, document.getDeploymentInstallationName(), document.getDeploymentInstallation());
-    setDeploymentRelatedProcessDuration(document, user, document.getDeploymentRemovalName(), document.getDeploymentRemoval());
-    setDeploymentRelatedProcessDuration(document, user, document.getDeploymentCleaningName(), document.getDeploymentCleaning());
-    setDeploymentRelatedProcessDuration(document, user, document.getDeploymentMaintenenceName(), document.getDeploymentMaintenence());
-    setDeploymentRelatedProcessDuration(document, user, document.getDeploymentProgramUpdateName(), document.getDeploymentProgramUpdate());
+    setDeploymentRelatedProcessDuration(document, user, document.getDeploymentInstallationName(),
+        document.getDeploymentInstallation());
+    setDeploymentRelatedProcessDuration(document, user, document.getDeploymentRemovalName(),
+        document.getDeploymentRemoval());
+    setDeploymentRelatedProcessDuration(document, user, document.getDeploymentCleaningName(),
+        document.getDeploymentCleaning());
+    setDeploymentRelatedProcessDuration(document, user, document.getDeploymentMaintenanceName(),
+        document.getDeploymentMaintenance());
+    setDeploymentRelatedProcessDuration(document, user, document.getDeploymentProgramUpdateName(),
+        document.getDeploymentProgramUpdate());
 
     cleanTempDocumentNames(document);
     updateRelationships(document);
+
     return saveMetadataDocument(user, file, document);
   }
 
-@SneakyThrows
-private void setDeploymentRelatedProcessDuration(
-  SingleSystemDeploymentDocument document, CatalogueUser user, String name, Set<String> docs) {
-  if (!StringUtils.isBlank(name)) {
-    val newDoc = new DeploymentRelatedProcessDurationDocument();
-    newDoc.setTitle(name);
-    saveNewMetadataDocument(user, newDoc, "new eLTER Deployment Related Process Duration");
-    if (docs != null)
-      docs.add(newDoc.getId());
+  @SneakyThrows
+  private void setDeploymentRelatedProcessDuration(SingleSystemDeploymentDocument document, CatalogueUser user,
+      String name, Set<String> docs) {
+    if (!StringUtils.isBlank(name)) {
+      val newDoc = new DeploymentRelatedProcessDurationDocument();
+      newDoc.setTitle(name);
+      saveNewMetadataDocument(user, newDoc, "new eLTER Deployment Related Process Duration");
+      if (docs != null)
+        docs.add(newDoc.getId());
+    }
   }
-}
-
 
   @SneakyThrows
-  private void setSingleSystemDeployment(
-      SingleSystemDeploymentDocument document, CatalogueUser user, String name, Set<String> docs) {
+  private void setSingleSystemDeployment(SingleSystemDeploymentDocument document, CatalogueUser user, String name,
+      Set<String> docs) {
     if (!StringUtils.isBlank(name)) {
       val newDoc = new SingleSystemDeploymentDocument();
       newDoc.setTitle(name);
@@ -97,30 +100,32 @@ private void setDeploymentRelatedProcessDuration(
     document.setDeploymentInstallationName(null);
     document.setDeploymentRemovalName(null);
     document.setDeploymentCleaningName(null);
-    document.setDeploymentMaintenenceName(null);
+    document.setDeploymentMaintenanceName(null);
     document.setDeploymentProgramUpdateName(null);
   }
 
   @PreAuthorize("@permission.userCanCreate('elter')")
   @RequestMapping(value = "elter/single-system-deployments", method = RequestMethod.GET)
   @ResponseBody
-  public List<SingleSystemDeploymentDocument> getSingleSystemDeploymentDocument(
-      @ActiveUser CatalogueUser user) {
+  public List<SingleSystemDeploymentDocument> getSingleSystemDeploymentDocument(@ActiveUser CatalogueUser user) {
     return this.elterService.getSingleSystemDeployments();
   }
 
-  private void updateRelationships (SingleSystemDeploymentDocument document) {
-    val docs = document.getDeploymentCleaning();
+  private void updateRelationships(SingleSystemDeploymentDocument document) {
     Set<Relationship> relationships = Sets.newHashSet();
-    for (val doc : docs) {
-      relationships.add(new Relationship("http://purl.org/dc/terms/references", doc));
-    }
-
-    val ps = document.getPowers();
-    for (val p : ps) {
-      relationships.add(new Relationship("http://purl.org/dc/terms/powers", p));
-    }
-
+    updateRelationship(relationships, document, "powers", document.getPowers());
+    updateRelationship(relationships, document, "deployment-installation", document.getDeploymentInstallation());
+    updateRelationship(relationships, document, "deployment-removal", document.getDeploymentRemoval());
+    updateRelationship(relationships, document, "deployment-cleaning", document.getDeploymentCleaning());
+    updateRelationship(relationships, document, "deployment-maintenance", document.getDeploymentMaintenance());
+    updateRelationship(relationships, document, "deployment-program-update", document.getDeploymentProgramUpdate());
     document.setRelationships(relationships);
+  }
+
+  private void updateRelationship(Set<Relationship> relationships, SingleSystemDeploymentDocument document, String relationship, Set<String> docs) {
+    if (docs != null)
+      for (val doc : docs)
+        if (doc != null)
+          relationships.add(new Relationship("http://purl.org/dc/terms/" + relationship, doc));
   }
 }
