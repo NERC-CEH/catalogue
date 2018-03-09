@@ -64,6 +64,7 @@ public class GraphService {
                         .classes(direction)
                     .add()
                     .node(String.format("%s-%s", source, target))
+                        .label(uriValue(foundRelationship))
                         .source(source)
                         .target(target)
                         .classes(uriValue(foundRelationship))
