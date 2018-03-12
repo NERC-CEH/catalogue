@@ -114,11 +114,11 @@ public class SingleSystemDeploymentController extends AbstractDocumentController
   private void updateRelationships(SingleSystemDeploymentDocument document) {
     Set<Relationship> relationships = Sets.newHashSet();
     updateRelationship(relationships, document, "powers", document.getPowers());
-    updateRelationship(relationships, document, "deployment-installation", document.getDeploymentInstallation());
-    updateRelationship(relationships, document, "deployment-removal", document.getDeploymentRemoval());
-    updateRelationship(relationships, document, "deployment-cleaning", document.getDeploymentCleaning());
-    updateRelationship(relationships, document, "deployment-maintenance", document.getDeploymentMaintenance());
-    updateRelationship(relationships, document, "deployment-program-update", document.getDeploymentProgramUpdate());
+    updateRelationship(relationships, document, "installs", document.getDeploymentInstallation());
+    updateRelationship(relationships, document, "removes", document.getDeploymentRemoval());
+    updateRelationship(relationships, document, "cleans", document.getDeploymentCleaning());
+    updateRelationship(relationships, document, "manitains", document.getDeploymentMaintenance());
+    updateRelationship(relationships, document, "program-updates", document.getDeploymentProgramUpdate());
     document.setRelationships(relationships);
   }
 

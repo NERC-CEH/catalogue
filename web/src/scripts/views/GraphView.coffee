@@ -27,6 +27,7 @@ define [
         'line-color': '#2C3E50'
         'target-arrow-color': '#2C3E50'
         'target-arrow-shape': 'triangle'
+        'arrow-scale': 2
     }, {
       selector: 'node'
       style: {
@@ -121,7 +122,7 @@ define [
 
         connected = []
         cy.elements().bfs({
-          roots: '#01b24480-c8ce-4dd3-8fa7-cc18adb0fd70'
+          roots: '#' + rootNode.id()
           visit: (currentNode) ->
             connected.push currentNode.id()
         })
@@ -129,7 +130,9 @@ define [
         @cy.nodes().each (node) ->
           node.remove() if !connected.includes(node.id())
         
-        @model.set 'elements', @cy.json().elements.nodes.concat(@cy.json().elements.edges)
+        nodes = @cy.json().elements.nodes || []
+        edges = @cy.json().elements.edges || []
+        @model.set 'elements', nodes.concat edges
     )
 
     updated
