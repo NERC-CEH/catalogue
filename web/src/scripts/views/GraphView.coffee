@@ -6,10 +6,13 @@ define [
   'file-saver'
 ], ($, Backbone, cytoscape, regCose) -> Backbone.View.extend
   cose:
-    name: 'cose-bilkent',
-    nodeDimensionsIncludeLabels: true,
-    randomize: false,
-    animate: false
+    name: 'cose-bilkent'
+    nodeDimensionsIncludeLabels: true
+    randomize: false
+    animate: 'end'
+    animationDuration: 200
+    idealEdgeLength: 200
+    padding: 50
 
   style: [{
       selector: 'node, edge'
@@ -25,6 +28,11 @@ define [
         'target-arrow-color': '#2C3E50'
         'target-arrow-shape': 'triangle'
     }, {
+      selector: 'node'
+      style: {
+        'background-image': 'data:image/svg+xml;utf8,' + encodeURIComponent '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="18" height="18" fill="#fff"><path d="M448 294.2v-76.4c0-13.3-10.7-24-24-24H286.2V56c0-13.3-10.7-24-24-24h-76.4c-13.3 0-24 10.7-24 24v137.8H24c-13.3 0-24 10.7-24 24v76.4c0 13.3 10.7 24 24 24h137.8V456c0 13.3 10.7 24 24 24h76.4c13.3 0 24-10.7 24-24V318.2H424c13.3 0 24-10.7 24-24z"></path></svg>'
+      }
+    }, {
       selector: '.root'
       style:
         'background-color': '#FD7400'
@@ -36,12 +44,21 @@ define [
       selector: '.parent'
       style:
         'background-color': '#468966'
+    }, {
+      selector: '.open'
+      style: {
+        'background-image': 'data:image/svg+xml;utf8,' + encodeURIComponent '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="18" height="18" fill="#fff"><path d="M424 318.2c13.3 0 24-10.7 24-24v-76.4c0-13.3-10.7-24-24-24H24c-13.3 0-24 10.7-24 24v76.4c0 13.3 10.7 24 24 24h400z"></path></svg>'
+      }
+    }, {
+      selector: '.root'
+      style: {
+        'background-image': 'none'
+      }
     }]
     
 
   shuffle: ->
     do @cy.layout(@cose).run
-
   initialize: ->
     regCose(cytoscape)
     $('#cy-zoom-in').click => do @zoomIn
@@ -56,7 +73,10 @@ define [
         elements: [],
         style: @style
     })
-    @model.on 'sync', => do @render
+    window.cy = @cy
+    @model.on 'sync', =>
+      do @render
+      setTimeout (=> do @shuffle), 201
 
   updateElements: (elements, group) ->
     updated = false
@@ -78,6 +98,40 @@ define [
         @cy.remove(c)
         updated = true
     )
+
+    @cy.removeListener 'tap'
+    @cy.on('tap', 'node', (evt) =>
+      rootNode = @cy.$('.root')[0]
+      dijkstra = @cy.elements().dijkstra('#' + rootNode.id())
+
+      if !evt.target.hasClass('open') and !evt.target.hasClass('root')
+        $.getJSON('/graph/' + evt.target.id(), (data) =>
+            @model.open evt.target.id(), data
+            do @render
+          )
+      if evt.target.hasClass('open')
+        evt.target.removeClass('open')
+        edges = evt.target.connectedEdges((el) ->
+          el.source().id() != rootNode.id() and el.target().id() != rootNode.id() and el.target().id() != evt.target.id()
+        )
+        edges.each (edge) ->
+          edge.source().removeClass('open')
+          edge.target().removeClass('open')
+        edges.remove()
+
+        connected = []
+        cy.elements().bfs({
+          roots: '#01b24480-c8ce-4dd3-8fa7-cc18adb0fd70'
+          visit: (currentNode) ->
+            connected.push currentNode.id()
+        })
+
+        @cy.nodes().each (node) ->
+          node.remove() if !connected.includes(node.id())
+        
+        @model.set 'elements', @cy.json().elements.nodes.concat(@cy.json().elements.edges)
+    )
+
     updated
   
   render: ->
