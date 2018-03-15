@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.ext.com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +24,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.controllers.AbstractDocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
@@ -54,6 +56,8 @@ public class DeploymentRelatedProcessDurationController extends AbstractDocument
       @RequestBody DeploymentRelatedProcessDurationDocument document) throws DocumentRepositoryException {
     setCarriedOutBy(document, user, document.getCarriedOutByName(), document.getCarriedOutBy());
     cleanTempDocumentNames(document);
+    document.setRelationships(Sets.newHashSet());
+    updateRelationship(document.getRelationships(), document, "carried-out-by", document.getCarriedOutBy());
     return saveMetadataDocument(user, file, document);
   }
 
@@ -78,5 +82,12 @@ public class DeploymentRelatedProcessDurationController extends AbstractDocument
 
   private void cleanTempDocumentNames(DeploymentRelatedProcessDurationDocument document) {
     document.setCarriedOutByName(null);
+  }
+
+  private void updateRelationship(Set<Relationship> relationships, DeploymentRelatedProcessDurationDocument document, String relationship, Set<String> docs) {
+    if (docs != null)
+      for (val doc : docs)
+        if (doc != null)
+          relationships.add(new Relationship("http://purl.org/dc/terms/" + relationship, doc));
   }
 }
