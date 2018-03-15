@@ -10,11 +10,20 @@
             <h1>${title}</h1>
         </div>
         <div class="row">
-            <div class="col-md-0">
-                <div class="menu"></div>
-            </div>
             <div class="col-md-12">
-                <div>
+                <div class="graph-buttons">
+                    <button type="button" class="btn btn-sm btn-default btn-success" id="cy-explore">
+                        <i class="fa fa-dot-circle-o"></i>
+                        <i class="fa fa-circle-o"></i>
+                        <i class="fa fa-hand-pointer-o"></i>
+                        <span> Explore</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-default" id="cy-open">
+                        <i class="fa fa-dot-circle-o"></i>
+                        <i class="fa fa-circle-o"></i>
+                        <i class="fa fa-file-o"></i>
+                        <span> Open</span>
+                    </button>
                     <button type="button" class="btn btn-sm btn-default" id="cy-zoom-in">
                         <i class="fa fa-search-plus"></i><span> Zoom In</span>
                     </button>
