@@ -57,7 +57,7 @@ public class DeploymentRelatedProcessDurationController extends AbstractDocument
     setCarriedOutBy(document, user, document.getCarriedOutByName(), document.getCarriedOutBy());
     cleanTempDocumentNames(document);
     document.setRelationships(Sets.newHashSet());
-    updateRelationship(document.getRelationships(), document, "cerried-out-by", document.getCarriedOutBy());
+    updateRelationship(document.getRelationships(), document, "carried-out-by", document.getCarriedOutBy());
     return saveMetadataDocument(user, file, document);
   }
 
