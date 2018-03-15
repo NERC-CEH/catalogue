@@ -1,37 +1,50 @@
 <#import "../skeleton.html.tpl" as skeleton>
-
 <#assign issues=jira.search("project=eidchelp and component='data transfer' and labels=" + parentId)>
 
 <@skeleton.master title=title>
     <div id="documents-upload" class="container documents-upload" data-guid='${id}'>
-        
-    <section class="section">
+    
+    <div class="header">
         <#assign headText = "data">
-        <#if issues[0].status == 'scheduled'>
-            <#assign headText = "upload " + headText>
-        <#elseif issues[0].status == 'in progress'>
-            <#if permission.userCanUpload(parentId)>
+        <#if permission.userCanUpload(parentId)>
+            <#if issues[0].status == 'scheduled'>
+                <#assign headText = "upload " + headText>
+            <#elseif issues[0].status == 'in progress'>
                 <#assign headText = "manage metadata/" + headText>
             </#if>
         <#else>
         </#if>
+        
+        <div>
+            <a class="btn btn-default btn-sm" href="/documents/${parentId}">&laquo; Return to metadata</a></small>
+        </div>
+        <div>
+            <h1>
+            ${headText?cap_first} for record <small><a href="/documents/${parentId}">${parentId}</a></small>
+            </h1>
+        </div>
+    </div>
 
-        <h1>
-        ${headText?cap_first} for record <small><a href="/documents/${parentId}">${parentId}</a></small>
-        </h1> 
-    </section>
-
-        <#if permission.userCanUpload(parentId)>
-            <#if issues?size != 1 || issues[0].status == 'open' || issues[0].status == 'approved' || issues[0].status == 'on hold'>
-                <#include "_read-only.html.tpl">
-            <#elseif issues[0].status == 'scheduled'>
+    <#if issues?size != 1 >
+        <#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
+            <div class="alert alert-danger"><b>ERROR</b><br>There is no Jira issue for this deposit</div>
+        </#if>
+    <#else>
+        <#if issues[0].status == 'scheduled'>
+            <#if permission.userCanUpload(parentId)>
+                 <!--CAN UPLOAD -->
                 <#include "_scheduled.html.tpl">
+            <#elseif permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
+                <#include "_read-only.html.tpl">
             <#else>
-                <#include "_in-progress.html.tpl">
             </#if>
-        <#elseif permission.userCanView(parentId)>
+        <#elseif permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN") && permission.userCanUpload(parentId)>
+            <!--MANAGE FILES -->
+            <#include "_in-progress.html.tpl">
+        <#else>
             <#include "_read-only.html.tpl">
         </#if>
+    </#if>
+
     </div>
-    <#include "_footer.html.tpl">
 </@skeleton.master>

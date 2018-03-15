@@ -28,6 +28,7 @@ public class UploadDocument extends AbstractMetadataDocument {
 
     public String getCsv(String ...names) {
         List<String> csv = Lists.newArrayList();
+        csv.add(String.format("Filename,Hash"));
         for (val name : names) {
             val uploadFiles = this.uploadFiles.get(name);
             appendToCsv(uploadFiles.getDocuments(), csv);
@@ -37,6 +38,7 @@ public class UploadDocument extends AbstractMetadataDocument {
     }
 
     private void appendToCsv(Map<String, UploadFile> uploadFiles, List<String> csv) {
+        
         for (val uploadFile : uploadFiles.values()) {
             csv.add(String.format("%s,%s", uploadFile.getName(), uploadFile.getHash()));
         }

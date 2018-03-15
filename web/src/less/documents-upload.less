@@ -1,9 +1,16 @@
 #documents-upload {
 
+    .header {
+        margin:2em 0;
+        padding-bottom: 1em;
+        border-bottom: 1px solid #EEE;
+    };
+    
     .folder {
         margin: 1em;
         padding:0;
-        width: 100%;
+        width: inherit;
+        overflow: hidden;
         h2 {
             margin-left:1em;
             small {
@@ -65,40 +72,53 @@
     };
 
     .read-only {
-        .files {
-            display:table;
-            .file {
-                display:table-row;
-                &:hover {
-                    background-color:transparent;
-                };
-                div {
-                    display:table-cell;
-                    padding: 0.8em 2em;
-                    border-bottom: 1px solid #eee;
-                };
-                .fileicon {
-                    padding-right: 0;
-                };
+        .folder {
+            border:1px solid #AAA;
+            overflow: auto;
+            .folder-title {
+                padding:1em;
+                background-color:#EEE;
             };
-            .fileHeader {
-                div {
-                    font-weight:bold;
-                    border-bottom: 2px solid #CCC;
-                }
+            h2 {
+                padding:0;
+                margin:0;
             };
-            [id*='zip'] {
-                div {
-                    padding-bottom: 0.2em ;
+            .files {
+                display:table;
+                .file {
+                    display:table-row;
+                    &:hover {
+                        background-color:transparent;
+                    };
+                    div {
+                        display:table-cell;
+                        padding: 0.6em 1.5em;
+                        border-bottom: 1px solid #eee;
+                        white-space: nowrap;
+                    };
+                    .fileicon {
+                        padding-right: 0;
+                    };
                 };
-            };
-            [id*='zip-'] {
-                .fa {
-                    display:none;
+                .fileHeader {
+                    div {
+                        font-weight:bold;
+                        border-bottom: 2px solid #CCC;
+                    }
                 };
-                div {
-                    padding-top: 0.2em;
-                    padding-left: 2.4em
+                [id*='zip'] {
+                    div {
+                        padding-bottom: 0.2em ;
+                    };
+                };
+                [id*='zip-'] {
+                    .fa {
+                        display:none;
+                    };
+                    div {
+                        padding-top: 0.2em;
+                        padding-left: 2.4em
+                    };
                 };
             };
         };
@@ -133,17 +153,6 @@
             .text-danger; 
         };
     }
-
-   .read-only {
-       .folder {
-           border:1px solid #AAA;
-           .folder-title {padding:1em; background-color:#EEE;};
-           h2 {padding:0; margin:0;};
-       };
-       .folder-options {
-            margin-top:1em;
-       }
-   }
 
     .filename {
         margin: 0;
