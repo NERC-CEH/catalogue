@@ -2,17 +2,14 @@ define [
   'jquery'
   'backbone'
   'cytoscape'
-  'cytoscape-cose-bilkent'
   'file-saver'
-], ($, Backbone, cytoscape, regCose) -> Backbone.View.extend
-  cose:
-    name: 'cose-bilkent'
+], ($, Backbone, cytoscape) -> Backbone.View.extend
+  breadthfirst:
+    name: 'breadthfirst'
+    avoidOverlap: true
     nodeDimensionsIncludeLabels: true
-    randomize: false
-    animate: 'end'
-    animationDuration: 200
-    idealEdgeLength: 200
-    padding: 50
+    animate: true
+    animationDuration: 300
 
   style: [{
       selector: 'node, edge'
@@ -64,10 +61,9 @@ define [
     
 
   shuffle: ->
-    do @cy.layout(@cose).run
+    do @cy.layout(@breadthfirst).run
 
   initialize: ->
-    regCose(cytoscape)
     $('#cy-zoom-in').click => do @zoomIn
     $('#cy-zoom-out').click => do @zoomOut
     $('#cy-fit').click => do @fit
@@ -78,21 +74,18 @@ define [
 
     @cy = cytoscape({
         container: document.getElementById('cy'),
-        @cose,
+        @breadthfirst,
         elements: [],
         style: @style
     })
     window.cy = @cy
     @model.on 'sync', =>
       do @render
-      setTimeout (=> do @shuffle), 201
 
   updateElements: (elements, group) ->
-    updated = false
     elements.forEach((e) =>
       element = @cy.$('#' + e.data.id)
       if (element.length == 0)
-        updated = true
         @cy.add
           classes: e.classes,
           data: e.data
@@ -103,9 +96,7 @@ define [
 
     @cy[group]().each((c) =>
       shouldRemove = elements.filter((e) -> e.data.id == c.id()).length == 0
-      if (shouldRemove)
-        @cy.remove(c)
-        updated = true
+      @cy.remove(c) if (shouldRemove)
     )
 
     @cy.removeListener 'tap'
@@ -143,14 +134,13 @@ define [
           nodes = @cy.json().elements.nodes || []
           edges = @cy.json().elements.edges || []
           @model.set 'elements', nodes.concat edges
+          do @shuffle
     )
 
-    updated
-  
   render: ->
-    nodesUpdated = @updateElements @model.get('elements'), 'nodes'
-    edgesUpdated = @updateElements @model.get('elements'), 'edges'
-    do @shuffle if (nodesUpdated || edgesUpdated)
+    @updateElements @model.get('elements'), 'nodes'
+    @updateElements @model.get('elements'), 'edges'
+    do @shuffle
 
   zoomIn: ->
     currentZoom = @cy.zoom()
