@@ -8,6 +8,7 @@
       <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>
       <field name="lineage" type="text_general" indexed="true" stored="true" multiValued="false"/>
       <field name="resourceStatus" type="keyword" indexed="true" stored="true" multiValued="false"/>
+      <field name="version" type="long" indexed="true" stored="true" multiValued="false"/>
       <field name="organisation" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
       <field name="individual" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
       <field name="orcid" type="orcid" indexed="true" stored="true" multiValued="true"/>
