@@ -1,13 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
+import static uk.ac.ceh.gateway.catalogue.util.FilenameContainsFilterUtils.doesNotContain;
+
 import java.io.File;
 
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.util.FileListUtils;
 import uk.ac.ceh.gateway.catalogue.util.HashUtils;
 import uk.ac.ceh.gateway.catalogue.util.ZipFileUtils;
-
-import static uk.ac.ceh.gateway.catalogue.util.FilenameContainsFilterUtils.*;
 
 public class UploadDocumentValidator {
 
@@ -17,18 +17,18 @@ public class UploadDocumentValidator {
             .forEach(uploadFiles -> {
                 val directory = new File(uploadFiles.getPath());
                 ZipFileUtils.archive(directory, unarchived -> {
-                    unknown(unarchived, uploadFiles);
+                    unknown(document.getId()  , unarchived, uploadFiles);
                     missing(unarchived, uploadFiles);
                     invalidHash(uploadFiles);
                 });
             });
     }
 
-    private static void unknown (File folder, UploadFiles uploadFiles) {
+    private static void unknown (String guid, File folder, UploadFiles uploadFiles) {
         val found = FileListUtils.absolutePathsTree(folder, doesNotContain(".hash"), doesNotContain(".hash"));
         for (val filename : found) {
             if (!uploadFiles.getDocuments().containsKey(filename) && !uploadFiles.getInvalid().containsKey(filename)) {
-                uploadFiles.getInvalid().put(filename, UploadFileBuilder.create(folder, uploadFiles.getPhysicalLocation(), new File(filename), UploadType.UNKNOWN_FILE)); 
+                uploadFiles.getInvalid().put(filename, UploadFileBuilder.create(guid, folder, uploadFiles.getPhysicalLocation(), new File(filename), UploadType.UNKNOWN_FILE)); 
             }
         }
     }

@@ -1,15 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
-import java.io.File;
+
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.util.HashUtils;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 
 public class UploadFileBuilderTest {
 
@@ -25,7 +27,7 @@ public class UploadFileBuilderTest {
         if (directory.exists()) FileUtils.forceDelete(directory);
         FileUtils.copyDirectory(dataDirectory, directory);
         file = new File(directory, "upload-file-builder/_extracted-folder/folder/_extracted-sub-folder/file.txt");
-        uploadFile = UploadFileBuilder.create(new File(directory, "upload-file-builder"), "phyisical/location", file, UploadType.DOCUMENTS);
+        uploadFile = UploadFileBuilder.create("guid", new File(directory, "upload-file-builder"), "phyisical/location", file, UploadType.DOCUMENTS);
     }
 
     @Test
@@ -76,8 +78,8 @@ public class UploadFileBuilderTest {
     }
 
     @Test
-    public void stesPhysicalLocation () {
-        assertThat(uploadFile.getPhysicalLocation(), is("phyisical\\location\\folder.zip\\folder\\sub-folder.zip\\file.txt"));
+    public void setsPhysicalLocation () {
+        assertThat(uploadFile.getPhysicalLocation(), is("phyisical\\location\\guid\\folder.zip\\folder\\sub-folder.zip\\file.txt"));
     }
 
 }
