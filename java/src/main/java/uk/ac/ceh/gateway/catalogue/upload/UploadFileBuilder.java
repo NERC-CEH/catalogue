@@ -3,8 +3,11 @@ package uk.ac.ceh.gateway.catalogue.upload;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
+
 import com.google.common.collect.Lists;
+
 import org.apache.commons.io.FilenameUtils;
+
 import lombok.SneakyThrows;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.util.HashUtils;
@@ -12,17 +15,17 @@ import uk.ac.ceh.gateway.catalogue.util.HashUtils;
 public class UploadFileBuilder {
 
     @SneakyThrows
-    public static void update (UploadFile uploadFile, File directory, String physicalLocation, File file, UploadType type) {
+    public static void update (String guid, UploadFile uploadFile, File directory, String physicalLocation, File file, UploadType type) {
         val hash = HashUtils.hash(file);
-        update(uploadFile, directory, physicalLocation, file, type, hash);
+        update(guid, uploadFile, directory, physicalLocation, file, type, hash);
     }
 
     @SneakyThrows
-    public static void update (UploadFile uploadFile, File directory, String physicalLocation, File file, UploadType type, String hash) {
+    public static void update (String guid, UploadFile uploadFile, File directory, String physicalLocation, File file, UploadType type, String hash) {
         String name = extractName(directory, file);
 
         uploadFile.setPath(file.getAbsolutePath());
-        uploadFile.setPhysicalLocation(FilenameUtils.separatorsToWindows(String.format("%s/%s", physicalLocation, name)));
+        uploadFile.setPhysicalLocation(FilenameUtils.separatorsToWindows(String.format("%s/%s/%s", physicalLocation, guid, name)));
         uploadFile.setType(type);
         uploadFile.setHash(hash);
         uploadFile.setId(name.replaceAll("[^\\w?]", "-"));
@@ -37,20 +40,20 @@ public class UploadFileBuilder {
     }
 
     @SneakyThrows
-    public static UploadFile create(File directory, String physicalLocation, Checksum checksum, UploadType type, String hash) {
+    public static UploadFile create(String guid, File directory, String physicalLocation, Checksum checksum, UploadType type, String hash) {
         val file = checksum.getFile();
         val uploadFile = new UploadFile();
-        update(uploadFile, directory, physicalLocation, file, type, hash);
+        update(guid, uploadFile, directory, physicalLocation, file, type, hash);
         return uploadFile;
     }
 
-    public static UploadFile create(File directory, String physicalLocation, File file, UploadType type, String hash) {
-        return create(directory, physicalLocation, new Checksum(hash, file), type, hash);        
+    public static UploadFile create(String guid, File directory, String physicalLocation, File file, UploadType type, String hash) {
+        return create(guid, directory, physicalLocation, new Checksum(hash, file), type, hash);        
     }
 
-    public static UploadFile create(File directory, String physicalLocation, File file, UploadType type) {
+    public static UploadFile create(String guid, File directory, String physicalLocation, File file, UploadType type) {
         val hash = HashUtils.hash(file);
-        return create(directory, physicalLocation, new Checksum(hash, file), type, hash);        
+        return create(guid, directory, physicalLocation, new Checksum(hash, file), type, hash);        
     }
 
     private static String extractName(File directory, File file) {
