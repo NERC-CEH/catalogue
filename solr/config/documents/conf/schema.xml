@@ -8,6 +8,7 @@
       <field name="description" type="text_general" indexed="true" stored="true" multiValued="false"/>
       <field name="lineage" type="text_general" indexed="true" stored="true" multiValued="false"/>
       <field name="resourceStatus" type="keyword" indexed="true" stored="true" multiValued="false"/>
+      <field name="version" type="float" indexed="true" stored="true" multiValued="false" default="1"/>
       <field name="organisation" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
       <field name="individual" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
       <field name="orcid" type="orcid" indexed="true" stored="true" multiValued="true"/>
@@ -38,6 +39,7 @@
     <types>
         <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
         <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+        <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0"/>
         <fieldType name="random" class="solr.RandomSortField"/>
         <fieldType name="keyword_lowercase" class="solr.TextField" sortMissingLast="true" omitNorms="true">
             <analyzer>

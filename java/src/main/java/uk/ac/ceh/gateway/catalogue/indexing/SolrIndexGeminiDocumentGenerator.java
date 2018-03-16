@@ -36,6 +36,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setAltTitle(document.getAlternateTitles())
             .setLineage(document.getLineage())
             .setResourceStatus(document.getResourceStatus())
+            .setVersion(document.getVersion())
             .setLicence(getLicence(document))
             .setOrganisation(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
             .setIndividual(grab(document.getResponsibleParties(), ResponsibleParty::getIndividualName))
