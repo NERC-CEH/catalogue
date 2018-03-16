@@ -1,8 +1,5 @@
 <section class="section">
     <div class="container">
-         <div class="intro">
-         <h2>Deposit in progress</h2>
-        </div>
         <div class="messages alert alert-info" role="alert">
             <div class="message loading">
                 <span class="fa fa-refresh fa-spin"></span>
@@ -139,7 +136,7 @@
                     <button class="btn btn-success zip" disabled>Zip</button>
                     <button class="btn btn-success unzip" disabled style="display: none">Unzip</button>
                 </#if>
-                <a class="btn btn-success downloadChecksum" href="data:text/csv;charset=utf-8,${getCsv('datastore')}" download="${parentId}.csv">Download checksum report</a>
+                <a class="btn btn-success downloadChecksum" href="data:text/csv;charset=utf-8,${getCsv('datastore')}" download="checksums_${parentId}.csv">Download checksum report</a>
             </div>
         </div>
     </div>

@@ -83,11 +83,6 @@
     padding-bottom: 6px;
   }
 
-  #document-upload-panel {
-    border-width:3px;
-    border-color: @brand-success; 
-  } 
-
   #section-children{
     margin-bottom:6em;
       .children {
@@ -138,7 +133,6 @@
   .alert-Superseded, .alert-Withdrawn {
     .alert-danger;
   }
-
 
   // Prevent definition lists from wrapping the term
   .dl-horizontal dt {
@@ -191,6 +185,19 @@
       };
     };
   }
+
+  #document-upload-panel {
+    border-width:3px;
+    border-color: @brand-success; 
+    .panel-body {
+      padding: 1em;
+      p {
+        font-weight: bold;
+        font-size: 1.2em;
+        margin: 0;
+      };
+    };
+  };
 
  #section-onlineResources {
 	p {margin-bottom:1.5em;}
