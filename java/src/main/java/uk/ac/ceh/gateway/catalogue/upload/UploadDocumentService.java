@@ -59,7 +59,7 @@ public class UploadDocumentService {
             uploadFiles.put(key, uploadFilesValue);
         });
 
-        documentRepository.save(user, uploadDocument, "eidc", "updating upload document");
+        saveUploadDocument(user, uploadDocument, "updating upload document");
         geminiDocument.setUploadId(uploadDocument.getId());
         documentRepository.save(user, geminiDocument, String.format("updating upload id: %s", uploadDocument.getId()));
         uploadDocument.validate();
@@ -471,7 +471,8 @@ public class UploadDocumentService {
             uploadFiles.setInvalid(invalid);
         }
         val found = documentRepository.read(document.getId());
-        document.setMetadata(found.getMetadata());
+        if (found != null)
+            document.setMetadata(found.getMetadata());
         documentRepository.save(user, document, message);
     }
 

@@ -1,16 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Maps;
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import lombok.SneakyThrows;
 import lombok.val;
@@ -18,10 +27,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import static org.mockito.MockitoAnnotations.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UploadDocumentServiceTest {
@@ -68,8 +73,7 @@ public class UploadDocumentServiceTest {
         uploadDocument.setId("id");
         uploadDocument.setMetadata(metadata);
 
-        doReturn(uploadDocument).when(documentRepository).read(anyString());
-
+        doReturn(uploadDocument).when(documentRepository).read(any());
     }
 
     @Test
