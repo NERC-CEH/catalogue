@@ -13,15 +13,17 @@ public class UploadDocumentValidator {
 
     public static void validate(UploadDocument document) {
         val uploadFilesMap = document.getUploadFiles();
-        uploadFilesMap.values().stream()
-            .forEach(uploadFiles -> {
-                val directory = new File(uploadFiles.getPath());
-                ZipFileUtils.archive(directory, unarchived -> {
-                    unknown(document.getId()  , unarchived, uploadFiles);
-                    missing(unarchived, uploadFiles);
-                    invalidHash(uploadFiles);
+        if (uploadFilesMap != null) {
+            uploadFilesMap.values().stream()
+                .forEach(uploadFiles -> {
+                    val directory = new File(uploadFiles.getPath());
+                    ZipFileUtils.archive(directory, unarchived -> {
+                        unknown(document.getId()  , unarchived, uploadFiles);
+                        missing(unarchived, uploadFiles);
+                        invalidHash(uploadFiles);
+                    });
                 });
-            });
+        }
     }
 
     private static void unknown (String guid, File folder, UploadFiles uploadFiles) {
