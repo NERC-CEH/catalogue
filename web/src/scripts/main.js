@@ -36,7 +36,9 @@ require.config({
     'chartjs':                '../vendor/chartjs/Chart',
     'jquery-ui':              '../vendor/jquery-ui/ui',
     'cytoscape':              '../vendor/cytoscape/dist/cytoscape',
-    'file-saver':              '../vendor/file-saver/FileSaver'
+
+    // should change to bower when this issue is resolved https://github.com/eligrey/FileSaver.js/issues/409 (or move to yarn/npm)
+    'file-saver':              './FileSaver'
   },
   waitSeconds:1000
 });
