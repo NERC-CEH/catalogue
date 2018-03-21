@@ -1,5 +1,5 @@
 <#if children??>
-  <#list children>
+  <#list children?sort_by("title")>
     <div class="panel panel-default" id="document-children">
       <div class="panel-heading">
         <p class="panel-title">This ${resourceType.value?html} includes the following resources</p>

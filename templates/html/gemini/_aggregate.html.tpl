@@ -7,7 +7,7 @@
 <#assign childServices = func.filter(children, "associationType", "service")>
 
 <h3>Access the data <#if childServices?size!=0>and services</#if></h3>
-	<#list childDatasets>
+	<#list childDatasets?sort_by("title")>
 		<div class="children">
 		<h4>Datasets</h4>
 		<#items as child>
@@ -17,7 +17,7 @@
 		</#items>
 		</div>
 	</#list>
-	<#list childSeries>
+	<#list childSeries?sort_by("title")>
 		<div class="children">
 		<h4>Data series</h4>
 		<#items as child>
@@ -27,7 +27,7 @@
 		</#items>
 		</div>
 	</#list>
-	<#list childServices>
+	<#list childServices?sort_by("title")>
 		<div class="children">
   	<h4>Web services</h4>
 		<#items as child>
