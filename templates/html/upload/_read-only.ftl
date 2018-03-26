@@ -1,16 +1,16 @@
 <#function displayFile document invalid=false>
-  <#local icon = "text" problem = "" invalidclass="">
+  <#local icon = "file-alt" problem = "" invalidclass="">
   
   <#if document.name?ends_with(".zip")>
-    <#local icon = "archive">
+    <#local icon = "file-archive">
   </#if>
 
   <#if invalid = true >
-    <#local problem = "<b class='text-red'><i class='fa fa-exclamation-triangle'></i> INVALID</b>" invalidclass="file-invalid">
+    <#local problem = "<b class='text-red'><i class='fas fa-exclamation-triangle'></i> INVALID</b>" invalidclass="file-invalid">
   </#if>
 
   <#local fileInfo = "<div id='" + document.id + "' class='file ${invalidclass} file-readonly is-inactive'>">
-  <#local fileInfo += "<div class='fileicon'><i class='fa fa-file-" + icon +"-o'></i></div>">
+  <#local fileInfo += "<div class='fileicon'><i class='fas fa-" + icon +"-o'></i></div>">
   <#local fileInfo += "<div class='filename'>" + document.name + "</div>">
   <#local fileInfo += "<div class='filehash'>" + document.hash + "</div>">
   <#local fileInfo += "<div class='filelocation'>" + document.physicalLocation + "</div>">
@@ -31,9 +31,9 @@
         <div class="intro">
             <#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
                 <#if issues[0].status == 'scheduled'>
-                    <div class="alert alert-info"><i class="fa fa-info-circle"></i> UPLOAD IN PROGRESS</div>
+                    <div class="alert alert-info"><i class="fas fa-info-circle"></i> UPLOAD IN PROGRESS</div>
                 <#elseif issues[0].status == 'in progress' >
-                    <div class="alert alert-info><i class="fa fa-info-circle"></i> You must <a href="./${parentId}/permission">amend permissions</a> to move files/fix problems</div>
+                    <div class="alert alert-info><i class="fas fa-info-circle"></i> You must <a href="./${parentId}/permission">amend permissions</a> to move files/fix problems</div>
                 </#if>
             <#else>
                 <p>We use MD5 checksums to verify data integrity and to ensure no errors occur during the files' transmission or storage. You can download a copy of the checksums for the data below.  For more information about checksums visit <a href="http://eidc.ceh.ac.uk/deposit/checksums" target="_blank" rel="noopener">http://eidc.ceh.ac.uk/deposit/checksums/</a></p>
@@ -41,7 +41,7 @@
         </div>
         <div class="messages alert alert-info" role="alert">
             <div class="message loading">
-                <span class="fa fa-refresh fa-spin"></span>
+                <span class="fas fa-sync fa-spin"></span>
                 <span>Loading please wait ...</span>
             </div>
         </div>
@@ -53,7 +53,7 @@
             <div class="folder clearfix">
                 <div class="folder-title">
                     <h2 class="folder-name">
-                        <i class="fa fa-lock"></i> Dropbox
+                        <i class="fas fa-lock"></i> Dropbox
                     </h2>
                 </div>
                 <div class="files">
@@ -77,7 +77,7 @@
             <div class="folder clearfix">
                 <div class="folder-title">
                     <h2 class="folder-name">
-                        <i class="fa fa-lock"></i> Data
+                        <i class="fas fa-lock"></i> Data
                     </h2>
                 </div>
                 <div class="files">
@@ -103,7 +103,7 @@
             <#if uploadFiles['plone'].documents?size != 0 || uploadFiles['plone'].invalid?values?sort_by('name')?size != 0>
                 <div class="folder clearfix">
                     <div class="folder-title">
-                        <h2 class="folder-name"><i class="fa fa-files-o"></i> Metadata</h2>
+                        <h2 class="folder-name"><i class="far fa-copy"></i> Metadata</h2>
                     </div>
                     <div class="files">
                         <div class="file fileHeader">
@@ -132,5 +132,5 @@
 
     </section>
 <#elseif permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
-    <div class="alert alert-info"><i class="fa fa-info-circle"></i> There are currently no files associated with this resource</div>
+    <div class="alert alert-info"><i class="fas fa-info-circle"></i> There are currently no files associated with this resource</div>
 </#if>

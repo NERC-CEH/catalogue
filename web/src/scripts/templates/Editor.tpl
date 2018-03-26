@@ -4,14 +4,14 @@
 <div class="navbar navbar-default navbar-fixed-bottom">
   <div class="container-fluid">
     <div class="navbar-left">
-      <button id="editorDelete" class="btn btn-default navbar-btn">Delete <i class="fa fa-times"></i></button>
+      <button id="editorDelete" class="btn btn-default navbar-btn">Delete <i class="fas fa-times"></i></button>
     </div>
     <div class="navbar-right">
       <p id="editorAjax" class="navbar-text">Saving: <img src="/static/img/ajax-loader.gif"></p>
-      <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="fa fa-chevron-left"></i> Back</button>
-      <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="fa fa-chevron-right"></i></button>
-      <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="fa fa-floppy-o"></i></button>
-      <button id="editorExit" class="btn btn-default navbar-btn">Exit <i class="fa fa-power-off"></i></button>
+      <button id="editorBack" class="btn btn-default navbar-btn" disabled><i class="fas fa-chevron-left"></i> Back</button>
+      <button id="editorNext" class="btn btn-default navbar-btn">Next <i class="fas fa-chevron-right"></i></button>
+      <button id="editorSave" class="btn btn-default navbar-btn">Save <i class="far fa-save"></i></button>
+      <button id="editorExit" class="btn btn-default navbar-btn">Exit <i class="fas fa-power-off"></i></button>
     </div>
   </div>
 </div>
@@ -35,7 +35,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body">
-        <h2 class="text-red"><i class="fa fa-exclamation-triangle"></i> <strong>Are you sure?</strong></h2>
+        <h2 class="text-red"><i class="fas fa-exclamation-triangle"></i> <strong>Are you sure?</strong></h2>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>

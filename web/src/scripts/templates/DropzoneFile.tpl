@@ -1,12 +1,12 @@
 <div class='uploading file'>
     <div class='filename'>
-        <i class='fa fa-file-text-o'></i>
+        <i class='far fa-file-alt'></i>
         <span data-dz-name></span>
     </div>
     <b class='error text-danger'></b>
     <div class='file-options'>
         <a class="btn btn-danger cancel" role="button">
-            <i class="fa fa-times"></i>
+            <i class="fas fa-times"></i>
             <span>Cancel</span>
         </a>
     </div>

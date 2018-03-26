@@ -19,26 +19,26 @@
 <div class="container new-admin">
     <div class="admin col-md-6">
         <a href="/elter/documents" class="btn btn-link">
-            <i class="fa fa-files-o" aria-hidden="true"></i>
+            <i class="far fa-copy" aria-hidden="true"></i>
             <span>eLTER Documents</span>
         </a>
         <a href="/network/${id}" class="btn btn-link">
-            <i class="fa fa-code-fork" aria-hidden="true"></i>
+            <i class="fas fa-code-branch" aria-hidden="true"></i>
             <span>Network</span>
         </a>
     </div>
     <div class="admin col-md-6">
         <div class="btn-group btn-group-justified" role="group">
             <a href='#' class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
-                <i class="fa fa-trash" aria-hidden="true"></i>
+                <i class="fas fa-trash-alt" aria-hidden="true"></i>
                 <span>Delete</span>
             </a>
             <a href="/documents/${id?html}/permission" data-document-type="${metadata.documentType}" class="btn btn-success">
-                <i class="fa fa-unlock-alt" aria-hidden="true"></i>
+                <i class="fas fa-unlock-alt" aria-hidden="true"></i>
                 <span>Amend Permissions</span>
             </a>
             <a href="/documents/${id?html}/publication" data-document-type="${metadata.documentType}" class="btn btn-success">
-                <i class="fa fa-check" aria-hidden="true"></i>
+                <i class="fas fa-check" aria-hidden="true"></i>
                 <span>Publication</span>
             </a>
         </div>
@@ -48,7 +48,7 @@
 <div class="container new-admin">
     <div class="admin col-md-6">
         <a href="/elter/documents" class="btn btn-link">
-            <i class="fa fa-files-o" aria-hidden="true"></i>
+            <i class="far fa-copy" aria-hidden="true"></i>
             <span>eLTER Documents</span>
         </a>
     </div>

@@ -24,7 +24,7 @@
           <#if downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || mapViewable || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) >
             <#if (downloadOrder.orderable)?? && downloadOrder.orderable>
               <#list downloadOrder.orderResources as onlineResource>
-                <p><a href="${onlineResource.url?html}"><i class="fa fa-download text-info"></i>
+                <p><a href="${onlineResource.url?html}"><i class="fas fa-download text-info"></i>
                   <#if onlineResource.name?has_content>
                     ${onlineResource.name?html}
                   <#else>
@@ -34,10 +34,10 @@
               </#list>
             </#if>
             <#if (downloadOrder.supportingDocumentsUrl)?has_content>
-              <p><a href="${downloadOrder.supportingDocumentsUrl?html}" title="Supporting information important for the re-use of this dataset"><i class="fa fa-files-o text-info"></i> Supporting documentation</a></p>
+              <p><a href="${downloadOrder.supportingDocumentsUrl?html}" title="Supporting information important for the re-use of this dataset"><i class="far fa-copy text-info"></i> Supporting documentation</a></p>
             </#if>
             <#if mapViewable>
-              <p><a href="${mapViewerUrl?html}"><i class="fa fa-map-o text-info"></i> Preview on map</a></p>
+              <p><a href="${mapViewerUrl?html}"><i class="far fa-map text-info"></i> Preview on map</a></p>
             </#if>
           </#if>
         <#else>
@@ -58,11 +58,11 @@
           <p class="panel-title">Use this service</p>
       </div>
       <div class="panel-body">
-        <p><a href="${mapViewerUrl?html}"><i class="fa fa-map-o text-info"></i> Open in map viewer</a></p>
+        <p><a href="${mapViewerUrl?html}"><i class="far fa-map text-info"></i> Open in map viewer</a></p>
   
       <#if mapservices??>
         <#list mapservices as wms>
-          <p><i class="fa fa-link"></i> URL: <span class="wmsurl">${wms.url?html}</span></p>
+          <p><i class="fas fa-link"></i> URL: <span class="wmsurl">${wms.url?html}</span></p>
         </#list>
       </#if>
       

@@ -4,7 +4,7 @@
     <% if (canDelete) { %>
         <td class="checksum-delete text-center">
             <button class="btn btn-block btn-danger delete" data-toggle="modal" data-target="#documentUploadModal">
-                <i class="fa fa-trash-o"></i> Delete
+                <i class="fas fa-trash-alt"></i> Delete
             </button>
         </td>
     <% } %>

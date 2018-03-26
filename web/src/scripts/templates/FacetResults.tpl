@@ -12,7 +12,7 @@
 
       <% if(facet.active) { %>
         <a href="<%=facet.url%>">
-          <span class="fa fa-times"></span>
+          <span class="fas fa-times"></span>
         </a>
       <% } %>
 

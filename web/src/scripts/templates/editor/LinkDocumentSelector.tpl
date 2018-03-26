@@ -13,7 +13,7 @@
     <input placeholder="Search the catalogue" id="term" type="text" autocomplete="off" class="form-control" value="<%= data.term %>">
     <div class="input-group-btn">
       <button tabindex="-1" class="btn btn-success" type="button">
-        <span class="fa fa-search"></span>
+        <span class="fas fa-search"></span>
       </button>
     </div>
   </div>

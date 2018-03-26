@@ -13,7 +13,7 @@
   <div class="row" id="adminPanel">
     <div class="col-sm-5 col-sm-offset-7 col-xs-12 col-xs-offset-0">
         <div class="btn-group btn-group-sm btn-group-justified" role="group">
-          <a href="#" class="btn btn-default edit-control" data-document-type="${metadata.documentType}"><i class="fa fa-pencil"></i> Edit</a>
+          <a href="#" class="btn btn-default edit-control" data-document-type="${metadata.documentType}"><i class="fas fa-pencil-alt"></i> Edit</a>
           <div class="btn-group btn-group-sm" role="group">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Publish <span class="caret"></span></button>
               <ul class="dropdown-menu dropdown-menu-right">
@@ -32,7 +32,7 @@
                 <#assign menuLabel="Mint DOI">
               <#else>
                 <#if !datacitable>
-                   <#assign menuLabel="<i class='fa fa-exclamation-triangle text-red'></i> DOI">
+                   <#assign menuLabel="<i class='fas fa-exclamation-triangle text-red'></i> DOI">
                 </#if>
               </#if>
 
@@ -40,7 +40,7 @@
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">${menuLabel} <span class="caret"></span></button>
                   <ul class="dropdown-menu dropdown-menu-right">
                     <#if dataciteMintable>
-                      <li><div class="msg text-success"><i class="fa fa-check text-success"></i> There is enough information<br>to assign a DOI to this resource</div></li>
+                      <li><div class="msg text-success"><i class="fas fa-check text-success"></i> There is enough information<br>to assign a DOI to this resource</div></li>
                       <#if permission.userCanDatacite()>
                         <form action="/documents/${id?html}/datacite" method="POST" class="mintDOI">
                             <button type="submit" class="btn btn-sm btn-success" value="Mint DOI">Mint DOI</button>
@@ -49,7 +49,7 @@
                       <li class="divider"></li>
                     <#else>
                       <#if !datacitable >
-                        <li><div class="msg text-red"><i class="fa fa-exclamation"></i> Conditions for assigning a <br>DOI have not been met</div></li>
+                        <li><div class="msg text-red"><i class="fas fa-exclamation"></i> Conditions for assigning a <br>DOI have not been met</div></li>
                         <li><a href="http://eidc.ceh.ac.uk/administration-folder/eidc-operations-procedures/mintADOI" target="_blank" rel="noopener noreferrer">Help</a></li>
                       </#if>
                     </#if>

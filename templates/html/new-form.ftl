@@ -14,10 +14,10 @@
 <#macro master document>
     <div class="container beta-form">
         <h3 id="loading" class="alert alert-info static-message">
-            <i class='fa fa-circle-o-notch fa-spin '></i> Loading ...
+            <i class='fas fa-circle-notch-notch fa-spin '></i> Loading ...
         </h3>
         <h3 id="saved" class="alert alert-info static-message" style="display: none;">
-            <i class="fa fa-save"></i> Saved
+            <i class="fas fa-save"></i> Saved
         </h3>
         <form id="form" class="new-form ${readonly}" data-document="${document}" data-guid="${id}" novalidate>
             <#nested>
@@ -135,7 +135,7 @@
 
 <#macro delete>
     <#if readonly == "">
-        <a id="" href='#' class="delete"><i class="fa fa-times"></i></a>
+        <a id="" href='#' class="delete"><i class="fas fa-times"></i></a>
     </#if>
 </#macro>
 <#macro selectList name documents=[] allDocuments=[]>
