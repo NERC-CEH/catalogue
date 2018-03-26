@@ -17,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-  @Template(called = "html/elter/deployment-related-process-duration.html.tpl",
+  @Template(called = "html/elter/deployment-related-process-duration.ftl",
       whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 public class DeploymentRelatedProcessDurationDocument extends AbstractMetadataDocument {

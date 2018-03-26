@@ -2,7 +2,7 @@
  This underscore template generates the drawing control view client side.
 
  IMPORTANT: If you change the structure of this, please update the 
- corresponding freemarker template /templates/search/_drawing.html.tpl
+ corresponding freemarker template /templates/search/_drawing.ftl
 */ %>
 <% if(withoutBbox) { %>
   <div class="btn-group">

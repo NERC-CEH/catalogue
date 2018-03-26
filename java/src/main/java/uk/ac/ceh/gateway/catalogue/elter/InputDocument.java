@@ -14,7 +14,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/elter/input.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/elter/input.ftl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 public class InputDocument extends AbstractMetadataDocument {
     private String parameterValue;

@@ -47,7 +47,7 @@ public class NERCWafController {
                 .stream()
                 .map((d)-> d + ".xml")
                 .collect(Collectors.toList());
-        return new ModelAndView("/html/waf.html.tpl", "files", files);
+        return new ModelAndView("/html/waf.ftl", "files", files);
     }
     
     @RequestMapping("{id}.xml")

@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/osdp/monitoringActivity.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/osdp/monitoringActivity.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class MonitoringActivity extends AbstractMetadataDocument implements WellKnownText {
     private TimePeriod temporalExtent;

@@ -46,7 +46,7 @@ public class DepositRequestController {
         if (isPublisher)
             model.put("allDepositRequests", depositRequestService.getAll());
         
-        return new ModelAndView("/html/deposit-requests.html.tpl", model);
+        return new ModelAndView("/html/deposit-requests.ftl", model);
     }
 
     @RequestMapping(value = "deposit-request", method = RequestMethod.GET)
@@ -55,7 +55,7 @@ public class DepositRequestController {
         Map<String, Object> model = new HashMap<>();
         model.put("name", user.getUsername());
         model.put("email", user.getEmail());
-        return new ModelAndView("/html/deposit-request.html.tpl", model);
+        return new ModelAndView("/html/deposit-request.ftl", model);
     }
 
     @RequestMapping(value = "deposit-request/form", method = RequestMethod.POST)
@@ -94,7 +94,7 @@ public class DepositRequestController {
         boolean userCanView = permissionService.userCanView(guid);
         model.put("userCanView", userCanView);
 
-        return new ModelAndView("/html/deposit-request-filled.html.tpl", model);
+        return new ModelAndView("/html/deposit-request-filled.ftl", model);
     }
 
     private static int countLines(String str) {

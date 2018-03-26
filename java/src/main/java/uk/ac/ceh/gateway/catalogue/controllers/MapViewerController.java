@@ -42,7 +42,7 @@ public class MapViewerController {
    
     @RequestMapping(method = RequestMethod.GET)
     public String loadMapViewer() {
-        return "/html/mapviewer.html.tpl";
+        return "/html/mapviewer.ftl";
     }
     
     @RequestMapping (value = "{file}")

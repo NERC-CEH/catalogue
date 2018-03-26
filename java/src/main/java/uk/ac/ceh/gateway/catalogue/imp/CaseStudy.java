@@ -12,7 +12,7 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper=true)
 @ConvertUsing({
-    @Template(called="html/imp-casestudy.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/imp-casestudy.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class CaseStudy extends ImpDocument {
     private Link caseStudy;

@@ -20,7 +20,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
     "uses"
 })
 @ConvertUsing({
-    @Template(called="html/ef.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="html/ef.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/ema.xml.tpl",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
 })
 public class Activity extends BaseMonitoringType {

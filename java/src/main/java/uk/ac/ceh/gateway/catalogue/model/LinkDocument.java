@@ -19,7 +19,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/link.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/link.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class LinkDocument extends AbstractMetadataDocument {

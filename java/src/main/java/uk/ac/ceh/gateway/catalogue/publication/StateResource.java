@@ -10,7 +10,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 
 @ConvertUsing({
-    @Template(called="html/publication.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/publication.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @Value
 public class StateResource {

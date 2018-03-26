@@ -7,7 +7,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 
 @Data
 @ConvertUsing({
-    @Template(called="html/error.html.tpl", whenRequestedAs="text/*"),
+    @Template(called="html/error.ftl", whenRequestedAs="text/*"),
     @Template(called="xml/error.xml.tpl",   whenRequestedAs="application/*+xml"),
     @Template(called="xml/error.xml.tpl",   whenRequestedAs=MediaType.APPLICATION_XML_VALUE)
 })

@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/upload/upload-document.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/upload/upload-document.ftl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 public class UploadDocument extends AbstractMetadataDocument {
     private final String parentId;

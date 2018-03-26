@@ -10,7 +10,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/osdp/agent.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/osdp/agent.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class Agent extends AbstractMetadataDocument {
     private String address;

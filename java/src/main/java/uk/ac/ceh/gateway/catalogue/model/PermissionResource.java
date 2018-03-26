@@ -17,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions.IdentityPermissionsBuilder;
 
 @ConvertUsing({
-    @Template(called="html/permission.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/permission.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @Value
 public class PermissionResource {
