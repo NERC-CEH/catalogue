@@ -26,7 +26,7 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/gemini.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="html/gemini.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/gemini.xml.tpl",   whenRequestedAs=GEMINI_XML_VALUE),
     @Template(called="rdf/ttl.tpl",   whenRequestedAs=RDF_TTL_VALUE),
     @Template(called="schema.org/schema.org.tpl",   whenRequestedAs=RDF_SCHEMAORG_VALUE)

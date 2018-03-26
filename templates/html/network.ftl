@@ -1,4 +1,4 @@
-<#import "skeleton.html.tpl" as skeleton>
+<#import "skeleton.ftl" as skeleton>
 
 <#assign title=document.title>
 <#assign id=document.id>

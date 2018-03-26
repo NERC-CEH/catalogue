@@ -21,7 +21,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing(
-    @Template(called="html/dataType.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/dataType.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 )
 public class DataType extends AbstractMetadataDocument {
     private final String type = "dataType";

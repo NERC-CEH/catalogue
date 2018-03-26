@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/elter/manufactuer.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/elter/manufactuer.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class ManufacturerDocument extends AbstractMetadataDocument {
     private String website;

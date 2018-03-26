@@ -185,7 +185,7 @@ import lombok.experimental.Accessors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/your-id/your-document.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/your-id/your-document.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class YourDocument extends AbstractMetadataDocument {
 }
@@ -193,17 +193,17 @@ public class YourDocument extends AbstractMetadataDocument {
 
 # Step 4b: html file
 
-create `html/your-id/your-document.html.tpl`
+create `html/your-id/your-document.ftl`
 
 which should have 
 
 ```html
-<#import "../skeleton.html.tpl" as skeleton>
+<#import "../skeleton.ftl" as skeleton>
 
 <!-- You need catalogue=catalogues.retrieve(metadata.catalogue) to load your css file -->
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
-<!-- You need id="metadata" to wrap the whole document so that everything works e.g. _admin.html.tpl buttons will work -->
+<!-- You need id="metadata" to wrap the whole document so that everything works e.g. _admin.ftl buttons will work -->
 <div id="metadata">
   <div class="container">
     <!-- put data here e.g. -->
@@ -266,7 +266,7 @@ you also need to add conversters for your documents in `messageConverters` add
 converters.add(new Object2TemplatedMessageConverter<>(YourNewDocument.class, freemarkerConfiguration()));
 ```
 
-Now your document will render as per `html/your-id/your-document.html.tpl`
+Now your document will render as per `html/your-id/your-document.ftl`
 
 # Step 4f: Controller
 
@@ -371,7 +371,7 @@ new SingleObjectView
 
 you don't have to do this step if you don't want to. It lets you let users edit and publish the document
 
-create `html/your-id/_admin.html.tpl`
+create `html/your-id/_admin.ftl`
 
 ```html
 <#if permission.userCanEdit(id)>
@@ -394,16 +394,16 @@ create `html/your-id/_admin.html.tpl`
 </#if>
 ```
 
-then in `html/your-id/your-document.html.tpl`
+then in `html/your-id/your-document.ftl`
 
 ```html
-<#import "../skeleton.html.tpl" as skeleton>
+<#import "../skeleton.ftl" as skeleton>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
 <div id="metadata">
    <div class="container">
-    <#include "_admin.html.tpl">
+    <#include "_admin.ftl">
     </div>
   </div>
 </@skeleton.master>

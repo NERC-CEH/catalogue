@@ -39,7 +39,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.EF_INSPIRE_XML_VALUE;
     "relatedTo"
 })
 @ConvertUsing({
-    @Template(called="html/ef.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="html/ef.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/emf.xml.tpl",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
 })
 public class Facility extends BaseMonitoringType implements WellKnownText {

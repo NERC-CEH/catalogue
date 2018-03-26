@@ -17,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.model.Catalogue;
  * A search results object for documents
  */
 @ConvertUsing({
-    @Template(called = "/html/search.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
+    @Template(called = "/html/search.ftl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 @Value
 public class SearchResults {

@@ -13,7 +13,7 @@ import uk.ac.ceh.gateway.catalogue.model.Link;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper=true)
 @ConvertUsing({
-    @Template(called="html/imp-model.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/imp-model.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class Model extends ImpDocument {
     private String version, license, operatingRequirements, applicationType,

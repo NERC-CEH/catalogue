@@ -32,13 +32,13 @@ that is all you need to do
 
 ## Freemarker
 
-The rest of the code goes into your freemarker code, it uses the `new-form.html.tpl` template
+The rest of the code goes into your freemarker code, it uses the `new-form.ftl` template
 
 ### Master
 
 ```ftl
-<#import "${relative-path-to-root}/skeleton.html.tpl" as skeleton>
-<#import "${relative-path-to-root}/new-form.html.tpl" as form>
+<#import "${relative-path-to-root}/skeleton.ftl" as skeleton>
+<#import "${relative-path-to-root}/new-form.ftl" as form>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <@form.master document='${document-name}'>
@@ -77,7 +77,7 @@ This is the "tabulated" section and you can place anything in here
 
 ### Admin
 
-This is a placeholder because admin experience is a little disjoined with this form look at `sensor.html.tpl` and `elter/_admin.html.tpl` for an example admin block. All you need is the wrapper the `new-admin` class will add some padding to the admin section
+This is a placeholder because admin experience is a little disjoined with this form look at `sensor.ftl` and `elter/_admin.ftl` for an example admin block. All you need is the wrapper the `new-admin` class will add some padding to the admin section
 
 ```ftl
 <div class="container new-admin">

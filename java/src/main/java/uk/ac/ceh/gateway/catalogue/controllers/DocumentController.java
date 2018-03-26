@@ -56,7 +56,7 @@ public class DocumentController extends AbstractDocumentController {
     @RequestMapping (value = "documents/upload",
                      method = RequestMethod.GET)
     public ModelAndView uploadForm() {
-        return new ModelAndView("/html/upload.html.tpl");
+        return new ModelAndView("/html/upload.ftl");
     }
     
     @PreAuthorize("@permission.userCanCreate(#catalogue)")

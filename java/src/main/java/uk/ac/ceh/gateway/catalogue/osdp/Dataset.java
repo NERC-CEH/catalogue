@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/osdp/dataset.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/osdp/dataset.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class Dataset extends ResearchArtifact implements WellKnownText {
     private List<Parameter> parametersMeasured;

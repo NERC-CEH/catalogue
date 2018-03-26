@@ -8,7 +8,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.validation.ValidatorResult;
 
 @ConvertUsing({
-    @Template(called="html/validation.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/validation.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @Data
 public class ValidationResponse {

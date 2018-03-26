@@ -10,7 +10,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 
 @ConvertUsing({
-    @Template(called="html/maintenance.html.tpl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/maintenance.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @Data
 public class MaintenanceResponse {

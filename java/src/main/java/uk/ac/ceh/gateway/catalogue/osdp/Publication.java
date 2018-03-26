@@ -9,7 +9,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/osdp/publication.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/osdp/publication.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class Publication extends ResearchArtifact {
 }

@@ -17,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/elter/single-system-deployment.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/elter/single-system-deployment.ftl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 public class SingleSystemDeploymentDocument extends AbstractMetadataDocument {
     private Set<String> powers;

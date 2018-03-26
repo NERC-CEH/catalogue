@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/elter/sensor.html.tpl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/elter/sensor.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class SensorDocument extends AbstractMetadataDocument {
 

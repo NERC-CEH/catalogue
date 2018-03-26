@@ -71,7 +71,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     public ModelAndView handleAccessDeniedException() {
         CatalogueUser user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         boolean isPublic = user.isPublic();
-        return new ModelAndView("html/access-denied.html.tpl", "isPublic", isPublic);
+        return new ModelAndView("html/access-denied.ftl", "isPublic", isPublic);
     }
     
     @ExceptionHandler({DocumentIndexingException.class})

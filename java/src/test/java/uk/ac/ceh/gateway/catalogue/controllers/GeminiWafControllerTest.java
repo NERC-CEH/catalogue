@@ -48,7 +48,7 @@ public class GeminiWafControllerTest {
         
         //Then
         Map<String, Object> model = modelAndView.getModel();
-        assertThat("Expected waf template", modelAndView.getViewName(), equalTo("/html/waf.html.tpl"));
+        assertThat("Expected waf template", modelAndView.getViewName(), equalTo("/html/waf.ftl"));
         assertTrue("Expected to find files", model.containsKey("files"));
         
         List<String> filenames = (List<String>)model.get("files");

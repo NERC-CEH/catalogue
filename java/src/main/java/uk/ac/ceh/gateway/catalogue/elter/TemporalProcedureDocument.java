@@ -15,7 +15,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/elter/temporal-procedure.html.tpl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/elter/temporal-procedure.ftl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 public class TemporalProcedureDocument extends AbstractMetadataDocument {
     private Set<String> replacedBy;
