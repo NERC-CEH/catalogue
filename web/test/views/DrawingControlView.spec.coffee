@@ -17,7 +17,7 @@ define [
     it "shows a pencil when no link to remove bounding box exists", ->
       view = new DrawingControlView model: model, el: el
 
-      expect($('#drawing-toggle span', el).hasClass 'fa-pencil' ).toBe true
+      expect($('#drawing-toggle span', el).hasClass 'fa-pencil-alt' ).toBe true
 
     it "shows a cross when link to remove bounding box exists", ->
       view = new DrawingControlView model: model, el: el
