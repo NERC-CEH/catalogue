@@ -113,7 +113,7 @@
   </#if>
 
   <#if (showName = false && supplement.url?has_content) || (showName = true && supplement.url?has_content && !supplement.name?has_content)>
-    <#local lsupplement = lsupplement + "<div class='supplemental-url'><a href='" + supplement.url + " target='_blank' rel='noopener noreferrer'>" + supplement.url + "</a></div>">
+    <#local lsupplement = lsupplement + "<div class='supplemental-url'><a href='" + supplement.url + "' target='_blank' rel='noopener noreferrer'>" + supplement.url + "</a></div>">
   </#if>
 
   <#local lsupplement = "<div class='supplemental-item'>" + lsupplement + "</div>">
