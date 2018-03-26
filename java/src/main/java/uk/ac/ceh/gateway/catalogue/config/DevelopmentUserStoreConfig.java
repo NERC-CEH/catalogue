@@ -29,6 +29,8 @@ public class DevelopmentUserStoreConfig {
     public static final String EIDC_PUBLISHER = "role_eidc_publisher";
     public static final String CMP_EDITOR = "role_cmp_editor";
     public static final String CMP_PUBLISHER = "role_cmp_publisher";
+    public static final String NC_EDITOR = "role_nc_editor";
+    public static final String NC_PUBLISHER = "role_nc_publisher";
     public static final String M_EDITOR = "role_m_editor";
     public static final String M_PUBLISHER = "role_m_publisher";
     public static final String INMS_EDITOR = "role_inms_editor";
@@ -126,6 +128,31 @@ public class DevelopmentUserStoreConfig {
 
         groupStore().grantGroupToUser(publisher, CMP_EDITOR);
         groupStore().grantGroupToUser(publisher, CMP_PUBLISHER);
+        userStore().addUser(publisher, "publisherpassword");
+        return publisher;
+    }
+
+    @Bean
+    @Qualifier("nc-editor")
+    public CatalogueUser ncEditor() throws UsernameAlreadyTakenException {
+        CatalogueUser editor = new CatalogueUser()
+            .setUsername("nc-editor")
+            .setEmail("nc-editor@ceh.ac.uk");
+
+        groupStore().grantGroupToUser(editor, NC_EDITOR);
+        userStore().addUser(editor, "editorpassword");
+        return editor;
+    }
+
+    @Bean
+    @Qualifier("nc-publisher")
+    public CatalogueUser ncPublisher() throws UsernameAlreadyTakenException {
+        CatalogueUser publisher = new CatalogueUser()
+            .setUsername("nc-publisher")
+            .setEmail("nc-publisher@ceh.ac.uk");
+
+        groupStore().grantGroupToUser(publisher, NC_EDITOR);
+        groupStore().grantGroupToUser(publisher, NC_PUBLISHER);
         userStore().addUser(publisher, "publisherpassword");
         return publisher;
     }
@@ -229,6 +256,8 @@ public class DevelopmentUserStoreConfig {
         toReturn.createGroup(EIDC_PUBLISHER, "EIDC Publisher Role");
         toReturn.createGroup(CMP_EDITOR, "CMP Editor Role");
         toReturn.createGroup(CMP_PUBLISHER, "CMP Publisher Role");
+        toReturn.createGroup(NC_EDITOR, "NC Editor Role");
+        toReturn.createGroup(NC_PUBLISHER, "NC Publisher Role");
         toReturn.createGroup(M_EDITOR, "M Editor Role");
         toReturn.createGroup(M_PUBLISHER, "M Publisher Role");
         toReturn.createGroup(INMS_EDITOR, "INMS Editor Role");

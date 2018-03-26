@@ -123,6 +123,8 @@ Other available users are:
 - eidc-publisher
 - cmp-editor
 - cmp-publisher
+- nc-editor
+- nc-publisher
 - m-publisher
 - inms-publisher
 - osdp-publisher

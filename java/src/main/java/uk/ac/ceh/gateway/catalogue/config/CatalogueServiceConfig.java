@@ -205,6 +205,8 @@ public class CatalogueServiceConfig {
                 .url("http://www.ceh.ac.uk")
                 .facetKey("resourceType")
                 .documentType(gemini)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
                 .documentType(link)
                 .fileUpload(false)
                 .build(),
@@ -254,8 +256,8 @@ public class CatalogueServiceConfig {
                 .facetKey("resourceType")
                 .facetKey("status")
                 .facetKey("licence")
-                .documentType(dataType)
                 .documentType(gemini)
+                .documentType(dataType)
                 .fileUpload(false)
                 .build(),
 
