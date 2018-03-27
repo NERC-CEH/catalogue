@@ -6,7 +6,7 @@
 
     <div class="messages alert alert-info" role="alert">
         <div class="message loading">
-            <span class="fa fa-refresh fa-spin"></span>
+            <span class="fas fa-sync fa-spin"></span>
             <span>Loading please wait ...</span>
         </div>
     </div>
@@ -25,7 +25,7 @@
                                 <button class="btn btn-xs btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal" data-filename="${document.path}">Delete</button>
                             </div>
                             <div class="filename">
-                                <i class="fa fa-file-text-o"></i> <span class="filename-label">${document.name}</span>
+                                <i class="far fa-file-alt"></i> <span class="filename-label">${document.name}</span>
                             </div>
                         </div>
                     </#list>

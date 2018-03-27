@@ -24,10 +24,10 @@
 
   <a href="${withoutBbox}" class="btn btn-primary btn-xs">
     Spatial Filter 
-    <span class="fa fa-times"></span>
+    <span class="fas fa-times"></span>
   </a>
 <#else>
   <button id="drawing-toggle" type="button" class="btn btn-default btn-xs">
-    <span class="fa fa-pencil"></span>
+    <span class="fas fa-pencil-alt"></span>
   </button>
 </#if>

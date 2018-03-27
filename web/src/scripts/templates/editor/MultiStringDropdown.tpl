@@ -7,6 +7,6 @@
     </select>
   </div>
   <div class="col-sm-1 col-lg-1">
-    <button data-index="<%= data.index %>" class="editor-button remove"><i class="fa fa-times"></i></button>
+    <button data-index="<%= data.index %>" class="editor-button remove"><i class="fas fa-times"></i></button>
   </div>
 </div>

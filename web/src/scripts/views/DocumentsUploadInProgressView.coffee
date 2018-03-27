@@ -81,13 +81,13 @@ define [
   renderZip: ->
     $('.zip, .unzip').attr 'disabled', off
     if @model.get('uploadFiles').datastore && @model.get('uploadFiles').datastore.zipped
-      $('.datastore-icon .fa').removeClass('fa-file-o')
-      $('.datastore-icon .fa').addClass('fa-file-archive-o')
+      $('.datastore-icon .far').removeClass('fa-file')
+      $('.datastore-icon .far').addClass('fa-file-archive')
       do $('.zip').hide
       do $('.unzip').show
     else
-      $('.datastore-icon .fa').removeClass('fa-file-archive-o')
-      $('.datastore-icon .fa').addClass('fa-file-o')
+      $('.datastore-icon .far').removeClass('fa-file-archive')
+      $('.datastore-icon .far').addClass('fa-file')
       do $('.zip').show
       do $('.unzip').hide
 

@@ -1,7 +1,7 @@
 <li class='delete-parent'>
     <div class="value-block">
         <a id="" href="#" class="delete">
-            <i class="fa fa-times"></i>
+            <i class="fas fa-times"></i>
         </a>
         <div class="value-block-value">
             <select name="<%= name %>[<%= index %>]">

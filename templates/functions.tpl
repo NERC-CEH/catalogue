@@ -70,7 +70,7 @@
     </#if>
 
     <#if contact.email?has_content>
-      <#assign mailIcon = " <a class='fa fa-envelope-o contactEmail' title='Email this contact' href='mailto:" + contact.email + "?subject=RE: " + title + "'></a>">
+      <#assign mailIcon = " <a class='far fa-envelope contactEmail' title='Email this contact' href='mailto:" + contact.email + "?subject=RE: " + title + "'></a>">
     <#else>
       <#assign mailIcon = "">
     </#if>

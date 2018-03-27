@@ -2,7 +2,7 @@
     <div class="container">
         <div class="messages alert alert-info" role="alert">
             <div class="message loading">
-                <span class="fa fa-refresh fa-spin"></span>
+                <span class="fas fa-sync fa-spin"></span>
                 <span>Loading please wait ...</span>
             </div>
         </div>
@@ -11,23 +11,23 @@
 <section class="section in-progress">
     <div class="container-fluid folders"> 
         <div class="documents folder">
-            <h2 class="folder-name"><i class="fa fa-archive"></i> Dropbox</h2>
+            <h2 class="folder-name"><i class="fas fa-archive"></i> Dropbox</h2>
             <div class="files connectedSortable">
                 <div class="empty-message"></div>
                 <#list uploadFiles['documents'].documents?values?sort_by('name') as file>
                     <div id="documents-${file.id}" class="file">
                         <div class="filename">
-                            <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
+                            <i class="far fa-file-alt"></i> <span class="filename-label">${file.name}</span>
                         </div>
                     </div>
                 </#list>
                 <#list uploadFiles['documents'].invalid?values?sort_by('name') as file>
                     <div id="documents-${file.id}" class="file file-invalid">
                         <div class="filename">
-                            <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
+                            <i class="far fa-file-alt"></i> <span class="filename-label">${file.name}</span>
                         </div>
                         <div class="invalid-container">
-                            <i class="fa fa-warning"></i> <span>${file.type}</span>
+                            <i class="fas fa-exclamation-triangle"></i> <span>${file.type}</span>
                             <#if file.type == "INVALID_HASH" || file.type == "UNKNOWN_FILE">
                                 <button class="btn btn-xs btn-success accept" disabled>Accept</button>
                             </#if>
@@ -46,7 +46,7 @@
             </div>
         </div>
         <div class="plone folder">
-            <h2 class="folder-name"> <i class="fa fa-files-o"></i> Metadata</h2>
+            <h2 class="folder-name"> <i class="far fa-copy"></i> Metadata</h2>
             <div class="files connectedSortable">
                     <#if uploadFiles['plone'].documents?size != 0 || uploadFiles['plone'].invalid?size != 0>
                         <div class="empty-message"></div>
@@ -58,17 +58,17 @@
                     <#list uploadFiles['plone'].documents?values?sort_by('name') as file>
                         <div id="plone-${file.id}" class="file">
                             <div class="filename">
-                                <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
+                                <i class="far fa-file-alt"></i> <span class="filename-label">${file.name}</span>
                             </div>
                         </div>
                     </#list>
                     <#list uploadFiles['plone'].invalid?values?sort_by('name') as file>
                         <div id="plone-${file.id}" class="file file-invalid ">
                             <div class="filename">
-                                <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
+                                <i class="far fa-file-alt"></i> <span class="filename-label">${file.name}</span>
                             </div>
                             <div class="invalid-container">
-                                <i class="fa fa-warning"></i> <span>${file.type}</span>
+                                <i class="fas fa-exclamation-triangle"></i> <span>${file.type}</span>
                                 <#if file.type == "INVALID_HASH" || file.type == "UNKNOWN_FILE">
                                     <button class="btn btn-xs btn-success accept" disabled>Accept</button>
                                 </#if>
@@ -84,13 +84,13 @@
             </div>
         </div>
         <div class="datastore folder">
-            <h2 class="folder-name"><i class="fa fa-lock"></i> Datastore
+            <h2 class="folder-name"><i class="fas fa-lock"></i> Datastore
                 <#if uploadFiles['datastore'].zipped>
                     <small class="zip" style="display: none"></small>
-                    <small class="unzip">ZIPPED <i class="fa fa-file-archive-o"></i></small>
+                    <small class="unzip">ZIPPED <i class="far fa-file-archive"></i></small>
                 <#else>
                     <small class="zip"></small>
-                    <small class="unzip" style="display: none">ZIPPED <i class="fa fa-file-archive-o"></i></small>
+                    <small class="unzip" style="display: none">ZIPPED <i class="far fa-file-archive"></i></small>
                 </#if>
             </h2>
             <div class="files connectedSortable ">
@@ -104,17 +104,17 @@
                 <#list uploadFiles['datastore'].documents?values?sort_by('name') as file>
                     <div id="datastore-${file.id}" class="file">
                         <div  class="filename">
-                            <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
+                            <i class="far fa-file-alt"></i> <span class="filename-label">${file.name}</span>
                         </div >
                     </div>
                 </#list>
                 <#list uploadFiles['datastore'].invalid?values?sort_by('name') as file>
                     <div id="datastore-${file.id}" class="file file-invalid">
                         <div  class="filename">
-                            <i class="fa fa-file-text-o"></i> <span class="filename-label">${file.name}</span>
+                            <i class="far fa-file-alt"></i> <span class="filename-label">${file.name}</span>
                         </div >
                         <div class="invalid-container">
-                            <i class="fa fa-warning"></i> <span>${file.type}</span>
+                            <i class="fas fa-exclamation-triangle"></i> <span>${file.type}</span>
                             <#if file.type == "INVALID_HASH" || file.type == "UNKNOWN_FILE">
                                 <button class="btn btn-xs btn-success accept" disabled>Accept</button>
                             </#if>

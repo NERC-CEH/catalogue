@@ -10,7 +10,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-body">
-          <button type="button" class="close" data-dismiss="modal" aria-label="CLose"><i aria-hidden="true" class="fa fa-times"></i></button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="CLose"><i aria-hidden="true" class="fas fa-times"></i></button>
           <p><strong>Cite this dataset as</strong></p>
           <p id="citation-text">
             ${citation.authors?join('; ')?html} (${citation.year?string["0000"]?html}). <b>${citation.title?html}</b>. ${citation.publisher?html}.  ${citation.url?html}
@@ -40,7 +40,7 @@
   <#if citation?has_content>
     <div class="doi">
       <a href="${citation.url?html}">${citation.url?html}</a>
-      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><i class="fa fa-bookmark"></i> Cite this ${codes.lookup('metadata.resourceType',type)?lower_case!''}</a>
+      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><i class="fas fa-bookmark"></i> Cite this ${codes.lookup('metadata.resourceType',type)?lower_case!''}</a>
     </div>
   </#if>
   

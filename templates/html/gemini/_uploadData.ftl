@@ -16,7 +16,7 @@
 
       <p>
         <a href="/upload/${id}">
-          <i class="fa fa-${uploadIcon}"></i>
+          <i class="fas fa-${uploadIcon}"></i>
           <span>${uploadText}</span>
         </a>
       </p>

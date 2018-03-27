@@ -27,7 +27,7 @@
   <div class="container">
     <div class="navbar-right">
       <a href="/documents/<%= id %>/permission" class="btn btn-default navbar-btn">Cancel</a>
-      <button id="permissionSave" class="btn btn-primary navbar-btn"><i class="fa fa-floppy-o"></i> Save</button>
+      <button id="permissionSave" class="btn btn-primary navbar-btn"><i class="far fa-save"></i> Save</button>
     </div>
   </div>
 </div>

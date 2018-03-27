@@ -6,7 +6,7 @@
     <div class="input-group"> 
       <input data-name='epsgCode' class="editor-input" value="<%= data.epsgCode %>">
       <span class="input-group-btn">
-        <button class="btn btn-default btn-sm remove" type="button"><span class="fa fa-times" aria-hidden="true"></span></button>
+        <button class="btn btn-default btn-sm remove" type="button"><span class="fas fa-times" aria-hidden="true"></span></button>
       </span>
     </div>
   </div>

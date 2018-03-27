@@ -13,31 +13,31 @@
             <div class="col-md-12">
                 <div class="graph-buttons">
                     <button type="button" class="btn btn-sm btn-default btn-success" id="cy-explore">
-                        <i class="fa fa-dot-circle-o"></i>
-                        <i class="fa fa-circle-o"></i>
-                        <i class="fa fa-hand-pointer-o"></i>
+                        <i class="far fa-dot-circle"></i>
+                        <i class="far fa-circle"></i>
+                        <i class="far fa-hand-pointer"></i>
                         <span> Explore</span>
                     </button>
                     <button type="button" class="btn btn-sm btn-default" id="cy-open">
-                        <i class="fa fa-dot-circle-o"></i>
-                        <i class="fa fa-circle-o"></i>
-                        <i class="fa fa-file-o"></i>
+                        <i class="far fa-dot-circle"></i>
+                        <i class="far fa-circle"></i>
+                        <i class="far fa-file"></i>
                         <span> Open</span>
                     </button>
                     <button type="button" class="btn btn-sm btn-default" id="cy-zoom-in">
-                        <i class="fa fa-search-plus"></i><span> Zoom In</span>
+                        <i class="fas fa-search-plus"></i><span> Zoom In</span>
                     </button>
                     <button type="button" class="btn btn-sm btn-default" id="cy-zoom-out">
-                        <i class="fa fa-search-minus"></i><span> Zoom Out</span>
+                        <i class="fas fa-search-minus"></i><span> Zoom Out</span>
                     </button>
                     <button type="button" class="btn btn-sm btn-default" id="cy-fit">
-                        <i class="fa fa-search"></i><span> Fit</span>
+                        <i class="fas fa-search"></i><span> Fit</span>
                     </button>
                     <button type="button" class="btn btn-sm btn-default" id="cy-organise">
-                        <i class="fa fa-random"></i><span> Organise Layout</span>
+                        <i class="fas fa-random"></i><span> Organise Layout</span>
                     </button>
                     <button type="button" class="btn btn-sm btn-default" id="cy-screenshot">
-                        <i class="fa fa-file-image-o"></i><span> Screenshot</span>
+                        <i class="far fa-file-image"></i><span> Screenshot</span>
                     </button>
                 </div>
                 <div class="cy" id="cy" data-document=${id}></div>
@@ -45,11 +45,11 @@
         </div>
         <div class="row">
             <a href="/elter/documents" class="btn btn-link">
-                <i class="fa fa-files-o" aria-hidden="true"></i>
+                <i class="far fa-copy" aria-hidden="true"></i>
                 <span>${catalogue.title} Documents</span>
             </a>
             <a href="/documents/${document.id}" class="btn btn-link">
-                <i class="fa fa-file-o" aria-hidden="true"></i>
+                <i class="far fa-file" aria-hidden="true"></i>
                 <span>${title}</span>
             </a>
         </div>

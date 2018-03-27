@@ -55,7 +55,7 @@
                         <textarea class="form-control dataset-description" disabled rows="${dataset.getDescriptionSize()}">${dataset.value!""}</textarea>
                         <#if dataset.document??>
                             <a class='btn btn-link' href="documents/${dataset.document}">
-                                <i class="fa fa-files-o"></i>
+                                <i class="far fa-copy"></i>
                                 <spa>Documents</span>
                             </a>
                         </#if>

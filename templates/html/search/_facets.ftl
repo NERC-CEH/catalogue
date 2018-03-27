@@ -12,7 +12,7 @@
         <a href="${facet.url}">${facet.name}</a> <small class="text-muted">(${facet.count})</small>
         <#if facet.active >
           <a href="${facet.url}">
-            <span class="fa fa-times"></span>
+            <span class="fas fa-times"></span>
           </a>
         </#if>
         <#if facet.subFacetResults?has_content>
