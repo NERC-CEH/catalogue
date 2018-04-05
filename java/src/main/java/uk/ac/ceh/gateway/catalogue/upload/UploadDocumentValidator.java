@@ -24,12 +24,12 @@ public class UploadDocumentValidator {
                         invalidHash(uploadFiles);
                     });
                 });
-        }
 
-        document.getUploadFiles().forEach((key, uploadFiles) -> {
-            updatePhysicalLocation(document, uploadFiles, uploadFiles.getDocuments());
-            updatePhysicalLocation(document, uploadFiles, uploadFiles.getInvalid());
-        });
+            uploadFilesMap.forEach((key, uploadFiles) -> {
+                updatePhysicalLocation(document, uploadFiles, uploadFiles.getDocuments());
+                updatePhysicalLocation(document, uploadFiles, uploadFiles.getInvalid());
+            });
+        }   
     }
 
     private static void updatePhysicalLocation(UploadDocument document, UploadFiles uploadFiles, Map<String, UploadFile> documents) {
