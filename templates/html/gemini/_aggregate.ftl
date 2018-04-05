@@ -39,4 +39,4 @@
 	</#list>	
 </div>
 </#if>
-<#include "_supplemental.html.tpl">
+<#include "_supplemental.ftl">
