@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.upload;
 import static uk.ac.ceh.gateway.catalogue.util.FilenameContainsFilterUtils.doesNotContain;
 
 import java.io.File;
+import java.util.Map;
 
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.util.FileListUtils;
@@ -24,6 +25,25 @@ public class UploadDocumentValidator {
                     });
                 });
         }
+
+        document.getUploadFiles().forEach((key, uploadFiles) -> {
+            updatePhysicalLocation(document, uploadFiles, uploadFiles.getDocuments());
+            updatePhysicalLocation(document, uploadFiles, uploadFiles.getInvalid());
+        });
+    }
+
+    private static void updatePhysicalLocation(UploadDocument document, UploadFiles uploadFiles, Map<String, UploadFile> documents) {
+        documents.forEach((docKey, uploadFile) -> {
+            UploadFileBuilder.update(
+                document.getParentId(),
+                uploadFile,
+                new File(uploadFiles.getPath()),
+                uploadFiles.getPhysicalLocation(),
+                new File(uploadFile.getPath()),
+                uploadFile.getType(),
+                uploadFile.getHash()
+            );
+        });
     }
 
     private static void unknown (String guid, File folder, UploadFiles uploadFiles) {
