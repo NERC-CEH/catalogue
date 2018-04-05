@@ -16,7 +16,8 @@ public class UploadFileBuilder {
 
     @SneakyThrows
     public static void update (String guid, UploadFile uploadFile, File directory, String physicalLocation, File file, UploadType type) {
-        val hash = HashUtils.hash(file);
+        String hash = "";
+        if (file.exists()) hash = HashUtils.hash(file);
         update(guid, uploadFile, directory, physicalLocation, file, type, hash);
     }
 
@@ -68,4 +69,3 @@ public class UploadFileBuilder {
             }).collect(Collectors.joining("/"));
     }
 }
-
