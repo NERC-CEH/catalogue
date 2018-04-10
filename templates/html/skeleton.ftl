@@ -1,7 +1,7 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false>
+<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false admin_editing="disabled">
 <#compress>
 <!DOCTYPE html>
 <html lang="en-GB" <#if catalogue?has_content>data-catalogue=${catalogue.id}</#if>>
@@ -40,7 +40,7 @@
     <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body data-admin-editing=${admin_editing}>
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="container-fluid">
         <div id="sso-brand" class="navbar-header">

@@ -110,6 +110,11 @@ public class PermissionService {
         }
     }
 
+    public String adminEditing() {
+        //TODO: write the logic to return either "disabled" or an empty string depending whether the current user has permission to edit 'admin' fields
+        return "disabled";
+    }
+
     public boolean userCanViewOrIsInGroup(@NonNull String file, @NonNull String group) {
         return userInGroup(group) || userCanView(file);
     }
