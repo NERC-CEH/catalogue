@@ -13,7 +13,7 @@
     </#if>
   </#list>
 </#macro>
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" admin_editing=permission.adminEditing()>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestricted()>
   <div id="metadata">
    <div class="container">
     <#include "gemini/_admin.ftl">

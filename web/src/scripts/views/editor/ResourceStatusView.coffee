@@ -10,6 +10,6 @@ define [
     InputView.prototype.render.apply @
     $select = @$('select')
     $select.val @model.get @data.modelAttribute
-    adminEditing = $($('body')[0]).data('admin-editing')
-    $select.prop adminEditing, adminEditing
+    disabled = $($('body')[0]).data('edit-restricted')
+    $select.prop disabled, disabled
     @
