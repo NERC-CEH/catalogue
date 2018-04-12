@@ -110,9 +110,8 @@ public class PermissionService {
         }
     }
 
-    public boolean userCanEditRestricted() {
-        //TODO: write the logic to return either "disabled" or an empty string depending whether the current user has permission to edit 'admin' fields
-        return false;
+    public boolean userCanEditRestrictedFields(@NonNull String catalogue) {
+        return userCanCreate(catalogue) || userCanMakePublic(catalogue);
     }
 
     public boolean userCanViewOrIsInGroup(@NonNull String file, @NonNull String group) {

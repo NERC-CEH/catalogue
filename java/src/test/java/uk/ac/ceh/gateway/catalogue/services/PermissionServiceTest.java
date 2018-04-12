@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,7 +44,74 @@ public class PermissionServiceTest {
         publik = MetadataInfo.builder().state("published").build();
         publik.addPermission(Permission.VIEW, "public");
     }
-    
+
+    @Test
+    public void publisherCanEditRestricted() {
+        //Given
+        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        Group editorRole = new CrowdGroup("ROLE_EIDC_PUBLISHER");
+        given(groupStore.getGroups(publisher)).willReturn(Arrays.asList(editorRole));
+
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(publisher);
+        SecurityContextHolder.setContext(securityContext);
+
+        //When
+        boolean actual = permissionService.userCanEditRestrictedFields("eidc");
+
+        //Then
+        assertThat("Publisher should be able to edit restricted fields", actual, equalTo(true));
+    }
+
+    @Test
+    public void editorCanEditRestricted() {
+        //Given
+        CatalogueUser editor = new CatalogueUser().setUsername("editor");
+        Group editorRole = new CrowdGroup("ROLE_EIDC_EDITOR");
+        given(groupStore.getGroups(editor)).willReturn(Arrays.asList(editorRole));
+
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(editor);
+        SecurityContextHolder.setContext(securityContext);
+
+        //When
+        boolean actual = permissionService.userCanEditRestrictedFields("eidc");
+
+        //Then
+        assertThat("Publisher should be able to edit restricted fields", actual, equalTo(true));
+    }
+
+    @Test
+    public void namedEditorCannotEditRestricted() throws IOException {
+        //Given
+        CatalogueUser editor = new CatalogueUser().setUsername("editor");
+
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(editor);
+        SecurityContextHolder.setContext(securityContext);
+
+        DataRevision revision = mock(DataRevision.class);
+        given(revision.getRevisionID()).willReturn("revision");
+        given(repo.getLatestRevision()).willReturn(revision);
+        DataDocument document = mock(DataDocument.class);
+        given(repo.getData("revision", "test.meta")).willReturn(document);
+        given(document.getInputStream()).willReturn(new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8)));
+        MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(info);
+
+        //When
+        boolean actual = permissionService.userCanEditRestrictedFields("eidc");
+
+        //Then
+        assertThat("Editor should be able to edit", actual, equalTo(false));
+    }
+
     @Test
     public void eidcEditorCanCreate() {
         //given
