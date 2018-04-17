@@ -1,10 +1,11 @@
 <select data-name="value" class="editor-input" id="input-resourceType">
   <option value="" selected>- Select Resource Type -</option>
   <optgroup label="EIDC">
-    <option value="aggregate">Aggregation</option>
     <option value="dataset">Dataset</option>
     <option value="nonGeographicDataset">Dataset (non-geographic)</option>
+    <option value="aggregate">Data collection (aggregation)</option>
     <option value="application">Model code (application)</option>
+    <option value="signpost">Signpost</option>
     <option value="service">Web service</option>
   </optgroup>
   <optgroup label="Other, ISO 19115 types">

@@ -253,7 +253,7 @@ public class CatalogueServiceConfig {
                 .title("Environmental Information Data Centre")
                 .url("http://eidc.ceh.ac.uk")
                 .facetKey("topic")
-                .facetKey("resourceType")
+                .facetKey("recordType")
                 .facetKey("status")
                 .facetKey("licence")
                 .documentType(gemini)

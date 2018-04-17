@@ -49,10 +49,11 @@
      
       <#include "gemini/_metadata.ftl">
     </div>
-	  <div id="footer">
-	    <#include "gemini/_footer.ftl">
-	  </div>
   </div>
+  <div id="footer">
+	 <#include "gemini/_footer.ftl">
+	</div>
+
   <script type="application/ld+json">
 	  <#include "../schema.org/schema.org.tpl">
   </script>

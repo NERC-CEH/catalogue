@@ -19,6 +19,13 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .hierarchical(false)
                     .build();
                 
+            case "recordType":
+                return Facet.builder()
+                    .fieldName("recordType")
+                    .displayName("Record type")
+                    .hierarchical(false)
+                    .build();
+                
             case "licence":
                 return Facet.builder()
                     .fieldName("licence")

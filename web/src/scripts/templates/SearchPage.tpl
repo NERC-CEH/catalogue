@@ -12,9 +12,9 @@
   <div class="result" id="<%=result.identifier%>">
     <h2 class="resultTitle">
       <small>
-      <span><%=result.resourceType%></span>
+        <span><%=result.recordType%></span>
       <% if(result.resourceStatus != '' && result.resourceStatus != 'Current') {  %>
-        <span class="label-<%=result.resourceStatus%>">(<%=result.resourceStatus%>)</span>
+        <span class="label-<%=result.resourceStatus%>"><%=result.resourceStatus%></span>
       <% } %>
       <% if(result.state == 'draft') { %>
         <span class="text-danger"><b>DRAFT</b></span>

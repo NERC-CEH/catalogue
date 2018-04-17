@@ -40,7 +40,7 @@ public class NERCWafController {
     @RequestMapping(value="/",
                     method=RequestMethod.GET)
     public ModelAndView getWaf() throws DataRepositoryException, IOException, PostProcessingException {
-        List<String> resourceTypes = Arrays.asList("dataset", "service", "application", "nonGeographicDataset");
+        List<String> resourceTypes = Arrays.asList("dataset", "service", "application", "nonGeographicDataset","signpost");
         DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
         List<String> files = (latestRevision == null) ? Collections.EMPTY_LIST : listing
                 .getPublicDocuments(latestRevision.getRevisionID(), GeminiDocument.class, resourceTypes)

@@ -30,6 +30,7 @@ public class SolrIndex {
     private @Field List<String> onlineResourceDescription;
     private @Field List<String> resourceIdentifier;
     private @Field String resourceType;
+    private @Field String recordType;
     private @Field List<String> locations = new ArrayList<>();
     private @Field String licence;
     private @Field String state;

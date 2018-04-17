@@ -1,7 +1,7 @@
 <#if distributionFormats?has_content>
 <div class="dataFormats" id="section-formats">
 	<#if distributionFormats?size = 1>
-		<p>Format of the ${codes.lookup('metadata.resourceType',resourceType.value)} :
+		<p>Format of the ${codes.lookup('metadata.recordType',resourceType.value)?lower_case} :
 		<#list distributionFormats as format>
 		<span>${format.name?html}</span>
 		</#list>

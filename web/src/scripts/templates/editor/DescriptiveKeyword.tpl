@@ -33,7 +33,6 @@
         <li><a href="http://inspire.ec.europa.eu/theme/af">Agricultural and Aquaculture Facilities</a></li>
         <li><a href="http://inspire.ec.europa.eu/theme/am">Area Management Restriction Regulation Zones and Reporting units</a></li>
         <li><a href="http://inspire.ec.europa.eu/theme/ac">Atmospheric Conditions</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/ac-mf">Atmospheric Conditions and meteorological geographical features</a></li>
         <li><a href="http://inspire.ec.europa.eu/theme/br">Bio-geographical Regions</a></li>
         <li><a href="http://inspire.ec.europa.eu/theme/bu">Buildings</a></li>
         <li><a href="http://inspire.ec.europa.eu/theme/cp">Cadastral Parcels</a></li>

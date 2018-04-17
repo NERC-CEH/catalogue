@@ -42,12 +42,13 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
 
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
-        log.info("{} is a {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()));
+        log.info("{} is a {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
         return new SolrIndex()
             .setDescription(document.getDescription())
             .setTitle(document.getTitle())
             .setIdentifier(identifierService.generateFileId(document.getId()))
             .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
+            .setRecordType(codeLookupService.lookup("metadata.recordType", document.getType()))
             .setState(getState(document))
             .setView(getViews(document))
             .setCatalogue(document.getCatalogue())
