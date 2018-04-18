@@ -11,5 +11,5 @@
 </#if>
 the Envionmental Information Data Centre. </b> 
 <#if signpostURLs?has_content>
-    To access the data go to <a href="${signpostURLs?first.url}">${signpostURLs?first.url}</a>
+    To access the data visit <a href="${signpostURLs?first.url}">${signpostURLs?first.url}</a>
 </#if>
