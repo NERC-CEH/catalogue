@@ -11,6 +11,7 @@ define [
   render: ->
     ParentView.prototype.render.apply @
     @$('button.add').replaceWith template data: @data
+    @$('button').prop @data.disabled, @data.disabled
     $dropdown = @$('ul.dropdown-menu')
     _.chain(@data.predefined)
     .keys()

@@ -45,6 +45,8 @@ define [
 
   initialize: ->
 
+    disabled = $($('body')[0]).data('edit-restricted')
+
     @sections = [
       label: 'General'
       title:  ''
@@ -259,6 +261,7 @@ define [
                     <p>Include addresses of web services used to access the data (e.g. order manager) and supporting information.</p>
                     <p>Other links such as project websites or related journal articles should NOT be included here. You can add them to "Additional links"</p>
                     """
+          disabled: disabled
         
         new PredefinedParentView
           model: @model
@@ -362,6 +365,7 @@ define [
           helpText: """
                     <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
                     """
+          disabled: disabled
 
         new InputView
           model: @model
@@ -564,6 +568,7 @@ define [
                     <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
                     <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>
                     """
+          disabled: disabled
       ]
     ,
       label: 'Web service'

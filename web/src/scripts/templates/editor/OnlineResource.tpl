@@ -3,13 +3,13 @@
     <label for="onlineResource<%= data.index %>Name">Name</label>
   </div>
   <div class="col-sm-6 col-lg-6">
-    <input data-name="name" id="onlineResource<%= data.index %>Name" class="editor-input" value="<%= data.name %>">
+    <input data-name="name" id="onlineResource<%= data.index %>Name" class="editor-input" value="<%= data.name %>" <%= data.disabled%>>
   </div>
   <div class="col-sm-1 col-lg-1">
     <label for="onlineResource<%= data.index %>Function">Function</label>
   </div>
   <div class="col-sm-3 col-lg-3">
-    <select data-name="function" id="onlineResource<%= data.index %>Function" class="editor-input">
+    <select data-name="function" id="onlineResource<%= data.index %>Function" class="editor-input" <%= data.disabled%>>
       <option value="" selected >- Select Function -</option>
       <option value="browseGraphic">Browse Graphic</option>
       <option value="download">Download</option>
@@ -25,7 +25,7 @@
     <label for="onlineResource<%= data.index %>Description">Description</label>
   </div>
   <div class="col-sm-10 col-lg-10">
-    <textarea rows="3" data-name="description" id="onlineResource<%= data.index %>Description" class="editor-textarea"><%= data.description %></textarea>
+    <textarea rows="3" data-name="description" id="onlineResource<%= data.index %>Description" class="editor-textarea" <%= data.disabled%>><%= data.description %></textarea>
   </div>
 </div>
 <div class="row">
@@ -33,6 +33,6 @@
     <label for="onlineResource<%= data.index %>Url">URL</label>
   </div>
   <div class="col-sm-10 col-lg-10">
-    <input data-name="url" id="onlineResource<%= data.index %>Url" class="editor-input" value="<%= data.url %>">
+    <input data-name="url" id="onlineResource<%= data.index %>Url" class="editor-input" value="<%= data.url %>" <%= data.disabled%>>
   </div>
 </div>

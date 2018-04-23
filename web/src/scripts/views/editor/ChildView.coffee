@@ -20,7 +20,7 @@ define [
       index: @index
 
   render: ->
-    @$el.html template index: @index
+    @$el.html template index: @index, data: @data
     @
 
   delete: ->
