@@ -374,14 +374,7 @@ define [
           helpText: """
                     <p>File identifier of parent series.</p>
                     """
-        
-        new ParentStringView
-          model: @model
-          modelAttribute: 'partOfRepository'
-          label: 'Repository membership'
-          helpText: """
-                    <p>File Identifier of repository.</p>
-                    """
+          disabled: disabled
 
         new InputView
           model: @model
@@ -390,7 +383,7 @@ define [
           helpText: """
                     <p>File Identifier of data resource being revised.</p>
                     """
-          
+          disabled: disabled
       ]
     ,
       label: 'Spatial'
@@ -579,6 +572,7 @@ define [
           modelAttribute: 'service'
           ModelType: Service
           label: 'Service'
+          disabled: disabled
 
         new ParentView
           model: @model
@@ -600,6 +594,7 @@ define [
                     This is only needed if you configure 'Stylying=Classification' for your GeoTiff.</p>
                     <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>
                     """
+          disabled: disabled
       ]
     ,
       label: 'Metadata'

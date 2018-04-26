@@ -35,5 +35,14 @@ define [
   addValue:  -> @values.add @defaultLegend
   addBucket: -> @buckets.add @defaultLegend
 
-  newValue: (m) -> new ChildView model: m, ObjectInputView: MapValueView
-  newBucket: (m) -> new ChildView model: m, ObjectInputView: MapBucketView
+  newValue: (m) -> 
+    new ChildView 
+      model: m
+      ObjectInputView: MapValueView
+      disabled: @data.disabled
+
+  newBucket: (m) -> 
+    new ChildView 
+      model: m
+      ObjectInputView: MapBucketView
+      disabled: @data.disabled

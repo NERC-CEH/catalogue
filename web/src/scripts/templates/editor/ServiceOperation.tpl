@@ -3,7 +3,7 @@
     <label class="control-label" for="serviceOperation<%= data.index %>OperationName">Operation Name</label>
   </div>
   <div class="col-sm-4 col-lg-4">
-    <select data-name='operationName' class="editor-input operationName" id="serviceOperation<%= data.index %>OperationName">
+    <select data-name='operationName' class="editor-input operationName" id="serviceOperation<%= data.index %>OperationName" <%= data.disabled%>>
       <option value="">- Select Operation Name -</option>
       <option>Cancel</option>
       <option>Confirm</option>
@@ -45,7 +45,7 @@
     <label class="control-label" for="serviceOperation<%= data.index %>Platform">Platform</label>
   </div>
   <div class="col-sm-4 col-lg-4">
-    <select data-name='platform' class="editor-input platform" id="serviceOperation<%= data.index %>Platform">
+    <select data-name='platform' class="editor-input platform" id="serviceOperation<%= data.index %>Platform" <%= data.disabled%>>
       <option value="">- Select Platform -</option>
       <option>COM</option>
       <option>Corba</option>
@@ -64,6 +64,6 @@
     <label class="control-label" for="serviceOperation<%= data.index %>Url">URL</label>
   </div>
   <div class="col-sm-10 col-lg-10">
-    <input data-name='url' class="editor-input" id="serviceOperation<%= data.index %>Url" value="<%= data.url %>">
+    <input data-name='url' class="editor-input" id="serviceOperation<%= data.index %>Url" value="<%= data.url %>" <%= data.disabled%>>
   </div>
 </div>

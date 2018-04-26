@@ -12,3 +12,4 @@ define [
     new MapStyleSelectorView
       el: @$('.style-selector')
       model: @model.getRelated 'style'
+      disabled: options.disabled

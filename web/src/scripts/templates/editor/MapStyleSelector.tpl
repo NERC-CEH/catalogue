@@ -1,7 +1,7 @@
 <div class="input-group">
-  <input type="text" class="form-control" value="<%= data.type %>"/>
+  <input type="text" class="form-control" value="<%= data.type %>" <%= data.disabled%>/>
   <div class="input-group-btn">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" <%= data.disabled%>>
       <span class="selected icon"></span>
     </span></button>
     <ul class="dropdown-menu dropdown-menu-right">
