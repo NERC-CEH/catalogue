@@ -25,11 +25,12 @@ define [
     if @data.multiline
       @$el.addClass 'multiline'
 
-    @$attach.sortable
-      start: (event, ui) =>
-        @_oldPosition = ui.item.index()
-      update: (event, ui) =>
-        @collection.position @_oldPosition, ui.item.index()
+    if !(@data.disabled == 'disabled')
+      @$attach.sortable
+        start: (event, ui) =>
+          @_oldPosition = ui.item.index()
+        update: (event, ui) =>
+          @collection.position @_oldPosition, ui.item.index()
 
   render: ->
     @$el.html template data: @data
