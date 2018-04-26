@@ -20,6 +20,7 @@ define [
     typeView = new ServiceTypeView
       model: service
       modelAttribute: 'type'
+      disabled: options.disabled
 
     serviceOperations = new ParentView
       model: service
@@ -27,6 +28,7 @@ define [
       ObjectInputView: ServiceOperationView
       label: 'Operations'
       multiline: true
+      disabled: options.disabled
 
     coupledResources = new ParentView
       model: service
@@ -34,11 +36,13 @@ define [
       ObjectInputView: CoupledResourceView
       label: 'Coupled Resources'
       multiline: true
+      disabled: options.disabled
 
     versions = new ParentStringView
       model: service
       modelAttribute: 'versions'
       label: 'Versions'
+      disabled: options.disabled
 
     _.invoke [serviceOperations, coupledResources, versions], 'show'
     @$('.dataentry').append typeView.el, serviceOperations.el, coupledResources.el, versions.el

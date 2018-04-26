@@ -110,6 +110,10 @@ public class PermissionService {
         }
     }
 
+    public boolean userCanEditRestrictedFields(@NonNull String catalogue) {
+        return userCanCreate(catalogue) || userCanMakePublic(catalogue);
+    }
+
     public boolean userCanViewOrIsInGroup(@NonNull String file, @NonNull String group) {
         return userInGroup(group) || userCanView(file);
     }

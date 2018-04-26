@@ -45,6 +45,8 @@ define [
 
   initialize: ->
 
+    disabled = $($('body')[0]).data('edit-restricted')
+
     @sections = [
       label: 'General'
       title:  ''
@@ -259,6 +261,7 @@ define [
                     <p>Include addresses of web services used to access the data (e.g. order manager) and supporting information.</p>
                     <p>Other links such as project websites or related journal articles should NOT be included here. You can add them to "Additional links"</p>
                     """
+          disabled: disabled
         
         new PredefinedParentView
           model: @model
@@ -362,6 +365,7 @@ define [
           helpText: """
                     <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
                     """
+          disabled: disabled
 
         new InputView
           model: @model
@@ -370,14 +374,7 @@ define [
           helpText: """
                     <p>File identifier of parent series.</p>
                     """
-        
-        new ParentStringView
-          model: @model
-          modelAttribute: 'partOfRepository'
-          label: 'Repository membership'
-          helpText: """
-                    <p>File Identifier of repository.</p>
-                    """
+          disabled: disabled
 
         new InputView
           model: @model
@@ -386,7 +383,7 @@ define [
           helpText: """
                     <p>File Identifier of data resource being revised.</p>
                     """
-          
+          disabled: disabled
       ]
     ,
       label: 'Spatial'
@@ -564,6 +561,7 @@ define [
                     <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
                     <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>
                     """
+          disabled: disabled
       ]
     ,
       label: 'Web service'
@@ -574,6 +572,7 @@ define [
           modelAttribute: 'service'
           ModelType: Service
           label: 'Service'
+          disabled: disabled
 
         new ParentView
           model: @model
@@ -595,6 +594,7 @@ define [
                     This is only needed if you configure 'Stylying=Classification' for your GeoTiff.</p>
                     <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>
                     """
+          disabled: disabled
       ]
     ,
       label: 'Metadata'

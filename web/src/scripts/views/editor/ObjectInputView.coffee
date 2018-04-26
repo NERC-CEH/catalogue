@@ -60,11 +60,12 @@ define [
     @listenTo collection, 'reset', resetView
 
     pos = null
-    element.sortable
-      start: (event, ui) =>
-        pos = ui.item.index()
-      update: (event, ui) =>
-        collection.position pos, ui.item.index()
+    if !(@data.disabled == 'disabled')
+      element.sortable
+        start: (event, ui) =>
+          pos = ui.item.index()
+        update: (event, ui) =>
+          collection.position pos, ui.item.index()
 
     do resetView
     return collection

@@ -3,7 +3,7 @@
     <label class="control-label">Label</label>
   </div>
   <div class="col-sm-3 col-lg-3">
-    <input data-name='label' class="editor-input" value="<%= data.label %>">
+    <input data-name='label' class="editor-input" value="<%= data.label %>" <%= data.disabled%>>
   </div>
 
   <div class="col-sm-1 col-lg-1">
@@ -11,9 +11,9 @@
   </div>
   <div class="col-sm-3 col-lg-3">
     <div class="input-group">
-      <input data-name='min' class="form-control editor-input" value="<%= data.min %>" placeholder="-∞">
+      <input data-name='min' class="form-control editor-input" value="<%= data.min %>" placeholder="-∞" <%= data.disabled%>>
       <span class="input-group-addon">< 𝑥 ≤</span>
-      <input data-name='max' class="form-control editor-input" value="<%= data.max %>" placeholder="∞">
+      <input data-name='max' class="form-control editor-input" value="<%= data.max %>" placeholder="∞" <%= data.disabled%>>
     </div>
   </div>
 

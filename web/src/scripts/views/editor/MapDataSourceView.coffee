@@ -47,12 +47,17 @@ define [
   addReprojection: -> @reprojections.add {}
   addAttribute:    -> @attributes.add {}
 
-  newReprojection: (model, i) -> new MapReprojectionView model: model
+  newReprojection: (model, i) -> 
+    new MapReprojectionView 
+      model: model
+      disabled: @data.disabled
+
   newAttribute: (model, i) ->
     new ChildView
       model: model
       index: i
       ObjectInputView: MapAttributeView
+      disabled: @data.disabled
 
   updateStyleMode: (e) -> @setStyleMode $(e.target).attr 'styleMode'
     
