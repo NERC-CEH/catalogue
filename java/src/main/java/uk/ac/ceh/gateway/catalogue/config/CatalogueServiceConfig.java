@@ -43,7 +43,7 @@ public class CatalogueServiceConfig {
         String defaultCatalogueKey = "eidc";
 
         DocumentType gemini = DocumentType.builder()
-            .title("Data Resource")
+            .title("Data resource")
             .type(GEMINI_DOCUMENT)
             .build();
 
@@ -158,7 +158,7 @@ public class CatalogueServiceConfig {
             .build();
 
         DocumentType dataType = DocumentType.builder()
-            .title("Data Type")
+            .title("Data type")
             .type(DATA_TYPE_SHORT)
             .build();
 
