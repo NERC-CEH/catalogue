@@ -194,7 +194,7 @@ public class DocumentController extends AbstractDocumentController {
             user,
             document,
             catalogue,
-            "new Data Type"
+            "new Data type"
         );
     }
 
