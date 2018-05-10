@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container hidden-print">
 <p>View as
   <#if resourceType??>
     <#if ['service', 'series', 'dataset']?seq_contains(resourceType.value) >

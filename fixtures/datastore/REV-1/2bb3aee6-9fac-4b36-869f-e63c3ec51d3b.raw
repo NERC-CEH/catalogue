@@ -1,27 +1,6 @@
-{
-    "id": "2bb3aee6-9fac-4b36-869f-e63c3ec51d3b",
-    "uri": "http://rod.ceh.ac.uk:8080/id/2bb3aee6-9fac-4b36-869f-e63c3ec51d3b",
-    "type": "dataType",
-    "title": "this time with a different type",
+{"id":"2bb3aee6-9fac-4b36-869f-e63c3ec51d3b","uri":"https://catalogue.ceh.ac.uk/id/2bb3aee6-9fac-4b36-869f-e63c3ec51d3b","type":"dataType","title":"Datatype test",
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin arcu lorem, a bibendum nunc vestibulum mattis. Aliquam faucibus, magna eu auctor dignissim, nulla quam mollis ligula, et vulputate arcu leo a nulla. Cras finibus varius faucibus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Integer porttitor dapibus imperdiet. Proin vitae sem ac urna ultrices consectetur. Aliquam pellentesque egestas enim. Integer et vulputate risus. In et nulla diam. Integer consequat nibh sit amet cursus luctus. Nullam euismod faucibus dignissim.\n\nFusce id gravida eros. Sed vel dui ante. Mauris sodales felis at purus varius semper. Etiam ultrices a arcu vitae volutpat. Praesent quis mi laoreet, bibendum erat sed, posuere augue. Fusce imperdiet accumsan ultrices. Maecenas accumsan, lorem quis suscipit sodales, est ipsum euismod tortor, sit amet molestie velit ligula vel elit. Curabitur id hendrerit eros, sit amet feugiat diam. Nam porttitor est in ante congue, non venenatis ipsum gravida. Donec efficitur erat sed nibh maximus porttitor. Curabitur facilisis ultrices elit, a condimentum arcu malesuada luctus. Duis bibendum, elit ac lacinia porttitor, purus ipsum interdum erat, a tincidunt quam elit quis mauris. Curabitur vitae pharetra dolor. Aliquam aliquet nunc purus, non aliquam urna maximus eu. Donec accumsan sodales massa, ac aliquam eros malesuada ut.",
-    "metadataDate": "2018-03-01T09:37:46.581",
-    "resourceIdentifiers": [
-        {
-            "code": "http://rod.ceh.ac.uk:8080/id/2bb3aee6-9fac-4b36-869f-e63c3ec51d3b",
-            "coupledResource": "http://rod.ceh.ac.uk:8080/id/2bb3aee6-9fac-4b36-869f-e63c3ec51d3b"
-        }
-    ],
-    "schema": {
-        "id": "eba4e58a-57cf-4ed7-be8d-c9a2db3165c7",
-        "fieldName": "field name 2",
-        "title": "title for field name 2",
-        "format": "format of title",
-        "fieldDescription": "field description",
-        "missingValues": "missing values are null",
-        "primaryKey": "true",
-        "constraints": "These are the constraints for field name 2",
-        "measurementUnits": "units of cm or sl"
-    },
+    "metadataDate": "2018-03-01T09:37:46.581","resourceIdentifiers":[{"code":"https://catalogue.ceh.ac.uk/id/2bb3aee6-9fac-4b36-869f-e63c3ec51d3b"}],"schema":[{"fieldName":"YEAR","type":"year","format":"YYYY","primaryKey":false},{"fieldName":"SITE","type":"string","primaryKey":false},{"fieldName":"DETERMINAND","type":"string","primaryKey":false},{"fieldName":"ANNUAL_AVERAGE","type":"number","primaryKey":false},{"fieldName":"UNITOFMEASUREMENT","type":"string","primaryKey":false}],
     "provenance": {
         "creationDate": "2018-01-07T18:45:54",
         "modificationDate": "2017-12-04T04:35:28",
@@ -33,5 +12,5 @@
             "Fred",
             "Ginger"
         ]
-    }
-}
+    }}
+
