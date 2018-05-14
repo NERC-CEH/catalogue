@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
+import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
@@ -25,22 +26,8 @@ import java.util.List;
 )
 public class DataType extends AbstractMetadataDocument {
     private final String type = "dataType";
-    private Schema schema;
+    private List<DataTypeSchema> schema;
     private Provenance provenance;
-
-    @Data
-    public static class Schema {
-        private String
-            id,
-            fieldName,
-            title,
-            format,
-            fieldDescription,
-            missingValues,
-            primaryKey,
-            constraints,
-            measurementUnits;
-    }
 
     @Data
     public static class Provenance {
