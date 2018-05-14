@@ -1,4 +1,4 @@
-<#if otherContacts?has_content || distributorContacts??>
+<#if otherContacts?has_content>
   <div id="document-otherContacts">
   <h3><a id="otherContacts"></a>Other contacts</h3>
   <dl class="dl-horizontal">
@@ -15,15 +15,6 @@
         </#if>
         </div>
   	 </dd>
-    </#list>
-  </#if>
-    
-  <#if distributorContacts?has_content>
-    <#list distributorContacts as distributorContact>
-      <dt>${distributorContact.roleDisplayName?html}</dt>
-      <dd>
-        ${func.displayContact(distributorContact, true, false)}
-      </dd>
     </#list>
   </#if>
   </dl>
