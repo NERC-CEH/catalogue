@@ -1,8 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.NonNull;
+import static java.lang.String.format;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import lombok.NonNull;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -14,13 +22,6 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
-
-import static java.lang.String.format;
 
 public class PermissionService {
     private final DataRepository<CatalogueUser> repo;
@@ -110,6 +111,18 @@ public class PermissionService {
         }
     }
 
+    public boolean userCanDelete(@NonNull String file) {
+        try {
+            CatalogueUser user = getCurrentUser();
+            DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
+            MetadataInfo document = getMetadataInfo(file, latestRevision.getRevisionID());
+            return !user.isPublic() && toAccess(user, document, "DELETE");
+        } catch (DataRepositoryException ex) {
+            String message = format("No document found for: %s", file);
+            throw new PermissionDeniedException(message, ex);
+        }
+    }
+
     public boolean userCanEditRestrictedFields(@NonNull String catalogue) {
         return userCanCreate(catalogue) || userCanMakePublic(catalogue);
     }
@@ -150,7 +163,7 @@ public class PermissionService {
         return userCan((String name) -> name.equalsIgnoreCase(group));
     }
     
-    private List<Group> getGroupsForUser(CatalogueUser user) {
+    public List<Group> getGroupsForUser(CatalogueUser user) {
         return (user.isPublic())
             ? Collections.emptyList()
             : groupStore.getGroups(user);

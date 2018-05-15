@@ -1,6 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
+
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -10,25 +13,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.SneakyThrows;
+import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.CataloguePermission;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
-import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
 
 @Controller
-@RequestMapping(value = "documents/{file}/permission")
 public class PermissionController {
     private final PermissionService permissionService;
     private final DocumentRepository documentRepository;
@@ -42,7 +45,7 @@ public class PermissionController {
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, value = "documents/{file}/permission")
     @ResponseBody
     public HttpEntity<PermissionResource> currentPermission (
             @ActiveUser CatalogueUser user,
@@ -54,9 +57,51 @@ public class PermissionController {
             )
         ); 
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "permissions")
+    @ResponseBody
+    public HttpEntity<CataloguePermission> permissions (
+            @ActiveUser CatalogueUser user,
+            @RequestParam(value = "catalogue", required = false) String catalogue,
+            @RequestParam(value = "id", required = false) String id
+    ) throws DocumentRepositoryException {
+        val builder = CataloguePermission.builder()
+            .identity(user.getUsername())
+            .datacite(permissionService.userCanDatacite())
+            .groups(permissionService.getGroupsForUser(user));
+
+        if (user.isPublic()) builder.identity("public");
+
+        if (id != null) {
+            builder
+                .id(id)
+                .view(permissionService.toAccess(user, id, "VIEW"))
+                .edit(permissionService.userCanEdit(id))
+                .upload(permissionService.userCanUpload(id))
+                .delete(permissionService.userCanDelete(id));
+        }
+
+        if (catalogue == null && id != null) {
+            val document = documentRepository.read(id);
+            catalogue = document.getCatalogue();
+        }
+
+        if (catalogue != null) {
+            builder
+                .catalogue(catalogue)
+                .create(permissionService.userCanCreate(catalogue));
+
+                permissionService.userCanEditRestrictedFields(catalogue);
+                permissionService.userCanMakePublic(catalogue);
+        } else {
+            builder.create(false);
+        }
+
+        return ResponseEntity.ok(builder.build()); 
+    }
     
     @PreAuthorize("@permission.userCanEdit(#file)")
-    @RequestMapping(method =  RequestMethod.PUT)
+    @RequestMapping(method =  RequestMethod.PUT, value = "documents/{file}/permission")
     @ResponseBody
     public HttpEntity<PermissionResource> updatePermission (
             @ActiveUser CatalogueUser user,
