@@ -11,6 +11,7 @@
       <field name="version" type="float" indexed="true" stored="true" multiValued="false" default="1"/>
       <field name="organisation" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
       <field name="individual" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
+      <field name="surname" type="name" indexed="true" stored="true" multiValued="true"/>
       <field name="orcid" type="orcid" indexed="true" stored="true" multiValued="true"/>
       <field name="onlineResourceName" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="onlineResourceDescription" type="text_general" indexed="true" stored="true" multiValued="true"/>
@@ -46,6 +47,12 @@
             <analyzer>
                 <tokenizer class="solr.WhitespaceTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
+        <fieldType name="name" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+            <analyzer>
+               <tokenizer class="solr.LetterTokenizerFactory"/>
+               <filter class="solr.LengthFilterFactory" min="2" max="50"/>
             </analyzer>
         </fieldType>
         <fieldType name="orcid" class="solr.TextField" sortMissingLast="true" omitNorms="true">
