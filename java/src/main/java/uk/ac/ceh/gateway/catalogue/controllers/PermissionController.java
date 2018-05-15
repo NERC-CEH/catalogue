@@ -89,10 +89,9 @@ public class PermissionController {
         if (catalogue != null) {
             builder
                 .catalogue(catalogue)
-                .create(permissionService.userCanCreate(catalogue));
-
-                permissionService.userCanEditRestrictedFields(catalogue);
-                permissionService.userCanMakePublic(catalogue);
+                .create(permissionService.userCanCreate(catalogue))
+                .makePublic(permissionService.userCanMakePublic(catalogue))
+                .editRestrictedFields(permissionService.userCanEditRestrictedFields(catalogue));
         } else {
             builder.create(false);
         }
