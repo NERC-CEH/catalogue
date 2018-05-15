@@ -96,7 +96,7 @@ public class BrowserTest {
     @SneakyThrows
     public void getDataTypePage() {
         //given
-        String expectedTitle = "this time with a different type";
+        String expectedTitle = "Datatype test";
 
         //when
         driver.get(format("http://%s:%s/documents/2bb3aee6-9fac-4b36-869f-e63c3ec51d3b", webHost, webPort));

@@ -1,88 +1,93 @@
 <div class="row">
   <div class="col-sm-2">
-    <label for="input-name">Fieldname</label>
+    <label for="input-name<%= data.index %>">Fieldname</label>
   </div>
   <div class="col-sm-10">
-    <input data-name="name" id="input-name" class="editor-input" value="<%= data.name %>" placeholder="name of field/column" />
+    <input data-name="name" id="input-name<%= data.index %>" class="editor-input" value="<%= data.name %>" placeholder="name of field/column" />
   </div>
 </div>
 <div class="row">
   <div class="col-sm-2">
-    <label for="input-title">Title</label>
+    <label for="input-title<%= data.index %>">Title</label>
   </div>
   <div class="col-sm-10">
-    <input data-name="title" id="input-title" class="editor-input" value="<%= data.title %>" placeholder="A nicer human readable label for the field (optional)" />
+    <input data-name="title" id="input-title<%= data.index %>" class="editor-input" value="<%= data.title %>" placeholder="A nicer human readable label for the field (optional)" />
   </div>
 </div>
 <div class="row">
   <div class="col-sm-2">
-    <label for="input-description">Description</label>
+    <label for="input-description<%= data.index %>">Description</label>
   </div>
   <div class="col-sm-10">
-    <textarea data-name="description" id="input-description" class="editor-textarea" rows="3"><%= data.description %></textarea>
+    <textarea data-name="description" id="input-description<%= data.index %>" class="editor-textarea" rows="3"><%= data.description %></textarea>
   </div>
 </div>
 <div class="row">
   <div class="col-sm-2 col-xs-12">
-    <label for="input-type">Type</label>
+    <label for="input-type<%= data.index %>">Type</label>
   </div>
   <div class="col-sm-4 col-xs-12">
-    <input list="typeList" data-name="type" id="input-type" class="editor-input" value="<%= data.type %>" placeholder="" />
+    <input list="typeList" data-name="type" id="input-type<%= data.index %>" class="editor-input" value="<%= data.type %>" placeholder="" />
   </div>
   <div class="col-sm-2 col-xs-12">
     <div class="hidden-xs text-right">
-      <label for="input-format">Format</label>
+      <label for="input-format<%= data.index %>">Format</label>
     </div>
     <div class="visible-xs-inline">
-      <label for="input-format">Format</label>
+      <label for="input-format<%= data.index %>">Format</label>
     </div>
   </div>
   <div class="col-sm-4 col-xs-12">
-    <input list="formatList" data-name="format" id="input-format" class="editor-input" value="<%= data.format %>" placeholder="recommended for dates and times" />
+    <input list="formatList" data-name="format" id="input-format<%= data.index %>" class="editor-input" value="<%= data.format %>" placeholder="recommended for dates and times" />
   </div>
 </div>
 <div class="row">
   <div class="col-sm-2">
-    <label for="input-units">Units</label>
+    <label for="input-units<%= data.index %>">Units</label>
   </div>
   <div class="col-sm-10">
-    <input data-name="units" id="input-units" class="editor-input" value="<%= data.units %>"/>
+    <input data-name="units" id="input-units<%= data.index %>" class="editor-input" value="<%= data.units %>"/>
   </div>
 </div>
 <div class="row">
   <div class="col-sm-2">
-    <label for="input-maximum">Maximum value</label>
+    <label for="input-maximum<%= data.index %>">Maximum value</label>
   </div>
   <div class="col-sm-4">
-    <input data-name="maximum" id="input-maximum" class="editor-input" value="<%= data.maximum %>"/>
+    <input data-name="maximum" id="input-maximum<%= data.index %>" class="editor-input" value="<%= data.maximum %>"/>
   </div>
   <div class="col-sm-2">
-    <label for="input-minimum">Minimum value</label>
+    <label for="input-minimum<%= data.index %>">Minimum value</label>
   </div>
   <div class="col-sm-4">
-    <input data-name="minimum" id="input-minimum" class="editor-input" value="<%= data.minimum %>"/>
+    <input data-name="minimum" id="input-minimum<%= data.index %>" class="editor-input" value="<%= data.minimum %>"/>
   </div>
 </div>
 <div class="row">
   <div class="col-sm-2">
-    <label for="input-minLength">Minimum length</label>
+    <label for="input-minLength<%= data.index %>">Minimum length</label>
   </div>
   <div class="col-sm-4">
-    <input data-name="minLength" id="input-minLength" class="editor-input" value="<%= data.minLength %>"/>
+    <input data-name="minLength" id="input-minLength<%= data.index %>" class="editor-input" value="<%= data.minLength %>"/>
   </div>
   <div class="col-sm-2">
-    <label for="input-maxLength">Maximum length</label>
+    <label for="input-maxLength<%= data.index %>">Maximum length</label>
   </div>
   <div class="col-sm-4">
-    <input data-name="maxLength" id="input-maxLength" class="editor-input" value="<%= data.maxLength %>"/>
+    <input data-name="maxLength" id="input-maxLength<%= data.index %>" class="editor-input" value="<%= data.maxLength %>"/>
   </div>
 </div>
 <div class="row">
   <div class="col-sm-2">
-    <label for="input-unique">Units</label>
+    <label>Unique</label>
   </div>
   <div class="col-sm-10">
-    <input type="checkbox" data-name="unique" id="input-unique" value="true" <% if (data.unique == true) { %> checked="checked" <% } %> />
+      <label class="radio-inline">
+        <input type="radio" data-name="unique" name="unique<%= data.index %>" value="true" <% if (data.unique == true) { %> checked="checked" <% } %> /> Yes 
+      </label>
+      <label class="radio-inline">
+        <input type="radio" data-name="unique" name="unique<%= data.index %>" value="false" <% if (data.unique == false) { %> checked="checked" <% } %> />No
+      </label>
   </div>
 </div>
 

@@ -50,8 +50,8 @@
       <#list schema as schemaItem>
       <tr>
         <td>
-          <#if schemaItem.fieldName?? && schemaItem.fieldName?has_content>
-          ${schemaItem.fieldName}
+          <#if schemaItem.name?? && schemaItem.name?has_content>
+          ${schemaItem.name}
           </#if>
         </td>
         <td>
@@ -71,8 +71,8 @@
         <h1 class="section-heading">More schema stuff for tidying up</h1>
         <#list schema as schemaItem>
         <div class="schemaItem">
-          <#if schemaItem.fieldName?? && schemaItem.fieldName?has_content>
-            <div>fieldName = ${schemaItem.fieldName}</div>
+          <#if schemaItem.name?? && schemaItem.name?has_content>
+            <div>name = ${schemaItem.name}</div>
           </#if>
           <#if schemaItem.title?? && schemaItem.title?has_content>
             <div>title = ${schemaItem.title}</div>
@@ -85,8 +85,8 @@
               </#if>
             </div>
           </#if>
-          <#if schemaItem.fieldDescription?? && schemaItem.fieldDescription?has_content>
-            <div>fieldDescription = ${schemaItem.fieldDescription}</div>
+          <#if schemaItem.description?? && schemaItem.description?has_content>
+            <div>Description = ${schemaItem.description}</div>
           </#if>
           <#--<#if schemaItem.primaryKey==true>
             <div>primaryKey = Yes</div>
@@ -94,8 +94,8 @@
           <#if schemaItem.constraints?? && schemaItem.constraints?has_content>
             <div>constraints = ${schemaItem.constraints}</div>
           </#if>
-          <#if schemaItem.measurementUnits?? && schemaItem.measurementUnits?has_content>
-            <div>measurementUnits = ${schemaItem.measurementUnits}</div>
+          <#if schemaItem.units?? && schemaItem.units?has_content>
+            <div>units = ${schemaItem.units}</div>
           </#if>
         </div>    
         </#list>
