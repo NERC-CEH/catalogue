@@ -1,8 +1,7 @@
 <#import "skeleton.ftl" as skeleton>
 <#import "new-form.ftl" as form>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html?replace("\n", "<br>")>
 
-
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
 <style>
 /* temporary obvs */
 .admin {margin-top:1em;}
@@ -39,27 +38,35 @@
 
       <#if schema??>
       <h1 class="section-heading">Schema</h1>
-      <table class="table schema">
+      <table class="table table-schema">
       <thead>
         <tr>
           <th>Field</th>
-          <th>type</th>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
       </thead>
       <tbody>
       <#list schema as schemaItem>
       <tr>
-        <td>
+        <td nowrap="nowrap">
           <#if schemaItem.name?? && schemaItem.name?has_content>
           ${schemaItem.name}
           </#if>
         </td>
-        <td>
+        <td nowrap="nowrap">
           <#if schemaItem.type?? && schemaItem.type?has_content>
               ${schemaItem.type}
               <#if schemaItem.format?? && schemaItem.format?has_content>
                 <span class="schema-format">(${schemaItem.format})</span>
               </#if>          
+          </#if>
+        </td>
+        <td>
+          <#if schemaItem.description?? && schemaItem.description?has_content>
+            <span class="decript">${schemaItem.description}</span>
+          <#else>
+            <span class="nodata" />
           </#if>
         </td>
       </tr>    
