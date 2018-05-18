@@ -2,17 +2,21 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.BDDMockito.given;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.CataloguePermission;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -57,6 +61,30 @@ public class PermissionControllerTest {
         
         //Then
         assertThat("Actual permissionResource should equal expected", actual.getBody(), equalTo(expected));
+    }
+    
+
+    @Test
+    public void permissions() throws Exception {
+        //Given
+        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        String file = "1234-567-890";
+        MetadataInfo info = MetadataInfo.builder().catalogue("catalogue").build();
+        MetadataDocument document = new GeminiDocument().setMetadata(info);
+        
+        
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/documents/1234-567-890");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        
+        given(documentRepository.read(file)).willReturn(document);
+        
+        
+        //When
+        HttpEntity<CataloguePermission> actual = permissionController.permissions(publisher, null, file);
+        
+        //Then
+        CataloguePermission expected = CataloguePermission.builder().identity("publisher").catalogue("catalogue").id(file).groups(Lists.newArrayList()).build();
+        assertThat(actual.getBody(), equalTo(expected));
     }
     
     @Test
