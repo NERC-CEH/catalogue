@@ -2,7 +2,9 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.File;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +31,21 @@ public class DocumentReader<T extends MetadataDocument> {
     val metadataInfo = mapper.readValue(meta, MetadataInfo.class);
     document.setMetadata(metadataInfo);
     return document;
+  }
+
+
+  @SneakyThrows
+  public static JsonNode raw(String guid) {
+    if (StringUtils.isBlank(guid) || !exists(guid)) return null;
+    val mapper = new ObjectMapper();
+    mapper.registerModule(new GuavaModule());
+    val json = new File(datastore, String.format("%s.raw", guid));
+    val meta = new File(datastore, String.format("%s.meta", guid));
+    val doc = (ObjectNode) mapper.readTree(json);
+    val info = (ObjectNode) mapper.readTree(meta);
+    info.remove("permissions");
+    doc.set("meta", info);
+    return doc;
   }
 
   public static boolean exists(String guid) {
