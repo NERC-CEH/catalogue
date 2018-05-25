@@ -74,7 +74,7 @@ public class SearchQuery {
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setParam("defType", "edismax")
-                .setParam("qf", "title^50 description^25 keyword^2 lineage organisation individual onlineResourceName onlineResourceDescription altTitle resourceIdentifier identifier")
+                .setParam("qf", "title^50 description^25 keyword^2 lineage organisation individual surname onlineResourceName onlineResourceDescription altTitle resourceIdentifier identifier")
                 .setParam("bq", "resourceStatus:Current state:published")
                 .setParam("bf", "version")
                 .setParam("ps", "5")
