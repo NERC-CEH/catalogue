@@ -40,7 +40,6 @@ define [
   'cs!views/SampleArchiveEditorView'
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
-  'cs!views/NewEditorView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'cs!models/Graph'
@@ -54,7 +53,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    NewEditorView, ClipboardCopyView, DataTypeEditorView, Graph, GraphView
+    ClipboardCopyView, DataTypeEditorView, Graph, GraphView
 ) ->
 
   ###
@@ -79,7 +78,6 @@ define [
     do @initEditor if $('.edit-control').length
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
-    do @newForm if $('.beta-form').length
     do @initClipboard if $('.clipboard-copy').length
     do @initGrpah if $('#cy').length
 
@@ -89,22 +87,6 @@ define [
   initGrpah: ->
     app = new Graph $('#cy').data('document')
     view = new GraphView model: app
-
-  newForm: ->
-    document = $('.new-form').data('document')
-    catalogue = $('html').data('catalogue')
-    guid = $('.new-form').data('guid')
-
-    if form
-      app = new EditorMetadata null,
-        mediaType: 'application/vnd.' + document + '-document+json'
-      app.id = guid
-      app.set('id', guid)
-      app.catalogue = catalogue
-      app.set('catalogue', catalogue)
-      
-      view = new NewEditorView
-        model: app
 
   initDepositRequest: ->
     app = new DepositRequestModel
@@ -227,51 +209,6 @@ define [
         View: SampleArchiveEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.sample-archive+json'
-      'Sensor':
-        usesNewForm: true
-        View: NewEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.sensor-document+json'
-      'Manufacturer':
-        usesNewForm: true
-        View: NewEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.manufacturer-document+json'
-      'Feature of Interest':
-        usesNewForm: true
-        View: NewEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.feature-of-interest-document+json'
-      'Observation Placeholder':
-        usesNewForm: true
-        View: NewEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.observation-placeholder-document+json'
-      'Temporal Procedure':
-        usesNewForm: true
-        View: NewEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.temporal-procedure-document+json'
-      'Input':
-        usesNewForm: true
-        View: NewEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.input-document+json'
-      'Single System Deployment':
-        usesNewForm: true
-        View: NewEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.single-system-deployment-document+json'
-      'Deployment Related Process Duration':
-        usesNewForm: true
-        View: NewEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.deployment-related-process-duration-document+json'
-      'Person':
-        usesNewForm: true
-        View: NewEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.person-document+json'
       'data-type':
         View: DataTypeEditorView
         Model: EditorMetadata
@@ -285,8 +222,6 @@ define [
 
       title = $(event.target).data('documentType')
       documentType = lookup[title]
-
-      do $editorCreate.toggle if !documentType.usesNewForm
 
       if $editorCreate.length
         new documentType.View

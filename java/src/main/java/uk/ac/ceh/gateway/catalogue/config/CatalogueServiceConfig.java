@@ -1,15 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATA_TYPE_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_INPUT_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_MANUFACTURER_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_PERSON_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_AGENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_DATASET_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MODEL_SHORT;
@@ -110,51 +101,6 @@ public class CatalogueServiceConfig {
         DocumentType sampleArchive = DocumentType.builder()
             .title("Sample Archive")
             .type(SAMPLE_ARCHIVE_SHORT)
-            .build();
-        
-        DocumentType elterSensor = DocumentType.builder()
-            .title("Sensor")
-            .type(ELTER_SENSOR_DOCUMENT_SHORT)
-            .build();
-        
-        DocumentType elterManufacturer = DocumentType.builder()
-            .title("Manufacturer")
-            .type(ELTER_MANUFACTURER_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterFeatureOfInterest = DocumentType.builder()
-            .title("Feature Of Interest")
-            .type(ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterObservationPlaceholder = DocumentType.builder()
-            .title("Oberstion Placeholder")
-            .type(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterTemporalProcedure = DocumentType.builder()
-            .title("Temporal Procedure")
-            .type(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterInput = DocumentType.builder()
-            .title("Input")
-            .type(ELTER_INPUT_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterSingleSystDocument = DocumentType.builder()
-            .title("Single System Deployment")
-            .type(ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterDeploymentRelatedProcessDuration = DocumentType.builder()
-            .title("Deployment Related Process Duration")
-            .type(ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterPerson = DocumentType.builder()
-            .title("Person")
-            .type(ELTER_PERSON_DOCUMENT_SHORT)
             .build();
 
         DocumentType dataType = DocumentType.builder()
@@ -304,17 +250,26 @@ public class CatalogueServiceConfig {
                 .title("eLTER")
                 .url("http://www.ceh.ac.uk")
                 .facetKey("documentType")
-                .facetKey("manufacturer")
-                .facetKey("manufacturerName")
-                .documentType(elterSensor)
-                .documentType(elterManufacturer)
-                .documentType(elterFeatureOfInterest)
-                .documentType(elterObservationPlaceholder)
-                .documentType(elterTemporalProcedure)
-                .documentType(elterInput)
-                .documentType(elterSingleSystDocument)
-                .documentType(elterDeploymentRelatedProcessDuration)
-                .documentType(elterPerson)
+                .documentType(DocumentType.builder().title("CompositeFeature").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("Condition").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("DeploymentRelatedProcessDuration").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("Input").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("Manufacturer").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("MonitoringFeature").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("ObservableProperty").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("ObservationPlaceholder").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("OperatingRange").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("Person").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("SampleFeature").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("Sensor").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("SensorType").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("SingleSystemDeployment").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("Stimulus").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("SystemCapability").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("SystemProperty").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("TemporalProcedure").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("VerticalMonitoringFeature").type("CompositeFeature").build())
+
                 .fileUpload(false)
                 .build()
         );

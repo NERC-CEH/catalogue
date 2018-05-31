@@ -87,25 +87,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String OSDP_SAMPLE_SHORT            = "osdp-sample";
     public static final String SAMPLE_ARCHIVE_SHORT         = "sample-archive";
     public static final String SAMPLE_ARCHIVE_JSON_VALUE         = "application/vnd.sample-archive+json";
-
-    public static final String ELTER_SENSOR_DOCUMENT_JSON_VALUE = "application/vnd.sensor-document+json";
-    public static final String ELTER_SENSOR_DOCUMENT_SHORT = "Sensor";
-    public static final String ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE = "application/vnd.manufacturer-document+json";
-    public static final String ELTER_MANUFACTURER_DOCUMENT_SHORT = "Manufacturer";
-    public static final String ELTER_FEATURE_OF_INTEREST_DOCUMENT_JSON_VALUE = "application/vnd.feature-of-interest-document+json";
-    public static final String ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT = "Feature of Interest";
-    public static final String ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_JSON_VALUE = "application/vnd.observation-placeholder-document+json";
-    public static final String ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT = "Observation Placeholder";
-    public static final String ELTER_TEMPORAL_PROCEDURE_DOCUMENT_JSON_VALUE = "application/vnd.temporal-procedure-document+json";
-    public static final String ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT = "Temporal Procedure";
-    public static final String ELTER_INPUT_DOCUMENT_JSON_VALUE = "application/vnd.input-document+json";
-    public static final String ELTER_INPUT_DOCUMENT_SHORT = "Input";
-    public static final String ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_JSON_VALUE = "application/vnd.single-system-deployment-document+json";
-    public static final String ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT = "Single System Deployment";
-    public static final String ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_JSON_VALUE = "application/vnd.deployment-related-process-duration-document+json";
-    public static final String ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT = "Deployment Related Process Duration";
-    public static final String ELTER_PERSON_DOCUMENT_JSON_VALUE = "application/vnd.person-document+json";
-    public static final String ELTER_PERSON_DOCUMENT_SHORT = "Person";
     
     public static final String UPLOAD_DOCUMENT_JSON_VALUE = "application/vnd.upload-document+json";
     public static final String UPLOAD_DOCUMENT_SHORT = "Upload";
@@ -180,17 +161,30 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(OSDP_PUBLICATION_SHORT, MediaType.parseMediaType(OSDP_PUBLICATION_JSON_VALUE))
                         .put(OSDP_SAMPLE_SHORT, MediaType.parseMediaType(OSDP_SAMPLE_JSON_VALUE))
                         .put(SAMPLE_ARCHIVE_SHORT, MediaType.parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE))
-                        .put(ELTER_SENSOR_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_SENSOR_DOCUMENT_JSON_VALUE))
-                        .put(ELTER_MANUFACTURER_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_MANUFACTURER_DOCUMENT_JSON_VALUE))
-                        .put(ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_FEATURE_OF_INTEREST_DOCUMENT_JSON_VALUE))
-                        .put(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_JSON_VALUE))
-                        .put(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_JSON_VALUE))
-                        .put(ELTER_INPUT_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_INPUT_DOCUMENT_JSON_VALUE))
-                        .put(ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_JSON_VALUE))
-                        .put(ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_JSON_VALUE))
-                        .put(ELTER_PERSON_DOCUMENT_SHORT, MediaType.parseMediaType(ELTER_PERSON_DOCUMENT_JSON_VALUE))
                         .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
                         .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
+
+
+                        .put("CompositeFeature", MediaType.parseMediaType(String.format("application/vnd.%s+json", "CompositeFeature")))
+                        .put("Condition", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Condition")))
+                        .put("DeploymentRelatedProcessDuration", MediaType.parseMediaType(String.format("application/vnd.%s+json", "DeploymentRelatedProcessDuration")))
+                        .put("Input", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Input")))
+                        .put("Manufacturer", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Manufacturer")))
+                        .put("MonitoringFeature", MediaType.parseMediaType(String.format("application/vnd.%s+json", "MonitoringFeature")))
+                        .put("ObservableProperty", MediaType.parseMediaType(String.format("application/vnd.%s+json", "ObservableProperty")))
+                        .put("ObservationPlaceholder", MediaType.parseMediaType(String.format("application/vnd.%s+json", "ObservationPlaceholder")))
+                        .put("OperatingRange", MediaType.parseMediaType(String.format("application/vnd.%s+json", "OperatingRange")))
+                        .put("Person", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Person")))
+                        .put("SampleFeature", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SampleFeature")))
+                        .put("Sensor", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Sensor")))
+                        .put("SensorType", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SensorType")))
+                        .put("SingleSystemDeployment", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SingleSystemDeployment")))
+                        .put("Stimulus", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Stimulus")))
+                        .put("SystemCapability", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SystemCapability")))
+                        .put("SystemProperty", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SystemProperty")))
+                        .put("TemporalProcedure", MediaType.parseMediaType(String.format("application/vnd.%s+json", "TemporalProcedure")))
+                        .put("VerticalMonitoringFeature", MediaType.parseMediaType(String.format("application/vnd.%s+json", "VerticalMonitoringFeature")))
+
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo
