@@ -24,7 +24,7 @@
               <li><a href="/documents/${id}/permission" ><i class="fas fa-users"></i> Permissions</a></li>
               <li><a href="/documents/${id}/publication" ><i class="fas fa-eye"></i> Publication status</a></li>
               <li role="separator" class="divider"></li>
-              <li><a href="/documents/${id}/catalogue" class="catalogue-control"><i class="fas fa-sign-out-alt"></i> Move catalogues</a></li>
+              <li><a href="/documents/${id}/catalogue" class="catalogue-control"><i class="fas fa-sign-out-alt"></i> Move to a different catalogue</a></li>
             </ul>
           </div>
         </div>
