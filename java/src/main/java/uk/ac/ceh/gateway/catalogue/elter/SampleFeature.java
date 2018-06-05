@@ -7,13 +7,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Accessors(chain = true)
-public class SampleFeature extends AbstractMetadataDocument implements Feature {
+public class SampleFeature extends Feature {
   private Feature parentFeature;
   private Date takenAt;
   private SamplingMethod samplingMethod;

@@ -69,7 +69,6 @@ dependencies {
     implementation "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:springsecurity-userstore:${cehComponentsVersion}"
     implementation 'org.hibernate:hibernate-validator:6.0.1.Final'
-    implementation "com.fasterxml.jackson.module:jackson-module-jsonSchema:${jacksonVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-guava:${jacksonVersion}"
     implementation "com.google.guava:guava:23.0"

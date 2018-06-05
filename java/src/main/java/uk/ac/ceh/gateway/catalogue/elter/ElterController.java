@@ -3,10 +3,6 @@ package uk.ac.ceh.gateway.catalogue.elter;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import lombok.SneakyThrows;
-import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.controllers.AbstractDocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -35,37 +29,15 @@ public class ElterController extends AbstractDocumentController {
         super(documentRepository);
     }
 
-    @SneakyThrows
-    private static JsonSchema getJsonSchema(ObjectMapper mapper, Class clazz) {
-        JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(mapper);
-        return schemaGen.generateSchema(clazz);
-    }
-
     List<Class> classes = Arrays.asList(CompositeFeature.class, Condition.class, DeploymentRelatedProcessDuration.class,
             Input.class, Manufacturer.class, MonitoringFeature.class, ObservableProperty.class,
             ObservationPlaceholder.class, OperatingPropertyProperty.class, OperatingRange.class, Person.class,
-            RangedAttribute.class, SampleFeature.class, Sensor.class, SensorType.class, SingleSystemDeployment.class,
-            SingleValueAttribute.class, Stimulus.class, SystemCapability.class, SystemProperty.class,
-            TemporalProcedure.class, VerticalMonitoringFeature.class);
+            SampleFeature.class, Sensor.class, SensorType.class, SingleSystemDeployment.class, Stimulus.class,
+            SystemCapability.class, SystemProperty.class, TemporalProcedure.class, VerticalMonitoringFeature.class);
 
-    @PreAuthorize("@permission.userCanCreate('elter')")
     @RequestMapping(value = "/elter/create", method = RequestMethod.GET)
     public ResponseEntity<List<Class>> create(@ActiveUser CatalogueUser user) {
         return ResponseEntity.ok(classes);
-    }
-
-    @PreAuthorize("@permission.userCanCreate('elter')")
-    @RequestMapping(value = "/elter/schema", method = RequestMethod.GET)
-    public ResponseEntity<Object> schema(@ActiveUser CatalogueUser user, @RequestParam(value = "name") String name) {
-        try {
-            val clazz = Class.forName(name);
-            if (!classes.contains(clazz))
-                return ResponseEntity.badRequest().body(String.format("%s is invalid", name));
-            val mapper = new ObjectMapper();
-            return ResponseEntity.ok(getJsonSchema(mapper, clazz));
-        } catch (ClassNotFoundException exp) {
-            return ResponseEntity.badRequest().body(String.format("%s is invalid", name));
-        }
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")

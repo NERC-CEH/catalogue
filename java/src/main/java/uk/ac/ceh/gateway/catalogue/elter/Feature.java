@@ -1,4 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
-public interface Feature {
+import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+
+public class Feature extends AbstractMetadataDocument {
 }

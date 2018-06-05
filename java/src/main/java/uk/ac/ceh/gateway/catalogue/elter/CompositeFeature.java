@@ -6,13 +6,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Accessors(chain = true)
-public class CompositeFeature extends AbstractMetadataDocument implements Feature {
+public class CompositeFeature extends Feature {
   private ObservationPlaceholder observationStream;
   private List<ObservableProperty> hasPropery;
   private List<ObservationPlaceholder> isFeatureOfInterestTo;
