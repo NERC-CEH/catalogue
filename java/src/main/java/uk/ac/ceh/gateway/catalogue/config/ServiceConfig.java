@@ -8,15 +8,6 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.GEMINI_D
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.IMP_DOCUMENT;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.LINK_DOCUMENT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATA_TYPE_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_INPUT_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_MANUFACTURER_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_PERSON_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_AGENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_DATASET_SHORT;
@@ -84,16 +75,25 @@ import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
-import uk.ac.ceh.gateway.catalogue.elter.DeploymentRelatedProcessDurationDocument;
-import uk.ac.ceh.gateway.catalogue.elter.ElterService;
-import uk.ac.ceh.gateway.catalogue.elter.FeatureOfInterestDocument;
-import uk.ac.ceh.gateway.catalogue.elter.InputDocument;
-import uk.ac.ceh.gateway.catalogue.elter.ManufacturerDocument;
-import uk.ac.ceh.gateway.catalogue.elter.ObservationPlaceholderDocument;
-import uk.ac.ceh.gateway.catalogue.elter.PersonDocument;
-import uk.ac.ceh.gateway.catalogue.elter.SensorDocument;
-import uk.ac.ceh.gateway.catalogue.elter.SingleSystemDeploymentDocument;
-import uk.ac.ceh.gateway.catalogue.elter.TemporalProcedureDocument;
+import uk.ac.ceh.gateway.catalogue.elter.CompositeFeature;
+import uk.ac.ceh.gateway.catalogue.elter.Condition;
+import uk.ac.ceh.gateway.catalogue.elter.DeploymentRelatedProcessDuration;
+import uk.ac.ceh.gateway.catalogue.elter.Input;
+import uk.ac.ceh.gateway.catalogue.elter.Manufacturer;
+import uk.ac.ceh.gateway.catalogue.elter.MonitoringFeature;
+import uk.ac.ceh.gateway.catalogue.elter.ObservableProperty;
+import uk.ac.ceh.gateway.catalogue.elter.ObservationPlaceholder;
+import uk.ac.ceh.gateway.catalogue.elter.OperatingRange;
+import uk.ac.ceh.gateway.catalogue.elter.Person;
+import uk.ac.ceh.gateway.catalogue.elter.SampleFeature;
+import uk.ac.ceh.gateway.catalogue.elter.Sensor;
+import uk.ac.ceh.gateway.catalogue.elter.SensorType;
+import uk.ac.ceh.gateway.catalogue.elter.SingleSystemDeployment;
+import uk.ac.ceh.gateway.catalogue.elter.Stimulus;
+import uk.ac.ceh.gateway.catalogue.elter.SystemCapability;
+import uk.ac.ceh.gateway.catalogue.elter.SystemProperty;
+import uk.ac.ceh.gateway.catalogue.elter.TemporalProcedure;
+import uk.ac.ceh.gateway.catalogue.elter.VerticalMonitoringFeature;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.graph.GraphService;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
@@ -113,7 +113,6 @@ import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.SensorManufacturerIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkDocumentGenerator;
@@ -228,12 +227,6 @@ public class ServiceConfig {
     }
 
     @Bean
-    public ElterService elterService() {
-        return new ElterService(solrServer);
-    }
-
-
-    @Bean
     public GraphService graphService() {
         return new GraphService(jenaTdb);
     }
@@ -338,17 +331,6 @@ public class ServiceConfig {
         converters.add(new WmsFeatureInfo2XmlMessageConverter());
         converters.add(mappingJackson2HttpMessageConverter);
 
-        // eLTER converters
-        converters.add(new Object2TemplatedMessageConverter<>(SensorDocument.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(ManufacturerDocument.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(FeatureOfInterestDocument.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(ObservationPlaceholderDocument.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(InputDocument.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(SingleSystemDeploymentDocument.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(DeploymentRelatedProcessDurationDocument.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(PersonDocument.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(TemporalProcedureDocument.class, freemarkerConfiguration()));
-
         converters.add(new Object2TemplatedMessageConverter<>(UploadDocument.class, freemarkerConfiguration()));
 
         converters.add(new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration()));
@@ -380,7 +362,6 @@ public class ServiceConfig {
         shared.put("downloadOrderDetails", downloadOrderDetailsService());
         shared.put("permission", permission());
         shared.put("jira", jiraService());
-        shared.put("elter", elterService());
         shared.put("graph", graphService());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
@@ -449,15 +430,27 @@ public class ServiceConfig {
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
                 .register(UPLOAD_DOCUMENT_SHORT, UploadDocument.class)
-                .register(ELTER_SENSOR_DOCUMENT_SHORT, SensorDocument.class)
-                .register(ELTER_MANUFACTURER_DOCUMENT_SHORT, ManufacturerDocument.class)
-                .register(ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT, FeatureOfInterestDocument.class)
-                .register(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT, ObservationPlaceholderDocument.class)
-                .register(ELTER_INPUT_DOCUMENT_SHORT, InputDocument.class)
-                .register(ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT, SingleSystemDeploymentDocument.class)
-                .register(ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT, DeploymentRelatedProcessDurationDocument.class)
-                .register(ELTER_PERSON_DOCUMENT_SHORT, PersonDocument.class)
-                .register(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT, TemporalProcedureDocument.class)
+
+                .register("CompositeFeature", CompositeFeature.class)
+                .register("Condition", Condition.class)
+                .register("DeploymentRelatedProcessDuration", DeploymentRelatedProcessDuration.class)
+                .register("Input", Input.class)
+                .register("Manufacturer", Manufacturer.class)
+                .register("MonitoringFeature", MonitoringFeature.class)
+                .register("ObservableProperty", ObservableProperty.class)
+                .register("ObservationPlaceholder", ObservationPlaceholder.class)
+                .register("OperatingRange", OperatingRange.class)
+                .register("Person", Person.class)
+                .register("SampleFeature", SampleFeature.class)
+                .register("Sensor", Sensor.class)
+                .register("SensorType", SensorType.class)
+                .register("SingleSystemDeployment", SingleSystemDeployment.class)
+                .register("Stimulus", Stimulus.class)
+                .register("SystemCapability", SystemCapability.class)
+                .register("SystemProperty", SystemProperty.class)
+                .register("TemporalProcedure", TemporalProcedure.class)
+                .register("VerticalMonitoringFeature", VerticalMonitoringFeature.class)
+
                 .register(DATA_TYPE_SHORT, DataType.class);
     }
     
@@ -546,7 +539,6 @@ public class ServiceConfig {
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
             .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
-            .register(SensorDocument.class, new SensorManufacturerIndexGenerator(metadataDocumentGenerator))
             .register(MetadataDocument.class, metadataDocumentGenerator);
         
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry<>(mappings);

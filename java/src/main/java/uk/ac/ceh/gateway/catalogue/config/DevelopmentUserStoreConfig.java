@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+
 import uk.ac.ceh.components.userstore.UsernameAlreadyTakenException;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryGroupStore;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
@@ -54,6 +55,8 @@ public class DevelopmentUserStoreConfig {
         groupStore().grantGroupToUser(superadmin, EIDC_PUBLISHER);
         groupStore().grantGroupToUser(superadmin, MAINTENANCE_ROLE);
         groupStore().grantGroupToUser(superadmin, DATACITE_ROLE);
+        groupStore().grantGroupToUser(superadmin, ELTER_EDITOR);
+        groupStore().grantGroupToUser(superadmin, ELTER_PUBLISHER);
         userStore().addUser(superadmin, "superadminpassword");
         return superadmin;
     }
