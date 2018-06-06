@@ -49,6 +49,11 @@ public class SolrIndex {
     private @Field List<String> inmsDemonstrationRegion;
     private @Field String manufacturer;
     private @Field String manufacturerName;
+    private @Field List<String> ncAssets;
+    private @Field List<String> ncCaseStudy;
+    private @Field List<String> ncDrivers;
+    private @Field List<String> ncEcosystemServices;
+    private @Field List<String> ncGeographicalScale;
 
     public SolrIndex addLocations(List<String> locations) {
         this.locations.addAll(locations);

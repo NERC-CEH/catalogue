@@ -12,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 
 import java.util.*;
 import java.util.function.Function;
@@ -35,10 +36,17 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static final String INMS_MODEL_TYPE_URL = "http://vocabs.ceh.ac.uk/inms/model_type";
     public static final String INMS_WATER_POLLUTANT_URL = "http://vocabs.ceh.ac.uk/inms/wp/";
     public static final String INMS_REGION_URL = "http://vocabs.ceh.ac.uk/inms/region";
+
+    public static final String NC_ASSETS_URL = "http://vocabs.ceh.ac.uk/ncterms/assets";
+    public static final String NC_CASE_STUDY_URL = "http://vocabs.ceh.ac.uk/ncterms/case_study";
+    public static final String NC_DRIVERS_URL = "http://vocabs.ceh.ac.uk/ncterms/drivers";
+    public static final String NC_ECOSYSTEM_SERVICES_URL = "http://vocabs.ceh.ac.uk/ncterms/ecosystem_services";
+    public static final String NC_GEOGRAPHICAL_SCALE_URL = "http://vocabs.ceh.ac.uk/ncterms/geographical_scale";
     
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     private final SolrGeometryService geometryService;
+    private final VocabularyService vocabularyService;
 
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
@@ -60,7 +68,12 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setImpWaterPollutant(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_POLLUTANT_URL, INMS_WATER_POLLUTANT_URL), Keyword::getValue))
             .setInmsDemonstrationRegion(grab(getKeywordsFilteredByUrlFragment(document, INMS_REGION_URL), Keyword::getValue))
             .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue))
-            .setLocations(getLocations(document));
+            .setLocations(getLocations(document))
+            .setNcAssets(grab(getKeywordsByVocabulary(document, NC_ASSETS_URL), Keyword::getValue))
+            .setNcCaseStudy(grab(getKeywordsByVocabulary(document, NC_CASE_STUDY_URL), Keyword::getValue))
+            .setNcDrivers(grab(getKeywordsByVocabulary(document, NC_DRIVERS_URL), Keyword::getValue))
+            .setNcEcosystemServices(grab(getKeywordsByVocabulary(document, NC_ECOSYSTEM_SERVICES_URL), Keyword::getValue))
+            .setNcGeographicalScale(grab(getKeywordsByVocabulary(document, NC_GEOGRAPHICAL_SCALE_URL), Keyword::getValue));
     }
 
     private List<String> getLocations(MetadataDocument document) {
@@ -117,6 +130,14 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                 .stream()
                 .filter(k -> Arrays.stream(urlFragments).anyMatch(urlFragment -> k.getUri().startsWith(urlFragment)))
                 .collect(Collectors.toList());
+    }
+
+    private List<Keyword> getKeywordsByVocabulary(MetadataDocument document, String broaderUrl) {
+        return Optional.ofNullable(document.getAllKeywords())
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter(k -> this.vocabularyService.isMember(broaderUrl, k.getUri()))
+            .collect(Collectors.toList());
     }
     
     private List<String> impScale(MetadataDocument document) {

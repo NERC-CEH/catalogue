@@ -1,44 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.CEH_MODEL;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.CEH_MODEL_APPLICATION;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.DEPOSIT_REQUEST_DOCUMENT;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.EF_DOCUMENT;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.GEMINI_DOCUMENT;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.IMP_DOCUMENT;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.LINK_DOCUMENT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATA_TYPE_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_AGENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_DATASET_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MODEL_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_ACTIVITY_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_FACILITY_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_PROGRAMME_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_PUBLICATION_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_SAMPLE_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_SHORT;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.validation.Schema;
-import javax.xml.xpath.XPathExpressionException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-
+import freemarker.cache.FileTemplateLoader;
+import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.TemplateModelException;
+import lombok.Data;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -56,91 +28,22 @@ import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
-
-import freemarker.cache.FileTemplateLoader;
-import freemarker.template.Template;
-import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.TemplateModelException;
-import lombok.Data;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
-import uk.ac.ceh.gateway.catalogue.ef.Activity;
-import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
-import uk.ac.ceh.gateway.catalogue.ef.Facility;
-import uk.ac.ceh.gateway.catalogue.ef.Network;
-import uk.ac.ceh.gateway.catalogue.ef.Programme;
-import uk.ac.ceh.gateway.catalogue.elter.CompositeFeature;
-import uk.ac.ceh.gateway.catalogue.elter.Condition;
-import uk.ac.ceh.gateway.catalogue.elter.DeploymentRelatedProcessDuration;
-import uk.ac.ceh.gateway.catalogue.elter.Input;
-import uk.ac.ceh.gateway.catalogue.elter.Manufacturer;
-import uk.ac.ceh.gateway.catalogue.elter.MonitoringFeature;
-import uk.ac.ceh.gateway.catalogue.elter.ObservableProperty;
-import uk.ac.ceh.gateway.catalogue.elter.ObservationPlaceholder;
-import uk.ac.ceh.gateway.catalogue.elter.OperatingRange;
-import uk.ac.ceh.gateway.catalogue.elter.Person;
-import uk.ac.ceh.gateway.catalogue.elter.SampleFeature;
-import uk.ac.ceh.gateway.catalogue.elter.Sensor;
-import uk.ac.ceh.gateway.catalogue.elter.SensorType;
-import uk.ac.ceh.gateway.catalogue.elter.SingleSystemDeployment;
-import uk.ac.ceh.gateway.catalogue.elter.Stimulus;
-import uk.ac.ceh.gateway.catalogue.elter.SystemCapability;
-import uk.ac.ceh.gateway.catalogue.elter.SystemProperty;
-import uk.ac.ceh.gateway.catalogue.elter.TemporalProcedure;
-import uk.ac.ceh.gateway.catalogue.elter.VerticalMonitoringFeature;
+import uk.ac.ceh.gateway.catalogue.converters.*;
+import uk.ac.ceh.gateway.catalogue.ef.*;
+import uk.ac.ceh.gateway.catalogue.elter.*;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.graph.GraphService;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
-import uk.ac.ceh.gateway.catalogue.indexing.AsyncDocumentIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.DataciteIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.ExtractTopicFromDocument;
-import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.IndexGeneratorRegistry;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexBaseMonitoringTypeGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexGeminiDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexLinkDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexMetadataDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.JenaIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexGeminiDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexLinkDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.Citation;
-import uk.ac.ceh.gateway.catalogue.model.DataType;
-import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
-import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
-import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
-import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
-import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
-import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
+import uk.ac.ceh.gateway.catalogue.indexing.*;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
-import uk.ac.ceh.gateway.catalogue.osdp.Agent;
-import uk.ac.ceh.gateway.catalogue.osdp.MonitoringActivity;
-import uk.ac.ceh.gateway.catalogue.osdp.MonitoringFacility;
-import uk.ac.ceh.gateway.catalogue.osdp.MonitoringProgramme;
-import uk.ac.ceh.gateway.catalogue.osdp.Publication;
-import uk.ac.ceh.gateway.catalogue.osdp.Sample;
+import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
@@ -153,33 +56,10 @@ import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.services.CitationService;
-import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
-import uk.ac.ceh.gateway.catalogue.services.DataciteService;
-import uk.ac.ceh.gateway.catalogue.services.DepositRequestService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReadingService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentTypeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
-import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService;
-import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
-import uk.ac.ceh.gateway.catalogue.services.GeminiExtractorService;
-import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
-import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
-import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
-import uk.ac.ceh.gateway.catalogue.services.JiraService;
-import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
-import uk.ac.ceh.gateway.catalogue.services.MessageConverterReadingService;
-import uk.ac.ceh.gateway.catalogue.services.MessageConverterWritingService;
-import uk.ac.ceh.gateway.catalogue.services.MetadataInfoBundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
-import uk.ac.ceh.gateway.catalogue.services.PermissionService;
-import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
-import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
+import uk.ac.ceh.gateway.catalogue.services.*;
+import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
+import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
+import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
 import uk.ac.ceh.gateway.catalogue.upload.UploadDocumentService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
@@ -187,6 +67,16 @@ import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
+
+import javax.xml.validation.Schema;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.*;
+
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.*;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
 @Configuration
 public class ServiceConfig {
@@ -202,6 +92,8 @@ public class ServiceConfig {
     @Value("${plone.username}") private String ploneUsername;
     @Value("${plone.password}") private String plonePassword;
     @Value("${plone.address}") private String ploneAddress;
+    @Value("sparql.endpoint") private String sparqlEndpoint;
+    @Value("sparql.graph") private String sparqlGraph;
     
     @Autowired private ObjectMapper jacksonMapper;
     @Autowired private DataRepository<CatalogueUser> dataRepository;
@@ -529,10 +421,22 @@ public class ServiceConfig {
                 .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb));
         return new ClassMapPostProcessingService(mappings);
     }
+
+    @Bean
+    public VocabularyService vocabularyService() {
+        SparqlVocabularyRetriever retriever = new SparqlVocabularyRetriever(new RestTemplate());
+        Multimap<String, String> multimap = retriever.retrieve(sparqlEndpoint, sparqlGraph);
+        return new SparqlVocabularyService(multimap);
+    }
     
     @Bean(initMethod = "initialIndex") @Qualifier("solr-index")
     public SolrIndexingService<MetadataDocument> documentIndexingService() throws XPathExpressionException, IOException, TemplateModelException {
-        SolrIndexMetadataDocumentGenerator metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(codeLookupService, documentIdentifierService(),solrGeometryService());
+        SolrIndexMetadataDocumentGenerator metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(
+            codeLookupService,
+            documentIdentifierService(),
+            solrGeometryService(),
+            vocabularyService()
+        );
         SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
         solrIndexLinkDocumentGenerator.setRepository(documentRepository());
         

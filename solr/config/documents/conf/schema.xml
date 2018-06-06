@@ -33,6 +33,11 @@
       <field name="impWaterPollutant" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="modelType" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="inmsDemonstrationRegion" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="ncAssets" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="ncCaseStudy" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="ncDrivers" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="ncEcosystemServices" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
+      <field name="ncGeographicalScale" type="keyword" indexed="true" stored="true" required="false" multiValued="true"/>
       <field name="manufacturer" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="manufacturerName" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
