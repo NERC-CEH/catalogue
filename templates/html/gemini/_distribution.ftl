@@ -39,7 +39,7 @@
           <#if reasonChanged??>
             <p class="reasonChangedDescription">${reasonChanged?html?replace("\n", "<br>")}</p>
           </#if>
-          <p>If you need access to the archived version, please <a href="#">contact EIDC</a></p>
+          <p>If you need access to the archived version, please <a href="http://eidc.ceh.ac.uk/contact" target="_blank" rel="noopener noreferrer">contact the EIDC</a></p>
         <#elseif resourceStatus == "Current" || resourceStatus == "Retired" >
           <#if downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || mapViewable || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) >
             <#if (downloadOrder.orderable)?? && downloadOrder.orderable>
