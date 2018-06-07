@@ -47,6 +47,7 @@ public class DocumentReader<T extends MetadataDocument> {
       .put("MonitoringFeature", String.format("application/vnd.%s+json", "MonitoringFeature"))
       .put("ObservableProperty", String.format("application/vnd.%s+json", "ObservableProperty"))
       .put("ObservationPlaceholder", String.format("application/vnd.%s+json", "ObservationPlaceholder"))
+      .put("OperatingProperty", String.format("application/vnd.%s+json", "OperatingProperty"))
       .put("OperatingRange", String.format("application/vnd.%s+json", "OperatingRange"))
       .put("Person", String.format("application/vnd.%s+json", "Person"))
       .put("SampleFeature", String.format("application/vnd.%s+json", "SampleFeature"))

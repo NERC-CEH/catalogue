@@ -258,6 +258,7 @@ public class CatalogueServiceConfig {
                 .documentType(DocumentType.builder().title("MonitoringFeature").type("MonitoringFeature").build())
                 .documentType(DocumentType.builder().title("ObservableProperty").type("ObservableProperty").build())
                 .documentType(DocumentType.builder().title("ObservationPlaceholder").type("ObservationPlaceholder").build())
+                .documentType(DocumentType.builder().title("OperatingProperty").type("OperatingProperty").build())
                 .documentType(DocumentType.builder().title("OperatingRange").type("OperatingRange").build())
                 .documentType(DocumentType.builder().title("Person").type("Person").build())
                 .documentType(DocumentType.builder().title("SampleFeature").type("SampleFeature").build())
