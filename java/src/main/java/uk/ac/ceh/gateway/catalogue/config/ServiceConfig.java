@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
@@ -11,6 +10,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateModelException;
 import lombok.Data;
+import lombok.val;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -92,8 +92,8 @@ public class ServiceConfig {
     @Value("${plone.username}") private String ploneUsername;
     @Value("${plone.password}") private String plonePassword;
     @Value("${plone.address}") private String ploneAddress;
-    @Value("sparql.endpoint") private String sparqlEndpoint;
-    @Value("sparql.graph") private String sparqlGraph;
+    @Value("${sparql.endpoint}") private String sparqlEndpoint;
+    @Value("${sparql.graph}") private String sparqlGraph;
     
     @Autowired private ObjectMapper jacksonMapper;
     @Autowired private DataRepository<CatalogueUser> dataRepository;
@@ -175,7 +175,7 @@ public class ServiceConfig {
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setObjectMapper(jacksonMapper);
-        
+
         // EF Message Converters  
         converters.add(new Object2TemplatedMessageConverter<>(Activity.class,  freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(Facility.class,  freemarkerConfiguration()));
@@ -424,9 +424,18 @@ public class ServiceConfig {
 
     @Bean
     public VocabularyService vocabularyService() {
-        SparqlVocabularyRetriever retriever = new SparqlVocabularyRetriever(new RestTemplate());
-        Multimap<String, String> multimap = retriever.retrieve(sparqlEndpoint, sparqlGraph);
-        return new SparqlVocabularyService(multimap);
+        val messageConverter = new MappingJackson2HttpMessageConverter();
+        messageConverter.setObjectMapper(jacksonMapper);
+        messageConverter.setSupportedMediaTypes(
+            Arrays.asList(
+                MediaType.APPLICATION_JSON,
+                new MediaType("application", "*+json"),
+                new MediaType("application", "*+json-simple")
+            )
+        );
+        val restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(Arrays.asList(messageConverter));
+        return new SparqlVocabularyService(new SparqlVocabularyRetriever(restTemplate, sparqlEndpoint, sparqlGraph).retrieve());
     }
     
     @Bean(initMethod = "initialIndex") @Qualifier("solr-index")
