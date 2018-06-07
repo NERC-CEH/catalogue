@@ -31,7 +31,7 @@ public class ElterController extends AbstractDocumentController {
 
     List<Class> classes = Arrays.asList(CompositeFeature.class, Condition.class, DeploymentRelatedProcessDuration.class,
             Input.class, Manufacturer.class, MonitoringFeature.class, ObservableProperty.class,
-            ObservationPlaceholder.class, OperatingPropertyProperty.class, OperatingRange.class, Person.class,
+            ObservationPlaceholder.class, OperatingProperty.class, OperatingRange.class, Person.class,
             SampleFeature.class, Sensor.class, SensorType.class, SingleSystemDeployment.class, Stimulus.class,
             SystemCapability.class, SystemProperty.class, TemporalProcedure.class, VerticalMonitoringFeature.class);
 
@@ -162,6 +162,22 @@ public class ElterController extends AbstractDocumentController {
             @RequestBody ObservationPlaceholder document, @RequestParam("catalogue") String catalogue)
             throws DocumentRepositoryException {
         return saveNewMetadataDocument(user, document, catalogue, "new ObservationPlaceholder");
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = "application/vnd.OperatingProperty+json")
+    public ResponseEntity<MetadataDocument> updateOperatingProperty(@ActiveUser CatalogueUser user,
+            @PathVariable("file") String file, @RequestBody OperatingProperty document)
+            throws DocumentRepositoryException {
+        return saveMetadataDocument(user, file, document);
+    }
+
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = "application/vnd.OperatingProperty+json")
+    public ResponseEntity<MetadataDocument> saveNewOperatingProperty(@ActiveUser CatalogueUser user,
+            @RequestBody OperatingProperty document, @RequestParam("catalogue") String catalogue)
+            throws DocumentRepositoryException {
+        return saveNewMetadataDocument(user, document, catalogue, "new OperatingProperty");
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")

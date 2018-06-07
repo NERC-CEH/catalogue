@@ -348,11 +348,13 @@ define [
               organisationName: 'Environmental Information Data Centre'
               role: 'distributor'
               email: 'eidc@ceh.ac.uk'
+            'EMBL-EBI':
+              organisationName: 'The European Bioinformatics Institute (EMBL-EBI)'
+              role: 'distributor'
             'Other distributor':
               role: 'distributor'
           helpText: """
                     <p>The organisation responsible for distributing the data resource</p>
-                    <p>It <b>MUST</b> include an email address, role and an organisation name.  Other elements are optional.</p>
                     """
       ]
     ,

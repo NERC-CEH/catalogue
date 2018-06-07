@@ -8,7 +8,7 @@
     
     <#if dataPapers?has_content>
       <div class="supplemental-block">
-        <h4>Data papers that describe this ${resourceType.value}:</h4>
+        <h4>Data papers that describe this ${codes.lookup('metadata.recordType',resourceType.value)?lower_case}:</h4>
         <#list dataPapers as supplement>
         ${func.displaySupplemental(supplement)}
         </#list>
@@ -17,7 +17,7 @@
 
     <#if citedBy?has_content>
       <div class="supplemental-block">
-        <h4>This ${resourceType.value} is cited by:</h4>
+        <h4>This ${codes.lookup('metadata.recordType',resourceType.value)?lower_case} is cited by:</h4>
         <#list citedBy as supplement>
          ${func.displaySupplemental(supplement)}
         </#list>
@@ -26,7 +26,7 @@
 
     <#if supOther?has_content || website?has_content>
       <div class="supplemental-block">
-        <h4>Other useful information regarding this ${resourceType.value}:</h4>
+        <h4>Other useful information regarding this ${codes.lookup('metadata.recordType',resourceType.value)?lower_case}:</h4>
         <#if supOther?has_content >
           <#list supOther as supplement>
               ${func.displaySupplemental(supplement true)}

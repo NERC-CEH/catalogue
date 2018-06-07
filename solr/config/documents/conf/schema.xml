@@ -10,8 +10,7 @@
       <field name="resourceStatus" type="keyword" indexed="true" stored="true" multiValued="false"/>
       <field name="version" type="float" indexed="true" stored="true" multiValued="false" default="1"/>
       <field name="organisation" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
-      <field name="individual" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
-      <field name="surname" type="name" indexed="true" stored="true" multiValued="true"/>
+      <field name="individual" type="keyword" indexed="true" stored="true" multiValued="true"/>
       <field name="orcid" type="orcid" indexed="true" stored="true" multiValued="true"/>
       <field name="onlineResourceName" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="onlineResourceDescription" type="text_general" indexed="true" stored="true" multiValued="true"/>
@@ -42,7 +41,9 @@
       <field name="manufacturerName" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
       <dynamicField name="random*" type="random" indexed="true" stored="false"/>
+      <dynamicField name="surname*" type="name" indexed="true" stored="false" multiValued="true"/>
     </fields>
+    <copyField source="individual" dest="surname" multiValued="true" />
     <types>
         <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
         <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>

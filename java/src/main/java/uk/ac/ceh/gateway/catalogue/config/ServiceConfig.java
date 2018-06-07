@@ -331,6 +331,7 @@ public class ServiceConfig {
                 .register("MonitoringFeature", MonitoringFeature.class)
                 .register("ObservableProperty", ObservableProperty.class)
                 .register("ObservationPlaceholder", ObservationPlaceholder.class)
+                .register("OperatingProperty", OperatingProperty.class)
                 .register("OperatingRange", OperatingRange.class)
                 .register("Person", Person.class)
                 .register("SampleFeature", SampleFeature.class)
