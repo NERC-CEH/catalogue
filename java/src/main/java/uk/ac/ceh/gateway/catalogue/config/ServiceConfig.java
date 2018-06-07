@@ -83,6 +83,7 @@ import uk.ac.ceh.gateway.catalogue.elter.Manufacturer;
 import uk.ac.ceh.gateway.catalogue.elter.MonitoringFeature;
 import uk.ac.ceh.gateway.catalogue.elter.ObservableProperty;
 import uk.ac.ceh.gateway.catalogue.elter.ObservationPlaceholder;
+import uk.ac.ceh.gateway.catalogue.elter.OperatingProperty;
 import uk.ac.ceh.gateway.catalogue.elter.OperatingRange;
 import uk.ac.ceh.gateway.catalogue.elter.Person;
 import uk.ac.ceh.gateway.catalogue.elter.SampleFeature;
@@ -439,6 +440,7 @@ public class ServiceConfig {
                 .register("MonitoringFeature", MonitoringFeature.class)
                 .register("ObservableProperty", ObservableProperty.class)
                 .register("ObservationPlaceholder", ObservationPlaceholder.class)
+                .register("OperatingProperty", OperatingProperty.class)
                 .register("OperatingRange", OperatingRange.class)
                 .register("Person", Person.class)
                 .register("SampleFeature", SampleFeature.class)

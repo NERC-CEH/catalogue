@@ -173,6 +173,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put("MonitoringFeature", MediaType.parseMediaType(String.format("application/vnd.%s+json", "MonitoringFeature")))
                         .put("ObservableProperty", MediaType.parseMediaType(String.format("application/vnd.%s+json", "ObservableProperty")))
                         .put("ObservationPlaceholder", MediaType.parseMediaType(String.format("application/vnd.%s+json", "ObservationPlaceholder")))
+                        .put("OperatingProperty", MediaType.parseMediaType(String.format("application/vnd.%s+json", "OperatingProperty")))
                         .put("OperatingRange", MediaType.parseMediaType(String.format("application/vnd.%s+json", "OperatingRange")))
                         .put("Person", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Person")))
                         .put("SampleFeature", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SampleFeature")))
