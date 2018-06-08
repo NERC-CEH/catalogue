@@ -8,15 +8,13 @@ import com.google.common.collect.Lists;
 import lombok.Value;
 import lombok.Builder;
 
-
 @Value
 public class DataTypeSchema {
-    private final String name, title, description, type, units, format, maximum, minimum, maxLength, minLength;
-    private final boolean unique;
+    private final String name, title, description, type, units, format;
+    private final Constraints constraints; //HERE
 
     @Builder
     @JsonCreator
-    //@JsonIgnoreProperties({"empty"})
     private DataTypeSchema(
         @JsonProperty("name") String name,
         @JsonProperty("title") String title,
@@ -24,23 +22,36 @@ public class DataTypeSchema {
         @JsonProperty("type") String type,
         @JsonProperty("units") String units,
         @JsonProperty("format") String format,
-        @JsonProperty("maximum") String maximum,
-        @JsonProperty("minimum") String minimum,
-        @JsonProperty("maxLength") String maxLength,
-        @JsonProperty("minLength") String minLength,
-        @JsonProperty("unique") boolean unique) {
-        this.name = name;
-        this.title = title;
-        this.description = description;
-        this.type = type;
-        this.units = units;
-        this.format = format;
-        this.maximum = maximum;
-        this.minimum = minimum;
-        this.maxLength = maxLength;
-        this.minLength = minLength;
-        this.unique = unique;
-        //this.unique = (unique = true) ? true : false;
-    }        
+        @JsonProperty("constraints") Constraints constraints) {
+        this.name =  nullToEmpty(name);
+        this.title =  nullToEmpty(title);
+        this.description =  nullToEmpty(description);
+        this.type =  nullToEmpty(type);
+        this.units =  nullToEmpty(units);
+        this.format =  nullToEmpty(format);
+        this.constraints = constraints;
+    }
 
+    @Value
+    @JsonIgnoreProperties({"empty"})
+    public static class Constraints {
+        private final String minimum, maximum, minLength, maxLength;
+        private final boolean unique;
+        
+        @Builder
+        @JsonCreator
+        private Constraints(
+            @JsonProperty("minimum") String minimum, 
+            @JsonProperty("maximum") String maximum,
+            @JsonProperty("minLength") String minLength,
+            @JsonProperty("maxLength") String maxLength,
+            @JsonProperty("unique") boolean unique) {
+            this.minimum = nullToEmpty(minimum);
+            this.maximum = nullToEmpty(maximum);
+            this.minLength = nullToEmpty(minLength);
+            this.maxLength = nullToEmpty(maxLength);
+            this.unique = unique;
+        }
+
+    }     
 }

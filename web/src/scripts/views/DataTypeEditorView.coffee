@@ -6,6 +6,7 @@ define [
   'cs!views/editor/ParentView'
   'cs!views/editor/PredefinedParentView'
   'cs!views/editor/DataTypeSchemaView'
+  'cs!models/editor/DataTypeSchema'
   'cs!views/editor/DataTypeProvenanceView'
 ], (
   EditorView,
@@ -15,6 +16,7 @@ define [
   ParentView,
   PredefinedParentView,
   DataTypeSchemaView,
+  DataTypeSchema,
   DataTypeProvenanceView
 ) -> EditorView.extend
 
@@ -35,14 +37,9 @@ define [
           rows: 5
           label: 'Description'
 
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'provenance'
-          label: 'Provenance'
-          ObjectInputView: DataTypeProvenanceView,
-        
         new PredefinedParentView
           model: @model
+          ModelType: DataTypeSchema
           modelAttribute: 'schema'
           multiline: true
           label: 'Schema'
@@ -83,6 +80,12 @@ define [
             'Year & month':
               type: 'yearmonth'
               format: 'YYYY-MM'
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'provenance'
+          label: 'Provenance'
+          ObjectInputView: DataTypeProvenanceView,        
       ]
     ]
 

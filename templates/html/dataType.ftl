@@ -44,6 +44,7 @@
           <th>Field</th>
           <th>Type</th>
           <th>Description</th>
+          <th>Constraints</th>
         </tr>
       </thead>
       <tbody>
@@ -51,7 +52,7 @@
       <tr>
         <td nowrap="nowrap">
           <#if schemaItem.name?? && schemaItem.name?has_content>
-          ${schemaItem.name}
+            ${schemaItem.name}
           </#if>
         </td>
         <td nowrap="nowrap">
@@ -64,7 +65,20 @@
         </td>
         <td>
           <#if schemaItem.description?? && schemaItem.description?has_content>
-            <span class="decript">${schemaItem.description}</span>
+            <span class="schema-description">${schemaItem.description}</span>
+          <#else>
+            <span class="nodata" />
+          </#if>
+        </td>
+        <td>
+          <#if schemaItem.constraints?? && schemaItem.constraints?has_content>
+            <span class="schema-constraints">
+              <#if schemaItem.constraints.minimum?has_content>Minimum : ${schemaItem.constraints.minimum}<br></#if>
+              <#if schemaItem.constraints.maximum?has_content>Maximum : ${schemaItem.constraints.maximum}<br></#if>
+              <#if schemaItem.constraints.minLength?has_content>Minimum length : ${schemaItem.constraints.minLength}<br></#if>
+              <#if schemaItem.constraints.maxLength?has_content>Maximum length : ${schemaItem.constraints.maxLength}<br></#if>
+              <#if schemaItem.constraints.unique=true>Is unique</#if>
+            </span>
           <#else>
             <span class="nodata" />
           </#if>
@@ -74,39 +88,8 @@
       </tbody></table>
       </#if>
 
-      <#if schema??>
-        <h1 class="section-heading">More schema stuff for tidying up</h1>
-        <#list schema as schemaItem>
-        <div class="schemaItem">
-          <#if schemaItem.name?? && schemaItem.name?has_content>
-            <div>name = ${schemaItem.name}</div>
-          </#if>
-          <#if schemaItem.title?? && schemaItem.title?has_content>
-            <div>title = ${schemaItem.title}</div>
-          </#if>
-          <#if schemaItem.type?? && schemaItem.type?has_content>
-            <div>
-              type = ${schemaItem.type}
-              <#if schemaItem.format?? && schemaItem.format?has_content>
-                <span>(${schemaItem.format})</span>
-              </#if>
-            </div>
-          </#if>
-          <#if schemaItem.description?? && schemaItem.description?has_content>
-            <div>Description = ${schemaItem.description}</div>
-          </#if>
-          <#--<#if schemaItem.primaryKey==true>
-            <div>primaryKey = Yes</div>
-          </#if>-->
-          <#if schemaItem.constraints?? && schemaItem.constraints?has_content>
-            <div>constraints = ${schemaItem.constraints}</div>
-          </#if>
-          <#if schemaItem.units?? && schemaItem.units?has_content>
-            <div>units = ${schemaItem.units}</div>
-          </#if>
-        </div>    
-        </#list>
-      </#if> 
+
+ 
       
       <#if provenance?? && (provenance.creationDate?? || provenance.modificationDate??)>
         <h1 class="section-heading">Provenance</h1>
@@ -121,10 +104,6 @@
         </#if>
       </#if>
       
-      <#if id?? && id?has_content>
-        <div>${id}</div>
-      </#if>
-
     </div>
   </div>
 </#escape>
