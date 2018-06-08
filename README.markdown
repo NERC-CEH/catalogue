@@ -16,6 +16,9 @@ The CEH metadata catalogue project.
 
 **NB:** `web/src/vendor/requirejs` needs to be left alone otherwise the build breaks
 
+## API
+[API documentation](docs/api.md)
+
 ## Usernames and Passwords
 
 you will need to create a `secrets.env` file with the following
