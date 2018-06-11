@@ -17,7 +17,7 @@
     <#if resourceType.value == 'signpost' >
       <div class="distribution-signpost">
         <#include "_signpost.ftl">
-        <#include "_formats.ftl">
+        
       </div>
     <#elseif resourceType.value == 'service' && mapViewable >
       <div class="distribution-service">

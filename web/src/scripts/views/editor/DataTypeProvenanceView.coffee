@@ -16,3 +16,5 @@ define [
         modelAttribute: 'contributors'
         label: 'Contributors'
     @
+
+  ## LOOK HERE!

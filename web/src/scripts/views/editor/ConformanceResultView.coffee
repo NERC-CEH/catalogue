@@ -12,4 +12,4 @@ define [
     @$('select').val @model.get 'dateType'
     @$("input[name='pass#{@data.index}'][value='#{@model.get('pass')}']")
       .prop 'checked', true
-    @
+    @  #see soo
