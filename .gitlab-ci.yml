@@ -54,6 +54,8 @@ java:
 .deployment_template: &deployment_definition # Hidden deployment definition for docker builds
   stage: docker
   image: gitlab/dind
+  dependencies:
+    - java
   only:
     - tags
 
@@ -74,6 +76,7 @@ build_solr:
 .puppet_deploy: &puppet_deployment_definition
   image: ruby:2
   stage: deploy
+  dependencies: []
   script:
     - curl $DEPLOYMENT_SCRIPT | bash
   only:
