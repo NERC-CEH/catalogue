@@ -5,7 +5,7 @@
 </#if>
 
 
-<#if permission.userCanEdit(id)>
+<#if resourceType?? && permission.userCanEdit(id)>
   <div class="row hidden-print" id="adminPanel">
     <div class="text-right" id="adminToolbar" role="toolbar">
       

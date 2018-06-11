@@ -298,13 +298,15 @@ define [
           ObjectInputView: ResourceConstraintView
           multiline: true
           predefined:
-            'Open Government Licence':
+            'Copyright - NERC':
+              value: '&copy; Natural Environment Research Council'
+              code: 'copyright'
+            'Copyright - NERC CEH':
+              value: '&copy; Natural Environment Research Council (Centre for Ecology &amp; Hydrology)'
+              code: 'copyright'
+            'Licence - OGL':
               value: 'This resource is made available under the terms of the Open Government Licence'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/cehOGL/plain'
-              code: 'license'
-            'Open Government Licence Non-CEH':
-              value: 'This resource is made available under the terms of the Open Government Licence'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGLnonceh/plain'
+              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL/plain'
               code: 'license'
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
@@ -482,8 +484,7 @@ define [
           label: 'Spatial resolution'
           ObjectInputView: SpatialResolutionView
           helpText: """
-                    <p>For gridded data, this is the area of the ground (in metres) represented in each pixel.</p>
-                    <p>For point data, the ground sample distance is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
+                    <p>This is an indication of the level of spatial detail/accuracy. Enter a distance OR equivalent scale but not both. For most datasets, <i>distance</i> is more appropriate.</p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
                     """
       ]
     ,  
