@@ -1,15 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATA_TYPE_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_INPUT_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_MANUFACTURER_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_PERSON_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SENSOR_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_AGENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_DATASET_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MODEL_SHORT;
@@ -43,7 +34,7 @@ public class CatalogueServiceConfig {
         String defaultCatalogueKey = "eidc";
 
         DocumentType gemini = DocumentType.builder()
-            .title("Data Resource")
+            .title("Data resource")
             .type(GEMINI_DOCUMENT)
             .build();
 
@@ -111,54 +102,9 @@ public class CatalogueServiceConfig {
             .title("Sample Archive")
             .type(SAMPLE_ARCHIVE_SHORT)
             .build();
-        
-        DocumentType elterSensor = DocumentType.builder()
-            .title("Sensor")
-            .type(ELTER_SENSOR_DOCUMENT_SHORT)
-            .build();
-        
-        DocumentType elterManufacturer = DocumentType.builder()
-            .title("Manufacturer")
-            .type(ELTER_MANUFACTURER_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterFeatureOfInterest = DocumentType.builder()
-            .title("Feature Of Interest")
-            .type(ELTER_FEATURE_OF_INTEREST_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterObservationPlaceholder = DocumentType.builder()
-            .title("Oberstion Placeholder")
-            .type(ELTER_OBSERVATION_PLACEHOLDER_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterTemporalProcedure = DocumentType.builder()
-            .title("Temporal Procedure")
-            .type(ELTER_TEMPORAL_PROCEDURE_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterInput = DocumentType.builder()
-            .title("Input")
-            .type(ELTER_INPUT_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterSingleSystDocument = DocumentType.builder()
-            .title("Single System Deployment")
-            .type(ELTER_SINGLE_SYSTEM_DEPLOYMENT_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterDeploymentRelatedProcessDuration = DocumentType.builder()
-            .title("Deployment Related Process Duration")
-            .type(ELTER_DEPLOYMENT_RELATED_PROCESS_DURATION_DOCUMENT_SHORT)
-            .build();
-
-        DocumentType elterPerson = DocumentType.builder()
-            .title("Person")
-            .type(ELTER_PERSON_DOCUMENT_SHORT)
-            .build();
 
         DocumentType dataType = DocumentType.builder()
-            .title("Data Type")
+            .title("Data type")
             .type(DATA_TYPE_SHORT)
             .build();
 
@@ -203,7 +149,7 @@ public class CatalogueServiceConfig {
                 .id("nc")
                 .title("Natural Capital")
                 .url("http://www.ceh.ac.uk")
-                .facetKey("resourceType")
+                .facetKey("recordType")
                 .documentType(gemini)
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
@@ -215,7 +161,7 @@ public class CatalogueServiceConfig {
                 .id("inms")
                 .title("International Nitrogen Management System")
                 .url("http://www.inms.international/")
-                .facetKey("resourceType")
+                .facetKey("recordType")
                 .facetKey("impScale")
                 .facetKey("impTopic")
                 .facetKey("inmsPollutant")
@@ -232,7 +178,7 @@ public class CatalogueServiceConfig {
                 .id("edge")
                 .title("EDgE")
                 .url("https://edge.climate.copernicus.eu")
-                .facetKey("resourceType")
+                .facetKey("recordType")
                 .documentType(gemini)
                 .documentType(link)
                 .fileUpload(true)
@@ -304,17 +250,27 @@ public class CatalogueServiceConfig {
                 .title("eLTER")
                 .url("http://www.ceh.ac.uk")
                 .facetKey("documentType")
-                .facetKey("manufacturer")
-                .facetKey("manufacturerName")
-                .documentType(elterSensor)
-                .documentType(elterManufacturer)
-                .documentType(elterFeatureOfInterest)
-                .documentType(elterObservationPlaceholder)
-                .documentType(elterTemporalProcedure)
-                .documentType(elterInput)
-                .documentType(elterSingleSystDocument)
-                .documentType(elterDeploymentRelatedProcessDuration)
-                .documentType(elterPerson)
+                .documentType(DocumentType.builder().title("CompositeFeature").type("CompositeFeature").build())
+                .documentType(DocumentType.builder().title("Condition").type("Condition").build())
+                .documentType(DocumentType.builder().title("DeploymentRelatedProcessDuration").type("DeploymentRelatedProcessDuration").build())
+                .documentType(DocumentType.builder().title("Input").type("Input").build())
+                .documentType(DocumentType.builder().title("Manufacturer").type("Manufacturer").build())
+                .documentType(DocumentType.builder().title("MonitoringFeature").type("MonitoringFeature").build())
+                .documentType(DocumentType.builder().title("ObservableProperty").type("ObservableProperty").build())
+                .documentType(DocumentType.builder().title("ObservationPlaceholder").type("ObservationPlaceholder").build())
+                .documentType(DocumentType.builder().title("OperatingProperty").type("OperatingProperty").build())
+                .documentType(DocumentType.builder().title("OperatingRange").type("OperatingRange").build())
+                .documentType(DocumentType.builder().title("Person").type("Person").build())
+                .documentType(DocumentType.builder().title("SampleFeature").type("SampleFeature").build())
+                .documentType(DocumentType.builder().title("Sensor").type("Sensor").build())
+                .documentType(DocumentType.builder().title("SensorType").type("SensorType").build())
+                .documentType(DocumentType.builder().title("SingleSystemDeployment").type("SingleSystemDeployment").build())
+                .documentType(DocumentType.builder().title("Stimulus").type("Stimulus").build())
+                .documentType(DocumentType.builder().title("SystemCapability").type("SystemCapability").build())
+                .documentType(DocumentType.builder().title("SystemProperty").type("SystemProperty").build())
+                .documentType(DocumentType.builder().title("TemporalProcedure").type("TemporalProcedure").build())
+                .documentType(DocumentType.builder().title("VerticalMonitoringFeature").type("VerticalMonitoringFeature").build())
+
                 .fileUpload(false)
                 .build()
         );

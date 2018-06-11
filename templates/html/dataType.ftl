@@ -1,7 +1,6 @@
 <#import "skeleton.ftl" as skeleton>
-<#import "new-form.ftl" as form>
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html?replace("\n", "<br>")>
 
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html?replace("\n", "<br>")>
 <style>
 /* temporary obvs */
 .admin {margin-top:1em;}
