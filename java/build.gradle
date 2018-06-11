@@ -9,8 +9,8 @@ plugins {
 ext {
     javaVersion = '1.8'
     cehComponentsVersion = '1.0.44'
-    springVersion = '4.3.10.RELEASE'
-    springSecurityVersion = '4.2.3.RELEASE'
+    springVersion = '4.3.17.RELEASE'
+    springSecurityVersion = '4.2.6.RELEASE'
     jacksonVersion = '2.9.0'
 }
 
@@ -68,7 +68,7 @@ dependencies {
     implementation "uk.ac.ceh.components:userstore-crowd:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:springsecurity-userstore:${cehComponentsVersion}"
-    implementation 'org.hibernate:hibernate-validator:6.0.1.Final'
+    implementation 'org.hibernate.validator:hibernate-validator:6.0.1.Final'
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-guava:${jacksonVersion}"
     implementation "com.google.guava:guava:23.0"
@@ -99,7 +99,7 @@ dependencies {
     testImplementation('junit:junit:4.12') {
         exclude(module: 'org.hamcrest-core')
     }
-    testImplementation('org.mockito:mockito-core:2.8.47') {
+    testImplementation('org.mockito:mockito-core:2.18.3') {
         exclude(module: 'org.hamcrest-core')
     }
     testImplementation 'org.hamcrest:hamcrest-all:1.3'

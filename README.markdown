@@ -79,7 +79,7 @@ If using System.out.println('foo'), you can grep it out like this:
 
 Run single tests:
     
-    gradle -Dtest.single=JiraService --info test -t
+    ./gradlew -Dtest.single=JiraService --info test -t
 
 --info spits out the error message and -t is watching for file changes and will re-run then
 

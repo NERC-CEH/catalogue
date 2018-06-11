@@ -116,6 +116,41 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Manufacturer")
                     .hierarchical(false)
                     .build();
+
+            case "ncAssets":
+                return Facet.builder()
+                    .fieldName("ncAssets")
+                    .displayName("Assets")
+                    .hierarchical(false)
+                    .build();
+
+            case "ncCaseStudy":
+                return Facet.builder()
+                    .fieldName("ncCaseStudy")
+                    .displayName("Case Study")
+                    .hierarchical(false)
+                    .build();
+
+            case "ncDrivers":
+                return Facet.builder()
+                    .fieldName("ncDrivers")
+                    .displayName("Drivers")
+                    .hierarchical(false)
+                    .build();
+
+            case "ncEcosystemServices":
+                return Facet.builder()
+                    .fieldName("ncEcosystemServices")
+                    .displayName("Ecosystem Services")
+                    .hierarchical(false)
+                    .build();
+
+            case "ncGeographicalScale":
+                return Facet.builder()
+                    .fieldName("ncGeographicalScale")
+                    .displayName("Geographical Scale")
+                    .hierarchical(false)
+                    .build();
         }
         return null;
     }

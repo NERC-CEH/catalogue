@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.osdp.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
+import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,6 +37,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock SolrGeometryService solrGeometryService;
+    @Mock VocabularyService vocabularyService;
     private SolrIndexMetadataDocumentGenerator generator;
     
     @Before
@@ -42,7 +45,8 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         generator = new SolrIndexMetadataDocumentGenerator(
             codeLookupService,
             documentIdentifierService,
-            solrGeometryService
+            solrGeometryService,
+            vocabularyService
         );
     }
 
@@ -295,6 +299,56 @@ public class SolrIndexMetadataDocumentGeneratorTest {
                 "Expected to get 'eidc'",
                 index.getCatalogue(),
                 equalTo("eidc")
+        );
+    }
+
+    @Test
+    public void checkThatVocabularyServiceUsed() {
+        //Given
+        DescriptiveKeywords ncterms = DescriptiveKeywords.builder()
+            .keywords(Arrays.asList(
+                Keyword.builder()
+                    .value("farm")
+                    .URI("http://vocabs.ceh.ac.uk/ncterms/farm")
+                    .build(),
+                Keyword.builder()
+                    .value("field")
+                    .URI("http://vocabs.ceh.ac.uk/ncterms/field")
+                    .build()
+                )
+            ).build();
+
+        DescriptiveKeywords other = DescriptiveKeywords.builder()
+            .keywords(Arrays.asList(
+                Keyword.builder()
+                    .value("Green")
+                    .build(),
+                Keyword.builder()
+                    .value("Blue")
+                    .URI("http://example.com/blue")
+                    .build()
+                )
+            ).build();
+
+        GeminiDocument document = new GeminiDocument();
+        document.setDescriptiveKeywords(Arrays.asList(ncterms, other));
+
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        verify(vocabularyService).isMember(
+            "http://vocabs.ceh.ac.uk/ncterms/geographical_scale",
+            "http://vocabs.ceh.ac.uk/ncterms/farm"
+        );
+        verify(vocabularyService).isMember(
+            "http://vocabs.ceh.ac.uk/ncterms/geographical_scale",
+            "http://vocabs.ceh.ac.uk/ncterms/field"
+        );
+        verify(vocabularyService).isMember(
+            "http://vocabs.ceh.ac.uk/ncterms/geographical_scale",
+            "http://example.com/blue"
         );
     }
     
