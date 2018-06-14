@@ -37,7 +37,7 @@
             <div class="col-sm-8 col-sm-pull-4">
               <#include "gemini/_extent.ftl">
               <#include "gemini/_supplemental.ftl">
-              <#include "gemini/_quality.ftl">
+              <#include "gemini/_dataquality.ftl">
               <#include "gemini/_authors.ftl">
               <#include "gemini/_otherContacts.ftl">
               <#include "gemini/_spatial.ftl">
