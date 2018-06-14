@@ -46,7 +46,7 @@
   
   <#include "_status.ftl">
 
-  <#if resourceType?? && (resourceType.value == 'signpost') >
+  <#if resourceType.value == 'signpost' >
     <div id="signpost" class="alert alert-warning" role="alert">
       <i class="fas fa-info-circle"></i>
       <#include "_signpost.ftl">  

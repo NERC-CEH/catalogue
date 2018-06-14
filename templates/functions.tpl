@@ -1,9 +1,15 @@
-<#function filter things name value >
+<#function filter things name value negate=false>
     <#local result = []>
     <#list things as thing>
-        <#if thing[name] == value >
-            <#local result = result + [thing]>
-        </#if>
+      <#if negate=true >
+          <#if thing[name] != value >
+              <#local result = result + [thing]>
+          </#if>
+      <#else>
+          <#if thing[name] == value >
+              <#local result = result + [thing]>
+          </#if>
+      </#if>
     </#list>
     <#return result>
 </#function>

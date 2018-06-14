@@ -41,15 +41,13 @@
               <#include "gemini/_authors.ftl">
               <#include "gemini/_otherContacts.ftl">
               <#include "gemini/_spatial.ftl">
-              <#include "gemini/_keywords.ftl">
-              <#include "gemini/_uris.ftl">
+              <#include "gemini/_tags.ftl">
             </div>
           </div>
         <#else>
           <#include "gemini/_aggregate.ftl">
         </#if>
       
-        <#include "gemini/_metadata.ftl">
       <#else>
         <div class="alert alert-danger" id="missingResourceType">
           <p class="clearfix"><i class="fas fa-exclamation-triangle"></i> <b>WARNING: </b> resource type is missing from this record

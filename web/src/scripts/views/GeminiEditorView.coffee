@@ -221,10 +221,10 @@ define [
           ObjectInputView: DescriptiveKeywordView
           multiline: true
           predefined:
+            'Catalogue topic':
+              type: 'Catalogue topic'
             'INSPIRE Theme':
               type: 'INSPIRE Theme'
-            'CEH Topic':
-              type: 'CEH Topic'
           helpText: """
                     <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
                     <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>
