@@ -248,6 +248,36 @@
   }
 }
 
+#section-metadataQuality {
+  table {
+    tr{
+      &.success {
+        color: #090;
+        font-weight: bold;
+      };
+      &.danger {
+        color: #F00;
+        font-weight: bold;
+      };
+      &.warning {
+        i.fas {
+          color: orange;
+        };
+      };
+      span {
+        color: #00D;
+        &:before {
+          content:" «"
+        };
+        &:after {
+          content:"» "
+        };
+      };
+    };
+    
+  }
+}
+
 #footer {background-color:#CCC; padding-top:1em;}
 
 .ceh-model {

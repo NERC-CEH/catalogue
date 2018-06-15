@@ -14,13 +14,27 @@
   </#list>
 </#macro>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
+<#-- TESTING -->
+  <#include "gemini/__metadataqualityChecks.ftl">
+<#-- END OF TESTING -->
   <div id="metadata">
     <div class="container">
-      <#if resourceType?has_content>
+      <#if resourceType?has_content && resourceType.value !=''>
       <#include "gemini/_admin.ftl">
+
         <div id="section-Top">
           <#include "gemini/_title.ftl">
         </div>
+
+        <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+        <#assign problems = func.filter(MD_checks, "result", "fail")>
+          <#if problems?size gte 1>
+            <div class="alert alert-warning alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <i class="fas fa-info-circle"></i> This metadata record has some quality issues that may need addressing.
+            </div>
+          </#if>
+        </#if>    
 
         <@blocks.description description!"" />
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
@@ -44,6 +58,11 @@
               <#include "gemini/_tags.ftl">
             </div>
           </div>
+          
+          <#-- TESTING -->
+            <#include "gemini/__metadataqualityResults.ftl">
+          <#-- END OF TESTING -->
+
         <#else>
           <#include "gemini/_aggregate.ftl">
         </#if>
@@ -56,6 +75,7 @@
       </#if>
     </div>
   </div>
+
   <div id="footer">
 	 <#include "gemini/_footer.ftl">
 	</div>
