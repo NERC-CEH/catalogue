@@ -55,13 +55,13 @@
             <@addResult elementName + " is present", result, severity/>
         </#macro>
 
-        <#macro hasCount elementName target="" severity=3 elements=1>
-            <#if target?? && target?has_content && target?size=elements>
+        <#macro hasCount elementName target="" severity=3 requirement=1>
+            <#if target?? && target?has_content && target?size=requirement>
                 <#assign result="pass">
             <#else>
                 <#assign result="fail">
             </#if>
-            <@addResult elementName + " count should be " + elements, result, severity/>
+            <@addResult elementName + " count should be " + requirement, result, severity/>
         </#macro>
     <#-- macros END -->
 
@@ -74,8 +74,9 @@
     <#if (metadata.state != 'draft') >
         <@isPresent "Publication date" publicationDate 1 />
     </#if>
-    <@hasCount "Point of contact" pocs />
+    <@isPresent "Point of contact" pocs 1 />
     <#if pocs?has_content>
+        <@hasCount "Point of contact" pocs />
         <#list pocs as poc>
             <#if poc.email == ''>
                 <@addResult "Point of contact email address is missing" "fail" 1/>
@@ -84,8 +85,12 @@
             </#if>
         </#list>
     </#if>
-    <@hasCount "Licence" licence 1 1 />
-
+    
+    <@isPresent "Licence" licences 1 />
+    <#if licences?has_content>
+        <@hasCount "Licence" licences 1 1 />
+    </#if>    
+    
     <#if resourceType.value="dataset" || resourceType.value="nonGeographicDataset" || resourceType.value="application" || resourceType.value="signpost">
         <@isPresent "Authors" authors />
         <#if authors?has_content>
@@ -107,8 +112,10 @@
                 </#if>
             </#list>
         </#if>
-        <@hasCount "Custodian" custodians />
+
+        <@isPresent "Custodian" custodians />
         <#if custodians?has_content>
+            <@hasCount "Custodian" custodians 1 1/>
             <#list custodians as custodian>
                 <#if custodian.organisationName != 'Environmental Information Data Centre'>
                     <@addResult "Custodian name is <span>" + custodian.organisationName + "</span>"/>
@@ -120,8 +127,10 @@
                 </#if>
             </#list>
         </#if>
-        <@hasCount "Publisher" publishers />
+
+        <@isPresent "Publisher" publishers />
         <#if publishers?has_content>
+            <@hasCount "Publisher" publishers 1 1/>
             <#list publishers as publisher>
                 <#if publisher.organisationName != 'NERC Environmental Information Data Centre'>
                     <@addResult "Publisher name is <span>" + publisher.organisationName + "</span>"/>
@@ -133,16 +142,18 @@
                 </#if>
             </#list>
         </#if>
+
+        <@isPresent "Distributor" distributorContacts 1/>
         <#if distributorContacts?has_content>
+            <@hasCount "Distributor contact" distributorContacts 1 1/>
             <#if nondistributors?size gte 1>
                 <@addResult "Distributor contact must have role 'distributor'" "fail" 1/>
             </#if>
             <#if distributors?size gt 1>
                 <@hasCount "Distributor contact" distributors 1 1/>
             </#if>
-        <#else>
-            <@hasCount "Distributor contact" distributorContacts 1 1/>
         </#if>
+
         <#if (orders?size + downloads?size) = 0 >
             <@addResult "There are no orders/downloads"/>
         <#else>
@@ -178,4 +189,10 @@
     </#if>
     <#-- Checks END -->
 
+
+<#assign
+    problems = func.filter(MD_checks, "result", "fail")?sort_by("severity")
+    errors = func.filter(problems, "severity", 1)
+    warnings = func.filter(problems, "severity", 3)
+>
 </#if>

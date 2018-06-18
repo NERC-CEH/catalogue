@@ -14,9 +14,7 @@
   </#list>
 </#macro>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
-<#-- TESTING -->
-  <#include "gemini/__metadataqualityChecks.ftl">
-<#-- END OF TESTING -->
+
   <div id="metadata">
     <div class="container">
       <#if resourceType?has_content && resourceType.value !=''>
@@ -27,13 +25,8 @@
         </div>
 
         <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-        <#assign problems = func.filter(MD_checks, "result", "fail")>
-          <#if problems?size gte 1>
-            <div class="alert alert-warning alert-dismissible" role="alert">
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <i class="fas fa-info-circle"></i> This metadata record has some quality issues that may need addressing.
-            </div>
-          </#if>
+          <#include "gemini/_metadataqualityChecks.ftl">
+          <#include "gemini/_metadataqualityAlert.ftl">
         </#if>    
 
         <@blocks.description description!"" />
@@ -60,7 +53,9 @@
           </div>
           
           <#-- TESTING -->
-            <#include "gemini/__metadataqualityResults.ftl">
+            <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+              <#include "gemini/_metadataqualityReport.ftl">
+            </#if>
           <#-- END OF TESTING -->
 
         <#else>

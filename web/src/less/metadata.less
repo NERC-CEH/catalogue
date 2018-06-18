@@ -1,5 +1,8 @@
 #metadata {
   @light-gray-border: #CCC;
+  @orange: #ffa500;
+  @red: #F00;
+  @green: #090;
 
   #section-title {
     margin-top: 3em;
@@ -31,6 +34,22 @@
       .btn-danger;
       .btn-xs;
     }
+  }
+
+  #qualityAlert {
+    .alert {
+      background-color:transparent ;
+      border: 2px solid #AAA;
+      border-radius: 10px;
+    };
+   .alert-danger {
+     border-color: @red;
+     color:@red;
+   };
+   .alert-warning {
+    border-color: @orange;
+    color:@orange;
+  };
   }
 
   .modal-body {
@@ -252,16 +271,16 @@
   table {
     tr{
       &.success {
-        color: #090;
+        color: @green;
         font-weight: bold;
       };
       &.danger {
-        color: #F00;
+        color: @red;
         font-weight: bold;
       };
       &.warning {
         i.fas {
-          color: orange;
+          color: @orange;
         };
       };
       span {
