@@ -34,6 +34,7 @@
     <#assign
         orders = func.filter(onlineResources, "function", "order")
         downloads = func.filter(onlineResources, "function", "download")
+        searches = func.filter(onlineResources, "function", "search") + func.filter(onlineResources, "function", "information") 
         validOrders = func.filterRegex(orders, "url", "https://catalogue.ceh.ac.uk/download") + func.filterRegex(orders,"url", "http://catalogue.ceh.ac.uk/download")
         validDownloads = func.filterRegex(downloads, "url", "https://catalogue.ceh.ac.uk/datastore/eidchub/") + func.filterRegex(downloads, "url", "http://catalogue.ceh.ac.uk/datastore/eidchub/")
     >
@@ -86,10 +87,13 @@
         </#list>
     </#if>
     
-    <@isPresent "Licence" licences 1 />
-    <#if licences?has_content>
-        <@hasCount "Licence" licences 1 1 />
-    </#if>    
+    <#if resourceType.value != "aggregate">
+        <@isPresent "Licence" licences 1 />
+        <#if licences?has_content>
+            <@hasCount "Licence" licences 1 1 />
+        </#if>
+        <@isPresent "Temporal extents" temporalExtents />
+    </#if>  
     
     <#if resourceType.value="dataset" || resourceType.value="nonGeographicDataset" || resourceType.value="application" || resourceType.value="signpost">
         <@isPresent "Authors" authors />
@@ -102,7 +106,7 @@
                 </#if>
             </#list>
         </#if>
-        <@isPresent "Temporal extents" temporalExtents />
+        
         <@isPresent "Topic category" topicCategories />
         <@isPresent "Data format" distributionFormats />
         <#if distributionFormats?has_content>
@@ -154,16 +158,19 @@
             </#if>
         </#if>
 
-        <#if (orders?size + downloads?size) = 0 >
-            <@addResult "There are no orders/downloads"/>
-        <#else>
-            <#if (orders?size + downloads?size) gt 1 >
-                <@addResult "There are multiple orders/downloads"/>
-            </#if>
-            <#if (downloads?size != validDownloads?size) || (orders?size != validOrders?size) >
-                <@addResult "Orders/downloads do not have a valid EIDC url"/>
+        <#if resourceStatus?? && resourceStatus == 'Current' && resourceType.value !="signpost">
+            <#if (orders?size + downloads?size) = 0 >
+                <@addResult "There are no orders/downloads" "fail" 1/>
+            <#else>
+                <#if (orders?size + downloads?size) gt 1 >
+                    <@addResult "There are multiple orders/downloads"/>
+                </#if>
+                <#if (downloads?size != validDownloads?size) || (orders?size != validOrders?size) >
+                    <@addResult "Orders/downloads do not have a valid EIDC url"/>
+                </#if>
             </#if>
         </#if>
+
     </#if>
 
     <#if resourceType.value="dataset">
@@ -186,6 +193,14 @@
         <@isPresent "Spatial extent" boundingBoxes 1 />
         <@isPresent "Spatial representation type" spatialRepresentationTypes 1 />
         <@isPresent "Spatial reference system" spatialReferenceSystems 1 />
+    </#if>
+
+    <#if resourceType.value="signpost">
+        <#if searches?? && searches?size gt 1 >
+            <@addResult "There are more than one search/information links"/>
+        <#else>
+            <@isPresent "Search/information link" searches 1 />
+        </#if>
     </#if>
     <#-- Checks END -->
 

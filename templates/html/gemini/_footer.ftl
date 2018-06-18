@@ -1,5 +1,5 @@
 <div class="container hidden-print clearfix">
-  <div class="pull-left">
+  <div class="pull-left hidden-xs">
     <p>View as
       <#if resourceType??>
         <#if ['service', 'series', 'dataset']?seq_contains(resourceType.value) >
