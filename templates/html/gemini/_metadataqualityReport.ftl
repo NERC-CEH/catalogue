@@ -12,7 +12,7 @@
             </#if>
             <tr class="${rowStyle}">
                 <td class="text-center"><i class="fas ${iconStyle}" /></td>
-                <td>${problem.test?replace("is present", "is not present")}</td>
+                <td>${problem.test}</td>
             </tr>
         </#list>
         </tbody>

@@ -10,10 +10,10 @@
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close" title="dismiss"><span aria-hidden="true">
                     <i class="far fa-times-circle"></i>
                 </span></button>
-                <i class="fas fa-${alerticon}"></i> <b>METADATA QUALITY: </b> There are  
-                <#if errors?size gte 1>${errors?size} errors</#if>
+                <i class="fas fa-${alerticon}"></i> <b>METADATA QUALITY: </b> 
+                <#if errors?size gte 1>${errors?size} error<#if errors?size gt 1>s</#if></#if>
                 <#if errors?size gte 1 && warnings?size gte 1>and</#if>
-                <#if warnings?size gte 1>${warnings?size} warnings</#if>
+                <#if warnings?size gte 1>${warnings?size} warning<#if warnings?size gt 1>s</#if></#if>
             </div>
         </div>
 

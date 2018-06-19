@@ -18,6 +18,12 @@
             publishers = func.filter(responsibleParties, "role", "publisher")
         >
     </#if>
+    <#if metadataPointsOfContact?has_content>
+        <#assign
+            metadataContact_pocs = func.filter(metadataPointsOfContact, "role", "pointOfContact")
+            metadataContact_other = func.filter(metadataPointsOfContact, "role", "pointOfContact", true)
+        >
+    </#if>
     <#if distributorContacts?has_content>
         <#assign
             distributors = func.filter(distributorContacts, "role", "distributor")
@@ -47,13 +53,13 @@
             <#assign MD_checks = MD_checks + [{"test":test, "result":result, "severity":severity}] >
         </#macro>
         
-        <#macro isPresent elementName target="" severity=3>
+        <#macro isMissing elementName target="" severity=3>
             <#if target?has_content>
                 <#assign result="pass">
             <#else>
                 <#assign result="fail">
             </#if>
-            <@addResult elementName + " is present", result, severity/>
+            <@addResult elementName + " is missing", result, severity/>
         </#macro>
 
         <#macro hasCount elementName target="" severity=3 requirement=1>
@@ -67,15 +73,26 @@
     <#-- macros END -->
 
     <#-- Checks -->
-    <@isPresent "Resource type" resourceType.value 1 />
-    <@isPresent "Title" title 1 />
-    <@isPresent "Description" description 1 />
-    <@isPresent "Lineage" lineage 1 />
-    <@isPresent "Resource status" resourceStatus 1 />
+    <@isMissing "Resource type" resourceType.value 1 />
+    <@isMissing "Title" title 1 />
+    <@isMissing "Description" description 1 />
+    <@isMissing "Lineage" lineage 1 />
+    <@isMissing "Resource status" resourceStatus 1 />
     <#if (metadata.state != 'draft') >
-        <@isPresent "Publication date" publicationDate 1 />
+        <@isMissing "Publication date" publicationDate 1 />
     </#if>
-    <@isPresent "Point of contact" pocs 1 />
+    
+    <@isMissing "Metadata point of contact" metadataPointsOfContact 1 />
+    <#if metadataPointsOfContact?has_content>
+        <#if metadataContact_other?size gt 0>
+            <@addResult "Metadata point of contact MUST have the role 'Point of contact'" "fail" 1/>
+        </#if>
+        <#if metadataContact_pocs?has_content>
+            <@hasCount "Metadata point of contact" metadataContact_pocs />
+        </#if>
+    </#if>
+
+    <@isMissing "Point of contact" pocs 1 />
     <#if pocs?has_content>
         <@hasCount "Point of contact" pocs />
         <#list pocs as poc>
@@ -88,15 +105,15 @@
     </#if>
     
     <#if resourceType.value != "aggregate">
-        <@isPresent "Licence" licences 1 />
+        <@isMissing "Licence" licences 1 />
         <#if licences?has_content>
             <@hasCount "Licence" licences 1 1 />
         </#if>
-        <@isPresent "Temporal extents" temporalExtents />
+        <@isMissing "Temporal extents" temporalExtents />
     </#if>  
     
     <#if resourceType.value="dataset" || resourceType.value="nonGeographicDataset" || resourceType.value="application" || resourceType.value="signpost">
-        <@isPresent "Authors" authors />
+        <@isMissing "Authors" authors />
         <#if authors?has_content>
             <#list authors as author>
                 <#if author.email == ''>
@@ -107,8 +124,8 @@
             </#list>
         </#if>
         
-        <@isPresent "Topic category" topicCategories />
-        <@isPresent "Data format" distributionFormats />
+        <@isMissing "Topic category" topicCategories />
+        <@isMissing "Data format" distributionFormats />
         <#if distributionFormats?has_content>
             <#list distributionFormats as distributionFormat>
                 <#if distributionFormat.version == '' >
@@ -117,7 +134,7 @@
             </#list>
         </#if>
 
-        <@isPresent "Custodian" custodians />
+        <@isMissing "Custodian" custodians />
         <#if custodians?has_content>
             <@hasCount "Custodian" custodians 1 1/>
             <#list custodians as custodian>
@@ -132,7 +149,7 @@
             </#list>
         </#if>
 
-        <@isPresent "Publisher" publishers />
+        <@isMissing "Publisher" publishers />
         <#if publishers?has_content>
             <@hasCount "Publisher" publishers 1 1/>
             <#list publishers as publisher>
@@ -147,7 +164,7 @@
             </#list>
         </#if>
 
-        <@isPresent "Distributor" distributorContacts 1/>
+        <@isMissing "Distributor" distributorContacts 1/>
         <#if distributorContacts?has_content>
             <@hasCount "Distributor contact" distributorContacts 1 1/>
             <#if nondistributors?size gte 1>
@@ -176,6 +193,9 @@
     <#if resourceType.value="dataset">
         <#if INSPIREthemes?has_content>
             <#list INSPIREthemes as INSPIREtheme>
+                <#if INSPIREtheme.keywords?size == 0>
+                    <@addResult "INSPIRE theme is empty" "fail" 1/>
+                </#if>
                 <#list INSPIREtheme.keywords as keyword>
                     <#if keyword.uri?has_content>
                         <#if keyword.uri?starts_with("http://inspire.ec.europa.eu/theme")>
@@ -188,18 +208,56 @@
                 </#list>    
             </#list>
         <#else>
-            <@isPresent "INSPIRE theme" INSPIREthemes 1 />
+            <@isMissing "INSPIRE theme" INSPIREthemes 1 />
         </#if>
-        <@isPresent "Spatial extent" boundingBoxes 1 />
-        <@isPresent "Spatial representation type" spatialRepresentationTypes 1 />
-        <@isPresent "Spatial reference system" spatialReferenceSystems 1 />
+        
+        <@isMissing "Spatial extent" boundingBoxes 1 />
+        <@isMissing "Spatial representation type" spatialRepresentationTypes 1 />
+        <@isMissing "Spatial reference system" spatialReferenceSystems 1 />
+
+        <#if boundingBoxes?has_content>
+            <#list boundingBoxes as box>
+                <#assign
+                    N = box.northBoundLatitude
+                    S = box.southBoundLatitude
+                    E = box.eastBoundLongitude
+                    W = box.westBoundLongitude
+                    Nscale = N?string["0.####"]?length-N?floor?length-1
+                    Sscale = S?string["0.####"]?length-S?floor?length-1
+                    Escale = E?string["0.####"]?length-E?floor?length-1
+                    Wscale = W?string["0.####"]?length-W?floor?length-1
+                >
+                <#if Nscale gt 3 || Sscale gt 3 || Escale gt 3 || Wscale gt 3>
+                    <@addResult "Bounding box coordinates are too precise (max 3 decimal places)" "fail" 1 />
+                </#if>
+                <#if N lt S>
+                    <@addResult "Bounding box northern boundary is smaller than the southern" "fail" 1 />
+                </#if>
+                <#if E lt W>
+                    <@addResult "Bounding box east boundary is smaller than the western" "fail" 1 />
+                </#if>
+            </#list>
+        </#if>
+
+    </#if>
+
+    <#if resourceType.value="nonGeographicDataset">
+        <#if boundingBoxes?has_content>
+            <@addResult "The record has a bounding box but the reource type is Non-geographic dataset" />
+        </#if>
+        <#if spatialRepresentationTypes?has_content>
+            <@addResult "The record has a spatial representation type but the reource type is Non-geographic dataset" />
+        </#if>
+        <#if spatialReferenceSystems?has_content>
+            <@addResult "The record has a spatial reference system but the reource type is Non-geographic dataset" />
+        </#if>
     </#if>
 
     <#if resourceType.value="signpost">
         <#if searches?? && searches?size gt 1 >
             <@addResult "There are more than one search/information links"/>
         <#else>
-            <@isPresent "Search/information link" searches 1 />
+            <@isMissing "Search/information link" searches 1 />
         </#if>
     </#if>
     <#-- Checks END -->
