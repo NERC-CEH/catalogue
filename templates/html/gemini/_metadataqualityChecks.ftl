@@ -49,148 +49,117 @@
     </#if>
 
     <#-- macros -->
-        <#macro addResult test result="fail" severity=3 >
-            <#assign MD_checks = MD_checks + [{"test":test, "result":result, "severity":severity}] >
-        </#macro>
-        
-        <#macro isMissing elementName target="" severity=3>
-            <#if target?has_content>
-                <#assign result="pass">
-            <#else>
-                <#assign result="fail">
-            </#if>
-            <@addResult elementName + " is missing", result, severity/>
-        </#macro>
+    <#macro addResult test result="fail" severity=3 >
+        <#assign MD_checks = MD_checks + [{"test":test, "result":result, "severity":severity}] >
+    </#macro>
+    
+    <#macro isMissing elementName target="" severity=3>
+        <#if target?has_content>
+            <#assign result="pass">
+        <#else>
+            <#assign result="fail">
+        </#if>
+        <@addResult elementName + " is missing", result, severity/>
+    </#macro>
 
-        <#macro hasCount elementName target="" severity=3 requirement=1>
-            <#if target?? && target?has_content && target?size=requirement>
-                <#assign result="pass">
-            <#else>
-                <#assign result="fail">
-            </#if>
-            <@addResult elementName + " count should be " + requirement, result, severity/>
-        </#macro>
+    <#macro hasCount elementName target="" severity=3 requirement=1>
+        <#if target?? && target?has_content && target?size=requirement>
+            <#assign result="pass">
+        <#else>
+            <#assign result="fail">
+        </#if>
+        <@addResult elementName + " count should be " + requirement, result, severity/>
+    </#macro>
+
+    <#macro checkAddress elementName target="" severity=3>
+        <@isMissing elementName target severity/>
+        <#if target?has_content>
+            <#list target>
+                <#items as contact>
+                    <#if contact.organisationName == '' &&  contact.individualName == ''>
+                        <@addResult elementName +" contact name is missing" "fail" 1/>
+                    </#if>
+                    <#if contact.email == ''>
+                        <@addResult elementName+ " email address is missing" "fail" 1/>
+                    </#if>
+                </#items>
+            </#list>
+        </#if>
+    </#macro>
     <#-- macros END -->
 
-    <#-- Checks -->
-    <@isMissing "Resource type" resourceType.value 1 />
-    <@isMissing "Title" title 1 />
-    <@isMissing "Description" description 1 />
-    <@isMissing "Lineage" lineage 1 />
-    <@isMissing "Resource status" resourceStatus 1 />
-    <#if (metadata.state != 'draft') >
-        <@isMissing "Publication date" publicationDate 1 />
-    </#if>
-    
-    <@isMissing "Metadata point of contact" metadataPointsOfContact 1 />
-    <#if metadataPointsOfContact?has_content>
-        <#if metadataContact_other?size gt 0>
-            <@addResult "Metadata point of contact MUST have the role 'Point of contact'" "fail" 1/>
+    <#-- Checks for all records -->
+        <@isMissing "Resource type" resourceType.value 1 />
+        <@isMissing "Title" title 1 />
+        <@isMissing "Description" description 1 />
+        <@isMissing "Lineage" lineage 1 />
+        <@isMissing "Resource status" resourceStatus 1 />
+        <#if (metadata.state != 'draft') >
+            <@isMissing "Publication date" publicationDate 1 />
         </#if>
-        <#if metadataContact_pocs?has_content>
-            <@hasCount "Metadata point of contact" metadataContact_pocs />
-        </#if>
-    </#if>
 
-    <@isMissing "Point of contact" pocs 1 />
-    <#if pocs?has_content>
-        <@hasCount "Point of contact" pocs />
-        <#list pocs as poc>
-            <#if poc.email == ''>
-                <@addResult "Point of contact email address is missing" "fail" 1/>
-            <#elseif poc.email != 'enquiries@ceh.ac.uk'>
-                <@addResult "Point of contact email address is <span>" + poc.email + "</span>" />
+        <#if resourceType.value != "aggregate">
+            <@isMissing "Licence" licences 1 />
+            <#if licences?has_content>
+                <@hasCount "Licence" licences 1 1 />
             </#if>
-        </#list>
-    </#if>
-    
-    <#if resourceType.value != "aggregate">
-        <@isMissing "Licence" licences 1 />
-        <#if licences?has_content>
-            <@hasCount "Licence" licences 1 1 />
-        </#if>
-        <@isMissing "Temporal extents" temporalExtents />
-    </#if>  
-    
-    <#if resourceType.value="dataset" || resourceType.value="nonGeographicDataset" || resourceType.value="application" || resourceType.value="signpost">
-        <@isMissing "Authors" authors />
-        <#if authors?has_content>
-            <#list authors as author>
-                <#if author.email == ''>
-                    <@addResult "Author email address is missing" "fail" 1/>
-                <#elseif author.email?ends_with("@ceh.ac.uk") && author.email != 'enquiries@ceh.ac.uk'>
-                    <@addResult "Author email address is <span>" + author.email + "</span>"/>
-                </#if>
-            </#list>
-        </#if>
-        
-        <@isMissing "Topic category" topicCategories />
-        <@isMissing "Data format" distributionFormats />
-        <#if distributionFormats?has_content>
-            <#list distributionFormats as distributionFormat>
-                <#if distributionFormat.version == '' >
-                    <@addResult "Format version is empty" "fail" 1/>
-                </#if>
-            </#list>
-        </#if>
-
-        <@isMissing "Custodian" custodians />
-        <#if custodians?has_content>
-            <@hasCount "Custodian" custodians 1 1/>
-            <#list custodians as custodian>
-                <#if custodian.organisationName != 'Environmental Information Data Centre'>
-                    <@addResult "Custodian name is <span>" + custodian.organisationName + "</span>"/>
-                </#if>
-                <#if custodian.email == ''>
-                    <@addResult "Custodian email address is missing" "fail" 1/>
-                <#elseif custodian.email != 'eidc@ceh.ac.uk'>
-                    <@addResult "Custodian email address is <span>" + custodian.email + "</span>"/>
-                </#if>
-            </#list>
-        </#if>
-
-        <@isMissing "Publisher" publishers />
-        <#if publishers?has_content>
-            <@hasCount "Publisher" publishers 1 1/>
-            <#list publishers as publisher>
-                <#if publisher.organisationName != 'NERC Environmental Information Data Centre'>
-                    <@addResult "Publisher name is <span>" + publisher.organisationName + "</span>"/>
-                </#if>
-                <#if publisher.email == ''>
-                    <@addResult "Publisher email address is missing" "fail" 1/>
-                <#elseif publisher.email != 'eidc@ceh.ac.uk'>
-                    <@addResult "Publisher email address is <span>" + publisher.email  + "</span>"/>
-                </#if>
-            </#list>
-        </#if>
-
-        <@isMissing "Distributor" distributorContacts 1/>
-        <#if distributorContacts?has_content>
-            <@hasCount "Distributor contact" distributorContacts 1 1/>
-            <#if nondistributors?size gte 1>
-                <@addResult "Distributor contact must have role 'distributor'" "fail" 1/>
-            </#if>
-            <#if distributors?size gt 1>
-                <@hasCount "Distributor contact" distributors 1 1/>
-            </#if>
-        </#if>
-
-        <#if resourceStatus?? && resourceStatus == 'Current' && resourceType.value !="signpost">
-            <#if (orders?size + downloads?size) = 0 >
-                <@addResult "There are no orders/downloads" "fail" 1/>
+            
+            <#-- Temporal extents -->
+            <#if temporalExtents?has_content>
+                <#list temporalExtents as tempo>
+                    <#if tempo.begin?has_content || tempo.end?has_content>
+                    <#else>
+                        <@addResult "Temporal extents is empty" "fail" 1/>
+                    </#if>
+                </#list>
             <#else>
-                <#if (orders?size + downloads?size) gt 1 >
-                    <@addResult "There are multiple orders/downloads"/>
-                </#if>
-                <#if (downloads?size != validDownloads?size) || (orders?size != validOrders?size) >
-                    <@addResult "Orders/downloads do not have a valid EIDC url"/>
-                </#if>
+                <@isMissing "Temporal extents" temporalExtents />
+            </#if>
+            <#-- END temporal extents -->
+        </#if>  
+
+        <#-- Metadata point of contact -->
+        <@checkAddress "Metadata point of contact" metadataPointsOfContact 1/>
+        <#if metadataPointsOfContact?has_content>
+            <#if metadataContact_other?size gt 0>
+                <@addResult "Metadata point of contact MUST have the role 'Point of contact'" "fail" 1/>
+            </#if>
+            <#if metadataContact_pocs?has_content>
+                <@hasCount "Metadata point of contact" metadataContact_pocs />
             </#if>
         </#if>
+        <#-- END Metadata point of contact -->
 
+        <@checkAddress "Point of contact" pocs 1/>
+    <#-- END checks for all records -->
+
+    <#-- For non-geographic datasets only -->
+    <#if resourceType.value="nonGeographicDataset">
+        <#if boundingBoxes?has_content>
+            <@addResult "The record has a bounding box but the reource type is Non-geographic dataset" />
+        </#if>
+        <#if spatialRepresentationTypes?has_content>
+            <@addResult "The record has a spatial representation type but the reource type is Non-geographic dataset" />
+        </#if>
+        <#if spatialReferenceSystems?has_content>
+            <@addResult "The record has a spatial reference system but the reource type is Non-geographic dataset" />
+        </#if>
     </#if>
+    <#-- End of non-geographic datasets -->
 
+    <#-- For signposts only -->
+    <#if resourceType.value="signpost">
+        <#if searches?? && searches?size gt 1 >
+            <@addResult "There are more than one search/information links"/>
+        <#else>
+            <@isMissing "Search/information link" searches 1 />
+        </#if>
+    </#if>
+    <#-- End of signposts -->
+
+    <#-- For datasets only -->
     <#if resourceType.value="dataset">
+        <#-- INSPIRE theme -->
         <#if INSPIREthemes?has_content>
             <#list INSPIREthemes as INSPIREtheme>
                 <#if INSPIREtheme.keywords?size == 0>
@@ -215,6 +184,7 @@
         <@isMissing "Spatial representation type" spatialRepresentationTypes 1 />
         <@isMissing "Spatial reference system" spatialReferenceSystems 1 />
 
+        <#-- Bounding box -->
         <#if boundingBoxes?has_content>
             <#list boundingBoxes as box>
                 <#assign
@@ -238,30 +208,102 @@
                 </#if>
             </#list>
         </#if>
-
     </#if>
+    <#-- End of datasets -->
 
-    <#if resourceType.value="nonGeographicDataset">
-        <#if boundingBoxes?has_content>
-            <@addResult "The record has a bounding box but the reource type is Non-geographic dataset" />
+    <#-- For datasets, non-geographic datasets, applications and signposts -->
+    <#if resourceType.value="dataset" || resourceType.value="nonGeographicDataset" || resourceType.value="application" || resourceType.value="signpost">
+        
+        <#-- Authors -->
+        <@checkAddress "Authors" authors />
+        <#if authors?has_content>
+            <#list authors as author>
+                <#if author.email?ends_with("@ceh.ac.uk") && author.email != 'enquiries@ceh.ac.uk'>
+                    <@addResult "Author email address is <span>" + author.email + "</span>"/>
+                </#if>
+            </#list>
         </#if>
-        <#if spatialRepresentationTypes?has_content>
-            <@addResult "The record has a spatial representation type but the reource type is Non-geographic dataset" />
-        </#if>
-        <#if spatialReferenceSystems?has_content>
-            <@addResult "The record has a spatial reference system but the reource type is Non-geographic dataset" />
-        </#if>
-    </#if>
-
-    <#if resourceType.value="signpost">
-        <#if searches?? && searches?size gt 1 >
-            <@addResult "There are more than one search/information links"/>
+        
+        <#-- Topic category -->
+        <#if topicCategories?has_content>
+            <#list topicCategories as topicCategory>
+                <#if topicCategory.value?has_content>
+                <#else>
+                    <@addResult "Topic category is empty" "fail" 1/>
+                </#if>
+            </#list>
         <#else>
-            <@isMissing "Search/information link" searches 1 />
+            <@isMissing "Topic category" topicCategories 1/>
+        </#if>
+
+        <@isMissing "Data format" distributionFormats />
+        <#if distributionFormats?has_content>
+            <#list distributionFormats as distributionFormat>
+                <#if distributionFormat.version == '' >
+                    <@addResult "Format version is empty" "fail" 1/>
+                </#if>
+            </#list>
+        </#if>
+
+        <#-- Custodian -->
+        <@checkAddress "Custodian" custodians />
+        <#if custodians?has_content>
+            <@hasCount "Custodian" custodians 1 1/>
+            <#list custodians as custodian>
+                <#if custodian.organisationName != 'Environmental Information Data Centre'>
+                    <@addResult "Custodian name is <span>" + custodian.organisationName + "</span>"/>
+                </#if>
+                <#if custodian.email == ''>
+                    <@addResult "Custodian email address is missing" "fail" 1/>
+                <#elseif custodian.email != 'eidc@ceh.ac.uk'>
+                    <@addResult "Custodian email address is <span>" + custodian.email + "</span>"/>
+                </#if>
+            </#list>
+        </#if>
+
+        <#-- Publisher -->
+        <@checkAddress "Publisher" publishers />
+        <#if publishers?has_content>
+            <@hasCount "Publisher" publishers 1 1/>
+            <#list publishers as publisher>
+                <#if publisher.organisationName != 'NERC Environmental Information Data Centre'>
+                    <@addResult "Publisher name is <span>" + publisher.organisationName + "</span>"/>
+                </#if>
+                <#if publisher.email == ''>
+                    <@addResult "Publisher email address is missing" "fail" 1/>
+                <#elseif publisher.email != 'eidc@ceh.ac.uk'>
+                    <@addResult "Publisher email address is <span>" + publisher.email  + "</span>"/>
+                </#if>
+            </#list>
+        </#if>
+
+        <#-- Distributor -->
+        <@checkAddress "Distributor" distributorContacts />
+        <#if distributorContacts?has_content>
+            <@hasCount "Distributor contact" distributorContacts 1 1/>
+            <#if nondistributors?size gte 1>
+                <@addResult "Distributor contact must have role 'distributor'" "fail" 1/>
+            </#if>
+            <#if distributors?size gt 1>
+                <@hasCount "Distributor contact" distributors 1 1/>
+            </#if>
+        </#if>
+
+        <#-- Download/order links -->
+        <#if resourceStatus?? && resourceStatus == 'Current' && resourceType.value !="signpost">
+            <#if (orders?size + downloads?size) = 0 >
+                <@addResult "There are no orders/downloads" "fail" 1/>
+            <#else>
+                <#if (orders?size + downloads?size) gt 1 >
+                    <@addResult "There are multiple orders/downloads"/>
+                </#if>
+                <#if (downloads?size != validDownloads?size) || (orders?size != validOrders?size) >
+                    <@addResult "Orders/downloads do not have a valid EIDC url"/>
+                </#if>
+            </#if>
         </#if>
     </#if>
-    <#-- Checks END -->
-
+    <#-- End of datasets, non-geographic datasets, applications and signposts -->
 
 <#assign
     problems = func.filter(MD_checks, "result", "fail")?sort_by("severity")

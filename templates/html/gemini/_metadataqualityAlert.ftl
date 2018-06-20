@@ -14,6 +14,7 @@
                 <#if errors?size gte 1>${errors?size} error<#if errors?size gt 1>s</#if></#if>
                 <#if errors?size gte 1 && warnings?size gte 1>and</#if>
                 <#if warnings?size gte 1>${warnings?size} warning<#if warnings?size gt 1>s</#if></#if>
+                &nbsp;<a href="#section-metadataQuality">&nbsp;details <i class="fas fa-angle-down"></i></a>
             </div>
         </div>
 
