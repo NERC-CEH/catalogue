@@ -10,14 +10,6 @@
     <#if datasetReferenceDate?has_content && datasetReferenceDate.publicationDate??>
         <#assign publicationDate = datasetReferenceDate.publicationDate>
     </#if>
-    <#if responsibleParties?has_content>
-        <#assign
-            pocs = func.filter(responsibleParties, "role", "pointOfContact")
-            authors = func.filter(responsibleParties, "role", "author")
-            custodians = func.filter(responsibleParties, "role", "custodian")
-            publishers = func.filter(responsibleParties, "role", "publisher")
-        >
-    </#if>
     <#if metadataPointsOfContact?has_content>
         <#assign
             metadataContact_pocs = func.filter(metadataPointsOfContact, "role", "pointOfContact")
@@ -76,11 +68,12 @@
         <#if target?has_content>
             <#list target>
                 <#items as contact>
-                    <#if contact.organisationName == '' &&  contact.individualName == ''>
-                        <@addResult elementName +" contact name is missing" "fail" 1/>
+                    <#if contact.organisationName == '' >
+                        <@addResult elementName +" organisation name is missing" "fail" 1/>
                     </#if>
-                    <#if contact.email == ''>
-                        <@addResult elementName+ " email address is missing" "fail" 1/>
+                    <#if (contact.email?ends_with("@ceh.ac.uk") && contact.email != 'enquiries@ceh.ac.uk')
+                    && (contact.email?ends_with("@ceh.ac.uk") && contact.email != 'eidc@ceh.ac.uk') >
+                        <@addResult elementName+ " email address is <span>" + contact.email + "</span>"/>
                     </#if>
                 </#items>
             </#list>
@@ -127,10 +120,25 @@
             <#if metadataContact_pocs?has_content>
                 <@hasCount "Metadata point of contact" metadataContact_pocs />
             </#if>
+            <#list metadataPointsOfContact as metadataPOC>
+                <#if ! metadataPOC.email?has_content>
+                    <@addResult "Metadata point of contact email address is missing" "fail" 1/>
+                </#if>
+            </#list>
         </#if>
         <#-- END Metadata point of contact -->
 
         <@checkAddress "Point of contact" pocs 1/>
+        <#if metadataContact_pocs?has_content>
+            <#list metadataContact_pocs as poc>
+                <#if ! poc.individualName?has_content>
+                    <@addResult "Point of contact name is missing"/>
+                </#if>
+                <#if ! poc.email?has_content>
+                    <@addResult "Point of contact email is missing"/>
+                </#if>
+            </#list>
+        </#if>
     <#-- END checks for all records -->
 
     <#-- For non-geographic datasets only -->
@@ -167,8 +175,7 @@
                 </#if>
                 <#list INSPIREtheme.keywords as keyword>
                     <#if keyword.uri?has_content>
-                        <#if keyword.uri?starts_with("http://inspire.ec.europa.eu/theme")>
-                        <#else>
+                        <#if ! keyword.uri?starts_with("http://inspire.ec.europa.eu/theme")>
                             <@addResult "INSPIRE theme does not have correct URI" />
                         </#if>
                     <#else>
@@ -218,8 +225,8 @@
         <@checkAddress "Authors" authors />
         <#if authors?has_content>
             <#list authors as author>
-                <#if author.email?ends_with("@ceh.ac.uk") && author.email != 'enquiries@ceh.ac.uk'>
-                    <@addResult "Author email address is <span>" + author.email + "</span>"/>
+                <#if ! author.individualName?has_content>
+                    <@addResult "Author's name is missing"/>
                 </#if>
             </#list>
         </#if>
@@ -227,8 +234,7 @@
         <#-- Topic category -->
         <#if topicCategories?has_content>
             <#list topicCategories as topicCategory>
-                <#if topicCategory.value?has_content>
-                <#else>
+                <#if ! topicCategory.value?has_content>
                     <@addResult "Topic category is empty" "fail" 1/>
                 </#if>
             </#list>
@@ -287,6 +293,11 @@
             <#if distributors?size gt 1>
                 <@hasCount "Distributor contact" distributors 1 1/>
             </#if>
+            <#list distributors as distributor>
+                <#if ! distributor.email?has_content>
+                    <@addResult "Distributor's email address is missing" "fail" 1/>
+                </#if>
+            </#list>
         </#if>
 
         <#-- Download/order links -->

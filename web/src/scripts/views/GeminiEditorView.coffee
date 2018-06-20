@@ -192,7 +192,7 @@ define [
               role: 'author'
           helpText: """
                     <p>The organisation or person responsible for the authorship and maintenance of the data resource.</p>
-                    <p>A contact must include an email address, role and organisation name.  Other elements are optional.</p>
+                    <p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
                     <p>The names of individuals should be included in the format <code>Surname, First Initial. Second Initial.</code> For example <strong>Brown, A.B.</strong></p>
                     <p>The preferred <b>identifier</b> for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID.  For example <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>.</p>
                     """
@@ -631,7 +631,6 @@ define [
                 country: 'United Kingdom'
           helpText: """
                     <p>The organisation or person responsible for the authorship, maintenance and curation of the metadata resource.</p>
-                    <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
                     <p>The names of individuals should be included in the format Surname, First Initial. Second Initial.  For example <strong>Brown, A.B.</strong></p>
                     """
 

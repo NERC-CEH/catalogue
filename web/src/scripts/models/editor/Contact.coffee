@@ -34,7 +34,7 @@ define [
     isValidORCID = (id) ->
       orcidRegEx.test id
 
-    if !isValidEmail email
+    if email && !isValidEmail email
       errors.push
         message:
           "That email address is wrong"
@@ -42,16 +42,16 @@ define [
     if nameIdentifier && !isValidORCID nameIdentifier
       errors.push
         message:
-          "If that's an ORCiD, it's not quite right!"
+          "If that's supposed to be an ORCiD, it's not quite right!"
 
     if nameIdentifier && !isValidnameIdentifier nameIdentifier
       errors.push
         message:
           "Are you using the <i>fully-qualified</i> name identifier. For example, ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X"
 
-    if ! organisationName || ! email || ! role
+    if ! organisationName || ! role
       errors.push
-        message: "The organisation name, role and email are mandatory."
+        message: "The organisation name and role are mandatory."
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

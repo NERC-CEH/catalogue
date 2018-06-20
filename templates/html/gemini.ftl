@@ -1,10 +1,20 @@
 <#import "blocks.ftl" as blocks>
 <#import "skeleton.ftl" as skeleton>
-<#import "../underscore.tpl" as _>
 <#import "../functions.tpl" as func>
 
-<#assign authors       = _.filter(responsibleParties, _.isAuthor) >
-<#assign otherContacts = _.reject(responsibleParties, _.isAuthor) >
+<#assign
+    authors = func.filter(responsibleParties, "role", "author")
+    pocs = func.filter(responsibleParties, "role", "pointOfContact")
+    custodians = func.filter(responsibleParties, "role", "custodian")
+    publishers = func.filter(responsibleParties, "role", "publisher")
+    depositors = func.filter(responsibleParties, "role", "depositor")
+    originators = func.filter(responsibleParties, "role", "originator")
+    owners = func.filter(responsibleParties, "role", "owner")
+    originators = func.filter(responsibleParties, "role", "originator")
+    resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
+    otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
+>
+
 <#macro getLabel val array>
   <#list array as item>
     <#if item['value']==val>
@@ -45,8 +55,7 @@
               <#include "gemini/_extent.ftl">
               <#include "gemini/_supplemental.ftl">
               <#include "gemini/_dataquality.ftl">
-              <#include "gemini/_authors.ftl">
-              <#include "gemini/_otherContacts.ftl">
+              <#include "gemini/_contacts.ftl">
               <#include "gemini/_spatial.ftl">
               <#include "gemini/_tags.ftl">
             </div>
