@@ -34,11 +34,6 @@
           <#include "gemini/_title.ftl">
         </div>
 
-        <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-          <#include "gemini/_metadataqualityChecks.ftl">
-          <#include "gemini/_metadataqualityAlert.ftl">
-        </#if>    
-
         <@blocks.description description!"" />
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "gemini/_dates.ftl">
@@ -56,17 +51,13 @@
               <#include "gemini/_supplemental.ftl">
               <#include "gemini/_dataquality.ftl">
               <#include "gemini/_contacts.ftl">
-              <#include "gemini/_spatial.ftl">
+              <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
+                <#include "gemini/_spatial.ftl">
+              </#if>
               <#include "gemini/_tags.ftl">
             </div>
           </div>
           
-          <#-- TESTING -->
-            <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-              <#include "gemini/_metadataqualityReport.ftl">
-            </#if>
-          <#-- END OF TESTING -->
-
         <#else>
           <#include "gemini/_aggregate.ftl">
         </#if>
