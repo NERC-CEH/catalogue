@@ -62,7 +62,6 @@ public class UploadDocumentService {
         saveUploadDocument(user, uploadDocument, "updating upload document");
         geminiDocument.setUploadId(uploadDocument.getId());
         documentRepository.save(user, geminiDocument, String.format("updating upload id: %s", uploadDocument.getId()));
-        uploadDocument.validate();
         return uploadDocument;
     }
 
@@ -138,7 +137,6 @@ public class UploadDocumentService {
     }
 
     public void add(CatalogueUser user, UploadDocument uploadDocument, String filename, InputStream in) {
-        uploadDocument.validate();
         val documents = uploadDocument.getUploadFiles().get("documents");
         val directory = new File(documents.getPath());
         val physicalLocation = documents.getPhysicalLocation();
@@ -159,7 +157,6 @@ public class UploadDocumentService {
             documents.getDocuments().put(uploadFile.getPath(), uploadFile);
             saveUploadDocument(user, uploadDocument, String.format("adding file: %s", file.getPath()));
         });
-        uploadDocument.validate();
     }
 
     @SneakyThrows
@@ -169,7 +166,6 @@ public class UploadDocumentService {
 
     @SneakyThrows
     public void move(CatalogueUser user, UploadDocument uploadDocument, String from, String to, String fromFilename) {
-        uploadDocument.validate();
         val fromUploadFiles = uploadDocument.getUploadFiles().get(from);
         val fromDirectory = new File(fromUploadFiles.getPath());
         val fromPhysicalLocation = fromUploadFiles.getPhysicalLocation();
@@ -232,7 +228,6 @@ public class UploadDocumentService {
                 saveUploadDocument(user, uploadDocument, String.format("moving file from: %s, to: %s", fromFilename, toFilename));
             }
             removeEmptyFolders(fromDirectory);
-            // uploadDocument.validate();
         }
     }
 
@@ -243,7 +238,6 @@ public class UploadDocumentService {
     }
 
     public void delete(CatalogueUser user, UploadDocument uploadDocument, String name, String filename) {
-        uploadDocument.validate();
         val uploadFiles = uploadDocument.getUploadFiles().get(name);
         UploadFile uploadFile = uploadFiles.getDocuments().get(filename);
         if (uploadFile == null) uploadFile = uploadFiles.getInvalid().get(filename);
@@ -272,7 +266,6 @@ public class UploadDocumentService {
             saveUploadDocument(user, uploadDocument, String.format("removing file: %s", uploadFile.getPath()));
             removeEmptyFolders(directory);
         }
-        uploadDocument.validate();
     }
 
     @SneakyThrows
@@ -282,7 +275,6 @@ public class UploadDocumentService {
     }
 
     public void moveToDatastore(CatalogueUser user, UploadDocument uploadDocument) {
-        uploadDocument.validate();
         val fromUploadFiles = uploadDocument.getUploadFiles().get("documents");
         val fromDirectory = new File(fromUploadFiles.getPath());
 
@@ -326,13 +318,11 @@ public class UploadDocumentService {
             removeEmptyFolders(fromDirectory);
 
             saveUploadDocument(user, uploadDocument, "moving all files from documents to datastore");
-            uploadDocument.validate();
         }
     }
 
     @SneakyThrows
     public void zip(CatalogueUser user, UploadDocument uploadDocument) {
-        uploadDocument.validate();
         val uploadFiles = uploadDocument.getUploadFiles().get("datastore");
         if (uploadFiles.getInvalid().size() == 0) {
             val directory = new File(uploadFiles.getPath());
@@ -367,7 +357,6 @@ public class UploadDocumentService {
 
             uploadFiles.setZipped(true);
             saveUploadDocument(user, uploadDocument, "zipping datastore");
-            uploadDocument.validate();
         }
     }
 
@@ -380,7 +369,6 @@ public class UploadDocumentService {
 
     @SneakyThrows
     public void unzip(CatalogueUser user, UploadDocument uploadDocument) {
-        uploadDocument.validate();
         val uploadFiles = uploadDocument.getUploadFiles().get("datastore");
 
         if (uploadFiles.getInvalid().size() == 0) {
@@ -406,7 +394,6 @@ public class UploadDocumentService {
 
             uploadFiles.setZipped(false);
             saveUploadDocument(user, uploadDocument, "unzipping datastore");
-            uploadDocument.validate();
         }
     }
 
@@ -438,7 +425,6 @@ public class UploadDocumentService {
     }
 
     public void acceptInvalid(CatalogueUser user, UploadDocument uploadDocument, String name, String filename) {
-        uploadDocument.validate();
         val uploadFiles = uploadDocument.getUploadFiles().get(name);
         val directory = new File(uploadFiles.getPath());
         val physicalLocation = uploadFiles.getPhysicalLocation();
@@ -456,7 +442,6 @@ public class UploadDocumentService {
 
         uploadFiles.getDocuments().put(filename, uploadFile);
         saveUploadDocument(user, uploadDocument, String.format("accepting invalid file %s", filename));
-        uploadDocument.validate();
     }
 
     @SneakyThrows
