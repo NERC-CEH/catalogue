@@ -5,7 +5,7 @@
   <div class="col-sm-11">
     <select data-name="type" class="editor-input type" id="descriptiveKeyword<%= data.index %>type">
       <option value="" selected >- Select Type -</option>
-      <option value="CEH Topic">CEH Topic</button>
+      <option value="Catalogue topic">Catalogue topic</button>
       <option value="dataCentre">Data Centre</option>
       <option value="discipline">Discipline</button>
       <option value="INSPIRE Theme">INSPIRE Theme</button>
@@ -64,9 +64,9 @@
         <li><a href="http://inspire.ec.europa.eu/theme/us">Utility and Governmental Services</a></li>
       </ul>
     </div>
-    <div class="keyword-add hidden" id="cehTopic">
+    <div class="keyword-add hidden" id="catalogueTopic">
       <button class="editor-button dropdown-toggle" type="button" id="dropdownCehTopicMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-        Choose keyword from CEH themes
+        Choose Catalogue topics
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu predefined" aria-labelledby="dropdownCehTopicMenu">
@@ -87,6 +87,7 @@
         <li><a href="http://onto.nerc.ac.uk/CEHMD/topic/3">Phenology</a></li>
         <li><a href="http://onto.nerc.ac.uk/CEHMD/topic/14">Pollinators</a></li>
         <li><a href="http://onto.nerc.ac.uk/CEHMD/topic/15">Pollution</a></li>
+        <li><a href="http://onto.nerc.ac.uk/CEHMD/topic/8">Radioecology</a></li>
         <li><a href="http://onto.nerc.ac.uk/CEHMD/topic/17">Soil</a></li>
         <li><a href="http://onto.nerc.ac.uk/CEHMD/topic/16">Water quality</a></li>
       </ul>

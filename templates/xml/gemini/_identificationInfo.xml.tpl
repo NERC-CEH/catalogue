@@ -130,9 +130,13 @@
 								<#if responsibleParty.country?has_content>
 								<gmd:country><gco:CharacterString>${responsibleParty.country}</gco:CharacterString></gmd:country>
 								</#if>
-								<#if responsibleParty.email?has_content>
-								<gmd:electronicMailAddress><gco:CharacterString>${responsibleParty.email}</gco:CharacterString></gmd:electronicMailAddress>
-								</#if>
+								<gmd:electronicMailAddress><gco:CharacterString>
+									<#if responsibleParty.email?has_content>
+										${responsibleParty.email}
+									<#else>
+										enquiries@ceh.ac.uk
+									</#if>
+								</gco:CharacterString></gmd:electronicMailAddress>
 							</gmd:CI_Address>
 						</gmd:address>
 					</gmd:CI_Contact>

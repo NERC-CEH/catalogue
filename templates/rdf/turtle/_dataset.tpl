@@ -12,7 +12,7 @@ a dcat:Dataset, dcmitype:Dataset ;
 </#if>
 <#if descriptiveKeywords?has_content>
   <#assign
-  themelist = func.filter(descriptiveKeywords, "type", "INSPIRE Theme") +  func.filter(descriptiveKeywords, "type", "CEH Topic")
+  themelist = func.filter(descriptiveKeywords, "type", "INSPIRE Theme") +  func.filter(descriptiveKeywords, "type", "Catalogue topic")
   >
 </#if>
 

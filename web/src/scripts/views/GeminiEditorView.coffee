@@ -192,7 +192,7 @@ define [
               role: 'author'
           helpText: """
                     <p>The organisation or person responsible for the authorship and maintenance of the data resource.</p>
-                    <p>A contact must include an email address, role and organisation name.  Other elements are optional.</p>
+                    <p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
                     <p>The names of individuals should be included in the format <code>Surname, First Initial. Second Initial.</code> For example <strong>Brown, A.B.</strong></p>
                     <p>The preferred <b>identifier</b> for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID.  For example <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>.</p>
                     """
@@ -221,10 +221,10 @@ define [
           ObjectInputView: DescriptiveKeywordView
           multiline: true
           predefined:
+            'Catalogue topic':
+              type: 'Catalogue topic'
             'INSPIRE Theme':
               type: 'INSPIRE Theme'
-            'CEH Topic':
-              type: 'CEH Topic'
           helpText: """
                     <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
                     <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>
@@ -298,13 +298,15 @@ define [
           ObjectInputView: ResourceConstraintView
           multiline: true
           predefined:
-            'Open Government Licence':
+            'Copyright - CEH':
+              value: '&copy; Centre for Ecology &amp; Hydrology (Natural Environment Research Council)'
+              code: 'copyright'
+            'Copyright - NERC':
+              value: '&copy; Natural Environment Research Council'
+              code: 'copyright'
+            'Licence - OGL':
               value: 'This resource is made available under the terms of the Open Government Licence'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/cehOGL/plain'
-              code: 'license'
-            'Open Government Licence Non-CEH':
-              value: 'This resource is made available under the terms of the Open Government Licence'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGLnonceh/plain'
+              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL/plain'
               code: 'license'
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
@@ -482,8 +484,7 @@ define [
           label: 'Spatial resolution'
           ObjectInputView: SpatialResolutionView
           helpText: """
-                    <p>For gridded data, this is the area of the ground (in metres) represented in each pixel.</p>
-                    <p>For point data, the ground sample distance is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
+                    <p>This is an indication of the level of spatial detail/accuracy. Enter a distance OR equivalent scale but not both. For most datasets, <i>distance</i> is more appropriate.</p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
                     """
       ]
     ,  
@@ -630,7 +631,6 @@ define [
                 country: 'United Kingdom'
           helpText: """
                     <p>The organisation or person responsible for the authorship, maintenance and curation of the metadata resource.</p>
-                    <p>A contact must include the contact's email address, role and an organisation name and/or individual's name.  Other elements are optional.</p>
                     <p>The names of individuals should be included in the format Surname, First Initial. Second Initial.  For example <strong>Brown, A.B.</strong></p>
                     """
 
