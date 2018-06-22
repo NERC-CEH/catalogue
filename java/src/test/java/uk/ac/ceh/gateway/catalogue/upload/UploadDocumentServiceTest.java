@@ -228,6 +228,7 @@ public class UploadDocumentServiceTest {
     @SneakyThrows
     public void acceptInvalid () {
         val file = new File(dropboxFolder, "guid/unknown.txt");
+        UploadDocumentValidator.validate(uploadDocument);
         service.acceptInvalid(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
 
         assertThatDocumentsHasFile("documents", dropboxFolder, "guid/unknown.txt");
@@ -311,6 +312,7 @@ public class UploadDocumentServiceTest {
 
     @SneakyThrows
     private void cleanDefaultInvalid () {
+        UploadDocumentValidator.validate(uploadDocument);
         val changedFile = new File(dropboxFolder, "guid/changed.txt");
         service.acceptInvalid(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", changedFile.getAbsolutePath());
         val unknownFile = new File(dropboxFolder, "guid/unknown.txt");

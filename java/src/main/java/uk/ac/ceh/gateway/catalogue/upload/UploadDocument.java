@@ -6,14 +6,15 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.springframework.http.MediaType;
-import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
-import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.val;
 import lombok.experimental.Accessors;
+import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
+import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -44,8 +45,4 @@ public class UploadDocument extends AbstractMetadataDocument {
         }
     }
 
-    @Override
-    public void validate() {
-        UploadDocumentValidator.validate(this);
-    }
 }
