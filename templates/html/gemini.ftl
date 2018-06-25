@@ -34,6 +34,11 @@
           <#include "gemini/_title.ftl">
         </div>
 
+      <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+        <#include "gemini/_metadataqualityChecks.ftl">
+        <#include "gemini/_metadataqualityAlert.ftl">
+      </#if>  
+
         <@blocks.description description!"" />
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "gemini/_dates.ftl">
@@ -58,6 +63,10 @@
             </div>
           </div>
           
+          <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+            <#include "gemini/_metadataqualityReport.ftl">
+          </#if>
+
         <#else>
           <#include "gemini/_aggregate.ftl">
         </#if>
