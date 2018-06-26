@@ -21,8 +21,8 @@ define [
     keywordType = @model.get 'type'
     if keywordType?
       # IE only supports .startsWith() in MS Edge (> version 11)
-      if keywordType.lastIndexOf('CEH Topic', 0) == 0
-        @$('#cehTopic').removeClass 'hidden'
+      if keywordType.lastIndexOf('Catalogue topic', 0) == 0
+        @$('#catalogueTopic').removeClass 'hidden'
         @$('.add').addClass 'hidden'
         @$('select.type').attr 'disabled', 'disabled'
       else if keywordType.lastIndexOf('INSPIRE Theme', 0) == 0

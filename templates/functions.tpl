@@ -1,9 +1,15 @@
-<#function filter things name value >
+<#function filter things name value negate=false>
     <#local result = []>
     <#list things as thing>
-        <#if thing[name] == value >
-            <#local result = result + [thing]>
-        </#if>
+      <#if negate=true >
+          <#if thing[name] != value >
+              <#local result = result + [thing]>
+          </#if>
+      <#else>
+          <#if thing[name] == value >
+              <#local result = result + [thing]>
+          </#if>
+      </#if>
     </#list>
     <#return result>
 </#function>
@@ -18,7 +24,7 @@
     <#return result>
 </#function>
 
-<#function displayContact contact showPostal showOrcid>
+<#function displayContact contact showPostal=false showEmail=false showOrcid=false>
   <#local lcontact = "", displayAddress = "", concatAddress="">
 
   <#if contact.address?has_content>
@@ -69,19 +75,13 @@
       <#assign orgName = contact.organisationName>
     </#if>
 
-    <#if contact.email?has_content>
-      <#assign mailIcon = " <a class='far fa-envelope contactEmail' title='Email this contact' href='mailto:" + contact.email + "?subject=RE: " + title + "'></a>">
-    <#else>
-      <#assign mailIcon = "">
-    </#if>
-
     <#if contact.individualName?has_content>
-      <#local lcontact = "<div class='individualName' title='"+ concatAddress + "'>" + contact.individualName + mailIcon + "</div><div class='organisationName'>" + orgName + "</div>">
+      <#local lcontact = "<div class='individualName' title='"+ concatAddress + "'>" + contact.individualName  + "</div><div class='organisationName'>" + orgName + "</div>">
     <#else>
-      <#local lcontact = "<div class='organisationName' title='"+ concatAddress + "'>" + orgName + mailIcon + "</div>">
+      <#local lcontact = "<div class='organisationName' title='"+ concatAddress + "'>" + orgName + "</div>">
     </#if>
 
-    <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$") && showOrcid =  true>
+    <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$") && showOrcid = true>
         <#local lcontact = lcontact + "<div class='nameIdentifier'><a href='" + contact.nameIdentifier + "' target='_blank' rel='noopener noreferrer' title='View this authors record on ORCID.org'><img src='/static/img/orcid_16x16.png' alt='ORCID iD icon' title='ORCID iD'> " + contact.nameIdentifier + "</a></div>">
     </#if>
   </#if>
@@ -91,6 +91,20 @@
   <#else>
     <#local lcontact = lcontact>
   </#if>
+
+  <#if showEmail=true>
+    <#assign emailSubject= "?subject=" + title>
+    <#if contact.email?has_content>
+      <#assign emailAddress=contact.email>
+    <#else>
+      <#assign emailAddress= "enquiries@ceh.ac.uk">
+    </#if>
+    <#if contact.individualName?has_content>
+      <#assign emailSubject = emailSubject + " (FAO: " + contact.individualName + ")">
+    </#if>
+    <#local lcontact = lcontact + "<a href='mailto:" + emailAddress + emailSubject  + "'><i class='far fa-envelope contactEmail'></i> " +  emailAddress + "</a>">
+  </#if>
+
   <#return lcontact>
 </#function>
 

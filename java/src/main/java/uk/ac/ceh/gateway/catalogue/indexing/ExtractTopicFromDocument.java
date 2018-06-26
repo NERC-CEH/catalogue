@@ -30,6 +30,7 @@ public class ExtractTopicFromDocument implements TopicIndexer {
         topicHierarchy.put("http://onto.nerc.ac.uk/CEHMD/topic/3",  ImmutableList.of("0/Phenology/"));
         topicHierarchy.put("http://onto.nerc.ac.uk/CEHMD/topic/14", ImmutableList.of("0/Pollinators/"));
         topicHierarchy.put("http://onto.nerc.ac.uk/CEHMD/topic/15", ImmutableList.of("0/Pollution/"));
+        topicHierarchy.put("http://onto.nerc.ac.uk/CEHMD/topic/8", ImmutableList.of("0/Radioecology/"));
         topicHierarchy.put("http://onto.nerc.ac.uk/CEHMD/topic/17", ImmutableList.of("0/Soil/"));
         topicHierarchy.put("http://onto.nerc.ac.uk/CEHMD/topic/16", ImmutableList.of("0/Water quality/"));
     }
