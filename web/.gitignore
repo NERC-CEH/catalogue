@@ -7,6 +7,7 @@ src/css/*
 node_modules
 
 # Ignore testing code
+.grunt
 _SpecRunner.html
 test-compiled
 junit
