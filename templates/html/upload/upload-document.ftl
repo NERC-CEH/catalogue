@@ -7,7 +7,9 @@
     <div class="header">
         <#assign headText = "data">
         <#if permission.userCanUpload(parentId)>
-            <#if issues[0].status == 'scheduled'>
+            <#if issues?size != 1 >
+                <div class="alert alert-danger"><b>ERROR</b><br>There is no Jira issue for this deposit</div>
+            <#elseif issues[0].status == 'scheduled'>
                 <#assign headText = "upload " + headText>
             <#elseif issues[0].status == 'in progress'>
                 <#assign headText = "manage metadata/" + headText>

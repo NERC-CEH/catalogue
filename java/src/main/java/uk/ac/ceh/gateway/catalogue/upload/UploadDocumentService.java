@@ -446,15 +446,6 @@ public class UploadDocumentService {
 
     @SneakyThrows
     private void saveUploadDocument(CatalogueUser user, UploadDocument document, String message) {
-        for (val uploadFiles : document.getUploadFiles().values()) {
-            HashMap<String, UploadFile> invalid = Maps.newHashMap();
-            val values = uploadFiles.getInvalid().values();
-            values.removeIf(value -> !value.getType().equals(UploadType.MISSING_FILE));
-            for (val value : values) {
-                invalid.put(value.getPath(), value);
-            }
-            uploadFiles.setInvalid(invalid);
-        }
         val found = documentRepository.read(document.getId());
         if (found != null)
             document.setMetadata(found.getMetadata());
