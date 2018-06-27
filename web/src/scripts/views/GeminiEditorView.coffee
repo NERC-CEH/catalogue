@@ -299,10 +299,10 @@ define [
           multiline: true
           predefined:
             'Copyright - CEH':
-              value: '&copy; Centre for Ecology &amp; Hydrology (Natural Environment Research Council)'
+              value: '© Centre for Ecology &amp; Hydrology (Natural Environment Research Council)'
               code: 'copyright'
             'Copyright - NERC':
-              value: '&copy; Natural Environment Research Council'
+              value: '© Natural Environment Research Council'
               code: 'copyright'
             'Licence - OGL':
               value: 'This resource is made available under the terms of the Open Government Licence'

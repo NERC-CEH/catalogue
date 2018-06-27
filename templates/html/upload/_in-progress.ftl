@@ -1,3 +1,5 @@
+<p class="text-right"><a class="btn btn-default" href="./${id}/validate">VALIDATE</a></p>
+
 <section class="section">
     <div class="container">
         <div class="messages alert alert-info" role="alert">
