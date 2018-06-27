@@ -3,6 +3,9 @@
 <@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue)><#escape x as x?html>
   <div id="metadata" class="container permission">
     <h2>Permissions</h2>
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle fa-2x pull-right"></i> For external users, the username is the email address with which they registered an account.<br>For CEH staff it is their CEH login username <b>not</b> their email address.
+    </div>
     <table class="table table-striped">
       <thead>
         <tr>

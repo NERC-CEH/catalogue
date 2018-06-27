@@ -50,7 +50,7 @@
       <dt>${otherContact.roleDisplayName?html}</dt>
       <dd>
         <div class="responsibleParty">      
-          ${func.displayContact(otherContact, false, false, false)}
+          ${func.displayContact(otherContact, false, true, false)}
         </div>
   	 </dd>
     </#list>
