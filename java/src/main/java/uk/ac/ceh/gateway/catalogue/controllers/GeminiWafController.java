@@ -1,5 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,18 +14,11 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_SHORT;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_SHORT;
 
 /**
  * The following emulates a Web accessible Folder of gemini metadata records 
@@ -44,7 +42,7 @@ public class GeminiWafController {
     public ModelAndView getWaf() throws DataRepositoryException, IOException, PostProcessingException {
         List<String> resourceTypes = Arrays.asList("dataset", "service");
         DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
-        List<String> files = (latestRevision == null) ? Collections.emptyList() : listing
+        List<String> files = (latestRevision == null) ? Collections.EMPTY_LIST : listing
                 .getPublicDocuments(latestRevision.getRevisionID(), GeminiDocument.class, resourceTypes)
                 .stream()
                 .map((d)-> d + ".xml")

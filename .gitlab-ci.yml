@@ -6,7 +6,6 @@ variables:
   DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
   NODE_KEY: catalogue_version
   NODE_VALUE: $CI_BUILD_REF_NAME
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 services:
   - docker:dind
