@@ -35,7 +35,7 @@
         </div>
 
       <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-        <#include "gemini/_metadataqualityChecks.ftl">
+        <#--  <#include "gemini/_metadataqualityChecks.ftl">  -->
         <#include "gemini/_metadataqualityAlert.ftl">
       </#if>  
 
@@ -63,9 +63,9 @@
             </div>
           </div>
           
-          <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+          <#--  <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
             <#include "gemini/_metadataqualityReport.ftl">
-          </#if>
+          </#if>  -->
 
         <#else>
           <#include "gemini/_aggregate.ftl">

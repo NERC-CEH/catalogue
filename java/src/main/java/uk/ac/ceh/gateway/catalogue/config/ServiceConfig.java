@@ -103,6 +103,7 @@ public class ServiceConfig {
     @Autowired private GroupStore<CatalogueUser> groupStore;
     @Autowired private CatalogueService catalogueService;
     @Autowired @Qualifier("gemini") private Schema geminiSchema;
+    @Autowired private MetadataQualityService metadataQualityService;
     
     @Bean FacetFactory facetFactory() {
         return new HardcodedFacetFactory();
@@ -258,6 +259,7 @@ public class ServiceConfig {
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
         shared.put("catalogues", catalogueService);
+        shared.put("quality", metadataQualityService);
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
