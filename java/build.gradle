@@ -109,5 +109,5 @@ dependencies {
     testImplementation 'org.projectlombok:lombok:1.16.18'
     integrationTestImplementation 'org.seleniumhq.selenium:selenium-remote-driver:3.8.1'
     integrationTestImplementation 'org.seleniumhq.selenium:selenium-chrome-driver:3.8.1'
-    integrationTestImplementation 'com.jayway.jsonpath:json-path:2.3.0'
+    implementation 'com.jayway.jsonpath:json-path:2.3.0'
 }

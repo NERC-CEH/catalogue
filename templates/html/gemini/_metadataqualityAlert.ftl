@@ -25,4 +25,5 @@
     </div>
 </#if>  -->
 <#--  ${catalogues.retrieve('eidc')}  -->
-metadata id ${quality.check('bb2d7874-7bf4-44de-aa43-348bd684a2fe')}
+<h1>${id}</h1>
+<#--  metadata id ${metadataQuality.check(id)}  -->

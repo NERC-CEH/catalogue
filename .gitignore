@@ -13,6 +13,8 @@ target
 java/out
 java/bin
 
+supporting-documents
+
 # Ignore the secret configuration file
 puppet/hieradata/secrets.yaml
 
