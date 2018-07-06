@@ -1,0 +1,15 @@
+{
+  "resourceType": {
+    "value": "dataset"
+  },
+  "descriptiveKeywords": [
+    {
+      "type": "INSPIRE Theme",
+      "keywords": [
+        {
+          "value": "Hydrography"
+        }
+      ]
+    }
+  ]
+}

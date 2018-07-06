@@ -1,0 +1,39 @@
+{
+  "resourceType": {
+    "value": "dataset"
+  },
+  "descriptiveKeywords": [
+    {
+      "type": "INSPIRE Theme",
+      "keywords": [
+        {
+          "value": "Hydrography",
+          "uri": "http://inspire.ec.europa.eu/theme/hy"
+        }
+      ]
+    },
+    {"type": "discipline"}
+  ],
+  "boundingBoxes": [
+    {
+      "westBoundLongitude": -23.4,
+      "eastBoundLongitude": 119.3,
+      "southBoundLatitude": -23.4,
+      "northBoundLatitude": 56.2
+    },
+    {
+      "westBoundLongitude": 1.023,
+      "eastBoundLongitude": 2.183,
+      "southBoundLatitude": 56.789,
+      "northBoundLatitude": 57.836
+    }
+  ],
+  "spatialRepresentationTypes": [
+    "string0",
+    "String1"
+  ],
+  "spatialReferenceSystems": [
+    {"code": "abc123", "codeSpace": "URN:EPSG"},
+    {"code": "abc001", "codeSpace": "URN:EPSG"}
+  ]
+}

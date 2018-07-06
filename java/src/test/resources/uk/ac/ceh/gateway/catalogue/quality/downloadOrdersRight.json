@@ -1,0 +1,15 @@
+{
+  "resourceType": {
+    "value": "dataset"
+  },
+  "resourceStatus": "Current",
+  "onlineResources": [
+    {
+      "url": "https://catalogue.ceh.ac.uk/datastore/eidchub/f947fb3a-ca95-4c75-b2f3-2f4a95ef99e5/",
+      "function": "download"
+    },
+    {
+      "function": "information"
+    }
+  ]
+}

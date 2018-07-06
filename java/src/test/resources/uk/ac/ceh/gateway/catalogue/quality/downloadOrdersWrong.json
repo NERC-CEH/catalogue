@@ -1,0 +1,23 @@
+{
+  "resourceType": {
+    "value": "dataset"
+  },
+  "resourceStatus": "Current",
+  "onlineResources": [
+    {
+      "url": "https://example.com/order0",
+      "function": "order"
+    },
+    {
+      "url": "https://example.com/order1",
+      "function": "order"
+    },
+    {
+      "url": "https://example.com/download0",
+      "function": "download"
+    },
+    {
+      "function": "information"
+    }
+  ]
+}

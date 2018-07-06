@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -19,6 +20,7 @@ import static java.lang.String.format;
 /**
  * static json MetadataDocument reader
  */
+@Service
 public class DocumentReader<T extends MetadataDocument> {
   private static final String datastore = "/var/ceh-catalogue/datastore";
 

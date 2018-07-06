@@ -5,7 +5,7 @@
         <tbody>
         
         <#list problems as problem>
-            <#if problem.severity=3>
+            <#if problem.severity == "WARNING">
                 <#assign rowStyle="warning" iconStyle="fa-exclamation">
             <#else>
                 <#assign rowStyle="danger" iconStyle="fa-exclamation-triangle">

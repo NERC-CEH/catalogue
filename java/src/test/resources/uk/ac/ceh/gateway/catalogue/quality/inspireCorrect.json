@@ -1,0 +1,17 @@
+{
+  "resourceType": {
+    "value": "dataset"
+  },
+  "descriptiveKeywords": [
+    {
+      "type": "INSPIRE Theme",
+      "keywords": [
+        {
+          "value": "Hydrography",
+          "uri": "http://inspire.ec.europa.eu/theme/hy"
+        }
+      ]
+    },
+    {"type": "discipline"}
+  ]
+}

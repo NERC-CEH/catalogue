@@ -1,5 +1,5 @@
-<#--  <#assign
-    MD_checks = quality.check(id)
+<#assign
+    MD_checks = metadataQuality.check(id)
     problems = MD_checks.getProblems()
     errors = MD_checks.getErrors()
     warnings = MD_checks.getWarnings()
@@ -20,10 +20,7 @@
             <#if errors gte 1>${errors} error<#if errors gt 1>s</#if></#if>
             <#if errors gte 1 && warnings gte 1>and</#if>
             <#if warnings gte 1>${warnings} warning<#if warnings gt 1>s</#if></#if>
-            &nbsp;<a href="#section-metadataQuality">&nbsp;details <i class="fas fa-angle-down"></i></a>
+            &nbsp;<a href="#section-metadataQuality">details</a>
         </div>
     </div>
-</#if>  -->
-<#--  ${catalogues.retrieve('eidc')}  -->
-<h1>${id}</h1>
-<#--  metadata id ${metadataQuality.check(id)}  -->
+</#if>
