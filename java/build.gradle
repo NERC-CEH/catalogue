@@ -12,6 +12,7 @@ ext {
     springVersion = '4.3.17.RELEASE'
     springSecurityVersion = '4.2.6.RELEASE'
     jacksonVersion = '2.9.0'
+    lombokVersion = '1.16.20'
 }
 
 tasks.withType(JavaCompile) {
@@ -106,11 +107,13 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation "org.springframework:spring-test:${springVersion}"
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
-    compileOnly 'org.projectlombok:lombok:1.16.20'
-    annotationProcessor 'org.projectlombok:lombok:1.16.20'
-    testCompileOnly 'org.projectlombok:lombok:1.16.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.16.20'
+    compileOnly  "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor  "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly  "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor  "org.projectlombok:lombok:${lombokVersion}"
     integrationTestImplementation 'org.seleniumhq.selenium:selenium-remote-driver:3.8.1'
     integrationTestImplementation 'org.seleniumhq.selenium:selenium-chrome-driver:3.8.1'
     implementation 'com.jayway.jsonpath:json-path:2.3.0'
+    integrationTestCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    integrationTestAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
