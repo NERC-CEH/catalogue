@@ -73,7 +73,6 @@ public class MetadataQualityService {
             checkBasics(parsedDoc).ifPresent(checks::addAll);
             checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
             checkNonAggregates(parsedDoc).ifPresent(checks::addAll);
-            checkAddress(parsedDoc, "Metadata point of contact", "metadataPointsOfContact", ERROR).ifPresent(checks::addAll);
             checkPointsOfContact(parsedDoc).ifPresent(checks::addAll);
             checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
             checkSignpost(parsedDoc).ifPresent(checks::add);
@@ -87,16 +86,24 @@ public class MetadataQualityService {
     }
 
     private boolean isQualifyingDocument(DocumentContext parsedDoc, DocumentContext parsedMeta) {
-        return isEqual(parsedMeta, "documentType", CatalogueServiceConfig.GEMINI_DOCUMENT) && isCorrectResourceType(parsedDoc);
+        val docType = parsedMeta.read("$.documentType", String.class);
+        return docType != null
+            && docType.equals(CatalogueServiceConfig.GEMINI_DOCUMENT)
+            && isCorrectResourceType(parsedDoc);
     }
 
     private Optional<List<MetadataCheck>> checkBasics(DocumentContext parsedDoc) {
         val toReturn = new ArrayList<MetadataCheck>();
-        isMissing(parsedDoc, "Resource type", "resourceType").ifPresent(toReturn::add);
-        isMissing(parsedDoc, "Title", "title").ifPresent(toReturn::add);
-        isMissing(parsedDoc, "Description", "description").ifPresent(toReturn::add);
-        isMissing(parsedDoc, "Lineage", "lineage").ifPresent(toReturn::add);
-        isMissing(parsedDoc, "Resource status", "resourceStatus").ifPresent(toReturn::add);
+        val toCheck = parsedDoc.read(
+            "$.['title','description','lineage','resourceStatus']",
+            new TypeRef<Map<String, String>>() {}
+            );
+        toCheck.put("resourceType", parsedDoc.read("$.resourceType.value", String.class));
+        toCheck.forEach((key, value) -> {
+            if (fieldIsMissing(toCheck, key)) {
+                toReturn.add(new MetadataCheck(key + " is missing", ERROR));
+            }
+        });
         return Optional.of(toReturn);
     }
 
@@ -117,17 +124,17 @@ public class MetadataQualityService {
         }
         val toReturn = new ArrayList<MetadataCheck>();
         val licences = parsedDoc.read("$.useConstraints[*][?(@.code == 'license')]", typeRefStringString);
-        if (licences.isEmpty()) {
+        if (licences == null || licences.isEmpty()) {
             toReturn.add(new MetadataCheck("Licence is missing", ERROR));
         }
-        if (licences.size() != 1) {
+        if (licences != null && licences.size() != 1) {
             toReturn.add(new MetadataCheck("Licences count should be 1", ERROR));
         }
         val temporalExtents = parsedDoc.read("$.temporalExtents[*]", typeRefStringString);
-        if (temporalExtents.isEmpty()) {
+        if (temporalExtents ==  null || temporalExtents.isEmpty()) {
             toReturn.add(new MetadataCheck("Temporal extents is missing", ERROR));
         }
-        if (temporalExtents.stream().anyMatch(this::beginAndEndBothEmpty)) {
+        if (temporalExtents != null && temporalExtents.stream().anyMatch(this::beginAndEndBothEmpty)) {
             toReturn.add(new MetadataCheck("Temporal extents is empty", ERROR));
         }
         if (toReturn.isEmpty()) {
@@ -141,59 +148,8 @@ public class MetadataQualityService {
         return fieldIsMissing(map, "begin") && fieldIsMissing(map, "end");
     }
 
-    private boolean isEqual(DocumentContext parsed, String path, String equal) {
-        return (Optional.ofNullable(parsed.read(path))
-            .orElse("")
-            .equals(equal)
-        );
-    }
-
     private boolean isCorrectResourceType(DocumentContext parsed) {
         return validResourceTypes.contains(parsed.read("$.resourceType.value", String.class));
-    }
-
-    boolean isEmpty(DocumentContext parsed, String path) {
-        return Optional.ofNullable(parsed.read(path, List.class))
-            .orElse(Collections.emptyList())
-            .isEmpty();
-    }
-
-    Optional<MetadataCheck> isMissing(DocumentContext parsed, String element, String path) {
-        return isMissingPath(parsed,
-            format("%s is missing", element),
-            format("$[?(@.%s empty false)]", path)
-        );
-    }
-
-    Optional<MetadataCheck> isMissingPath(DocumentContext parsed, String message, String path) {
-        if (isEmpty(parsed, path)) {
-            return Optional.of(new MetadataCheck(message, ERROR));
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    Optional<MetadataCheck> hasCount(DocumentContext parsed, String element, String path, int requirement) {
-        val message = format("%s count should be %s", element, requirement);
-        if (Optional.ofNullable(parsed.read(path, List.class))
-            .orElse(Collections.emptyList())
-            .size() == requirement
-            )
-        {
-            return Optional.empty();
-        } else {
-            return Optional.of(new MetadataCheck(message, ERROR));
-        }
-    }
-
-    Optional<List<MetadataCheck>> checkAddress(DocumentContext parsed, String element, String path, Severity severity) {
-        return checkAddress(
-            parsed.read(
-                format("$.%s[*].['organisationName','email']", path),
-                typeRefStringString
-            ),
-            element
-        );
     }
 
     Optional<List<MetadataCheck>> checkAddress(List<Map<String, String>> addresses, String element) {
@@ -201,10 +157,14 @@ public class MetadataQualityService {
         if (addresses == null || addresses.isEmpty()) {
             return Optional.of(Collections.singletonList(new MetadataCheck(element + " is missing", ERROR)));
         }
-        if (addresses.stream().anyMatch(this::isMissingOrganisationName)) {
+        if (addresses.stream().anyMatch(map -> fieldIsMissing(map, "organisationName"))) {
             toReturn.add(new MetadataCheck(element + " organisation name is missing", ERROR));
         }
-        reportNonStandardEmail(addresses, element).ifPresent(toReturn::addAll);
+        addresses.stream()
+            .filter(address -> address.containsKey("email"))
+            .map(address -> address.get("email"))
+            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("eidc@ceh.ac.uk"))
+            .forEach(email -> toReturn.add(new MetadataCheck(format("%s email address is %s", element, email), WARNING)));
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -212,42 +172,27 @@ public class MetadataQualityService {
         }
     }
 
-    private boolean isMissingOrganisationName(Map<String, String> address) {
-        return !address.containsKey("organisationName") || (address.get("organisationName") == null || address.get("organisationName").isEmpty());
-    }
-
-    Optional<MetadataCheck> checkOrganisationName(DocumentContext parsed, String element, String path, Severity severity) {
-        val testPath = format("$.%s[*][?(@.organisationName empty true || @.organisationName == null)]", path);
-        val message = format("%s organisation name is missing", element);
-        if (parsed.read(testPath, List.class).isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(new MetadataCheck(message, severity));
-        }
-    }
-
-    Optional<List<MetadataCheck>> reportNonStandardEmail(DocumentContext parsed, String element, String path, Severity severity) {
-        val addresses = parsed.read(format("$.%s[*]", path), typeRefStringString);
-        return reportNonStandardEmail(addresses, element);
-    }
-
-    Optional<List<MetadataCheck>> reportNonStandardEmail(List<Map<String, String>> addresses, String element) {
-        return Optional.of(addresses.stream()
-            .filter(address -> address.containsKey("email"))
-            .map(address -> address.get("email"))
-            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("eidc@ceh.ac.uk"))
-            .map(email -> new MetadataCheck(format("%s email address is %s", element, email), WARNING))
-            .collect(Collectors.toList()));
-    }
-
     Optional<List<MetadataCheck>> checkPointsOfContact(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
-        hasCount(parsed, "Metadata point of contact", "metadataPointsOfContact", 1).ifPresent(toReturn::add);
-        if (parsed.read("$.metadataPointsOfContact[*][?(@.role == 'pointOfContact')]", List.class).isEmpty()) {
+        val metadataPointsOfContact = parsed.read("$.metadataPointsOfContact[*].['organisationName','individualName','role','email']", typeRefStringString);
+        if (metadataPointsOfContact == null) {
+            return Optional.of(Collections.singletonList(new MetadataCheck("Metadata point of contact missing", ERROR)));
+        }
+        if (metadataPointsOfContact.size() != 1) {
+            toReturn.add(new MetadataCheck("Metadata point of contact count should be 1", ERROR));
+        }
+        if (metadataPointsOfContact.stream().anyMatch(map -> fieldNotEqual(map, "role", "pointOfContact"))){
             toReturn.add(new MetadataCheck("Metadata point of contact MUST have the role 'Point of Contact'", ERROR));
         }
-        isMissingPath(parsed, "Metadata point of contact email is missing","metadataPointsOfContact[*][?(@.email empty false)]").ifPresent(toReturn::add);
-        isMissingPath(parsed, "Metadata point of contact name is missing","metadataPointsOfContact[*][?(@.individualName empty false)]").ifPresent(toReturn::add);
+        if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "organisationName"))){
+            toReturn.add(new MetadataCheck("Metadata point of contact organisation is missing", ERROR));
+        }
+        if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "email"))){
+            toReturn.add(new MetadataCheck("Metadata point of contact email is missing", ERROR));
+        }
+        if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "individualName"))        ){
+            toReturn.add(new MetadataCheck("Metadata point of contact name is missing", ERROR));
+        }
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -260,15 +205,15 @@ public class MetadataQualityService {
             return Optional.empty();
         }
         val toReturn = new ArrayList<MetadataCheck>();
-        if (parsed.read("$[?(@.boundingBoxes empty true)].id", List.class).isEmpty()) {
-            toReturn.add(new MetadataCheck("The record has a bounding box but the resource type is Non-geographic dataset", WARNING));
-        }
-        if (parsed.read("$[?(@.spatialRepresentationTypes empty true)].id", List.class).isEmpty()) {
-            toReturn.add(new MetadataCheck("The record has a spatial representation type but the resource type is Non-geographic dataset", WARNING));
-        }
-        if (parsed.read("$[?(@.spatialReferenceSystems empty true)].id", List.class).isEmpty()) {
-            toReturn.add(new MetadataCheck("The record has a spatial reference system but the resource type is Non-geographic dataset", WARNING));
-        }
+        val toCheck = parsed.read(
+            "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems']",
+            new TypeRef<Map<String, List>>() {}
+        );
+        toCheck.forEach((key, value) -> {
+            if ( !fieldListIsMissing(toCheck, key)) {
+                toReturn.add(new MetadataCheck("The record has a " + key + " but the resource type is Non-geographic dataset", ERROR));
+            }
+        });
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -300,9 +245,15 @@ public class MetadataQualityService {
         val toReturn = new ArrayList<MetadataCheck>();
         checkInspireTheme(parsed).ifPresent(toReturn::addAll);
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
-        isMissing(parsed, "Spatial extent", "boundingBoxes").ifPresent(toReturn::add);
-        isMissing(parsed, "Spatial representation type", "spatialRepresentationTypes").ifPresent(toReturn::add);
-        isMissing(parsed, "Spatial reference system", "spatialReferenceSystems").ifPresent(toReturn::add);
+        val spatial = parsed.read(
+            "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems']",
+            new TypeRef<Map<String, List>>() {}
+            );
+        spatial.forEach((key, value) -> {
+            if (fieldListIsMissing(spatial, key)) {
+                toReturn.add(new MetadataCheck(key + " is missing", ERROR));
+            }
+        });
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -316,20 +267,15 @@ public class MetadataQualityService {
             toReturn.add(new MetadataCheck("INSPIRE theme is missing", ERROR));
             return Optional.of(toReturn);
         }
-        if (parsed.read("$.descriptiveKeywords[*][?(@.type == 'INSPIRE Theme')].keywords[*]", List.class).size() == 0) {
+        val keywords = parsed.read("$.descriptiveKeywords[*][?(@.type == 'INSPIRE Theme')].keywords[*]", typeRefStringString);
+        if (keywords.size() == 0) {
             toReturn.add(new MetadataCheck("INSPIRE theme is empty", ERROR));
             return Optional.of(toReturn);
         }
-        if (parsed.read(
-            "$.descriptiveKeywords[*][?(@.type == 'INSPIRE Theme')].keywords[*][?(@.uri contains 'http://inspire.ec.europa.eu/theme/')].uri",
-            List.class
-        ).isEmpty()) {
+        if (keywords.stream().anyMatch(map -> fieldNotStartingWith(map, "uri", "http://inspire.ec.europa.eu/theme/"))) {
             toReturn.add(new MetadataCheck("INSPIRE theme does not have correct URI", ERROR));
         }
-        if (parsed.read(
-            "$.descriptiveKeywords[*][?(@.type == 'INSPIRE Theme')].keywords[*][?(@.uri empty false)]",
-            List.class
-        ).isEmpty()) {
+        if (keywords.stream().anyMatch(map -> fieldIsMissing(map, "uri"))) {
             toReturn.add(new MetadataCheck("INSPIRE theme does not have a URI", ERROR));
         }
         if (toReturn.isEmpty()) {
@@ -532,6 +478,13 @@ public class MetadataQualityService {
     }
 
     private boolean fieldIsMissing(Map<String, String> map, String key) {
+        return map == null
+            || !map.containsKey(key)
+            || map.get(key) == null
+            || map.get(key).isEmpty();
+    }
+
+    private boolean fieldListIsMissing(Map<String, List> map, String key) {
         return map == null
             || !map.containsKey(key)
             || map.get(key) == null
