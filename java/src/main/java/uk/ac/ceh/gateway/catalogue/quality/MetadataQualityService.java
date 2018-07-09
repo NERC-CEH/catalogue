@@ -59,29 +59,34 @@ public class MetadataQualityService {
     public Results check(String id) {
         log.debug("Checking {}", id);
 
-        val parsedDoc = JsonPath.parse(
-            this.documentReader.read(id, "raw"),
-            this.config
-        );
-        val parsedMeta = JsonPath.parse(
-            this.documentReader.read(id, "meta"),
-            this.config
-        );
+        try {
+            val parsedDoc = JsonPath.parse(
+                this.documentReader.read(id, "raw"),
+                this.config
+            );
+            val parsedMeta = JsonPath.parse(
+                this.documentReader.read(id, "meta"),
+                this.config
+            );
 
-        if (isQualifyingDocument(parsedDoc, parsedMeta)) {
-            val checks = new ArrayList<MetadataCheck>();
-            checkBasics(parsedDoc).ifPresent(checks::addAll);
-            checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
-            checkNonAggregates(parsedDoc).ifPresent(checks::addAll);
-            checkPointsOfContact(parsedDoc).ifPresent(checks::addAll);
-            checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
-            checkSignpost(parsedDoc).ifPresent(checks::add);
-            checkDataset(parsedDoc).ifPresent(checks::addAll);
-            checkStuff(parsedDoc).ifPresent(checks::addAll);
-            checkDownloadAndOrderLinks(parsedDoc).ifPresent(checks::addAll);
-            return new Results(checks);
-        } else {
-            return new Results(Collections.emptyList());
+            if (isQualifyingDocument(parsedDoc, parsedMeta)) {
+                val checks = new ArrayList<MetadataCheck>();
+                checkBasics(parsedDoc).ifPresent(checks::addAll);
+                checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
+                checkNonAggregates(parsedDoc).ifPresent(checks::addAll);
+                checkPointsOfContact(parsedDoc).ifPresent(checks::addAll);
+                checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
+                checkSignpost(parsedDoc).ifPresent(checks::add);
+                checkDataset(parsedDoc).ifPresent(checks::addAll);
+                checkStuff(parsedDoc).ifPresent(checks::addAll);
+                checkDownloadAndOrderLinks(parsedDoc).ifPresent(checks::addAll);
+                return new Results(checks, id);
+            } else {
+                return new Results(Collections.emptyList(), id, "Not a qualifying document type");
+            }
+        } catch (Exception ex) {
+            log.error("Error - could not check " + id, ex);
+            return new Results(Collections.emptyList(), id, "Error - could not check this document");
         }
     }
 
@@ -568,11 +573,18 @@ public class MetadataQualityService {
     @Value
     public static class Results {
         private final List<MetadataCheck> problems;
+        private final String id, message;
 
-        public Results(List<MetadataCheck> problems) {
+        public Results(@NonNull List<MetadataCheck> problems, @NonNull String id) {
+            this(problems, id, "");
+        }
+
+        public Results(@NonNull List<MetadataCheck> problems, @NonNull String id, @NonNull String message) {
             this.problems = problems.stream()
                 .sorted(Comparator.comparingInt(o -> o.getSeverity().priority))
                 .collect(Collectors.toList());
+            this.id = id;
+            this.message = message;
         }
 
         public long getErrors() {
@@ -585,6 +597,23 @@ public class MetadataQualityService {
             return problems.stream()
                 .filter(m -> WARNING.equals(m.getSeverity()))
                 .count();
+        }
+    }
+
+    @Value
+    public static class CatalogueResults {
+        private final List<Results> results;
+
+        public long getTotalErrors() {
+            return results.stream()
+                .mapToLong(Results::getErrors)
+                .sum();
+        }
+
+        public long getTotalWarnings() {
+            return results.stream()
+                .mapToLong(Results::getWarnings)
+                .sum();
         }
     }
 }

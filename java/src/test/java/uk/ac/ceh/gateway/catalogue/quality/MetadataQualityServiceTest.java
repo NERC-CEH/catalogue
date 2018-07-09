@@ -484,7 +484,7 @@ public class MetadataQualityServiceTest {
         );
 
         //when
-        val actual = new MetadataQualityService.Results(checks).getErrors();
+        val actual = new MetadataQualityService.Results(checks, "test").getErrors();
 
         //then
         assertThat(actual, equalTo(4L));
@@ -502,7 +502,7 @@ public class MetadataQualityServiceTest {
         );
 
         //when
-        val actual = new MetadataQualityService.Results(checks).getWarnings();
+        val actual = new MetadataQualityService.Results(checks, "test").getWarnings();
 
         //then
         assertThat(actual, equalTo(3L));
@@ -526,7 +526,7 @@ public class MetadataQualityServiceTest {
         );
 
         //when
-        val actual = new MetadataQualityService.Results(checks)
+        val actual = new MetadataQualityService.Results(checks, "test")
             .getProblems()
             .stream()
             .map(MetadataCheck::getSeverity)
@@ -534,5 +534,36 @@ public class MetadataQualityServiceTest {
 
         //then
         assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    public void totalErrorsAndWarnings() {
+        //given
+        val expectedTotalErrors = 8L;
+        val expectedTotalWarnings = 12L;
+        val checks = Arrays.asList(
+            new MetadataCheck("check 1", WARNING),
+            new MetadataCheck("check 2", ERROR),
+            new MetadataCheck("check 3", WARNING),
+            new MetadataCheck("check 4", ERROR),
+            new MetadataCheck("check 5", WARNING),
+            new MetadataCheck("check 6", WARNING),
+            new MetadataCheck("check 7", ERROR),
+            new MetadataCheck("check 8", WARNING),
+            new MetadataCheck("check 9", ERROR),
+            new MetadataCheck("check 10", WARNING)
+        );
+
+        val results =Arrays.asList(
+            new MetadataQualityService.Results(checks, "test0"),
+            new MetadataQualityService.Results(checks, "test1")
+        );
+
+        //when
+        val actual = new MetadataQualityService.CatalogueResults(results);
+
+        //then
+        assertThat(actual.getTotalErrors(), equalTo(expectedTotalErrors));
+        assertThat(actual.getTotalWarnings(), equalTo(expectedTotalWarnings));
     }
 }
