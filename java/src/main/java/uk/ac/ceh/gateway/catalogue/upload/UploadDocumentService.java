@@ -1,5 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
+import com.google.common.collect.Maps;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.val;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import org.apache.commons.io.FileUtils;
+import org.apache.jena.ext.com.google.common.collect.Lists;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.util.FileListUtils;
+import uk.ac.ceh.gateway.catalogue.util.FilenameContainsFilterUtils;
+import uk.ac.ceh.gateway.catalogue.util.ZipFileUtils;
+
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -8,23 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import com.google.common.collect.Maps;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.jena.ext.com.google.common.collect.Lists;
-
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.val;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.model.ZipParameters;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.util.FileListUtils;
-import uk.ac.ceh.gateway.catalogue.util.FilenameContainsFilterUtils;
-import uk.ac.ceh.gateway.catalogue.util.ZipFileUtils;
 
 @AllArgsConstructor
 public class UploadDocumentService {
@@ -38,9 +36,12 @@ public class UploadDocumentService {
     public UploadDocument create(CatalogueUser user, GeminiDocument geminiDocument) {
         val guid = geminiDocument.getId();
         Map<String, UploadFiles> uploadFiles = Maps.newHashMap();
-        val uploadDocument = new UploadDocument(guid, uploadFiles);
-        uploadDocument.setType("dataResource");
-        uploadDocument.setTitle(geminiDocument.getTitle());
+        val uploadDocument = new UploadDocument();
+        uploadDocument
+            .setParentId(guid)
+            .setUploadFiles(uploadFiles)
+            .setType("dataResource")
+            .setTitle(geminiDocument.getTitle());
         documentRepository.saveNew(user, uploadDocument, "eidc", "creating new upload document");
 
         folders.entrySet().stream().forEach(entry -> {
@@ -52,10 +53,13 @@ public class UploadDocumentService {
             val invalid = new HashMap<String, UploadFile>();
             createDocuments(uploadDocument.getParentId(), directory, documents, physicalLocation);
             boolean zipped = isZipped(directory);
-            val uploadFilesValue = new UploadFiles(directory.getAbsolutePath(), physicalLocation);
-            uploadFilesValue.setZipped(zipped);
-            uploadFilesValue.setDocuments(documents);
-            uploadFilesValue.setInvalid(invalid);
+            val uploadFilesValue = new UploadFiles();
+            uploadFilesValue
+                .setPath(directory.getAbsolutePath())
+                .setPhysicalLocation(physicalLocation)
+                .setZipped(zipped)
+                .setDocuments(documents)
+                .setInvalid(invalid);
             uploadFiles.put(key, uploadFilesValue);
         });
 

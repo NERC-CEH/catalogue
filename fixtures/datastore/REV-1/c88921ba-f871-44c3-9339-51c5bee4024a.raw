@@ -1,0 +1,21 @@
+{
+  "id": "c88921ba-f871-44c3-9339-51c5bee4024a",
+  "uri": "https://catalogue-staging.ceh.ac.uk/id/c88921ba-f871-44c3-9339-51c5bee4024a",
+  "type": "dataset",
+  "title": "Busy buzzy bumblebees",
+  "metadataDate": "2018-02-16T13:25:19.86",
+  "resourceIdentifiers": [
+    {
+      "code": "https://catalogue-staging.ceh.ac.uk/id/c88921ba-f871-44c3-9339-51c5bee4024a",
+      "coupledResource": "https://catalogue-staging.ceh.ac.uk/id/c88921ba-f871-44c3-9339-51c5bee4024a"
+    }
+  ],
+  "resourceType": {
+    "value": "dataset",
+    "uri": "http://inspire.ec.europa.eu/metadata-codelist/ResourceType/dataset"
+  },
+  "uploadId": "2a3dcf41-fe2c-4722-83c8-6e388ab94f77",
+  "datacitable": false,
+  "dataciteMintable": false,
+  "mapViewable": false
+}
