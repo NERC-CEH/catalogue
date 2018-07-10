@@ -1,0 +1,14 @@
+{
+  "distributorContacts": [
+    {
+      "organisationName": "NERC Environmental Information Data Centre",
+      "email": "eidc@ceh.ac.uk",
+      "role": "distributor"
+    },
+    {
+      "organisationName": "NERC Environmental Information Data Centre",
+      "email": "eidc@ceh.ac.uk",
+      "role": "publisher"
+    }
+  ]
+}

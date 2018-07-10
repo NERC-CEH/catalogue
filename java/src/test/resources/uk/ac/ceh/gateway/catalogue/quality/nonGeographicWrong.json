@@ -1,0 +1,28 @@
+{
+  "resourceType": {
+    "value": "nonGeographicDataset"
+  },
+  "id": "017b2785-7018-4488-8c08-2be611f92764",
+  "boundingBoxes": [
+    {
+      "westBoundLongitude": -23.4443454444,
+      "eastBoundLongitude": 119.3894724633,
+      "southBoundLatitude": -23.428948723,
+      "northBoundLatitude": 56.213931389
+    },
+    {
+      "westBoundLongitude": 1.023,
+      "eastBoundLongitude": 2.183,
+      "southBoundLatitude": 56.789,
+      "northBoundLatitude": 57.836
+    }
+  ],
+  "spatialRepresentationTypes": [
+    "string0",
+    "String1"
+  ],
+  "spatialReferenceSystems": [
+    {"code": "abc123", "codeSpace": "URN:EPSG"},
+    {"code": "abc001", "codeSpace": "URN:EPSG"}
+  ]
+}

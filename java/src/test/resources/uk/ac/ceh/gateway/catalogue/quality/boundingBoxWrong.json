@@ -1,0 +1,16 @@
+{
+  "boundingBoxes": [
+    {
+      "westBoundLongitude": -23.4443454444,
+      "eastBoundLongitude": 119.3894724633,
+      "southBoundLatitude": -23.428948723,
+      "northBoundLatitude": 56.213931389
+    },
+    {
+      "westBoundLongitude": 10.023,
+      "eastBoundLongitude": 2.183,
+      "southBoundLatitude": 58.789,
+      "northBoundLatitude": 7.836
+    }
+  ]
+}

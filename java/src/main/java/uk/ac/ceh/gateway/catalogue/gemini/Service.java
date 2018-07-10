@@ -3,10 +3,11 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
-import java.util.Collections;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
+
+import java.util.Collections;
+import java.util.List;
 
 @Value
 public class Service {
@@ -26,9 +27,9 @@ public class Service {
     ) {
         this.type = Strings.nullToEmpty(type);
         this.couplingType = Strings.nullToEmpty(couplingType);
-        this.versions = (versions != null)? versions : Collections.EMPTY_LIST;
-        this.coupledResources = (coupledResources != null)? coupledResources : Collections.EMPTY_LIST;
-        this.containsOperations = (containsOperations != null)? containsOperations : Collections.EMPTY_LIST;
+        this.versions = (versions != null)? versions : Collections.emptyList();
+        this.coupledResources = (coupledResources != null)? coupledResources : Collections.emptyList();
+        this.containsOperations = (containsOperations != null)? containsOperations : Collections.emptyList();
     }
 
     @Value

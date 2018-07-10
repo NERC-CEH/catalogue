@@ -10,6 +10,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateModelException;
 import lombok.Data;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -49,6 +50,7 @@ import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
@@ -103,6 +105,7 @@ public class ServiceConfig {
     @Autowired private GroupStore<CatalogueUser> groupStore;
     @Autowired private CatalogueService catalogueService;
     @Autowired @Qualifier("gemini") private Schema geminiSchema;
+    @Autowired private MetadataQualityService metadataQualityService;
     
     @Bean FacetFactory facetFactory() {
         return new HardcodedFacetFactory();
@@ -247,7 +250,8 @@ public class ServiceConfig {
     }
     
     @Bean
-    public freemarker.template.Configuration freemarkerConfiguration() throws TemplateModelException, IOException {
+    @SneakyThrows
+    public freemarker.template.Configuration freemarkerConfiguration() {
         Map<String, Object> shared = new HashMap<>();
         shared.put("jena", jenaLookupService());
         shared.put("codes", codeLookupService);
@@ -258,6 +262,7 @@ public class ServiceConfig {
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
         shared.put("catalogues", catalogueService);
+        shared.put("metadataQuality", metadataQualityService);
         
         freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);

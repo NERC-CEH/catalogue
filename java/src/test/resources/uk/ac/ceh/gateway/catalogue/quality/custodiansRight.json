@@ -1,0 +1,12 @@
+{
+  "responsibleParties": [
+    {
+      "organisationName": "Environmental Information Data Centre",
+      "email": "eidc@ceh.ac.uk",
+      "role": "custodian"
+    },
+    {
+      "role": "distributor"
+    }
+  ]
+}

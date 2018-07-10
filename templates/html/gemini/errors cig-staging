@@ -1,7 +1,0 @@
-Error: Could not start Service[docker-web]: Execution of '/etc/init.d/docker-web start' returned 1: Starting docker-web:        70a93f7058f1f1afbc4b9c22d67c266f57405c9bee831f476722008cf0dfa749
-/usr/bin/docker: Error response from daemon: OCI runtime create failed: container_linux.go:296: starting container process caused "process_linux.go:398: container init caused \"rootfs_linux.go:58: mounting \\\"/dropbox\\\" to rootfs \\\"/var/lib/docker/aufs/mnt/88b48862658028e207bc6de4145b43384a440a624b8de31b60f7bba8349b7e7e\\\" at \\\"/var/lib/docker/aufs/mnt/88b48862658028e207bc6de4145b43384a440a624b8de31b60f7bba8349b7e7e/var/ceh-catalogue/dropbox\\\" caused \\\"too many levels of symbolic links\\\"\"": unknown.
-
- *
-Error: /Stage[main]/Profile::Docker/Docker::Run[web]/Service[docker-web]/ensure: change from stopped to running failed: Could not start Service[docker-web]: Execution of '/etc/init.d/docker-web start' returned 1: Starting docker-web:      70a93f7058f1f1afbc4b9c22d67c266f57405c9bee831f476722008cf0dfa749
-/usr/bin/docker: Error response from daemon: OCI runtime create failed: container_linux.go:296: starting container process caused "process_linux.go:398: container init caused \"rootfs_linux.go:58: mounting \\\"/dropbox\\\" to rootfs \\\"/var/lib/docker/aufs/mnt/88b48862658028e207bc6de4145b43384a440a624b8de31b60f7bba8349b7e7e\\\" at \\\"/var/lib/docker/aufs/mnt/88b48862658028e207bc6de4145b43384a440a624b8de31b60f7bba8349b7e7e/var/ceh-catalogue/dropbox\\\" caused \\\"too many levels of symbolic links\\\"\"": unknown.
-

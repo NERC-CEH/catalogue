@@ -1,0 +1,17 @@
+{
+  "responsibleParties": [
+    {
+      "organisationName": "Organisation 0",
+      "email": "custodian0@example.com",
+      "role": "custodian"
+    },
+    {
+      "organisationName": "Organisation 1",
+      "email": "custodian1@example.com",
+      "role": "custodian"
+    },
+    {
+      "role": "distributor"
+    }
+  ]
+}
