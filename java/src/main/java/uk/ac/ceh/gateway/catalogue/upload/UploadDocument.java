@@ -1,20 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.ext.com.google.common.collect.Lists;
-import org.springframework.http.MediaType;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import lombok.val;
 import lombok.experimental.Accessors;
+import lombok.val;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.ext.com.google.common.collect.Lists;
+import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+
+import java.util.List;
+import java.util.Map;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -24,8 +23,8 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
     @Template(called="html/upload/upload-document.ftl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 public class UploadDocument extends AbstractMetadataDocument {
-    private final String parentId;
-    private final Map<String, UploadFiles> uploadFiles;
+    private String parentId;
+    private Map<String, UploadFiles> uploadFiles;
 
     public String getCsv(String ...names) {
         List<String> csv = Lists.newArrayList();
