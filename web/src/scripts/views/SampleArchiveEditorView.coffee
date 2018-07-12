@@ -140,9 +140,9 @@ define [
           predefined:
             England:
               northBoundLatitude: 55.812
-              eastBoundLongitude: 1.7675
+              eastBoundLongitude: 1.768
               southBoundLatitude: 49.864
-              westBoundLongitude: -6.4526
+              westBoundLongitude: -6.452
             'Great Britain':
               northBoundLatitude: 60.861
               eastBoundLongitude: 1.768
@@ -159,10 +159,10 @@ define [
               southBoundLatitude: 54.634
               westBoundLongitude: -8.648
             'United Kingdom':
-              northBoundLatitude: 60.86099
-              eastBoundLongitude: 1.767549
-              southBoundLatitude: 49.86382
-              westBoundLongitude: -8.648393
+              northBoundLatitude: 60.861
+              eastBoundLongitude: 1.768
+              southBoundLatitude: 49.864
+              westBoundLongitude: -8.648
             Wales:
               northBoundLatitude: 53.434
               eastBoundLongitude: -2.654

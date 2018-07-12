@@ -135,11 +135,18 @@ define [
           ObjectInputView: ContactView
           multiline: true
           predefined:
-            'CEH Author':
+            'Author - CEH':
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'author'
               email: 'enquiries@ceh.ac.uk'
-            'CEH Bangor':
+            'Author - unaffiliated':
+              organisationName: 'Unaffiliated'
+              role: 'author'
+            'Custodian - EIDC':
+              organisationName: 'Environmental Information Data Centre'
+              role: 'custodian'
+              email: 'eidc@ceh.ac.uk'
+            'Point of contact - CEH Bangor':
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
@@ -149,7 +156,7 @@ define [
                 city: 'Bangor'
                 administrativeArea: 'Gwynedd'
                 country: 'United Kingdom'
-            'CEH Edinburgh':
+            'Point of contact - CEH Edinburgh':
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
@@ -159,7 +166,7 @@ define [
                 city: 'Penicuik'
                 administrativeArea: 'Midlothian'
                 country: 'United Kingdom'
-            'CEH Lancaster':
+            'Point of contact - CEH Lancaster':
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
@@ -169,7 +176,7 @@ define [
                 city: 'Lancaster'
                 administrativeArea: 'Lancashire'
                 country: 'United Kingdom'
-            'CEH Wallingford':
+            'Point of contact - CEH Wallingford':
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
@@ -179,22 +186,14 @@ define [
                 city: 'Wallingford'
                 administrativeArea: 'Oxfordshire'
                 country: 'United Kingdom'
-            'EIDC Custodian':
-              organisationName: 'Environmental Information Data Centre'
-              role: 'custodian'
-              email: 'eidc@ceh.ac.uk'
-            'NERC Publisher':
+            'Publisher - NERC':
               organisationName: 'NERC Environmental Information Data Centre'
               role: 'publisher'
               email: 'eidc@ceh.ac.uk'
-            'Unaffiliated author':
-              organisationName: 'Unaffiliated'
-              role: 'author'
           helpText: """
-                    <p>The organisation or person responsible for the authorship and maintenance of the data resource.</p>
+                    <p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
                     <p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
-                    <p>The names of individuals should be included in the format <code>Surname, First Initial. Second Initial.</code> For example <strong>Brown, A.B.</strong></p>
-                    <p>The preferred <b>identifier</b> for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID.  For example <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>.</p>
+                    <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
                     """
       ]
     ,
@@ -406,9 +405,9 @@ define [
           predefined:
             England:
               northBoundLatitude: 55.812
-              eastBoundLongitude: 1.7675
+              eastBoundLongitude: 1.768
               southBoundLatitude: 49.864
-              westBoundLongitude: -6.4526
+              westBoundLongitude: -6.452
             'Great Britain':
               northBoundLatitude: 60.861
               eastBoundLongitude: 1.768
@@ -425,10 +424,10 @@ define [
               southBoundLatitude: 54.634
               westBoundLongitude: -8.648
             'United Kingdom':
-              northBoundLatitude: 60.86099
-              eastBoundLongitude: 1.767549
-              southBoundLatitude: 49.86382
-              westBoundLongitude: -8.648393
+              northBoundLatitude: 60.861
+              eastBoundLongitude: 1.768
+              southBoundLatitude: 49.864
+              westBoundLongitude: -8.648
             Wales:
               northBoundLatitude: 53.434
               eastBoundLongitude: -2.654

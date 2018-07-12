@@ -76,7 +76,7 @@
               <#if schemaItem.constraints.maximum?has_content>Maximum : ${schemaItem.constraints.maximum}<br></#if>
               <#if schemaItem.constraints.minLength?has_content>Minimum length : ${schemaItem.constraints.minLength}<br></#if>
               <#if schemaItem.constraints.maxLength?has_content>Maximum length : ${schemaItem.constraints.maxLength}<br></#if>
-              <#if schemaItem.constraints.unique=true>Is unique</#if>
+              <#if schemaItem.constraints.unique=true><small class="far fa-check-circle text-success"></small> Is unique</#if>
             </span>
           <#else>
             <span class="nodata" />
@@ -87,19 +87,17 @@
       </tbody></table>
       </#if>
 
-
- 
       
-      <#if provenance?? && (provenance.creationDate?? || provenance.modificationDate??)>
+      <#if provenance.creationDate?has_content || provenance.modificationDate?has_content || provenance.contributors?has_content >
         <h1 class="section-heading">Provenance</h1>
         <#if provenance.creationDate?? && provenance.creationDate?has_content>
-          <div>${provenance.creationDate}</div>
+          <div><p>Created: ${provenance.creationDate}</p></div>
         </#if>
         <#if provenance.modificationDate?? && provenance.modificationDate?has_content>
-          <div>${provenance.modificationDate}</div>
+          <div><p>Modified: ${provenance.modificationDate}</p></div>
         </#if>
         <#if provenance.contributors?? && provenance.contributors?has_content>
-          <div>${provenance.contributors?join(", ")}</div>
+          <div><p>Contributors: ${provenance.contributors?join(", ")}</p></div>
         </#if>
       </#if>
       

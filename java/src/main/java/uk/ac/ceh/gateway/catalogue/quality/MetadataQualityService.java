@@ -97,6 +97,7 @@ public class MetadataQualityService {
             && isCorrectResourceType(parsedDoc);
     }
 
+//NOT WORKING
     private Optional<List<MetadataCheck>> checkBasics(DocumentContext parsedDoc) {
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsedDoc.read(
@@ -132,12 +133,12 @@ public class MetadataQualityService {
         if (licences == null || licences.isEmpty()) {
             toReturn.add(new MetadataCheck("Licence is missing", ERROR));
         }
-        if (licences != null && licences.size() != 1) {
-            toReturn.add(new MetadataCheck("Licences count should be 1", ERROR));
+        if (licences != null && licences.size() > 1) {
+            toReturn.add(new MetadataCheck("There should be only ONE licence", ERROR));
         }
         val temporalExtents = parsedDoc.read("$.temporalExtents[*]", typeRefStringString);
         if (temporalExtents ==  null || temporalExtents.isEmpty()) {
-            toReturn.add(new MetadataCheck("Temporal extents is missing", ERROR));
+            toReturn.add(new MetadataCheck("Temporal extents is missing", WARNING));
         }
         if (temporalExtents != null && temporalExtents.stream().anyMatch(this::beginAndEndBothEmpty)) {
             toReturn.add(new MetadataCheck("Temporal extents is empty", ERROR));
@@ -165,11 +166,6 @@ public class MetadataQualityService {
         if (addresses.stream().anyMatch(map -> fieldIsMissing(map, "organisationName"))) {
             toReturn.add(new MetadataCheck(element + " organisation name is missing", ERROR));
         }
-        addresses.stream()
-            .filter(address -> address.containsKey("email"))
-            .map(address -> address.get("email"))
-            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("eidc@ceh.ac.uk"))
-            .forEach(email -> toReturn.add(new MetadataCheck(format("%s email address is %s", element, email), WARNING)));
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -181,22 +177,25 @@ public class MetadataQualityService {
         val toReturn = new ArrayList<MetadataCheck>();
         val metadataPointsOfContact = parsed.read("$.metadataPointsOfContact[*].['organisationName','individualName','role','email']", typeRefStringString);
         if (metadataPointsOfContact == null) {
-            return Optional.of(Collections.singletonList(new MetadataCheck("Metadata point of contact missing", ERROR)));
+            return Optional.of(Collections.singletonList(new MetadataCheck("Metadata contact is missing", ERROR)));
         }
-        if (metadataPointsOfContact.size() != 1) {
-            toReturn.add(new MetadataCheck("Metadata point of contact count should be 1", ERROR));
+        if (metadataPointsOfContact.size() > 1) {
+            toReturn.add(new MetadataCheck("There should be only ONE metadata contact", WARNING));
         }
         if (metadataPointsOfContact.stream().anyMatch(map -> fieldNotEqual(map, "role", "pointOfContact"))){
-            toReturn.add(new MetadataCheck("Metadata point of contact MUST have the role 'Point of Contact'", ERROR));
+            toReturn.add(new MetadataCheck("Metadata contact MUST have the role 'Point of Contact'", ERROR));
+        }
+        if (metadataPointsOfContact.stream().anyMatch(map -> fieldNotEqual(map, "email", "enquiries@ceh.ac.uk"))){
+            toReturn.add(new MetadataCheck("Metadata contact email address is not enquiries@ceh.ac.uk", WARNING));
         }
         if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "organisationName"))){
-            toReturn.add(new MetadataCheck("Metadata point of contact organisation is missing", ERROR));
+            toReturn.add(new MetadataCheck("Metadata contact organisation is missing", ERROR));
         }
         if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "email"))){
-            toReturn.add(new MetadataCheck("Metadata point of contact email is missing", ERROR));
+            toReturn.add(new MetadataCheck("Metadata contact email is missing", ERROR));
         }
         if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "individualName"))        ){
-            toReturn.add(new MetadataCheck("Metadata point of contact name is missing", ERROR));
+            toReturn.add(new MetadataCheck("Metadata contact name is missing", WARNING));
         }
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -211,12 +210,12 @@ public class MetadataQualityService {
         }
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsed.read(
-            "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems']",
+            "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems','spatialResolutions']",
             new TypeRef<Map<String, List>>() {}
         );
         toCheck.forEach((key, value) -> {
             if ( !fieldListIsMissing(toCheck, key)) {
-                toReturn.add(new MetadataCheck("The record has a " + key + " but the resource type is Non-geographic dataset", ERROR));
+                toReturn.add(new MetadataCheck("The record has " + key + " but the resource type is Non-geographic dataset", ERROR));
             }
         });
         if (toReturn.isEmpty()) {
@@ -239,7 +238,7 @@ public class MetadataQualityService {
         } else if (size == 1) {
             return Optional.empty();
         } else {
-            return Optional.of(new MetadataCheck("There are more than one search/information links", ERROR));
+            return Optional.of(new MetadataCheck("There are more than one search/information links", WARNING));
         }
     }
 
@@ -250,8 +249,9 @@ public class MetadataQualityService {
         val toReturn = new ArrayList<MetadataCheck>();
         checkInspireTheme(parsed).ifPresent(toReturn::addAll);
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
+//NOT WORKING
         val spatial = parsed.read(
-            "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems']",
+            "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems','spatialResolutions']",
             new TypeRef<Map<String, List>>() {}
             );
         spatial.forEach((key, value) -> {
@@ -332,6 +332,7 @@ public class MetadataQualityService {
         checkAuthors(parsed).ifPresent(toReturn::addAll);
         checkTopicCategories(parsed).ifPresent(toReturn::add);
         checkDataFormat(parsed).ifPresent(toReturn::add);
+        checkPOC(parsed).ifPresent(toReturn::addAll);
         checkCustodian(parsed).ifPresent(toReturn::addAll);
         checkPublisher(parsed).ifPresent(toReturn::addAll);
         checkDistributor(parsed).ifPresent(toReturn::addAll);
@@ -353,15 +354,23 @@ public class MetadataQualityService {
             typeRefStringString
         );
         checkAddress(distributors, "Distributor").ifPresent(toReturn::addAll);
-        if (distributors.size() != 1) {
-            toReturn.add(new MetadataCheck("Distributor count should be 1", ERROR));
+        if (distributors.size() > 1) {
+            toReturn.add(new MetadataCheck("There should be only ONE distributor", ERROR));
         }
         if (nonDistributors.size() > 0) {
             toReturn.add(new MetadataCheck("Distributor contact must have role 'distributor'", ERROR));
         }
-        if (distributors.stream().anyMatch(custodian -> fieldIsMissing(custodian, "email"))) {
+        if (distributors.stream().anyMatch(distributor -> fieldIsMissing(distributor, "email"))) {
             toReturn.add(new MetadataCheck("Distributor's email address is missing", ERROR));
         }
+
+        if (notRequiredResourceTypes(parsed, "signpost")) {
+             distributors.stream()
+            .filter(distributor -> fieldNotEqual(distributor, "email", "eidc@ceh.ac.uk"))
+            .map(distributor -> distributor.getOrDefault("email", "unknown"))
+            .forEach(email -> toReturn.add(new MetadataCheck("Distributor's email address is " + email, WARNING)));
+        }   
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -376,21 +385,16 @@ public class MetadataQualityService {
             typeRefStringString
         );
         checkAddress(publishers, "Publisher").ifPresent(toReturn::addAll);
-        if (publishers.size() != 1) {
-            toReturn.add(new MetadataCheck("Publisher count should be 1", ERROR));
+        if (publishers.size() > 1) {
+            toReturn.add(new MetadataCheck("There should be only ONE publisher", ERROR));
         }
-        if (publishers.stream().anyMatch(custodian -> fieldIsMissing(custodian, "email"))) {
+        if (publishers.stream().anyMatch(publisher -> fieldIsMissing(publisher, "email"))) {
             toReturn.add(new MetadataCheck("Publisher email address is missing", ERROR));
         }
         publishers.stream()
-            .filter(custodian -> fieldNotEqual(custodian, "organisationName", "NERC Environmental Information Data Centre"))
-            .map(custodian -> custodian.getOrDefault("organisationName", "unknown"))
+            .filter(publisher -> fieldNotEqual(publisher, "organisationName", "NERC Environmental Information Data Centre"))
+            .map(publisher -> publisher.getOrDefault("organisationName", "unknown"))
             .forEach(organisationName -> toReturn.add(new MetadataCheck("Publisher name is " + organisationName, WARNING)));
-
-        publishers.stream()
-            .filter(custodian -> fieldNotEqual(custodian, "email", "eidc@ceh.ac.uk"))
-            .map(custodian -> custodian.getOrDefault("email", "unknown"))
-            .forEach(email -> toReturn.add(new MetadataCheck("Publisher email address is " + email, WARNING)));
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -406,8 +410,8 @@ public class MetadataQualityService {
             typeRefStringString
         );
         checkAddress(custodians, "Custodian").ifPresent(toReturn::addAll);
-        if (custodians.size() != 1) {
-            toReturn.add(new MetadataCheck("Custodian count should be 1", ERROR));
+        if (custodians.size() > 1) {
+            toReturn.add(new MetadataCheck("There should be only ONE custodian", ERROR));
         }
         if (custodians.stream().anyMatch(custodian -> fieldIsMissing(custodian, "email"))) {
             toReturn.add(new MetadataCheck("Custodian email address is missing", ERROR));
@@ -429,6 +433,35 @@ public class MetadataQualityService {
         }
     }
 
+    Optional<List<MetadataCheck>> checkPOC(DocumentContext parsed) {
+        val toReturn = new ArrayList<MetadataCheck>();
+        val pocs = parsed.read(
+            "$.responsibleParties[*][?(@.role == 'pointOfContact')].['organisationName','individualName','email']",
+            typeRefStringString
+        );
+        if (pocs.size() == 0 ) {
+            toReturn.add(new MetadataCheck("Point of contact is missing", ERROR));
+        }
+        if (pocs.size() > 1) {
+            toReturn.add(new MetadataCheck("There should be only ONE point of contact", ERROR));
+        }
+        if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "email"))) {
+            toReturn.add(new MetadataCheck("Point of contact email address is missing", ERROR));
+        }
+        if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "individualName"))) {
+            toReturn.add(new MetadataCheck("Point of contact name is missing", ERROR));
+        }
+        if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "organisationName"))) {
+            toReturn.add(new MetadataCheck("Point of contact organisation name is missing", ERROR));
+        }
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
+
     private boolean fieldNotEqual(Map<String, String> map, String key, String value) {
         return !map.containsKey(key)
             || map.get(key) == null
@@ -441,7 +474,7 @@ public class MetadataQualityService {
             typeRefStringString
         );
         if (dataFormats.isEmpty()) {
-            return Optional.of(new MetadataCheck("Data format is missing", ERROR));
+            return Optional.of(new MetadataCheck("Data format is missing", WARNING));
         }
         if (dataFormats.stream().anyMatch(format -> fieldIsMissing(format, "version"))) {
             return Optional.of(new MetadataCheck("Format version is empty", ERROR));
@@ -456,7 +489,7 @@ public class MetadataQualityService {
             typeRefStringString
             );
         if (topicCategories.isEmpty()) {
-            return Optional.of(new MetadataCheck("Topic category is missing", ERROR));
+            return Optional.of(new MetadataCheck("Topic category is missing", WARNING));
         }
         if (topicCategories.stream().anyMatch(topic -> fieldIsMissing(topic, "value"))) {
             return Optional.of(new MetadataCheck("Topic category is empty", ERROR));
@@ -471,10 +504,21 @@ public class MetadataQualityService {
             "$.responsibleParties[*][?(@.role == 'author')].['individualName', 'organisationName','email']",
             typeRefStringString
             );
-        checkAddress(authors, "Authors").ifPresent(toReturn::addAll);
-        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
-            toReturn.add(new MetadataCheck("Author's name is missing", ERROR));
+        if (authors.size() == 0) {
+            toReturn.add(new MetadataCheck("There are no authors", WARNING));
         }
+        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
+            toReturn.add(new MetadataCheck("Author's name is missing", WARNING));
+        }
+        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
+            toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
+        }
+        authors.stream()
+            .filter(author -> author.containsKey("email"))
+            .map(author -> author.get("email"))
+            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("eidc@ceh.ac.uk"))
+            .forEach(email -> toReturn.add(new MetadataCheck(format("Author's email address is %s", email), ERROR)));
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -496,11 +540,13 @@ public class MetadataQualityService {
             || map.get(key).isEmpty();
     }
 
+//ONLY IF STATUS == "Current" NOT WORKING
     Optional<List<MetadataCheck>> checkDownloadAndOrderLinks(DocumentContext parsed) {
         if (resourceStatusIsNotCurrent(parsed) && notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")
         ) {
             return Optional.empty();
         }
+        
         val toReturn = new ArrayList<MetadataCheck>();
         val orders = parsed.read(
             "$.onlineResources[*][?(@.function == 'order')]",
@@ -511,11 +557,13 @@ public class MetadataQualityService {
             typeRefStringString
         );
         val totalOrdersAndDownloads = orders.size() + downloads.size();
+        
         if (totalOrdersAndDownloads == 0) {
             toReturn.add(new MetadataCheck("There are no orders/downloads", ERROR));
         } else if (totalOrdersAndDownloads > 1) {
             toReturn.add(new MetadataCheck("There are multiple orders/downloads", WARNING));
         }
+        
         if(orders.stream()
             .anyMatch(order -> fieldNotStartingWith(order, "url", "https://catalogue.ceh.ac.uk/download"))) {
             toReturn.add(new MetadataCheck("Orders do not have a valid EIDC url", WARNING));
