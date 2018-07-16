@@ -97,20 +97,24 @@ public class MetadataQualityService {
             && isCorrectResourceType(parsedDoc);
     }
 
-//NOT WORKING
-    private Optional<List<MetadataCheck>> checkBasics(DocumentContext parsedDoc) {
+    Optional<List<MetadataCheck>> checkBasics(DocumentContext parsedDoc) {
+        val requiredKeys = ImmutableSet.of("title", "description", "lineage", "resourceStatus", "resourceType");
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsedDoc.read(
             "$.['title','description','lineage','resourceStatus']",
             new TypeRef<Map<String, String>>() {}
             );
         toCheck.put("resourceType", parsedDoc.read("$.resourceType.value", String.class));
-        toCheck.forEach((key, value) -> {
+        requiredKeys.forEach(key -> {
             if (fieldIsMissing(toCheck, key)) {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
             }
         });
-        return Optional.of(toReturn);
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
     }
 
     private Optional<MetadataCheck> checkPublicationDate(DocumentContext parsedDoc, DocumentContext parsedMeta) {
@@ -246,15 +250,15 @@ public class MetadataQualityService {
         if (notRequiredResourceTypes(parsed, "dataset")) {
             return Optional.empty();
         }
+        val requiredKeys = ImmutableSet.of("boundingBoxes", "spatialRepresentationTypes", "spatialReferenceSystems", "spatialResolutions");
         val toReturn = new ArrayList<MetadataCheck>();
         checkInspireTheme(parsed).ifPresent(toReturn::addAll);
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
-//NOT WORKING
         val spatial = parsed.read(
             "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems','spatialResolutions']",
             new TypeRef<Map<String, List>>() {}
             );
-        spatial.forEach((key, value) -> {
+        requiredKeys.forEach(key -> {
             if (fieldListIsMissing(spatial, key)) {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
             }
@@ -540,9 +544,8 @@ public class MetadataQualityService {
             || map.get(key).isEmpty();
     }
 
-//ONLY IF STATUS == "Current" NOT WORKING
     Optional<List<MetadataCheck>> checkDownloadAndOrderLinks(DocumentContext parsed) {
-        if (resourceStatusIsNotCurrent(parsed) && notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")
+        if ( !resourceStatusIsCurrent(parsed) && notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")
         ) {
             return Optional.empty();
         }
@@ -585,9 +588,9 @@ public class MetadataQualityService {
             || !map.get(key).startsWith(value);
     }
 
-    private boolean resourceStatusIsNotCurrent(DocumentContext parsed) {
+    boolean resourceStatusIsCurrent(DocumentContext parsed) {
         val resourceStatus = parsed.read("$.resourceStatus", String.class);
-        return resourceStatus == null || !resourceStatus.equals("Current");
+        return resourceStatus != null && resourceStatus.equals("Current");
     }
 
     private boolean notRequiredResourceTypes(DocumentContext parsed, String... resourceTypes) {

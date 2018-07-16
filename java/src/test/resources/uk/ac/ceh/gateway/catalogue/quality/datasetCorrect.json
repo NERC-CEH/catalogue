@@ -35,5 +35,10 @@
   "spatialReferenceSystems": [
     {"code": "abc123", "codeSpace": "URN:EPSG"},
     {"code": "abc001", "codeSpace": "URN:EPSG"}
+  ],
+  "spatialResolutions": [
+    {"distance": "10 or more"},
+    {"distance": "11"},
+    {"distance": "12"}
   ]
 }
