@@ -250,7 +250,7 @@ public class MetadataQualityService {
         if (notRequiredResourceTypes(parsed, "dataset")) {
             return Optional.empty();
         }
-        val requiredKeys = ImmutableSet.of("boundingBoxes", "spatialRepresentationTypes", "spatialReferenceSystems", "spatialResolutions");
+        val requiredKeys = ImmutableSet.of("boundingBoxes", "spatialRepresentationTypes", "spatialReferenceSystems");
         val toReturn = new ArrayList<MetadataCheck>();
         checkInspireTheme(parsed).ifPresent(toReturn::addAll);
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
@@ -263,6 +263,9 @@ public class MetadataQualityService {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
             }
         });
+        if (fieldListIsMissing(spatial, "spatialResolutions")) {
+            toReturn.add(new MetadataCheck("spatial resolutions is missing", WARNING));
+        };
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -545,8 +548,7 @@ public class MetadataQualityService {
     }
 
     Optional<List<MetadataCheck>> checkDownloadAndOrderLinks(DocumentContext parsed) {
-        if ( !resourceStatusIsCurrent(parsed) && notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")
-        ) {
+        if (!resourceStatusIsCurrent(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return Optional.empty();
         }
         
