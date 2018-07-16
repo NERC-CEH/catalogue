@@ -1,0 +1,9 @@
+{
+  "resourceType": {
+    "value": "dataset"
+  },
+  "title": "title",
+  "description": "description",
+  "lineage": "lineage",
+  "resourceStatus": "resourceStatus"
+}

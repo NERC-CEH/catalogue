@@ -1,6 +1,6 @@
 <div id="section-metadataQuality" class="clearfix">
     <h3>Metadata quality</h3>
-    <#if problems??>
+    <#if problems?? && problems?has_content>
     <table class="table table-bordered table-condensed">
         <tbody>
         
@@ -18,6 +18,6 @@
         </tbody>
     </table>
     <#else>
-        <p class="text-success"><i class="fas fa-check-circle"></i> No issues found</p>
+        <p class="text-success"><i class="fas fa-check-circle"></i> No metadata issues found</p>
     </#if>
 </div>

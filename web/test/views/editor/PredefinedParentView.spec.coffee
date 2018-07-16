@@ -19,9 +19,9 @@ define [
         predefined:
           England:
             northBoundLatitude: 55.812
-            eastBoundLongitude: 1.7675
+            eastBoundLongitude: 1.768
             southBoundLatitude: 49.864
-            westBoundLongitude: -6.4526
+            westBoundLongitude: -6.452
 
     describe 'clicking England', ->
 
@@ -34,6 +34,6 @@ define [
 
         expect(view.collection.add).toHaveBeenCalledWith
           northBoundLatitude: 55.812
-          eastBoundLongitude: 1.7675
+          eastBoundLongitude: 1.768
           southBoundLatitude: 49.864
-          westBoundLongitude: -6.4526
+          westBoundLongitude: -6.452
