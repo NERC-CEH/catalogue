@@ -11,12 +11,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.UsernameAlreadyTakenException;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
+import uk.ac.ceh.gateway.catalogue.file.FileRepository;
+import uk.ac.ceh.gateway.catalogue.file.FilesystemRepository;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
@@ -65,5 +68,13 @@ public class ApplicationConfig {
     public CodeLookupService codeNameLookupService() throws IOException {
         Properties properties = PropertiesLoaderUtils.loadAllProperties("codelist.properties");
         return new CodeLookupService(properties);
+    }
+
+    @Bean
+    public FileRepository fileRepository() {
+        return new FilesystemRepository(
+            new FileSystemResourceLoader(),
+            "file:///var/ceh-catalogue/datastore"
+        );
     }
 }
