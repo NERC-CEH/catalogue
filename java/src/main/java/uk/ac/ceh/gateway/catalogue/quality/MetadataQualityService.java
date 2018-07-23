@@ -30,7 +30,6 @@ public class MetadataQualityService {
     private final DocumentReader documentReader;
     private final Configuration config;
     private final Set<String> validResourceTypes = ImmutableSet.of(
-        "aggregate",
         "application",
         "dataset",
         "nonGeographicDataset",
@@ -73,7 +72,7 @@ public class MetadataQualityService {
                 val checks = new ArrayList<MetadataCheck>();
                 checkBasics(parsedDoc).ifPresent(checks::addAll);
                 checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
-                checkNonAggregates(parsedDoc).ifPresent(checks::addAll);
+                checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
                 checkPointsOfContact(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
                 checkSignpost(parsedDoc).ifPresent(checks::add);
@@ -110,6 +109,13 @@ public class MetadataQualityService {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
             }
         });
+        val licences = parsedDoc.read("$.useConstraints[*][?(@.code == 'license')]", typeRefStringString);
+        if (licences == null || licences.isEmpty()) {
+            toReturn.add(new MetadataCheck("Licence is missing", ERROR));
+        }
+        if (licences != null && licences.size() > 1) {
+            toReturn.add(new MetadataCheck("There should be only ONE licence", ERROR));
+        }
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -128,18 +134,12 @@ public class MetadataQualityService {
         }
     }
 
-    private Optional<List<MetadataCheck>> checkNonAggregates(DocumentContext parsedDoc) {
-        if ( !notRequiredResourceTypes(parsedDoc, "aggregate")) {
+    private Optional<List<MetadataCheck>> checkTemporalExtents(DocumentContext parsedDoc) {
+        if ( !notRequiredResourceTypes(parsedDoc, "application")) {
             return Optional.empty();
         }
         val toReturn = new ArrayList<MetadataCheck>();
-        val licences = parsedDoc.read("$.useConstraints[*][?(@.code == 'license')]", typeRefStringString);
-        if (licences == null || licences.isEmpty()) {
-            toReturn.add(new MetadataCheck("Licence is missing", ERROR));
-        }
-        if (licences != null && licences.size() > 1) {
-            toReturn.add(new MetadataCheck("There should be only ONE licence", ERROR));
-        }
+        
         val temporalExtents = parsedDoc.read("$.temporalExtents[*]", typeRefStringString);
         if (temporalExtents ==  null || temporalExtents.isEmpty()) {
             toReturn.add(new MetadataCheck("Temporal extents is missing", WARNING));
@@ -189,17 +189,14 @@ public class MetadataQualityService {
         if (metadataPointsOfContact.stream().anyMatch(map -> fieldNotEqual(map, "role", "pointOfContact"))){
             toReturn.add(new MetadataCheck("Metadata contact MUST have the role 'Point of Contact'", ERROR));
         }
-        if (metadataPointsOfContact.stream().anyMatch(map -> fieldNotEqual(map, "email", "enquiries@ceh.ac.uk"))){
-            toReturn.add(new MetadataCheck("Metadata contact email address is not enquiries@ceh.ac.uk", WARNING));
+        if (metadataPointsOfContact.stream().anyMatch(map -> fieldNotEqual(map, "email", "enquiries@ceh.ac.uk") && fieldNotEqual(map, "email", "eidc@ceh.ac.uk"))){
+            toReturn.add(new MetadataCheck("Metadata contact email address is neither eidc@ceh.ac.uk nor enquiries@ceh.ac.uk", WARNING));
         }
         if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "organisationName"))){
             toReturn.add(new MetadataCheck("Metadata contact organisation is missing", ERROR));
         }
         if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "email"))){
             toReturn.add(new MetadataCheck("Metadata contact email is missing", ERROR));
-        }
-        if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "individualName"))        ){
-            toReturn.add(new MetadataCheck("Metadata contact name is missing", WARNING));
         }
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -265,7 +262,7 @@ public class MetadataQualityService {
         });
         if (fieldListIsMissing(spatial, "spatialResolutions")) {
             toReturn.add(new MetadataCheck("spatial resolutions is missing", WARNING));
-        };
+        }
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -450,13 +447,13 @@ public class MetadataQualityService {
             toReturn.add(new MetadataCheck("Point of contact is missing", ERROR));
         }
         if (pocs.size() > 1) {
-            toReturn.add(new MetadataCheck("There should be only ONE point of contact", ERROR));
+            toReturn.add(new MetadataCheck("There should be only ONE point of contact", WARNING));
         }
         if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "email"))) {
             toReturn.add(new MetadataCheck("Point of contact email address is missing", ERROR));
         }
         if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "individualName"))) {
-            toReturn.add(new MetadataCheck("Point of contact name is missing", ERROR));
+            toReturn.add(new MetadataCheck("Point of contact name is missing", WARNING));
         }
         if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "organisationName"))) {
             toReturn.add(new MetadataCheck("Point of contact organisation name is missing", ERROR));
