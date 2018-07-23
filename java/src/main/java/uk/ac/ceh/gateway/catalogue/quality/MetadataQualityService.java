@@ -147,8 +147,6 @@ public class MetadataQualityService {
         if (temporalExtents != null && temporalExtents.stream().anyMatch(this::beginAndEndBothEmpty)) {
             toReturn.add(new MetadataCheck("Temporal extents is empty", ERROR));
         }
-
-
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -264,7 +262,7 @@ public class MetadataQualityService {
         });
         if (fieldListIsMissing(spatial, "spatialResolutions")) {
             toReturn.add(new MetadataCheck("spatial resolutions is missing", WARNING));
-        };
+        }
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
