@@ -1,7 +1,7 @@
 import org.ajoberstar.grgit.Person
 
 plugins {
-  id 'org.ajoberstar.grgit' version '2.0.0'
+  id 'org.ajoberstar.grgit' version '2.3.0'
 }
 
 defaultTasks ':java:forDefaultComposeDown', 'clean', 'prepFixtures', 'build', ':web:grunt_default', ':java:forDefaultComposeUp'
