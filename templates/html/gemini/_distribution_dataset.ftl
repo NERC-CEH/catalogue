@@ -1,36 +1,14 @@
 <#if onlineResources?? >
-  <#assign
-    downloadOrder=downloadOrderDetails.from(onlineResources) 
-    mapservices = func.filterRegex(onlineResources, "url", "https://catalogue.ceh.ac.uk/maps/")>
+  <#assign downloadOrder=downloadOrderDetails.from(onlineResources) >
 </#if>
 
-<#if resourceStatus?? && (resourceType.value == 'signpost' || (resourceType.value == 'service' && mapViewable) || resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application') >
   <div class="panel panel-default hidden-print" id="document-distribution">
-    <div class="panel-heading"><p class="panel-title">
-      <#if resourceType.value == 'service' >
-        Use this service
-      <#else >
-        Get the data
-      </#if>
-    </p></div>
+    <div class="panel-heading">
+      <p class="panel-title">Get the data</p>
+    </div>
     <div class="panel-body">
-    <#if resourceType.value == 'signpost' >
-      <div class="distribution-signpost">
-        <#include "_signpost.ftl">
-        
-      </div>
-    <#elseif resourceType.value == 'service' && mapViewable >
-      <div class="distribution-service">
-        <p><a href="${mapViewerUrl?html}"><i class="far fa-map text-info"></i> Open in map viewer</a></p>
-        <#if mapservices??>
-        <#list mapservices as wms>
-          <p><i class="fas fa-link"></i> URL: <span class="wmsurl">${wms.url?html}</span></p>
-        </#list>
-        </#if>
-      </div>
-    <#else >
       <div class="distribution-dataset">
-        <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" >
+        <#if resourceStatus == "Sperseded" || resourceStatus == "Withdrawn" >
           <p><b>THIS ${resourceType.value?upper_case} HAS BEEN WITHDRAWN</b>
           <#if revised??>
             and superseded by <a href="${revised.href}">${revised.title}</a>
@@ -63,7 +41,5 @@
         </#if>
         <#include "_formats.ftl">
       </div>
-    </#if>
     </div>
   </div>
-</#if>

@@ -8,6 +8,8 @@ define [
   'cs!views/editor/ParentStringView'
   'cs!views/editor/ResourceTypeView'
   'cs!models/editor/ResourceType'
+  'cs!views/editor/AccessLimitationView'
+  'cs!models/editor/AccessLimitation'
   'cs!models/editor/TopicCategory'
   'cs!views/editor/TopicCategoryView'
   'cs!views/editor/ContactView'
@@ -22,7 +24,6 @@ define [
   'cs!views/editor/ResourceConstraintView'
   'cs!views/editor/OtherConstraintView'
   'cs!views/editor/TemporalExtentView'
-  'cs!views/editor/ResourceStatusView'
   'cs!views/editor/ResourceMaintenanceView'
   'cs!views/editor/SpatialReferenceSystemView'
   'cs!views/editor/SpatialRepresentationTypeView'
@@ -41,7 +42,7 @@ define [
   'cs!views/editor/ConformanceResultView'
   'cs!models/editor/MapDataSource'
   'cs!views/editor/MapDataSourceView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView, ResourceStatusView, ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, ConformanceResultView, MapDataSource, MapDataSourceView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, ConformanceResultView, MapDataSource, MapDataSourceView) -> EditorView.extend
 
   initialize: ->
 
@@ -57,7 +58,7 @@ define [
           ModelType: ResourceType
           label: 'Resource Type'
           ObjectInputView: ResourceTypeView
-
+               
         new InputView
           model: @model
           modelAttribute: 'title'
@@ -88,11 +89,16 @@ define [
                     <p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
                     <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure - see <a href="http://eidc.ceh.ac.uk/help/createedit/metadataauthorguide" target="_blank" rel="noopener">guidance for metadata authors</a></p>
                     """
-
-        new ResourceStatusView
+                    
+        new SingleObjectView
           model: @model
-          modelAttribute: 'resourceStatus'
-          label: 'Resource status'
+          modelAttribute: 'accessLimitation'
+          ModelType: AccessLimitation
+          label: 'Access'
+          ObjectInputView: AccessLimitationView
+          helpText: """
+                    <p>Level of access to the resource.  For example, is the resource embargoed or are restrictions imposed for reasons of confidentiality or security.</p>
+                    """
 
         new InputView
           model: @model
@@ -318,25 +324,6 @@ define [
                     <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>
                     """
 
-        new PredefinedParentView
-          model: @model
-          modelAttribute: 'accessConstraints'
-          label: 'Limitations on access'
-          ObjectInputView: ResourceConstraintView
-          multiline: true
-          predefined:
-            'Registration required':
-              value: 'Registration is required to access this data'
-              uri: 'http://eidc.ceh.ac.uk/help/faq/registration'
-              code: 'otherRestrictions'
-            'no limitations':
-              value: 'no limitations'
-              code:  'otherRestrictions'
-          helpText: """
-                    <p>Any conditions that are in place to restrict a user's <strong>access</strong> to the data. These may include, for example, restrictions imposed for reasons of security or for licensing purposes.</p>
-                    <p>You MUST enter something even if there are no access limitations. In the rare case that there are none, enter "no limitations".</p>
-                    """
-       
         new PredefinedParentView
           model: @model
           ModelType: Contact

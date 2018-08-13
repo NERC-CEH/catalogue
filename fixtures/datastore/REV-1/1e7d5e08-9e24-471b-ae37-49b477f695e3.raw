@@ -16,7 +16,7 @@
       "coupledResource": "https://catalogue.ceh.ac.uk/id/1e7d5e08-9e24-471b-ae37-49b477f695e3"
     }
   ],
-  "resourceStatus": "Current",
+  "resourceStatus": "Available",
   "lineage": "LCM2007 uses a spatial framework based on OSNI Vector Map. Vector Map was generalised to remove unnecessary detail, then the framework was segmented according to the underlying satellite data to split areas of non-uniform landscape. The data was classified according to a parcel-based supervised maximum likelihood classification procedure. The raster products are derived from the vector products. ",
   "metadataStandardName": "ISO 19115 (UK GEMINI)",
   "metadataStandardVersion": "1.0 (2.2)",
@@ -242,7 +242,11 @@
   ],
   "resourceType": {
     "value": "dataset"
-  },
+  },"accessLimitation": {
+    "value":"Registration is required to access this data",
+    "code":"Available",
+    "uri":"http://eidc.ceh.ac.uk/help/faq/registration"
+},
   "datacitable": true,
   "dataciteMintable": false,
   "mapViewerUrl": "/maps#layers/1e7d5e08-9e24-471b-ae37-49b477f695e3",

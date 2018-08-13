@@ -264,22 +264,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Then
         assertThat("DistributionInfo 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
-    
-    @Test
-    public void canNotGetResourceStatus() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("browseGraphicUrl.xml"));
-        String expected = null;
         
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getResourceStatus();
-        
-        //Then
-        assertThat("resourceStatus 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
     @Test
     public void canGetBrowseGraphicUrl() throws IOException {
         //Given
@@ -467,32 +452,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertThat("Actual useConstraints should equal expected", actual, equalTo(expected));
     }
     
-    @Test
-    public void canGetAccessConstraints() throws IOException {
-       
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
-        List<ResourceConstraint> expected = Arrays.asList(
-            ResourceConstraint.builder()
-                .uri("http://example.com/1")
-                .code("copyright")
-                .value("description")
-                .build(),
-            ResourceConstraint.builder()
-                .uri("http://example.com/2")
-                .code("intellectualPropertyRights")
-                .value("limitations on public access")
-                .build()
-        );
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<ResourceConstraint> actual = document.getAccessConstraints();
-        
-        //Then
-        assertThat("Actual accessConstraints should equal expected", actual, equalTo(expected));
-    }
     
     @Test
     public void canGetSecurityConstraints() throws IOException {

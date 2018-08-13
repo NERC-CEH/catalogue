@@ -8,7 +8,6 @@
     <#include "_licence.ftl">
     <#include "_citation.ftl">
     <#include "_otherUseConstraints.ftl">
-    <#include "_accessConstraints.ftl">
     </div>
   </div>
 </#if>

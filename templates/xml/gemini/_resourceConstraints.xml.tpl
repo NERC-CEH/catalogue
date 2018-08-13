@@ -1,5 +1,5 @@
 <#escape x as x?xml>
-<#if resourceStatus?? && resourceStatus == "Embargoed" >
+<#if resourceStatus?? && resourceStatus == "embargoed" >
 	<gmd:resourceConstraints>
 		<gmd:MD_Constraints>
 			<gmd:useLimitation>
@@ -32,7 +32,7 @@
 	</#if>
 </#if>
 
-<#if resourceStatus?? && resourceStatus == "Embargoed" >
+<#if resourceStatus?? && resourceStatus == "embargoed" >
 	<gmd:resourceConstraints>
 		<gmd:MD_LegalConstraints>
 			<gmd:accessConstraints>
@@ -43,7 +43,7 @@
 			</gmd:otherConstraints>
 		</gmd:MD_LegalConstraints>
 	</gmd:resourceConstraints>
-<#elseif resourceStatus?? && (resourceStatus == "Superseded" || resourceStatus = "Withdrawn") >
+<#elseif resourceStatus?? && (resourceStatus == "superseded" || resourceStatus = "withdrawn") >
 	<gmd:resourceConstraints>
 		<gmd:MD_LegalConstraints>
 			<gmd:accessConstraints>

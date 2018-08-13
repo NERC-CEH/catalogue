@@ -1,4 +1,4 @@
-<#if resourceStatus?? && resourceStatus?has_content && (resourceStatus != "Current")>
+<#if resourceStatus?? && resourceStatus?has_content && (resourceStatus != "available")>
     <div id="resourceStatus" class="alert alert-${resourceStatus}" role="alert">
         <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
             <p>
@@ -10,7 +10,7 @@
             <#if reasonChanged??>
             <p class="reasonChangedDescription">${reasonChanged?html?replace("\n", "<br>")}</p>
             </#if>
-        <#elseif resourceStatus == "Retired" && parent?has_content>
+        <#elseif resourceStatus == "retired" && parent?has_content>
           <p>See other resources in this series: <a href="${parent.href?html}">${parent.title?html}</a></p>
         <#elseif resourceStatus == "Embargoed">
            <#include "_embargo.ftl">

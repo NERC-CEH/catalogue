@@ -81,7 +81,7 @@
 		<gmd:abstract>
 			<#assign statusMsg ="">
 			<#if resourceStatus?? && resourceStatus?has_content >
-				<#if resourceStatus == "Withdrawn" || resourceStatus == "Superseded" >
+				<#if resourceStatus == "withdrawn" || resourceStatus == "superseded" >
 					<#assign statusMsg = "THIS " + resourceType.value?upper_case + " HAS BEEN WITHDRAWN ">
 					<#if revised??>
 						<#assign statusMsg = statusMsg + " and superseded by " + revised.title + " (" + revised.href + "). ">
@@ -92,7 +92,7 @@
 						<#assign statusMsg = statusMsg + reasonChanged + ". " >
 					</#if>
 				</#if>
-				<#if resourceStatus == "Embargoed" >
+				<#if resourceStatus == "embargoed" >
 					<#assign statusMsg = "This " + resourceType.value + " is embargoed ">
 					<#if datasetReferenceDate.releasedDate??>
 						<#assign statusMsg = statusMsg + "until "+ datasetReferenceDate.releasedDate?date?string.long>

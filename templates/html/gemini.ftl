@@ -44,7 +44,21 @@
           <div class="row">
             <div class="col-sm-4 col-sm-push-8">
               <#include "gemini/_uploadData.ftl">
-              <#include "gemini/_distribution.ftl">
+
+              <#if resourceStatus??>
+                <#if resourceStatus == 'Restricted'>
+                  <#include "gemini/_distribution_restricted.ftl">
+                <#elseif resourceStatus == 'Available'>
+                  <#if resourceType.value == 'signpost'>
+                    <#include "gemini/_distribution_signpost.ftl">
+                  <#elseif resourceType.value == 'service' && mapViewable>
+                    <#include "gemini/_distribution_service.ftl">
+                  <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                    <#include "gemini/_distribution_dataset.ftl">
+                  </#if>
+                </#if>
+              </#if>
+
               <#include "gemini/_reuse.ftl">
               <#include "gemini/_children.ftl">
               <#include "gemini/_related.ftl">

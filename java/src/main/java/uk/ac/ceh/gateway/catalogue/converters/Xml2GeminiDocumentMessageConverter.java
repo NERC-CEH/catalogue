@@ -135,7 +135,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
             toReturn.setBrowseGraphicUrl(emptyToNull(browseGraphicUrl.evaluate(document)));
             toReturn.setTemporalExtents(temporalExtentConverter.convert(document));
-            toReturn.setResourceStatus(emptyToNull(resourceStatus.evaluate(document)));
             toReturn.setSpatialReferenceSystems(spatialReferenceSystem.convert(document));
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
             toReturn.setMetadataDate(LocalDateFactory.parseForDateTime(metadataDate.evaluate(document)));
@@ -148,7 +147,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setMetadataStandardVersion(emptyToNull(metadataStandardVersion.evaluate(document)));
             toReturn.setSpatialRepresentationTypes(getListOfStrings(document, spatialRepresentationType));
             toReturn.setUseConstraints(useConstraintsConverter.convert(document));
-            toReturn.setAccessConstraints(accessConstraintsConverter.convert(document));
             toReturn.setSecurityConstraints(getListOfStrings(document, securityConstraints));
             toReturn.setParentIdentifier(emptyToNull(parentIdentifier.evaluate(document)));
             toReturn.setRevisionOfIdentifier(emptyToNull(revisionOfConverter.convert(document)));

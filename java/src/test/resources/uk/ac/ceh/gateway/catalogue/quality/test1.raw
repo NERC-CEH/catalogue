@@ -5,7 +5,7 @@
   "title": "test1",
   "description": "description of test1",
   "lineage": "lineage of test1",
-  "resourceStatus": "current",
+  "resourceStatus": "Available",
   "datasetReferenceDate": {
     "publicationDate": "2018-03-01"
   },
