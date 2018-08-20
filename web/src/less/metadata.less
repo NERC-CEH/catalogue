@@ -172,7 +172,7 @@
   // displayed to the user at the top of the metadata page with
   // id = 'not-current'
   #resourceStatus {    
-    margin: 1em 0 0 0 ;
+    margin: 1em 0 ;
     a {
       color:#00B;
       text-decoration: underline;
@@ -280,46 +280,48 @@
 }
 
 #section-metadataQuality {
-  table {
-    tr{
-      &.MDquality_success {
-        color: @quality_success;
-        font-weight: bold;
-        background-color: fade(@quality_success, 20%);
-      };
-      &.MDquality_error {
-        color: @quality_error;
-        font-weight: bold;
-        background-color: fade(@quality_error, 20%);
-      };
-      &.MDquality_caution {
-        color: @quality_caution;
-        font-weight: bold;
-        background-color: fade(@quality_caution, 20%);
-      };
-      &.MDquality_warning {
-        color: #777;
-        background-color: fade(@quality_warning, 10%);
-      };
-      &.MDquality_warning {
-        i.fas {
-          color: @quality_warning;
-        };
-      };
+  .panel-heading.MDquality_error {
+    background:@quality_error;
+    color:#fff;
+  };
+  .panel-heading.MDquality_caution {
+    background:@quality_caution;
+    color:#fff;
+  };
+  .panel-heading.MDquality_warning {
+    background:@quality_warning;
+    columns: #444;;
+  };
+  ul.MDquality_error {
+    li {
+      color: @quality_error;
+      font-weight: bold;
+      background-color: fade(@quality_error, 15%);
+    }
+  };
+  ul.MDquality_caution {
+    li {
+      color: @quality_caution;
+      font-weight: bold;
+      background-color: fade(@quality_caution, 15%);
+    }
+  };
+  ul.MDquality_warning {
+    li {
+      background-color: fade(@quality_warning, 15%);
+    }
+  };
 
-      span {
-        color: #00D;
-        &:before {
-          content:" «"
-        };
-        &:after {
-          content:"» "
-        };
-      };
+  span {
+    color: #00D;
+    &:before {
+      content:" «"
     };
-    
-  }
-}
+    &:after {
+      content:"» "
+    };
+  };
+};
 
 #footer {
   background-color:#CCC;

@@ -14,7 +14,7 @@
     <#elseif cautions gte 1 >
         <#assign alertclass="caution" alerticon="exclamation-triangle">
     </#if>
-    <div id="qualityAlert">
+    <div id="qualityAlert" class="hidden-print">
         <div class="alert alert-MDquality_${alertclass} alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close" title="dismiss"><span aria-hidden="true">
                 <i class="fas fa-times"></i>
