@@ -46,7 +46,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
     private final ResponsiblePartyConverter distributorConverter;
-    private final ResponsiblePartyConverter metadataPointOfContactConverter;
     private final ResponsiblePartyConverter responsiblePartyConverter;
     private final BoundingBoxesConverter boundingBoxesConverter;
     private final TemporalExtentConverter temporalExtentConverter;
@@ -76,7 +75,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.resourceType = xpath.compile(XPaths.RESOURCE_TYPE);
         this.resourceIdentifierConverter = new ResourceIdentifierConverter(xpath);
         this.descriptiveKeywordsConverter = new DescriptiveKeywordsConverter(xpath);
-        this.metadataPointOfContactConverter = new ResponsiblePartyConverter(xpath, XPaths.METADATA_POINT_OF_CONTACT);
         this.distributorConverter = new ResponsiblePartyConverter(xpath, XPaths.DISTRIBUTOR);
         this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath, XPaths.RESPONSIBLE_PARTY);
         this.boundingBoxesConverter = new BoundingBoxesConverter(xpath);
@@ -130,7 +128,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setResponsibleParties(responsiblePartyConverter.convert(document));
             toReturn.setResourceType(Keyword.builder().value(resourceType.evaluate(document)).build());
             toReturn.setResourceIdentifiers(resourceIdentifierConverter.convert(document));
-            toReturn.setMetadataPointsOfContact(metadataPointOfContactConverter.convert(document));
             toReturn.setDistributorContacts(distributorConverter.convert(document));
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
             toReturn.setBrowseGraphicUrl(emptyToNull(browseGraphicUrl.evaluate(document)));

@@ -2,7 +2,7 @@
     <div id="resourceStatus" class="alert alert-${resourceStatus}" role="alert">
         <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
             <p>
-            <i class="fas fa-exclamation-circle-circle fa-lg"></i> <b>THIS ${resourceType.value?upper_case} HAS BEEN WITHDRAWN</b>
+            <i class="fas fa-exclamation-circle-circle fa-lg"></i> <b>THIS ${recordType?upper_case} HAS BEEN WITHDRAWN</b>
                 <#if revised??>
                 and superseded by <a href="${revised.href}">${revised.title}</a>
                 </#if>

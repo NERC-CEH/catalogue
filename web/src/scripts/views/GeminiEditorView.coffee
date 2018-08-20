@@ -2,6 +2,7 @@ define [
   'cs!views/EditorView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/InputView'
+  'cs!views/editor/ReadOnlyView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentView'
   'cs!views/editor/PredefinedParentView'
@@ -42,7 +43,7 @@ define [
   'cs!views/editor/ConformanceResultView'
   'cs!models/editor/MapDataSource'
   'cs!views/editor/MapDataSourceView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, ConformanceResultView, MapDataSource, MapDataSourceView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, ReadOnlyView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, ConformanceResultView, MapDataSource, MapDataSourceView) -> EditorView.extend
 
   initialize: ->
 
@@ -52,6 +53,11 @@ define [
       label: 'General'
       title:  ''
       views: [
+        new ReadOnlyView
+          model: @model
+          modelAttribute: 'id'
+          label: 'File identifier'
+          
         new SingleObjectView
           model: @model
           modelAttribute: 'resourceType'
@@ -83,7 +89,7 @@ define [
           model: @model
           modelAttribute: 'description'
           label: 'Description'
-          rows: 17
+          rows: 12
           helpText: """
                     <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
                     <p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
@@ -94,17 +100,12 @@ define [
           model: @model
           modelAttribute: 'accessLimitation'
           ModelType: AccessLimitation
-          label: 'Access'
+          label: 'Resource status'
           ObjectInputView: AccessLimitationView
           helpText: """
-                    <p>Level of access to the resource.  For example, is the resource embargoed or are restrictions imposed for reasons of confidentiality or security.</p>
+                    <p>Access status of resource.  For example, is the resource embargoed or are restrictions imposed for reasons of confidentiality or security.</p>
+                    <p><b>NOTE</b>: if access is Embargoed, you must also complete the <i>Release date</i>.</p>
                     """
-
-        new InputView
-          model: @model
-          modelAttribute: 'version'
-          typeAttribute: 'number'
-          label: 'Version'
 
         new SingleObjectView
           model: @model
@@ -118,6 +119,12 @@ define [
                     <p>For embargoed resources, <b>Release(d)</b> is the date on which the embargo was lifted <i class='text-red'><b>or is due to be lifted</b></i>.</p>
                     <p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>
                     """
+
+        new InputView
+          model: @model
+          modelAttribute: 'version'
+          typeAttribute: 'number'
+          label: 'Version'
 
         new ParentView
           model: @model
@@ -586,69 +593,6 @@ define [
                     <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>
                     """
           disabled: disabled
-      ]
-    ,
-      label: 'Metadata'
-      title: 'Metadata about metadata'
-      views: [
-        new PredefinedParentView
-          model: @model
-          ModelType: Contact
-          modelAttribute: 'metadataPointsOfContact'
-          label: 'Metadata point of contact'
-          ObjectInputView: ContactView
-          multiline: true
-          predefined:
-            'CEH Point of Contact':
-              organisationName: 'Centre for Ecology & Hydrology'
-              role: 'pointOfContact'
-              email: 'enquiries@ceh.ac.uk'
-              address:
-                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
-                postalCode: 'OX10 8BB'
-                city: 'Wallingford'
-                administrativeArea: 'Oxfordshire'
-                country: 'United Kingdom'
-            'EIDC Point of Contact':
-              organisationName: 'Environmental Information Data Centre'
-              role: 'pointOfContact'
-              email: 'eidc@ceh.ac.uk'
-              address:
-                country: 'United Kingdom'
-          helpText: """
-                    <p>The organisation or person responsible for the authorship, maintenance and curation of the metadata resource.</p>
-                    <p>The names of individuals should be included in the format Surname, First Initial. Second Initial.  For example <strong>Brown, A.B.</strong></p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'id'
-          label: 'File identifier'
-          readonly: true
-          helpText: """
-                    <p>File identifier of metadata record.</p>
-                    <p>For information only, not editable.</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'uri'
-          label: 'URL'
-          readonly: true
-          helpText: """
-                    <p>URL of metadata record.</p>
-                    <p>For information only, not editable.</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'metadataDate'
-          label: 'Metadata Date'
-          readonly: true
-          helpText: """
-                    <p>Date and time metadata last updated.</p>
-                    <p>For information only, not editable.</p>
-                    """
       ]
     ]
 

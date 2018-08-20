@@ -28,8 +28,8 @@
   <div id="metadata">
     <div class="container">
       <#if resourceType?has_content && resourceType.value !=''>
+      <#assign recordType = codes.lookup('metadata.recordType',resourceType.value)?lower_case>
       <#include "gemini/_admin.ftl">
-
         <div id="section-Top">
           <#include "gemini/_title.ftl">
         </div>
@@ -48,7 +48,7 @@
               <#if resourceStatus??>
                 <#if resourceStatus == 'Restricted'>
                   <#include "gemini/_distribution_restricted.ftl">
-                <#elseif resourceStatus == 'Available'>
+                <#else>
                   <#if resourceType.value == 'signpost'>
                     <#include "gemini/_distribution_signpost.ftl">
                   <#elseif resourceType.value == 'service' && mapViewable>
@@ -59,7 +59,6 @@
                 </#if>
               </#if>
 
-              <#include "gemini/_reuse.ftl">
               <#include "gemini/_children.ftl">
               <#include "gemini/_related.ftl">
               <#include "gemini/_model.ftl">

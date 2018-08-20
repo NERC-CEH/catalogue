@@ -8,8 +8,8 @@
     </div>
     <div class="panel-body">
       <div class="distribution-dataset">
-        <#if resourceStatus == "Sperseded" || resourceStatus == "Withdrawn" >
-          <p><b>THIS ${resourceType.value?upper_case} HAS BEEN WITHDRAWN</b>
+        <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" >
+          <p><b>THIS ${recordType?upper_case} HAS BEEN WITHDRAWN</b>
           <#if revised??>
             and superseded by <a href="${revised.href}">${revised.title}</a>
           </#if>
@@ -18,7 +18,9 @@
             <p class="reasonChangedDescription">${reasonChanged?html?replace("\n", "<br>")}</p>
           </#if>
           <p>If you need access to the archived version, please <a href="http://eidc.ceh.ac.uk/contact" target="_blank" rel="noopener noreferrer">contact the EIDC</a></p>
-        <#elseif resourceStatus == "available" || resourceStatus == "retired" >
+        <#elseif resourceStatus == "Embargoed">
+          <#include "_embargo.ftl">
+        <#elseif resourceStatus == "Available" >
           <#if downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || mapViewable || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) >
             <#if (downloadOrder.orderable)?? && downloadOrder.orderable>
               <#list downloadOrder.orderResources as onlineResource>
@@ -40,6 +42,9 @@
           </#if>
         </#if>
         <#include "_formats.ftl">
+        <#include "_licence.ftl">
+        <#include "_citation.ftl">
+        <#include "_otherUseConstraints.ftl">
       </div>
     </div>
   </div>

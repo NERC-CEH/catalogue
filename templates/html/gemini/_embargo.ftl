@@ -1,5 +1,5 @@
 <p>
-    <b>This resource is embargoed</b> 
+    <b>This ${recordType} is embargoed</b> 
     <#if datasetReferenceDate?? && datasetReferenceDate.releasedDate?has_content>
         and will be made available by ${datasetReferenceDate.releasedDate?date?string["d MMMM yyyy"]} at the latest
     </#if>

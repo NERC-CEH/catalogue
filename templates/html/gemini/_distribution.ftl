@@ -31,7 +31,7 @@
     <#else >
       <div class="distribution-dataset">
         <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" >
-          <p><b>THIS ${resourceType.value?upper_case} HAS BEEN WITHDRAWN</b>
+          <p><b>THIS ${recordType?upper_case} HAS BEEN WITHDRAWN</b>
           <#if revised??>
             and superseded by <a href="${revised.href}">${revised.title}</a>
           </#if>

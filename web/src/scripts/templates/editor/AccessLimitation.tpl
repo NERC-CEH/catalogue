@@ -1,7 +1,8 @@
-<select data-name="value" class="editor-input" id="input-accessLimitation">
+<select data-name="value" class="editor-input" id="input-accessLimitation" <%= data.disabled%>>
+	<option value=""> -- Choose an option -- </option>
 	<optgroup label="Available">
 		<option value="Registration is required to access this data">FREELY AVAILABLE - but USERS MUST LOG IN to access it</option>
-		<option value="no limitations to public access">FREELY AVAILABLE and there is NO NEED TO LOG IN to access it (No limitations)</option>
+		<option value="no limitations to public access">FREELY AVAILABLE and there is NO NEED TO LOG IN to access it (no limitations)</option>
 	</optgroup>
 	<optgroup label="Unavailable">
 		<option value="embargoed">EMBARGOED - This resource is not yet available but a date has been set for its release</option>
@@ -13,9 +14,6 @@
 		<option value="public access limited according to Article 13(1)(f) of the INSPIRE Directive">ACCESS RESTRICTED as it contains personal information</option>
 		<option value="public access limited according to Article 13(1)(d) of the INSPIRE Directive">ACCESS RESTRICTED for reasons of commercial confidentiality</option>
 		<option value="public access limited according to Article 13(1)(e) of the INSPIRE Directive">ACCESS RESTRICTED as release would adversely affect intellectual property rights</option>
-		<option value="public access limited according to Article 13(1)(a) of the INSPIRE Directive">ACCESS RESTRICTED as release would adversely affect the confidentiality of the proceedings of public authorities</option>
-		<option value="public access limited according to Article 13(1)(b) of the INSPIRE Directive">ACCESS RESTRICTED for reasons of public security/national defence</option>
-		<option value="public access limited according to Article 13(1)(c) of the INSPIRE Directive">ACCESS RESTRICTED as release would adversely affect the course of justice or the ability to conduct criminal/disciplinary enquiries</option>
 	</optgroup>
 </select>
 

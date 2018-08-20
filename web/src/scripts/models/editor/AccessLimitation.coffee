@@ -19,7 +19,7 @@ define [
     'public access limited according to Article 13(1)(h) of the INSPIRE Directive':'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1h'
 
   codes:
-    'Registration is required to access this data':'available'
+    'Registration is required to access this data':'Available'
     'no limitations to public access':'Available'
     'embargoed':'Embargoed'
     'superseded':'Superseded'

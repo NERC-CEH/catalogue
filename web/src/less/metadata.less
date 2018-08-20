@@ -1,9 +1,11 @@
 @light-gray-border: #CCC;
-@quality_success: #090;
-@quality_warning: #ffa500;
-@quality_error: #F00;
 
-#metadata {
+@quality_success: #090;
+@quality_caution: rgb(255, 130, 0);
+@quality_warning: rgb(255, 190, 0);
+@quality_error: rgb(255, 0, 0);
+
+#metadata {r
 
   #section-title {
     margin-top: 3em;
@@ -43,14 +45,22 @@
       border: 2px solid #AAA;
       border-radius: 10px;
     };
-   .alert-danger {
-     border-color: @quality_error;
-     color: @quality_error;
-   };
-   .alert-warning {
-    border-color: @quality_warning;
-    color:@quality_warning;
-  };
+    .alert-MDquality_danger {
+      border-color: @quality_error;
+      color: @quality_error;
+    };
+    .alert-MDquality_error {
+      border-color: @quality_error;
+      color: @quality_error;
+    };
+    .alert-MDquality_caution {
+      border-color: @quality_caution;
+      color:@quality_caution;
+    };
+    .alert-MDquality_warning {
+      border-color: @quality_warning;
+      color:@quality_warning;
+    };
   }
 
   .modal-body {
@@ -176,11 +186,11 @@
     }
   }
 
-  .alert-retired, .alert-embargoed {
+  .alert-Embargoed {
     .alert-info;
   }
 
-  .alert-superseded, .alert-withdrawn {
+  .alert-Superseded, .alert-Withdrawn {
     .alert-danger;
   }
 
@@ -272,19 +282,31 @@
 #section-metadataQuality {
   table {
     tr{
-      &.success {
+      &.MDquality_success {
         color: @quality_success;
         font-weight: bold;
+        background-color: fade(@quality_success, 20%);
       };
-      &.danger {
+      &.MDquality_error {
         color: @quality_error;
         font-weight: bold;
+        background-color: fade(@quality_error, 20%);
       };
-      &.warning {
+      &.MDquality_caution {
+        color: @quality_caution;
+        font-weight: bold;
+        background-color: fade(@quality_caution, 20%);
+      };
+      &.MDquality_warning {
+        color: #777;
+        background-color: fade(@quality_warning, 10%);
+      };
+      &.MDquality_warning {
         i.fas {
           color: @quality_warning;
         };
       };
+
       span {
         color: #00D;
         &:before {

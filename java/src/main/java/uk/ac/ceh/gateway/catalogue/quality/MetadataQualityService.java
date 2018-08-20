@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.ERROR;
+import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.CAUTION;
 import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.WARNING;
 
 @Slf4j
@@ -73,7 +74,6 @@ public class MetadataQualityService {
                 checkBasics(parsedDoc).ifPresent(checks::addAll);
                 checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
                 checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
-                checkPointsOfContact(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
                 checkSignpost(parsedDoc).ifPresent(checks::add);
                 checkDataset(parsedDoc).ifPresent(checks::addAll);
@@ -177,34 +177,6 @@ public class MetadataQualityService {
         }
     }
 
-    Optional<List<MetadataCheck>> checkPointsOfContact(DocumentContext parsed) {
-        val toReturn = new ArrayList<MetadataCheck>();
-        val metadataPointsOfContact = parsed.read("$.metadataPointsOfContact[*].['organisationName','individualName','role','email']", typeRefStringString);
-        if (metadataPointsOfContact == null) {
-            return Optional.of(Collections.singletonList(new MetadataCheck("Metadata contact is missing", ERROR)));
-        }
-        if (metadataPointsOfContact.size() > 1) {
-            toReturn.add(new MetadataCheck("There should be only ONE metadata contact", WARNING));
-        }
-        if (metadataPointsOfContact.stream().anyMatch(map -> fieldNotEqual(map, "role", "pointOfContact"))){
-            toReturn.add(new MetadataCheck("Metadata contact MUST have the role 'Point of Contact'", ERROR));
-        }
-        if (metadataPointsOfContact.stream().anyMatch(map -> fieldNotEqual(map, "email", "enquiries@ceh.ac.uk") && fieldNotEqual(map, "email", "eidc@ceh.ac.uk"))){
-            toReturn.add(new MetadataCheck("Metadata contact email address is neither eidc@ceh.ac.uk nor enquiries@ceh.ac.uk", WARNING));
-        }
-        if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "organisationName"))){
-            toReturn.add(new MetadataCheck("Metadata contact organisation is missing", ERROR));
-        }
-        if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "email"))){
-            toReturn.add(new MetadataCheck("Metadata contact email is missing", ERROR));
-        }
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
-    }
-
     Optional<List<MetadataCheck>> checkNonGeographicDatasets(DocumentContext parsed) {
         if (notRequiredResourceTypes(parsed, "nonGeographicDataset")) {
             return Optional.empty();
@@ -273,7 +245,7 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkInspireTheme(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         if (parsed.read("$.descriptiveKeywords[*][?(@.type == 'INSPIRE Theme')].type", List.class).isEmpty()) {
-            toReturn.add(new MetadataCheck("INSPIRE theme is missing", ERROR));
+            toReturn.add(new MetadataCheck("INSPIRE theme is missing", CAUTION));
             return Optional.of(toReturn);
         }
         val keywords = parsed.read("$.descriptiveKeywords[*][?(@.type == 'INSPIRE Theme')].keywords[*]", typeRefStringString);
@@ -336,7 +308,7 @@ public class MetadataQualityService {
         checkAuthors(parsed).ifPresent(toReturn::addAll);
         checkTopicCategories(parsed).ifPresent(toReturn::add);
         checkDataFormat(parsed).ifPresent(toReturn::add);
-        checkPOC(parsed).ifPresent(toReturn::addAll);
+        checkPointOfContact(parsed).ifPresent(toReturn::addAll);
         checkCustodian(parsed).ifPresent(toReturn::addAll);
         checkPublisher(parsed).ifPresent(toReturn::addAll);
         checkDistributor(parsed).ifPresent(toReturn::addAll);
@@ -437,7 +409,7 @@ public class MetadataQualityService {
         }
     }
 
-    Optional<List<MetadataCheck>> checkPOC(DocumentContext parsed) {
+    Optional<List<MetadataCheck>> checkPointOfContact(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val pocs = parsed.read(
             "$.responsibleParties[*][?(@.role == 'pointOfContact')].['organisationName','individualName','email']",
@@ -545,7 +517,7 @@ public class MetadataQualityService {
     }
 
     Optional<List<MetadataCheck>> checkDownloadAndOrderLinks(DocumentContext parsed) {
-        if (!resourceStatusIsCurrent(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
+        if (!resourceStatusIsAvailable(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return Optional.empty();
         }
         
@@ -561,7 +533,7 @@ public class MetadataQualityService {
         val totalOrdersAndDownloads = orders.size() + downloads.size();
         
         if (totalOrdersAndDownloads == 0) {
-            toReturn.add(new MetadataCheck("There are no orders/downloads", ERROR));
+            toReturn.add(new MetadataCheck("There are no orders/downloads", CAUTION));
         } else if (totalOrdersAndDownloads > 1) {
             toReturn.add(new MetadataCheck("There are multiple orders/downloads", WARNING));
         }
@@ -587,9 +559,9 @@ public class MetadataQualityService {
             || !map.get(key).startsWith(value);
     }
 
-    boolean resourceStatusIsCurrent(DocumentContext parsed) {
+    boolean resourceStatusIsAvailable(DocumentContext parsed) {
         val resourceStatus = parsed.read("$.resourceStatus", String.class);
-        return resourceStatus != null && resourceStatus.equals("Current");
+        return resourceStatus != null && resourceStatus.equals("Available");
     }
 
     private boolean notRequiredResourceTypes(DocumentContext parsed, String... resourceTypes) {
@@ -605,7 +577,7 @@ public class MetadataQualityService {
     }
 
     public enum Severity {
-        ERROR(1), WARNING(3);
+        ERROR(1), CAUTION(2), WARNING(3);
 
         private final int priority;
 
@@ -640,6 +612,12 @@ public class MetadataQualityService {
         public long getErrors() {
             return problems.stream()
                 .filter(m -> ERROR.equals(m.getSeverity()))
+                .count();
+        }
+
+        public long getCautions() {
+            return problems.stream()
+                .filter(m -> CAUTION.equals(m.getSeverity()))
                 .count();
         }
 
