@@ -5,8 +5,7 @@
 @quality_warning: rgb(255, 190, 0);
 @quality_error: rgb(255, 0, 0);
 
-#metadata {r
-
+#metadata {
   #section-title {
     margin-top: 3em;
     padding: 1em 0;
@@ -92,6 +91,27 @@
     .signpostURL {
       display: block;
       margin: 1em 0;
+    };
+    #resourceStatus {   
+      background-color: transparent;
+      border:none;
+      color: #222;
+      padding: 0;
+      border-bottom: 1px solid #AAF !important;
+      padding-bottom: 1em !important;
+      a {
+        color: @link-color;
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      };
+      p {
+        margin-left: 0;
+      };
+      i{
+        display:none;
+      };
     }
   };
   
@@ -180,10 +200,13 @@
         text-decoration: none;
       }
     };
-    .reasonChangedDescription {
-      margin-top: 1em;
-      margin-left:2em;
-    }
+    p {
+      margin-left: 1.5em;
+    };
+    i.fa-info-circle{
+      margin-left: -1.5em;
+      padding-right: .25em;
+    };
   }
 
   .alert-Embargoed {
@@ -352,3 +375,7 @@
     }
   }
 }
+
+
+
+

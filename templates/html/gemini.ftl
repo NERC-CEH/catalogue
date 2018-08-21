@@ -30,9 +30,9 @@
       <#if resourceType?has_content && resourceType.value !=''>
       <#assign recordType = codes.lookup('metadata.recordType',resourceType.value)?lower_case>
       <#include "gemini/_admin.ftl">
-        <div id="section-Top">
-          <#include "gemini/_title.ftl">
-        </div>
+      <div id="section-Top">
+        <#include "gemini/_title.ftl">
+      </div>
 
       <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
         <#include "gemini/_metadataqualityAlert.ftl">
@@ -89,6 +89,7 @@
           <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
         </div>
       </#if>
+
     </div>
   </div>
 

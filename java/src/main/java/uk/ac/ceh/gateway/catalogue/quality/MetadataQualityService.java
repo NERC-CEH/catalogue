@@ -79,6 +79,7 @@ public class MetadataQualityService {
                 checkDataset(parsedDoc).ifPresent(checks::addAll);
                 checkStuff(parsedDoc).ifPresent(checks::addAll);
                 checkDownloadAndOrderLinks(parsedDoc).ifPresent(checks::addAll);
+                checkEmbargo(parsedDoc).ifPresent(checks::addAll);
                 return new Results(checks, id);
             } else {
                 return new Results(Collections.emptyList(), id, "Not a qualifying document type");
@@ -329,6 +330,10 @@ public class MetadataQualityService {
             "$.distributorContacts[*][?(@.role != 'distributor')].['organisationName','email']",
             typeRefStringString
         );
+        distributors.stream()
+            .filter(distributor -> fieldNotEqual(distributor, "organisationName", "Environmental Information Data Centre"))
+            .map(distributor -> distributor.getOrDefault("organisationName", "unknown"))
+            .forEach(organisationName -> toReturn.add(new MetadataCheck("Distributor name is " + organisationName, WARNING)));
         checkAddress(distributors, "Distributor").ifPresent(toReturn::addAll);
         if (distributors.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE distributor", ERROR));
@@ -465,7 +470,7 @@ public class MetadataQualityService {
             typeRefStringString
             );
         if (topicCategories.isEmpty()) {
-            return Optional.of(new MetadataCheck("Topic category is missing", WARNING));
+            return Optional.of(new MetadataCheck("Topic category is missing", ERROR));
         }
         if (topicCategories.stream().anyMatch(topic -> fieldIsMissing(topic, "value"))) {
             return Optional.of(new MetadataCheck("Topic category is empty", ERROR));
@@ -553,6 +558,34 @@ public class MetadataQualityService {
         }
     }
 
+    Optional<List<MetadataCheck>> checkEmbargo(DocumentContext parsed) {
+        if (!resourceStatusIsEmbargoed(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
+            return Optional.empty();
+        }
+        
+        val toReturn = new ArrayList<MetadataCheck>();
+        val orders = parsed.read(
+            "$.onlineResources[*][?(@.function == 'order')]",
+            typeRefStringString
+        );
+        val downloads = parsed.read(
+            "$.onlineResources[*][?(@.function == 'download')]",
+            typeRefStringString
+        );
+        val totalOrdersAndDownloads = orders.size() + downloads.size();
+        
+        if (totalOrdersAndDownloads > 0) {
+            toReturn.add(new MetadataCheck("This resource is embargoed but it contains orders/downloads", ERROR));
+        }
+
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
+
     private boolean fieldNotStartingWith(Map<String, String> map, String key, String value) {
         return !map.containsKey(key)
             || map.get(key) == null
@@ -562,6 +595,11 @@ public class MetadataQualityService {
     boolean resourceStatusIsAvailable(DocumentContext parsed) {
         val resourceStatus = parsed.read("$.resourceStatus", String.class);
         return resourceStatus != null && resourceStatus.equals("Available");
+    }
+
+    boolean resourceStatusIsEmbargoed(DocumentContext parsed) {
+        val resourceStatus = parsed.read("$.resourceStatus", String.class);
+        return resourceStatus != null && resourceStatus.equals("Embargoed");
     }
 
     private boolean notRequiredResourceTypes(DocumentContext parsed, String... resourceTypes) {
