@@ -29,7 +29,7 @@
                 <span>${warnings} warning<#if warnings gt 1>s</#if></span>
             </#if>
             <#if infos gte 1>
-                <span>${infos} point<#if infos gt 1>s</#if> of information</span>
+                <span>${infos} other issue<#if infos gt 1>s</#if></span>
             </#if>
             &nbsp;<a href="#section-metadataQuality">details</a>
         </div>
