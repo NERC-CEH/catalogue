@@ -10,7 +10,7 @@
             <#if reasonChanged??>
                 <p>${reasonChanged?html?replace("\n", "<br>")}</p>
             </#if>
-            <p>If you need access to the archived version, please <a href="http://eidc.ceh.ac.uk/contact" target="_blank" rel="noopener noreferrer">contact the EIDC</a></p>
+            <p>If you need access to this archived version, please <a href="http://eidc.ceh.ac.uk/contact" target="_blank" rel="noopener noreferrer">contact the EIDC</a></p>
         <#elseif resourceStatus == "Embargoed">
         <p>
             <b>This ${recordType} is embargoed</b> 
