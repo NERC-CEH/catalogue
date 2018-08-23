@@ -77,6 +77,7 @@ public class MetadataQualityService {
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
                 checkSignpost(parsedDoc).ifPresent(checks::add);
                 checkDataset(parsedDoc).ifPresent(checks::addAll);
+                checkService(parsedDoc).ifPresent(checks::addAll);
                 checkStuff(parsedDoc).ifPresent(checks::addAll);
                 checkDownloadAndOrderLinks(parsedDoc).ifPresent(checks::addAll);
                 checkEmbargo(parsedDoc).ifPresent(checks::addAll);
@@ -236,6 +237,29 @@ public class MetadataQualityService {
         if (fieldListIsMissing(spatial, "spatialResolutions")) {
             toReturn.add(new MetadataCheck("Spatial resolution is missing", INFO));
         }
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
+    Optional<List<MetadataCheck>> checkService(DocumentContext parsed) {
+        if (notRequiredResourceTypes(parsed, "service")) {
+            return Optional.empty();
+        }
+        val requiredKeys = ImmutableSet.of("boundingBoxes","spatialReferenceSystems");
+        val toReturn = new ArrayList<MetadataCheck>();
+        checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
+        val spatial = parsed.read(
+            "$.['boundingBoxes','spatialReferenceSystems']",
+            new TypeRef<Map<String, List>>() {}
+            );
+        requiredKeys.forEach(key -> {
+            if (fieldListIsMissing(spatial, key)) {
+                toReturn.add(new MetadataCheck(key + " is missing", ERROR));
+            }
+        });
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
