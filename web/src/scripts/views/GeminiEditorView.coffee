@@ -199,7 +199,7 @@ define [
                 city: 'Wallingford'
                 administrativeArea: 'Oxfordshire'
                 country: 'United Kingdom'
-            'Publisher - NERC':
+            'Publisher - EIDC':
               organisationName: 'NERC Environmental Information Data Centre'
               role: 'publisher'
               email: 'eidc@ceh.ac.uk'

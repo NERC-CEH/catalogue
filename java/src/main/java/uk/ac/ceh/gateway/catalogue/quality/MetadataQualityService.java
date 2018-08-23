@@ -250,6 +250,7 @@ public class MetadataQualityService {
         }
         val requiredKeys = ImmutableSet.of("boundingBoxes","spatialReferenceSystems");
         val toReturn = new ArrayList<MetadataCheck>();
+        checkTopicCategoriesService(parsed).ifPresent(toReturn::add);
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
         val spatial = parsed.read(
             "$.['boundingBoxes','spatialReferenceSystems']",
@@ -500,6 +501,18 @@ public class MetadataQualityService {
             return Optional.of(new MetadataCheck("Topic category is empty", ERROR));
         } else {
             return Optional.empty();
+        }
+    }
+
+    Optional<MetadataCheck> checkTopicCategoriesService(DocumentContext parsed) {
+        val topicCategories = parsed.read(
+            "$.topicCategories[*]",
+            typeRefStringString
+            );
+        if (topicCategories.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new MetadataCheck("Metadata contains topic categories which is incorrect for a service", ERROR));
         }
     }
 
