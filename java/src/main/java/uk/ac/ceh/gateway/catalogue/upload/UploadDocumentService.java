@@ -1,15 +1,22 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
+import java.io.File;
+import java.io.InputStream;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import org.apache.commons.io.FileUtils;
+
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.val;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.HubbubService;
 
 @AllArgsConstructor
 public class UploadDocumentService {
   private final HubbubService hubbubService;
+  private final Map<String, File> folders;
 
   private UploadFiles getUploadFiles(String directory, String id) {
     val data = (ArrayNode) hubbubService.get(String.format("%s/%s", directory, id));
@@ -66,7 +73,15 @@ public class UploadDocumentService {
     return document;
   }
 
-  public UploadDocument delete(CatalogueUser user, String id, String filename) {
+  @SneakyThrows
+  public UploadDocument add(String id, String filename, InputStream in) {
+    val directory = folders.get("documents");
+    val file = new File(directory.getPath() + "/" + id + "/" + filename);
+    FileUtils.copyInputStreamToFile(in, file);
+    return get(id);
+  }
+
+  public UploadDocument delete(String id, String filename) {
     hubbubService.delete(filename);
     return get(id);
   }

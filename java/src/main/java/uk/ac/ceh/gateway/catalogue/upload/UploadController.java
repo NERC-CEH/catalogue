@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.upload;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_VALUE;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import lombok.AllArgsConstructor;
@@ -62,21 +65,21 @@ public class UploadController {
     return ResponseEntity.ok(document);
   }
 
-  // @RequestMapping(value = "documents/{id}/add-upload-document", method = RequestMethod.POST)
-  // @ResponseBody
-  // public ResponseEntity<UploadDocument> addFile(
-  //     @ActiveUser CatalogueUser user,
-  //     @PathVariable("id") String id,
-  //     @RequestParam("file") MultipartFile file
-  // ) throws IOException, DocumentRepositoryException {
-  //     val document = (UploadDocument) documentRepository.read(id);
-  //     userCanUpload(document);
-  //     try (InputStream in = file.getInputStream()) {
-  //         val filename = file.getOriginalFilename();
-  //         uploadDocumentService.add(user, document, filename, in);
-  //     }
-  //     return ResponseEntity.ok(document);
-  // }
+  @RequestMapping(value = "documents/{id}/add-upload-document", method = RequestMethod.POST)
+  @ResponseBody
+  public ResponseEntity<UploadDocument> addFile(
+      @ActiveUser CatalogueUser user,
+      @PathVariable("id") String id,
+      @RequestParam("file") MultipartFile file
+  ) throws IOException, DocumentRepositoryException {
+      userCanUpload(id);
+      try (InputStream in = file.getInputStream()) {
+          val filename = file.getOriginalFilename();  
+          uploadDocumentService.add(id, filename, in);
+      }
+      val document = uploadDocumentService.get(id);
+      return ResponseEntity.ok(document);
+  }
 
   @RequestMapping(value = "documents/{id}/delete-upload-file", method = RequestMethod.PUT,
       consumes = UPLOAD_DOCUMENT_JSON_VALUE)
@@ -84,7 +87,7 @@ public class UploadController {
   deleteFile(@ActiveUser CatalogueUser user, @PathVariable("id") String id,
       @RequestParam("filename") String filename) {
     userCanUpload(id);
-    val document = uploadDocumentService.delete(user, id, filename);
+    val document = uploadDocumentService.delete(id, filename);
     return ResponseEntity.ok(document);
   }
 

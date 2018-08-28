@@ -258,7 +258,7 @@ public class ServiceConfig {
         physicalLocations.put("datastore", "datastore/eidchub");
         physicalLocations.put("plone", "datastore/plone");
 
-        return new UploadDocumentService(hubbubService);
+        return new UploadDocumentService(hubbubService, folders);
     }
     
     @Bean
