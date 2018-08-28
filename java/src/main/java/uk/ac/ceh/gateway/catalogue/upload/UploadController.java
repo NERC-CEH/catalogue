@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -75,19 +76,14 @@ public class UploadController {
   //     return ResponseEntity.ok(document);
   // }
 
-  // @RequestMapping(value = "documents/{id}/delete-upload-file", method = RequestMethod.PUT,
-  // consumes = UPLOAD_DOCUMENT_JSON_VALUE)
-  // public ResponseEntity<MetadataDocument> deleteFile(
-  //     @ActiveUser CatalogueUser user,
-  //     @PathVariable("id") String id,
-  //     @RequestParam("name") String name,
-  //     @RequestParam("filename") String filename,
-  //     @RequestBody UploadDocument document
-  // ) {
-  //     userCanUpload(document);
-  //     uploadDocumentService.delete(user, document, name, filename);
-  //     return ResponseEntity.ok(document);
-  // }
+  @RequestMapping(value = "documents/{id}/delete-upload-file", method = RequestMethod.PUT,
+      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  deleteFile(@ActiveUser CatalogueUser user, @PathVariable("id") String id, @RequestParam("filename") String filename) {
+    userCanUpload(id);
+    val document = uploadDocumentService.delete(user, id, filename);
+    return ResponseEntity.ok(document);
+  }
 
   // @RequestMapping(value = "documents/{id}/finish", method = RequestMethod.PUT, consumes =
   // UPLOAD_DOCUMENT_JSON_VALUE)
@@ -134,10 +130,10 @@ public class UploadController {
   //     return String.format(jqlTemplate, guid);
   // }
 
-  // private void userCanUpload (UploadDocument document) {
-  //     if (!permissionService.userCanUpload(document.getParentId())) throw new
-  //     PermissionDeniedException("Invalid Permissions");
-  // }
+  private void userCanUpload(String id) {
+    if (!permissionService.userCanUpload(id))
+      throw new PermissionDeniedException("Invalid Permissions");
+  }
 
   // @RequestMapping(value = "documents/{id}/accept-upload-file", method = RequestMethod.PUT,
   // consumes = UPLOAD_DOCUMENT_JSON_VALUE)

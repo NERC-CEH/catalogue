@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.HubbubService;
 
 @AllArgsConstructor
@@ -33,9 +34,12 @@ public class UploadDocumentService {
         documents.put(path, uploadFile);
       else {
         UploadType type = UploadType.INVALID;
-        if(status.equals("MISSING")) type = UploadType.MISSING_FILE;
-        else if(status.equals("UNKNOWN_FILE")) type = UploadType.UNKNOWN_FILE;
-        else if(status.equals("CHANGED")) type = UploadType.INVALID_HASH;
+        if (status.equals("MISSING"))
+          type = UploadType.MISSING_FILE;
+        else if (status.equals("UNKNOWN_FILE"))
+          type = UploadType.UNKNOWN_FILE;
+        else if (status.equals("CHANGED"))
+          type = UploadType.INVALID_HASH;
 
         uploadFile.setType(type);
         invalid.put(path, uploadFile);
@@ -60,6 +64,11 @@ public class UploadDocumentService {
 
     document.getUploadFiles().put("plone", new UploadFiles());
     return document;
+  }
+
+  public UploadDocument delete(CatalogueUser user, String id, String filename) {
+    hubbubService.delete(filename);
+    return get(id);
   }
 
   // private static final Pattern regex = Pattern.compile("([a-f0-9]{32})\\s*\\*?(.*)");
