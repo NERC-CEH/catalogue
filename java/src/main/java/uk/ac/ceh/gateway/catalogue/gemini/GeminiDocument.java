@@ -66,7 +66,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<ResourceConstraint> accessConstraints, useConstraints;
     private MapDataDefinition mapDataDefinition;
     private Keyword resourceType;
-    private String uploadId;
     
     @Override
     public String getType() {
