@@ -16,6 +16,15 @@ define [
     }
   
   finish: ->
-    @save @attributes,
-      url: @url() + '/finish'
-      success: -> do window.location.reload
+    url = @url() + '/finish'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) ->
+        do window.location.reload
+      error: (err) ->
+        console.error('error', err)
+    }

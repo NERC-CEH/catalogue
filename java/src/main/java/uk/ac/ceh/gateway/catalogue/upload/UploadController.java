@@ -5,6 +5,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import lombok.AllArgsConstructor;
@@ -79,41 +81,40 @@ public class UploadController {
   @RequestMapping(value = "documents/{id}/delete-upload-file", method = RequestMethod.PUT,
       consumes = UPLOAD_DOCUMENT_JSON_VALUE)
   public ResponseEntity<UploadDocument>
-  deleteFile(@ActiveUser CatalogueUser user, @PathVariable("id") String id, @RequestParam("filename") String filename) {
+  deleteFile(@ActiveUser CatalogueUser user, @PathVariable("id") String id,
+      @RequestParam("filename") String filename) {
     userCanUpload(id);
     val document = uploadDocumentService.delete(user, id, filename);
     return ResponseEntity.ok(document);
   }
 
-  // @RequestMapping(value = "documents/{id}/finish", method = RequestMethod.PUT, consumes =
-  // UPLOAD_DOCUMENT_JSON_VALUE)
-  // public ResponseEntity<MetadataDocument> finish(
-  //     @ActiveUser CatalogueUser user,
-  //     @PathVariable("id") String id,
-  //     @RequestBody UploadDocument document
-  // ) throws DocumentRepositoryException {
-  //     userCanUpload(document);
-  //     val parentId = document.getParentId();
-  //     transitionIssueToStartProgress(user, parentId);
-  //     removeUploadPermission(user, parentId);
-  //     return ResponseEntity.ok(document);
-  // }
+  @RequestMapping(value = "documents/{id}/finish", method = RequestMethod.PUT,
+      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  finish(@ActiveUser CatalogueUser user, @PathVariable("id") String id)
+      throws DocumentRepositoryException {
+    userCanUpload(id);
+    transitionIssueToStartProgress(user, id);
+    val document = uploadDocumentService.get(id);
+    return ResponseEntity.ok(document);
+  }
 
-  // private void transitionIssueToStartProgress(CatalogueUser user, String guid) {
-  //     val issues = jiraService.search(jql(guid));
-  //     if (issues.size() != 1) throw new NonUniqueJiraIssue();
-  //     val issue = issues.get(0);
-  //     val key = issue.getKey();
-  //     jiraService.transition(key, START_PROGRESS);
-  //     jiraService.comment(key, String.format("%s has finished uploading the documents to
-  //     dropbox", user.getEmail()));
-  // }
+  private void transitionIssueToStartProgress(CatalogueUser user, String guid) {
+    val issues = jiraService.search(jql(guid));
+    if (issues.size() != 1)
+      throw new NonUniqueJiraIssue();
+    val issue = issues.get(0);
+    val key = issue.getKey();
+    jiraService.transition(key, START_PROGRESS);
+    jiraService.comment(
+        key, String.format("%s has finished uploading the documents to dropbox", user.getEmail()));
+  }
 
-  // @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Can not finish, contact admin to
-  // resolve issue clash")
-  // class NonUniqueJiraIssue extends RuntimeException {
-  //     static final long serialVersionUID = 1L;
-  // }
+  @ResponseStatus(value = HttpStatus.BAD_REQUEST,
+      reason = "Can not finish, contact admin to resolve issue clash")
+  class NonUniqueJiraIssue extends RuntimeException {
+    static final long serialVersionUID = 1L;
+  }
 
   // private void removeUploadPermission(CatalogueUser user, String guid) throws
   // DocumentRepositoryException {
@@ -125,10 +126,10 @@ public class UploadController {
   //     guid));
   // }
 
-  // private String jql(String guid) {
-  //     String jqlTemplate = "project=eidchelp and component='data transfer' and labels=%s";
-  //     return String.format(jqlTemplate, guid);
-  // }
+  private String jql(String guid) {
+    String jqlTemplate = "project=eidchelp and component='data transfer' and labels=%s";
+    return String.format(jqlTemplate, guid);
+  }
 
   private void userCanUpload(String id) {
     if (!permissionService.userCanUpload(id))
