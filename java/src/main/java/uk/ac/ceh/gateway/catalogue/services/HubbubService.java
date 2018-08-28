@@ -31,4 +31,13 @@ public class HubbubService {
         .header("Authorization", String.format("Bearer %s", accessToken))
         .delete(JsonNode.class);
   }
+
+  @SneakyThrows
+  public JsonNode post(String path) {
+    return resource.path(path)
+        .accept(MediaType.APPLICATION_JSON_TYPE)
+        .type(MediaType.APPLICATION_JSON_TYPE)
+        .header("Authorization", String.format("Bearer %s", accessToken))
+        .post(JsonNode.class);
+  }
 }

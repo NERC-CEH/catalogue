@@ -86,6 +86,11 @@ public class UploadDocumentService {
     return get(id);
   }
 
+  public UploadDocument accept(String id, String filename) {
+    hubbubService.post(String.format("/accept%s", filename));
+    return get(id);
+  }
+
   // private static final Pattern regex = Pattern.compile("([a-f0-9]{32})\\s*\\*?(.*)");
   // private final DocumentRepository documentRepository;
   // // private final HubbubService hubbubService;

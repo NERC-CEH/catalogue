@@ -67,18 +67,16 @@ public class UploadController {
 
   @RequestMapping(value = "documents/{id}/add-upload-document", method = RequestMethod.POST)
   @ResponseBody
-  public ResponseEntity<UploadDocument> addFile(
-      @ActiveUser CatalogueUser user,
-      @PathVariable("id") String id,
-      @RequestParam("file") MultipartFile file
-  ) throws IOException, DocumentRepositoryException {
-      userCanUpload(id);
-      try (InputStream in = file.getInputStream()) {
-          val filename = file.getOriginalFilename();  
-          uploadDocumentService.add(id, filename, in);
-      }
-      val document = uploadDocumentService.get(id);
-      return ResponseEntity.ok(document);
+  public ResponseEntity<UploadDocument> addFile(@ActiveUser CatalogueUser user,
+      @PathVariable("id") String id, @RequestParam("file") MultipartFile file)
+      throws IOException, DocumentRepositoryException {
+    userCanUpload(id);
+    try (InputStream in = file.getInputStream()) {
+      val filename = file.getOriginalFilename();
+      uploadDocumentService.add(id, filename, in);
+    }
+    val document = uploadDocumentService.get(id);
+    return ResponseEntity.ok(document);
   }
 
   @RequestMapping(value = "documents/{id}/delete-upload-file", method = RequestMethod.PUT,
@@ -139,19 +137,15 @@ public class UploadController {
       throw new PermissionDeniedException("Invalid Permissions");
   }
 
-  // @RequestMapping(value = "documents/{id}/accept-upload-file", method = RequestMethod.PUT,
-  // consumes = UPLOAD_DOCUMENT_JSON_VALUE)
-  // public ResponseEntity<MetadataDocument> acceptFile(
-  //     @ActiveUser CatalogueUser user,
-  //     @PathVariable("id") String id,
-  //     @RequestParam("name") String name,
-  //     @RequestParam("filename") String filename,
-  //     @RequestBody UploadDocument document
-  // ) {
-  //     userCanUpload(document);
-  //     uploadDocumentService.acceptInvalid(user, document, name, filename);
-  //     return ResponseEntity.ok(document);
-  // }
+  @RequestMapping(value = "documents/{id}/accept-upload-file", method = RequestMethod.PUT,
+      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  acceptFile(@ActiveUser CatalogueUser user, @PathVariable("id") String id,
+      @RequestParam("path") String path) {
+    userCanUpload(id);
+    val document = uploadDocumentService.accept(id, path);
+    return ResponseEntity.ok(document);
+  }
 
   // @RequestMapping(value = "documents/{id}/move-upload-file", method = RequestMethod.PUT, consumes
   // = UPLOAD_DOCUMENT_JSON_VALUE)
