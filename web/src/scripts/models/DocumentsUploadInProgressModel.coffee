@@ -30,8 +30,18 @@ define [
     }
 
   ignore: (name, file) ->
-    @save @attributes,
-      url: @url() + '/delete-upload-file?name=' + name + '&filename=' + encodeURIComponent(file)
+    url = @url() + '/delete-upload-file?filename=' + encodeURIComponent(file)
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) ->
+        console.error('error', err)
+    }
 
   move: (file, from, to) ->
     @save @attributes,
