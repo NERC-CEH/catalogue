@@ -25,7 +25,7 @@
                 <div class="folder-title">
                     <h2 class="folder-name"><i class="fas fa-lock"></i> Dropbox</h2>
                 </div>
-                <table class='table'>
+                <table class='table' style='margin-bottom: 0'>
                     <thead>
                         <tr>
                             <th></th>
@@ -44,7 +44,7 @@
             <div class="folder-title">
                 <h2 class="folder-name"><i class="fas fa-lock"></i> Data</h2>
             </div>
-            <table class='table'>
+            <table class='table' style='margin-bottom: 0'>
                 <thead>
                     <tr>
                         <th></th>
@@ -64,7 +64,7 @@
             <div class="folder-title">
                 <h2 class="folder-name"><i class="fas fa-lock"></i> Metadata</h2>
             </div>
-            <table class='table'>
+            <table class='table' style='margin-bottom: 0'>
                 <thead>
                     <tr>
                         <th></th>
