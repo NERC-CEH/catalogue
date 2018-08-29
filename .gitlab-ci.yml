@@ -34,6 +34,9 @@ java:
     - echo jira.password=$JIRA_PASSWORD >> secrets.env
     - echo plone.username=$PLONE_USERNAME >> secrets.env
     - echo plone.password=$PLONE_PASSWORD >> secrets.env
+    - echo hubbub.url=$HUBBUB_URL >> secrets.env
+    - echo hubbub.username=$HUBBUB_USERNAME >> secrets.env
+    - echo hubbub.password=$HUBBUB_PASSWORD >> secrets.env
     - echo doi.password= >> secrets.env
   
   script:
