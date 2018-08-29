@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 
-import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -145,11 +144,5 @@ public JsonNode post(String path) {
                                   .type(MediaType.APPLICATION_JSON_TYPE)
                                   .header("Authorization", String.format("Bearer %s", accessToken))
                                   .post(JsonNode.class));
-}
-
-@Data
-class Token {
-  private String access_token;
-  private String refresh_token;
 }
 }
