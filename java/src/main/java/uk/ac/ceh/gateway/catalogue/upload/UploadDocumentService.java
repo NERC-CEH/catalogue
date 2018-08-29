@@ -95,12 +95,12 @@ public class UploadDocumentService {
   }
 
   public UploadDocument zip(String id) {
-    hubbubService.post(String.format("/zip%s", id));
+    hubbubService.post(String.format("/zip/%s", id));
     return get(id);
   }
 
   public UploadDocument unzip(String id) {
-    hubbubService.post(String.format("/unzip%s"));
+    hubbubService.post(String.format("/unzip/%s", id));
     return get(id);
   }
 }
