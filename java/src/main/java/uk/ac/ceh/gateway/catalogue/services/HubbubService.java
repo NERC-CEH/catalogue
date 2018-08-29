@@ -1,5 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.function.Supplier;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.ws.rs.core.MediaType;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -9,42 +23,71 @@ import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.val;
 
-import javax.ws.rs.core.MediaType;
-import java.util.function.Supplier;
-
 public class HubbubService {
   private final WebResource resource;
   private final String username;
   private final String password;
 
-  public HubbubService(WebResource resource, String username, String password) {
-    this.resource = resource;
-    this.username = username;
-    this.password = password;
-  }
-
-  private String accessToken = null;
-  private String refreshToken = null;
-
-  @SneakyThrows
-  public JsonNode authenticated(Supplier<JsonNode> fn) {
+  private static void disableSslVerification() {
     try {
-      if (accessToken == null && refreshToken == null)
-        updateTokens();
-      return fn.get();
-    } catch (UniformInterfaceException expiredAccess) {
-      if (shouldGetNewToken(expiredAccess)) {
-        try {
-          updateAccessToken();
-        } catch (UniformInterfaceException expiredRefresh) {
-          if (shouldGetNewToken(expiredRefresh)) {
-            updateTokens();
+      TrustManager[] trustAllCerts = new TrustManager[] {
+        new X509TrustManager(){
+          @Override public X509Certificate[] getAcceptedIssuers() {
+            return null;
           }
+
+          @Override
+          public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+
+          @Override
+          public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+        }
+      };
+      SSLContext sc = SSLContext.getInstance("SSL");
+      sc.init(null, trustAllCerts, new java.security.SecureRandom());
+      HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+      HostnameVerifier allHostsValid = new HostnameVerifier() {
+        public boolean verify(String hostname, SSLSession session) {
+          return true;
+        }
+      };
+      HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    } catch (KeyManagementException e) {
+      e.printStackTrace();
+    }
+}
+
+public HubbubService(WebResource resource, String username, String password) {
+  this.resource = resource;
+  this.username = username;
+  this.password = password;
+  disableSslVerification();
+}
+
+private String accessToken = null;
+private String refreshToken = null;
+
+@SneakyThrows
+public JsonNode authenticated(Supplier<JsonNode> fn) {
+  try {
+    if (accessToken == null && refreshToken == null)
+      updateTokens();
+    return fn.get();
+  } catch (UniformInterfaceException expiredAccess) {
+    if (shouldGetNewToken(expiredAccess)) {
+      try {
+        updateAccessToken();
+      } catch (UniformInterfaceException expiredRefresh) {
+        if (shouldGetNewToken(expiredRefresh)) {
+          updateTokens();
         }
       }
-      return fn.get();
     }
+    return fn.get();
   }
+}
 
   private boolean shouldGetNewToken(UniformInterfaceException expiredAccess) {
     val res = expiredAccess.getResponse().getEntity(ObjectNode.class);

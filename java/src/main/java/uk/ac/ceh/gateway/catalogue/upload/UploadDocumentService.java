@@ -60,7 +60,8 @@ public class UploadDocumentService {
 
     val eidchubFiles = getUploadFiles("eidchub", id);
     document.getUploadFiles().put("datastore", eidchubFiles);
-    eidchubFiles.setZipped(true);
+    val isZipped = eidchubFiles.getDocuments().keySet().contains(String.format("/mnt/eidchub/%s/%s.zip", id, id));
+    eidchubFiles.setZipped(isZipped);
 
     val dropboxFiles = getUploadFiles("dropbox", id);
     document.getUploadFiles().put("documents", dropboxFiles);
@@ -90,12 +91,12 @@ public class UploadDocumentService {
   }
 
   public UploadDocument zip(String id) {
-    hubbubService.post(String.format("/zip%s", id));
+    hubbubService.post(String.format("/zip/%s", id));
     return get(id);
   }
 
   public UploadDocument unzip(String id) {
-    hubbubService.post(String.format("/unzip%s"));
+    hubbubService.post(String.format("/unzip/%s", id));
     return get(id);
   }
 
