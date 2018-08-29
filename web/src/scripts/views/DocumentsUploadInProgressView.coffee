@@ -203,7 +203,8 @@ define [
     for index, file of files
       checksums.push file.name + ',' + file.hash
 
-    href = 'data:text/csv;charset=utf-8,' + checksums.join('\n')
+    href = 'data:text/csv;charset=utf-8,' + encodeURI(checksums.join('\n'))
 
+    $('.downloadChecksum').attr('disabled', no)
     $('.downloadChecksum').attr('href', href)
 

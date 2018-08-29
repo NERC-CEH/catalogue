@@ -70,9 +70,36 @@ define [
       for key, document of invalid
         @renderFile document, $(".#{name} .files-list-invalid"), yes
 
+  renderChecksums: ->
+    checksums = []
+
+    files = @model.get('uploadFiles').datastore.documents || {}
+    files = (value for own prop, value of files)
+    files.sort (left, right) ->
+      return -1 if left.name < right.name
+      return 1 if left.name > right.name
+      return 0
+    for index, file of files
+      checksums.push file.name + ',' + file.hash
+
+    files = @model.get('uploadFiles').datastore.invalid || {}
+    files = (value for own prop, value of files)
+    files.sort (left, right) ->
+      return -1 if left.name < right.name
+      return 1 if left.name > right.name
+      return 0
+    for index, file of files
+      checksums.push file.name + ',' + file.hash
+
+    href = 'data:text/csv;charset=utf-8,' + encodeURI(checksums.join('\n'))
+
+    $('.downloadChecksum').attr('disabled', no)
+    $('.downloadChecksum').attr('href', href)
+
   render: ->
     files = @model.get 'uploadFiles'
     if $('.documents').length
       @renderFiles(files, 'documents')
     @renderFiles(files, 'datastore')
     @renderFiles(files, 'plone')
+    do @renderChecksums

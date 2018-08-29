@@ -82,6 +82,6 @@
         </div>
     </div>
     <div class="folder-options text-right">
-        <a class="btn btn-success downloadChecksum" href="get_checksum" download="checksums_${id}.csv">Download checksum report</a>
+        <a class="btn btn-success downloadChecksum" href="get_checksum" download="checksums_${id}.csv" disabled>Download checksum report</a>
     </div>
 </section>

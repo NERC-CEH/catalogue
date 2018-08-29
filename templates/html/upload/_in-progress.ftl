@@ -41,7 +41,7 @@
             <div class="folder-options text-right">
                 <button class="btn btn-success zip" disabled>Zip</button>
                 <button class="btn btn-success unzip" disabled style="display: none">Unzip</button>
-                <a class="btn btn-success downloadChecksum" href="get_checksum" download="checksums_${id}.csv">Download checksum report</a>
+                <a class="btn btn-success downloadChecksum" href="get_checksum" download="checksums_${id}.csv" disabled>Download checksum report</a>
             </div>
         </div>
     </div>
