@@ -61,7 +61,8 @@ public class UploadDocumentService {
 
     val eidchubFiles = getUploadFiles("eidchub", id);
     document.getUploadFiles().put("datastore", eidchubFiles);
-    eidchubFiles.setZipped(true);
+    val isZipped = eidchubFiles.getDocuments().keySet().contains(String.format("/mnt/eidchub/%s/%s.zip", id, id));
+    eidchubFiles.setZipped(isZipped);
 
     val dropboxFiles = getUploadFiles("dropbox", id);
     document.getUploadFiles().put("documents", dropboxFiles);
