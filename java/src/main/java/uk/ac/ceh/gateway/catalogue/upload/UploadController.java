@@ -1,40 +1,31 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_VALUE;
+import lombok.AllArgsConstructor;
+import lombok.val;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+import uk.ac.ceh.gateway.catalogue.services.JiraService;
+import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-
-import lombok.AllArgsConstructor;
-import lombok.val;
-import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.services.JiraService;
-import uk.ac.ceh.gateway.catalogue.services.PermissionService;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_VALUE;
 
 @Controller
 @AllArgsConstructor
+@SuppressWarnings("unused")
 public class UploadController {
   private static final String START_PROGRESS = "751";
 
@@ -151,34 +142,38 @@ public class UploadController {
     return ResponseEntity.ok(document);
   }
 
-  // this is for rod to complete
+   @RequestMapping(
+       value = "documents/{id}/move-upload-file",
+       method = RequestMethod.PUT,
+       consumes = UPLOAD_DOCUMENT_JSON_VALUE
+   )
+   public ResponseEntity<UploadDocument>
+   acceptFile(
+       @ActiveUser CatalogueUser user,
+       @PathVariable("id") String id,
+       @RequestParam("from") String from,
+       @RequestParam("to") String to,
+       @RequestParam("filename") String filename,
+       @RequestBody UploadDocument document
+   ){
+      // TODO: Need to remove 'from' and 'document' from method arguments
+      userCanUpload(id);
+      val toReturn = uploadDocumentService.setDestination(id, filename, to);
+      return ResponseEntity.ok(toReturn);
+   }
 
-  // @RequestMapping(value = "documents/{id}/move-upload-file", method = RequestMethod.PUT, consumes
-  // = UPLOAD_DOCUMENT_JSON_VALUE)
-  // public ResponseEntity<MetadataDocument> acceptFile(
-  //     @ActiveUser CatalogueUser user,
-  //     @PathVariable("id") String id,
-  //     @RequestParam("from") String from,
-  //     @RequestParam("to") String to,
-  //     @RequestParam("filename") String filename,
-  //     @RequestBody UploadDocument document
-  // ){
-  //     userCanUpload(document);
-  //     uploadDocumentService.move(user, document, from, to, filename);
-  //     return ResponseEntity.ok(document);
-  // }
-
-  // @RequestMapping(value = "documents/{id}/move-to-datastore", method = RequestMethod.PUT,
-  // consumes = UPLOAD_DOCUMENT_JSON_VALUE)
-  // public ResponseEntity<MetadataDocument> moveToDatastore(
-  //     @ActiveUser CatalogueUser user,
-  //     @PathVariable("id") String id,
-  //     @RequestBody UploadDocument document
-  // ) {
-  //     userCanUpload(document);
-  //     uploadDocumentService.moveToDatastore(user, document);
-  //     return ResponseEntity.ok(document);
-  // }
+   @RequestMapping(
+       value = "documents/{id}/move-to-datastore",
+       method = RequestMethod.PUT,
+       consumes = UPLOAD_DOCUMENT_JSON_VALUE
+   )
+   public ResponseEntity<UploadDocument>
+   moveToDatastore(@ActiveUser CatalogueUser user, @PathVariable("id") String id,
+       @RequestBody UploadDocument document) {
+     userCanUpload(id);
+     val toReturn = uploadDocumentService.move(id);
+     return ResponseEntity.ok(toReturn);
+   }
 
   @RequestMapping(value = "documents/{id}/zip-upload-files", method = RequestMethod.PUT,
       consumes = UPLOAD_DOCUMENT_JSON_VALUE)

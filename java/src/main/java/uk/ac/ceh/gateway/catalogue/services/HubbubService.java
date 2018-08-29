@@ -1,18 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.function.Supplier;
-
-import javax.ws.rs.core.MediaType;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
-
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.val;
+
+import javax.ws.rs.core.MediaType;
+import java.util.function.Supplier;
 
 public class HubbubService {
   private final WebResource resource;
@@ -106,6 +104,17 @@ public class HubbubService {
                    .type(MediaType.APPLICATION_JSON_TYPE)
                    .header("Authorization", String.format("Bearer %s", accessToken))
                    .post(JsonNode.class));
+  }
+
+  @SneakyThrows
+  public JsonNode patch(String path, String request) {
+    return authenticated(
+        ()
+            -> resource.path(path)
+                  .accept(MediaType.APPLICATION_JSON_TYPE)
+                  .type(new MediaType("application", "json-patch+json"))
+                  .method("PATCH", JsonNode.class, request)
+    );
   }
 
   @Data
