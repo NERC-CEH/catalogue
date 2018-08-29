@@ -213,8 +213,8 @@ public class ServiceConfig {
     @Value("${sparql.graph}") private String sparqlGraph;
 
     @Value("${hubbub.url}") private String hubbubUrl;
-    @Value("${hubbub.access}") private String hubbubAccessToken;
-    @Value("${hubbub.refresh}") private String hubbubRefreshToken;
+    @Value("${hubbub.username}") private String hubbubUsername;
+    @Value("${hubbub.password}") private String hubbubPassword;
     
     @Autowired private ObjectMapper jacksonMapper;
     @Autowired private DataRepository<CatalogueUser> dataRepository;
@@ -273,7 +273,7 @@ public class ServiceConfig {
     public HubbubService hubbubService() {
         Client client = Client.create();
         WebResource hubbub = client.resource(hubbubUrl);
-        return new HubbubService(hubbub, hubbubAccessToken, hubbubRefreshToken);
+        return new HubbubService(hubbub, hubbubUsername, hubbubPassword);
     }
     
     @Bean

@@ -24,6 +24,9 @@ import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
@@ -96,6 +99,7 @@ public class UploadController {
       throws DocumentRepositoryException {
     userCanUpload(id);
     transitionIssueToStartProgress(user, id);
+    removeUploadPermission(user, id);
     val document = uploadDocumentService.get(id);
     return ResponseEntity.ok(document);
   }
@@ -117,15 +121,15 @@ public class UploadController {
     static final long serialVersionUID = 1L;
   }
 
-  // private void removeUploadPermission(CatalogueUser user, String guid) throws
-  // DocumentRepositoryException {
-  //     MetadataDocument document = documentRepository.read(guid);
-  //     MetadataInfo info = document.getMetadata();
-  //     info.removePermission(Permission.UPLOAD, user.getUsername());
-  //     document.setMetadata(info);
-  //     documentRepository.save(user, document, guid, String.format("Permissions of %s changed.",
-  //     guid));
-  // }
+  private void removeUploadPermission(CatalogueUser user, String guid)
+      throws DocumentRepositoryException {
+    MetadataDocument document = documentRepository.read(guid);
+    MetadataInfo info = document.getMetadata();
+    info.removePermission(Permission.UPLOAD, user.getUsername());
+    document.setMetadata(info);
+    documentRepository.save(
+        user, document, guid, String.format("Permissions of %s changed.", guid));
+  }
 
   private String jql(String guid) {
     String jqlTemplate = "project=eidchelp and component='data transfer' and labels=%s";
@@ -147,6 +151,8 @@ public class UploadController {
     return ResponseEntity.ok(document);
   }
 
+  // this is for rod to complete
+
   // @RequestMapping(value = "documents/{id}/move-upload-file", method = RequestMethod.PUT, consumes
   // = UPLOAD_DOCUMENT_JSON_VALUE)
   // public ResponseEntity<MetadataDocument> acceptFile(
@@ -162,18 +168,6 @@ public class UploadController {
   //     return ResponseEntity.ok(document);
   // }
 
-  // @RequestMapping(value = "documents/{id}/validate", method = RequestMethod.GET)
-  // @SneakyThrows
-  // public ResponseEntity<MetadataDocument> acceptFile(
-  //     @ActiveUser CatalogueUser user,
-  //     @PathVariable("id") String id
-  // ) {
-  //     val document = (UploadDocument) documentRepository.read(id);
-  //     userCanUpload(document);
-  //     val doc = documentRepository.save(user, document, id, String.format("Validated %s", id));
-  //     return ResponseEntity.ok(doc);
-  // }
-
   // @RequestMapping(value = "documents/{id}/move-to-datastore", method = RequestMethod.PUT,
   // consumes = UPLOAD_DOCUMENT_JSON_VALUE)
   // public ResponseEntity<MetadataDocument> moveToDatastore(
@@ -186,27 +180,21 @@ public class UploadController {
   //     return ResponseEntity.ok(document);
   // }
 
-  // @RequestMapping(value = "documents/{id}/zip-upload-files", method = RequestMethod.PUT, consumes
-  // = UPLOAD_DOCUMENT_JSON_VALUE)
-  // public ResponseEntity<MetadataDocument> zip(
-  //     @ActiveUser CatalogueUser user,
-  //     @PathVariable("id") String id,
-  //     @RequestBody UploadDocument document
-  // ) {
-  //     userCanUpload(document);
-  //     uploadDocumentService.zip(user, document);
-  //     return ResponseEntity.ok(document);
-  // }
+  @RequestMapping(value = "documents/{id}/zip-upload-files", method = RequestMethod.PUT,
+      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  zip(@ActiveUser CatalogueUser user, @PathVariable("id") String id) {
+    userCanUpload(id);
+    val document = uploadDocumentService.zip(id);
+    return ResponseEntity.ok(document);
+  }
 
-  // @RequestMapping(value = "documents/{id}/unzip-upload-files", method = RequestMethod.PUT,
-  // consumes = UPLOAD_DOCUMENT_JSON_VALUE)
-  // public ResponseEntity<MetadataDocument> unzip(
-  //     @ActiveUser CatalogueUser user,
-  //     @PathVariable("id") String id,
-  //     @RequestBody UploadDocument document
-  // ) {
-  //     userCanUpload(document);
-  //     uploadDocumentService.unzip(user, document);
-  //     return ResponseEntity.ok(document);
-  // }
+  @RequestMapping(value = "documents/{id}/unzip-upload-files", method = RequestMethod.PUT,
+      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  unzip(@ActiveUser CatalogueUser user, @PathVariable("id") String id) {
+    userCanUpload(id);
+    val document = uploadDocumentService.unzip(id);
+    return ResponseEntity.ok(document);
+  }
 }

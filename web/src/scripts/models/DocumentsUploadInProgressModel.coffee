@@ -43,6 +43,34 @@ define [
         console.error('error', err)
     }
 
+  zip: ->
+    url = @url() + '/zip-upload-files'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) ->
+        console.error('error', err)
+    }
+
+  unzip: ->
+    url = @url() + '/unzip-upload-files'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) ->
+        console.error('error', err)
+    }
+
   move: (file, from, to) ->
     @save @attributes,
       url: @url() + '/move-upload-file?from=' + from + '&to=' + to + '&filename=' + encodeURIComponent(file)
@@ -50,11 +78,3 @@ define [
   moveToDatastore: (files) ->
     @save @attributes,
       url: @url() + '/move-to-datastore'
-
-  zip: ->
-    @save @attributes,
-      url: @url() + '/zip-upload-files'
-
-  unzip: ->
-    @save @attributes,
-      url: @url() + '/unzip-upload-files'
