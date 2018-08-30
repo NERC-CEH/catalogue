@@ -76,9 +76,7 @@ public class HubbubService {
 
   @SneakyThrows
   public JsonNode get(String path) {
-    return authenticated(
-        ()
-            -> resource.path(path)
+    return authenticated(() -> resource.path(path)
                    .accept(MediaType.APPLICATION_JSON_TYPE)
                    .type(MediaType.APPLICATION_JSON_TYPE)
                    .header("Authorization", String.format("Bearer %s", accessToken))
@@ -87,9 +85,7 @@ public class HubbubService {
 
   @SneakyThrows
   public JsonNode delete(String path) {
-    return authenticated(
-        ()
-            -> resource.path(path)
+    return authenticated(() -> resource.path(path)
                    .accept(MediaType.APPLICATION_JSON_TYPE)
                    .type(MediaType.APPLICATION_JSON_TYPE)
                    .header("Authorization", String.format("Bearer %s", accessToken))
@@ -98,12 +94,18 @@ public class HubbubService {
 
   @SneakyThrows
   public JsonNode post(String path) {
-    return authenticated(
-        ()
-            -> resource.path(path)
+    return authenticated(() -> resource.path(path)
                    .accept(MediaType.APPLICATION_JSON_TYPE)
                    .type(MediaType.APPLICATION_JSON_TYPE)
                    .header("Authorization", String.format("Bearer %s", accessToken))
                    .post(JsonNode.class));
+  }
+
+  @SneakyThrows
+  public JsonNode patch(String path, String request) {
+    return authenticated(() -> resource.path(path)
+                   .accept(MediaType.APPLICATION_JSON_TYPE)
+                   .type(new MediaType("application", "json-patch+json"))
+                   .method("PATCH", JsonNode.class, request));
   }
 }

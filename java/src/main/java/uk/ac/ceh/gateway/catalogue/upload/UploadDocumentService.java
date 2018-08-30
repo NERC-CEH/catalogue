@@ -1,17 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
-import org.apache.commons.io.FileUtils;
-
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.apache.commons.io.FileUtils;
 import uk.ac.ceh.gateway.catalogue.services.HubbubService;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.Map;
 
 @AllArgsConstructor
 public class UploadDocumentService {
@@ -35,6 +33,7 @@ public class UploadDocumentService {
       uploadFile.setEncoding("utf-8");
       uploadFile.setBytes(item.get("bytes").asLong());
       uploadFile.setHash(item.get("hash").asText());
+      uploadFile.setDestination(item.get("destination").asText());
 
       val status = item.get("status").asText();
       if (status.equals("VALID"))
@@ -67,11 +66,8 @@ public class UploadDocumentService {
     val dropboxFiles = getUploadFiles("dropbox", id);
     document.getUploadFiles().put("documents", dropboxFiles);
 
-    // this is for rod to complete
-    // val ploneFile = getUploadFiles("plone", id);
-    // document.getUploadFiles().put("plone", ploneFiles);
-
-    document.getUploadFiles().put("plone", new UploadFiles());
+    val ploneFiles = getUploadFiles("supporting-documents", id);
+    document.getUploadFiles().put("plone", ploneFiles);
 
     return document;
   }
@@ -101,6 +97,19 @@ public class UploadDocumentService {
 
   public UploadDocument unzip(String id) {
     hubbubService.post(String.format("/unzip/%s", id));
+    return get(id);
+  }
+
+  public UploadDocument move(String id) {
+    hubbubService.post(String.format("/dropbox/%s", id));
+    return get(id);
+  }
+
+  public UploadDocument setDestination(String id, String filename, String to) {
+    hubbubService.patch(
+        String.format("/dropbox/%/%s", id, filename),
+        String.format("[{\"op\":\"add\",\"path\":\"/destination\",\"value\":\"%s\"}]", to)
+    );
     return get(id);
   }
 }
