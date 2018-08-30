@@ -1,15 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.val;
-import org.apache.commons.io.FileUtils;
-import uk.ac.ceh.gateway.catalogue.services.HubbubService;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import org.apache.commons.io.FileUtils;
+
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.val;
+import uk.ac.ceh.gateway.catalogue.services.HubbubService;
 
 @AllArgsConstructor
 public class UploadDocumentService {
@@ -33,8 +35,8 @@ public class UploadDocumentService {
       uploadFile.setEncoding("utf-8");
       uploadFile.setBytes(item.get("bytes").asLong());
       uploadFile.setHash(item.get("hash").asText());
-      uploadFile.setDestination(item.get("destination").asText());
-
+      if (item.has("destination"))
+        uploadFile.setDestination(item.get("destination").asText());
       val status = item.get("status").asText();
       if (status.equals("VALID"))
         documents.put(path, uploadFile);
@@ -60,7 +62,8 @@ public class UploadDocumentService {
 
     val eidchubFiles = getUploadFiles("eidchub", id);
     document.getUploadFiles().put("datastore", eidchubFiles);
-    val isZipped = eidchubFiles.getDocuments().keySet().contains(String.format("/mnt/eidchub/%s/%s.zip", id, id));
+    val isZipped = eidchubFiles.getDocuments().keySet().contains(
+        String.format("/mnt/eidchub/%s/%s.zip", id, id));
     eidchubFiles.setZipped(isZipped);
 
     val dropboxFiles = getUploadFiles("dropbox", id);
@@ -106,10 +109,8 @@ public class UploadDocumentService {
   }
 
   public UploadDocument setDestination(String id, String filename, String to) {
-    hubbubService.patch(
-        String.format("/dropbox/%/%s", id, filename),
-        String.format("[{\"op\":\"add\",\"path\":\"/destination\",\"value\":\"%s\"}]", to)
-    );
+    hubbubService.patch(String.format("/dropbox/%/%s", id, filename),
+        String.format("[{\"op\":\"add\",\"path\":\"/destination\",\"value\":\"%s\"}]", to));
     return get(id);
   }
 }
