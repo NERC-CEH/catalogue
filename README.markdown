@@ -40,6 +40,8 @@ The catalogue requires a few tools:
 - Docker
 - Docker Compose
 
+You need to add the `ceh.ac.uk.crt` certificate locally to a file `certs/ceh.ac.uk.crt`
+
 Having installed these you can then build the catalogue code base by running:
 
     ./gradlew
