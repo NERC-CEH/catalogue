@@ -26,14 +26,21 @@ public class UploadDocumentService {
     data.forEach(item -> {
       val uploadFile = new UploadFile();
       val path = item.get("path").asText();
-      uploadFile.setName(item.get("name").asText());
       uploadFile.setPath(path);
-      uploadFile.setPhysicalLocation(item.get("physicalLocation").asText());
-      uploadFile.setId(item.get("id").asText());
-      uploadFile.setFormat(item.get("format").asText());
-      uploadFile.setMediatype(item.get("mediatype").asText());
+      if (item.has("name"))
+        uploadFile.setName(item.get("name").asText());
+      if (item.has("physicalLocation"))
+        uploadFile.setPhysicalLocation(item.get("physicalLocation").asText());
+      if (item.has("id"))
+        uploadFile.setId(item.get("id").asText());
+      if (item.has("format"))
+        uploadFile.setFormat(item.get("format").asText());
+      if (item.has("mediatype"))
+        uploadFile.setMediatype(item.get("mediatype").asText());
       uploadFile.setEncoding("utf-8");
-      uploadFile.setBytes(item.get("bytes").asLong());
+      if (item.has("bytes"))
+        uploadFile.setBytes(item.get("bytes").asLong());
+      if (item.has("hash"))
       uploadFile.setHash(item.get("hash").asText());
       if (item.has("destination"))
         uploadFile.setDestination(item.get("destination").asText());
@@ -78,9 +85,10 @@ public class UploadDocumentService {
   @SneakyThrows
   public UploadDocument add(String id, String filename, InputStream in) {
     val directory = folders.get("documents");
-    val file = new File(directory.getPath() + "/" + id + "/" + filename);
+    val path = directory.getPath() + "/" + id + "/" + filename;
+    val file = new File(path);
     FileUtils.copyInputStreamToFile(in, file);
-    return get(id);
+    return accept(id, String.format("/mnt/dropbox/%s/%s", id, filename));
   }
 
   public UploadDocument delete(String id, String filename) {
@@ -88,7 +96,10 @@ public class UploadDocumentService {
     return get(id);
   }
 
+  @SneakyThrows
   public UploadDocument accept(String id, String filename) {
+    if (!filename.startsWith("/"))
+      filename = "/" + filename;
     hubbubService.post(String.format("/accept%s", filename));
     return get(id);
   }
