@@ -2,7 +2,7 @@
  This underscore template generates the search results client side.
 
  IMPORTANT: If you change the structure of this, please update the 
- corresponding freemarker template /templates/search/_page.tpl
+ corresponding freemarker template /templates/search/_page.ftl
 */ %>
 <div class="search-results-heading">
   <span id="num-records"><%=numFound%></span> records found
@@ -13,7 +13,7 @@
     <h2 class="resultTitle">
       <small>
         <span><%=result.recordType%></span>
-      <% if(result.resourceStatus != '' && result.resourceStatus != 'Current') {  %>
+      <% if(result.resourceStatus != '' && result.resourceStatus != 'available') {  %>
         <span class="label-<%=result.resourceStatus%>"><%=result.resourceStatus%></span>
       <% } %>
       <% if(result.state == 'draft') { %>

@@ -1,5 +1,5 @@
 <#escape x as x?xml>
-<#if resourceStatus?? && resourceStatus == "Embargoed" >
+<#if resourceStatus?? && resourceStatus == "embargoed" >
 	<gmd:resourceConstraints>
 		<gmd:MD_Constraints>
 			<gmd:useLimitation>
@@ -32,53 +32,21 @@
 	</#if>
 </#if>
 
-<#if resourceStatus?? && resourceStatus == "Embargoed" >
+<#if accessLimitation??>
 	<gmd:resourceConstraints>
 		<gmd:MD_LegalConstraints>
 			<gmd:accessConstraints>
 				<gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
 			</gmd:accessConstraints>
 			<gmd:otherConstraints>
-					<gco:CharacterString>This resource is currently under embargo</gco:CharacterString>
+				<#if accessLimitation.uri?has_content >
+					<gmx:Anchor xlink:href="${accessLimitation.uri}">${accessLimitation.value}</gmx:Anchor>
+				<#else>
+					<gco:CharacterString>${accessLimitation.value}</gco:CharacterString>
+				</#if>
 			</gmd:otherConstraints>
 		</gmd:MD_LegalConstraints>
 	</gmd:resourceConstraints>
-<#elseif resourceStatus?? && (resourceStatus == "Superseded" || resourceStatus = "Withdrawn") >
-	<gmd:resourceConstraints>
-		<gmd:MD_LegalConstraints>
-			<gmd:accessConstraints>
-				<gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
-			</gmd:accessConstraints>
-			<gmd:otherConstraints>
-					<gco:CharacterString>This dataset has been withdrawn. If you need access, please email eidc@ceh.ac.uk</gco:CharacterString>
-			</gmd:otherConstraints>
-		</gmd:MD_LegalConstraints>
-	</gmd:resourceConstraints>
-<#else>
-	<#if accessConstraints?has_content>
-		<#list accessConstraints as accessConstraint>
-			<gmd:resourceConstraints>
-				<gmd:MD_LegalConstraints>
-					<gmd:accessConstraints>
-						<gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
-					</gmd:accessConstraints>
-					<gmd:otherConstraints>
-							<gco:CharacterString>${accessConstraint.value}</gco:CharacterString>
-					</gmd:otherConstraints>
-				</gmd:MD_LegalConstraints>
-			</gmd:resourceConstraints>
-		</#list>
-	<#else>
-		<gmd:resourceConstraints>
-				<gmd:MD_LegalConstraints>
-					<gmd:accessConstraints>
-						<gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
-					</gmd:accessConstraints>
-			<gmd:otherConstraints>
-				<gco:CharacterString>no limitations</gco:CharacterString>
-			</gmd:otherConstraints>
-				</gmd:MD_LegalConstraints>
-			</gmd:resourceConstraints>
-	</#if>
 </#if>
+
 </#escape>

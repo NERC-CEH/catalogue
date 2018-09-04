@@ -127,7 +127,7 @@
         font-size:1.6em;
       }
       .resultDescription { margin:0;}
-      .label-Embargoed {
+      .label-Embargoed, .label-Available {
         display:none;
       };
       .label-Superseded, .label-Withdrawn {
@@ -140,6 +140,16 @@
         };
         &:after {
           content: ")";
+        };
+      };
+      .label-Restricted {
+        margin:0 1em;
+        color: #C00;
+        font-size: 0.8em;
+        font-weight: bold;
+        text-transform: uppercase;
+        &:before {
+          content: "access ";
         };
       };
     }

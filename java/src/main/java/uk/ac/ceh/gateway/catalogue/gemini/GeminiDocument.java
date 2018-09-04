@@ -33,7 +33,7 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 })
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
-    private String otherCitationDetails, browseGraphicUrl, resourceStatus, lineage, reasonChanged,
+    private String otherCitationDetails, browseGraphicUrl, lineage, reasonChanged,
         metadataStandardName, metadataStandardVersion, parentIdentifier, revisionOfIdentifier;
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
@@ -45,7 +45,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
-    private List<ResponsibleParty> metadataPointsOfContact;
     private List<ResponsibleParty> distributorContacts;
     private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> temporalExtents;
@@ -63,9 +62,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private DatasetReferenceDate datasetReferenceDate;
     private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
-    private List<ResourceConstraint> accessConstraints, useConstraints;
+    private List<ResourceConstraint> useConstraints;
     private MapDataDefinition mapDataDefinition;
     private Keyword resourceType;
+    private AccessLimitation accessLimitation;
     private String uploadId;
     
     @Override
@@ -73,6 +73,12 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return Optional.ofNullable(resourceType)
             .map(Keyword::getValue)
             .orElse("");
+    }
+
+    public String getResourceStatus() {
+        return Optional.ofNullable(accessLimitation)
+            .map(AccessLimitation::getCode)
+            .orElse(null);
     }
     
     @Override

@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.ERROR;
 import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.WARNING;
+import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.INFO;
 
 @Slf4j
 @SuppressWarnings({"unused", "WeakerAccess"})
@@ -73,12 +74,13 @@ public class MetadataQualityService {
                 checkBasics(parsedDoc).ifPresent(checks::addAll);
                 checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
                 checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
-                checkPointsOfContact(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
                 checkSignpost(parsedDoc).ifPresent(checks::add);
                 checkDataset(parsedDoc).ifPresent(checks::addAll);
+                checkService(parsedDoc).ifPresent(checks::addAll);
                 checkStuff(parsedDoc).ifPresent(checks::addAll);
                 checkDownloadAndOrderLinks(parsedDoc).ifPresent(checks::addAll);
+                checkEmbargo(parsedDoc).ifPresent(checks::addAll);
                 return new Results(checks, id);
             } else {
                 return new Results(Collections.emptyList(), id, "Not a qualifying document type");
@@ -142,7 +144,7 @@ public class MetadataQualityService {
         
         val temporalExtents = parsedDoc.read("$.temporalExtents[*]", typeRefStringString);
         if (temporalExtents ==  null || temporalExtents.isEmpty()) {
-            toReturn.add(new MetadataCheck("Temporal extents is missing", WARNING));
+            toReturn.add(new MetadataCheck("Temporal extents is missing", INFO));
         }
         if (temporalExtents != null && temporalExtents.stream().anyMatch(this::beginAndEndBothEmpty)) {
             toReturn.add(new MetadataCheck("Temporal extents is empty", ERROR));
@@ -169,34 +171,6 @@ public class MetadataQualityService {
         }
         if (addresses.stream().anyMatch(map -> fieldIsMissing(map, "organisationName"))) {
             toReturn.add(new MetadataCheck(element + " organisation name is missing", ERROR));
-        }
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
-    }
-
-    Optional<List<MetadataCheck>> checkPointsOfContact(DocumentContext parsed) {
-        val toReturn = new ArrayList<MetadataCheck>();
-        val metadataPointsOfContact = parsed.read("$.metadataPointsOfContact[*].['organisationName','individualName','role','email']", typeRefStringString);
-        if (metadataPointsOfContact == null) {
-            return Optional.of(Collections.singletonList(new MetadataCheck("Metadata contact is missing", ERROR)));
-        }
-        if (metadataPointsOfContact.size() > 1) {
-            toReturn.add(new MetadataCheck("There should be only ONE metadata contact", WARNING));
-        }
-        if (metadataPointsOfContact.stream().anyMatch(map -> fieldNotEqual(map, "role", "pointOfContact"))){
-            toReturn.add(new MetadataCheck("Metadata contact MUST have the role 'Point of Contact'", ERROR));
-        }
-        if (metadataPointsOfContact.stream().anyMatch(map -> fieldNotEqual(map, "email", "enquiries@ceh.ac.uk") && fieldNotEqual(map, "email", "eidc@ceh.ac.uk"))){
-            toReturn.add(new MetadataCheck("Metadata contact email address is neither eidc@ceh.ac.uk nor enquiries@ceh.ac.uk", WARNING));
-        }
-        if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "organisationName"))){
-            toReturn.add(new MetadataCheck("Metadata contact organisation is missing", ERROR));
-        }
-        if (metadataPointsOfContact.stream().anyMatch(map -> fieldIsMissing(map, "email"))){
-            toReturn.add(new MetadataCheck("Metadata contact email is missing", ERROR));
         }
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -239,7 +213,7 @@ public class MetadataQualityService {
         } else if (size == 1) {
             return Optional.empty();
         } else {
-            return Optional.of(new MetadataCheck("There are more than one search/information links", WARNING));
+            return Optional.of(new MetadataCheck("There are more than one search/information links", INFO));
         }
     }
 
@@ -261,8 +235,32 @@ public class MetadataQualityService {
             }
         });
         if (fieldListIsMissing(spatial, "spatialResolutions")) {
-            toReturn.add(new MetadataCheck("spatial resolutions is missing", WARNING));
+            toReturn.add(new MetadataCheck("Spatial resolution is missing", INFO));
         }
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
+    Optional<List<MetadataCheck>> checkService(DocumentContext parsed) {
+        if (notRequiredResourceTypes(parsed, "service")) {
+            return Optional.empty();
+        }
+        val requiredKeys = ImmutableSet.of("boundingBoxes","spatialReferenceSystems");
+        val toReturn = new ArrayList<MetadataCheck>();
+        checkTopicCategoriesService(parsed).ifPresent(toReturn::add);
+        checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
+        val spatial = parsed.read(
+            "$.['boundingBoxes','spatialReferenceSystems']",
+            new TypeRef<Map<String, List>>() {}
+            );
+        requiredKeys.forEach(key -> {
+            if (fieldListIsMissing(spatial, key)) {
+                toReturn.add(new MetadataCheck(key + " is missing", ERROR));
+            }
+        });
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -273,7 +271,7 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkInspireTheme(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         if (parsed.read("$.descriptiveKeywords[*][?(@.type == 'INSPIRE Theme')].type", List.class).isEmpty()) {
-            toReturn.add(new MetadataCheck("INSPIRE theme is missing", ERROR));
+            toReturn.add(new MetadataCheck("INSPIRE theme is missing", WARNING));
             return Optional.of(toReturn);
         }
         val keywords = parsed.read("$.descriptiveKeywords[*][?(@.type == 'INSPIRE Theme')].keywords[*]", typeRefStringString);
@@ -336,7 +334,7 @@ public class MetadataQualityService {
         checkAuthors(parsed).ifPresent(toReturn::addAll);
         checkTopicCategories(parsed).ifPresent(toReturn::add);
         checkDataFormat(parsed).ifPresent(toReturn::add);
-        checkPOC(parsed).ifPresent(toReturn::addAll);
+        checkPointOfContact(parsed).ifPresent(toReturn::addAll);
         checkCustodian(parsed).ifPresent(toReturn::addAll);
         checkPublisher(parsed).ifPresent(toReturn::addAll);
         checkDistributor(parsed).ifPresent(toReturn::addAll);
@@ -357,6 +355,10 @@ public class MetadataQualityService {
             "$.distributorContacts[*][?(@.role != 'distributor')].['organisationName','email']",
             typeRefStringString
         );
+        distributors.stream()
+            .filter(distributor -> fieldNotEqual(distributor, "organisationName", "Environmental Information Data Centre"))
+            .map(distributor -> distributor.getOrDefault("organisationName", "unknown"))
+            .forEach(organisationName -> toReturn.add(new MetadataCheck("Distributor name is " + organisationName, INFO)));
         checkAddress(distributors, "Distributor").ifPresent(toReturn::addAll);
         if (distributors.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE distributor", ERROR));
@@ -372,7 +374,7 @@ public class MetadataQualityService {
              distributors.stream()
             .filter(distributor -> fieldNotEqual(distributor, "email", "eidc@ceh.ac.uk"))
             .map(distributor -> distributor.getOrDefault("email", "unknown"))
-            .forEach(email -> toReturn.add(new MetadataCheck("Distributor's email address is " + email, WARNING)));
+            .forEach(email -> toReturn.add(new MetadataCheck("Distributor's email address is " + email, INFO)));
         }   
 
         if (toReturn.isEmpty()) {
@@ -398,7 +400,7 @@ public class MetadataQualityService {
         publishers.stream()
             .filter(publisher -> fieldNotEqual(publisher, "organisationName", "NERC Environmental Information Data Centre"))
             .map(publisher -> publisher.getOrDefault("organisationName", "unknown"))
-            .forEach(organisationName -> toReturn.add(new MetadataCheck("Publisher name is " + organisationName, WARNING)));
+            .forEach(organisationName -> toReturn.add(new MetadataCheck("Publisher name is " + organisationName, INFO)));
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -423,12 +425,12 @@ public class MetadataQualityService {
         custodians.stream()
             .filter(custodian -> fieldNotEqual(custodian, "organisationName", "Environmental Information Data Centre"))
             .map(custodian -> custodian.getOrDefault("organisationName", "unknown"))
-            .forEach(organisationName -> toReturn.add(new MetadataCheck("Custodian name is " + organisationName, WARNING)));
+            .forEach(organisationName -> toReturn.add(new MetadataCheck("Custodian name is " + organisationName, INFO)));
 
         custodians.stream()
             .filter(custodian -> fieldNotEqual(custodian, "email", "eidc@ceh.ac.uk"))
             .map(custodian -> custodian.getOrDefault("email", "unknown"))
-            .forEach(email -> toReturn.add(new MetadataCheck("Custodian email address is " + email, WARNING)));
+            .forEach(email -> toReturn.add(new MetadataCheck("Custodian email address is " + email, INFO)));
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -437,7 +439,7 @@ public class MetadataQualityService {
         }
     }
 
-    Optional<List<MetadataCheck>> checkPOC(DocumentContext parsed) {
+    Optional<List<MetadataCheck>> checkPointOfContact(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val pocs = parsed.read(
             "$.responsibleParties[*][?(@.role == 'pointOfContact')].['organisationName','individualName','email']",
@@ -447,13 +449,13 @@ public class MetadataQualityService {
             toReturn.add(new MetadataCheck("Point of contact is missing", ERROR));
         }
         if (pocs.size() > 1) {
-            toReturn.add(new MetadataCheck("There should be only ONE point of contact", WARNING));
+            toReturn.add(new MetadataCheck("There should be only ONE point of contact", INFO));
         }
         if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "email"))) {
             toReturn.add(new MetadataCheck("Point of contact email address is missing", ERROR));
         }
         if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "individualName"))) {
-            toReturn.add(new MetadataCheck("Point of contact name is missing", WARNING));
+            toReturn.add(new MetadataCheck("Point of contact name is missing", INFO));
         }
         if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "organisationName"))) {
             toReturn.add(new MetadataCheck("Point of contact organisation name is missing", ERROR));
@@ -478,7 +480,7 @@ public class MetadataQualityService {
             typeRefStringString
         );
         if (dataFormats.isEmpty()) {
-            return Optional.of(new MetadataCheck("Data format is missing", WARNING));
+            return Optional.of(new MetadataCheck("Data format is missing", INFO));
         }
         if (dataFormats.stream().anyMatch(format -> fieldIsMissing(format, "version"))) {
             return Optional.of(new MetadataCheck("Format version is empty", ERROR));
@@ -493,12 +495,24 @@ public class MetadataQualityService {
             typeRefStringString
             );
         if (topicCategories.isEmpty()) {
-            return Optional.of(new MetadataCheck("Topic category is missing", WARNING));
+            return Optional.of(new MetadataCheck("Topic category is missing", ERROR));
         }
         if (topicCategories.stream().anyMatch(topic -> fieldIsMissing(topic, "value"))) {
             return Optional.of(new MetadataCheck("Topic category is empty", ERROR));
         } else {
             return Optional.empty();
+        }
+    }
+
+    Optional<MetadataCheck> checkTopicCategoriesService(DocumentContext parsed) {
+        val topicCategories = parsed.read(
+            "$.topicCategories[*]",
+            typeRefStringString
+            );
+        if (topicCategories.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new MetadataCheck("Metadata contains topic categories which is incorrect for a service", ERROR));
         }
     }
 
@@ -509,10 +523,10 @@ public class MetadataQualityService {
             typeRefStringString
             );
         if (authors.size() == 0) {
-            toReturn.add(new MetadataCheck("There are no authors", WARNING));
+            toReturn.add(new MetadataCheck("There are no authors", INFO));
         }
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
-            toReturn.add(new MetadataCheck("Author's name is missing", WARNING));
+            toReturn.add(new MetadataCheck("Author's name is missing", INFO));
         }
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
             toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
@@ -545,7 +559,7 @@ public class MetadataQualityService {
     }
 
     Optional<List<MetadataCheck>> checkDownloadAndOrderLinks(DocumentContext parsed) {
-        if (!resourceStatusIsCurrent(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
+        if (!resourceStatusIsAvailable(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return Optional.empty();
         }
         
@@ -561,18 +575,18 @@ public class MetadataQualityService {
         val totalOrdersAndDownloads = orders.size() + downloads.size();
         
         if (totalOrdersAndDownloads == 0) {
-            toReturn.add(new MetadataCheck("There are no orders/downloads", ERROR));
+            toReturn.add(new MetadataCheck("There are no orders/downloads", WARNING));
         } else if (totalOrdersAndDownloads > 1) {
-            toReturn.add(new MetadataCheck("There are multiple orders/downloads", WARNING));
+            toReturn.add(new MetadataCheck("There are multiple orders/downloads", INFO));
         }
         
         if(orders.stream()
             .anyMatch(order -> fieldNotStartingWith(order, "url", "https://catalogue.ceh.ac.uk/download"))) {
-            toReturn.add(new MetadataCheck("Orders do not have a valid EIDC url", WARNING));
+            toReturn.add(new MetadataCheck("Orders do not have a valid EIDC url", INFO));
         }
         if(downloads.stream()
             .anyMatch(order -> fieldNotStartingWith(order, "url", "https://catalogue.ceh.ac.uk/datastore/eidchub/"))) {
-            toReturn.add(new MetadataCheck("Downloads do not have a valid EIDC url", WARNING));
+            toReturn.add(new MetadataCheck("Downloads do not have a valid EIDC url", INFO));
         }
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -581,15 +595,48 @@ public class MetadataQualityService {
         }
     }
 
+    Optional<List<MetadataCheck>> checkEmbargo(DocumentContext parsed) {
+        if (!resourceStatusIsEmbargoed(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
+            return Optional.empty();
+        }
+        
+        val toReturn = new ArrayList<MetadataCheck>();
+        val orders = parsed.read(
+            "$.onlineResources[*][?(@.function == 'order')]",
+            typeRefStringString
+        );
+        val downloads = parsed.read(
+            "$.onlineResources[*][?(@.function == 'download')]",
+            typeRefStringString
+        );
+        val totalOrdersAndDownloads = orders.size() + downloads.size();
+        
+        if (totalOrdersAndDownloads > 0) {
+            toReturn.add(new MetadataCheck("This resource is embargoed but it contains orders/downloads", ERROR));
+        }
+
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
+
     private boolean fieldNotStartingWith(Map<String, String> map, String key, String value) {
         return !map.containsKey(key)
             || map.get(key) == null
             || !map.get(key).startsWith(value);
     }
 
-    boolean resourceStatusIsCurrent(DocumentContext parsed) {
+    boolean resourceStatusIsAvailable(DocumentContext parsed) {
         val resourceStatus = parsed.read("$.resourceStatus", String.class);
-        return resourceStatus != null && resourceStatus.equals("Current");
+        return resourceStatus != null && resourceStatus.equals("Available");
+    }
+
+    boolean resourceStatusIsEmbargoed(DocumentContext parsed) {
+        val resourceStatus = parsed.read("$.resourceStatus", String.class);
+        return resourceStatus != null && resourceStatus.equals("Embargoed");
     }
 
     private boolean notRequiredResourceTypes(DocumentContext parsed, String... resourceTypes) {
@@ -605,7 +652,7 @@ public class MetadataQualityService {
     }
 
     public enum Severity {
-        ERROR(1), WARNING(3);
+        ERROR(1), WARNING(2), INFO(3);
 
         private final int priority;
 
@@ -648,6 +695,12 @@ public class MetadataQualityService {
                 .filter(m -> WARNING.equals(m.getSeverity()))
                 .count();
         }
+
+        public long getInfo() {
+            return problems.stream()
+                .filter(m -> INFO.equals(m.getSeverity()))
+                .count();
+        }
     }
 
     @Value
@@ -663,6 +716,12 @@ public class MetadataQualityService {
         public long getTotalWarnings() {
             return results.stream()
                 .mapToLong(Results::getWarnings)
+                .sum();
+        }
+
+        public long getTotalInfo() {
+            return results.stream()
+                .mapToLong(Results::getInfo)
                 .sum();
         }
     }

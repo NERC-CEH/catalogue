@@ -10,7 +10,7 @@
       </#if>
 
         <#if licence.uri?has_content>
-          <a href="${licence.uri}">${licenceText?html}</a>
+          <a href="${licence.uri}">${licenceText?replace("resource",recordType)?html}</a>
         <#else>
           ${licenceText?html}
         </#if>

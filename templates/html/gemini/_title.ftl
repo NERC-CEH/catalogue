@@ -44,8 +44,10 @@
     </div>
   </#if>
   
-  <#include "_status.ftl">
-
+  <#if resourceStatus??>
+    <#include "_status.ftl">
+  </#if>
+  
   <#if resourceType.value == 'signpost' >
     <div id="signpost" class="alert alert-warning" role="alert">
       <i class="fas fa-info-circle"></i>

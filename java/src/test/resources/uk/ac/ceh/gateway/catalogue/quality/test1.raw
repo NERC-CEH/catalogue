@@ -5,7 +5,7 @@
   "title": "test1",
   "description": "description of test1",
   "lineage": "lineage of test1",
-  "resourceStatus": "current",
+  "resourceStatus": "Available",
   "datasetReferenceDate": {
     "publicationDate": "2018-03-01"
   },
@@ -18,11 +18,6 @@
     {
       "begin": "1998-04-05",
       "end": "2001-12-29"
-    }
-  ],
-  "metadataPointsOfContact": [
-    {
-      "individualName": "Metadata editor 1"
     }
   ]
 }
