@@ -75,10 +75,10 @@ public class MetadataQualityService {
                 checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
                 checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
-                checkSignpost(parsedDoc).ifPresent(checks::add);
                 checkDataset(parsedDoc).ifPresent(checks::addAll);
                 checkService(parsedDoc).ifPresent(checks::addAll);
                 checkStuff(parsedDoc).ifPresent(checks::addAll);
+                checkSignpost(parsedDoc).ifPresent(checks::addAll);
                 checkDownloadAndOrderLinks(parsedDoc).ifPresent(checks::addAll);
                 checkEmbargo(parsedDoc).ifPresent(checks::addAll);
                 return new Results(checks, id);
@@ -200,22 +200,6 @@ public class MetadataQualityService {
         }
     }
 
-    Optional<MetadataCheck> checkSignpost(DocumentContext parsed) {
-        if (notRequiredResourceTypes(parsed, "signpost")) {
-            return Optional.empty();
-        }
-        val size = parsed.read(
-            "$.onlineResources[*][?(@.function in ['information', 'search'])].function",
-            List.class
-        ).size();
-        if (size < 1) {
-            return Optional.of(new MetadataCheck("Search/information link is missing", ERROR));
-        } else if (size == 1) {
-            return Optional.empty();
-        } else {
-            return Optional.of(new MetadataCheck("There are more than one search/information links", INFO));
-        }
-    }
 
     Optional<List<MetadataCheck>> checkDataset(DocumentContext parsed) {
         if (notRequiredResourceTypes(parsed, "dataset")) {
@@ -327,7 +311,7 @@ public class MetadataQualityService {
     }
 
     Optional<List<MetadataCheck>> checkStuff(DocumentContext parsed) {
-        if (notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application", "signpost")) {
+        if (notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return Optional.empty();
         }
         val toReturn = new ArrayList<MetadataCheck>();
@@ -338,6 +322,36 @@ public class MetadataQualityService {
         checkCustodian(parsed).ifPresent(toReturn::addAll);
         checkPublisher(parsed).ifPresent(toReturn::addAll);
         checkDistributor(parsed).ifPresent(toReturn::addAll);
+        checkDistributorEIDC(parsed).ifPresent(toReturn::addAll);
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
+    Optional<List<MetadataCheck>> checkSignpost(DocumentContext parsed) {
+        if (notRequiredResourceTypes(parsed, "signpost")) {
+            return Optional.empty();
+        }
+        val toReturn = new ArrayList<MetadataCheck>();
+        checkAuthors(parsed).ifPresent(toReturn::addAll);
+        checkTopicCategories(parsed).ifPresent(toReturn::add);
+        checkDataFormat(parsed).ifPresent(toReturn::add);
+        checkPointOfContact(parsed).ifPresent(toReturn::addAll);
+        checkDistributor(parsed).ifPresent(toReturn::addAll);
+        
+       val size = parsed.read(
+            "$.onlineResources[*][?(@.function in ['information', 'search'])].function",
+            List.class
+        ).size();
+        if (size < 1) {
+            toReturn.add(new MetadataCheck("Search/information link is missing", ERROR));
+        }
+        if (size > 1){
+            toReturn.add(new MetadataCheck("There are more than one search/information links", INFO));
+        } 
+        
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -355,10 +369,7 @@ public class MetadataQualityService {
             "$.distributorContacts[*][?(@.role != 'distributor')].['organisationName','email']",
             typeRefStringString
         );
-        distributors.stream()
-            .filter(distributor -> fieldNotEqual(distributor, "organisationName", "Environmental Information Data Centre"))
-            .map(distributor -> distributor.getOrDefault("organisationName", "unknown"))
-            .forEach(organisationName -> toReturn.add(new MetadataCheck("Distributor name is " + organisationName, INFO)));
+
         checkAddress(distributors, "Distributor").ifPresent(toReturn::addAll);
         if (distributors.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE distributor", ERROR));
@@ -368,14 +379,7 @@ public class MetadataQualityService {
         }
         if (distributors.stream().anyMatch(distributor -> fieldIsMissing(distributor, "email"))) {
             toReturn.add(new MetadataCheck("Distributor's email address is missing", ERROR));
-        }
-
-        if (notRequiredResourceTypes(parsed, "signpost")) {
-             distributors.stream()
-            .filter(distributor -> fieldNotEqual(distributor, "email", "eidc@ceh.ac.uk"))
-            .map(distributor -> distributor.getOrDefault("email", "unknown"))
-            .forEach(email -> toReturn.add(new MetadataCheck("Distributor's email address is " + email, INFO)));
-        }   
+        }  
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -383,6 +387,30 @@ public class MetadataQualityService {
             return Optional.of(toReturn);
         }
     }
+
+    Optional<List<MetadataCheck>> checkDistributorEIDC(DocumentContext parsed) {
+        val toReturn = new ArrayList<MetadataCheck>();
+        val distributors = parsed.read(
+            "$.distributorContacts[*][?(@.role == 'distributor')].['organisationName','email']",
+            typeRefStringString
+        );
+        distributors.stream()
+            .filter(distributor -> fieldNotEqual(distributor, "organisationName", "Environmental Information Data Centre"))
+            .map(distributor -> distributor.getOrDefault("organisationName", "unknown"))
+            .forEach(organisationName -> toReturn.add(new MetadataCheck("Distributor name is " + organisationName, INFO)));
+
+        distributors.stream()
+            .filter(distributor -> fieldNotEqual(distributor, "email", "eidc@ceh.ac.uk"))
+            .map(distributor -> distributor.getOrDefault("email", "unknown"))
+            .forEach(email -> toReturn.add(new MetadataCheck("Distributor's email address is " + email, INFO)));
+
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
 
     Optional<List<MetadataCheck>> checkPublisher(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();

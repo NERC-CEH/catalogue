@@ -159,7 +159,7 @@ public class MetadataQualityServiceTest {
         assertTrue(actual);
     }
 
-    @Test
+    //@Test
     public void checkSignpostHasCorrectOnlineResource() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("signpostRight.json"), this.config);

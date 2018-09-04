@@ -4,11 +4,11 @@
 		<gmd:scope>
 			<gmd:DQ_Scope>
 				<gmd:level>
-					<gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="${resourceType.value}">${resourceType.value}</gmd:MD_ScopeCode>
+					<gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="${recordType}">${recordType}</gmd:MD_ScopeCode>
 				</gmd:level>
 				<gmd:levelDescription>
 					<gmd:MD_ScopeDescription>
-						<gmd:other><gco:CharacterString>${resourceType.value}</gco:CharacterString></gmd:other>
+						<gmd:other><gco:CharacterString>${recordType}</gco:CharacterString></gmd:other>
 					</gmd:MD_ScopeDescription>
 				</gmd:levelDescription>
 			</gmd:DQ_Scope>
