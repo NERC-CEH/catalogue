@@ -310,8 +310,8 @@ define [
           ObjectInputView: ResourceConstraintView
           multiline: true
           predefined:
-            'Copyright - CEH':
-              value: '© Centre for Ecology &amp; Hydrology (Natural Environment Research Council)'
+            'Copyright - CEH (NERC)':
+              value: '© Centre for Ecology & Hydrology (Natural Environment Research Council)'
               code: 'copyright'
             'Copyright - NERC':
               value: '© Natural Environment Research Council'

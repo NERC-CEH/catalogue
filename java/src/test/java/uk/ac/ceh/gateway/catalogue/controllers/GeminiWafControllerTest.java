@@ -39,7 +39,7 @@ public class GeminiWafControllerTest {
     public void checkThatXmlExtensionIsAppendedToGeminiMetadataRecords() throws DataRepositoryException, IOException, PostProcessingException {
         //Given
         List<String> files = Arrays.asList("test1", "test2");
-        List<String> resourceTypes = new ArrayList<>(Arrays.asList("dataset", "service"));
+        List<String> resourceTypes = new ArrayList<>(Arrays.asList("dataset", "service", "signpost"));
         when(repo.getLatestRevision().getRevisionID()).thenReturn("latest");
         when(listingService.getPublicDocuments("latest", GeminiDocument.class, resourceTypes)).thenReturn(files);
                 

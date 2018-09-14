@@ -40,7 +40,7 @@
   <#if citation?has_content>
     <div class="doi">
       <a href="${citation.url?html}">${citation.url?html}</a>
-      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><i class="fas fa-bookmark"></i> Cite this ${codes.lookup('metadata.recordType',type)?lower_case!''}</a>
+      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><i class="fas fa-bookmark"></i> Cite this ${recordType?lower_case!''}</a>
     </div>
   </#if>
   
