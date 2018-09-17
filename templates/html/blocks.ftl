@@ -288,7 +288,7 @@ CEH model QA
 <#macro qa qa={"done": "unknown"}>
   <div>
     <#if qa.done?? && qa.done?has_content>
-      <span class="key">done</span> ${qa.done?cap_first}
+      <span class="key">done?</span> ${qa.done?cap_first}
     </#if>
     <#if qa.modelVersion?? && qa.modelVersion?has_content>
       <span class="key">model version</span> ${qa.modelVersion}
