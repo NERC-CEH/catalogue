@@ -1,5 +1,5 @@
 <div class="layerInfo">
-  <h2>Legend-ary</h2>
+  <h2>Legend</h2>
   <div class="legendContainer">
     <%=onlineResource.collection.metadataDocument.get('title')%>
     <img src="<%=getLegend()%>"/>

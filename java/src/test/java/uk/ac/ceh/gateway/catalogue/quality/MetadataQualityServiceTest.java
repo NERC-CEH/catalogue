@@ -104,30 +104,6 @@ public class MetadataQualityServiceTest {
     }
 
     @Test
-    public void successfullyCheckPointsOfContact() {
-        //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("checkPointsOfContact.json"), this.config);
-
-        //when
-        val actual = this.service.checkPointsOfContact(parsed).isPresent();
-
-        //then
-        assertFalse(actual);
-    }
-
-    @Test
-    public void unsuccessfullyCheckPointsOfContact() {
-        //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("checkAddressMissingOrganisation.json"), this.config);
-
-        //when
-        val actual = this.service.checkPointsOfContact(parsed).isPresent();
-
-        //then
-        assertTrue(actual);
-    }
-
-    @Test
     public void checkAddressOrganisationName() {
         //given
         val addresses = new ArrayList<Map<String, String>>(Arrays.asList(
@@ -183,7 +159,7 @@ public class MetadataQualityServiceTest {
         assertTrue(actual);
     }
 
-    @Test
+    //@Test
     public void checkSignpostHasCorrectOnlineResource() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("signpostRight.json"), this.config);
@@ -388,9 +364,9 @@ public class MetadataQualityServiceTest {
     }
 
     @Test
-    public void checkDownloadOrdersNotCurrent() {
+    public void checkDownloadOrdersNotAvailable() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("downloadOrdersNotCurrent.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("downloadOrdersNotAvailable.json"), this.config);
 
         //when
         val actual = this.service.checkDownloadAndOrderLinks(parsed).isPresent();
@@ -460,24 +436,24 @@ public class MetadataQualityServiceTest {
     }
 
     @Test
-    public void checkResourceStatusCurrent() {
+    public void checkResourceStatusAvailable() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("resourceStatusCurrent.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("resourceStatusAvailable.json"), this.config);
 
         //when
-        val actual = this.service.resourceStatusIsCurrent(parsed);
+        val actual = this.service.resourceStatusIsAvailable(parsed);
 
         //then
         assertTrue(actual);
     }
 
     @Test
-    public void checkResourceStatusNotCurrent() {
+    public void checkResourceStatusNotAvailable() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("resourceStatusNotCurrent.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("resourceStatusNotAvailable.json"), this.config);
 
         //when
-        val actual = this.service.resourceStatusIsCurrent(parsed);
+        val actual = this.service.resourceStatusIsAvailable(parsed);
 
         //then
         assertFalse(actual);

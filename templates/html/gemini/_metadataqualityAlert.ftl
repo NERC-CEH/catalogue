@@ -2,24 +2,35 @@
     MD_checks = metadataQuality.check(id)
     problems = MD_checks.getProblems()
     errors = MD_checks.getErrors()
+    infos =  MD_checks.getInfo()
     warnings = MD_checks.getWarnings()
     alertclass="warning"
     alerticon="exclamation"
 >
 
-<#if errors gte 1 || warnings gte 1>
+<#if errors gte 1 || warnings gte 1 || infos gte 1>
     <#if errors gte 1 >
-        <#assign alertclass="danger" alerticon="exclamation-triangle">
+        <#assign alertclass="error" alerticon="exclamation-triangle">
+    <#elseif warnings gte 1 >
+        <#assign alertclass="warning" alerticon="exclamation">
+    <#elseif infos gte 1 >
+        <#assign alertclass="info" alerticon="info-circle">
     </#if>
-    <div id="qualityAlert">
-        <div class="alert alert-${alertclass} alert-dismissible" role="alert">
+    <div id="qualityAlert" class="hidden-print">
+        <div class="alert alert-MDquality_${alertclass} alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close" title="dismiss"><span aria-hidden="true">
-                <i class="far fa-times-circle"></i>
+                <i class="fas fa-times"></i>
             </span></button>
-            <i class="fas fa-${alerticon}"></i> <b>METADATA QUALITY: </b> 
-            <#if errors gte 1>${errors} error<#if errors gt 1>s</#if></#if>
-            <#if errors gte 1 && warnings gte 1>and</#if>
-            <#if warnings gte 1>${warnings} warning<#if warnings gt 1>s</#if></#if>
+            <i class="fas fa-${alerticon}"></i> <b>METADATA QUALITY REPORT</b> 
+            <#if errors gte 1>
+                <span>${errors} error<#if errors gt 1>s</#if></span>
+            </#if>
+            <#if warnings gte 1>
+                <span>${warnings} warning<#if warnings gt 1>s</#if></span>
+            </#if>
+            <#if infos gte 1>
+                <span>${infos} other issue<#if infos gt 1>s</#if></span>
+            </#if>
             &nbsp;<a href="#section-metadataQuality">details</a>
         </div>
     </div>

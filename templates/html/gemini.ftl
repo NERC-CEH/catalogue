@@ -28,11 +28,11 @@
   <div id="metadata">
     <div class="container">
       <#if resourceType?has_content && resourceType.value !=''>
+      <#assign recordType = codes.lookup('metadata.recordType',resourceType.value)?lower_case>
       <#include "gemini/_admin.ftl">
-
-        <div id="section-Top">
-          <#include "gemini/_title.ftl">
-        </div>
+      <div id="section-Top">
+        <#include "gemini/_title.ftl">
+      </div>
 
       <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
         <#include "gemini/_metadataqualityAlert.ftl">
@@ -44,8 +44,21 @@
           <div class="row">
             <div class="col-sm-4 col-sm-push-8">
               <#include "gemini/_uploadData.ftl">
-              <#include "gemini/_distribution.ftl">
-              <#include "gemini/_reuse.ftl">
+
+              <#if resourceStatus??>
+                <#if resourceStatus == 'Restricted'>
+                  <#include "gemini/_distribution_restricted.ftl">
+                <#else>
+                  <#if resourceType.value == 'signpost'>
+                    <#include "gemini/_distribution_signpost.ftl">
+                  <#elseif resourceType.value == 'service' && mapViewable>
+                    <#include "gemini/_distribution_service.ftl">
+                  <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                    <#include "gemini/_distribution_dataset.ftl">
+                  </#if>
+                </#if>
+              </#if>
+
               <#include "gemini/_children.ftl">
               <#include "gemini/_related.ftl">
               <#include "gemini/_model.ftl">
@@ -76,6 +89,7 @@
           <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
         </div>
       </#if>
+
     </div>
   </div>
 
