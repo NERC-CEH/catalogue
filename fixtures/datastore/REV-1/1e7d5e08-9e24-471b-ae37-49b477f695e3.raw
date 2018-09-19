@@ -84,32 +84,20 @@
   ],
   "distributorContacts": [
     {
-      "organisationName": "Centre for Ecology & Hydrology",
+      "organisationName": "Environmental Information Data Centre",
       "role": "distributor",
-      "email": "datalicensing@ceh.ac.uk",
-      "address": {
-        "deliveryPoint": "Maclean Building, Benson Lane, Crowmarsh Gifford",
-        "city": "Wallingford",
-        "administrativeArea": "Oxfordshire ",
-        "postalCode": "OX10 8BB",
-        "country": "United Kingdom"
-      }
+      "email": "eidc@ceh.ac.uk"
     }
   ],
   "responsibleParties": [
     {
-      "individualName": "Morton, R.D.",
+      "individualName": "Dan Morton",
       "organisationName": "Centre for Ecology & Hydrology",
       "role": "pointOfContact",
       "email": "enquiries@ceh.ac.uk"
     },
     {
-      "organisationName": "Parr Section",
-      "role": "resourceProvider",
-      "email": "enquiries@ceh.ac.uk"
-    },
-    {
-      "organisationName": "EIDC Hub",
+      "organisationName": "Environmental Information Data Centre",
       "role": "custodian",
       "email": "eidc@ceh.ac.uk"
     },
@@ -175,13 +163,6 @@
   ],
   "onlineResources": [
     {
-      "url": "http://www.countrysidesurvey.org.uk/",
-      "name": "Countryside Survey website",
-      "description": "Countryside Survey website",
-      "function": "information",
-      "type": "OTHER"
-    },
-    {
       "url": "https://catalogue.ceh.ac.uk/download?fileIdentifier=1e7d5e08-9e24-471b-ae37-49b477f695e3",
       "name": "Dataset download",
       "description": "Link to download this dataset",
@@ -220,10 +201,12 @@
   "useConstraints": [
     {
       "value": "This resource is made available under the terms of the Open Government Licence",
+      "code": "license",
       "uri": "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain"
     },
     {
-      "value": "If you reuse this data, you must cite: Morton, R.D., Rowland, C., Wood, C., Meek, L., Marston, G., Smith, G., Wadsworth, R., Simpson, I. (2011). Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland). NERC Environmental Information Data Centre 10.5285/1e7d5e08-9e24-471b-ae37-49b477f695e3"
+      "value": "If you reuse this data, you must cite: Morton, R.D., Rowland, C., Wood, C., Meek, L., Marston, G., Smith, G., Wadsworth, R., Simpson, I. (2011). Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland). NERC Environmental Information Data Centre 10.5285/1e7d5e08-9e24-471b-ae37-49b477f695e3",
+      "code": "otherRestrictions"
     }
   ],
   "resourceType": {
