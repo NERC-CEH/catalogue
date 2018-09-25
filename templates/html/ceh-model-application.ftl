@@ -4,10 +4,13 @@
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
   <@b.metadataContainer "ceh-model">
     <@b.admin />
-    <#if title?? || projectObjectives?? || description?? || keywords?? || projectCompletionDate?? || projectWebsite?? || funderDetails?? || contactName?? || multipleModelsUsed?? || multipleModelLinkages??>
+    <#if title?? || projectCode?? || projectObjectives?? || description?? || keywords?? || projectCompletionDate?? || projectWebsite?? || funderDetails?? || contactName?? || multipleModelsUsed?? || multipleModelLinkages??>
       <@b.sectionHeading>Project Information</@b.sectionHeading>
       <#if title?? && title?has_content>
         <@b.key "Project title" "Title of project">${title}</@b.key>
+      </#if>
+      <#if projectCode?? && projectCode?has_content>
+        <@b.key "Project code" "RMS project code">${projectCode}</@b.key>
       </#if>
       <#if projectObjectives?? && projectObjectives?has_content>
         <@b.key "Project objectives" "Brief description of main objectives">
