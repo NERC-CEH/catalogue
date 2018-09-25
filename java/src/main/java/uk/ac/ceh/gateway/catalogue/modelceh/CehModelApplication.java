@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 })
 public class CehModelApplication extends AbstractMetadataDocument {
     private String
+        projectCode,
         projectObjectives,
         projectCompletionDate,
         projectWebsite,

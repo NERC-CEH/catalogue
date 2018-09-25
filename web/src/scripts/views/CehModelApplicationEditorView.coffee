@@ -41,6 +41,14 @@ define [
                     <p>Title of project</p>
                     """
 
+        new InputView
+          model: @model
+          modelAttribute: 'projectCode'
+          label: 'Project code'
+          helpText: """
+                    <p>RMS project code</p>
+                    """
+
         new TextareaView
           model: @model
           modelAttribute: 'projectObjectives'
