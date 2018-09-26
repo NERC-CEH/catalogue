@@ -207,7 +207,15 @@ public class MetadataQualityService {
         }
         val requiredKeys = ImmutableSet.of("boundingBoxes", "spatialRepresentationTypes", "spatialReferenceSystems");
         val toReturn = new ArrayList<MetadataCheck>();
-        checkInspireTheme(parsed).ifPresent(toReturn::addAll);
+        val notINSPIRE = parsed.read("notINSPIRE", boolean.class);
+        
+        if (notINSPIRE == true ) {
+            return Optional.empty();
+        } else {
+            checkInspireTheme(parsed).ifPresent(toReturn::addAll);
+        }
+
+        
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
         val spatial = parsed.read(
             "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems','spatialResolutions']",

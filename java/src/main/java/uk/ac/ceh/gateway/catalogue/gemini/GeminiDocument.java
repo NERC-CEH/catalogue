@@ -67,6 +67,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
     private String uploadId;
+    private boolean notINSPIRE;
     
     @Override
     public String getType() {

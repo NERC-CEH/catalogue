@@ -39,5 +39,6 @@
   "spatialResolutions": [
     {"distance": "11"},
     {"distance": "12"}
-  ]
+  ],
+  "notINSPIRE": false
 }

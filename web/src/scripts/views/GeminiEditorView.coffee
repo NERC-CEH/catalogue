@@ -2,6 +2,7 @@ define [
   'cs!views/EditorView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/InputView'
+  'cs!views/editor/CheckboxView'
   'cs!views/editor/ReadOnlyView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentView'
@@ -43,7 +44,7 @@ define [
   'cs!views/editor/ConformanceResultView'
   'cs!models/editor/MapDataSource'
   'cs!views/editor/MapDataSourceView'
-], (EditorView, SingleObjectView, InputView, ReadOnlyView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, ConformanceResultView, MapDataSource, MapDataSourceView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, ConformanceResultView, MapDataSource, MapDataSourceView) -> EditorView.extend
 
   initialize: ->
 
@@ -119,7 +120,7 @@ define [
                     <p>For embargoed resources, <b>Release(d)</b> is the date on which the embargo was lifted <i class='text-red'><b>or is due to be lifted</b></i>.</p>
                     <p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>
                     """
-
+        
         new InputView
           model: @model
           modelAttribute: 'version'
@@ -241,6 +242,14 @@ define [
                     <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
                     <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>
                     """
+
+        new CheckboxView
+          model: @model
+          modelAttribute: 'notINSPIRE'
+          label: 'Exclude from INSPIRE obligations'
+          helpText: """
+              <p>Tick this box to exclude this resource from INSPIRE obligations.</p><p>If the data is spatial <b>AND</b> relates to an area where an EU Member State exercises jurisdictional rights it <b>is</b> an INSPIRE resource.</p>
+              """
       ]
     ,    
       label: 'Distribution'
