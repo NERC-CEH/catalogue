@@ -14,6 +14,10 @@
     </#if>
 </b>
 
+<#if  metadata.catalogue != "eidc">
+    <#include "_licence.ftl">
+</#if>
+
 <#if signpostURLs?has_content>
     <span class="signpostURL">To access the data visit <a href="${signpostURLs?first.url}">${signpostURLs?first.url}</a></span>
 </#if>
