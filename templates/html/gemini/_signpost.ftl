@@ -5,6 +5,10 @@
     <#assign signpostDistributor = func.filter(distributorContacts, "role", "distributor")>
 </#if>
 
+<#if  metadata.catalogue != "eidc">
+    <#include "_licence.ftl">
+</#if>
+
 <b>
     This record describes <#if metadata.catalogue == "eidc">NERC-funded </#if>data managed by 
     <#if signpostDistributor?has_content>

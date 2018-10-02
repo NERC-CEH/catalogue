@@ -14,6 +14,10 @@
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
 >
+<#if useConstraints?has_content>
+  <#assign licences = func.filter(useConstraints, "code", "license")>
+</#if>
+
 
 <#macro getLabel val array>
   <#list array as item>
@@ -57,6 +61,8 @@
                     <#include "gemini/_distribution_dataset.ftl">
                   </#if>
                 </#if>
+              <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
+                 <#include "gemini/_distribution_signpost.ftl">
               </#if>
 
               <#include "gemini/_children.ftl">
