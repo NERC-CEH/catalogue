@@ -127,8 +127,8 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id("m")
-                .title("Modelling")
-                .url("http://www.ceh.ac.uk")
+                .title("Model Management")
+                .url("http://intranet.ceh.ac.uk/procedures/science-information-management/science-information-management-full-procedures/model-management-procedures")
                 .facetKey("resourceType")
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
