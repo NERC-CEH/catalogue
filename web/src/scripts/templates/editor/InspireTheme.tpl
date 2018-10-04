@@ -46,9 +46,9 @@
   </div>
   <div class="col-sm-3">
     <select class="editor-input conformity"  data-name="conformity" id="inspireTheme<%= data.index %>Conformity" class="editor-input">
-        <option value="" selected>Not assessed</option>
-        <option value="Not conformant">Not conformant</option>
+        <option value="" selected>Not evaluated</option>
         <option value="Conformant">Conformant</option>
+        <option value="Not conformant">Not conformant</option>
     </select>
   </div>
 </div>

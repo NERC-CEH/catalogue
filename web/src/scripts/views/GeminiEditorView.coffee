@@ -248,8 +248,8 @@ define [
           label: 'INSPIRE theme'
           ObjectInputView: InspireThemeView
           helpText: """
-                     <p>If the resource falls within the scope of an INSPIRE theme it must be stated here.</p>
-                     <p>Conformity is the degree to which the data conforms to the relevent INSPIRE data specification.</p>
+                     <p>If the resource falls within the scope of an INSPIRE theme it must be declared here.</p>
+                     <p>Conformity is the degree to which the <i class='text-red'>data</i> conforms to the relevant INSPIRE data specification.</p>
                     """
 
         new CheckboxView
@@ -257,7 +257,7 @@ define [
           modelAttribute: 'notGEMINI'
           label: 'Exclude from GEMINI obligations'
           helpText: """
-              <p>Tick this box to exclude this resource from GEMINI/INSPIRE obligations.</p><p class='text-red'><span class='fas fa-exclamation-triangle'>&nbsp;</span> If the data is spatial and relates to an area where an EU Member State exercises jurisdictional rights it <b>SHOULD NOT</b> be excluded.</p>
+              <p>Tick this box to exclude this resource from GEMINI/INSPIRE obligations.</p><p <b class='text-red'><span class='fas fa-exclamation-triangle'>&nbsp;</span> WARNING.  This should only be ticked if the data DOES NOT relate to an area where an EU Member State exercises jurisdictional rights</b>.</p>
               """
       ]
     ,    
