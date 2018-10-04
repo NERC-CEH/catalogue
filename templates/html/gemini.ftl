@@ -18,7 +18,6 @@
   <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
 
-
 <#macro getLabel val array>
   <#list array as item>
     <#if item['value']==val>

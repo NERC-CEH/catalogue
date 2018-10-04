@@ -121,7 +121,7 @@ define [
                     <p>For embargoed resources, <b>Release(d)</b> is the date on which the embargo was lifted <i class='text-red'><b>or is due to be lifted</b></i>.</p>
                     <p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>
                     """
-
+        
         new InputView
           model: @model
           modelAttribute: 'version'
