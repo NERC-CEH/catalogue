@@ -1,4 +1,4 @@
-<#if topicCategories?? || descriptiveKeywords??>
+<#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme??>
   <h3>Tags</h3>
   <dl id="keywords" class="dl-horizontal">
 
@@ -38,5 +38,25 @@
       </#list>
     </dd>
     </#if>
+
+    <#if inspireTheme??>
+      <dt>INSPIRE Theme</dt>
+      <dd class="descriptive-keywords">
+      <#list inspireTheme?sort_by("theme") as keyword>
+        <span>
+        <#if keyword.uri?has_content>
+          <a href="${keyword.uri?html}" target="_blank" rel="noopener noreferrer">${keyword.theme?trim}</a><#if keyword_has_next><br></#if>
+        <#else>
+          ${keyword.theme?trim}<#if keyword_has_next><br></#if>
+        </#if>
+        </span>
+      </#list>
+    </dd>
+    </#if>  
+
   </dl>
 </#if>
+
+
+
+ 

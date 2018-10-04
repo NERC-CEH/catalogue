@@ -420,41 +420,41 @@ define [
               eastBoundLongitude: 1.768
               southBoundLatitude: 49.864
               westBoundLongitude: -6.452
-              extentLabel: 'England'
+              extentName: 'England'
               extentUri: 'http://sws.geonames.org/6269131'
             'Great Britain':
               northBoundLatitude: 60.861
               eastBoundLongitude: 1.768
               southBoundLatitude: 49.864
               westBoundLongitude: -8.648
-              extentLabel: 'Great Britain'
+              extentName: 'Great Britain'
             'Northern Ireland':
               northBoundLatitude: 55.313
               eastBoundLongitude: -5.432
               southBoundLatitude: 54.022
               westBoundLongitude: -8.178
-              extentLabel: 'Northern Ireland'
+              extentName: 'Northern Ireland'
               extentUri: 'http://sws.geonames.org/2641364'
             Scotland:
               northBoundLatitude: 60.861
               eastBoundLongitude: -0.728
               southBoundLatitude: 54.634
               westBoundLongitude: -8.648
-              extentLabel: 'Scotland'
+              extentName: 'Scotland'
               extentUri: 'http://sws.geonames.org/2638360'
             'United Kingdom':
               northBoundLatitude: 60.861
               eastBoundLongitude: 1.768
               southBoundLatitude: 49.864
               westBoundLongitude: -8.648
-              extentLabel: 'United Kingdom'
+              extentName: 'United Kingdom'
               extentUri: 'http://sws.geonames.org/2635167'
             Wales:
               northBoundLatitude: 53.434
               eastBoundLongitude: -2.654
               southBoundLatitude: 51.375
               westBoundLongitude: -5.473
-              extentLabel: 'Wales'
+              extentName: 'Wales'
               extentUri: 'http://sws.geonames.org/2634895'
             World:
               northBoundLatitude: 90.00

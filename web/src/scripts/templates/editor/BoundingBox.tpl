@@ -20,7 +20,7 @@
       <div class="map" style="width: 400px; height: 400px;"></div>
     </div>
     <div class="row">
-      <span class="extentLabel"><%= data.extentLabel %></span>
+      <span class="extentName"><%= data.extentName %></span>
       <span class="extentUri"><%= data.extentUri %></span>
     </div>
   </div>

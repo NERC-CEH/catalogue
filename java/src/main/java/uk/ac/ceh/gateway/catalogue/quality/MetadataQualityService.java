@@ -223,11 +223,7 @@ public class MetadataQualityService {
             toReturn.add(new MetadataCheck("Spatial resolution is missing", INFO));
         }
         
-        if (notGEMINI ==  null) {
-            return Optional.empty();
-        } else if (notGEMINI == true) {
-            return Optional.empty();
-        } else {
+        if (notGEMINI ==  null || notGEMINI == false) {
             checkInspireTheme(parsed).ifPresent(toReturn::add);
         }
         
