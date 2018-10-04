@@ -13,7 +13,7 @@
 				</gmd:levelDescription>
 			</gmd:DQ_Scope>
 		</gmd:scope>
-		<#if conformanceResults?has_content>
+		<#--if conformanceResults?has_content>
 		<#list conformanceResults as conformanceResult>
 		<gmd:report>
 		<gmd:DQ_DomainConsistency>
@@ -49,7 +49,7 @@
 		</gmd:DQ_DomainConsistency>
 		</gmd:report>
 		</#list>
-		</#if>
+		</#if-->
 		<#if lineage?has_content>
 		<gmd:lineage>
 			<gmd:LI_Lineage>

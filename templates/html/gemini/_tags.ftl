@@ -16,29 +16,9 @@
     </dd>
     </#if>
 
-    <#--INSPIRE Themes-->
     <#if descriptiveKeywords?has_content>
-    <#assign INSPIREthemes = func.filter(descriptiveKeywords, "type", "INSPIRE Theme")>
-    <#if INSPIREthemes?has_content>
-    <#list INSPIREthemes as themes>
-      <dt>INSPIRE Theme</dt>
-      <dd class="descriptive-keywords">
-      <#list themes.keywords as theme>
-          <#if theme.uri?has_content>
-            <a href="${theme.uri?html}" target="_blank" rel="noopener noreferrer">${theme.value?trim}</a>
-          <#else>
-            ${theme.value?trim}
-          </#if>
-          <#if theme_has_next><br></#if>
-      </#list>
-      </dd>
-    </#list>
-    </#if>
-    
-    <#--MERGE ALL OTHER KEYWORDS INTO A SINGLE LIST-->
-    <#assign otherKeywords = func.filter(descriptiveKeywords, "type", "INSPIRE Theme", true)>
      <#assign allKeywords= []>
-      <#list otherKeywords as descriptiveKeyword>
+      <#list descriptiveKeywords as descriptiveKeyword>
         <#list descriptiveKeyword.keywords as keyword>
           <#assign allKeywords = allKeywords + [keyword]>
         </#list>

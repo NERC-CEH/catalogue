@@ -25,10 +25,6 @@ define [
         @$('#catalogueTopic').removeClass 'hidden'
         @$('.add').addClass 'hidden'
         @$('select.type').attr 'disabled', 'disabled'
-      else if keywordType.lastIndexOf('INSPIRE Theme', 0) == 0
-        @$('#inspireTheme').removeClass 'hidden'
-        @$('.add').addClass 'hidden'
-        @$('select.type').attr 'disabled', 'disabled'
 
     @keywords = @model.getRelatedCollection 'keywords'
     @createList @keywords, '.keywords', @addOne

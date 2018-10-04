@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import static com.google.common.base.Strings.nullToEmpty;
 import java.math.BigDecimal;
 import lombok.Value;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @JsonIgnoreProperties({"wkt"})
 public class BoundingBox {
     private final BigDecimal westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude;
+    private final String extentLabel, extentUri;
     
     @Builder
     @JsonCreator
@@ -20,12 +22,16 @@ public class BoundingBox {
         @JsonProperty("westBoundLongitude") String westBoundLongitude,
         @JsonProperty("eastBoundLongitude") String eastBoundLongitude,
         @JsonProperty("southBoundLatitude") String southBoundLatitude,
-        @JsonProperty("northBoundLatitude") String northBoundLatitude) {
+        @JsonProperty("northBoundLatitude") String northBoundLatitude,
+        @JsonProperty("extentLabel") String extentLabel,
+        @JsonProperty("extentUri") String extentUri) {
         log.debug("w: {}, e: {}, s: {}, n: {}", westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude);
         this.westBoundLongitude = new BigDecimal(westBoundLongitude);
         this.eastBoundLongitude = new BigDecimal(eastBoundLongitude);
         this.southBoundLatitude = new BigDecimal(southBoundLatitude);
         this.northBoundLatitude = new BigDecimal(northBoundLatitude);
+        this.extentLabel = nullToEmpty(extentLabel);
+        this.extentUri = nullToEmpty(extentUri);
     }
     
     public String getWkt() {

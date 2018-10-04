@@ -4,15 +4,20 @@
   },
   "descriptiveKeywords": [
     {
-      "type": "INSPIRE Theme",
       "keywords": [
         {
-          "value": "Hydrography",
-          "uri": "http://inspire.ec.europa.eu/theme/hy"
+          "value": "STAR_NOE"
         }
-      ]
-    },
-    {"type": "discipline"}
+      ],
+      "type": "project"
+    }
+  ],
+  "inspireTheme": [
+    {
+      "theme": "Bio-geographical Regions",
+      "uri": "http://inspire.ec.europa.eu/theme/br",
+      "conformity": "Not conformant"
+    }
   ],
   "boundingBoxes": [
     {
@@ -39,5 +44,6 @@
   "spatialResolutions": [
     {"distance": "11"},
     {"distance": "12"}
-  ]
+  ],
+  "notGEMINI": false
 }
