@@ -1,12 +1,12 @@
 <#escape x as x?xml>
 
 
-<#if inspireTheme??>
+<#if inspireThemes??>
   <gmd:descriptiveKeywords>
     <gmd:MD_Keywords>
-      <#list inspireTheme as inspire>
+      <#list inspireThemes as inspireTheme>
       <gmd:keyword>
-        <gco:CharacterString>${inspire.theme}</gco:CharacterString>
+        <gco:CharacterString>${inspireTheme.theme}</gco:CharacterString>
       </gmd:keyword>
       </#list>
         <gmd:type>

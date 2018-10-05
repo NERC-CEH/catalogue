@@ -41,7 +41,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<Keyword> topicCategories;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
-    private List<InspireTheme> inspireTheme;
+    private List<InspireTheme> inspireThemes;
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;

@@ -244,7 +244,7 @@ define [
         new ParentView
           model: @model
           ModelType: InspireTheme
-          modelAttribute: 'inspireTheme'
+          modelAttribute: 'inspireThemes'
           label: 'INSPIRE theme'
           ObjectInputView: InspireThemeView
           helpText: """

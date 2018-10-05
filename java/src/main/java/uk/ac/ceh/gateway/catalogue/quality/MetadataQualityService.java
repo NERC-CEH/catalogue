@@ -486,7 +486,7 @@ public class MetadataQualityService {
 
     Optional<MetadataCheck> checkInspireTheme(DocumentContext parsed) {
         val inspireTheme = parsed.read(
-            "$.inspireTheme[*]",
+            "$.inspireThemes[*]",
             typeRefStringString
         );
         if (inspireTheme.isEmpty()) {

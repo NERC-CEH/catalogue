@@ -39,15 +39,15 @@
     </dd>
     </#if>
 
-    <#if inspireTheme??>
+    <#if inspireThemes??>
       <dt>INSPIRE Theme</dt>
       <dd class="descriptive-keywords">
-      <#list inspireTheme?sort_by("theme") as keyword>
+      <#list inspireThemes?sort_by("theme") as inspireTheme>
         <span>
-        <#if keyword.uri?has_content>
-          <a href="${keyword.uri?html}" target="_blank" rel="noopener noreferrer">${keyword.theme?trim}</a><#if keyword_has_next><br></#if>
+        <#if inspireTheme.uri?has_content>
+          <a href="${inspireTheme.uri?html}" target="_blank" rel="noopener noreferrer">${inspireTheme.theme?trim}</a><#if inspireTheme_has_next><br></#if>
         <#else>
-          ${keyword.theme?trim}<#if keyword_has_next><br></#if>
+          ${inspireTheme.theme?trim}<#if inspireTheme_has_next><br></#if>
         </#if>
         </span>
       </#list>
