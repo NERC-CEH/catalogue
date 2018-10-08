@@ -22,6 +22,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -34,6 +35,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
+@Slf4j
 @Controller
 @AllArgsConstructor
 public class UploadController  {
@@ -76,7 +78,7 @@ public class UploadController  {
         @RequestParam("file") MultipartFile file
     ) throws IOException, DocumentRepositoryException {
         try {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ADDING FILE (%s) TO %s", new Date(), file.getName(), id));
+            log.info("UPLOAD CONTROLLER - ADDING FILE ({}) TO {}", new Date(), file.getName(), id);
             val document = (UploadDocument) documentRepository.read(id);
             userCanUpload(document);
             try (InputStream in = file.getInputStream()) {        
@@ -85,7 +87,7 @@ public class UploadController  {
             }
             return ResponseEntity.ok(document);
         } catch(Exception exp) {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ERROR ADDING FILE (%s) TO %s\n%s", new Date(), file.getName(), id, exp.getMessage()));
+            log.info("{} - UPLOAD CONTROLLER - ERROR ADDING FILE ({}) TO {}\n{}", new Date(), file.getName(), id, exp.getMessage());
             return ResponseEntity.status(500).body(null);
         }
     }
@@ -99,11 +101,11 @@ public class UploadController  {
         @RequestBody UploadDocument document
     ) {
         try {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - DELETING FILE (%s) FROM %s", new Date(), name, id));
+            log.info("{} - UPLOAD CONTROLLER - DELETING FILE ({}) FROM {}", new Date(), name, id);
             userCanUpload(document);
             uploadDocumentService.delete(user, document, name, filename);
         } catch (Exception exp) {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ERROR DELETING FILE (%s) FROM %s\n%s", new Date(), name, id, exp.getMessage()));
+            log.info("{} - UPLOAD CONTROLLER - ERROR DELETING FILE ({}) FROM {}\n{}", new Date(), name, id, exp.getMessage());
         }
         return ResponseEntity.ok(document);
     }
@@ -115,13 +117,13 @@ public class UploadController  {
         @RequestBody UploadDocument document
     ) throws DocumentRepositoryException {
         try {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - FINISHING %s", new Date(), id));
+            log.info("{} - UPLOAD CONTROLLER - FINISHING {}", new Date(), id);
             userCanUpload(document);
             val parentId = document.getParentId();
             transitionIssueToStartProgress(user, parentId);
             removeUploadPermission(user, parentId);
         } catch (Exception exp) {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ERROR FINISHING %s\n%s", new Date(), id, exp.getMessage()));
+            log.info("{} - UPLOAD CONTROLLER - ERROR FINISHING {}\n{}", new Date(), id, exp.getMessage());
         }
         return ResponseEntity.ok(document);
     }
@@ -166,11 +168,11 @@ public class UploadController  {
         @RequestBody UploadDocument document
     ) {
         try {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ACCEPING FILE (%s) FROM %s", new Date(), name, id));
+            log.info("{} - UPLOAD CONTROLLER - ACCEPING FILE ({}) FROM {}", new Date(), name, id);
             userCanUpload(document);
             uploadDocumentService.acceptInvalid(user, document, name, filename);
         } catch (Exception exp) {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ERROR ACCEPING FILE (%s) FROM %s\n%s", new Date(), name, id, exp.getMessage()));
+            log.info("{} - UPLOAD CONTROLLER - ERROR ACCEPING FILE ({}) FROM {}\n{}", new Date(), name, id, exp.getMessage());
         }
         return ResponseEntity.ok(document);
     }
@@ -185,11 +187,11 @@ public class UploadController  {
         @RequestBody UploadDocument document
     ){
         try {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - MOVING FILE (%s) FROM %s TO %s for %s", new Date(), from, to, id));
+            log.info("{} - UPLOAD CONTROLLER - MOVING FILE ({}) FROM {} TO {} for {}", new Date(), from, to, id);
             userCanUpload(document);
             uploadDocumentService.move(user, document, from, to, filename);
         } catch (Exception exp) {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ERROR MOVING FILE (%s) FROM %s TO %s for %s\n%s", new Date(), from, to, id, exp.getMessage()));
+            log.info("{} - UPLOAD CONTROLLER - ERROR MOVING FILE ({}) FROM {} TO {} for {}\n{}", new Date(), from, to, id, exp.getMessage());
         }
         return ResponseEntity.ok(document);
     }
@@ -201,14 +203,14 @@ public class UploadController  {
         @PathVariable("id") String id
     ) {
         try {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - VALIDATING %s", new Date(), id));
+            log.info("{} - UPLOAD CONTROLLER - VALIDATING {}", new Date(), id);
             val document = (UploadDocument) documentRepository.read(id);
             userCanUpload(document);
             UploadDocumentValidator.validate(document);
             val doc = documentRepository.save(user, document, id, String.format("Validated %s", id));
             return ResponseEntity.ok(doc);
         } catch (Exception exp) {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ERROR VALIDATING %s\n%s", new Date(), id, exp.getMessage()));
+            log.info("{} - UPLOAD CONTROLLER - ERROR VALIDATING {}\n{}", new Date(), id, exp.getMessage());
             return ResponseEntity.status(500).body(null);
         }
     }
@@ -220,11 +222,11 @@ public class UploadController  {
         @RequestBody UploadDocument document
     ) {
         try {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - MOVING TO DATASTORE %s", new Date(), id));
+            log.info("{} - UPLOAD CONTROLLER - MOVING TO DATASTORE {}", new Date(), id);
             userCanUpload(document);
             uploadDocumentService.moveToDatastore(user, document);
         } catch (Exception exp) {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ERROR MOVING TO DATASTORE %s\n%s", new Date(), id, exp.getMessage()));
+            log.info("{} - UPLOAD CONTROLLER - ERROR MOVING TO DATASTORE {}\n{}", new Date(), id, exp.getMessage());
         }
         return ResponseEntity.ok(document);
     }
@@ -236,11 +238,11 @@ public class UploadController  {
         @RequestBody UploadDocument document
     ) {
         try {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ZIPPING %s", new Date(), id));
+            log.info("{} - UPLOAD CONTROLLER - ZIPPING {}", new Date(), id);
             userCanUpload(document);
             uploadDocumentService.zip(user, document);
         } catch (Exception exp) {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ERROR ZIPPING %s\n%s", new Date(), id, exp.getMessage()));
+            log.info("{} - UPLOAD CONTROLLER - ERROR ZIPPING {}\n{}", new Date(), id, exp.getMessage());
         }
         return ResponseEntity.ok(document);
     }
@@ -252,11 +254,11 @@ public class UploadController  {
         @RequestBody UploadDocument document
     ) {
         try {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - UNZIPPING %s", new Date(), id));
+            log.info("{} - UPLOAD CONTROLLER - UNZIPPING {}", new Date(), id);
             userCanUpload(document);
             uploadDocumentService.unzip(user, document);
         } catch (Exception exp) {
-            System.out.println(String.format("%s - UPLOAD CONTROLLER - ERROR UNZIPPING %s\n%s", new Date(), id, exp.getMessage()));
+            log.info("{} - UPLOAD CONTROLLER - ERROR UNZIPPING {}\n{}", new Date(), id, exp.getMessage());
         }
         return ResponseEntity.ok(document);
     }
