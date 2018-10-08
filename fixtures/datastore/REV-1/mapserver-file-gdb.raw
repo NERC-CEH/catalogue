@@ -46,20 +46,6 @@
       "northBoundLatitude": 56.12
     }
   ],
-  "metadataPointsOfContact": [
-    {
-      "organisationName": "Centre for Ecology & Hydrology",
-      "role": "pointOfContact",
-      "email": "enquiries@ceh.ac.uk",
-      "address": {
-        "deliveryPoint": "Lancaster Environment Centre, Library Avenue, Bailrigg",
-        "city": "Lancaster",
-        "administrativeArea": "Lancashire",
-        "postalCode": "LA1 4AP",
-        "country": "United Kingdom"
-      }
-    }
-  ],
   "distributorContacts": [
     {
       "organisationName": "Centre for Ecology & Hydrology",

@@ -145,41 +145,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Then
         assertThat("Distributor 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
-    
-    @Test
-    public void canGetMetadataPointsOfContact() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("responsibleParty.xml"));
-        List<ResponsibleParty> expected = Arrays.asList(
-            ResponsibleParty.builder()
-                .organisationName("Shore Section")
-                .role("pointOfContact")
-                .email("enquiries@ceh.ac.uk")
-                .address(Address.builder().build())
-                .build(),
-            ResponsibleParty.builder()
-                .organisationName("Centre for Ecology & Hydrology")
-                .role("pointOfContact")
-                .email("enquiries@ceh.ac.uk")
-                .address(Address.builder()
-                    .deliveryPoint("Maclean Building, Benson Lane, Crowmarsh Gifford")
-                    .city("Wallingford")
-                    .administrativeArea("Oxfordshire")
-                    .postalCode("OX10 8BB")
-                    .country("UK")
-                    .build()
-                ).build()
-        );
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<ResponsibleParty> actual = document.getMetadataPointsOfContact();
-        
-        //Then
-        assertThat("PointOfContact 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
+       
     @Test
     public void canGetTimeExtent() throws IOException {
         //Given
@@ -264,22 +230,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Then
         assertThat("DistributionInfo 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
-    
-    @Test
-    public void canNotGetResourceStatus() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("browseGraphicUrl.xml"));
-        String expected = null;
         
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getResourceStatus();
-        
-        //Then
-        assertThat("resourceStatus 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
     @Test
     public void canGetBrowseGraphicUrl() throws IOException {
         //Given
@@ -467,32 +418,6 @@ public class Xml2GeminiDocumentMessageConverterTest {
         assertThat("Actual useConstraints should equal expected", actual, equalTo(expected));
     }
     
-    @Test
-    public void canGetAccessConstraints() throws IOException {
-       
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
-        List<ResourceConstraint> expected = Arrays.asList(
-            ResourceConstraint.builder()
-                .uri("http://example.com/1")
-                .code("copyright")
-                .value("description")
-                .build(),
-            ResourceConstraint.builder()
-                .uri("http://example.com/2")
-                .code("intellectualPropertyRights")
-                .value("limitations on public access")
-                .build()
-        );
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<ResourceConstraint> actual = document.getAccessConstraints();
-        
-        //Then
-        assertThat("Actual accessConstraints should equal expected", actual, equalTo(expected));
-    }
     
     @Test
     public void canGetSecurityConstraints() throws IOException {

@@ -7,6 +7,7 @@ define [
   'cs!views/editor/KeywordView'
   'cs!views/editor/SelectView'
   'cs!views/editor/ReferenceView'
+  'cs!models/editor/Reference'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/QaView'
   'cs!views/editor/VersionHistoryView'
@@ -19,10 +20,11 @@ define [
   ParentStringView,
   KeywordView,
   SelectView,
-  ReferenceView
-  SingleObjectView
-  QaView
-  VersionHistoryView
+  ReferenceView,
+  Reference,
+  SingleObjectView,
+  QaView,
+  VersionHistoryView,
   ProjectUsageView
 ) -> EditorView.extend
 
@@ -116,13 +118,14 @@ define [
       views: [
         new ParentView
           model: @model
+          ModelType: Reference
           modelAttribute: 'references'
           label: 'References'
           ObjectInputView: ReferenceView
           multiline: true
           helpText: """
-                    <p>Citation - Add publication citation here</p>
-                    <p>DOI - DOI link for the citation e.g. http://dx.doi.org/10.1179/2042349715Y.0000000010</p>
+                    <p>Citation - Add publication citations here</p>
+                    <p>DOI - DOI link for the citation e.g. https://doi.org/10.1111/journal-id.1882</p>
                     <p>NORA - NORA links of the citation e.g. http://nora.nerc.ac.uk/513147/</p>
                     """
       ]
@@ -180,6 +183,7 @@ define [
         new InputView
           model: @model
           modelAttribute: 'releaseDate'
+          typeAttribute: 'date'
           label: 'Release date'
           helpText: """
                     <p>Date of release of current model version (if applicable) e.g. 2012-02-17</p>
@@ -270,9 +274,6 @@ define [
           model: @model
           modelAttribute: 'documentation'
           label: 'Documentation url'
-          helpText: """
-                    <p>Memory required to run code (if known)</p>
-                    """
       ]
     ,
       label: 'QA Info'

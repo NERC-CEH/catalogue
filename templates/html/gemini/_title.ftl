@@ -40,12 +40,14 @@
   <#if citation?has_content>
     <div class="doi">
       <a href="${citation.url?html}">${citation.url?html}</a>
-      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><i class="fas fa-bookmark"></i> Cite this ${codes.lookup('metadata.recordType',type)?lower_case!''}</a>
+      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><i class="fas fa-bookmark"></i> Cite this ${recordType?lower_case!''}</a>
     </div>
   </#if>
   
-  <#include "_status.ftl">
-
+  <#if resourceStatus??>
+    <#include "_status.ftl">
+  </#if>
+  
   <#if resourceType.value == 'signpost' >
     <div id="signpost" class="alert alert-warning" role="alert">
       <i class="fas fa-info-circle"></i>

@@ -6,6 +6,7 @@ define [
   'cs!views/editor/ParentStringView'
   'cs!views/editor/KeywordView'
   'cs!views/editor/ReferenceView'
+  'cs!models/editor/Reference'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/DataInfoView'
   'cs!views/editor/ModelInfoView'
@@ -16,9 +17,10 @@ define [
   ParentView,
   ParentStringView,
   KeywordView,
-  ReferenceView
-  SingleObjectView
-  DataInfoView
+  ReferenceView,
+  Reference,
+  SingleObjectView,
+  DataInfoView,
   ModelInfoView
 ) -> EditorView.extend
 
@@ -37,6 +39,14 @@ define [
           label: 'Project title'
           helpText: """
                     <p>Title of project</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'projectCode'
+          label: 'Project code'
+          helpText: """
+                    <p>RMS project code</p>
                     """
 
         new TextareaView
@@ -132,13 +142,14 @@ define [
       views: [
         new ParentView
           model: @model
+          ModelType: Reference
           modelAttribute: 'references'
           label: 'References'
           ObjectInputView: ReferenceView
           multiline: true
           helpText: """
-                    <p>Citation - Add publication citation here</p>
-                    <p>DOI - DOI link for the citation e.g. http://dx.doi.org/10.1179/2042349715Y.0000000010</p>
+                    <p>Citation - Add publication citations here</p>
+                    <p>DOI - DOI link for the citation e.g. https://doi.org/10.1111/journal-id.1882</p>
                     <p>NORA - NORA links of the citation e.g. http://nora.nerc.ac.uk/513147/</p>
                     """
       ]

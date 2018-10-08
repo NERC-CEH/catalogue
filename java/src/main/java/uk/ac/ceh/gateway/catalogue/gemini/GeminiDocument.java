@@ -1,12 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_SCHEMAORG_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_TTL_VALUE;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.springframework.http.MediaType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
@@ -14,12 +29,6 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
-import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
 @Data 
 @EqualsAndHashCode(callSuper = true)
@@ -33,7 +42,7 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 })
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
-    private String otherCitationDetails, browseGraphicUrl, resourceStatus, lineage, reasonChanged,
+    private String otherCitationDetails, browseGraphicUrl, lineage, reasonChanged,
         metadataStandardName, metadataStandardVersion, parentIdentifier, revisionOfIdentifier;
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
@@ -45,7 +54,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
-    private List<ResponsibleParty> metadataPointsOfContact;
     private List<ResponsibleParty> distributorContacts;
     private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> temporalExtents;
@@ -63,15 +71,22 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private DatasetReferenceDate datasetReferenceDate;
     private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
-    private List<ResourceConstraint> accessConstraints, useConstraints;
+    private List<ResourceConstraint> useConstraints;
     private MapDataDefinition mapDataDefinition;
     private Keyword resourceType;
+    private AccessLimitation accessLimitation;
     
     @Override
     public String getType() {
         return Optional.ofNullable(resourceType)
             .map(Keyword::getValue)
             .orElse("");
+    }
+
+    public String getResourceStatus() {
+        return Optional.ofNullable(accessLimitation)
+            .map(AccessLimitation::getCode)
+            .orElse(null);
     }
     
     @Override
