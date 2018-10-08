@@ -1,38 +1,29 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_VALUE;
-
-import java.io.IOException;
-import java.io.InputStream;
-
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
-
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_VALUE;
+
+@Slf4j
 @Controller
 @AllArgsConstructor
 public class UploadController  {
@@ -74,13 +65,19 @@ public class UploadController  {
         @PathVariable("id") String id,
         @RequestParam("file") MultipartFile file
     ) throws IOException, DocumentRepositoryException {
-        val document = (UploadDocument) documentRepository.read(id);
-        userCanUpload(document);
-        try (InputStream in = file.getInputStream()) {        
-            val filename = file.getOriginalFilename();
-            uploadDocumentService.add(user, document, filename, in);
+        try {
+            log.info("ADDING FILE ({}) TO {}", file.getName(), id);
+            val document = (UploadDocument) documentRepository.read(id);
+            userCanUpload(document);
+            try (InputStream in = file.getInputStream()) {        
+                val filename = file.getOriginalFilename();
+                uploadDocumentService.add(user, document, filename, in);
+            }
+            return ResponseEntity.ok(document);
+        } catch(Exception exp) {
+            log.error("ERROR ADDING FILE ({}) TO {} - {}", file.getName(), id, exp.getMessage());
+            return ResponseEntity.status(500).body(null);
         }
-        return ResponseEntity.ok(document);
     }
 
     @RequestMapping(value = "documents/{id}/delete-upload-file", method = RequestMethod.PUT, consumes = UPLOAD_DOCUMENT_JSON_VALUE)
@@ -91,8 +88,13 @@ public class UploadController  {
         @RequestParam("filename") String filename,
         @RequestBody UploadDocument document
     ) {
-        userCanUpload(document);
-        uploadDocumentService.delete(user, document, name, filename);
+        try {
+            log.info("DELETING FILE ({}) FROM {}", name, id);
+            userCanUpload(document);
+            uploadDocumentService.delete(user, document, name, filename);
+        } catch (Exception exp) {
+            log.error("ERROR DELETING FILE ({}) FROM {} - {}", name, id, exp.getMessage());
+        }
         return ResponseEntity.ok(document);
     }
 
@@ -102,10 +104,15 @@ public class UploadController  {
         @PathVariable("id") String id,
         @RequestBody UploadDocument document
     ) throws DocumentRepositoryException {
-        userCanUpload(document);
-        val parentId = document.getParentId();
-        transitionIssueToStartProgress(user, parentId);
-        removeUploadPermission(user, parentId);
+        try {
+            log.info("FINISHING {}", id);
+            userCanUpload(document);
+            val parentId = document.getParentId();
+            transitionIssueToStartProgress(user, parentId);
+            removeUploadPermission(user, parentId);
+        } catch (Exception exp) {
+            log.error("ERROR FINISHING {} - {}", id, exp.getMessage());
+        }
         return ResponseEntity.ok(document);
     }
 
@@ -148,8 +155,13 @@ public class UploadController  {
         @RequestParam("filename") String filename,
         @RequestBody UploadDocument document
     ) {
-        userCanUpload(document);
-        uploadDocumentService.acceptInvalid(user, document, name, filename);
+        try {
+            log.info("ACCEPING FILE ({}) FROM {}", name, id);
+            userCanUpload(document);
+            uploadDocumentService.acceptInvalid(user, document, name, filename);
+        } catch (Exception exp) {
+            log.error("ERROR ACCEPING FILE ({}) FROM {} - {}", name, id, exp.getMessage());
+        }
         return ResponseEntity.ok(document);
     }
 
@@ -162,8 +174,13 @@ public class UploadController  {
         @RequestParam("filename") String filename,
         @RequestBody UploadDocument document
     ){
-        userCanUpload(document);
-        uploadDocumentService.move(user, document, from, to, filename);
+        try {
+            log.info("MOVING FILE ({}) FROM {} TO {} for {}", filename, from, to, id);
+            userCanUpload(document);
+            uploadDocumentService.move(user, document, from, to, filename);
+        } catch (Exception exp) {
+            log.error("ERROR MOVING FILE ({}) FROM {} TO {} for {} - {}", filename, from, to, id, exp.getMessage());
+        }
         return ResponseEntity.ok(document);
     }
 
@@ -173,11 +190,17 @@ public class UploadController  {
         @ActiveUser CatalogueUser user,
         @PathVariable("id") String id
     ) {
-        val document = (UploadDocument) documentRepository.read(id);
-        userCanUpload(document);
-        UploadDocumentValidator.validate(document);
-        val doc = documentRepository.save(user, document, id, String.format("Validated %s", id));
-        return ResponseEntity.ok(doc);
+        try {
+            log.info("VALIDATING {}", id);
+            val document = (UploadDocument) documentRepository.read(id);
+            userCanUpload(document);
+            UploadDocumentValidator.validate(document);
+            val doc = documentRepository.save(user, document, id, String.format("Validated %s", id));
+            return ResponseEntity.ok(doc);
+        } catch (Exception exp) {
+            log.error("ERROR VALIDATING {} - {}", id, exp.getMessage());
+            return ResponseEntity.status(500).body(null);
+        }
     }
 
     @RequestMapping(value = "documents/{id}/move-to-datastore", method = RequestMethod.PUT, consumes = UPLOAD_DOCUMENT_JSON_VALUE)
@@ -186,8 +209,13 @@ public class UploadController  {
         @PathVariable("id") String id,
         @RequestBody UploadDocument document
     ) {
-        userCanUpload(document);
-        uploadDocumentService.moveToDatastore(user, document);
+        try {
+            log.info("MOVING TO DATASTORE {}", id);
+            userCanUpload(document);
+            uploadDocumentService.moveToDatastore(user, document);
+        } catch (Exception exp) {
+            log.error("ERROR MOVING TO DATASTORE {} - {}", id, exp.getMessage());
+        }
         return ResponseEntity.ok(document);
     }
 
@@ -197,8 +225,13 @@ public class UploadController  {
         @PathVariable("id") String id,
         @RequestBody UploadDocument document
     ) {
-        userCanUpload(document);
-        uploadDocumentService.zip(user, document);
+        try {
+            log.info("ZIPPING {}", id);
+            userCanUpload(document);
+            uploadDocumentService.zip(user, document);
+        } catch (Exception exp) {
+            log.error("ERROR ZIPPING {} - {}", id, exp.getMessage());
+        }
         return ResponseEntity.ok(document);
     }
 
@@ -208,8 +241,13 @@ public class UploadController  {
         @PathVariable("id") String id,
         @RequestBody UploadDocument document
     ) {
-        userCanUpload(document);
-        uploadDocumentService.unzip(user, document);
+        try {
+            log.info("UNZIPPING {}", id);
+            userCanUpload(document);
+            uploadDocumentService.unzip(user, document);
+        } catch (Exception exp) {
+            log.error("ERROR UNZIPPING {} - {}", id, exp.getMessage());
+        }
         return ResponseEntity.ok(document);
     }
 }
