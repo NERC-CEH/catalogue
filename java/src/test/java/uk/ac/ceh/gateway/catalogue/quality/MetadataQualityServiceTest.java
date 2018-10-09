@@ -460,42 +460,6 @@ public class MetadataQualityServiceTest {
     }
 
     @Test
-    public void checkInspireThemeCorrect() {
-        //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("inspireCorrect.json"), this.config);
-
-        //when
-        val actual = this.service.checkInspireTheme(parsed).isPresent();
-
-        //then
-        assertFalse(actual);
-    }
-
-    @Test
-    public void checkInspireThemeWrong() {
-        //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("inspireWrong.json"), this.config);
-
-        //when
-        val actual = this.service.checkInspireTheme(parsed).isPresent();
-
-        //then
-        assertTrue(actual);
-    }
-
-    @Test
-    public void checkInspireThemeKeywordWrong() {
-        //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("inspireKeywordWrong.json"), this.config);
-
-        //when
-        val actual = this.service.checkInspireTheme(parsed).isPresent();
-
-        //then
-        assertTrue(actual);
-    }
-
-    @Test
     public void checkBoundingBoxesWrong() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("boundingBoxWrong.json"), this.config);

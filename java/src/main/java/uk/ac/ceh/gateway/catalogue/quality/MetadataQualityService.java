@@ -206,8 +206,9 @@ public class MetadataQualityService {
             return Optional.empty();
         }
         val requiredKeys = ImmutableSet.of("boundingBoxes", "spatialRepresentationTypes", "spatialReferenceSystems");
+        Boolean notGEMINI = parsed.read("$.notGEMINI", boolean.class);
         val toReturn = new ArrayList<MetadataCheck>();
-        checkInspireTheme(parsed).ifPresent(toReturn::addAll);
+       
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
         val spatial = parsed.read(
             "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems','spatialResolutions']",
@@ -221,6 +222,11 @@ public class MetadataQualityService {
         if (fieldListIsMissing(spatial, "spatialResolutions")) {
             toReturn.add(new MetadataCheck("Spatial resolution is missing", INFO));
         }
+        
+        if (notGEMINI ==  null || notGEMINI == false) {
+            checkInspireTheme(parsed).ifPresent(toReturn::add);
+        }
+        
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -245,30 +251,6 @@ public class MetadataQualityService {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
             }
         });
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
-    }
-
-    Optional<List<MetadataCheck>> checkInspireTheme(DocumentContext parsed) {
-        val toReturn = new ArrayList<MetadataCheck>();
-        if (parsed.read("$.descriptiveKeywords[*][?(@.type == 'INSPIRE Theme')].type", List.class).isEmpty()) {
-            toReturn.add(new MetadataCheck("INSPIRE theme is missing", WARNING));
-            return Optional.of(toReturn);
-        }
-        val keywords = parsed.read("$.descriptiveKeywords[*][?(@.type == 'INSPIRE Theme')].keywords[*]", typeRefStringString);
-        if (keywords.size() == 0) {
-            toReturn.add(new MetadataCheck("INSPIRE theme is empty", ERROR));
-            return Optional.of(toReturn);
-        }
-        if (keywords.stream().anyMatch(map -> fieldNotStartingWith(map, "uri", "http://inspire.ec.europa.eu/theme/"))) {
-            toReturn.add(new MetadataCheck("INSPIRE theme does not have correct URI", ERROR));
-        }
-        if (keywords.stream().anyMatch(map -> fieldIsMissing(map, "uri"))) {
-            toReturn.add(new MetadataCheck("INSPIRE theme does not have a URI", ERROR));
-        }
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -500,6 +482,18 @@ public class MetadataQualityService {
         return !map.containsKey(key)
             || map.get(key) == null
             || !map.get(key).equals(value);
+    }
+
+    Optional<MetadataCheck> checkInspireTheme(DocumentContext parsed) {
+        val inspireTheme = parsed.read(
+            "$.inspireThemes[*]",
+            typeRefStringString
+        );
+        if (inspireTheme.isEmpty()) {
+            return Optional.of(new MetadataCheck("INSPIRE Theme is missing", WARNING));
+        } else {
+            return Optional.empty();
+        }
     }
 
     Optional<MetadataCheck> checkDataFormat(DocumentContext parsed) {

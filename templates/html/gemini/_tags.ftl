@@ -1,4 +1,4 @@
-<#if topicCategories?? || descriptiveKeywords??>
+<#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme??>
   <h3>Tags</h3>
   <dl id="keywords" class="dl-horizontal">
 
@@ -16,29 +16,9 @@
     </dd>
     </#if>
 
-    <#--INSPIRE Themes-->
     <#if descriptiveKeywords?has_content>
-    <#assign INSPIREthemes = func.filter(descriptiveKeywords, "type", "INSPIRE Theme")>
-    <#if INSPIREthemes?has_content>
-    <#list INSPIREthemes as themes>
-      <dt>INSPIRE Theme</dt>
-      <dd class="descriptive-keywords">
-      <#list themes.keywords as theme>
-          <#if theme.uri?has_content>
-            <a href="${theme.uri?html}" target="_blank" rel="noopener noreferrer">${theme.value?trim}</a>
-          <#else>
-            ${theme.value?trim}
-          </#if>
-          <#if theme_has_next><br></#if>
-      </#list>
-      </dd>
-    </#list>
-    </#if>
-    
-    <#--MERGE ALL OTHER KEYWORDS INTO A SINGLE LIST-->
-    <#assign otherKeywords = func.filter(descriptiveKeywords, "type", "INSPIRE Theme", true)>
      <#assign allKeywords= []>
-      <#list otherKeywords as descriptiveKeyword>
+      <#list descriptiveKeywords as descriptiveKeyword>
         <#list descriptiveKeyword.keywords as keyword>
           <#assign allKeywords = allKeywords + [keyword]>
         </#list>
@@ -58,5 +38,25 @@
       </#list>
     </dd>
     </#if>
+
+    <#if inspireThemes??>
+      <dt>INSPIRE Theme</dt>
+      <dd class="descriptive-keywords">
+      <#list inspireThemes?sort_by("theme") as inspireTheme>
+        <span>
+        <#if inspireTheme.uri?has_content>
+          <a href="${inspireTheme.uri?html}" target="_blank" rel="noopener noreferrer">${inspireTheme.theme?trim}</a><#if inspireTheme_has_next><br></#if>
+        <#else>
+          ${inspireTheme.theme?trim}<#if inspireTheme_has_next><br></#if>
+        </#if>
+        </span>
+      </#list>
+    </dd>
+    </#if>  
+
   </dl>
 </#if>
+
+
+
+ 

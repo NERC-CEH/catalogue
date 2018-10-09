@@ -1,5 +1,5 @@
-<#if useConstraints?has_content>
-  <#list useConstraints as licence>
+<#if licences?has_content>
+  <#list licences as licence>
     <#if licence.code == 'license'>
       <p class="licenceText">
 

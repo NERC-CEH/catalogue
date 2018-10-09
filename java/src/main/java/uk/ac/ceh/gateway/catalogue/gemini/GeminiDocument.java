@@ -41,7 +41,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<Keyword> topicCategories;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
-    private List<ConformanceResult> conformanceResults;
+    private List<InspireTheme> inspireThemes;
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
@@ -67,6 +67,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
     private String uploadId;
+    private boolean notGEMINI;
     
     @Override
     public String getType() {

@@ -21,7 +21,7 @@
             <button type="button" class="close" data-dismiss="alert" aria-label="Close" title="dismiss"><span aria-hidden="true">
                 <i class="fas fa-times"></i>
             </span></button>
-            <i class="fas fa-${alerticon}"></i> <b>METADATA QUALITY REPORT</b> 
+            <i class="fas fa-${alerticon}"></i> <b>METADATA QUALITY</b> 
             <#if errors gte 1>
                 <span>${errors} error<#if errors gt 1>s</#if></span>
             </#if>
@@ -29,7 +29,7 @@
                 <span>${warnings} warning<#if warnings gt 1>s</#if></span>
             </#if>
             <#if infos gte 1>
-                <span>${infos} other issue<#if infos gt 1>s</#if></span>
+                <span>${infos} issue<#if infos gt 1>s</#if></span>
             </#if>
             &nbsp;<a href="#section-metadataQuality">details</a>
         </div>
