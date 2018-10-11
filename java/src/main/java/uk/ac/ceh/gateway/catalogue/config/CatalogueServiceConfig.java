@@ -191,7 +191,7 @@ public class CatalogueServiceConfig {
             Catalogue.builder()
                 .id(defaultCatalogueKey)
                 .title("Environmental Information Data Centre")
-                .url("http://eidc.ceh.ac.uk")
+                .url("/eidc/documents")
                 .facetKey("topic")
                 .facetKey("recordType")
                 .facetKey("status")
