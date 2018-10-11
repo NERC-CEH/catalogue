@@ -64,11 +64,11 @@
               <li><a href="http://eidc.ceh.ac.uk/help">Help</a></li>
             <#else>
               <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Search</a></li>
-              <#if catalogue.url?? && catalogue.url == "">
-                <li><h3 class="navbar-text navbar-title">${catalogue.title?html}</h3></li>
-              <#else>
-                <li><a href="${catalogue.url!'/'?html}">${catalogue.title?html}</a></li>
-              </#if>
+            </#if>
+            <#if catalogue.url?? && catalogue.url == "">
+              <li><h3 class="navbar-text navbar-title">${catalogue.title?html}</h3></li>
+            <#else>
+              <li><a href="${catalogue.url!'/'?html}">${catalogue.title?html}</a></li>
             </#if>
           </#if>
           </ul>
