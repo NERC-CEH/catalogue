@@ -66,7 +66,7 @@ public class BrowserTest {
     @SneakyThrows
     public void getPermissionPage() {
         //given
-        String expectedTitle = "Permissions - Environmental Information Data Centre";
+        String expectedTitle = "Permissions - EIDC";
 
         //when
         driver.get(format("http://%s:%s/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/permission", webHost, webPort));
