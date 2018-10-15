@@ -190,7 +190,7 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id(defaultCatalogueKey)
-                .title("Environmental Information Data Centre")
+                .title("EIDC")
                 .url("/eidc/documents")
                 .facetKey("topic")
                 .facetKey("recordType")
