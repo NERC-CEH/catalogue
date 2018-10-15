@@ -51,7 +51,7 @@ public class BrowserTest {
     @SneakyThrows
     public void getPublicationPage() {
         //given
-        String expectedTitle = "Publication - Environmental Information Data Centre";
+        String expectedTitle = "Publication - EIDC";
 
         //when
         driver.get(format("http://%s:%s/documents/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/publication", webHost, webPort));
