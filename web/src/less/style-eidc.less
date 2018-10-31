@@ -6,6 +6,41 @@
 @panel-default-text: @header-text;
 .text-red {color:#EE0000;}
 
+.datatype {
+    .admin {
+        margin-top:1em;
+    };
+    .schemaItem {
+        border-bottom: 1px solid #eee;
+        margin:0.5em;
+        padding:0.5em;
+    };
+    .section {
+        margin-top:3em;
+        .section-content {
+            margin-left:4em;
+        };
+    };
+    .section-schema {
+        .table-schema {
+            .table-condensed;
+        };
+    };
+    .section-provenance {
+        display: table ;
+        div {
+            display:table-row ;
+            span:first-child {
+               font-weight: bold;
+               text-align: right;
+            };
+            span {
+                display:table-cell;
+                padding: 0.35em 1em ;
+            }
+        }
+    }
+}
 
 /*Change menu collapse breakpoint */
 @media (max-width: 900px) {
