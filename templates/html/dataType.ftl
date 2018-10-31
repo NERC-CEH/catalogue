@@ -31,70 +31,87 @@
       </#if>
 
       <#if schema??>
-      <h1 class="section-heading">Schema</h1>
-      <table class="table table-schema">
-      <thead>
+      <div class="section section-schema">
+        <h2 class="section-heading">Schema</h2>
+        <div class="section-content">
+        <table class="table table-schema">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Constraints</th>
+          </tr>
+        </thead>
+        <tbody>
+        <#list schema as schemaItem>
         <tr>
-          <th>Field</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Constraints</th>
-        </tr>
-      </thead>
-      <tbody>
-      <#list schema as schemaItem>
-      <tr>
-        <td nowrap="nowrap">
-          <#if schemaItem.name?? && schemaItem.name?has_content>
-            ${schemaItem.name}
-          </#if>
-        </td>
-        <td nowrap="nowrap">
-          <#if schemaItem.type?? && schemaItem.type?has_content>
-              ${schemaItem.type}
-              <#if schemaItem.format?? && schemaItem.format?has_content>
-                <span class="schema-format">(${schemaItem.format})</span>
-              </#if>          
-          </#if>
-        </td>
-        <td>
-          <#if schemaItem.description?? && schemaItem.description?has_content>
-            <span class="schema-description">${schemaItem.description}</span>
-          <#else>
-            <span class="nodata" />
-          </#if>
-        </td>
-        <td>
-          <#if schemaItem.constraints?? && schemaItem.constraints?has_content>
-            <span class="schema-constraints">
-              <#if schemaItem.constraints.minimum?has_content>Minimum : ${schemaItem.constraints.minimum}<br></#if>
-              <#if schemaItem.constraints.maximum?has_content>Maximum : ${schemaItem.constraints.maximum}<br></#if>
-              <#if schemaItem.constraints.minLength?has_content>Minimum length : ${schemaItem.constraints.minLength}<br></#if>
-              <#if schemaItem.constraints.maxLength?has_content>Maximum length : ${schemaItem.constraints.maxLength}<br></#if>
-              <#if schemaItem.constraints.unique=true><small class="far fa-check-circle text-success"></small> Is unique</#if>
-            </span>
-          <#else>
-            <span class="nodata" />
-          </#if>
-        </td>
-      </tr>    
-      </#list>
-      </tbody></table>
+          <td nowrap="nowrap">
+            <#if schemaItem.name?? && schemaItem.name?has_content>
+              ${schemaItem.name}
+            </#if>
+          </td>
+          <td nowrap="nowrap">
+            <#if schemaItem.type?? && schemaItem.type?has_content>
+                ${schemaItem.type}
+                <#if schemaItem.format?? && schemaItem.format?has_content>
+                  <span class="schema-format">(${schemaItem.format})</span>
+                </#if>          
+            </#if>
+          </td>
+          <td>
+            <#if schemaItem.description?? && schemaItem.description?has_content>
+              <span class="schema-description">${schemaItem.description}</span>
+            <#else>
+              <span class="nodata" />
+            </#if>
+          </td>
+          <td>
+            <#if schemaItem.constraints?? && schemaItem.constraints?has_content>
+              <span class="schema-constraints">
+                <#if schemaItem.constraints.minimum?has_content>Minimum : ${schemaItem.constraints.minimum}<br></#if>
+                <#if schemaItem.constraints.maximum?has_content>Maximum : ${schemaItem.constraints.maximum}<br></#if>
+                <#if schemaItem.constraints.minLength?has_content>Minimum length : ${schemaItem.constraints.minLength}<br></#if>
+                <#if schemaItem.constraints.maxLength?has_content>Maximum length : ${schemaItem.constraints.maxLength}<br></#if>
+                <#if schemaItem.constraints.unique=true><small class="far fa-check-circle text-success"></small> Is unique</#if>
+              </span>
+            <#else>
+              <span class="nodata" />
+            </#if>
+          </td>
+        </tr>    
+        </#list>
+        </tbody></table>
+        </div>
+      </div>
       </#if>
 
       <#if provenance??>
+      <div class="section section-provenance">
         <#if provenance.creationDate?has_content || provenance.modificationDate?has_content || provenance.contributors?has_content >
-          <h1 class="section-heading">Provenance</h1>
+          <h2 class="section-heading">Provenance</h2>
+          <div class="section-content">
           <#if provenance.creationDate?? && provenance.creationDate?has_content>
-            <div><p>Created: ${provenance.creationDate}</p></div>
+            <div>
+              <span>Created</span>
+              <span title="${provenance.creationDate?date?string['dd MMMM yyyy']} ${provenance.creationDate?datetime.iso?time?string['HH:mm']}">${provenance.creationDate?date?string['dd MMMM yyyy']}</span>
+            </div>
           </#if>
           <#if provenance.modificationDate?? && provenance.modificationDate?has_content>
-            <div><p>Modified: ${provenance.modificationDate}</p></div>
+            <div>
+              <span>Modified</span>
+              <span title="${provenance.modificationDate?date?string['dd MMMM yyyy']} ${provenance.modificationDate?datetime.iso?time?string['HH:mm']}">${provenance.modificationDate?date?string['dd MMMM yyyy']}</span>
+            </div>
           </#if>
           <#if provenance.contributors?? && provenance.contributors?has_content>
-            <div><p>Contributors: ${provenance.contributors?join(", ")}</p></div>
+            <div>
+              <span>Contributors</span>
+              <span>${provenance.contributors?join(", ")}</span>
+            </div>
           </#if>
+          </div>
         </#if>
+      </div>
       </#if>
     </div>
   </div>
