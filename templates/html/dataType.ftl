@@ -1,11 +1,6 @@
 <#import "skeleton.ftl" as skeleton>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html?replace("\n", "<br>")>
-<style>
-/* temporary obvs */
-.admin {margin-top:1em;}
-.schemaItem { border-bottom: 1px solid #eee; margin:0.5em; padding:0.5em;}
-</style>
 
   <div id="metadata" class="datatype">
     <div class="container">
@@ -87,20 +82,20 @@
       </tbody></table>
       </#if>
 
-      
-      <#if provenance.creationDate?has_content || provenance.modificationDate?has_content || provenance.contributors?has_content >
-        <h1 class="section-heading">Provenance</h1>
-        <#if provenance.creationDate?? && provenance.creationDate?has_content>
-          <div><p>Created: ${provenance.creationDate}</p></div>
-        </#if>
-        <#if provenance.modificationDate?? && provenance.modificationDate?has_content>
-          <div><p>Modified: ${provenance.modificationDate}</p></div>
-        </#if>
-        <#if provenance.contributors?? && provenance.contributors?has_content>
-          <div><p>Contributors: ${provenance.contributors?join(", ")}</p></div>
+      <#if provenance??>
+        <#if provenance.creationDate?has_content || provenance.modificationDate?has_content || provenance.contributors?has_content >
+          <h1 class="section-heading">Provenance</h1>
+          <#if provenance.creationDate?? && provenance.creationDate?has_content>
+            <div><p>Created: ${provenance.creationDate}</p></div>
+          </#if>
+          <#if provenance.modificationDate?? && provenance.modificationDate?has_content>
+            <div><p>Modified: ${provenance.modificationDate}</p></div>
+          </#if>
+          <#if provenance.contributors?? && provenance.contributors?has_content>
+            <div><p>Contributors: ${provenance.contributors?join(", ")}</p></div>
+          </#if>
         </#if>
       </#if>
-      
     </div>
   </div>
 </#escape>
