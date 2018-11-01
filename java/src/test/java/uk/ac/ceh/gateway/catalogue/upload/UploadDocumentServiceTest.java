@@ -12,11 +12,15 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -48,27 +52,27 @@ public class UploadDocumentServiceTest {
     @SneakyThrows
     public void beforeEach() {
         initMocks(this);
-        
+
         val folders = new HashMap<String, File>();
 
-        if (directory.exists()) FileUtils.forceDelete(directory);
+        if (directory.exists())
+            FileUtils.forceDelete(directory);
         FileUtils.copyDirectory(dataDirectory, directory);
 
         folders.put("documents", dropboxFolder);
         folders.put("datastore", datastoreFolder);
         folders.put("plone", ploneFolder);
 
-
         val physicalLocations = new HashMap<String, String>();
         physicalLocations.put("documents", "\\physical\\location");
         physicalLocations.put("datastore", "\\physical\\location");
         physicalLocations.put("plone", "\\physical\\location");
-        
+
         service = new UploadDocumentService(documentRepository, folders, physicalLocations);
         val geminiDocument = new GeminiDocument();
         geminiDocument.setId("guid");
         uploadDocument = service.create(CatalogueUser.PUBLIC_USER, geminiDocument);
-        
+
         val metadata = MetadataInfo.builder().build();
         uploadDocument.setId("id");
         uploadDocument.setMetadata(metadata);
@@ -100,7 +104,7 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void create_emptyListOfNoFolder () {
+    public void create_emptyListOfNoFolder() {
         val datastoreDocuments = uploadDocument.getUploadFiles().get("datastore").getDocuments();
         assertThat(datastoreDocuments.size(), is(0));
         val datastoreInvalid = uploadDocument.getUploadFiles().get("datastore").getInvalid();
@@ -130,7 +134,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void add_onlyAddsTheFileToDocuments () {
+    public void add_onlyAddsTheFileToDocuments() {
         val in = new FileInputStream(new File(directory, "upload-service/new-file.txt"));
         service.add(CatalogueUser.PUBLIC_USER, uploadDocument, "new-file.txt", in);
 
@@ -139,7 +143,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void add_getAllZipFilesFromAZip () {
+    public void add_getAllZipFilesFromAZip() {
         val in = new FileInputStream(new File(directory, "upload-service/zippy.zip"));
         service.add(CatalogueUser.PUBLIC_USER, uploadDocument, "zippy.zip", in);
 
@@ -152,7 +156,7 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void move_fromOnePlaceToAnother () {
+    public void move_fromOnePlaceToAnother() {
         cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/file.txt");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
@@ -161,8 +165,21 @@ public class UploadDocumentServiceTest {
         assertThatDocumentsHasFile("datastore", datastoreFolder, "guid/file.txt");
     }
 
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
+
     @Test
-    public void move_zipFromOnePlaceToAnotherTakesAllFilesWithIt () {
+    public void move_noneExistingFile() {
+        cleanDefaultInvalid();
+        val file = new File(dropboxFolder, "guid/file.txt");
+        file.delete();
+        exception.expect(FileNotFoundException.class);
+        exception.expectMessage(CoreMatchers.containsString("Could not move file file.txt as it does not exist"));
+        service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
+    }
+
+    @Test
+    public void move_zipFromOnePlaceToAnotherTakesAllFilesWithIt() {
         cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
@@ -180,7 +197,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void move_subZip () {
+    public void move_subZip() {
         cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
@@ -196,7 +213,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void delete_onlyAddsTheFileToDocuments () {
+    public void delete_onlyAddsTheFileToDocuments() {
         val file = new File(dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
         service.delete(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
         assertThatDocumentsDoesNotHaveFile("documents", dropboxFolder, "guid/_extracted-zip/_extracted-sub-zip/sz.txt");
@@ -206,7 +223,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void delete_allZipFilesFromAZip () {
+    public void delete_allZipFilesFromAZip() {
         val file = new File(dropboxFolder, "guid/_extracted-zip/sub-zip.zip");
         service.delete(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
 
@@ -216,7 +233,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void delete_invalidFile () {
+    public void delete_invalidFile() {
         val file = new File(dropboxFolder, "guid/unknown.txt");
         service.delete(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
 
@@ -226,7 +243,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void acceptInvalid () {
+    public void acceptInvalid() {
         val file = new File(dropboxFolder, "guid/unknown.txt");
         UploadDocumentValidator.validate(uploadDocument);
         service.acceptInvalid(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", file.getAbsolutePath());
@@ -237,7 +254,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void zip () {
+    public void zip() {
         cleanDefaultInvalid();
 
         val file = new File(dropboxFolder, "guid/zip.zip");
@@ -252,7 +269,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void zip_doesNothingIfAlreadyZipped () {
+    public void zip_doesNothingIfAlreadyZipped() {
         cleanDefaultInvalid();
 
         val file = new File(dropboxFolder, "guid/zip.zip");
@@ -268,7 +285,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void unzip () {
+    public void unzip() {
         cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
@@ -283,11 +300,11 @@ public class UploadDocumentServiceTest {
 
     @Test
     @SneakyThrows
-    public void unzip_doesNothingIfNotCorrectlyZipped () {
+    public void unzip_doesNothingIfNotCorrectlyZipped() {
         cleanDefaultInvalid();
         val file = new File(dropboxFolder, "guid/zip.zip");
         service.move(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", "datastore", file.getAbsolutePath());
-        
+
         service.unzip(CatalogueUser.PUBLIC_USER, uploadDocument);
 
         val datastore = uploadDocument.getUploadFiles().get("datastore");
@@ -311,7 +328,7 @@ public class UploadDocumentServiceTest {
     }
 
     @SneakyThrows
-    private void cleanDefaultInvalid () {
+    private void cleanDefaultInvalid() {
         UploadDocumentValidator.validate(uploadDocument);
         val changedFile = new File(dropboxFolder, "guid/changed.txt");
         service.acceptInvalid(CatalogueUser.PUBLIC_USER, uploadDocument, "documents", changedFile.getAbsolutePath());

@@ -1,21 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.val;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.model.ZipParameters;
-import org.apache.commons.io.FileUtils;
-import org.apache.jena.ext.com.google.common.collect.Lists;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.util.FileListUtils;
-import uk.ac.ceh.gateway.catalogue.util.FilenameContainsFilterUtils;
-import uk.ac.ceh.gateway.catalogue.util.ZipFileUtils;
-
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -23,6 +9,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.Maps;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.jena.ext.com.google.common.collect.Lists;
+
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.val;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.util.FileListUtils;
+import uk.ac.ceh.gateway.catalogue.util.FilenameContainsFilterUtils;
+import uk.ac.ceh.gateway.catalogue.util.ZipFileUtils;
 
 @AllArgsConstructor
 public class UploadDocumentService {
@@ -237,6 +240,9 @@ public class UploadDocumentService {
 
     @SneakyThrows
     private void moveFile(File from, File to) {
+        if (!from.exists()) {
+            throw new FileNotFoundException(String.format("Could not move file %s as it does not exist", from.getName()));
+        }
         forceDelete(to.getAbsolutePath());
         FileUtils.moveFile(from, to);
     }

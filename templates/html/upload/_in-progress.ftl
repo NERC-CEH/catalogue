@@ -1,4 +1,13 @@
-<p class="text-right"><a class="btn btn-default" href="./${id}/validate">VALIDATE</a></p>
+<section class="section in-progress">
+    <div class="container-fluid folders"> 
+        <p>
+            If you suspect the documents to be in error please <b>VALIDATE</b> before continuing so as to reduce further errors
+        </p>
+        <a class="btn btn-primary" href="./${id}/validate">
+            <i class="far fa-check-circle"></i> VALIDATE
+        </a>
+    </div>
+</section>
 
 <section class="section">
     <div class="container">
