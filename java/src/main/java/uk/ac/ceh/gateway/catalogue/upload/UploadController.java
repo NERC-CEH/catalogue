@@ -87,7 +87,7 @@ public class UploadController  {
             return ResponseEntity.ok(document);
         } catch(Exception exp) {
             log.error("ERROR ADDING FILE ({}) TO {} - {}", file.getName(), id, exp.getMessage());
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -105,7 +105,7 @@ public class UploadController  {
             uploadDocumentService.delete(user, document, name, filename);
         } catch (Exception exp) {
             log.error("ERROR DELETING FILE ({}) FROM {} - {}", name, id, exp.getMessage());
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok(document);
     }
@@ -124,7 +124,7 @@ public class UploadController  {
             removeUploadPermission(user, parentId);
         } catch (Exception exp) {
             log.error("ERROR FINISHING {} - {}", id, exp.getMessage());
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok(document);
     }
@@ -174,7 +174,7 @@ public class UploadController  {
             uploadDocumentService.acceptInvalid(user, document, name, filename);
         } catch (Exception exp) {
             log.error("ERROR ACCEPING FILE ({}) FROM {} - {}", name, id, exp.getMessage());
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok(document);
     }
@@ -194,7 +194,7 @@ public class UploadController  {
             uploadDocumentService.move(user, document, from, to, filename);
         } catch (Exception exp) {
             log.error("ERROR MOVING FILE ({}) FROM {} TO {} for {} - {}", filename, from, to, id, exp.getMessage());
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok(document);
     }
@@ -230,7 +230,7 @@ public class UploadController  {
             uploadDocumentService.moveToDatastore(user, document);
         } catch (Exception exp) {
             log.error("ERROR MOVING TO DATASTORE {} - {}", id, exp.getMessage());
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok(document);
     }
@@ -247,7 +247,7 @@ public class UploadController  {
             uploadDocumentService.zip(user, document);
         } catch (Exception exp) {
             log.error("ERROR ZIPPING {} - {}", id, exp.getMessage());
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok(document);
     }
@@ -264,7 +264,7 @@ public class UploadController  {
             uploadDocumentService.unzip(user, document);
         } catch (Exception exp) {
             log.error("ERROR UNZIPPING {} - {}", id, exp.getMessage());
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return ResponseEntity.ok(document);
     }
