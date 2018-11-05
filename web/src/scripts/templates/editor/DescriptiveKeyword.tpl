@@ -8,7 +8,6 @@
       <option value="Catalogue topic">Catalogue topic</button>
       <option value="dataCentre">Data Centre</option>
       <option value="discipline">Discipline</button>
-      <option value="INSPIRE Theme">INSPIRE Theme</button>
       <option value="instrument">Instrument</option>
       <option value="place">Place</button>
       <option value="project">Project</option>
@@ -22,48 +21,6 @@
 <div class="keywords row col-sm-11 col-sm-offset-1"></div>
 <div class="row">
   <div class="col-sm-11 col-sm-offset-1">
-    <div class="keyword-add hidden" id="inspireTheme">
-      <button class="editor-button dropdown-toggle" type="button" id="dropdownInspireMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-        Choose keyword from the INSPIRE vocabulary
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu predefined" aria-labelledby="dropdownInspireMenu">
-        <li><a href="http://inspire.ec.europa.eu/theme/ad">Addresses</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/au">Administrative Units</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/af">Agricultural and Aquaculture Facilities</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/am">Area Management Restriction Regulation Zones and Reporting units</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/ac">Atmospheric Conditions</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/br">Bio-geographical Regions</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/bu">Buildings</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/cp">Cadastral Parcels</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/rs">Coordinate reference systems</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/el">Elevation</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/er">Energy Resources</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/ef">Environmental Monitoring Facilities</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/gg">Geographical grid systems</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/gn">Geographical Names</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/ge">Geology</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/hb">Habitats and Biotopes</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/hh">Human Health and Safety</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/hy">Hydrography</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/lc">Land Cover</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/lu">Land Use</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/mf">Meteorological geographical features</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/mr">Mineral Resources</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/nz">Natural Risk Zones</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/of">Oceanographic Geographical Features</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/oi">Orthoimagery</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/pd">Population Distribution - Demography</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/pf">Production and Industrial Facilities</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/ps">Protected Sites</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/sr">Sea Regions</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/so">Soil</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/sd">Species Distribution</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/su">Statistical Units</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/tn">Transport Networks</a></li>
-        <li><a href="http://inspire.ec.europa.eu/theme/us">Utility and Governmental Services</a></li>
-      </ul>
-    </div>
     <div class="keyword-add hidden" id="catalogueTopic">
       <button class="editor-button dropdown-toggle" type="button" id="dropdownCehTopicMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         Choose Catalogue topics

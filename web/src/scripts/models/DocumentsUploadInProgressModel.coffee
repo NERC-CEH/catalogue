@@ -74,6 +74,7 @@ define [
   move: (file, from, to) ->
     @save @attributes,
       url: @url() + '/move-upload-file?from=' + from + '&to=' + to + '&filename=' + encodeURIComponent(file)
+      error: -> do window.location.href = window.location.href + '/validate'
 
   moveToDatastore: (files) ->
     @save @attributes,

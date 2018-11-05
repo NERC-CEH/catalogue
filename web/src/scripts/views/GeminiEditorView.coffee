@@ -2,6 +2,7 @@ define [
   'cs!views/EditorView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/InputView'
+  'cs!views/editor/CheckboxView'
   'cs!views/editor/ReadOnlyView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentView'
@@ -11,6 +12,8 @@ define [
   'cs!models/editor/ResourceType'
   'cs!views/editor/AccessLimitationView'
   'cs!models/editor/AccessLimitation'
+  'cs!models/editor/InspireTheme'
+  'cs!views/editor/InspireThemeView'
   'cs!models/editor/TopicCategory'
   'cs!views/editor/TopicCategoryView'
   'cs!views/editor/ContactView'
@@ -40,10 +43,9 @@ define [
   'cs!models/editor/Supplemental'
   'cs!views/editor/ServiceView'
   'cs!models/editor/Service'
-  'cs!views/editor/ConformanceResultView'
   'cs!models/editor/MapDataSource'
   'cs!views/editor/MapDataSourceView'
-], (EditorView, SingleObjectView, InputView, ReadOnlyView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, ConformanceResultView, MapDataSource, MapDataSourceView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView) -> EditorView.extend
 
   initialize: ->
 
@@ -119,7 +121,7 @@ define [
                     <p>For embargoed resources, <b>Release(d)</b> is the date on which the embargo was lifted <i class='text-red'><b>or is due to be lifted</b></i>.</p>
                     <p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>
                     """
-
+        
         new InputView
           model: @model
           modelAttribute: 'version'
@@ -220,7 +222,6 @@ define [
           label: 'Topic categories'
           ObjectInputView: TopicCategoryView
           helpText: """
-                    <p>The main theme(s) of the data resource as defined by the INSPIRE Directive.</p>
                     <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
                     <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
                     """
@@ -235,12 +236,29 @@ define [
           predefined:
             'Catalogue topic':
               type: 'Catalogue topic'
-            'INSPIRE Theme':
-              type: 'INSPIRE Theme'
           helpText: """
                     <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
                     <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>
                     """
+
+        new ParentView
+          model: @model
+          ModelType: InspireTheme
+          modelAttribute: 'inspireThemes'
+          label: 'INSPIRE theme'
+          ObjectInputView: InspireThemeView
+          helpText: """
+                     <p>If the resource falls within the scope of an INSPIRE theme it must be declared here.</p>
+                     <p>Conformity is the degree to which the <i class='text-red'>data</i> conforms to the relevant INSPIRE data specification.</p>
+                    """
+
+        new CheckboxView
+          model: @model
+          modelAttribute: 'notGEMINI'
+          label: 'Exclude from GEMINI obligations'
+          helpText: """
+              <p>Tick this box to exclude this resource from GEMINI/INSPIRE obligations.</p><p <b class='text-red'><span class='fas fa-exclamation-triangle'>&nbsp;</span> WARNING.  This should only be ticked if the data DOES NOT relate to an area where an EU Member State exercises jurisdictional rights</b>.</p>
+              """
       ]
     ,    
       label: 'Distribution'
@@ -402,31 +420,42 @@ define [
               eastBoundLongitude: 1.768
               southBoundLatitude: 49.864
               westBoundLongitude: -6.452
+              extentName: 'England'
+              extentUri: 'http://sws.geonames.org/6269131'
             'Great Britain':
               northBoundLatitude: 60.861
               eastBoundLongitude: 1.768
               southBoundLatitude: 49.864
               westBoundLongitude: -8.648
+              extentName: 'Great Britain'
             'Northern Ireland':
               northBoundLatitude: 55.313
               eastBoundLongitude: -5.432
               southBoundLatitude: 54.022
               westBoundLongitude: -8.178
+              extentName: 'Northern Ireland'
+              extentUri: 'http://sws.geonames.org/2641364'
             Scotland:
               northBoundLatitude: 60.861
               eastBoundLongitude: -0.728
               southBoundLatitude: 54.634
               westBoundLongitude: -8.648
+              extentName: 'Scotland'
+              extentUri: 'http://sws.geonames.org/2638360'
             'United Kingdom':
               northBoundLatitude: 60.861
               eastBoundLongitude: 1.768
               southBoundLatitude: 49.864
               westBoundLongitude: -8.648
+              extentName: 'United Kingdom'
+              extentUri: 'http://sws.geonames.org/2635167'
             Wales:
               northBoundLatitude: 53.434
               eastBoundLongitude: -2.654
               southBoundLatitude: 51.375
               westBoundLongitude: -5.473
+              extentName: 'Wales'
+              extentUri: 'http://sws.geonames.org/2634895'
             World:
               northBoundLatitude: 90.00
               eastBoundLongitude: 180.00
@@ -512,18 +541,6 @@ define [
           helpText: """
                     <p>This states how often the updated data resource is made available to the user.  For the vast majority of EIDC data, this value will be "not planned".</p>
                     """
-
-        new PredefinedParentView
-          model: @model
-          modelAttribute: 'conformanceResults'
-          label: 'Conformance results'
-          multiline: true
-          ObjectInputView: ConformanceResultView
-          predefined:
-            INSPIRE:
-              title: 'COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services'
-              date: '2010-12-08'
-              dateType: 'publication'
       ]
     ,
       label: 'Supplemental'

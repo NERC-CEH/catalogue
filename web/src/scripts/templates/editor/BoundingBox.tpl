@@ -16,6 +16,12 @@
     <button class="editor-button" title="Show/Update map"><span class="fas fa-globe" aria-hidden="true"></span></button>
   </div>
   <div class="col-sm-6 col-lg-6">
-    <div class="map" style="width: 400px; height: 400px;"></div>
+    <div class="row">
+      <div class="map" style="width: 400px; height: 400px;"></div>
+    </div>
+    <div class="row">
+      <span class="extentName"><%= data.extentName %></span>
+      <span class="extentUri"><%= data.extentUri %></span>
+    </div>
   </div>
 </div>

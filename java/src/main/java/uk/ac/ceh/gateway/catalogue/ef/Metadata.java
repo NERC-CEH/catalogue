@@ -38,24 +38,9 @@ public class Metadata {
     
     @Data
     @XmlType(propOrder = {
-        "lineage",
-        "conformanceResults"
+        "lineage"
     })
     public static class Quality {
         private String lineage;
-        @XmlElement(name = "conformanceResult")
-        private List<ConformanceResult> conformanceResults;
-    }
-    
-    @Data
-    @XmlType(propOrder = {
-        "specification",
-        "explanation",
-        "pass"
-    })
-    public static class ConformanceResult {
-        private Link specification;
-        private String explanation;
-        private String pass;
     }
 }

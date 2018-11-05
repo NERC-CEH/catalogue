@@ -53,7 +53,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final DatasetReferenceDatesConverter datasetReferenceDatesConverter;
     private final OnlineResourceConverter onlineResourceConverter;
     private final DistributionInfoConverter distributionInfoConverter;
-    private final ConformanceResultConverter conformanceResultConverter;
     private final SpatialResolutionConverter spatialResolutionConverter;
     private final RevisionOfConverter revisionOfConverter;
     private final ResourceMaintenanceConverter resourceMaintenaceConverter;
@@ -87,7 +86,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.onlineResourceConverter = new OnlineResourceConverter(xpath);
         this.distributionInfoConverter = new DistributionInfoConverter(xpath);
         this.lineage = xpath.compile(XPaths.LINEAGE);
-        this.conformanceResultConverter = new ConformanceResultConverter(xpath);
         this.spatialResolutionConverter = new SpatialResolutionConverter(xpath);
         this.metadataStandardName = xpath.compile(XPaths.METADATA_STANDARD);
         this.metadataStandardVersion = xpath.compile(XPaths.METADATA_VERSION);
@@ -138,7 +136,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setOnlineResources(onlineResourceConverter.convert(document));
             toReturn.setDistributionFormats(distributionInfoConverter.convert(document));
             toReturn.setLineage(emptyToNull(lineage.evaluate(document)));
-            toReturn.setConformanceResults(conformanceResultConverter.convert(document));
             toReturn.setSpatialResolutions(spatialResolutionConverter.convert(document));
             toReturn.setMetadataStandardName(emptyToNull(metadataStandardName.evaluate(document)));
             toReturn.setMetadataStandardVersion(emptyToNull(metadataStandardVersion.evaluate(document)));
