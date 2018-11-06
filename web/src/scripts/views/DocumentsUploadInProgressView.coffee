@@ -10,6 +10,7 @@ define [
       do @initFolders
       do @initZip
       do @initMoveToDatastore
+      do @initValidate
       do @render
       do $('.loading').remove
       $('.messages').hide 'fast'
@@ -31,14 +32,14 @@ define [
 
         from = item.attr('id').split('-')[0]
         to = 'documents'
-        to = 'datastore' if isDatastore
-        to = 'plone' if isPlone
+        to = 'eidchub' if isDatastore
+        to = 'supporting-documents' if isPlone
 
         if from != to and to != 'documents'
           file = item.data('filename')
           item.addClass('moving')
           item.attr('disabled', on)
-          @model.move file, from, to
+          @model.move file, to
         else
           @model.set
             cancel: yes
@@ -53,13 +54,12 @@ define [
     $('.move-to-datastore').unbind 'click'
     $('.move-to-datastore').attr 'disabled', off
     $('.move-to-datastore').click =>
-      files = []
-      $('.documents .file .filename-label').each (index, filename) ->
-        files.push $(filename).text() if !$(filename).parent().parent().hasClass('file-invalid')
-
-      if files.length > 0
-        $('.move-to-datastore').attr 'disabled', on
-        @model.moveToDatastore files
+      do @model.moveToDatastore
+  
+  initValidate: ->
+    $('#validate').unbind 'click'
+    $('#validate').click =>
+      do @model.validateFiles
 
   render: ->
     do @renderZip
@@ -128,6 +128,7 @@ define [
         path: file.path
         name: file.name,
         hash: file.hash,
+        type: file.type,
         id: id)
       $('.' + folder + ' .files').append(newFile) if $('#' + id).length == 0
   

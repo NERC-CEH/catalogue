@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +21,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
-import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -35,7 +33,6 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
-@Slf4j
 @Controller
 @AllArgsConstructor
 public class UploadController {
@@ -154,38 +151,33 @@ public class UploadController {
     return ResponseEntity.ok(document);
   }
 
-   @RequestMapping(
-       value = "documents/{id}/move-upload-file",
-       method = RequestMethod.PUT,
-       consumes = UPLOAD_DOCUMENT_JSON_VALUE
-   )
-   public ResponseEntity<UploadDocument>
-   acceptFile(
-       @ActiveUser CatalogueUser user,
-       @PathVariable("id") String id,
-       @RequestParam("from") String from,
-       @RequestParam("to") String to,
-       @RequestParam("filename") String filename,
-       @RequestBody UploadDocument document
-   ){
-      // TODO: Need to remove 'from' and 'document' from method arguments
-      userCanUpload(id);
-      val toReturn = uploadDocumentService.setDestination(id, filename, to);
-      return ResponseEntity.ok(toReturn);
-   }
+  @RequestMapping(value = "documents/{id}/move-upload-file", method = RequestMethod.PUT,
+      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  acceptFile(@ActiveUser CatalogueUser user, @PathVariable("id") String id,
+      @RequestParam("to") String to, @RequestParam("filename") String filename) {
+    userCanUpload(id);
+    val document = uploadDocumentService.move(id, filename, to);
+    return ResponseEntity.ok(document);
+  }
 
-   @RequestMapping(
-       value = "documents/{id}/move-to-datastore",
-       method = RequestMethod.PUT,
-       consumes = UPLOAD_DOCUMENT_JSON_VALUE
-   )
-   public ResponseEntity<UploadDocument>
-   moveToDatastore(@ActiveUser CatalogueUser user, @PathVariable("id") String id,
-       @RequestBody UploadDocument document) {
-     userCanUpload(id);
-     val toReturn = uploadDocumentService.move(id);
-     return ResponseEntity.ok(toReturn);
-   }
+  @RequestMapping(value = "documents/{id}/move-to-datastore", method = RequestMethod.PUT,
+      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  moveToDatastore(@ActiveUser CatalogueUser user, @PathVariable("id") String id) {
+    userCanUpload(id);
+    val document = uploadDocumentService.moveToDataStore(id);
+    return ResponseEntity.ok(document);
+  }
+
+  @RequestMapping(value = "documents/{id}/validate", method = RequestMethod.PUT,
+      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  validate(@ActiveUser CatalogueUser user, @PathVariable("id") String id) {
+    userCanUpload(id);
+    val document = uploadDocumentService.validate(id);
+    return ResponseEntity.ok(document);
+  }
 
   @RequestMapping(value = "documents/{id}/zip-upload-files", method = RequestMethod.PUT,
       consumes = UPLOAD_DOCUMENT_JSON_VALUE)

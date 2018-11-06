@@ -11,8 +11,9 @@ define [
       type: 'PUT'
       success: (data) =>
         @set(data)
-      error: (err) ->
+      error: (err) =>
         console.error('error', err)
+        do @fetch
     }
 
   delete: (name, file) ->
@@ -25,8 +26,9 @@ define [
       type: 'PUT'
       success: (data) =>
         @set(data)
-      error: (err) ->
+      error: (err) =>
         console.error('error', err)
+        do @fetch
     }
 
   ignore: (name, file) ->
@@ -39,8 +41,9 @@ define [
       type: 'PUT'
       success: (data) =>
         @set(data)
-      error: (err) ->
+      error: (err) =>
         console.error('error', err)
+        do @fetch
     }
 
   zip: ->
@@ -53,8 +56,9 @@ define [
       type: 'PUT'
       success: (data) =>
         @set(data)
-      error: (err) ->
+      error: (err) =>
         console.error('error', err)
+        do @fetch
     }
 
   unzip: ->
@@ -67,15 +71,52 @@ define [
       type: 'PUT'
       success: (data) =>
         @set(data)
-      error: (err) ->
+      error: (err) =>
         console.error('error', err)
+        do @fetch
     }
 
-  move: (file, from, to) ->
-    @save @attributes,
-      url: @url() + '/move-upload-file?from=' + from + '&to=' + to + '&filename=' + encodeURIComponent(file)
-      error: -> do window.location.href = window.location.href + '/validate'
+  move: (file, to) ->
+    url = @url() + '/move-upload-file?to=' + to + '&filename=' + encodeURIComponent(file)
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
 
   moveToDatastore: (files) ->
-    @save @attributes,
-      url: @url() + '/move-to-datastore'
+    url = @url() + '/move-to-datastore'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
+  
+  validateFiles: () ->
+    url = @url() + '/validate'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }

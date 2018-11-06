@@ -4,7 +4,7 @@
             <#if issues[0].status == 'scheduled'>
                 <div class="alert alert-info"><i class="fas fa-info-circle"></i> UPLOAD IN PROGRESS</div>
             <#elseif issues[0].status == 'in progress' >
-                <div class="alert alert-info><i class="fas fa-info-circle"></i> You must <a href="./${id}/permission">amend permissions</a> to move files/fix problems</div>
+                <div class="alert alert-info><i class="fas fa-info-circle"></i> You must <a href="/documents/${id}/permission">amend permissions</a> to move files/fix problems</div>
             </#if>
         <#else>
             <p>We use MD5 checksums to verify data integrity and to ensure no errors occur during the files' transmission or storage. You can download a copy of the checksums for the data below.  For more information about checksums visit <a href="http://eidc.ceh.ac.uk/deposit/checksums" target="_blank" rel="noopener">http://eidc.ceh.ac.uk/deposit/checksums/</a></p>

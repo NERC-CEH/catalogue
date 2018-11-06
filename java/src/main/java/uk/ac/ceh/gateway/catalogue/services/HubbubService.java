@@ -77,8 +77,8 @@ public class HubbubService {
   @SneakyThrows
   public JsonNode get(String path) {
     return authenticated(() -> resource.path(path)
+                   .queryParam("data", "true")
                    .accept(MediaType.APPLICATION_JSON_TYPE)
-                   .type(MediaType.APPLICATION_JSON_TYPE)
                    .header("Authorization", String.format("Bearer %s", accessToken))
                    .get(JsonNode.class));
   }
@@ -102,10 +102,12 @@ public class HubbubService {
   }
 
   @SneakyThrows
-  public JsonNode patch(String path, String request) {
+  public JsonNode postQuery(String path, String queryKey, String queryValue) {
     return authenticated(() -> resource.path(path)
+                   .queryParam(queryKey, queryValue)
                    .accept(MediaType.APPLICATION_JSON_TYPE)
-                   .type(new MediaType("application", "json-patch+json"))
-                   .method("PATCH", JsonNode.class, request));
+                   .type(MediaType.APPLICATION_JSON_TYPE)
+                   .header("Authorization", String.format("Bearer %s", accessToken))
+                   .post(JsonNode.class));
   }
 }

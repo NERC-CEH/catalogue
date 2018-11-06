@@ -40,7 +40,7 @@ define [
     if invalid
       error = $('<td></td>')
       errorMessage = $('<b></b>')
-      errorMessage.text('INVALID')
+      errorMessage.text(document.type)
       error.append(errorMessage)
       item.append(error)
 
@@ -61,7 +61,7 @@ define [
     documents = files[name]['documents'] || []
     invalid = files[name]['invalid'] || []
 
-    if documents.length == 0
+    if documents.length == 0 and invalid.length == 0
       @renderNoFiles $(".#{name} .files-list")
 
     for key, document of documents

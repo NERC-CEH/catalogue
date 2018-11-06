@@ -4,13 +4,13 @@
     </div>
     <div class="invalid-container">
         <div class="pull-right">
-            <% if (type === 'INVALID_HASH' || type == 'UNKNOWN_FILE') { %>
+            <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH') { %>
                 <button class="btn btn-xs btn-success accept">Accept</button>
             <% } %>
-            <% if (type == 'MISSING_FILE') { %>
+            <% if (type == 'MISSING') { %>
                 <button class="btn btn-xs btn-danger ignore">Ignore</button>
             <% } %>
-            <% if (type == 'UNKNOWN_FILE') { %>
+            <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH') { %>
                 <button class="btn btn-xs btn-danger delete" data-toggle="modal" data-target="#documentUploadModal">Delete</button>
             <% } %>
         </div>

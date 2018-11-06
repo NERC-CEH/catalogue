@@ -18,8 +18,10 @@ public class UploadDocumentService {
   private final HubbubService hubbubService;
   private final Map<String, File> folders;
 
+  @SneakyThrows
   private UploadFiles getUploadFiles(String directory, String id) {
-    val data = (ArrayNode) hubbubService.get(String.format("%s/%s", directory, id));
+    val folder = String.format("%s/%s", directory, id);
+    val data = (ArrayNode) hubbubService.get(folder);
     val files = new UploadFiles();
     val documents = files.getDocuments();
     val invalid = files.getInvalid();
@@ -27,12 +29,12 @@ public class UploadDocumentService {
       val uploadFile = new UploadFile();
       val path = item.get("path").asText();
       uploadFile.setPath(path);
-      if (item.has("name"))
-        uploadFile.setName(item.get("name").asText());
+      val name = path.replace(String.format("/%s/", folder), "");
+      uploadFile.setName(name);
+      uploadFile.setId(name.replaceAll("[^\\w?]", "-"));
+
       if (item.has("physicalLocation"))
         uploadFile.setPhysicalLocation(item.get("physicalLocation").asText());
-      if (item.has("id"))
-        uploadFile.setId(item.get("id").asText());
       if (item.has("format"))
         uploadFile.setFormat(item.get("format").asText());
       if (item.has("mediatype"))
@@ -41,22 +43,14 @@ public class UploadDocumentService {
       if (item.has("bytes"))
         uploadFile.setBytes(item.get("bytes").asLong());
       if (item.has("hash"))
-      uploadFile.setHash(item.get("hash").asText());
+        uploadFile.setHash(item.get("hash").asText());
       if (item.has("destination"))
         uploadFile.setDestination(item.get("destination").asText());
       val status = item.get("status").asText();
-      if (status.equals("VALID"))
+      uploadFile.setType(status);
+      if (status.equals("VALID") || status.equals("VALIDATING_HASH"))
         documents.put(path, uploadFile);
-      else {
-        UploadType type = UploadType.INVALID;
-        if (status.equals("MISSING"))
-          type = UploadType.MISSING_FILE;
-        else if (status.equals("UNKNOWN_FILE"))
-          type = UploadType.UNKNOWN_FILE;
-        else if (status.equals("CHANGED"))
-          type = UploadType.INVALID_HASH;
-
-        uploadFile.setType(type);
+      else if (!status.equals("REMOVED") && !status.equals("MOVED") && !status.equals("ZIPPED")) {
         invalid.put(path, uploadFile);
       }
     });
@@ -69,8 +63,8 @@ public class UploadDocumentService {
 
     val eidchubFiles = getUploadFiles("eidchub", id);
     document.getUploadFiles().put("datastore", eidchubFiles);
-    val isZipped = eidchubFiles.getDocuments().keySet().contains(
-        String.format("/mnt/eidchub/%s/%s.zip", id, id));
+    val isZipped =
+        eidchubFiles.getDocuments().keySet().contains(String.format("/eidchub/%s/%s.zip", id, id));
     eidchubFiles.setZipped(isZipped);
 
     val dropboxFiles = getUploadFiles("dropbox", id);
@@ -88,7 +82,7 @@ public class UploadDocumentService {
     val path = directory.getPath() + "/" + id + "/" + filename;
     val file = new File(path);
     FileUtils.copyInputStreamToFile(in, file);
-    return accept(id, String.format("/mnt/dropbox/%s/%s", id, filename));
+    return acceptAndValidate(id, String.format("/mnt/dropbox/%s/%s", id, filename));
   }
 
   public UploadDocument delete(String id, String filename) {
@@ -100,7 +94,24 @@ public class UploadDocumentService {
   public UploadDocument accept(String id, String filename) {
     if (!filename.startsWith("/"))
       filename = "/" + filename;
+    filename = filename.replace("/mnt", "");
     hubbubService.post(String.format("/accept%s", filename));
+    return get(id);
+  }
+
+  @SneakyThrows
+  public UploadDocument acceptAndValidate(String id, String filename) {
+    if (!filename.startsWith("/"))
+      filename = "/" + filename;
+    filename = filename.replace("/mnt", "");
+    hubbubService.post(String.format("/accept%s", filename));
+    hubbubService.post(String.format("/validate%s", filename));
+    return get(id);
+  }
+
+  @SneakyThrows
+  public UploadDocument validate(String id) {
+    hubbubService.post(String.format("/validate/%s", id));
     return get(id);
   }
 
@@ -114,14 +125,13 @@ public class UploadDocumentService {
     return get(id);
   }
 
-  public UploadDocument move(String id) {
-    hubbubService.post(String.format("/dropbox/%s", id));
+  public UploadDocument move(String id, String filename, String to) {
+    hubbubService.postQuery(String.format("/move%s", filename), "to", to);
     return get(id);
   }
 
-  public UploadDocument setDestination(String id, String filename, String to) {
-    hubbubService.patch(String.format("/dropbox/%/%s", id, filename),
-        String.format("[{\"op\":\"add\",\"path\":\"/destination\",\"value\":\"%s\"}]", to));
+  public UploadDocument moveToDataStore(String id) {
+    hubbubService.post(String.format("/move_all/%s", id));
     return get(id);
   }
 }
