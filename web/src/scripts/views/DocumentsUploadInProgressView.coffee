@@ -20,6 +20,9 @@ define [
   
   update: ->
     do @model.fetch
+    now = new Date()
+    options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }
+    $('.checked-message').text('Last Updated: ' + now.toLocaleDateString('us-EN', options))
     @updateTimeout = setTimeout(
       => do @update
       5000

@@ -7,13 +7,13 @@
             <% if (type == 'CHANGED_MTIME') { %>
                 <button class="btn btn-xs btn-primary validate">Validate</button>
             <% } %>
-            <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH') { %>
+            <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH' || type == 'UNKNOWN_ZIPPED') { %>
                 <button class="btn btn-xs btn-success accept">Accept</button>
             <% } %>
             <% if (type == 'MISSING' || type == 'UNKNOWN_REMOVED') { %>
                 <button class="btn btn-xs btn-danger ignore">Ignore</button>
             <% } %>
-            <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH') { %>
+            <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH' || type == 'UNKNOWN_ZIPPED') { %>
                 <button class="btn btn-xs btn-danger delete" data-toggle="modal" data-target="#documentUploadModal">Delete</button>
             <% } %>
         </div>

@@ -10,7 +10,8 @@
 </section>
 <section class="section in-progress">
     <div class="container-fluid"> 
-        <button class="btn btn-primary" id="validate"><i class="fa fa-check"></i> Validate</button>
+        <p class="checked-message"></p>
+        <button class="btn btn-primary" id="validate">Validate All Files</button>
     </div>
 </section>
 <section class="section in-progress">
