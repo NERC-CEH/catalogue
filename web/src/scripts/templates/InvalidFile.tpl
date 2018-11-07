@@ -7,7 +7,7 @@
             <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH') { %>
                 <button class="btn btn-xs btn-success accept">Accept</button>
             <% } %>
-            <% if (type == 'MISSING') { %>
+            <% if (type == 'MISSING' || type == 'UNKNOWN_REMOVED') { %>
                 <button class="btn btn-xs btn-danger ignore">Ignore</button>
             <% } %>
             <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH') { %>

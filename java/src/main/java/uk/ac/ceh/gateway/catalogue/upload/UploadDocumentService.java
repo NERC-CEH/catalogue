@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import org.apache.commons.io.FileUtils;
@@ -19,9 +20,8 @@ public class UploadDocumentService {
   private final Map<String, File> folders;
 
   @SneakyThrows
-  private UploadFiles getUploadFiles(String directory, String id) {
+  private UploadFiles getUploadFiles(String directory, String id, ArrayNode data) {
     val folder = String.format("%s/%s", directory, id);
-    val data = (ArrayNode) hubbubService.get(folder);
     val files = new UploadFiles();
     val documents = files.getDocuments();
     val invalid = files.getInvalid();
@@ -61,17 +61,29 @@ public class UploadDocumentService {
     val document = new UploadDocument();
     document.setId(id);
 
-    val eidchubFiles = getUploadFiles("eidchub", id);
-    document.getUploadFiles().put("datastore", eidchubFiles);
-    val isZipped =
-        eidchubFiles.getDocuments().keySet().contains(String.format("/eidchub/%s/%s.zip", id, id));
-    eidchubFiles.setZipped(isZipped);
+    val eidchubFiles = new ObjectMapper().createArrayNode();
+    val dropboxFiles = new ObjectMapper().createArrayNode();
+    val ploneFiles = new ObjectMapper().createArrayNode();
 
-    val dropboxFiles = getUploadFiles("dropbox", id);
-    document.getUploadFiles().put("documents", dropboxFiles);
+    val data = (ArrayNode) hubbubService.get(id);
+    data.forEach(item -> {
+      val path = item.get("path").asText();
+      if (path.contains("eidchub"))
+        eidchubFiles.add(item);
+      if (path.contains("dropbox"))
+        dropboxFiles.add(item);
+      if (path.contains("support-documents"))
+        ploneFiles.add(item);
+    });
 
-    val ploneFiles = getUploadFiles("supporting-documents", id);
-    document.getUploadFiles().put("plone", ploneFiles);
+    val eidchubUploadFiles = getUploadFiles("eidchub", id, eidchubFiles);
+    val isZipped = eidchubUploadFiles.getDocuments().keySet().contains(
+        String.format("/eidchub/%s/%s.zip", id, id));
+    eidchubUploadFiles.setZipped(isZipped);
+
+    document.getUploadFiles().put("datastore", eidchubUploadFiles);
+    document.getUploadFiles().put("documents", getUploadFiles("dropbox", id, dropboxFiles));
+    document.getUploadFiles().put("plone", getUploadFiles("supporting-documents", id, ploneFiles));
 
     return document;
   }

@@ -16,7 +16,14 @@ define [
       $('.messages').hide 'fast'
 
     @model.on 'change', => do @render
+    do @update
+  
+  update: ->
     do @model.fetch
+    @updateTimeout = setTimeout(
+      => do @update
+      1000
+    )
 
   initFolders: ->
     $('.documents .files, .plone .files, .datastore .files').sortable
@@ -24,6 +31,8 @@ define [
       scroll: false
       connectWith: '.connectedSortable'
       cancel: '.empty-message, .file-invalid, .moving'
+      start: =>
+        clearTimeout(@updateTimeout)
       stop: (evt, ui) =>
         item = $(ui.item)
         isDocuments = item.parent().parent().hasClass('documents')
@@ -43,6 +52,7 @@ define [
         else
           @model.set
             cancel: yes
+        do @update
 
   initZip: ->
     $('.zip, .unzip').unbind 'click'
