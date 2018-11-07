@@ -127,6 +127,13 @@ public class UploadDocumentService {
     return get(id);
   }
 
+  @SneakyThrows
+  public UploadDocument validateFile(String id, String filename) {
+    System.out.println("filename: " + filename);
+    hubbubService.post(String.format("/validate%s", filename));
+    return get(id);
+  }
+
   public UploadDocument zip(String id) {
     hubbubService.post(String.format("/zip/%s", id));
     return get(id);

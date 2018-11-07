@@ -22,7 +22,7 @@ define [
     do @model.fetch
     @updateTimeout = setTimeout(
       => do @update
-      1000
+      5000
     )
 
   initFolders: ->
@@ -162,6 +162,7 @@ define [
       $('.' + folder + ' .files').append(invalidFile) if $('#' + id).length == 0
 
     @invalidAction('accept')
+    @invalidAction('validate')
     @invalidAction('ignore')
     @invalidAction('delete')
   

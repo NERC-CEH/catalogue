@@ -15,6 +15,20 @@ define [
         console.error('error', err)
         do @fetch
     }
+  validate: (name, file) ->
+    url = @url() + '/validate-upload-file?path=' + encodeURIComponent(file)
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
 
   delete: (name, file) ->
     url = @url() + '/delete-upload-file?filename=' + encodeURIComponent(file)

@@ -151,10 +151,20 @@ public class UploadController {
     return ResponseEntity.ok(document);
   }
 
+  @RequestMapping(value = "documents/{id}/validate-upload-file", method = RequestMethod.PUT,
+      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  validateFile(@ActiveUser CatalogueUser user, @PathVariable("id") String id,
+      @RequestParam("path") String path) {
+    userCanUpload(id);
+    val document = uploadDocumentService.validateFile(id, path);
+    return ResponseEntity.ok(document);
+  }
+
   @RequestMapping(value = "documents/{id}/move-upload-file", method = RequestMethod.PUT,
       consumes = UPLOAD_DOCUMENT_JSON_VALUE)
   public ResponseEntity<UploadDocument>
-  acceptFile(@ActiveUser CatalogueUser user, @PathVariable("id") String id,
+  moveFile(@ActiveUser CatalogueUser user, @PathVariable("id") String id,
       @RequestParam("to") String to, @RequestParam("filename") String filename) {
     userCanUpload(id);
     val document = uploadDocumentService.move(id, filename, to);

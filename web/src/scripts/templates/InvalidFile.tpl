@@ -4,6 +4,9 @@
     </div>
     <div class="invalid-container">
         <div class="pull-right">
+            <% if (type == 'CHANGED_MTIME') { %>
+                <button class="btn btn-xs btn-primary validate">Validate</button>
+            <% } %>
             <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH') { %>
                 <button class="btn btn-xs btn-success accept">Accept</button>
             <% } %>
