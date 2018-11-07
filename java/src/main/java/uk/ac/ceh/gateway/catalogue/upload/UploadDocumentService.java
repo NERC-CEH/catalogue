@@ -72,7 +72,7 @@ public class UploadDocumentService {
         eidchubFiles.add(item);
       if (path.contains("dropbox"))
         dropboxFiles.add(item);
-      if (path.contains("support-documents"))
+      if (path.contains("supporting-documents"))
         ploneFiles.add(item);
     });
 
