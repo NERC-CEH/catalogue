@@ -472,23 +472,20 @@ define [
           label: 'Spatial reference systems'
           ObjectInputView: SpatialReferenceSystemView
           predefined:
-            'OSGB 1936 / British National Grid':
+            'British National Grid':
               code: 27700
               codeSpace: 'urn:ogc:def:crs:EPSG'
-            'TM65 / Irish National Grid':
-              code: 29900
-              codeSpace: 'urn:ogc:def:crs:EPSG'
-            'OSNI 1952 / Irish National Grid':
-              code: 29901
-              codeSpace: 'urn:ogc:def:crs:EPSG'
-            'TM65 / Irish Grid':
-              code: 29902
-              codeSpace: 'urn:ogc:def:crs:EPSG'
-            'WGS 84':
+            'Latitude/longitude (WGS84)':
               code: 4326
               codeSpace: 'urn:ogc:def:crs:EPSG'
-            'WGS 84 longitude-latitude (CRS:84)':
-              code: 'CRS:84'
+            'Spherical mercator':
+              code: 3857
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'Irish National Grid (Northern Ireland, UK)':
+              code: 29901
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'Irish grid (Ireland) ':
+              code: 29902
               codeSpace: 'urn:ogc:def:crs:EPSG'
           helpText: """
                     <p>The spatial referencing system used within the data resource.  <strong>This is mandatory for datasets</strong>; if the dataset has no spatial component (e.g. if it is a laboratory study) the resource type ‘non-geographic data’ should be used instead.</p>
