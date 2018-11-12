@@ -22,8 +22,9 @@ public class SpatialReferenceSystem {
         temp.put(String.format("%s%s", CODESPACE_EPSG, "29900"),"TM65 / Irish National Grid");
         temp.put(String.format("%s%s", CODESPACE_EPSG, "29901"),"OSNI 1952 / Irish National Grid");
         temp.put(String.format("%s%s", CODESPACE_EPSG, "29902"),"TM65 / Irish Grid");
+        temp.put(String.format("%s%s", CODESPACE_EPSG, "29903"),"TM75 / Irish Gridd");
         temp.put(String.format("%s%s", CODESPACE_EPSG, "4326"),"WGS 84");
-        temp.put(String.format("%s%s", CODESPACE_EPSG, "CRS:84"),"WGS 84 longitude-latitude (CRS:84)");
+        temp.put(String.format("%s%s", CODESPACE_EPSG, "3857"),"Spherical mercator");
         titleLookup = Collections.unmodifiableMap(temp);
     }
     private final String code, codeSpace;
