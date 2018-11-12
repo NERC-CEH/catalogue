@@ -261,9 +261,10 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkBoundingBoxes(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val boundingBoxes = parsed.read(
-            "$.boundingBoxes[*]",
+            "$.boundingBoxes[*].['northBoundLatitude','southBoundLatitude','eastBoundLongitude','westBoundLongitude']",
             new TypeRef<List<Map<String, Number>>>() {}
         );
+
         boundingBoxes.forEach(boundingBox -> {
             boundingBox.forEach((key, value) -> {
                 if (BigDecimal.valueOf(value.doubleValue()).scale() > 3) {
@@ -274,14 +275,14 @@ public class MetadataQualityService {
                 val north = boundingBox.get("northBoundLatitude");
                 val south = boundingBox.get("southBoundLatitude");
                 if (north.doubleValue() < south.doubleValue()) {
-                    toReturn.add(new MetadataCheck("Bounding box northern boundary is smaller than the southern", ERROR));
+                    toReturn.add(new MetadataCheck("Bounding box north boundary is smaller than the south", ERROR));
                 }
             }
             if (boundingBox.containsKey("westBoundLongitude") && boundingBox.containsKey("eastBoundLongitude")) {
                 val east = boundingBox.get("eastBoundLongitude");
                 val west = boundingBox.get("westBoundLongitude");
                 if (east.doubleValue() < west.doubleValue()) {
-                    toReturn.add(new MetadataCheck("Bounding box east boundary is smaller than the western", ERROR));
+                    toReturn.add(new MetadataCheck("Bounding box east boundary is smaller than the west", ERROR));
                 }
             }
         });
