@@ -7,13 +7,13 @@
             <% if (type == 'CHANGED_MTIME' || type == 'NO_HASH') { %>
                 <button class="btn btn-xs btn-primary validate">Validate</button>
             <% } %>
-            <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH' || type == 'UNKNOWN_ZIPPED') { %>
+            <% if (name.indexOf('.zip') == -1 && (type.indexOf('MISSING') == -1 && type.indexOf('UNKNOWN') != -1 || type == 'CHANGED_HASH')) { %>
                 <button class="btn btn-xs btn-success accept">Accept</button>
             <% } %>
-            <% if (type == 'MISSING' || type == 'UNKNOWN_REMOVED') { %>
+            <% if (type.indexOf('MISSING') != -1) { %>
                 <button class="btn btn-xs btn-danger ignore">Ignore</button>
             <% } %>
-            <% if (type == 'UNKNOWN' || type == 'CHANGED_HASH' || type == 'UNKNOWN_ZIPPED') { %>
+            <% if (name.indexOf('.zip') == -1 && (type.indexOf('MISSING') == -1 && type.indexOf('UNKNOWN') != -1 || type == 'CHANGED_HASH')) { %>
                 <button class="btn btn-xs btn-danger delete" data-toggle="modal" data-target="#documentUploadModal">Delete</button>
             <% } %>
         </div>
