@@ -18,17 +18,19 @@
         <dd>
           <#list spatialReferenceSystems as SRS>
             <#if SRS.title?has_content>
-              ${SRS.title}
-            <#else>
-              <#if SRS.codeSpace?has_content>
-                <#if SRS.codeSpace == 'urn:ogc:def:crs:EPSG'>
-                  <#assign code='EPSG'>
+                ${SRS.title}
+              <#else>
+                <#if SRS.codeSpace?has_content>
+                  <#if SRS.codeSpace == 'urn:ogc:def:crs:EPSG'>
+                    <#assign codeSpace='EPSG'>
+                  <#else>
+                    <#assign codeSpace=SRS.codeSpace>
+                  </#if>
+                  ${codeSpace}::${SRS.code}
                 <#else>
-                  <#assign code=SRS.codeSpace>
+                  ${SRS.code}
                 </#if>
               </#if>
-              ${code}::${SRS.code}
-            </#if>
             <#if SRS_has_next><br></#if>  
           </#list>
         </dd>
