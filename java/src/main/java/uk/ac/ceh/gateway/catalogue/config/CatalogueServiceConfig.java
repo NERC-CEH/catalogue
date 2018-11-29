@@ -1,13 +1,23 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATA_TYPE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_AGENT_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_DATASET_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MODEL_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_ACTIVITY_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_FACILITY_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_PROGRAMME_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_PUBLICATION_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_SAMPLE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_SHORT;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
-
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
 @Configuration
 public class CatalogueServiceConfig {
@@ -236,35 +246,6 @@ public class CatalogueServiceConfig {
                 .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
                 .facetKey("resourceType")
                 .documentType(gemini)
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
-                .id("elter")
-                .title("eLTER")
-                .url("http://www.ceh.ac.uk")
-                .facetKey("documentType")
-                .documentType(DocumentType.builder().title("CompositeFeature").type("CompositeFeature").build())
-                .documentType(DocumentType.builder().title("Condition").type("Condition").build())
-                .documentType(DocumentType.builder().title("DeploymentRelatedProcessDuration").type("DeploymentRelatedProcessDuration").build())
-                .documentType(DocumentType.builder().title("Input").type("Input").build())
-                .documentType(DocumentType.builder().title("Manufacturer").type("Manufacturer").build())
-                .documentType(DocumentType.builder().title("MonitoringFeature").type("MonitoringFeature").build())
-                .documentType(DocumentType.builder().title("ObservableProperty").type("ObservableProperty").build())
-                .documentType(DocumentType.builder().title("ObservationPlaceholder").type("ObservationPlaceholder").build())
-                .documentType(DocumentType.builder().title("OperatingProperty").type("OperatingProperty").build())
-                .documentType(DocumentType.builder().title("OperatingRange").type("OperatingRange").build())
-                .documentType(DocumentType.builder().title("Person").type("Person").build())
-                .documentType(DocumentType.builder().title("SampleFeature").type("SampleFeature").build())
-                .documentType(DocumentType.builder().title("Sensor").type("Sensor").build())
-                .documentType(DocumentType.builder().title("SensorType").type("SensorType").build())
-                .documentType(DocumentType.builder().title("SingleSystemDeployment").type("SingleSystemDeployment").build())
-                .documentType(DocumentType.builder().title("Stimulus").type("Stimulus").build())
-                .documentType(DocumentType.builder().title("SystemCapability").type("SystemCapability").build())
-                .documentType(DocumentType.builder().title("SystemProperty").type("SystemProperty").build())
-                .documentType(DocumentType.builder().title("TemporalProcedure").type("TemporalProcedure").build())
-                .documentType(DocumentType.builder().title("VerticalMonitoringFeature").type("VerticalMonitoringFeature").build())
-
                 .fileUpload(false)
                 .build()
         );

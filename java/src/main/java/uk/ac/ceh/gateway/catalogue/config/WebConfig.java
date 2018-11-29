@@ -163,29 +163,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(SAMPLE_ARCHIVE_SHORT, MediaType.parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE))
                         .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
                         .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
-
-
-                        .put("CompositeFeature", MediaType.parseMediaType(String.format("application/vnd.%s+json", "CompositeFeature")))
-                        .put("Condition", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Condition")))
-                        .put("DeploymentRelatedProcessDuration", MediaType.parseMediaType(String.format("application/vnd.%s+json", "DeploymentRelatedProcessDuration")))
-                        .put("Input", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Input")))
-                        .put("Manufacturer", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Manufacturer")))
-                        .put("MonitoringFeature", MediaType.parseMediaType(String.format("application/vnd.%s+json", "MonitoringFeature")))
-                        .put("ObservableProperty", MediaType.parseMediaType(String.format("application/vnd.%s+json", "ObservableProperty")))
-                        .put("ObservationPlaceholder", MediaType.parseMediaType(String.format("application/vnd.%s+json", "ObservationPlaceholder")))
-                        .put("OperatingProperty", MediaType.parseMediaType(String.format("application/vnd.%s+json", "OperatingProperty")))
-                        .put("OperatingRange", MediaType.parseMediaType(String.format("application/vnd.%s+json", "OperatingRange")))
-                        .put("Person", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Person")))
-                        .put("SampleFeature", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SampleFeature")))
-                        .put("Sensor", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Sensor")))
-                        .put("SensorType", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SensorType")))
-                        .put("SingleSystemDeployment", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SingleSystemDeployment")))
-                        .put("Stimulus", MediaType.parseMediaType(String.format("application/vnd.%s+json", "Stimulus")))
-                        .put("SystemCapability", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SystemCapability")))
-                        .put("SystemProperty", MediaType.parseMediaType(String.format("application/vnd.%s+json", "SystemProperty")))
-                        .put("TemporalProcedure", MediaType.parseMediaType(String.format("application/vnd.%s+json", "TemporalProcedure")))
-                        .put("VerticalMonitoringFeature", MediaType.parseMediaType(String.format("application/vnd.%s+json", "VerticalMonitoringFeature")))
-
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo

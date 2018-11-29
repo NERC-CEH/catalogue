@@ -94,11 +94,6 @@ module.exports = function(grunt) {
         files: {
           'src/css/style-sa.css': 'src/less/style-sa.less'
         }
-      },
-      elter: {
-        files: {
-          'src/css/style-elter.css': 'src/less/style-elter.less'
-        }
       }
     },
     cssmin: {
@@ -155,11 +150,6 @@ module.exports = function(grunt) {
       sa: {
         files: {
           'src/css/style-sa.css': 'src/css/style-sa.css'
-        }
-      },
-      elter: {
-        files: {
-          'src/css/style-elter.css': 'src/css/style-elter.css'
         }
       }
     },

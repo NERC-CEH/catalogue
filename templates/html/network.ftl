@@ -44,10 +44,6 @@
             </div>
         </div>
         <div class="row">
-            <a href="/elter/documents" class="btn btn-link">
-                <i class="far fa-copy" aria-hidden="true"></i>
-                <span>${catalogue.title} Documents</span>
-            </a>
             <a href="/documents/${document.id}" class="btn btn-link">
                 <i class="far fa-file" aria-hidden="true"></i>
                 <span>${title}</span>

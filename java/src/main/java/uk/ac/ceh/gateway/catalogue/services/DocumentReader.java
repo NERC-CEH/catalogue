@@ -1,21 +1,23 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import static java.lang.String.format;
+
+import java.io.File;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.collect.ImmutableMap;
-import lombok.SneakyThrows;
-import lombok.val;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import lombok.SneakyThrows;
+import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-
-import java.io.File;
-import java.util.Map;
-
-import static java.lang.String.format;
 
 /**
  * static json MetadataDocument reader
@@ -40,28 +42,6 @@ public class DocumentReader<T extends MetadataDocument> {
       .put("osdp-monitoring-programme", "application/vnd.osdp.monitoring-programme+json")
       .put("osdp-monitoring-facility", "application/vnd.osdp.monitoring-facility+json")
       .put("sample-archive", "application/vnd.sample-archive+json")
-
-      .put("CompositeFeature", format("application/vnd.%s+json", "CompositeFeature"))
-      .put("Condition", format("application/vnd.%s+json", "Condition"))
-      .put("DeploymentRelatedProcessDuration", format("application/vnd.%s+json", "DeploymentRelatedProcessDuration"))
-      .put("Input", format("application/vnd.%s+json", "Input"))
-      .put("Manufacturer", format("application/vnd.%s+json", "Manufacturer"))
-      .put("MonitoringFeature", format("application/vnd.%s+json", "MonitoringFeature"))
-      .put("ObservableProperty", format("application/vnd.%s+json", "ObservableProperty"))
-      .put("ObservationPlaceholder", format("application/vnd.%s+json", "ObservationPlaceholder"))
-      .put("OperatingProperty", format("application/vnd.%s+json", "OperatingProperty"))
-      .put("OperatingRange", format("application/vnd.%s+json", "OperatingRange"))
-      .put("Person", format("application/vnd.%s+json", "Person"))
-      .put("SampleFeature", format("application/vnd.%s+json", "SampleFeature"))
-      .put("Sensor", format("application/vnd.%s+json", "Sensor"))
-      .put("SensorType", format("application/vnd.%s+json", "SensorType"))
-      .put("SingleSystemDeployment", format("application/vnd.%s+json", "SingleSystemDeployment"))
-      .put("Stimulus", format("application/vnd.%s+json", "Stimulus"))
-      .put("SystemCapability", format("application/vnd.%s+json", "SystemCapability"))
-      .put("SystemProperty", format("application/vnd.%s+json", "SystemProperty"))
-      .put("TemporalProcedure", format("application/vnd.%s+json", "TemporalProcedure"))
-      .put("VerticalMonitoringFeature", format("application/vnd.%s+json", "VerticalMonitoringFeature"))
-
       .put("data-type", "application/vnd.data-type+json")
       .build();
 
