@@ -74,6 +74,7 @@ public class MetadataQualityService {
                 checkBasics(parsedDoc).ifPresent(checks::addAll);
                 checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
                 checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
+                checkKeywords(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
                 checkDataset(parsedDoc).ifPresent(checks::addAll);
                 checkService(parsedDoc).ifPresent(checks::addAll);
@@ -156,6 +157,25 @@ public class MetadataQualityService {
         }
     }
 
+    private Optional<List<MetadataCheck>> checkKeywords(DocumentContext parsedDoc) {
+        if ( !notRequiredResourceTypes(parsedDoc, "application")) {
+            return Optional.empty();
+        }
+        val toReturn = new ArrayList<MetadataCheck>();
+        val keywords = parsedDoc.read("$.descriptiveKeywords[*].['keywords'].['value']", typeRefStringString);
+        
+        if (keywords ==  null || keywords.isEmpty()) {
+            toReturn.add(new MetadataCheck("There are no keywords", ERROR));
+        }
+
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
+    
     private boolean beginAndEndBothEmpty(Map<String, String> map) {
         return fieldIsMissing(map, "begin") && fieldIsMissing(map, "end");
     }
@@ -199,7 +219,6 @@ public class MetadataQualityService {
             return Optional.of(toReturn);
         }
     }
-
 
     Optional<List<MetadataCheck>> checkDataset(DocumentContext parsed) {
         if (notRequiredResourceTypes(parsed, "dataset")) {
