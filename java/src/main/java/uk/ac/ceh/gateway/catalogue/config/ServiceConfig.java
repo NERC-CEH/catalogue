@@ -97,7 +97,6 @@ import uk.ac.ceh.gateway.catalogue.elter.SystemProperty;
 import uk.ac.ceh.gateway.catalogue.elter.TemporalProcedure;
 import uk.ac.ceh.gateway.catalogue.elter.VerticalMonitoringFeature;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.graph.GraphService;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
@@ -241,11 +240,6 @@ public class ServiceConfig {
     }
 
     @Bean
-    public GraphService graphService() {
-        return new GraphService(jenaTdb);
-    }
-
-    @Bean
     @SneakyThrows
     public UploadDocumentService uploadDocumentService(HubbubService hubbubService) {
         Map<String, File> folders = Maps.newHashMap();
@@ -385,7 +379,6 @@ public class ServiceConfig {
         shared.put("downloadOrderDetails", downloadOrderDetailsService());
         shared.put("permission", permission());
         shared.put("jira", jiraService());
-        shared.put("graph", graphService());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
         shared.put("catalogues", catalogueService);
