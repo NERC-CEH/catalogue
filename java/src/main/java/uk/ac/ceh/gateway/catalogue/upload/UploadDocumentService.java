@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.upload;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -90,10 +91,13 @@ public class UploadDocumentService {
 
   @SneakyThrows
   public UploadDocument add(String id, String filename, InputStream in) {
+    val start = new Date().getTime();
+    System.out.println("starting");
     val directory = folders.get("documents");
     val path = directory.getPath() + "/" + id + "/" + filename;
     val file = new File(path);
     FileUtils.copyInputStreamToFile(in, file);
+    System.out.println("time:" + (new Date().getTime() - start) / 1000);
     return acceptAndValidate(id, String.format("/mnt/dropbox/%s/%s", id, filename));
   }
 
