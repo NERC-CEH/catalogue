@@ -43,6 +43,7 @@ define [
     render = @render.bind @
 
     @dropzone = new Dropzone '.dropzone-files',
+      timeout: 60 * 1000
       url: model.url() + '/add-upload-document'
       maxFilesize: 1250
       autoQueue: yes
