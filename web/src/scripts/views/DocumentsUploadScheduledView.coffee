@@ -45,7 +45,7 @@ define [
     @dropzone = new Dropzone '.dropzone-files',
       timeout: -1
       url: model.url() + '/add-upload-document'
-      maxFilesize: 20000000
+      maxFilesize: 20 * 1000 * 1000
       autoQueue: yes
       previewTemplate: dropzoneFileTpl()
       previewsContainer: '.dropzone-files'
