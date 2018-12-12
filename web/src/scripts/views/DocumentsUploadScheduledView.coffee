@@ -43,9 +43,9 @@ define [
     render = @render.bind @
 
     @dropzone = new Dropzone '.dropzone-files',
-      timeout: 60 * 1000
+      timeout: -1
       url: model.url() + '/add-upload-document'
-      maxFilesize: 1250
+      maxFilesize: 20000000
       autoQueue: yes
       previewTemplate: dropzoneFileTpl()
       previewsContainer: '.dropzone-files'
