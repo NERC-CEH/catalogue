@@ -38,7 +38,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static final String INMS_REGION_URL = "http://vocabs.ceh.ac.uk/inms/region";
 
     public static final String NC_ASSETS_URL = "http://vocabs.ceh.ac.uk/ncterms/assets";
-    public static final String NC_CASE_STUDY_URL = "http://vocabs.ceh.ac.uk/ncterms/case_study";
+    public static final String NC_CASE_STUDY_URL = "http://vocabs.ceh.ac.uk/ncterms/caseStudy";
     public static final String NC_DRIVERS_URL = "http://vocabs.ceh.ac.uk/ncterms/drivers";
     public static final String NC_ECOSYSTEM_SERVICES_URL = "http://vocabs.ceh.ac.uk/ncterms/ecosystem_services";
     public static final String NC_GEOGRAPHICAL_SCALE_URL = "http://vocabs.ceh.ac.uk/ncterms/geographical_scale";
