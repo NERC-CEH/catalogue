@@ -35,7 +35,6 @@ require.config({
     'openlayers':             '../vendor/OpenLayers-custom',
     'chartjs':                '../vendor/chartjs/Chart',
     'jquery-ui':              '../vendor/jquery-ui/ui',
-    'cytoscape':              '../vendor/cytoscape/dist/cytoscape',
 
     // should change to bower when this issue is resolved https://github.com/eligrey/FileSaver.js/issues/409 (or move to yarn/npm)
     'file-saver':              './FileSaver'
