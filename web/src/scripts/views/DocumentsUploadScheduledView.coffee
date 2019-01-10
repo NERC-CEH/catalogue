@@ -6,7 +6,14 @@ define [
 ], (Backbone, message, dropzoneFileTpl, deleteableFileTpl) -> Backbone.View.extend
   dropzone: null
 
+
+
   initialize: ->
+    setInterval(
+      () => do @model.fetch
+      5000
+    )
+
     @model.on 'sync', =>
       do @render
       do $('.loading').remove
