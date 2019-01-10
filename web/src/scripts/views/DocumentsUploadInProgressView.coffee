@@ -25,7 +25,7 @@ define [
     $('.checked-message').text('Last Updated: ' + now.toLocaleDateString('us-EN', options))
     @updateTimeout = setTimeout(
       => do @update
-      5000
+      10000
     )
 
   initFolders: ->

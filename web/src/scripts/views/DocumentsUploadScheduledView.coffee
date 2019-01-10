@@ -11,7 +11,7 @@ define [
   initialize: ->
     setInterval(
       () => do @model.fetch
-      5000
+      10000
     )
 
     @model.on 'sync', =>
