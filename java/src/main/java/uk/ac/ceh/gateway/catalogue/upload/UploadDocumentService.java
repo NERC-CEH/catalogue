@@ -48,7 +48,7 @@ public class UploadDocumentService {
         uploadFile.setDestination(item.get("destination").asText());
       val status = item.get("status").asText();
       uploadFile.setType(status);
-      if (status.equals("VALID") || status.equals("VALIDATING_HASH"))
+      if (status.equals("VALID") || status.equals("VALIDATING_HASH") || status.equals("NO_HASH"))
         documents.put(path, uploadFile);
       else if (!status.equals("REMOVED") && !status.equals("MOVED") && !status.equals("ZIPPED")) {
         invalid.put(path, uploadFile);
