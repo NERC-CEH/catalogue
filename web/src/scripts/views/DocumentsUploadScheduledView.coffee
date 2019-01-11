@@ -6,8 +6,6 @@ define [
 ], (Backbone, message, dropzoneFileTpl, deleteableFileTpl) -> Backbone.View.extend
   dropzone: null
 
-
-
   initialize: ->
     setInterval(
       () => do @model.fetch
@@ -129,6 +127,11 @@ define [
 
     documents = @model.get('uploadFiles').documents || {}
     files = documents.documents || {}
+
+    for index, file of documents.invalid
+      if file.type.indexOf('REMOVED') == -1 and file.type.indexOf('MOVED') == -1 and file.type.indexOf('UNKNOWN') == -1 and file.type.indexOf('MISSING') == -1
+        files[file.name] = file
+
     files = (value for own prop, value of files)
     files.sort (left, right) ->
       return -1 if left.name < right.name
