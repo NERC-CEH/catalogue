@@ -74,6 +74,7 @@ public class MetadataQualityService {
                 checkBasics(parsedDoc).ifPresent(checks::addAll);
                 checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
                 checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
+                checkKeywords(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
                 checkDataset(parsedDoc).ifPresent(checks::addAll);
                 checkService(parsedDoc).ifPresent(checks::addAll);
@@ -156,6 +157,25 @@ public class MetadataQualityService {
         }
     }
 
+    private Optional<List<MetadataCheck>> checkKeywords(DocumentContext parsedDoc) {
+        if ( !notRequiredResourceTypes(parsedDoc, "application")) {
+            return Optional.empty();
+        }
+        val toReturn = new ArrayList<MetadataCheck>();
+        val keywords = parsedDoc.read("$.descriptiveKeywords[*].['keywords'].['value']", typeRefStringString);
+        
+        if (keywords ==  null || keywords.isEmpty()) {
+            toReturn.add(new MetadataCheck("There are no keywords", ERROR));
+        }
+
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
+    
     private boolean beginAndEndBothEmpty(Map<String, String> map) {
         return fieldIsMissing(map, "begin") && fieldIsMissing(map, "end");
     }
@@ -199,7 +219,6 @@ public class MetadataQualityService {
             return Optional.of(toReturn);
         }
     }
-
 
     Optional<List<MetadataCheck>> checkDataset(DocumentContext parsed) {
         if (notRequiredResourceTypes(parsed, "dataset")) {
@@ -261,9 +280,10 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkBoundingBoxes(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val boundingBoxes = parsed.read(
-            "$.boundingBoxes[*]",
+            "$.boundingBoxes[*].['northBoundLatitude','southBoundLatitude','eastBoundLongitude','westBoundLongitude']",
             new TypeRef<List<Map<String, Number>>>() {}
         );
+
         boundingBoxes.forEach(boundingBox -> {
             boundingBox.forEach((key, value) -> {
                 if (BigDecimal.valueOf(value.doubleValue()).scale() > 3) {
@@ -274,14 +294,14 @@ public class MetadataQualityService {
                 val north = boundingBox.get("northBoundLatitude");
                 val south = boundingBox.get("southBoundLatitude");
                 if (north.doubleValue() < south.doubleValue()) {
-                    toReturn.add(new MetadataCheck("Bounding box northern boundary is smaller than the southern", ERROR));
+                    toReturn.add(new MetadataCheck("Bounding box north boundary is smaller than the south", ERROR));
                 }
             }
             if (boundingBox.containsKey("westBoundLongitude") && boundingBox.containsKey("eastBoundLongitude")) {
                 val east = boundingBox.get("eastBoundLongitude");
                 val west = boundingBox.get("westBoundLongitude");
                 if (east.doubleValue() < west.doubleValue()) {
-                    toReturn.add(new MetadataCheck("Bounding box east boundary is smaller than the western", ERROR));
+                    toReturn.add(new MetadataCheck("Bounding box east boundary is smaller than the west", ERROR));
                 }
             }
         });

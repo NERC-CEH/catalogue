@@ -76,26 +76,6 @@ import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
-import uk.ac.ceh.gateway.catalogue.elter.CompositeFeature;
-import uk.ac.ceh.gateway.catalogue.elter.Condition;
-import uk.ac.ceh.gateway.catalogue.elter.DeploymentRelatedProcessDuration;
-import uk.ac.ceh.gateway.catalogue.elter.Input;
-import uk.ac.ceh.gateway.catalogue.elter.Manufacturer;
-import uk.ac.ceh.gateway.catalogue.elter.MonitoringFeature;
-import uk.ac.ceh.gateway.catalogue.elter.ObservableProperty;
-import uk.ac.ceh.gateway.catalogue.elter.ObservationPlaceholder;
-import uk.ac.ceh.gateway.catalogue.elter.OperatingProperty;
-import uk.ac.ceh.gateway.catalogue.elter.OperatingRange;
-import uk.ac.ceh.gateway.catalogue.elter.Person;
-import uk.ac.ceh.gateway.catalogue.elter.SampleFeature;
-import uk.ac.ceh.gateway.catalogue.elter.Sensor;
-import uk.ac.ceh.gateway.catalogue.elter.SensorType;
-import uk.ac.ceh.gateway.catalogue.elter.SingleSystemDeployment;
-import uk.ac.ceh.gateway.catalogue.elter.Stimulus;
-import uk.ac.ceh.gateway.catalogue.elter.SystemCapability;
-import uk.ac.ceh.gateway.catalogue.elter.SystemProperty;
-import uk.ac.ceh.gateway.catalogue.elter.TemporalProcedure;
-import uk.ac.ceh.gateway.catalogue.elter.VerticalMonitoringFeature;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
@@ -446,27 +426,6 @@ public class ServiceConfig {
                 .register(OSDP_PUBLICATION_SHORT, Publication.class)
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
-
-                .register("CompositeFeature", CompositeFeature.class)
-                .register("Condition", Condition.class)
-                .register("DeploymentRelatedProcessDuration", DeploymentRelatedProcessDuration.class)
-                .register("Input", Input.class)
-                .register("Manufacturer", Manufacturer.class)
-                .register("MonitoringFeature", MonitoringFeature.class)
-                .register("ObservableProperty", ObservableProperty.class)
-                .register("ObservationPlaceholder", ObservationPlaceholder.class)
-                .register("OperatingProperty", OperatingProperty.class)
-                .register("OperatingRange", OperatingRange.class)
-                .register("Person", Person.class)
-                .register("SampleFeature", SampleFeature.class)
-                .register("Sensor", Sensor.class)
-                .register("SensorType", SensorType.class)
-                .register("SingleSystemDeployment", SingleSystemDeployment.class)
-                .register("Stimulus", Stimulus.class)
-                .register("SystemCapability", SystemCapability.class)
-                .register("SystemProperty", SystemProperty.class)
-                .register("TemporalProcedure", TemporalProcedure.class)
-                .register("VerticalMonitoringFeature", VerticalMonitoringFeature.class)
 
                 .register(DATA_TYPE_SHORT, DataType.class);
     }

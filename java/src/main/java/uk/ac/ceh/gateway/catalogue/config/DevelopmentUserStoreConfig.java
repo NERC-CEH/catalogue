@@ -40,8 +40,6 @@ public class DevelopmentUserStoreConfig {
     public static final String OSDP_PUBLISHER = "role_osdp_publisher";
     public static final String SA_EDITOR = "role_sa_editor";
     public static final String SA_PUBLISHER = "role_sa_publisher";
-    public static final String ELTER_EDITOR = "role_elter_editor";
-    public static final String ELTER_PUBLISHER = "role_elter_publisher";
 
     @Bean
     @Qualifier("superadmin")
@@ -55,8 +53,6 @@ public class DevelopmentUserStoreConfig {
         groupStore().grantGroupToUser(superadmin, EIDC_PUBLISHER);
         groupStore().grantGroupToUser(superadmin, MAINTENANCE_ROLE);
         groupStore().grantGroupToUser(superadmin, DATACITE_ROLE);
-        groupStore().grantGroupToUser(superadmin, ELTER_EDITOR);
-        groupStore().grantGroupToUser(superadmin, ELTER_PUBLISHER);
         userStore().addUser(superadmin, "superadminpassword");
         return superadmin;
     }
@@ -225,31 +221,6 @@ public class DevelopmentUserStoreConfig {
     }
 
     @Bean
-    @Qualifier("elter-publisher")
-    public CatalogueUser elterPublisher() throws UsernameAlreadyTakenException {
-        CatalogueUser user = new CatalogueUser()
-            .setUsername("elter-publisher")
-            .setEmail("elter-publisher@ceh.ac.uk");
-
-        groupStore().grantGroupToUser(user, ELTER_PUBLISHER);
-        groupStore().grantGroupToUser(user, ELTER_EDITOR);
-        userStore().addUser(user, "publisherpassword");
-        return user;
-    }
-
-    @Bean
-    @Qualifier("elter-publisher")
-    public CatalogueUser elterEditor() throws UsernameAlreadyTakenException {
-        CatalogueUser user = new CatalogueUser()
-            .setUsername("elter-editor")
-            .setEmail("elter-editor@ceh.ac.uk");
-
-        groupStore().grantGroupToUser(user, ELTER_EDITOR);
-        userStore().addUser(user, "editorpassword");
-        return user;
-    }
-
-    @Bean
     public InMemoryGroupStore<CatalogueUser> groupStore() {
         InMemoryGroupStore<CatalogueUser> toReturn = new InMemoryGroupStore<>();
         //create groups
@@ -271,8 +242,6 @@ public class DevelopmentUserStoreConfig {
         toReturn.createGroup(SA_PUBLISHER, "SA Publisher Role");
         toReturn.createGroup(MAINTENANCE_ROLE, "System Admin Role");
         toReturn.createGroup(DATACITE_ROLE, "Datacite Role");
-        toReturn.createGroup(ELTER_EDITOR, "eLTER Editor Role");
-        toReturn.createGroup(ELTER_PUBLISHER, "eLTER Publisher Role");
         return toReturn;
     }
 
