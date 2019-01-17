@@ -1,13 +1,9 @@
 <#if supplemental?has_content>
-<#assign dataPapers = func.filter(supplemental, "type", "dataPaper")>
-<#assign citedBy = func.filter(supplemental, "type", "isCitedBy")>
-<#assign supOther = func.filter(supplemental, "type", "website") + func.filter(supplemental, "type", "") + func.filter(supplemental, "type", "relatedArticle") + func.filter(supplemental, "type", "relatedDataset")>
-
   <div id="section-supplemental">
     <h3>Supplemental information</h3>
     
     <#if dataPapers?has_content>
-      <div class="supplemental-block">
+      <div class="supplemental-block" id="dataPapers">
         <h4>Data papers that describe this ${recordType}:</h4>
         <#list dataPapers as supplement>
         ${func.displaySupplemental(supplement)}
@@ -16,9 +12,9 @@
     </#if>
 
     <#if citedBy?has_content>
-      <div class="supplemental-block">
+      <div class="supplemental-block" id="citations">
         <h4>This ${recordType} is cited by:</h4>
-        <#list citedBy as supplement>
+        <#list citedBy+dataPapers as supplement>
          ${func.displaySupplemental(supplement)}
         </#list>
       </div>

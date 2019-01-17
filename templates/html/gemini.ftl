@@ -14,8 +14,11 @@
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
 >
-<#if useConstraints?has_content>
-  <#assign licences = func.filter(useConstraints, "code", "license")>
+
+<#if supplemental?has_content>
+  <#assign dataPapers = func.filter(supplemental, "type", "dataPaper")>
+  <#assign citedBy = func.filter(supplemental, "type", "isCitedBy")>
+  <#assign supOther = func.filter(supplemental, "type", "website") + func.filter(supplemental, "type", "") + func.filter(supplemental, "type", "relatedArticle") + func.filter(supplemental, "type", "relatedDataset")>
 </#if>
 
 <#macro getLabel val array>
@@ -47,6 +50,7 @@
           <div class="row">
             <div class="col-sm-4 col-sm-push-8">
               <#include "gemini/_uploadData.ftl">
+              <#include "gemini/_metrics.ftl">
 
               <#if resourceStatus??>
                 <#if resourceStatus == 'Restricted'>
