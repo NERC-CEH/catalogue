@@ -42,7 +42,6 @@ public class MetadataQualityService {
         "eidc@ceh.ac.uk"
     );
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<List<Map<String, String>>>() {};
-    private final TypeRef<List<List<Map<String, String>>>> typeKeyword = new TypeRef<List<List<Map<String, String>>>>() {};
 
     @Autowired
     public MetadataQualityService(@NonNull DocumentReader documentReader, @NonNull ObjectMapper objectMapper) {
@@ -164,7 +163,7 @@ public class MetadataQualityService {
         }
         val toReturn = new ArrayList<MetadataCheck>();
         val descriptiveKeywords = parsedDoc.read("$.descriptiveKeywords[*].['keywords']", typeRefStringString);
-        val keywords = parsedDoc.read("$.descriptiveKeywords.keywords[*].['value']", typeKeyword);
+        val keywords = parsedDoc.read("$.descriptiveKeywords.keywords[*].['value']", typeRefStringString);
         
         if (keywords ==  null || keywords.isEmpty()) {
             toReturn.add(new MetadataCheck("There are no keywords", ERROR));
