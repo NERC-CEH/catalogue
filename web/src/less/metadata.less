@@ -1,9 +1,10 @@
 @light-gray-border: #CCC;
-
 @quality_success: #090;
 @quality_warning: rgb(255, 153, 51);
 @quality_info: rgb(102, 102, 255);
 @quality_error: rgb(255, 102, 102);
+
+@border_radius: 0.5em;
 
 #metadata {
   #section-title {
@@ -21,12 +22,13 @@
     .licenceText {
       a{font-weight:bold;}
     }
-    .titleSpacer {
-      border-bottom: 1px solid @light-gray-border;
-      margin-bottom: 1em;
-      padding: 1em 0;
-    }
   }
+
+  .titleSpacer {
+    border-bottom: 1px solid @light-gray-border;
+    margin-bottom: 1em;
+    padding: 1em 0;
+  };
 
   #missingResourceType {
     margin:4em 0;
@@ -91,18 +93,49 @@
 }
 
 #document-metrics {
-  h2 {margin:0;
-    a {display: block;}
-    i {margin-right:0.35em;};
-  };
- 
-};
 
+  h2 {
+    margin:0;
+    font-size:1.25em;
+    a {
+      display: block;
+      color: #777;
+    };
+    i {
+      margin-right:0.35em;
+      font-size:1.85em;
+      color: @brand-success;
+    };
+    span {
+      font-size:1.85em;
+      color: @brand-success;
+    };
+  };
+  p {
+    margin:1em 0 0 0;
+  };
+
+};
 
   #document-distribution {
     .signpostURL {
       display: block;
       margin: 1em 0;
+    };
+    .divider {
+      height: 1px; 
+      background:@light-gray-border;
+      margin:1.2em 0;
+    };
+    .onlineResourceLinks{
+      >div {
+        padding: 0.65em;
+        margin-left:2em;
+        i {
+          margin-left:-2.25em;
+          margin-right:.75em;
+        };
+      };
     };
     #resourceStatus {   
       background-color: transparent;
@@ -125,7 +158,7 @@
         display:none;
       };
     }
-  };
+};
   
   #signpost {
     .signpostURL {
@@ -300,9 +333,17 @@
     };
   };
 
- #section-onlineResources {
+#section-onlineResources {
 	p {margin-bottom:1.5em;}
- }
+ };
+
+.panel {
+  border-radius: @border_radius !important;
+  .panel-heading {
+    border-radius: @border_radius @border_radius 0 0 !important;
+  }
+  };
+
 
  @media (min-width: 768px) {
     .dl-horizontal dt {
@@ -318,6 +359,8 @@
  @media (min-width: 468px) {
     .dl-horizontal dd { margin-bottom:1em;}
   }
+
+
 }
 
 #section-metadataQuality {
@@ -396,7 +439,4 @@
     }
   }
 }
-
-
-
 

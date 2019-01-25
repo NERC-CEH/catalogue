@@ -4,7 +4,7 @@
       <p class="licenceText">
 
        <#if resourceStatus?? && resourceStatus == "Embargoed">
-        <#assign licenceText = licence.value?replace("is made available","will be available") >
+        <#assign licenceText = licence.value?replace("is made available","will be available")?replace("is available","will be available") >
        <#else> 
         <#assign licenceText = licence.value >
       </#if>
@@ -15,6 +15,7 @@
           ${licenceText?html}
         </#if>
       </p>
+      <div class="divider"></div>
     </#if>
   </#list>
 </#if>

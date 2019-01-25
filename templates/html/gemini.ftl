@@ -14,7 +14,9 @@
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
 >
-
+<#if useConstraints?has_content>
+  <#assign licences = func.filter(useConstraints, "code", "license")>
+</#if>
 <#if supplemental?has_content>
   <#assign dataPapers = func.filter(supplemental, "type", "dataPaper")>
   <#assign citedBy = func.filter(supplemental, "type", "isCitedBy")>
