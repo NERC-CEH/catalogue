@@ -75,7 +75,7 @@ public class SearchQuery {
                 .setQuery(term)
                 .setParam("defType", "edismax")
                 .setParam("qf", "title^50 description^25 keyword^2 lineage organisation individual surname onlineResourceName onlineResourceDescription altTitle resourceIdentifier identifier")
-                .setParam("bq", "resourceStatus:available state:published")
+                .setParam("bq", "resourceStatus:Superseded^-15")
                 .setParam("bf", "version")
                 .setParam("ps", "5")
                 .setParam("pf", "title^50 description^25 keyword^2")
