@@ -11,10 +11,10 @@
       </div>
     </#if>
 
-    <#if citedBy?has_content>
-      <div class="supplemental-block" id="citations">
-        <h4>This ${recordType} is cited by:</h4>
-        <#list citedBy+dataPapers as supplement>
+    <#if referencedBy?has_content>
+      <div class="supplemental-block" id="referencedIn">
+        <h4>This ${recordType} is referenced in:</h4>
+        <#list referencedBy+dataPapers as supplement>
          ${func.displaySupplemental(supplement)}
         </#list>
       </div>

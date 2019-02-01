@@ -1,15 +1,12 @@
 <#if supplemental?has_content>
-  <#assign citationCount= citedBy?size + dataPapers?size>
-  <#if citationCount gt 0 >
+  <#assign referenceCount= referencedBy?size + dataPapers?size>
+  <#if referenceCount gt 0 >
     <div class="panel panel-default hidden-print" id="document-metrics">
       <div class="panel-body">
         <h2><a href="#section-supplemental">
         <i class="fas fa-book-reader pull-right"></i>
-        This ${recordType} has <span>${citationCount}</span> citation<#if citationCount gt 1>s</#if>
+        <span>${referenceCount}</span> citation<#if referenceCount gt 1>s</#if>
         </a></h2>
-        <#if citation?has_content>
-          <p class="text-right"><small><a class="text-muted" href="#" data-toggle="modal" data-target="#citationModal"><small><i class="fas fa-quote-left fa-xs"></i> <i class="fas fa-quote-right fa-xs"></i></small> Cite this ${recordType?lower_case!''}</a></small></p>
-        </#if>
       </div>
     </div>
   </#if>

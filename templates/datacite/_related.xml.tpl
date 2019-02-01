@@ -4,10 +4,10 @@
 
 <#if doc.supplemental?has_content>
   <#assign dataPapers = func.filter(doc.supplemental, "type", "dataPaper")>
-  <#assign citedBy = func.filter(doc.supplemental, "type", "isCitedBy")>
+  <#assign referencedBy = func.filter(doc.supplemental, "type", "isReferencedBy")>
 </#if>
 
-<#if doc.revisionOfIdentifier?has_content || infoResources?has_content || dataPapers?has_content || citedBy?has_content>
+<#if doc.revisionOfIdentifier?has_content || infoResources?has_content || dataPapers?has_content || referencedBy?has_content>
   <relatedIdentifiers>
     
     <#if infoResources?has_content>
@@ -27,18 +27,18 @@
         <#else>
           <#assign idtype="URL", uri=link.url>
         </#if>
-        <relatedIdentifier relatedIdentifierType="${idtype}" relationType="IsDescribedBy" resourceTypeGeneral="DataPaper">${uri}</relatedIdentifier>
+        <relatedIdentifier relatedIdentifierType="${idtype}" relationType="IsSupplementTo" resourceTypeGeneral="DataPaper">${uri}</relatedIdentifier>
       </#list>
     </#if>
 
-    <#if citedBy?has_content>
-      <#list citedBy as link>
+    <#if referencedBy?has_content>
+      <#list referencedBy as link>
         <#if link.url?matches("^http(|s)://(|dx.)doi.org/10.\\d{2,9}/.+$")>
           <#assign idtype="DOI", uri=link.url?replace("http://dx.doi.org/","")?replace("http://doi.org/","")?replace("https://doi.org/","")>
         <#else>
           <#assign idtype="URL", uri=link.url>
         </#if>
-        <relatedIdentifier relatedIdentifierType="${idtype}" relationType="IsCitedBy" resourceTypeGeneral="Text">${uri}</relatedIdentifier>
+        <relatedIdentifier relatedIdentifierType="${idtype}" relationType="IsReferencedBy" resourceTypeGeneral="Text">${uri}</relatedIdentifier>
       </#list>
     </#if>
   </relatedIdentifiers>
