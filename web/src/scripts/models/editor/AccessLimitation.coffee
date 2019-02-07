@@ -24,6 +24,7 @@ define [
     'embargoed':'Embargoed'
     'superseded':'Superseded'
     'withdrawn':'Withdrawn'
+    'controlled':'Controlled'
     'public access limited according to Article 13(1)(a) of the INSPIRE Directive':'Restricted'
     'public access limited according to Article 13(1)(b) of the INSPIRE Directive':'Restricted'
     'public access limited according to Article 13(1)(c) of the INSPIRE Directive':'Restricted'
@@ -34,6 +35,7 @@ define [
     'public access limited according to Article 13(1)(h) of the INSPIRE Directive':'Restricted'
 
   descriptions:
+    'controlled':'To access this data, a licence needs to be negotiated with the provider.  There may be a cost'
     'public access limited according to Article 13(1)(a) of the INSPIRE Directive':'Access would adversely affect the confidentiality of the proceedings of public authorities, where such confidentiality is provided for by law.'
     'public access limited according to Article 13(1)(b) of the INSPIRE Directive':'Access would adversely affect international relations, public security or national defence.'
     'public access limited according to Article 13(1)(c) of the INSPIRE Directive':'Access would adversely affect the course of justice, the ability of any person to receive a fair trial or the ability of a public authority to conduct an enquiry of a criminal or disciplinary nature.'
