@@ -4,12 +4,17 @@
   </div>
   <div class="col-sm-10">
     <select data-name="type" class="editor-input type" id="supplemental<%= data.index %>Type">
-      <option value="dataPaper">DATA PAPER (that describes this resource)</option>
-      <option value="isReferencedBy">REFERENCED IN... (an article that references or cites this resource)</option>
-      <option value="relatedArticle">RELATED ARTICLE (or grey literature) which is relevant but which DOESN'T cite this resource</option>
-      <option value="relatedDataset">RELATED DATASET (but which is NOT hosted by EIDC)</option>
-      <option value="website">WEBSITE (e.g. project website)</option>
-      <option value="" selected>Other</option>
+    <option value="" selected>-- Choose one --</option>
+    <optgroup label="Citation">
+      <option value="isReferencedBy">REFERENCED IN. The data is referenced/cited in this article.</option>
+      <option value="isSupplementTo">SUPPLEMENT TO. The data underlies the findings in this article.</option>
+    </optgroup>
+    <optgroup label="Other">
+      <option value="relatedArticle">RELATED ARTICLE. An article (or grey literature) which is relevant but which DOESN'T cite this resource</option>
+      <option value="relatedDataset">RELATED DATASET. A dataset which is related but which is NOT hosted by EIDC)/option>
+      <option value="website">RELATED WEBSITE. (e.g. project website)</option>
+      <option value="">Miscellaneous</option>
+    </optgroup>
     </select>
   </div>
 </div>
@@ -26,7 +31,7 @@
     <label class="control-label" for="supplemental<%= data.index %>Description">Description</label>
   </div>
   <div class="col-sm-10">
-    <textarea data-name='description' class="editor-textarea" id="supplemental<%= data.index %>Description" rows="7"><%= data.description %></textarea>
+    <textarea data-name='description' class="editor-textarea" id="supplemental<%= data.index %>Description" rows="4"><%= data.description %></textarea>
   </div>
 </div>
 <div class="row">

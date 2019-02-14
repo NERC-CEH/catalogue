@@ -18,8 +18,8 @@
   <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
 <#if supplemental?has_content>
-  <#assign dataPapers = func.filter(supplemental, "type", "dataPaper")>
   <#assign referencedBy = func.filter(supplemental, "type", "isReferencedBy")>
+  <#assign supplementTo = func.filter(supplemental, "type", "isSupplementTo")>
   <#assign supOther = func.filter(supplemental, "type", "website") + func.filter(supplemental, "type", "") + func.filter(supplemental, "type", "relatedArticle") + func.filter(supplemental, "type", "relatedDataset")>
 </#if>
 

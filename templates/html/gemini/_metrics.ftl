@@ -1,5 +1,5 @@
 <#if supplemental?has_content>
-  <#assign referenceCount= referencedBy?size + dataPapers?size>
+  <#assign referenceCount= referencedBy?size + supplementTo?size>
   <#if referenceCount gt 0 >
     <div class="panel panel-default hidden-print" id="document-metrics">
       <div class="panel-body">

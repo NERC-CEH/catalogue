@@ -2,10 +2,10 @@
   <div id="section-supplemental">
     <h3>Supplemental information</h3>
     
-    <#if dataPapers?has_content>
-      <div class="supplemental-block" id="dataPapers">
-        <h4>Data papers that describe this ${recordType}:</h4>
-        <#list dataPapers as supplement>
+    <#if supplementTo?has_content>
+      <div class="supplemental-block" id="supplementTo">
+        <h4>This ${recordType} is a supplement to:</h4>
+        <#list supplementTo as supplement>
         ${func.displaySupplemental(supplement)}
         </#list>
       </div>
@@ -14,7 +14,7 @@
     <#if referencedBy?has_content>
       <div class="supplemental-block" id="referencedIn">
         <h4>This ${recordType} is referenced in:</h4>
-        <#list referencedBy+dataPapers as supplement>
+        <#list referencedBy as supplement>
          ${func.displaySupplemental(supplement)}
         </#list>
       </div>
