@@ -22,5 +22,4 @@
         </#if>
     </div>
 <#else>
-    <div class="titleSpacer"></div>
 </#if>

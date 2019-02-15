@@ -162,7 +162,8 @@ public class MetadataQualityService {
             return Optional.empty();
         }
         val toReturn = new ArrayList<MetadataCheck>();
-        val keywords = parsedDoc.read("$.descriptiveKeywords[*].['keywords'].['value']", typeRefStringString);
+        val descriptiveKeywords = parsedDoc.read("$.descriptiveKeywords[*].['keywords']", typeRefStringString);
+        val keywords = parsedDoc.read("$.descriptiveKeywords.keywords[*].['value']", typeRefStringString);
         
         if (keywords ==  null || keywords.isEmpty()) {
             toReturn.add(new MetadataCheck("There are no keywords", ERROR));

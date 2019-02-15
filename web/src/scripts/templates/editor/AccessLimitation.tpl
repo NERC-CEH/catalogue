@@ -4,6 +4,9 @@
 		<option value="Registration is required to access this data">FREELY AVAILABLE - but USERS MUST LOG IN to access it</option>
 		<option value="no limitations to public access">FREELY AVAILABLE and there is NO NEED TO LOG IN to access it (no limitations)</option>
 	</optgroup>
+	<optgroup label="Controlled">
+		<option value="controlled">CONTROLLED - To access this data, a bespoke licence needs to be negotiated and there may be a cost</option>
+	</optgroup>
 	<optgroup label="Unavailable">
 		<option value="embargoed">EMBARGOED - This resource is not yet available but a date has been set for its release</option>
 		<option value="superseded">SUPERSEDED - This resource has been withdrawn and has been replaced by an updated version</option>

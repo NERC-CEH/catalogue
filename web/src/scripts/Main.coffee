@@ -42,8 +42,6 @@ define [
   'cs!views/DepositRequestView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
-  'cs!models/Graph'
-  'cs!views/GraphView'
   'bootstrap'
   'dropzone'
 ], (
@@ -53,7 +51,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
-    ClipboardCopyView, DataTypeEditorView, Graph, GraphView
+    ClipboardCopyView, DataTypeEditorView
 ) ->
 
   ###
@@ -79,14 +77,9 @@ define [
     do @initPermission if $('.permission').length
     do @initCatalogue if $('.catalogue-control').length
     do @initClipboard if $('.clipboard-copy').length
-    do @initGrpah if $('#cy').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
-
-  initGrpah: ->
-    app = new Graph $('#cy').data('document')
-    view = new GraphView model: app
 
   initDepositRequest: ->
     app = new DepositRequestModel

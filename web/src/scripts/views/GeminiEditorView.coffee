@@ -335,7 +335,7 @@ define [
               value: '© Natural Environment Research Council'
               code: 'copyright'
             'Licence - OGL':
-              value: 'This resource is made available under the terms of the Open Government Licence'
+              value: 'This resource is available under the terms of the Open Government Licence'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL/plain'
               code: 'license'
           helpText: """
@@ -541,14 +541,14 @@ define [
       ]
     ,
       label: 'Supplemental'
-      title:  'Supplemental information and funding'
+      title:  'Additional information and funding'
       views: [
         new ParentView
           model: @model
           modelAttribute: 'supplemental'
           ModelType: Supplemental
           multiline: true
-          label: 'Supplemental information'
+          label: 'Additional information'
           ObjectInputView: SupplementalView
           helpText: """
                     <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
