@@ -73,7 +73,7 @@ dependencies {
     implementation 'org.hibernate.validator:hibernate-validator:6.0.1.Final'
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-guava:${jacksonVersion}"
-    implementation "com.google.guava:guava:27.0.1-android"
+    implementation "com.google.guava:guava:23"
     implementation("org.springframework:spring-core:${springVersion}") {
         exclude(module: 'commons-logging')
     }
