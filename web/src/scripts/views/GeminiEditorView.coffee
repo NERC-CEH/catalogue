@@ -567,7 +567,7 @@ define [
           predefined:
             'NERC':
               funderName: 'Natural Environment Research Council'
-              funderIdentifier: 'https://doi.org/10.13039/501100000270'
+              funderIdentifier: 'https://ror.org/02b5d8509'
           helpText: """
                     <p>Include here details of any grants or awards that were used to generate this resource.</p>
                     <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
