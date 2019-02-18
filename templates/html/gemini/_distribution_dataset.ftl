@@ -13,7 +13,7 @@
       <div class="distribution-dataset">
         <#include "_status.ftl">
         <#include "_licence.ftl">
-        <#if resourceStatus == "Available" >
+        <#if resourceStatus == "Available" || resourceStatus == "Controlled">
           <#if offlineOrders?? || downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) || mapViewable?? >
             <div class="onlineResourceLinks">
             <#if (downloadOrder.orderable)?? && downloadOrder.orderable>
