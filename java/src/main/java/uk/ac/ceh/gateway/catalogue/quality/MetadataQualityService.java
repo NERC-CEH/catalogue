@@ -74,7 +74,6 @@ public class MetadataQualityService {
                 checkBasics(parsedDoc).ifPresent(checks::addAll);
                 checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
                 checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
-                checkKeywords(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
                 checkDataset(parsedDoc).ifPresent(checks::addAll);
                 checkService(parsedDoc).ifPresent(checks::addAll);
@@ -157,26 +156,7 @@ public class MetadataQualityService {
         }
     }
 
-    private Optional<List<MetadataCheck>> checkKeywords(DocumentContext parsedDoc) {
-        if ( !notRequiredResourceTypes(parsedDoc, "application")) {
-            return Optional.empty();
-        }
-        val toReturn = new ArrayList<MetadataCheck>();
-        val descriptiveKeywords = parsedDoc.read("$.descriptiveKeywords[*].['keywords']", typeRefStringString);
-        val keywords = parsedDoc.read("$.descriptiveKeywords.keywords[*].['value']", typeRefStringString);
-        
-        if (keywords ==  null || keywords.isEmpty()) {
-            toReturn.add(new MetadataCheck("There are no keywords", ERROR));
-        }
 
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
-    }
-
-    
     private boolean beginAndEndBothEmpty(Map<String, String> map) {
         return fieldIsMissing(map, "begin") && fieldIsMissing(map, "end");
     }
@@ -318,7 +298,8 @@ public class MetadataQualityService {
             return Optional.empty();
         }
         val toReturn = new ArrayList<MetadataCheck>();
-        checkAuthors(parsed).ifPresent(toReturn::addAll);
+        checkAuthors(parsed).ifPresent(toReturn::addAll);        
+        checkKeywords(parsed).ifPresent(toReturn::add);
         checkTopicCategories(parsed).ifPresent(toReturn::add);
         checkDataFormat(parsed).ifPresent(toReturn::add);
         checkPointOfContact(parsed).ifPresent(toReturn::addAll);
@@ -527,6 +508,18 @@ public class MetadataQualityService {
         }
         if (dataFormats.stream().anyMatch(format -> fieldIsMissing(format, "version"))) {
             return Optional.of(new MetadataCheck("Format version is empty", ERROR));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    Optional<MetadataCheck> checkKeywords(DocumentContext parsed) {
+        val keywords = parsed.read("$.descriptiveKeywords[*]keywords[*]",typeRefStringString);
+        if (keywords.isEmpty()) {
+            return Optional.of(new MetadataCheck("Keywords are missing", ERROR));
+        }
+        if (keywords.stream().anyMatch(keyword -> fieldIsMissing(keyword, "value"))) {
+            return Optional.of(new MetadataCheck("Keyword is empty", ERROR));
         } else {
             return Optional.empty();
         }
