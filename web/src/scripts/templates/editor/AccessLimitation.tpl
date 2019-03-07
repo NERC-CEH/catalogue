@@ -5,7 +5,7 @@
 		<option value="no limitations to public access">FREELY AVAILABLE and there is NO NEED TO LOG IN to access it (no limitations)</option>
 	</optgroup>
 	<optgroup label="Controlled">
-		<option value="controlled">CONTROLLED - To access this data, a bespoke licence needs to be negotiated and there may be a cost</option>
+		<option value="To access this data, a licence needs to be negotiated with the provider and there may be a cost">CONTROLLED - To access this data, a bespoke licence needs to be negotiated and there may be a cost</option>
 	</optgroup>
 	<optgroup label="Unavailable">
 		<option value="embargoed">EMBARGOED - This resource is not yet available but a date has been set for its release</option>

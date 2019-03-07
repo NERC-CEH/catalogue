@@ -86,15 +86,15 @@
   <#list doc.funding as funder>
     <fundingReference>
       <funderName>${funder.funderName}</funderName>
-      <#if funder.funderIdentifier?has_content>
-         <#if funder.funderIdentifier?matches("^http(|s)://(|dx.)doi.org/10.13039/\\d+$")>
-            <funderIdentifier funderIdentifierType="Crossref Funder">${funder.funderIdentifier}</funderIdentifier>
-         <#elseif funder.funderIdentifier?matches("^http(|s)://grid.ac/institutes/)grid.[\\w.]+$")>
-            <funderIdentifier funderIdentifierType="GRID">${funder.funderIdentifier}</funderIdentifier>
+        <#if funder.funderIdentifier?has_content>
+        <#assign funderIdentifierType="Other">
+          <#if funder.funderIdentifier?matches("^http(|s)://(|dx.)doi.org/10.13039/\\d+$")>
+              <#assign funderIdentifierType="Crossref Funder">
           <#elseif funder.funderIdentifier?matches("^http(|s)://ror.org/[0-9a-z]+$")>
-            <funderIdentifier funderIdentifierType="ROR">${funder.funderIdentifier}</funderIdentifier>
-         </#if>
-      </#if>
+              <#assign funderIdentifierType="ROR">
+          </#if>
+        <funderIdentifier funderIdentifierType="${funderIdentifierType}">${funder.funderIdentifier}</funderIdentifier>
+        </#if>
       <#if funder.awardNumber?has_content>
         <awardNumber>${funder.awardNumber}</awardNumber>
       </#if>
@@ -108,3 +108,6 @@
 </resource>
 </#escape>
 </#compress>
+
+
+
