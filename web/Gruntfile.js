@@ -55,6 +55,11 @@ module.exports = function(grunt) {
           'src/css/style-cmp.css': 'src/less/style-cmp.less'
         }
       },
+      erammp: {
+        files: {
+          'src/css/style-erammp.css': 'src/less/style-erammp.less'
+        }
+      },
       eidc: {
         files: {
           'src/css/style-eidc.css': 'src/less/style-eidc.less'
@@ -110,6 +115,11 @@ module.exports = function(grunt) {
       cmp: {
         files: {
           'src/css/style-cmp.css': 'src/css/style-cmp.css'
+        }
+      },
+      erammp: {
+        files: {
+          'src/css/style-erammp.css': 'src/css/style-erammp.css'
         }
       },
       eidc: {

@@ -30,6 +30,8 @@ public class DevelopmentUserStoreConfig {
     public static final String EIDC_PUBLISHER = "role_eidc_publisher";
     public static final String CMP_EDITOR = "role_cmp_editor";
     public static final String CMP_PUBLISHER = "role_cmp_publisher";
+    public static final String ERAMMP_EDITOR = "role_erammp_editor";
+    public static final String ERAMMP_PUBLISHER = "role_erammp_publisher";
     public static final String NC_EDITOR = "role_nc_editor";
     public static final String NC_PUBLISHER = "role_nc_publisher";
     public static final String M_EDITOR = "role_m_editor";
@@ -157,6 +159,31 @@ public class DevelopmentUserStoreConfig {
     }
 
     @Bean
+    @Qualifier("erammp-editor")
+    public CatalogueUser erammpEditor() throws UsernameAlreadyTakenException {
+        CatalogueUser editor = new CatalogueUser()
+            .setUsername("erammp-editor")
+            .setEmail("erammp-editor@ceh.ac.uk");
+
+        groupStore().grantGroupToUser(editor, ERAMMP_EDITOR);
+        userStore().addUser(editor, "editorpassword");
+        return editor;
+    }
+
+    @Bean
+    @Qualifier("erammp-publisher")
+    public CatalogueUser erammpPublisher() throws UsernameAlreadyTakenException {
+        CatalogueUser publisher = new CatalogueUser()
+            .setUsername("erammp-publisher")
+            .setEmail("erammp-publisher@ceh.ac.uk");
+
+        groupStore().grantGroupToUser(publisher, ERAMMP_EDITOR);
+        groupStore().grantGroupToUser(publisher, ERAMMP_PUBLISHER);
+        userStore().addUser(publisher, "publisherpassword");
+        return publisher;
+    }
+
+    @Bean
     @Qualifier("m-publisher")
     public CatalogueUser mPublisher() throws UsernameAlreadyTakenException {
         CatalogueUser publisher = new CatalogueUser()
@@ -230,6 +257,8 @@ public class DevelopmentUserStoreConfig {
         toReturn.createGroup(EIDC_PUBLISHER, "EIDC Publisher Role");
         toReturn.createGroup(CMP_EDITOR, "CMP Editor Role");
         toReturn.createGroup(CMP_PUBLISHER, "CMP Publisher Role");
+        toReturn.createGroup(ERAMMP_EDITOR, "NC Editor Role");
+        toReturn.createGroup(ERAMMP_PUBLISHER, "NC Publisher Role");
         toReturn.createGroup(NC_EDITOR, "NC Editor Role");
         toReturn.createGroup(NC_PUBLISHER, "NC Publisher Role");
         toReturn.createGroup(M_EDITOR, "M Editor Role");

@@ -17,6 +17,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_FACIL
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_PROGRAMME_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_PUBLICATION_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_SAMPLE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ERAMMP_MODEL_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_SHORT;
 
@@ -134,6 +135,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
+import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
@@ -300,6 +302,9 @@ public class ServiceConfig {
         converters.add(new Object2TemplatedMessageConverter<>(Publication.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration()));
 
+        //ERAMMP
+        converters.add(new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration()));
+
         //Sample Archive
         converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration()));
         
@@ -420,6 +425,7 @@ public class ServiceConfig {
                 .register(OSDP_MONITORING_PROGRAMME_SHORT, MonitoringProgramme.class)
                 .register(OSDP_PUBLICATION_SHORT, Publication.class)
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
+                .register(ERAMMP_MODEL_SHORT, ErammpModel.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
                 .register(UPLOAD_DOCUMENT_SHORT, UploadDocument.class)
 

@@ -38,6 +38,7 @@ define [
   'cs!views/OsdpMonitoringProgrammeEditorView'
   'cs!views/OsdpMonitoringFacilityEditorView'
   'cs!views/SampleArchiveEditorView'
+  'cs!views/ErammpModelEditorView'
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
   'cs!views/ClipboardCopyView'
@@ -50,7 +51,7 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView,
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, DepositRequestModel, DepositRequestView,
     ClipboardCopyView, DataTypeEditorView
 ) ->
 
@@ -202,6 +203,10 @@ define [
         View: SampleArchiveEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.sample-archive+json'
+      'erammp-model':
+        View: ErammpModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.erammp-model+json'
       'data-type':
         View: DataTypeEditorView
         Model: EditorMetadata

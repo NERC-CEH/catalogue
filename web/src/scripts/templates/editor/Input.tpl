@@ -1,1 +1,1 @@
-<input data-name="<%= data.modelAttribute %>" type="<%= data.typeAttribute %>" class="editor-input" id="input-<%= data.modelAttribute %>" value="<%= data.value %>" <%= data.disabled%>>
+<input data-name="<%= data.modelAttribute %>" type="<%= data.typeAttribute %>" placeholder="<%= data.placeholderAttribute %>" class="editor-input" id="input-<%= data.modelAttribute %>" value="<%= data.value %>" <%= data.disabled%>>
