@@ -5,7 +5,8 @@
  corresponding freemarker template /templates/search/_facets.tpl
 */ %>
 <% _.each(facets, function(facet) { %>
-  <h3><%= facet.displayName %></h3>
-
-  <%= template({"results": facet.results, "template": template}) %>
+  <div class="facet">
+    <h3><%= facet.displayName %></h3>
+    <%= template({"results": facet.results, "template": template}) %>
+  </div>
 <% }); %>

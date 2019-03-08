@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/erammp/erammp_model.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+  @Template(called="html/erammp/erammp_model.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class ErammpModel extends AbstractMetadataDocument implements WellKnownText {
   private String modelApproach, version, ipr, spatialResolution, runtimeTotal, runtimeWales, runtimeOptimisation, calibrationEffort, futureRun, integrationExperience, integrationHistory;

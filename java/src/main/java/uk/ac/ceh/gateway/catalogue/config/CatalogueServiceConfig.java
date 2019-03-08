@@ -219,6 +219,8 @@ public class CatalogueServiceConfig {
                 .id(defaultCatalogueKey)
                 .title("EIDC")
                 .url("http://eidc.ceh.ac.uk")
+                .facetKey("state")
+                .facetKey("resourceType")
                 .facetKey("topic")
                 .facetKey("recordType")
                 .facetKey("status")

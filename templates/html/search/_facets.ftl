@@ -23,9 +23,27 @@
   </ul>
 </#macro> 
 
+
+<#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
+<div class="adminFacets">
+<h3><a data-toggle="collapse" href="#facets" aria-expanded="false" aria-controls="facets" title="Show/hide admin filters">Admin</a></h3>
+  <div id="facets" class="collapse">
+  <#list facets as facet>
+    <#if facet.admin>
+      <div class="facet">
+        <h3>${facet.displayName}</h3>
+        <@facetResults facet.results/>
+      </div>
+    </#if>
+  </#list>
+</div></div>
+</#if>
+
 <#list facets as facet>
-  <div class="facet">
-    <h3>${facet.displayName}</h3>
-    <@facetResults facet.results/>
-  </div>
+  <#if !facet.admin>
+    <div class="facet">
+      <h3>${facet.displayName}</h3>
+      <@facetResults facet.results/>
+    </div>
+  </#if>
 </#list>
