@@ -18,7 +18,6 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_PROGR
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_PUBLICATION_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_SAMPLE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_SHORT;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,7 +77,6 @@ import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.graph.GraphService;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
@@ -153,6 +151,7 @@ import uk.ac.ceh.gateway.catalogue.services.ExtensionDocumentListingService;
 import uk.ac.ceh.gateway.catalogue.services.GeminiExtractorService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.HashMapDocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.HubbubService;
 import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
@@ -191,6 +190,10 @@ public class ServiceConfig {
     @Value("${plone.address}") private String ploneAddress;
     @Value("${sparql.endpoint}") private String sparqlEndpoint;
     @Value("${sparql.graph}") private String sparqlGraph;
+
+    @Value("${hubbub.url}") private String hubbubUrl;
+    @Value("${hubbub.username}") private String hubbubUsername;
+    @Value("${hubbub.password}") private String hubbubPassword;
     
     @Autowired private ObjectMapper jacksonMapper;
     @Autowired private DataRepository<CatalogueUser> dataRepository;
@@ -217,12 +220,8 @@ public class ServiceConfig {
     }
 
     @Bean
-    public GraphService graphService() {
-        return new GraphService(jenaTdb);
-    }
-
-    @Bean
-    public UploadDocumentService uploadDocumentService() throws XPathExpressionException, IOException, TemplateModelException {
+    @SneakyThrows
+    public UploadDocumentService uploadDocumentService(HubbubService hubbubService) {
         Map<String, File> folders = Maps.newHashMap();
         folders.put("documents", new File("/var/ceh-catalogue/dropbox"));
         folders.put("datastore", new File("/var/ceh-catalogue/eidchub-rw"));
@@ -233,7 +232,7 @@ public class ServiceConfig {
         physicalLocations.put("datastore", "datastore/eidchub");
         physicalLocations.put("plone", "datastore/plone");
 
-        return new UploadDocumentService(documentRepository(), folders, physicalLocations);
+        return new UploadDocumentService(hubbubService, folders);
     }
     
     @Bean
@@ -242,6 +241,13 @@ public class ServiceConfig {
         client.addFilter(new HTTPBasicAuthFilter(jiraUsername, jiraPassword));
         WebResource jira = client.resource(jiraAddress);
         return new JiraService(jira);
+    }
+
+    @Bean
+    public HubbubService hubbubService() {
+        Client client = Client.create();
+        WebResource hubbub = client.resource(hubbubUrl);
+        return new HubbubService(hubbub, hubbubUsername, hubbubPassword);
     }
     
     @Bean
@@ -353,7 +359,6 @@ public class ServiceConfig {
         shared.put("downloadOrderDetails", downloadOrderDetailsService());
         shared.put("permission", permission());
         shared.put("jira", jiraService());
-        shared.put("graph", graphService());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("geminiHelper", geminiExtractorService());
         shared.put("catalogues", catalogueService);
@@ -421,7 +426,6 @@ public class ServiceConfig {
                 .register(OSDP_PUBLICATION_SHORT, Publication.class)
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
-                .register(UPLOAD_DOCUMENT_SHORT, UploadDocument.class)
 
                 .register(DATA_TYPE_SHORT, DataType.class);
     }

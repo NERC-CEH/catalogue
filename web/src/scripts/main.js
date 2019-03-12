@@ -34,7 +34,8 @@ require.config({
     'backbone':               '../vendor/backbone/backbone',
     'openlayers':             '../vendor/OpenLayers-custom',
     'chartjs':                '../vendor/chartjs/Chart',
-    'jquery-ui':              '../vendor/jquery-ui/ui'
+    'jquery-ui':              '../vendor/jquery-ui/ui',
+    'file-saver':              './FileSaver'
   },
   waitSeconds:1000
 });

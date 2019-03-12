@@ -13,5 +13,6 @@ public class UploadFile {
     private String encoding;
     private long bytes;
     private String hash;
-    private UploadType type;
+    private String type;
+    private String destination;
 }
