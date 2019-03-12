@@ -108,23 +108,11 @@ public class PermissionController {
             @RequestBody PermissionResource permissionResource) 
         throws DocumentRepositoryException {
         MetadataDocument document = documentRepository.read(file);
-        if (document instanceof GeminiDocument) {
-            GeminiDocument geminiDocument = (GeminiDocument) document;
-            String uploadId = geminiDocument.getUploadId();
-            if (uploadId != null) copyPermission(user, documentRepository.read(uploadId), permissionResource);
-        }
         document.setMetadata(removeAddedPublicGroupIfNotPublisher(document.getMetadata(), permissionResource));
         documentRepository.save(user, document, file, String.format("Permissions of %s changed.", file));
         return ResponseEntity.ok(new PermissionResource(document)); 
     }
-    
-    @SneakyThrows
-    private void copyPermission (CatalogueUser user, MetadataDocument document, PermissionResource permissionResource) {
-        MetadataInfo metadataInfo = document.getMetadata();
-        metadataInfo = metadataInfo.replaceAllPermissions(permissionResource.getPermissions());
-        document.setMetadata(metadataInfo);
-        documentRepository.save(user, document, String.format("Permissions of %s changed.", document.getId()));
-    }
+
 
     private MetadataInfo removeAddedPublicGroupIfNotPublisher(MetadataInfo original, PermissionResource permissionResource) {
         MetadataInfo toReturn; 

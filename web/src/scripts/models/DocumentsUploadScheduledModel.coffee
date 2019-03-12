@@ -2,12 +2,29 @@ define [
   'cs!models/DocumentUploadModel'
 ], (DocumentUploadModel) -> DocumentUploadModel.extend
   delete: (file) ->
-    @save @attributes,
-      url: @url() + '/delete-upload-file?name=documents&filename=' + encodeURIComponent(file)
-      error: -> do window.location.href = window.location.href + '/validate'
+    url = @url() + '/delete-upload-file?filename=' + encodeURIComponent(file)
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) ->
+        console.error('error', err)
+    }
   
   finish: ->
-    @save @attributes,
-      url: @url() + '/finish'
-      success: -> do window.location.reload
-      error: -> do window.location.href = window.location.href + '/validate'
+    url = @url() + '/finish'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) ->
+        do window.location.reload
+      error: (err) ->
+        console.error('error', err)
+    }

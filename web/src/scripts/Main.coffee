@@ -29,6 +29,7 @@ define [
   'cs!views/DocumentsUploadInProgressView'
   'cs!models/DocumentsUploadInProgressModel'
   'cs!views/DocumentsUploadReadOnlyView'
+  'cs!models/DocumentsUploadReadOnlyModel'
   'cs!views/OsdpAgentEditorView'
   'cs!views/OsdpDatasetEditorView'
   'cs!views/OsdpModelEditorView'
@@ -48,7 +49,7 @@ define [
   _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView,
-    DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, OsdpAgentEditorView,
+    DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, DocumentsUploadReadOnlyModel, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, DepositRequestModel, DepositRequestView,
     ClipboardCopyView, DataTypeEditorView
@@ -86,7 +87,12 @@ define [
     view = new DepositRequestView model: app
 
   initReadOnly: ->
-    view = new DocumentsUploadReadOnlyView()
+    id = $('#documents-upload').data('guid')
+    app = new DocumentsUploadReadOnlyModel null,
+        mediaType: 'application/vnd.upload-document+json'
+    app.id = id
+    app.set('id', id)
+    view = new DocumentsUploadReadOnlyView model: app
 
   initScheduled: ->
     id = $('#documents-upload').data('guid')

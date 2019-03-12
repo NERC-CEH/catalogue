@@ -7,6 +7,11 @@ define [
   dropzone: null
 
   initialize: ->
+    setInterval(
+      () => do @model.fetch
+      10000
+    )
+
     @model.on 'sync', =>
       do @render
       do $('.loading').remove
@@ -43,8 +48,9 @@ define [
     render = @render.bind @
 
     @dropzone = new Dropzone '.dropzone-files',
+      timeout: -1
       url: model.url() + '/add-upload-document'
-      maxFilesize: 1250
+      maxFilesize: 20 * 1000 * 1000
       autoQueue: yes
       previewTemplate: dropzoneFileTpl()
       previewsContainer: '.dropzone-files'
@@ -121,6 +127,11 @@ define [
 
     documents = @model.get('uploadFiles').documents || {}
     files = documents.documents || {}
+
+    for index, file of documents.invalid
+      if file.type.indexOf('REMOVED') == -1 and file.type.indexOf('MOVED') == -1 and file.type.indexOf('UNKNOWN') == -1 and file.type.indexOf('MISSING') == -1
+        files[file.name] = file
+
     files = (value for own prop, value of files)
     files.sort (left, right) ->
       return -1 if left.name < right.name

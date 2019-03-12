@@ -1,12 +1,12 @@
 <#import "../skeleton.ftl" as skeleton>
-<#assign issues=jira.search("project=eidchelp and component='data transfer' and labels=" + parentId)>
+<#assign issues=jira.search("project=eidchelp and component='data transfer' and labels=" + id)>
 
 <@skeleton.master title=title>
     <div id="documents-upload" class="container documents-upload" data-guid='${id}'>
     
     <div class="header">
         <#assign headText = "data">
-        <#if permission.userCanUpload(parentId)>
+        <#if permission.userCanUpload(id)>
             <#if issues?size != 1 >
                 <div class="alert alert-danger"><b>ERROR</b><br>There is no Jira issue for this deposit</div>
             <#elseif issues[0].status == 'scheduled'>
@@ -18,11 +18,11 @@
         </#if>
         
         <div>
-            <a class="btn btn-default btn-sm" href="/documents/${parentId}">&laquo; Return to metadata</a></small>
+            <a class="btn btn-default btn-sm" href="/documents/${id}">&laquo; Return to metadata</a></small>
         </div>
         <div>
             <h1>
-            ${headText?cap_first} for record <small><a href="/documents/${parentId}">${parentId}</a></small>
+            ${headText?cap_first} for record <small><a href="/documents/${id}">${id}</a></small>
             </h1>
         </div>
     </div>
@@ -33,14 +33,14 @@
         </#if>
     <#else>
         <#if issues[0].status == 'scheduled'>
-            <#if permission.userCanUpload(parentId)>
+            <#if permission.userCanUpload(id)>
                  <!--CAN UPLOAD -->
                 <#include "_scheduled.ftl">
             <#elseif permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
                 <#include "_read-only.ftl">
             <#else>
             </#if>
-        <#elseif permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN") && permission.userCanUpload(parentId)>
+        <#elseif permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN") && permission.userCanUpload(id)>
             <!--MANAGE FILES -->
             <#include "_in-progress.ftl">
         <#else>

@@ -17,19 +17,7 @@
         <div class="row">
             <div class="documents folder">
                 <div class="dropzone-files files connectedSortable">
-                    <#if uploadFiles['documents'].documents?size == 0>
-                        <div class="empty-message">Drag files here to upload</div>
-                    </#if>
-                    <#list uploadFiles['documents'].documents?values?sort_by('name') as document>
-                        <div id="documents-${document.id}" class="file">
-                            <div class="file-options">
-                                <button class="btn btn-xs btn-danger delete" disabled data-toggle="modal" data-target="#documentUploadModal" data-filename="${document.path}">Delete</button>
-                            </div>
-                            <div class="filename">
-                                <i class="far fa-file-alt"></i> <span class="filename-label">${document.name}</span>
-                            </div>
-                        </div>
-                    </#list>
+                    <div class="empty-message">Please Wait</div>
                 </div>
                 <div class="folder-options text-right">
                     <button class="btn btn-default fileinput-button" disabled>Add files &hellip;</button>

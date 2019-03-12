@@ -2,36 +2,135 @@ define [
   'cs!models/DocumentUploadModel'
 ], (DocumentUploadModel) -> DocumentUploadModel.extend
   accept: (name, file) ->
-    @save @attributes,
-      url: @url() + '/accept-upload-file?name=' + name + '&filename=' + encodeURIComponent(file)
-      error: -> do window.location.href = window.location.href + '/validate'
+    url = @url() + '/accept-upload-file?path=' + encodeURIComponent(file)
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
+  validate: (name, file) ->
+    url = @url() + '/validate-upload-file?path=' + encodeURIComponent(file)
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
 
   delete: (name, file) ->
-    @save @attributes,
-      url: @url() + '/delete-upload-file?name=' + name + '&filename=' + encodeURIComponent(file)
-      error: -> do window.location.href = window.location.href + '/validate'
+    url = @url() + '/delete-upload-file?filename=' + encodeURIComponent(file)
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
 
   ignore: (name, file) ->
-    @save @attributes,
-      url: @url() + '/delete-upload-file?name=' + name + '&filename=' + encodeURIComponent(file)
-      error: -> do window.location.href = window.location.href + '/validate'
-
-  move: (file, from, to) ->
-    @save @attributes,
-      url: @url() + '/move-upload-file?from=' + from + '&to=' + to + '&filename=' + encodeURIComponent(file)
-      error: -> do window.location.href = window.location.href + '/validate'
-
-  moveToDatastore: (files) ->
-    @save @attributes,
-      url: @url() + '/move-to-datastore'
-      error: -> do window.location.href = window.location.href + '/validate'
+    url = @url() + '/delete-upload-file?filename=' + encodeURIComponent(file)
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
 
   zip: ->
-    @save @attributes,
-      url: @url() + '/zip-upload-files'
-      error: -> do window.location.href = window.location.href + '/validate'
+    url = @url() + '/zip-upload-files'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
 
   unzip: ->
-    @save @attributes,
-      url: @url() + '/unzip-upload-files'
-      error: -> do window.location.href = window.location.href + '/validate'
+    url = @url() + '/unzip-upload-files'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
+
+  move: (file, to) ->
+    url = @url() + '/move-upload-file?to=' + to + '&filename=' + encodeURIComponent(file)
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
+
+  moveToDatastore: (files) ->
+    url = @url() + '/move-to-datastore'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
+  
+  validateFiles: () ->
+    url = @url() + '/validate'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+    }
