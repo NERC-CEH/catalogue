@@ -40,6 +40,10 @@ The catalogue requires a few tools:
 - Docker
 - Docker Compose
 
+You will then need to login to the Gitlab Docker Registry, nb. this uses your Gitlab username/password or token, not Crowd, if they're not the same, this might catch you out.
+
+    $ docker login registry.gitlab.ceh.ac.uk
+
 Having installed these you can then build the catalogue code base by running:
 
     ./gradlew
