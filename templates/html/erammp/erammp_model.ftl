@@ -29,7 +29,7 @@
         </#if>
 
         <#if boundingBoxes?? && boundingBoxes?has_content>
-          <@simplerow "Bounding box${(boundingBoxes?size > 1)?then('es', '')}">
+          <@simplerow "Coverage">
             <div id="studyarea-map">
               <#list boundingBoxes as extent>
               <span content="${extent.wkt?html}" datatype="geo:wktLiteral"/>

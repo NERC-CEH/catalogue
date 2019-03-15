@@ -1,6 +1,6 @@
 define [
   'cs!views/editor/ObjectInputView'
-  'tpl!templates/editor/ErammpInput.tpl'
+  'tpl!templates/editor/ErammpModelInput.tpl'
 ], (ObjectInputView, template) -> ObjectInputView.extend
 
   template: template

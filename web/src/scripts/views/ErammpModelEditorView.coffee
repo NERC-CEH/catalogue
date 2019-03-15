@@ -16,10 +16,10 @@ define [
   'cs!views/editor/SingleView'
   'cs!views/editor/PointOfContactView'
   'cs!views/editor/LinkView'
-  'cs!views/editor/ErammpInputView'
-  'cs!views/editor/ErammpOutputView'
+  'cs!views/editor/ErammpModelInputView'
+  'cs!views/editor/ErammpModelOutputView'
   'cs!views/editor/ReadOnlyView'
-], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, PointOfContactView, LinkView, ErammpInputView, ErammpOutputView, ReadOnlyView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, PointOfContactView, LinkView, ErammpModelInputView, ErammpModelOutputView, ReadOnlyView) -> EditorView.extend
 
   initialize: ->
     @model.set('type', 'erammpModel') unless @model.has('type')
@@ -244,7 +244,7 @@ define [
           model: @model
           modelAttribute: 'inputs'
           label: 'Inputs'
-          ObjectInputView: ErammpInputView
+          ObjectInputView: ErammpModelInputView
 
       ]
     ,
@@ -256,7 +256,7 @@ define [
           model: @model
           modelAttribute: 'outputs'
           label: 'Outputs'
-          ObjectInputView: ErammpOutputView
+          ObjectInputView: ErammpModelOutputView
           
       ]
       ,

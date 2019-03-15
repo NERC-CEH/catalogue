@@ -53,42 +53,44 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="col-sm-2">
-    <label class="control-label" for="contacts<%= data.index %>Address">Address</label>
+<div class="postalAddress extended hidden">
+  <div class="row">
+    <div class="col-sm-2">
+      <label class="control-label" for="contacts<%= data.index %>Address">Address</label>
+    </div>
+    <div class="col-sm-10">
+      <input data-name="deliveryPoint" class="editor-input" id="contacts<%= data.index %>Address" value="<%= data.address.deliveryPoint %>">
+    </div>
   </div>
-  <div class="col-sm-10">
-    <input data-name="deliveryPoint" class="editor-input" id="contacts<%= data.index %>Address" value="<%= data.address.deliveryPoint %>">
-  </div>
-</div>
 
-<div class="row">
-  <div class="col-sm-2">
-    <label class="control-label" for="contacts<%= data.index %>City">City/Town</label>
+  <div class="row">
+    <div class="col-sm-2">
+      <label class="control-label" for="contacts<%= data.index %>City">City/Town</label>
+    </div>
+    <div class="col-sm-5">
+      <input data-name="city" class="editor-input" id="contacts<%= data.index %>City" value="<%= data.address.city %>">
+    </div>
+    <div class="col-sm-1">
+      <label class="control-label" for="contacts<%= data.index %>County">County</label>
+    </div>
+    <div class="col-sm-4">
+      <input data-name="administrativeArea" class="editor-input" id="contacts<%= data.index %>County" value="<%= data.address.administrativeArea %>">
+    </div>
   </div>
-  <div class="col-sm-5">
-    <input data-name="city" class="editor-input" id="contacts<%= data.index %>City" value="<%= data.address.city %>">
-  </div>
-  <div class="col-sm-1">
-    <label class="control-label" for="contacts<%= data.index %>County">County</label>
-  </div>
-  <div class="col-sm-4">
-    <input data-name="administrativeArea" class="editor-input" id="contacts<%= data.index %>County" value="<%= data.address.administrativeArea %>">
-  </div>
-</div>
 
-<div class="row">
-  <div class="col-sm-2">
-    <label class="control-label" for="contacts<%= data.index %>Postcode">Postcode</label>
-  </div>
-  <div class="col-sm-5">
-    <input data-name="postalCode" class="editor-input" id="contacts<%= data.index %>Postcode" value="<%= data.address.postalCode %>">
-  </div>
-  <div class="col-sm-1">
-    <label class="control-label" for="contacts<%= data.index %>Country">Country</label>
-  </div>
-  <div class="col-sm-4">
-    <input data-name="country" class="editor-input" id="contacts<%= data.index %>Country" value="<%= data.address.country %>">
+  <div class="row">
+    <div class="col-sm-2">
+      <label class="control-label" for="contacts<%= data.index %>Postcode">Postcode</label>
+    </div>
+    <div class="col-sm-5">
+      <input data-name="postalCode" class="editor-input" id="contacts<%= data.index %>Postcode" value="<%= data.address.postalCode %>">
+    </div>
+    <div class="col-sm-1">
+      <label class="control-label" for="contacts<%= data.index %>Country">Country</label>
+    </div>
+    <div class="col-sm-4">
+      <input data-name="country" class="editor-input" id="contacts<%= data.index %>Country" value="<%= data.address.country %>">
+    </div>
   </div>
 </div>
 
@@ -106,6 +108,6 @@
     <label class="control-label" for="contacts<%= data.index %>nameIdentifier">Identifier</label>
   </div>
   <div class="col-sm-10">
-    <input data-name='nameIdentifier' placeholder='(e.g. ORCiD or ISNI)' class="editor-input" id="contacts<%= data.index %>nameIdentifier" value="<%= data.nameIdentifier %>">
+    <input data-name='nameIdentifier' placeholder='(e.g. ORCiD, ISNI, RoR)' class="editor-input" id="contacts<%= data.index %>nameIdentifier" value="<%= data.nameIdentifier %>">
   </div>
 </div>

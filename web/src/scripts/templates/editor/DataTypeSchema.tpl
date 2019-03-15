@@ -6,88 +6,91 @@
     <input data-name="name" id="schema-name<%= data.index %>" class="editor-input" value="<%= data.name %>" placeholder="name of field/column" />
   </div>
 </div>
-<div class="row">
-  <div class="col-sm-2">
-    <label for="schema-title<%= data.index %>">Title</label>
-  </div>
-  <div class="col-sm-10">
-    <input data-name="title" id="schema-title<%= data.index %>" class="editor-input" value="<%= data.title %>" placeholder="A nicer human readable label for the field (optional)" />
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-2">
-    <label for="schema-description<%= data.index %>">Description</label>
-  </div>
-  <div class="col-sm-10">
-    <textarea data-name="description" id="schema-description<%= data.index %>" class="editor-textarea" rows="3"><%= data.description %></textarea>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-2 col-xs-12">
-    <label for="schema-type<%= data.index %>">Type</label>
-  </div>
-  <div class="col-sm-4 col-xs-12">
-    <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" placeholder="" />
-  </div>
-  <div class="col-sm-2 col-xs-12">
-    <div class="hidden-xs text-right">
-      <label for="schema-format<%= data.index %>">Format</label>
+<div class="extended hidden" id="schemaDetail<%= data.index %>">
+  <div class="row">
+    <div class="col-sm-2">
+      <label for="schema-title<%= data.index %>">Title</label>
     </div>
-    <div class="visible-xs-inline">
-      <label for="schema-format<%= data.index %>">Format</label>
+    <div class="col-sm-10">
+      <input data-name="title" id="schema-title<%= data.index %>" class="editor-input" value="<%= data.title %>" placeholder="A nicer human readable label for the field (optional)" />
     </div>
   </div>
-  <div class="col-sm-4 col-xs-12">
-    <input list="formatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" placeholder="recommended for dates and times" />
+  <div class="row">
+    <div class="col-sm-2">
+      <label for="schema-description<%= data.index %>">Description</label>
+    </div>
+    <div class="col-sm-10">
+      <textarea data-name="description" id="schema-description<%= data.index %>" class="editor-textarea" rows="3"><%= data.description %></textarea>
+    </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-sm-2">
-    <label for="schema-units<%= data.index %>">Units</label>
+  <div class="row">
+    <div class="col-sm-2 col-xs-12">
+      <label for="schema-type<%= data.index %>">Type</label>
+    </div>
+    <div class="col-sm-4 col-xs-12">
+      <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" placeholder="" />
+    </div>
+    <div class="col-sm-2 col-xs-12">
+      <div class="hidden-xs text-right">
+        <label for="schema-format<%= data.index %>">Format</label>
+      </div>
+      <div class="visible-xs-inline">
+        <label for="schema-format<%= data.index %>">Format</label>
+      </div>
+    </div>
+    <div class="col-sm-4 col-xs-12">
+      <input list="formatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" placeholder="recommended for dates and times" />
+    </div>
   </div>
-  <div class="col-sm-10">
-    <input data-name="units" id="schema-units<%= data.index %>" class="editor-input" value="<%= data.units %>"/>
+  <div class="row">
+    <div class="col-sm-2">
+      <label for="schema-units<%= data.index %>">Units</label>
+    </div>
+    <div class="col-sm-10">
+      <input data-name="units" id="schema-units<%= data.index %>" class="editor-input" value="<%= data.units %>"/>
+    </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-sm-2">
-    <label for="schema-minLength<%= data.index %>">Minimum length</label>
+  <div class="row">
+    <div class="col-sm-2">
+      <label for="schema-minimum<%= data.index %>">Minimum value</label>
+    </div>
+    <div class="col-sm-4">
+      <input data-name="minimum" type="number" id="schema-minimum<%= data.index %>" class="editor-input" value="<%= data.constraints.minimum %>"/>
+    </div>
+    <div class="col-sm-2">
+      <label for="schema-maximum<%= data.index %>">Maximum value</label>
+    </div>
+    <div class="col-sm-4">
+      <input data-name="maximum" type="number" id="schema-maximum<%= data.index %>" class="editor-input" value="<%= data.constraints.maximum %>"/>
+    </div>
   </div>
-  <div class="col-sm-4">
-    <input data-name="minLength" type="number" step="1" id="schema-minLength<%= data.index %>" class="editor-input" value="<%= data.constraints.minLength %>"/>
+  <div class="row">
+    <div class="col-sm-2">
+      <label for="schema-minLength<%= data.index %>">Minimum length</label>
+    </div>
+    <div class="col-sm-4">
+      <input data-name="minLength" type="number" step="1" id="schema-minLength<%= data.index %>" class="editor-input" value="<%= data.constraints.minLength %>"/>
+    </div>
+    <div class="col-sm-2">
+      <label for="schema-maxLength<%= data.index %>">Maximum length</label>
+    </div>
+    <div class="col-sm-4">
+      <input data-name="maxLength" type="number" step="1" id="schema-maxLength<%= data.index %>" class="editor-input" value="<%= data.constraints.maxLength %>"/>
+    </div>
   </div>
-  <div class="col-sm-2">
-    <label for="schema-maxLength<%= data.index %>">Maximum length</label>
-  </div>
-  <div class="col-sm-4">
-    <input data-name="maxLength" type="number" step="1" id="schema-maxLength<%= data.index %>" class="editor-input" value="<%= data.constraints.maxLength %>"/>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-2">
-    <label for="schema-minimum<%= data.index %>">Minimum value</label>
-  </div>
-  <div class="col-sm-4">
-    <input data-name="minimum" type="number" id="schema-minimum<%= data.index %>" class="editor-input" value="<%= data.constraints.minimum %>"/>
-  </div>
-  <div class="col-sm-2">
-    <label for="schema-maximum<%= data.index %>">Maximum value</label>
-  </div>
-  <div class="col-sm-4">
-    <input data-name="maximum" type="number" id="schema-maximum<%= data.index %>" class="editor-input" value="<%= data.constraints.maximum %>"/>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-2">
-    <label>Unique</label>
-  </div>
-  <div class="col-sm-10">
-      <label class="radio-inline">
-        <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %> /> Yes 
-      </label>
-      <label class="radio-inline">
-        <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> />No
-      </label>
+
+  <div class="row">
+    <div class="col-sm-2">
+      <label>Unique</label>
+    </div>
+    <div class="col-sm-10">
+        <label class="radio-inline">
+          <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %> /> Yes 
+        </label>
+        <label class="radio-inline">
+          <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> />No
+        </label>
+    </div>
   </div>
 </div>
 

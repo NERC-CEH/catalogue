@@ -7,13 +7,12 @@ import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
-import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Link;
-import uk.ac.ceh.gateway.catalogue.erammp.ErammpModelInput;
-import uk.ac.ceh.gateway.catalogue.erammp.ErammpModelOutput;
+import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.Collections;
@@ -26,18 +25,16 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-  @Template(called="html/erammp/erammp_model.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+  @Template(called="html/erammp/erammp_datacube.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
-public class ErammpModel extends AbstractMetadataDocument implements WellKnownText {
-  private String modelApproach, version, ipr, spatialResolution, runtimeTotal, runtimeWales, runtimeOptimisation, calibrationEffort, futureRun, integrationExperience, integrationHistory;
+public class ErammpDatacube extends AbstractMetadataDocument implements WellKnownText{
+  private String version, ipr, dataFormat, dataSource, spatialResolution, spatialRepresentationType, constraints;
   private List<Keyword> keywords;
-  private List<BoundingBox> boundingBoxes;
-  private List<String> outputFormats, sectors, programmingLanguages, operatingSystems, timeSteps;
-  private List<ResponsibleParty> contacts;
+  private List<String> locations;
+  private List<ResponsibleParty> provider;
+  private List<DataTypeSchema> schema;
   private List<Link> resourceLocators;
-  private List<ErammpModelInput> inputs;
-  private List<ErammpModelOutput> outputs;
-  private boolean spatiallyExplicit, calibratedForWales;
+  private List<BoundingBox> boundingBoxes;
 
   @Override
   public List<String> getWKTs() {
@@ -47,4 +44,7 @@ public class ErammpModel extends AbstractMetadataDocument implements WellKnownTe
         .map(BoundingBox::getWkt)
         .collect(Collectors.toList());
   }
+
 }
+
+

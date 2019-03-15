@@ -7,12 +7,12 @@ import lombok.Builder;
 import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
-public class ErammpInput {
+public class ErammpModelInput {
     private final String internalName, externalName, definition, inputSource, unit, spatialResolution, temporalResolution, managementPolicy, access, licensing, dataSource, additionalNotes;
 
     @Builder
     @JsonCreator
-    private ErammpInput(
+    private ErammpModelInput(
         @JsonProperty("internalName") String internalName,
         @JsonProperty("externalName") String externalName,
         @JsonProperty("definition") String definition,

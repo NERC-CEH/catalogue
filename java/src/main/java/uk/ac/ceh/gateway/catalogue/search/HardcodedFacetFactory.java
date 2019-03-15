@@ -17,7 +17,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("resourceType")
                     .displayName("Resource type")
                     .hierarchical(false)
-                    .isAdmin(true)
                     .build();
                 
             case "state":
@@ -25,7 +24,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                 .fieldName("state")
                 .displayName("Status")
                 .hierarchical(false)
-                .isAdmin(true)
                 .build();
                     
             case "recordType":
@@ -33,7 +31,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("recordType")
                     .displayName("Record type")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
                 
             case "licence":
@@ -41,7 +38,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("licence")
                     .displayName("Licence")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
                 
             case "status":
@@ -49,7 +45,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("resourceStatus")
                     .displayName("Availability")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
                 
             case "topic":        
@@ -57,7 +52,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("topic")
                     .displayName("Topic")
                     .hierarchical(true)
-                    .isAdmin(false)
                     .build();
                 
             case "impCaMMPIssues":
@@ -65,7 +59,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("impCaMMPIssues")
                     .displayName("CaMMP Issues")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
                 
             case "impDataType":
@@ -73,7 +66,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("impDataType")
                     .displayName("Data Type")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
                 
             case "impScale":
@@ -81,7 +73,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("impScale")
                     .displayName("Scale")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
                 
             case "impTopic":
@@ -89,7 +80,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("impTopic")
                     .displayName("Topic")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
                 
             case "impWaterPollutant":
@@ -97,7 +87,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("impWaterPollutant")
                     .displayName("Water Pollutant")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
                 
             case "inmsPollutant":
@@ -105,7 +94,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("impWaterPollutant")
                     .displayName("Pollutant")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
                 
             case "inmsDemonstrationRegion":
@@ -113,7 +101,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("inmsDemonstrationRegion")
                     .displayName("Demonstration Region")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
                 
             case "modelType":
@@ -121,7 +108,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("modelType")
                     .displayName("Model Type")
                     .hierarchical(false)
-                    .isAdmin(false)
+                    
                     .build();
 
             case "documentType":
@@ -129,7 +116,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("documentType")
                     .displayName("Document Type")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
             
             case "ncAssets":
@@ -137,7 +123,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("ncAssets")
                     .displayName("Assets")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
 
             case "ncCaseStudy":
@@ -145,7 +130,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("ncCaseStudy")
                     .displayName("Case Study")
                     .hierarchical(false)
-                    .isAdmin(false)
+                    
                     .build();
 
             case "ncDrivers":
@@ -153,7 +138,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("ncDrivers")
                     .displayName("Drivers")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
 
             case "ncEcosystemServices":
@@ -161,7 +145,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("ncEcosystemServices")
                     .displayName("Ecosystem Services")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
 
             case "ncGeographicalScale":
@@ -169,7 +152,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("ncGeographicalScale")
                     .displayName("Geographical Scale")
                     .hierarchical(false)
-                    .isAdmin(false)
                     .build();
         }
         return null;

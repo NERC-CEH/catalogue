@@ -6,7 +6,9 @@ define [
   'cs!views/editor/ReadOnlyView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentView'
+  'cs!views/editor/ParentLargeView'
   'cs!views/editor/PredefinedParentView'
+  'cs!views/editor/PredefinedParentLargeView'
   'cs!views/editor/ParentStringView'
   'cs!views/editor/ResourceTypeView'
   'cs!models/editor/ResourceType'
@@ -45,7 +47,7 @@ define [
   'cs!models/editor/Service'
   'cs!models/editor/MapDataSource'
   'cs!views/editor/MapDataSourceView'
-], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, PredefinedParentView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView) -> EditorView.extend
 
   initialize: ->
 
@@ -142,7 +144,7 @@ define [
       label: 'Authors & contacts'
       title: 'Authors and other contacts'
       views: [
-        new PredefinedParentView
+        new PredefinedParentLargeView
           model: @model
           ModelType: Contact
           modelAttribute: 'responsibleParties'

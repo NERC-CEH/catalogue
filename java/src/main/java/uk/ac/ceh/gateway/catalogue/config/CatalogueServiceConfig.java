@@ -10,6 +10,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_PROGR
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_PUBLICATION_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_SAMPLE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ERAMMP_MODEL_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ERAMMP_DATACUBE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_SHORT;
 
 import org.springframework.context.annotation.Bean;
@@ -104,6 +105,11 @@ public class CatalogueServiceConfig {
             .type(ERAMMP_MODEL_SHORT)
             .build();
 
+        DocumentType erammpDatacube = DocumentType.builder()
+            .title("ERAMMP data cube")
+            .type(ERAMMP_DATACUBE_SHORT)
+            .build();
+
         DocumentType sampleArchive = DocumentType.builder()
             .title("Sample Archive")
             .type(SAMPLE_ARCHIVE_SHORT)
@@ -167,13 +173,13 @@ public class CatalogueServiceConfig {
                 .fileUpload(false)
                 .build(),
 
-
                 Catalogue.builder()
                 .id("erammp")
                 .title("ERAMMP")
                 .url("http://www.ceh.ac.uk")
                 .facetKey("recordType")
                 .documentType(erammpModel)
+                .documentType(erammpDatacube)
                 .documentType(link)
                 .fileUpload(false)
                 .build(),
@@ -219,7 +225,6 @@ public class CatalogueServiceConfig {
                 .id(defaultCatalogueKey)
                 .title("EIDC")
                 .url("http://eidc.ceh.ac.uk")
-                .facetKey("state")
                 .facetKey("resourceType")
                 .facetKey("topic")
                 .facetKey("recordType")
