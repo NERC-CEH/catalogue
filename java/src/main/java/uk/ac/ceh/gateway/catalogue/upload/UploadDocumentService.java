@@ -113,13 +113,13 @@ public class UploadDocumentService {
 
   @SneakyThrows
   public UploadDocument validate(String id) {
-    hubbubService.post(String.format("/validate/%s", id));
+    hubbubService.postQuery(String.format("/validate/%s", id), "force", "true");
     return get(id);
   }
 
   @SneakyThrows
   public UploadDocument validateFile(String id, String filename) {
-    hubbubService.post(String.format("/validate%s", filename));
+    hubbubService.postQuery(String.format("/validate%s", filename), "force", "true");
     return get(id);
   }
 
