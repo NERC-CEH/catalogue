@@ -10,6 +10,7 @@ define [
 	'cs!views/editor/ParentStringTextboxView'
 	'cs!views/editor/PredefinedParentView'
 	'cs!views/editor/PredefinedParentLargeView'
+	'cs!views/editor/ResourceConstraintView'
 	'cs!models/editor/BoundingBox'
 	'cs!models/editor/PointOfContact'
 	'cs!models/editor/MultipleDate'
@@ -23,7 +24,7 @@ define [
 	'cs!models/editor/DataTypeSchema'
 	'cs!views/editor/ReadOnlyView'
 
-], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, SelectView, PointOfContactView, LinkView, DataTypeSchemaView, DataTypeSchema, ReadOnlyView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, ResourceConstraintView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, SelectView, PointOfContactView, LinkView, DataTypeSchemaView, DataTypeSchema, ReadOnlyView) -> EditorView.extend
 
 	initialize: ->
 		@model.set('type', 'erammpDatacube') unless @model.has('type')
@@ -35,7 +36,12 @@ define [
 				new InputView
 					model: @model
 					modelAttribute: 'title'
-					label: 'Data cube name'
+					label: 'Data name'
+
+				new InputView
+					model: @model
+					modelAttribute: 'version'
+					label: 'Version'
 
 				new TextareaView
 					model: @model
@@ -45,14 +51,15 @@ define [
 
 				new InputView
 					model: @model
-					modelAttribute: 'version'
-					label: 'Version'
-
-				new InputView
-					model: @model
 					modelAttribute: 'dataFormat'
 					label: 'Data format'
 					placeholderAttribute: 'e.g. NetCDF, dbf, csv, shp'
+				
+				new InputView
+					model: @model
+					modelAttribute: 'dataSource'
+					label: 'Data source'
+					helpText: "this is a placeholder - it will be where you link to the source model's metadata "
 
 				new PredefinedParentView
 					model: @model
@@ -77,39 +84,39 @@ define [
 			label: 'Distribution'
 			title: 'Distribution'
 			views: [						
-				new SelectView
-							model: @model
-							modelAttribute: 'constraints'
-							label: 'Access/distribution constraints'
-							options: [
-								{value: 'unclassified', label: 'Unclassified (available for general disclosure)'},
-								{value: 'restricted', label: 'Restricted (not for general disclosure)'},
-								{value: 'confidential', label: 'Confidential (available for someone who can be entrusted with information)'},
-								{value: 'secret', label: 'Secret (kept or meant to be kept private, unknown, or hidden from all but a select group of people)'},
-								{value: 'SBU', label: 'Sensitive but unclassified (although unclassified, requires strict controls over its distribution)'},
-								{value: 'forOfficialUseOnly', label: 'For official use only (unclassified information that is to be used only for official purposes determined by the designating body)'},
-								{value: 'protected', label: 'Protected (compromise of the information could cause damage)'},
-								{value: 'limitedDistribution', label: 'Limited distribution (desimination limited by designating body)'}
-							]
-							helpText: """
-												<p>...</p>
-												"""
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'accessConstraints'
+          label: 'Access constraints'
+          ObjectInputView: ResourceConstraintView
+          multiline: true
+          predefined:
+            'Restricted to ERAMMP team':
+              value: 'Access to this data is restricted to members of the ERAMMP project team'
+              code: 'otherRestrictions'
+            'Restricted to named individuals':
+              value: 'Access to this data is restricted to the following named individuals: '
+              code: 'otherRestrictions'
+          helpText: """
+                    <p>Describe any restrictions and legal prerequisites placed on <strong>access</strong> to this  data</p>
+                    """
 
+        new ParentView
+          model: @model
+          modelAttribute: 'useConstraints'
+          label: 'Use constraints'
+          ObjectInputView: ResourceConstraintView
+          multiline: true
+          helpText: """
+                    <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed.</p>
+                    """
+				
 				new ParentStringView
 					model: @model
-					modelAttribute: 'locations'
-					label: 'Location'
+					modelAttribute: 'dataLocations'
+					label: 'Data location'
 					helpText: """
-					          <p>Where is the data stored (eg SharePoint, SAN).  A direct path to the datacube is preferred.</p>
-					          """
-
-				new TextareaView
-					model: @model
-					modelAttribute: 'ipr'
-					label: 'IPR'
-					rows: 5
-					helpText: """
-					          <p>Are there any IPR issues to consider when using the data?</p>
+					          <p>Where is the data stored (eg SharePoint, SAN).  A direct path to the data is preferred.</p>
 					          """
 			]
 		,
@@ -162,18 +169,9 @@ define [
               format: 'YYYY-MM'
 			]
 		,
-			label: 'Another section'
-			title: 'Section 3'
-			views: [
-				new ParentView
-					model: @model
-					modelAttribute: 'keywords'
-					label: 'Keywords'
-					ObjectInputView: KeywordView
-					helpText: """
-					          <p>A list of keywords that help to identify and describe the model - used to improve search results and filtering. A keyword may be an entry from a vocabulary (with a uri) or just plain text.</p>
-					          """
-				
+			label: 'Spatial'
+			title: 'Spatial'
+			views: [				
 				new PredefinedParentView
           model: @model
           modelAttribute: 'boundingBoxes'
@@ -220,6 +218,11 @@ define [
 												<p>...</p>
 												"""
 
+				new InputView
+					model: @model
+					modelAttribute: 'spatialResolution'
+					label: 'Spatial resolution'
+
 				new ParentView
           model: @model
           modelAttribute: 'resourceLocators'
@@ -228,17 +231,30 @@ define [
           helpText: """
                     <p>A list of links to additional resources that may be of use to the user.</p>
                     """
+				]
+		,
+			label: 'Metadata'
+			title: 'Metadata'
+			views: [
+				new ParentView
+					model: @model
+					modelAttribute: 'keywords'
+					label: 'Keywords'
+					ObjectInputView: KeywordView
+					helpText: """
+					          <p>A list of keywords that help to identify and describe the model - used to improve search results and filtering. A keyword may be an entry from a vocabulary (with a uri) or just plain text.</p>
+					          """
 				
-				new InputView
-					model: @model
-					modelAttribute: 'dataSource'
-					label: 'Data source'
-					placeholderText: "this is a placeholder - it will be where you link to the source model's metadata "
+				new ReadOnlyView
+          model: @model
+          modelAttribute: 'id'
+          label: 'Identifier'
+			
+				new ReadOnlyView
+          model: @model
+          modelAttribute: 'uri'
+          label: 'URL'
 
-				new InputView
-					model: @model
-					modelAttribute: 'spatialResolution'
-					label: 'Spatial resolution'
 				]
 		]
 

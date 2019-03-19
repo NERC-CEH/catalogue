@@ -81,7 +81,7 @@
 
 
         <#if inputs?? && inputs?has_content>
-        <div id="section-inputs">
+        <div class="section section-inputs">
         <h2>Inputs</h2>
            <table class="table table-responsive">
            <thead>
@@ -105,7 +105,7 @@
         </#if>
 
         <#if outputs?? && outputs?has_content>
-        <div id="section-outputs">
+        <div class="section section-outputs">
         <h2>Outputs</h2>
           <table class="table table-responsive">
            <thead>

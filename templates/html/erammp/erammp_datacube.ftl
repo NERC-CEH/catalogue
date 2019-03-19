@@ -17,47 +17,57 @@
         </#if>
 
         <#if description?? && description?has_content>
-          <div class="description">
-            <@renderLinebreaks description/>
+        <div class="section">
+          <div class="section-content">
+              <div class="description">
+                <@renderLinebreaks description/>
+              </div>
           </div>
+        </div>
         </#if>
 
-        <#if dataFormat?? && dataFormat?has_content>
-          <div class="dataFormat">
-            <@renderLinebreaks dataFormat/>
-          </div>
-        </#if>
+        <div class="section">
+          <div class="section-content">
+            <div class="row">
+              <div class="col-md-9 col-sm-12">
+                  <#if dataFormat?? && dataFormat?has_content>
+                    <@simplerow "Data format">${dataFormat}</@simplerow>
+                  </#if>
 
-        <#if locations?? && locations?has_content>
-          <@simplerow "Location"><@commaList locations /></@simplerow>
-        </#if>
+                  <#if dataLocations?? && dataLocations?has_content>
+                    <@simplerow "Data location"><@commaList dataLocations /></@simplerow>
+                  </#if>
 
-        <#if boundingBoxes?? && boundingBoxes?has_content>
-          <@simplerow "Coverage">
-            <div id="studyarea-map">
-              <#list boundingBoxes as extent>
-              <span content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
-              </#list>
-            </div>
-          </@simplerow>
-        </#if>
-
-        
-        <#if provider?? && provider?has_content>
-          <@simplerow "provider${(provider?size > 1)?then('s', '')}">
-            <#list provider as contact>
-              <#noescape>
-                <div class="responsibleParty">      
-                  ${func.displayContact(contact, false, true)}
+                  <#if provider?? && provider?has_content>
+                    <@simplerow "Data provider${(provider?size > 1)?then('s', '')}">
+                      <#list provider as contact>
+                        <#noescape>
+                          <div class="responsibleParty">      
+                            ${func.displayContact(contact, false, true)}
+                          </div>
+                        </#noescape>
+                      </#list>
+                    </@simplerow>
+                  </#if>
+              </div>
+              <div class="col-md-3 col-sm-12">
+              <#if boundingBoxes?? && boundingBoxes?has_content>
+                <div id="studyarea-map" title="Spatial coverage of the data">
+                <#list boundingBoxes as extent>
+                  <span  content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
+                </#list>
                 </div>
-              </#noescape>
-            </#list>
-          </@simplerow>
-        </#if>
-        
+              </#if>
+              </div>
+            </div>
+         </div>
+        </div>
+
         <#if schema??>
           <div class="section section-schema">
-            <h2 class="section-heading">Schema</h2>
+            <div class="section-heading">
+              <h2>Schema</h2>
+            </div>
             <div class="section-content">
             <table class="table table-schema">
             <thead>
@@ -70,7 +80,11 @@
             </thead>
             <tbody>
             <#list schema as schemaItem>
-            <tr>
+            <#assign rowClass="">
+            <#if schemaItem.constraints?? && schemaItem.constraints.unique=true>
+              <#assign rowClass="unique">
+            </#if>
+            <tr class="${rowClass}">
               <td nowrap="nowrap">
                 <#if schemaItem.name?? && schemaItem.name?has_content>
                   ${schemaItem.name}
@@ -120,24 +134,26 @@
             </div>
           </div>
         </#if>
-        
-        <#if keywords?? && keywords?has_content>
-          <@simplerow "Keywords">
-           <#list keywords as keyword>
-            <#if keyword.uri?has_content>
-              <a href="${keyword.uri}" target="_blank" rel="noopener noreferrer">${keyword.value}</a>
-            <#else>
-               ${keyword.value}
-            </#if>
-            <#if keyword_has_next>, </#if>  
-           </#list>
-          </@simplerow>
-        </#if>
 
-        <div id="section-metadata">
-          <h2>Metadata</h2>
+        <div class="section section-metadata">
+          <div class="section-heading">
+            <h2>Metadata</h2>
+          </div>
+          <div class="section-content">
             <@simplerow "Record ID">${id}</@simplerow>
             <@simplerow "URL">${uri}</@simplerow>
+            <#if keywords?? && keywords?has_content>
+              <@simplerow "Keywords">
+              <#list keywords as keyword>
+                <#if keyword.uri?has_content>
+                  <a href="${keyword.uri}" target="_blank" rel="noopener noreferrer">${keyword.value}</a><#sep>,</#sep>
+                <#else>
+                  ${keyword.value}<#sep>,</#sep>
+                </#if>
+              </#list>
+              </@simplerow>
+            </#if>
+          </div>
         </div>
 
       </div>
@@ -150,14 +166,16 @@
   </#escape>
 </@skeleton.master>
 
+<#----------MACROS ---------->
 <#macro simplerow label>
   <div class="row">
-    <div class="col-sm-3 col-xs-12"><div class="view-label">${label}</div></div>
-    <div class="col-sm-9 col-xs-12">
+    <div class="col-sm-2 col-xs-12"><div class="view-label">${label}</div></div>
+    <div class="col-sm-10 col-xs-12">
       <#nested>
     </div>
   </div>
 </#macro>
+
 <#macro renderLinebreaks content>
     ${content?replace("\n", "<br>")}
 </#macro>

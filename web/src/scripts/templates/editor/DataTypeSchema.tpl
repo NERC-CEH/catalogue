@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-sm-2">
-    <label for="schema-name<%= data.index %>">Fieldname</label>
+    <label for="schema-name<%= data.index %>">Field</label>
   </div>
   <div class="col-sm-10">
     <input data-name="name" id="schema-name<%= data.index %>" class="editor-input" value="<%= data.name %>" placeholder="name of field/column" />

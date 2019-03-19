@@ -53,7 +53,7 @@
   </div>
 </div>
 
-<div class="postalAddress extended hidden">
+<div class="postalAddress">
   <div class="row">
     <div class="col-sm-2">
       <label class="control-label" for="contacts<%= data.index %>Address">Address</label>

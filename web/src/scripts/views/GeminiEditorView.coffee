@@ -144,7 +144,7 @@ define [
       label: 'Authors & contacts'
       title: 'Authors and other contacts'
       views: [
-        new PredefinedParentLargeView
+        new PredefinedParentView
           model: @model
           ModelType: Contact
           modelAttribute: 'responsibleParties'
