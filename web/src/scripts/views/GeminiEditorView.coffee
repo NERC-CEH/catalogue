@@ -415,9 +415,8 @@ define [
           label: 'Spatial extent'
           ObjectInputView: BoundingBoxView
           multiline: true
-          # These bounding box values were copied from terraCatalog
           predefined:
-            England:
+            'England':
               northBoundLatitude: 55.812
               eastBoundLongitude: 1.768
               southBoundLatitude: 49.864

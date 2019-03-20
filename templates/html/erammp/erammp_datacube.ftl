@@ -153,16 +153,12 @@
               </#list>
               </@simplerow>
             </#if>
+            <@simplerow "Record last updated">${metadataDateTime?datetime.iso?time?string['d MMMM yyyy, HH:mm']}</@simplerow>
           </div>
         </div>
 
       </div>
     </div>
-
-  <div class="clearfix">&nbsp;</div>
-  <div id="footer">
-      <small class="pull-right">Last updated ${metadataDateTime?datetime.iso?time?string['d MMMM yyyy, HH:mm']}&nbsp;&nbsp;</small>
-  </div>
   </#escape>
 </@skeleton.master>
 
