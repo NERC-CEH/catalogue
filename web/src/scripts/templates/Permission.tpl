@@ -20,7 +20,7 @@
       <td><input id="canEdit" type="checkbox"></td>
       <td><input id="canDelete" type="checkbox"></td>
       <td><input id="canUpload" type="checkbox"></td>
-      <td><button id="permissionAdd" class="btn btn-default btn-xs">Add</button></td>
+      <td><button id="permissionAdd" class="editor-button-xs">Add</button></td>
     </tr>
   </tfoot>
   <tbody>

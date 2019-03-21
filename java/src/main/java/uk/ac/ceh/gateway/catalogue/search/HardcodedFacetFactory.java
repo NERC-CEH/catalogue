@@ -19,6 +19,13 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .hierarchical(false)
                     .build();
                 
+            case "state":
+            return Facet.builder()
+                .fieldName("state")
+                .displayName("Status")
+                .hierarchical(false)
+                .build();
+                    
             case "recordType":
                 return Facet.builder()
                     .fieldName("recordType")
@@ -101,6 +108,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("modelType")
                     .displayName("Model Type")
                     .hierarchical(false)
+                    
                     .build();
 
             case "documentType":
@@ -122,6 +130,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("ncCaseStudy")
                     .displayName("Case Study")
                     .hierarchical(false)
+                    
                     .build();
 
             case "ncDrivers":

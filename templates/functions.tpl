@@ -92,7 +92,7 @@
     <#local lcontact = lcontact>
   </#if>
 
-  <#if showEmail=true>
+  <#if showEmail=true && (contact.email?has_content || metadata.catalogue = "eidc")>
     <#assign emailSubject= "?subject=" + title>
     <#if contact.email?has_content>
       <#assign emailAddress=contact.email>

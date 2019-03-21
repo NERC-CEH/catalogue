@@ -1,3 +1,3 @@
-<button type="button" class="btn btn-default btn-xs">
+<button type="button" class="editor-button-xs">
   <i class="fas fa-clipboard"></i>
 </button>

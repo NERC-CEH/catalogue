@@ -11,7 +11,7 @@ import lombok.Builder;
 @Value
 public class DataTypeSchema {
     private final String name, title, description, type, units, format;
-    private final Constraints constraints; //HERE
+    private final Constraints constraints;
 
     @Builder
     @JsonCreator

@@ -33,6 +33,13 @@
     .pull-right;
   }
 
+  .editor-button-xs {
+    .btn;
+    .btn-default;
+    .btn-xs;
+    .pull-right;
+  }
+
   .editor-help {
     .help-block;
     .hidden-print;
@@ -72,6 +79,20 @@
         z-index: 0;
       }
     }
+    .btnSchemaDetail {
+      .btn;
+      .btn-default;
+      .btn-xs;
+      text-align: right;
+      span:before{
+        content:"hide ";
+      };
+    };
+    .btnSchemaDetail.collapsed {
+        span:before {
+          content:"show " !important;
+        };
+      };
   }
   .multiline .existing > .row {
     border-style: solid;
@@ -130,3 +151,8 @@
     font-weight:bold;
   }
 }
+
+
+
+
+

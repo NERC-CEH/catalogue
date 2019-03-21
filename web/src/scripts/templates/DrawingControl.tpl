@@ -6,7 +6,7 @@
 */ %>
 <% if(withoutBbox) { %>
   <div class="btn-group">
-    <button id="spatial-op-dropdown"  class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
+    <button id="spatial-op-dropdown"  class="editor-button-xs dropdown-toggle" type="button" data-toggle="dropdown">
       <% if (withinBbox) { %>
         Overlapping
       <% } else { %>
@@ -25,7 +25,7 @@
     <span class="fas fa-times"></span>
   </a>
 <% } else { %>
-  <button id="drawing-toggle" type="button" class="btn btn-default btn-xs">
+  <button id="drawing-toggle" type="button" class="editor-button-xs">
     <span class="fas fa-pencil-alt"></span>
   </button>
 <% } %>

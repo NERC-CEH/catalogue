@@ -24,6 +24,8 @@
 </#macro> 
 
 <#list facets as facet>
-  <h3>${facet.displayName}</h3>
-  <@facetResults facet.results/>
+  <div class="facet">
+    <h3>${facet.displayName}</h3>
+    <@facetResults facet.results/>
+  </div>
 </#list>

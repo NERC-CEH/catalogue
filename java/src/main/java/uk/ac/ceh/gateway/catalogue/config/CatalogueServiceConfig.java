@@ -9,6 +9,8 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_FACIL
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_MONITORING_PROGRAMME_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_PUBLICATION_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_SAMPLE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ERAMMP_MODEL_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ERAMMP_DATACUBE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_SHORT;
 
 import org.springframework.context.annotation.Bean;
@@ -98,6 +100,16 @@ public class CatalogueServiceConfig {
             .type(OSDP_SAMPLE_SHORT)
             .build();
 
+        DocumentType erammpModel = DocumentType.builder()
+            .title("ERAMMP model")
+            .type(ERAMMP_MODEL_SHORT)
+            .build();
+
+        DocumentType erammpDatacube = DocumentType.builder()
+            .title("ERAMMP data cube")
+            .type(ERAMMP_DATACUBE_SHORT)
+            .build();
+
         DocumentType sampleArchive = DocumentType.builder()
             .title("Sample Archive")
             .type(SAMPLE_ARCHIVE_SHORT)
@@ -145,7 +157,7 @@ public class CatalogueServiceConfig {
                 .fileUpload(false)
                 .build(),
 
-            Catalogue.builder()
+                Catalogue.builder()
                 .id("nc")
                 .title("Natural Capital")
                 .url("http://www.ceh.ac.uk")
@@ -157,6 +169,17 @@ public class CatalogueServiceConfig {
                 .documentType(gemini)
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
+                .documentType(link)
+                .fileUpload(false)
+                .build(),
+
+                Catalogue.builder()
+                .id("erammp")
+                .title("ERAMMP")
+                .url("http://www.ceh.ac.uk")
+                .facetKey("recordType")
+                .documentType(erammpModel)
+                .documentType(erammpDatacube)
                 .documentType(link)
                 .fileUpload(false)
                 .build(),
