@@ -8,7 +8,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -47,8 +46,8 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
             Arrays.stream(responseEntity.getBody())
                 .forEach(concept -> toReturn.put(concept.topConcept, concept.concept));
             log.info("Vocabulary top concepts retrieved: {}", toReturn.keySet());
-        } catch (HttpStatusCodeException ex) {
-            log.info("Failed to retrieve vocabulary: {} status: {}, query: {}", ex.getMessage(), ex.getStatusCode(), this.query);
+        } catch (Exception ex) {
+            log.info("Failed to retrieve vocabulary: {} status: {}, query: {}", ex.getMessage(), this.query);
         }
         return toReturn;
     }
