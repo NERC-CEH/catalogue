@@ -5,7 +5,11 @@
         <#list licences as licence>
         <#if licence.code == "license">
         <#if licence.uri?has_content>
-            <rights rightsURI="${licence.uri}">${licence.value}</rights>
+            <#if licence.uri="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL/plain">
+                <rights rightsURI="${licence.uri}" rightsIdentifier="OGL-UK-3.0" rightsIdentifierScheme="SPDX">${licence.value}</rights>
+            <#else>
+                <rights rightsURI="${licence.uri}">${licence.value}</rights>
+            </#if>
         <#else>
             <rights>${licence.value}</rights>
         </#if>
