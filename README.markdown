@@ -29,6 +29,7 @@ jira.password=jira_password
 crowd.password=FindMeInK33Pa55
 plone.password=plone_password
 doi.password=
+hubbub.password=
 ```
 
 ## Getting started

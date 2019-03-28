@@ -4,7 +4,7 @@
 <#compress>
 <#escape x as x?xml>
 <?xml version="1.0" encoding="UTF-8"?>
-<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.1/metadata.xsd">
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.2/metadata.xsd">
   <identifier identifierType="DOI">${doi}</identifier>
   
   <#include "_creators.xml.tpl">
@@ -91,7 +91,7 @@
           <#if funder.funderIdentifier?matches("^http(|s)://(|dx.)doi.org/10.13039/\\d+$")>
               <#assign funderIdentifierType="Crossref Funder">
           <#elseif funder.funderIdentifier?matches("^http(|s)://ror.org/[0-9a-z]+$")>
-              <#assign funderIdentifierType="ROR">
+              <#assign funderIdentifierType="Other">
           </#if>
         <funderIdentifier funderIdentifierType="${funderIdentifierType}">${funder.funderIdentifier}</funderIdentifier>
         </#if>

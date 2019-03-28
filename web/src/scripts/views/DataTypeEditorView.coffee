@@ -4,7 +4,7 @@ define [
   'cs!views/editor/InputView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentView'
-  'cs!views/editor/PredefinedParentView'
+  'cs!views/editor/PredefinedParentLargeView'
   'cs!views/editor/DataTypeSchemaView'
   'cs!models/editor/DataTypeSchema'
   'cs!views/editor/DataTypeProvenanceView'
@@ -14,7 +14,7 @@ define [
   InputView,
   TextareaView,
   ParentView,
-  PredefinedParentView,
+  PredefinedParentLargeView,
   DataTypeSchemaView,
   DataTypeSchema,
   DataTypeProvenanceView
@@ -37,7 +37,7 @@ define [
           rows: 5
           label: 'Description'
 
-        new PredefinedParentView
+        new PredefinedParentLargeView
           model: @model
           ModelType: DataTypeSchema
           modelAttribute: 'schema'
