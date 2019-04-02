@@ -93,6 +93,7 @@ public class UploadDocumentService {
     val directory = folders.get("documents");
     val path = directory.getPath() + "/" + id + "/" + filename;
     val file = new File(path);
+    file.setReadOnly();
     FileUtils.copyInputStreamToFile(in, file);
     return accept(id, String.format("/mnt/dropbox/%s/%s", id, filename));
   }
