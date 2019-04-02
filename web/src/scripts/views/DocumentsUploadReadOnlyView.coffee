@@ -2,6 +2,23 @@ define [
   'backbone'
   'cs!views/DocumentUploadMessage'
 ], (Backbone, message) -> Backbone.View.extend
+  statusMap:
+    'VALID': 'VALID'
+    'CHANGED_HASH': 'ERROR File has changed'
+    'CHANGED_MTIME': 'WARNING File may have changed - please validate'
+    'INVALID': 'ERROR Invalid file'
+    'MISSING': 'ERROR File missing'
+    'MISSING_UNKNOWN': 'ERROR Unknown file. Please validate'
+    'MOVED_UNKNOWN': 'ERROR File in wrong location'
+    'NO_HASH': 'WARNING No checksum exists – please validate'
+    'REMOVED_UNKNOWN': 'ERROR Unknown file'
+    'UNKNOWN': 'ERROR Unknown file'
+    'UNKNOWN_MISSING': 'ERROR Unknown file has been removed (manually)'
+    'VALIDATING_HASH': 'Validating… Please wait\n(large files may take some time, please come back later)'
+    'ZIPPED_UNKNOWN': 'ERROR This file should be zipped'
+    'ZIPPED_UNKNOWN_MISSING': 'ERROR a file which should has been zipped, has since been removed (manually)'
+    'MOVED_UNKNOWN_MISSING': 'ERROR a file which should have been moved, has since been removed (manually)'
+
   initialize: (options) ->
     @model.on 'sync', =>
       do @render
@@ -40,7 +57,7 @@ define [
     if invalid
       error = $('<td></td>')
       errorMessage = $('<b></b>')
-      errorMessage.text(document.type)
+      errorMessage.text(@statusMap[document.type])
       error.append(errorMessage)
       item.append(error)
 
