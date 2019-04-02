@@ -5,6 +5,23 @@ define [
   'tpl!templates/InvalidFile.tpl'
 ], (Backbone, message, fileTpl, invalidFileTpl) -> Backbone.View.extend
   el: '.folders'
+  statusMap:
+    'VALID': 'VALID'
+    'CHANGED_HASH': 'ERROR File has changed'
+    'CHANGED_MTIME': 'WARNING File may have changed - please validate'
+    'INVALID': 'ERROR Invalid file'
+    'MISSING': 'ERROR File missing'
+    'MISSING_UNKNOWN': 'ERROR Unknown file. Please validate'
+    'MOVED_UNKNOWN': 'ERROR File in wrong location'
+    'NO_HASH': 'WARNING No checksum exists – please validate'
+    'REMOVED_UNKNOWN': 'ERROR Unknown file'
+    'UNKNOWN': 'ERROR Unknown file'
+    'UNKNOWN_MISSING': 'ERROR Unknown file has been removed (manually)'
+    'VALIDATING_HASH': 'Validating… Please wait\n(large files may take some time, please come back later)'
+    'ZIPPED_UNKNOWN': 'ERROR This file should be zipped'
+    'ZIPPED_UNKNOWN_MISSING': 'ERROR a file which should has been zipped, has since been removed (manually)'
+    'MOVED_UNKNOWN_MISSING': 'ERROR a file which should have been moved, has since been removed (manually)'
+
   initialize: ->
     @model.on 'sync', =>
       do @initFolders
@@ -139,9 +156,9 @@ define [
       id = folder + '-' + file.id
       newFile = $(fileTpl
         path: file.path
-        name: file.name,
-        hash: file.hash,
-        type: file.type,
+        name: file.name
+        hash: file.hash
+        type: @statusMap[file.type]
         id: id)
       $('.' + folder + ' .files').append(newFile) if $('#' + id).length == 0
   
@@ -157,10 +174,10 @@ define [
       id = folder + '-' + file.id
       invalidFile = $(invalidFileTpl
         path: file.path
-        comment: file.type
-        type: file.type,
-        name: file.name,
-        hash: file.hash,
+        comment: @statusMap[file.type]
+        type: file.type
+        name: file.name
+        hash: file.hash
         id: id)
       $('.' + folder + ' .files').append(invalidFile) if $('#' + id).length == 0
 
