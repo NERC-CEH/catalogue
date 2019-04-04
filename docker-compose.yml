@@ -14,9 +14,6 @@ services:
       - ./eidchub-rw:/var/ceh-catalogue/eidchub-rw
       - mapfiles:/var/ceh-catalogue/mapfiles
     environment:
-      - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
-      - plone.address=http://eidctest.ceh.ac.uk/administration-folder/eidc-data-inventory/adddatadeposit
-      - documents.baseUri=https://catalogue.ceh.ac.uk
       - spring.profiles.active=development
     env_file:
       - secrets.env
