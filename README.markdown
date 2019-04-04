@@ -19,6 +19,9 @@ The CEH metadata catalogue project.
 ## API
 [API documentation](docs/api.md)
 
+## Endpoints
+[Endpoint documentation](docs/endpoints.md)
+
 ## Usernames and Passwords
 
 you will need to create a `secrets.env` file with the following
