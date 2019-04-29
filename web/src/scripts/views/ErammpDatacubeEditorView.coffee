@@ -22,9 +22,10 @@ define [
 	'cs!views/editor/LinkView'
 	'cs!views/editor/DataTypeSchemaView'
 	'cs!models/editor/DataTypeSchema'
+	'cs!views/editor/ProvenanceView'
 	'cs!views/editor/ReadOnlyView'
 
-], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, ResourceConstraintView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, SelectView, PointOfContactView, LinkView, DataTypeSchemaView, DataTypeSchema, ReadOnlyView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, ResourceConstraintView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, SelectView, PointOfContactView, LinkView, DataTypeSchemaView, DataTypeSchema, ProvenanceView, ReadOnlyView) -> EditorView.extend
 
 	initialize: ->
 		@model.set('type', 'erammpDatacube') unless @model.has('type')
@@ -42,6 +43,16 @@ define [
 					model: @model
 					modelAttribute: 'version'
 					label: 'Version'
+				
+				new SelectView
+							model: @model
+							modelAttribute: 'condition'
+							label: 'Condition/status'
+							options: [
+								{value: 'current', label: 'Current'},
+								{value: 'draft', label: 'Draft'},
+								{value: 'obsolete', label: 'Obsolete (DO NOT USE)'},
+							]
 
 				new TextareaView
 					model: @model
@@ -55,12 +66,6 @@ define [
 					label: 'Data format'
 					placeholderAttribute: 'e.g. NetCDF, dbf, csv, shp'
 				
-				new InputView
-					model: @model
-					modelAttribute: 'dataSource'
-					label: 'Data source'
-					helpText: "this is a placeholder - it will be where you link to the source model's metadata "
-
 				new PredefinedParentView
 					model: @model
 					ModelType: PointOfContact
@@ -214,23 +219,21 @@ define [
 								{value: 'vector', label: 'Vector'},
 								{value: 'textTable', label: 'Tabular (e.g. spreadsheet, database table)'}
 							]
-							helpText: """
-												<p>...</p>
-												"""
 
 				new InputView
 					model: @model
 					modelAttribute: 'spatialResolution'
 					label: 'Spatial resolution'
-
+				]
+		,
+			label: 'Provenance'
+			title: 'Provenance'
+			views: [
 				new ParentView
-          model: @model
-          modelAttribute: 'resourceLocators'
-          label: 'Additional links'
-          ObjectInputView: LinkView
-          helpText: """
-                    <p>A list of links to additional resources that may be of use to the user.</p>
-                    """
+					model: @model
+					modelAttribute: 'provenance'
+					label: 'Provenance'
+					ObjectInputView: ProvenanceView
 				]
 		,
 			label: 'Metadata'
@@ -244,7 +247,16 @@ define [
 					helpText: """
 					          <p>A list of keywords that help to identify and describe the model - used to improve search results and filtering. A keyword may be an entry from a vocabulary (with a uri) or just plain text.</p>
 					          """
-				
+
+				new ParentView
+          model: @model
+          modelAttribute: 'resourceLocators'
+          label: 'Additional links'
+          ObjectInputView: LinkView
+          helpText: """
+                    <p>A list of links to additional resources that may be of use to the user.</p>
+                    """
+
 				new ReadOnlyView
           model: @model
           modelAttribute: 'id'

@@ -6,7 +6,8 @@
     <div id="metadata" class="metadata erammp-metadata">
       <div class="container">
         <#include "_admin.ftl">
-
+        
+        
         <#if title?? && title?has_content>
           <div id="pageTitle">
             <h1>
@@ -14,6 +15,12 @@
               <#if version?? && version?has_content><small>version ${version}</small></#if>
             </h1>
           </div>
+        </#if>
+
+        <#if condition?? && condition?has_content && condition=="obsolete">
+            <div class="alert alert-danger">
+              <b><i class="fas fa-exclamation-triangle"></i> PLEASE DO NOT USE THIS DATA - it is obsolete.</b>
+            </div>
         </#if>
 
         <#if description?? && description?has_content>
