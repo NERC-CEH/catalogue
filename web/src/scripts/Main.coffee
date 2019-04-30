@@ -45,6 +45,7 @@ define [
   'cs!views/DepositRequestView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
+  'cs!views/DocumentUploadView'
   'bootstrap'
   'dropzone'
 ], (
@@ -54,7 +55,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, DocumentsUploadReadOnlyModel, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, DepositRequestModel, DepositRequestView,
-    ClipboardCopyView, DataTypeEditorView
+    ClipboardCopyView, DataTypeEditorView, DocumentUploadView
 ) ->
 
   ###
@@ -71,6 +72,9 @@ define [
     do @initScheduled if $('#documents-upload .scheduled').length
     do @initInProgress if $('#documents-upload .in-progress').length
     do @initReadOnly if $('#documents-upload .read-only').length
+
+    do @initDocumentUpload if $('#document-upload').length
+
     do @initDepositRequest if $('#deposit-request').length
     do @initStudyAreaMap if $('#studyarea-map').length
     do @initGeometryMap if $('#geometry-map').length
@@ -83,6 +87,14 @@ define [
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
+  
+  initDocumentUpload: ->
+    id = $('#document-upload').data('guid')
+    app = new DocumentsUploadReadOnlyModel null,
+        mediaType: 'application/vnd.upload-document+json'
+    app.id = id
+    app.set('id', id)
+    view = new DocumentUploadView model: app
 
   initDepositRequest: ->
     app = new DepositRequestModel

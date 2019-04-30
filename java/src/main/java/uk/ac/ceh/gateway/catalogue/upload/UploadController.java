@@ -43,6 +43,23 @@ public class UploadController {
   private final DocumentRepository documentRepository;
   private final JiraService jiraService;
 
+
+  @RequestMapping(value = "upload/beta/{id}", method = RequestMethod.GET)
+  @ResponseBody
+  public ModelAndView createOrGetUploadDocumentBeta(@ActiveUser CatalogueUser user,
+      @PathVariable("id") String id) throws DocumentRepositoryException {
+    val geminiDocument = (GeminiDocument) documentRepository.read(id);
+    val canUpload = permissionService.userCanUpload(id);
+    if (canUpload) {
+      Map<String, Object> model = new HashMap<>();
+      model.put("id", id);
+      model.put("title", geminiDocument.getTitle());
+      return new ModelAndView("/html/upload/upload-beta-document.ftl", model);
+    } else {
+      throw new PermissionDeniedException("Permissions denied");
+    }
+  }
+
   @RequestMapping(value = "upload/{id}", method = RequestMethod.GET)
   @ResponseBody
   public ModelAndView createOrGetUploadDocument(@ActiveUser CatalogueUser user,

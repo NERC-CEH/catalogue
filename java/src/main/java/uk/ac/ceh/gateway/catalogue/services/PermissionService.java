@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.NonNull;
+import lombok.val;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -100,6 +101,8 @@ public class PermissionService {
     }
     
     public boolean userCanUpload(@NonNull String file) {
+        val isAdmin = userInGroup("ROLE_CIG_SYSTEM_ADMIN");
+        if (isAdmin) return true;
         try {
             CatalogueUser user = getCurrentUser();
             DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
