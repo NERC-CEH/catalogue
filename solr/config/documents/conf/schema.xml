@@ -40,6 +40,7 @@
       <field name="manufacturer" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="manufacturerName" type="keyword" indexed="true" stored="true" required="false" multiValued="false"/>
       <field name="_version_" type="long" indexed="true" stored="true" multiValued="false"/>
+      <field name="condition" type="text_general" indexed="true" stored="true" required="false" multiValued="false"/>
       <dynamicField name="random*" type="random" indexed="true" stored="false"/>
       <dynamicField name="surname*" type="name" indexed="true" stored="false" multiValued="true"/>
     </fields>

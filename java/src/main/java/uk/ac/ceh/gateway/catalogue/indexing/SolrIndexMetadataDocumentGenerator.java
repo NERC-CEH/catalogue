@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -73,7 +74,16 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setNcCaseStudy(grab(getKeywordsByVocabulary(document, NC_CASE_STUDY_URL), Keyword::getValue))
             .setNcDrivers(grab(getKeywordsByVocabulary(document, NC_DRIVERS_URL), Keyword::getValue))
             .setNcEcosystemServices(grab(getKeywordsByVocabulary(document, NC_ECOSYSTEM_SERVICES_URL), Keyword::getValue))
-            .setNcGeographicalScale(grab(getKeywordsByVocabulary(document, NC_GEOGRAPHICAL_SCALE_URL), Keyword::getValue));
+            .setNcGeographicalScale(grab(getKeywordsByVocabulary(document, NC_GEOGRAPHICAL_SCALE_URL), Keyword::getValue))
+            .setCondition(getCondition(document));
+    }
+
+    private String getCondition(MetadataDocument document) {
+        if(document instanceof ErammpDatacube){
+            return ((ErammpDatacube) document).getCondition();
+        } else {
+            return "";
+        }
     }
 
     private List<String> getLocations(MetadataDocument document) {
