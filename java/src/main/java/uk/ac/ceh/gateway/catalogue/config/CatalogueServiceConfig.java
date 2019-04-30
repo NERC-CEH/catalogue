@@ -176,7 +176,7 @@ public class CatalogueServiceConfig {
                 Catalogue.builder()
                 .id("erammp")
                 .title("ERAMMP")
-                .url("http://www.ceh.ac.uk")
+                .url("")
                 .facetKey("recordType")
                 .documentType(erammpModel)
                 .documentType(erammpDatacube)
