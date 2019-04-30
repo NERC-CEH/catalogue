@@ -11,6 +11,7 @@ define [
 	'cs!views/editor/PredefinedParentView'
 	'cs!views/editor/PredefinedParentLargeView'
 	'cs!views/editor/ResourceConstraintView'
+	'cs!views/editor/SpatialReferenceSystemView'
 	'cs!models/editor/BoundingBox'
 	'cs!models/editor/PointOfContact'
 	'cs!models/editor/MultipleDate'
@@ -25,7 +26,7 @@ define [
 	'cs!views/editor/ProvenanceView'
 	'cs!views/editor/ReadOnlyView'
 
-], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, ResourceConstraintView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, SelectView, PointOfContactView, LinkView, DataTypeSchemaView, DataTypeSchema, ProvenanceView, ReadOnlyView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, ResourceConstraintView, SpatialReferenceSystemView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, SelectView, PointOfContactView, LinkView, DataTypeSchemaView, DataTypeSchema, ProvenanceView, ReadOnlyView) -> EditorView.extend
 
 	initialize: ->
 		@model.set('type', 'erammpDatacube') unless @model.has('type')
@@ -177,6 +178,26 @@ define [
 			label: 'Spatial'
 			title: 'Spatial'
 			views: [				
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'spatialReferenceSystems'
+          label: 'Spatial reference systems'
+          ObjectInputView: SpatialReferenceSystemView
+          predefined:
+            'British National Grid':
+              code: 27700
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'Latitude/longitude (WGS84)':
+              code: 4326
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'Spherical mercator':
+              code: 3857
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+          helpText: """
+                    <p>The spatial referencing system used by the data resource.</p>
+                    """
+
+
 				new PredefinedParentView
           model: @model
           modelAttribute: 'boundingBoxes'
