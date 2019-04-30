@@ -1,3 +1,105 @@
+.document-upload {
+    margin-top: 32px;
+
+    &-section {
+        margin-bottom: 96px;
+    }
+
+    .file-head {
+        font-size: 16px;
+        padding-bottom: 16px;
+        margin: 0;
+        border-bottom: solid 2px #aaa;
+    }
+
+    .file-row {
+        margin: 0;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-bottom: solid 1px #ccc;
+    }
+
+    .file-name,
+    .file-size,
+    .file-checksum {
+        font-size: 16px;
+        height: 36px;
+        line-height: 36px;
+    }
+
+    .file-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .file-message {
+        font-size: 13px;
+        color: #808080;
+        margin-top: -8px;
+    }
+
+    .file-warning {
+        color: #f0ad4e;
+    }
+
+    .file-danger {
+        color: #c9302c;
+    }
+
+    .file-warning,
+    .file-danger {
+        font-weight: bold;
+    }
+
+    .file-icon {
+        margin-right: 4px;
+    }
+
+    .btn-icon {
+        margin-right: 8px;
+    }
+
+    .file-actions {
+        display: flex;
+    }
+
+    .file-action {
+        width: 50%;
+    }
+
+    .file-action {
+        margin-left: 8px;
+    }
+
+    .file-action:first-child {
+        margin-left: 0px;
+    }
+
+    .move-all {
+        margin-top: 16px;
+        width: 100%;
+    }
+
+    .file-action,
+    .move-all,
+    .file-actions,
+    .file-head-action {
+        display: none;
+    }
+
+    .loading h3 {
+        color: #888;
+    }
+
+    .no-documents {
+        color: #bbb;
+        font-weight: 400;
+        letter-spacing: 1px;
+    }
+}
+
+
 #documents-upload {
 
     .header {
