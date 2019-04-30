@@ -1,15 +1,16 @@
 <h2>Permissions</h2>
-<div class="alert alert-info">
-  <i class="fas fa-info-circle fa-2x pull-right"></i> For external users, the username is the email address with which they registered an account.<br>For CEH staff it is their CEH login username <b>not</b> their email address.
+<div>
+  <p><i class="fas fa-info-circle fa-2x pull-right"></i> Amend permissions for users or groups.. For external users, the username is the email address with which they registered an account.<br>For CEH staff it is their CEH login username <b>not</b> their email address.</p>
+  <p><b>NOTE</b>: Catalogue administrators have permission to add and edit all records regardless of permissions defined here.</p>
 </div>
 <table class="table table-striped">
   <thead>
   <tr>
     <th>Username/Group</th>
-    <th>Can View</th>
-    <th>Can Edit</th>
-    <th>Can Delete</th>
-    <th>Can Upload</th>
+    <th>Can view</th>
+    <th>Can edit</th>
+    <th>Can delete</th>
+    <th>Can upload</th>
     <th>Action</th>
   </tr>
   </thead>
@@ -20,7 +21,7 @@
       <td><input id="canEdit" type="checkbox"></td>
       <td><input id="canDelete" type="checkbox"></td>
       <td><input id="canUpload" type="checkbox"></td>
-      <td><button id="permissionAdd" class="editor-button-xs">Add</button></td>
+      <td><button id="permissionAdd" class="editor-button-xs" title="remove permissions for this user">Add</button></td>
     </tr>
   </tfoot>
   <tbody>

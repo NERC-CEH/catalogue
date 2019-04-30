@@ -82,7 +82,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
         if(document instanceof ErammpDatacube){
             return ((ErammpDatacube) document).getCondition();
         } else {
-            return "";
+            return null;
         }
     }
 

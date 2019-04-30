@@ -49,10 +49,6 @@ public class ErammpDatacube extends AbstractMetadataDocument implements WellKnow
         .map(BoundingBox::getWkt)
         .collect(Collectors.toList());
   }
-
-  public String getCondition() {
-    return condition;
-  }
 }
 
 

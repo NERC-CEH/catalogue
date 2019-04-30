@@ -178,6 +178,7 @@ public class CatalogueServiceConfig {
                 .title("ERAMMP")
                 .url("")
                 .facetKey("recordType")
+                .facetKey("condition")
                 .documentType(erammpModel)
                 .documentType(erammpDatacube)
                 .documentType(link)
