@@ -48,11 +48,12 @@ define [
 				new SelectView
 							model: @model
 							modelAttribute: 'condition'
-							label: 'Condition/status'
+							label: 'Status'
 							options: [
-								{value: 'current', label: 'Current'},
-								{value: 'draft', label: 'Draft'},
-								{value: 'obsolete', label: 'Obsolete (DO NOT USE)'},
+								{value: '', label: ''},
+								{value: 'Current', label: 'Current'},
+								{value: 'Draft', label: 'Draft'},
+								{value: 'Obsolete', label: 'Obsolete (DO NOT USE)'},
 							]
 
 				new TextareaView

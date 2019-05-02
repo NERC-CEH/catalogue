@@ -57,7 +57,7 @@
           <#if catalogue?has_content>
             <li class="navbar-title">
             <#if catalogue.url?? && catalogue.url == "">
-              ${catalogue.title?html}
+              <div>${catalogue.title?html}</div>
             <#else>
               <a href="${catalogue.url!'/'?html}">${catalogue.title?html}</a>
             </#if>
