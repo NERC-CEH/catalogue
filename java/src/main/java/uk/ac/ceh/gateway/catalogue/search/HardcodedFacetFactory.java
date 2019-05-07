@@ -117,7 +117,14 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Document Type")
                     .hierarchical(false)
                     .build();
-            
+
+            case "condition":
+                return Facet.builder()
+                    .fieldName("condition")
+                    .displayName("Status")
+                    .hierarchical(false)
+                    .build();
+
             case "ncAssets":
                 return Facet.builder()
                     .fieldName("ncAssets")

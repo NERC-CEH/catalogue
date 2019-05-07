@@ -277,12 +277,26 @@ public class MetadataQualityService {
                 if (north.doubleValue() < south.doubleValue()) {
                     toReturn.add(new MetadataCheck("Bounding box north boundary is smaller than the south", ERROR));
                 }
+
+                if (north.doubleValue() < -90 || north.doubleValue() > 90 ) {
+                    toReturn.add(new MetadataCheck("Bounding box north boundary is out of range", ERROR));
+                }
+
+                if (south.doubleValue() < -90 || south.doubleValue() > 90 ) {
+                    toReturn.add(new MetadataCheck("Bounding box south boundary is out of range", ERROR));
+                }
+
             }
             if (boundingBox.containsKey("westBoundLongitude") && boundingBox.containsKey("eastBoundLongitude")) {
                 val east = boundingBox.get("eastBoundLongitude");
                 val west = boundingBox.get("westBoundLongitude");
-                if (east.doubleValue() < west.doubleValue()) {
-                    toReturn.add(new MetadataCheck("Bounding box east boundary is smaller than the west", ERROR));
+                
+                if (east.doubleValue() < -180 || east.doubleValue() > 180) {
+                    toReturn.add(new MetadataCheck("Bounding box east boundary is out of range", ERROR));
+                }
+                
+                if (west.doubleValue() < -180 || west.doubleValue() > 180 ) {
+                    toReturn.add(new MetadataCheck("Bounding box west boundary is out of range", ERROR));
                 }
             }
         });

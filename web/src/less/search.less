@@ -128,7 +128,7 @@
         font-size:1.6em;
       }
       .resultDescription { margin:0;}
-      .label-Embargoed, .label-Available, .label-Controlled {
+      .label-Embargoed, .label-Available, .label-Controlled, .label-Current {
         display:none;
       };
       .label-Superseded, .label-Withdrawn {
@@ -143,7 +143,7 @@
           content: ")";
         };
       };
-      .label-Restricted {
+     .label-Restricted { 
         margin:0 1em;
         color: #C00;
         font-size: 0.8em;
@@ -152,6 +152,10 @@
         &:before {
           content: "access ";
         };
+      };
+      .label-Obsolete { 
+        color: #F00;
+        font-weight: bold;
       };
     };
 

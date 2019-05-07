@@ -57,18 +57,15 @@
           <#if catalogue?has_content>
             <li class="navbar-title">
             <#if catalogue.url?? && catalogue.url == "">
-              ${catalogue.title?html}
+              <div>${catalogue.title?html}</div>
             <#else>
               <a href="${catalogue.url!'/'?html}">${catalogue.title?html}</a>
             </#if>
             </li>
             <#if catalogue.id == "eidc">
-              <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Find data</a></li>
-              <li><a href="http://eidc.ceh.ac.uk/deposit">Deposit data</a></li>
-              <li><a href="http://eidc.ceh.ac.uk/support">Support</a></li>
-              <li><a href="http://eidc.ceh.ac.uk/about">About</a></li>
-              <li><a href="http://eidc.ceh.ac.uk/contact">Contact us</a></li>
-              <li><a href="http://eidc.ceh.ac.uk/help">Help</a></li>
+              <#include "menus/gemini.ftl">
+            <#elseif catalogue.id == "erammp">
+              <#include "menus/erammp.ftl">
             <#else>
               <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Search</a></li>
             </#if>

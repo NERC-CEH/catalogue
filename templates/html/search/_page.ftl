@@ -12,6 +12,9 @@
   <div class="result result-${result.state}" data-location="${(result.locations?join(','))!}" id="${result.identifier}">
     <h2 class="resultTitle">
       <small>
+        <#if (result.condition??) >
+          <span class="label-${result.condition}">${result.condition}</span>
+        </#if>
         <span>${result.recordType!""}</span>
         <#if (result.resourceStatus??) >
           <span class="label-${result.resourceStatus}">${result.resourceStatus}</span>

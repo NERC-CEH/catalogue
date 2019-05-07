@@ -12,6 +12,9 @@
   <div class="result result-<%=result.state%>" id="<%=result.identifier%>">
     <h2 class="resultTitle">
       <small>
+      <% if (result.condition != '') {  %>
+        <span class="label-<%=result.condition%>"><%=result.condition%></span>
+      <% } %>
         <span><%=result.recordType%></span>
       <% if (result.resourceStatus != '') {  %>
         <span class="label-<%=result.resourceStatus%>"><%=result.resourceStatus%></span>

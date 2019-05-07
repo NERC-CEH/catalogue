@@ -27,8 +27,9 @@ The CEH metadata catalogue project.
 you will need to create a `secrets.env` file with the following
 
 ```
-jira.password=jira_password
-crowd.password=FindMeInK33Pa55
+jira.password=FindMeInK33Pa55
+crowd.password=
+plone.password=
 doi.password=
 hubbub.password=
 ```

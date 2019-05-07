@@ -8,10 +8,6 @@ import org.apache.solr.client.solrj.beans.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
-* The following represents the elements of a gemini document which can be indexed
-* by solr
-*/
 @Data
 @Accessors(chain=true)
 public class SolrIndex {
@@ -53,6 +49,7 @@ public class SolrIndex {
     private @Field List<String> ncDrivers;
     private @Field List<String> ncEcosystemServices;
     private @Field List<String> ncGeographicalScale;
+    private @Field String condition;
 
     public SolrIndex addLocations(List<String> locations) {
         this.locations.addAll(locations);

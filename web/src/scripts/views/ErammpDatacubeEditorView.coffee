@@ -11,6 +11,7 @@ define [
 	'cs!views/editor/PredefinedParentView'
 	'cs!views/editor/PredefinedParentLargeView'
 	'cs!views/editor/ResourceConstraintView'
+	'cs!views/editor/SpatialReferenceSystemView'
 	'cs!models/editor/BoundingBox'
 	'cs!models/editor/PointOfContact'
 	'cs!models/editor/MultipleDate'
@@ -22,9 +23,10 @@ define [
 	'cs!views/editor/LinkView'
 	'cs!views/editor/DataTypeSchemaView'
 	'cs!models/editor/DataTypeSchema'
+	'cs!views/editor/ProvenanceView'
 	'cs!views/editor/ReadOnlyView'
 
-], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, ResourceConstraintView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, SelectView, PointOfContactView, LinkView, DataTypeSchemaView, DataTypeSchema, ReadOnlyView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, ResourceConstraintView, SpatialReferenceSystemView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, SelectView, PointOfContactView, LinkView, DataTypeSchemaView, DataTypeSchema, ProvenanceView, ReadOnlyView) -> EditorView.extend
 
 	initialize: ->
 		@model.set('type', 'erammpDatacube') unless @model.has('type')
@@ -42,6 +44,17 @@ define [
 					model: @model
 					modelAttribute: 'version'
 					label: 'Version'
+				
+				new SelectView
+							model: @model
+							modelAttribute: 'condition'
+							label: 'Status'
+							options: [
+								{value: '', label: ''},
+								{value: 'Current', label: 'Current'},
+								{value: 'Draft', label: 'Draft'},
+								{value: 'Obsolete', label: 'Obsolete (DO NOT USE)'},
+							]
 
 				new TextareaView
 					model: @model
@@ -55,12 +68,6 @@ define [
 					label: 'Data format'
 					placeholderAttribute: 'e.g. NetCDF, dbf, csv, shp'
 				
-				new InputView
-					model: @model
-					modelAttribute: 'dataSource'
-					label: 'Data source'
-					helpText: "this is a placeholder - it will be where you link to the source model's metadata "
-
 				new PredefinedParentView
 					model: @model
 					ModelType: PointOfContact
@@ -172,6 +179,26 @@ define [
 			label: 'Spatial'
 			title: 'Spatial'
 			views: [				
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'spatialReferenceSystems'
+          label: 'Spatial reference systems'
+          ObjectInputView: SpatialReferenceSystemView
+          predefined:
+            'British National Grid':
+              code: 27700
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'Latitude/longitude (WGS84)':
+              code: 4326
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'Spherical mercator':
+              code: 3857
+              codeSpace: 'urn:ogc:def:crs:EPSG'
+          helpText: """
+                    <p>The spatial referencing system used by the data resource.</p>
+                    """
+
+
 				new PredefinedParentView
           model: @model
           modelAttribute: 'boundingBoxes'
@@ -214,23 +241,21 @@ define [
 								{value: 'vector', label: 'Vector'},
 								{value: 'textTable', label: 'Tabular (e.g. spreadsheet, database table)'}
 							]
-							helpText: """
-												<p>...</p>
-												"""
 
 				new InputView
 					model: @model
 					modelAttribute: 'spatialResolution'
 					label: 'Spatial resolution'
-
+				]
+		,
+			label: 'Provenance'
+			title: 'Provenance'
+			views: [
 				new ParentView
-          model: @model
-          modelAttribute: 'resourceLocators'
-          label: 'Additional links'
-          ObjectInputView: LinkView
-          helpText: """
-                    <p>A list of links to additional resources that may be of use to the user.</p>
-                    """
+					model: @model
+					modelAttribute: 'provenance'
+					label: 'Provenance'
+					ObjectInputView: ProvenanceView
 				]
 		,
 			label: 'Metadata'
@@ -244,7 +269,16 @@ define [
 					helpText: """
 					          <p>A list of keywords that help to identify and describe the model - used to improve search results and filtering. A keyword may be an entry from a vocabulary (with a uri) or just plain text.</p>
 					          """
-				
+
+				new ParentView
+          model: @model
+          modelAttribute: 'resourceLocators'
+          label: 'Additional links'
+          ObjectInputView: LinkView
+          helpText: """
+                    <p>A list of links to additional resources that may be of use to the user.</p>
+                    """
+
 				new ReadOnlyView
           model: @model
           modelAttribute: 'id'
