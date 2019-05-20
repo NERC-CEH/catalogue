@@ -46,6 +46,7 @@ define [
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'cs!views/DocumentUploadView'
+  'cs!models/DocumentUploadBetaModel'
   'bootstrap'
   'dropzone'
 ], (
@@ -55,7 +56,7 @@ define [
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, DocumentsUploadReadOnlyModel, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, DepositRequestModel, DepositRequestView,
-    ClipboardCopyView, DataTypeEditorView, DocumentUploadView
+    ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel
 ) ->
 
   ###
@@ -90,7 +91,7 @@ define [
   
   initDocumentUpload: ->
     id = $('#document-upload').data('guid')
-    app = new DocumentsUploadReadOnlyModel null,
+    app = new DocumentUploadModel null,
         mediaType: 'application/vnd.upload-document+json'
     app.id = id
     app.set('id', id)

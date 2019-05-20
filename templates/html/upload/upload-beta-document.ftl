@@ -84,9 +84,10 @@
             <div class="row">
                 <div class="col-md-6"></div>
                 <div class="col-md-6 file-actions">
-                    <button class="file-action btn btn-primary"><i class="btn-icon fas fa-check"></i><span>VALIDATE ALL</span></button>
-                    <button class="file-action btn btn-success"><i class="btn-icon far fa-file-archive"></i><span>ZIP</span></button>
-                    <button class="file-action btn btn-success"><i class="btn-icon fas fa-file-download"></i><span>DOWNLOAD CHECKSUM REPORT</span></button>
+                    <button class="validate-all file-action btn btn-primary"><i class="btn-icon fas fa-check"></i><span>VALIDATE ALL</span></button>
+                    <button class="zip file-action btn btn-success"><i class="btn-icon far fa-file-archive"></i><span>ZIP</span></button>
+                    <button class="unzip file-action btn btn-success" style="display: none"><i class="btn-icon far fa-file-archive"></i><span>UNZIP</span></button>
+                    <a class="downloadChecksum file-action btn btn-success" href="get_checksum" download="checksums_${id}.csv"><i class="btn-icon fas fa-file-download"></i><span>DOWNLOAD CHECKSUM REPORT</span></a>
                 </div>
             </div>
         </section>
