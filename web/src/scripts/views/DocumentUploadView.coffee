@@ -64,6 +64,8 @@ define [
 
 
   initialize: ->
+    Dropzone.autoDiscover = false
+
     setInterval(
       () => do @model.fetch
       10000
@@ -129,7 +131,6 @@ define [
 
     @dropzone = new Dropzone '.dropzone',
       timeout: -1
-      autoDiscover: no
       url: model.url() + '/add-upload-document'
       maxFilesize: 20 * 1000 * 1000
       autoQueue: yes
