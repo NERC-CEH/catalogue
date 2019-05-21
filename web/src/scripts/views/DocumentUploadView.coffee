@@ -2,7 +2,10 @@ define [
   'jquery'
   'backbone'
   'tpl!templates/DocumentUploadFileRow.tpl'
-], ($, Backbone, DocumentUploadFileRowTemplate) -> Backbone.View.extend
+  'tpl!templates/BetaDropzoneFile.tpl'
+], ($, Backbone, DocumentUploadFileRowTemplate, DropzoneFileTpl) -> Backbone.View.extend
+  dropzone: null
+
   keyToName:
     documents: 'data'
     plone: 'metadata'
@@ -83,7 +86,7 @@ define [
         if typeof filename == 'undefined'
             el = $(evt.target).parent()
         filename = el.data('filename')
-        el.children('i').attr('class', 'fas fa-spinner fa-spin')
+        el.children('i').attr('class', 'fas fa-sync fa-spin')
         el.attr('disabled', true)
         @model[action](filename, to)
     )
@@ -117,7 +120,48 @@ define [
     href = 'data:text/csv;charset=utf-8,' + encodeURI(checksums.join('\n\r'))
 
     $('.downloadChecksum').attr('href', href)
-  
+
+  initDropzone: ->
+    model = @model.bind @
+    render = @render.bind @
+
+    @dropzone = new Dropzone '.dropzone',
+      timeout: -1
+      url: model.url() + '/add-upload-document'
+      maxFilesize: 20 * 1000 * 1000
+      autoQueue: yes
+      previewTemplate: DropzoneFileTpl()
+      previewsContainer: '.dropzone-files'
+      clickable: '.fileinput-button'
+      parallelUploads: 1
+      init: ->
+        @on 'addedfile', (file) ->
+          last = $('.uploading').length - 1
+          uploading = $($('.uploading')[last])
+          id = file.name.replace(/[^\w?]/g, '-')
+          uploading.addClass('uploading-' + id)
+          uploading.find('.cancel').click => @removeFile file
+        
+        @on 'success', (file, res) ->
+          id = file.name.replace(/[^\w?]/g, '-')
+          setTimeout(
+            -> $('.uploading-' + id).remove()
+            500
+          )
+          model.set res
+          do render
+        
+        @on 'error', (file, errorMessage, xhr) ->
+          id = file.name.replace(/[^\w?]/g, '-')
+          $('.uploading-' + id + ' .file-status').text('Error')
+          errorMessages =
+            0: 'No connection'
+            403: 'Unauthorized'
+            500: 'Internal Server Error'
+          errorMessage = errorMessage
+          errorMessage = errorMessages[xhr.status] || errorMessage if xhr
+          $('.uploading-' + id + ' .file-message').text(errorMessage)
+
   renderZip: ->
     if @model.get('uploadFiles').datastore && @model.get('uploadFiles').datastore.zipped
       $('.datastore-icon .far').removeClass('fa-file')
@@ -131,12 +175,16 @@ define [
       do $('.unzip').hide
 
   render: ->
+    do @initDropzone if @dropzone == null && $('.dropzone-files').length
+
     uploadFiles = @model.get('uploadFiles')
 
     @globalAction('move-all', 'moveToDatastore')
     @globalAction('validate-all', 'validateFiles')
     @globalAction('zip')
     @globalAction('unzip')
+    @globalAction('finish')
+
     do @renderChecksums
     do @renderZip
 

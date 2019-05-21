@@ -9,6 +9,9 @@ services:
       - ./templates:/opt/ceh-catalogue/templates
       - ./web/src:/opt/ceh-catalogue/web
       - ./java/build/libs:/opt/ceh-catalogue/libs
+    environment:
+      - spring.profiles.active=development
+      - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
   solr:
     # Expose the solr port for development
     ports:

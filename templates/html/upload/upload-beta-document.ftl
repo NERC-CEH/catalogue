@@ -1,18 +1,58 @@
 <#import "../skeleton.ftl" as skeleton>
-<#assign issues=jira.search("project=eidchelp and component='data transfer' and labels=" + id)>
+<#assign issues=jira.search("project%3Deidchelp%20and%20component%3D%27data%20transfer%27%20and%20labels%3D" + id)>
+<#assign scheduled=issues?size == 1 && issues[0].status == 'scheduled'>
 
 <@skeleton.master title=title>
 <div class="container" id="document-upload" data-guid='${id}'>
+
+    <#if scheduled>
+    <div class="container-fluid document-upload is-scheduled">
+    <#else>
     <div class="container-fluid document-upload">
+    </#if>
         <div>
             <a class="btn btn-success" href="/documents/${id}"><i class="btn-icon fas fa-arrow-left"></i><span>${id}<span></a>
         </div>
-<#--  
-        <section class="document-upload-section">
-            <div class="page-header">
-                <h3>Upload</h3>
-            </div>
-        </section>  -->
+
+        <#if issues?size != 1 >
+            <div class="no-issue alert alert-danger"><b>ERROR</b><br>There is no Jira issue for this deposit</div>
+        <#elseif scheduled>
+            <section class="document-upload-section">
+                <div class="page-header">
+                    <h3><i class="btn-icon fas fa-file-upload"></i> Upload</h3>
+                </div>
+                <div class='dropzone'>
+                    <div class="dropzone-files">
+                        <div class="row file-head">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-4"><b>Name</b></div>
+                                    <div class="col-md-2"><b>Size</b></div>
+                                    <div class="col-md-6"><b>Status</b></div>
+                                </div>
+                            </div>
+                            <div class="file-head-action col-md-3"><b>Actions</b></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <button class="btn btn-success fileinput-button">ADD FILES ...</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-4">
+                        <button class="btn btn-success finish">
+                            <i class="fas fa-check"></i>
+                            <span>FINISH UPLOADING</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </#if>
 
         <section class="document-upload-section">
             <div class="page-header">
@@ -29,7 +69,7 @@
                 <div class="file-head-action col-md-3"><b>Actions</b></div>
             </div>
             <div class="row loading text-center">
-                <h3><i class="fas fa-spinner fa-spin"></i> LOADING</h3>
+                <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
             <div class="documents-files"></div>
             <div class="row">
@@ -55,7 +95,7 @@
                 <div class="file-head-action col-md-3"><b>Actions</b></div>
             </div>
             <div class="row loading text-center">
-                <h3><i class="fas fa-spinner fa-spin"></i> LOADING</h3>
+                <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
             <div class="plone-files"></div>
         </section>
@@ -75,7 +115,7 @@
                 <div class="file-head-action col-md-3"><b>Actions</b></div>
             </div>
             <div class="row loading text-center">
-                <h3><i class="fas fa-spinner fa-spin"></i> LOADING</h3>
+                <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
             <div class="datastore-files"></div>
         </section>

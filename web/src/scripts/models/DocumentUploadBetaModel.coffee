@@ -135,3 +135,17 @@ define [
         console.error('error', err)
         do @fetch
     }
+
+  finish: ->
+    url = @url() + '/finish'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) ->
+        do window.location.reload
+      error: (err) ->
+        console.error('error', err)
+    }
