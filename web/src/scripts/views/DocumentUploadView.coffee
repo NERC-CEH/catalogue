@@ -4,8 +4,6 @@ define [
   'tpl!templates/DocumentUploadFileRow.tpl'
   'tpl!templates/BetaDropzoneFile.tpl'
 ], ($, Backbone, DocumentUploadFileRowTemplate, DropzoneFileTpl) -> Backbone.View.extend
-  dropzone: null
-
   keyToName:
     documents: 'data'
     plone: 'metadata'
@@ -68,7 +66,7 @@ define [
 
     setInterval(
       () => do @model.fetch
-      10000
+      3000
     )
 
     @model.on 'sync', =>
@@ -127,9 +125,9 @@ define [
     model = @model.bind @
     render = @render.bind @
 
-    console.log(@dropzone, model.url() + '/add-upload-document')
+    $('.dropzone').addClass('is-ready')
 
-    @dropzone = new Dropzone '.dropzone',
+    new Dropzone '.dropzone',
       timeout: -1
       url: model.url() + '/add-upload-document'
       maxFilesize: 20 * 1000 * 1000
@@ -179,7 +177,7 @@ define [
       do $('.unzip').hide
 
   render: ->
-    do @initDropzone if @dropzone == null && $('.dropzone-files').length
+    do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0
 
     uploadFiles = @model.get('uploadFiles')
 
