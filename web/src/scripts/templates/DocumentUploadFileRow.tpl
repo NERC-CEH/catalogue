@@ -35,11 +35,15 @@
                 <span>MOVE METADATA</span>
             </button>
         <% } else if (action === 'move-both') { %>
-            <button class="move-metadata file-action btn btn-success" data-filename="<%= path %>">
+            <button class="delete file-action btn btn-danger" data-filename="<%= path %>">
+                <i class="btn-icon fas fa-trash"></i>
+                <span>DELETE</span>
+            </button>
+            <button class="move-both move-metadata file-action btn btn-success" data-filename="<%= path %>">
                 <i class="btn-icon fas fa-level-down-alt"></i>
                 <span>MOVE METADATA</span>
             </button>
-            <button class="move-datastore file-action btn btn-success" data-filename="<%= path %>">
+            <button class="move-both move-datastore file-action btn btn-success" data-filename="<%= path %>">
                 <i class="btn-icon fas fa-level-down-alt"></i>
                 <span>MOVE DATASTORE</span>
             </button>
