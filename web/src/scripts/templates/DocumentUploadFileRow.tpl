@@ -1,4 +1,4 @@
-<div class="row file-row" title="<%= name %>">
+<div class="row file-row is-<%= type %>" title="<%= name %>">
     <div class="col-md-8">
         <div class="row">
             <div class="col-md-4 file-name">
@@ -8,7 +8,7 @@
                     <span><%= name %></span>
                 <% } %>
             </div>
-            <div class="col-md-2 file-size"><%= bytes %> B</div>
+            <div class="col-md-2 file-size"><%= size %></div>
             <div class="col-md-6 file-checksum">
                 <% if (errorType === 'hash') { %>
                     <span class="file-danger"><i class="file-icon fas fa-exclamation-circle"></i><%= hash %></span>
@@ -24,7 +24,12 @@
         </div>
     </div>
     <div class="col-md-4 file-actions">
-        <% if (action === 'move-datastore') { %>
+        <% if (moving) { %>
+            <button disabled class="file-action btn btn-success">
+                <i class="btn-icon fas fa-ban"></i>
+                <span>MOVING</span>
+            </button>
+        <% } else if (action === 'move-datastore') { %>
             <button class="move-datastore file-action btn btn-success" data-filename="<%= path %>">
                 <i class="btn-icon fas fa-level-down-alt"></i>
                 <span>MOVE DATASTORE</span>

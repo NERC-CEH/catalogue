@@ -21,6 +21,7 @@ require.config({
   },
   paths: {
     'dropzone':               '../vendor/dropzone/dist/dropzone',
+    'filesize':               '../vendor/filesize/lib/filesize',
     'bootstrap':              '../vendor/bootstrap/dist/js/bootstrap',
     'colorpicker':            '../vendor/bootstrap-colorpicker/dist/js/bootstrap-colorpicker',
     'cs' :                    '../vendor/require-cs/cs',
@@ -34,8 +35,7 @@ require.config({
     'backbone':               '../vendor/backbone/backbone',
     'openlayers':             '../vendor/OpenLayers-custom',
     'chartjs':                '../vendor/chartjs/Chart',
-    'jquery-ui':              '../vendor/jquery-ui/ui',
-    'file-saver':              './FileSaver'
+    'jquery-ui':              '../vendor/jquery-ui/ui'
   },
   waitSeconds:1000
 });
