@@ -125,6 +125,8 @@ define [
     model = @model.bind @
     render = @render.bind @
 
+    console.log(model.url() + '/add-upload-document')
+
     @dropzone = new Dropzone '.dropzone',
       timeout: -1
       url: model.url() + '/add-upload-document'
