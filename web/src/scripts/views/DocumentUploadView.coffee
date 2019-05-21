@@ -1,9 +1,16 @@
 define [
   'jquery'
   'backbone'
+  'filesize'
   'tpl!templates/DocumentUploadFileRow.tpl'
   'tpl!templates/BetaDropzoneFile.tpl'
-], ($, Backbone, DocumentUploadFileRowTemplate, DropzoneFileTpl) -> Backbone.View.extend
+], (
+  $
+  Backbone
+  filesize
+  DocumentUploadFileRowTemplate
+  DropzoneFileTpl
+) -> Backbone.View.extend
   keyToName:
     documents: 'data'
     plone: 'metadata'
@@ -29,6 +36,7 @@ define [
     ZIPPED_UNKNOWN: 'This file was zipped and has been manually added'
     ZIPPED_UNKNOWN_MISSING: 'This file was zipped, was been manually added, now manually removed'
     INVLAID: 'Something went wrong with this file'
+    MOVING: 'The file is currently being moved'
 
   errorType:
     CHANGED_HASH: 'hash'
@@ -196,18 +204,23 @@ define [
         if typeof uploadFiles[name].documents == 'undefined' && typeof uploadFiles[name].invalid == 'undefined'
             filesEl.append($("<h3 class='no-documents'>NO FILES IN #{@keyToName[name].toUpperCase()}</h3>"))
         for filename, data of uploadFiles[name].invalid
+            data.moving = false
             data.message = @messages[data.type]
             data.errorType = @errorType[data.type] || ''
             data.hash = data.hash || 'NO HASH'
             data.action = @errorActions[data.type]
             data.el = "#{name}-#{data.id}"
+            data.size = filesize(data.bytes)
             row = $(DocumentUploadFileRowTemplate data)
             filesEl.append(row)
         for filename, data of uploadFiles[name].documents
+            data.message = @messages[data.type]
             data.errorType = 'valid'
+            data.moving = data.type == 'MOVING'
             data.hash = data.hash || 'NO HASH'
             data.action = @keyToAction[name]
             data.el = "#{name}-#{data.id}"
+            data.size = filesize(data.bytes)
             row = $(DocumentUploadFileRowTemplate data)
             filesEl.append(row)
 
