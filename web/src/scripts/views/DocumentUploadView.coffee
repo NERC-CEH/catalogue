@@ -185,7 +185,11 @@ define [
       do $('.unzip').hide
 
   render: ->
-    do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0
+    setTimeout(
+      =>  do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0,
+      500
+    )
+    
 
     uploadFiles = @model.get('uploadFiles')
 
