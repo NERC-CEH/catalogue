@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.upload;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -18,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.services.HubbubService;
 public class UploadDocumentService {
   private final HubbubService hubbubService;
   private final Map<String, File> folders;
+  private final ExecutorService threadPool;
 
   @SneakyThrows
   private UploadFiles getUploadFiles(String directory, String id, ArrayNode data) {
@@ -95,7 +97,13 @@ public class UploadDocumentService {
     val file = new File(path);
     file.setReadOnly();
     FileUtils.copyInputStreamToFile(in, file);
-    return accept(id, String.format("/mnt/dropbox/%s/%s", id, filename));
+
+    threadPool.execute(() -> {
+      accept(id, String.format("/dropbox/%s/%s", id, filename));
+      validateFile(id, String.format("/dropbox/%s/%s", id, filename));
+    });
+
+    return get(id);
   }
 
   public UploadDocument delete(String id, String filename) {
@@ -105,9 +113,7 @@ public class UploadDocumentService {
 
   @SneakyThrows
   public UploadDocument accept(String id, String filename) {
-    if (!filename.startsWith("/"))
-      filename = "/" + filename;
-    filename = filename.replace("/mnt", "");
+    if (!filename.startsWith("/")) filename = "/" + filename;
     hubbubService.post(String.format("/accept%s", filename));
     return get(id);
   }

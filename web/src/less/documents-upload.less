@@ -50,13 +50,11 @@
     .file-name,
     .file-size,
     .file-checksum,
-    .file-status {
+    .file-status,
+    .file-estimate {
         font-size: 16px;
         height: 36px;
         line-height: 36px;
-    }
-
-    .file-name {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -120,6 +118,10 @@
         letter-spacing: 1px;
     }
 
+    .move-all {
+        display: initial;
+    }
+
     .delete {
         display: none;
     }
@@ -129,6 +131,7 @@
             display: initial;
         }
 
+        .move-all,
         .move-both {
             display: none;
         }
