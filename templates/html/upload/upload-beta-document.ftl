@@ -11,7 +11,7 @@
     <div class="container-fluid document-upload">
     </#if>
         <div>
-            <a class="btn btn-success" href="/documents/${id}"><i class="btn-icon fas fa-arrow-left"></i><span>${id}<span></a>
+            <a class="btn" href="/documents/${id}"><i class="btn-icon fas fa-arrow-left"></i><span>RETURN TO DOCUMENT: ${id}<span></a>
         </div>
 
         <#if issues?size != 1 >
@@ -24,7 +24,7 @@
                 <div class='dropzone'>
                     <div class="dropzone-files">
                         <div class="row file-head">
-                            <div class="col-md-8">
+                            <div class="col-md-9">
                                 <div class="row">
                                     <div class="col-md-6"><b>Name</b></div>
                                     <div class="col-md-3"><b>Size</b></div>
@@ -35,7 +35,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-8"></div>
+                        <div class="col-md-9"></div>
                         <div class="col-md-4">
                             <button class="btn btn-success fileinput-button">ADD FILES ...</button>
                         </div>
@@ -43,7 +43,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-8"></div>
+                    <div class="col-md-9"></div>
                     <div class="col-md-4">
                         <button class="btn btn-success finish">
                             <i class="fas fa-check"></i>
@@ -59,12 +59,13 @@
                 <h3><i class="btn-icon fas fa-archive"></i> Data</h3>
             </div>
             <div class="row file-head">
-                <div class="col-md-8">
+                <div class="col-md-9">
                     <div class="row">
-                        <div class="col-md-6"><b>Name</b></div>
+                        <div class="col-md-5"><b>Name</b></div>
                         <div class="col-md-2"><b>Size</b></div>
                         <div class="col-md-2"><b>Checksum</b></div>
-                        <div class="col-md-2"><b>Estimate</b></div>
+                        <div class="col-md-1"><b>Est.</b></div>
+                        <div class="col-md-2"><b>Time</b></div>
                     </div>
                 </div>
                 <div class="file-head-action col-md-3"><b>Actions</b></div>
@@ -74,8 +75,8 @@
             </div>
             <div class="documents-files"></div>
             <div class="row">
-                <div class="col-md-8"></div>
-                <div class="col-md-4">
+                <div class="col-md-9"></div>
+                <div class="col-md-3">
                     <button class="move-all btn btn-success"><i class="btn-icon fas fa-level-down-alt"></i><span>MOVE ALL DATASTORE</span></button>
                 </div>
             </div>
@@ -86,12 +87,13 @@
                 <h3><i class="btn-icon far fa-copy"></i> Metadata <small>Supporting Documents</small></h3>
             </div>
             <div class="row file-head">
-                <div class="col-md-8">
+                <div class="col-md-9">
                     <div class="row">
-                        <div class="col-md-6"><b>Name</b></div>
+                        <div class="col-md-5"><b>Name</b></div>
                         <div class="col-md-2"><b>Size</b></div>
                         <div class="col-md-2"><b>Checksum</b></div>
-                        <div class="col-md-2"><b>Estimate</b></div>
+                        <div class="col-md-1"><b>Est.</b></div>
+                        <div class="col-md-2"><b>Time</b></div>
                     </div>
                 </div>
                 <div class="file-head-action col-md-3"><b>Actions</b></div>
@@ -107,12 +109,13 @@
                 <h3><i class="btn-icon fas fa-lock"></i> Datastore</h3>
             </div>
             <div class="row file-head">
-                <div class="col-md-8">
+                <div class="col-md-9">
                     <div class="row">
-                        <div class="col-md-6"><b>Name</b></div>
+                        <div class="col-md-5"><b>Name</b></div>
                         <div class="col-md-2"><b>Size</b></div>
                         <div class="col-md-2"><b>Checksum</b></div>
-                        <div class="col-md-2"><b>Estimate</b></div>
+                        <div class="col-md-1"><b>Est.</b></div>
+                        <div class="col-md-2"><b>Time</b></div>
                     </div>
                 </div>
                 <div class="file-head-action col-md-3"><b>Actions</b></div>

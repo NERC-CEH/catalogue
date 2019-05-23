@@ -35,6 +35,8 @@ public class UploadDocumentService {
       uploadFile.setName(name);
       uploadFile.setId(name.replaceAll("[^\\w?]", "-"));
 
+      if (item.has("time"))
+        uploadFile.setTime(item.get("time").asLong());
       if (item.has("physicalLocation"))
         uploadFile.setPhysicalLocation(item.get("physicalLocation").asText());
       if (item.has("format"))
