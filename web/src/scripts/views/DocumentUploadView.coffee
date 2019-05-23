@@ -226,12 +226,25 @@ define [
         break
     time
 
+  simpleDate: (time) ->
+    date = new Date(time)
+    d = date.getDate()
+    M = date.getMonth()
+    y = ('' + date.getFullYear()).slice(2)
+    
+    h = date.getHours()
+    h = "0#{h}" if h < 10
+
+    m = date.getMinutes()
+    m = "0#{m}" if m < 10
+
+    "#{d}/#{M}/#{y} - #{h}:#{m}"
+
   render: ->
     setTimeout(
       =>  do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0,
       500
     )
-    
 
     uploadFiles = @model.get('uploadFiles')
 
@@ -258,6 +271,7 @@ define [
             data.size = filesize(data.bytes)
             data.estimate = @sizeToTime(data.bytes)
             data.message = @messages[data.type]
+            data.date = @simpleDate(data.time)
             row = $(DocumentUploadFileRowTemplate data)
             filesEl.append(row)
         for filename, data of uploadFiles[name].documents
@@ -269,6 +283,7 @@ define [
             data.size = filesize(data.bytes)
             data.estimate = @sizeToTime(data.bytes)
             data.message = @messages[data.type]
+            data.date = @simpleDate(data.time)
             row = $(DocumentUploadFileRowTemplate data)
             filesEl.append(row)
 

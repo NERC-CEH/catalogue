@@ -12,6 +12,7 @@ public class UploadFile {
     private String mediatype;
     private String encoding;
     private long bytes;
+    private long time;
     private String hash;
     private String type;
     private String destination;
