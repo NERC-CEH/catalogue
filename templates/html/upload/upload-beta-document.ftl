@@ -26,9 +26,9 @@
                         <div class="row file-head">
                             <div class="col-md-8">
                                 <div class="row">
-                                    <div class="col-md-4"><b>Name</b></div>
-                                    <div class="col-md-2"><b>Size</b></div>
-                                    <div class="col-md-6"><b>Status</b></div>
+                                    <div class="col-md-6"><b>Name</b></div>
+                                    <div class="col-md-3"><b>Size</b></div>
+                                    <div class="col-md-3"><b>Status</b></div>
                                 </div>
                             </div>
                             <div class="file-head-action col-md-3"><b>Actions</b></div>
@@ -61,9 +61,10 @@
             <div class="row file-head">
                 <div class="col-md-8">
                     <div class="row">
-                        <div class="col-md-4"><b>Name</b></div>
+                        <div class="col-md-6"><b>Name</b></div>
                         <div class="col-md-2"><b>Size</b></div>
-                        <div class="col-md-6"><b>Checksum</b></div>
+                        <div class="col-md-2"><b>Checksum</b></div>
+                        <div class="col-md-2"><b>Estimate</b></div>
                     </div>
                 </div>
                 <div class="file-head-action col-md-3"><b>Actions</b></div>
@@ -87,9 +88,10 @@
             <div class="row file-head">
                 <div class="col-md-8">
                     <div class="row">
-                        <div class="col-md-4"><b>Name</b></div>
+                        <div class="col-md-6"><b>Name</b></div>
                         <div class="col-md-2"><b>Size</b></div>
-                        <div class="col-md-6"><b>Checksum</b></div>
+                        <div class="col-md-2"><b>Checksum</b></div>
+                        <div class="col-md-2"><b>Estimate</b></div>
                     </div>
                 </div>
                 <div class="file-head-action col-md-3"><b>Actions</b></div>
@@ -107,9 +109,10 @@
             <div class="row file-head">
                 <div class="col-md-8">
                     <div class="row">
-                        <div class="col-md-4"><b>Name</b></div>
+                        <div class="col-md-6"><b>Name</b></div>
                         <div class="col-md-2"><b>Size</b></div>
-                        <div class="col-md-6"><b>Checksum</b></div>
+                        <div class="col-md-2"><b>Checksum</b></div>
+                        <div class="col-md-2"><b>Estimate</b></div>
                     </div>
                 </div>
                 <div class="file-head-action col-md-3"><b>Actions</b></div>

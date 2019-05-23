@@ -1,7 +1,7 @@
 <div class="row file-row is-<%= type %>" title="<%= name %>">
     <div class="col-md-8">
         <div class="row">
-            <div class="col-md-4 file-name">
+            <div class="col-md-6 file-name">
                 <% if (errorType === 'file') { %>
                     <span class="file-danger"><i class="file-icon fas fa-exclamation-circle"></i><%= name %></span>
                 <% } else { %>
@@ -9,12 +9,15 @@
                 <% } %>
             </div>
             <div class="col-md-2 file-size"><%= size %></div>
-            <div class="col-md-6 file-checksum">
+            <div class="col-md-2 file-checksum">
                 <% if (errorType === 'hash') { %>
                     <span class="file-danger"><i class="file-icon fas fa-exclamation-circle"></i><%= hash %></span>
                 <% } else { %>
                     <span><%= hash %></span>
                 <% } %>
+            </div>
+            <div class="col-md-2 file-estimate">
+                <span><%= estimate %></span>
             </div>
             <div class="col-md-12 file-message">
                 <% if (typeof message !== 'undefined') { %>

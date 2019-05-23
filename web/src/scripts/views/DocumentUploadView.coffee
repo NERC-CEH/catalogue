@@ -11,6 +11,40 @@ define [
   DocumentUploadFileRowTemplate
   DropzoneFileTpl
 ) -> Backbone.View.extend
+
+  # calculated using Hubbub on the SAN, 22/05/19, recalculate for better estimates
+  timeEstimate:
+    1400000: '1s'
+    6300000: '2s'
+    10000000: '3s'
+    12000000: '4s'
+    24000000: '5s'
+    39000000: '6s'
+    50000000: '8s'
+    54000000: '9s'
+    69000000: '10s'
+    79000000: '20s'
+    170000000: '30s'
+    220000000: '40s'
+    250000000: '50s'
+    290000000: '1m'
+    320000000: '1m10s'
+    400000000: '1m20s'
+    470000000: '1m30s'
+    730000000: '2m'
+    800000000: '2m30s'
+    1300000000: '5m'
+    1600000000: '7m'
+    4300000000: '8m'
+    4700000000: '10m'
+    5000000000: '12m'
+    5300000000: '14m'
+    12000000000: '45m'
+    18000000000: '1h'
+    46000000000: '2h'
+    65000000000: '2h+'
+
+
   keyToName:
     documents: 'data'
     plone: 'metadata'
@@ -23,7 +57,7 @@ define [
 
   messages:
     CHANGED_HASH: 'The file has changed'
-    NO_HASH: 'This file has not been succesfully validated'
+    NO_HASH: 'This file has not been validated or failed to validate'
     CHANGED_MTIME: 'The meta information about this file has changed'
     UNKNOWN: 'This is an unknown file'
     UNKNOWN_MISSING: 'This was an unknown file, but has been removed manually'
@@ -74,7 +108,7 @@ define [
 
     setInterval(
       () => do @model.fetch
-      3000
+      1000
     )
 
     @model.on 'sync', =>
@@ -184,6 +218,14 @@ define [
       do $('.zip').show
       do $('.unzip').hide
 
+  sizeToTime: (size) ->
+    time = ''
+    for key, value of @timeEstimate
+      if size < key
+        time = value
+        break
+    time
+
   render: ->
     setTimeout(
       =>  do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0,
@@ -209,22 +251,24 @@ define [
             filesEl.append($("<h3 class='no-documents'>NO FILES IN #{@keyToName[name].toUpperCase()}</h3>"))
         for filename, data of uploadFiles[name].invalid
             data.moving = false
-            data.message = @messages[data.type]
             data.errorType = @errorType[data.type] || ''
             data.hash = data.hash || 'NO HASH'
             data.action = @errorActions[data.type]
             data.el = "#{name}-#{data.id}"
             data.size = filesize(data.bytes)
+            data.estimate = @sizeToTime(data.bytes)
+            data.message = @messages[data.type]
             row = $(DocumentUploadFileRowTemplate data)
             filesEl.append(row)
         for filename, data of uploadFiles[name].documents
-            data.message = @messages[data.type]
             data.errorType = 'valid'
             data.moving = data.type == 'MOVING'
             data.hash = data.hash || 'NO HASH'
             data.action = @keyToAction[name]
             data.el = "#{name}-#{data.id}"
             data.size = filesize(data.bytes)
+            data.estimate = @sizeToTime(data.bytes)
+            data.message = @messages[data.type]
             row = $(DocumentUploadFileRowTemplate data)
             filesEl.append(row)
 
