@@ -1,6 +1,90 @@
 .document-upload {
     margin-top: 32px;
 
+    .return {
+        font-size: 18px;
+    }
+
+    .panel-file {
+        transition: margin ease-in-out 0.2s;
+        margin: 16px 0;
+        border-radius: 0;
+
+        &.is-collapsed {
+            margin: 0;
+            margin-bottom: -2px;
+            border-bottom: 0;
+
+            .panel-heading-chevron {
+                transform: rotate(180deg);
+            }
+
+            & .panel-body,
+            & .panel-footer {
+                display: none;
+            }
+        }
+
+        &:last-child {
+            margin-bottom: 16px;
+        }
+
+        &.panel-default .panel-heading {
+            background-color: transparent;
+            color: #333;
+
+            &:hover {
+                background-color: #eee;
+            }
+        }
+
+        &.panel-danger .panel-heading:hover {
+            background-color: #ffa8a6;
+        }
+
+        .panel-heading {
+            display: flex;
+            border-radius: 0;
+
+            &:hover {
+                cursor: pointer;
+            }
+            
+            &-chevron {
+                transition: transform ease-in-out 0.2s;
+                margin-left: auto;
+                line-height: 22px;
+            }
+
+            &-type {
+                margin-left: 12px;
+            }
+        }
+
+        .panel-file-message {
+            margin-top: 16px;
+
+            &-title {
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            &-body {
+                font-size: 14px;
+                margin: 0;
+            }
+
+        }
+
+        .panel-footer {
+            display: flex;
+
+            .buttons {
+                margin-left: auto;
+            }
+        }
+    }
+
     .dropzone {
         border-radius: 4px;
         padding: 16px;
@@ -17,11 +101,10 @@
         display: none;
     }
 
-    .fileinput-button {
-        width: 100%;
-    }
-
-    .finish {
+    .finish,
+    .fileinput-button,
+    .zip,
+    .unzip {
         width: 100%;
     }
 

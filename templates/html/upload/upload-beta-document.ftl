@@ -10,8 +10,11 @@
     <#else>
     <div class="container-fluid document-upload">
     </#if>
-        <div>
-            <a class="btn" href="/documents/${id}"><i class="btn-icon fas fa-arrow-left"></i><span>RETURN TO DOCUMENT: ${id}<span></a>
+        <div class="return">
+            <a href="/documents/${id}">
+                <i class="btn-icon fas fa-arrow-left"></i>
+                <span>RETURN TO DOCUMENT: ${id}<span>
+            </a>
         </div>
 
         <#if issues?size != 1 >
@@ -35,20 +38,19 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-9"></div>
-                        <div class="col-md-4">
-                            <button class="btn btn-success fileinput-button">ADD FILES ...</button>
+                        <div class="col-md-7"></div>
+                        <div class="col-md-2">
+                            <button class="btn btn-success fileinput-button">
+                                <i class="btn-icon fas fa-file-upload"></i>
+                                <span>ADD FILES ...</span>
+                            </button>
                         </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-9"></div>
-                    <div class="col-md-4">
-                        <button class="btn btn-success finish">
-                            <i class="fas fa-check"></i>
+                        <div class="col-md-3">
+                        <button class="btn btn-primary finish">
+                            <i class="btn-icon fas fa-check"></i>
                             <span>FINISH UPLOADING</span>
                         </button>
+                    </div>
                     </div>
                 </div>
             </section>
@@ -57,18 +59,6 @@
         <section class="document-upload-section">
             <div class="page-header">
                 <h3><i class="btn-icon fas fa-archive"></i> Data</h3>
-            </div>
-            <div class="row file-head">
-                <div class="col-md-9">
-                    <div class="row">
-                        <div class="col-md-5"><b>Name</b></div>
-                        <div class="col-md-2"><b>Size</b></div>
-                        <div class="col-md-2"><b>Checksum</b></div>
-                        <div class="col-md-1"><b>Est.</b></div>
-                        <div class="col-md-2"><b>Time</b></div>
-                    </div>
-                </div>
-                <div class="file-head-action col-md-3"><b>Actions</b></div>
             </div>
             <div class="row loading text-center">
                 <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
@@ -86,18 +76,6 @@
             <div class="page-header">
                 <h3><i class="btn-icon far fa-copy"></i> Metadata <small>Supporting Documents</small></h3>
             </div>
-            <div class="row file-head">
-                <div class="col-md-9">
-                    <div class="row">
-                        <div class="col-md-5"><b>Name</b></div>
-                        <div class="col-md-2"><b>Size</b></div>
-                        <div class="col-md-2"><b>Checksum</b></div>
-                        <div class="col-md-1"><b>Est.</b></div>
-                        <div class="col-md-2"><b>Time</b></div>
-                    </div>
-                </div>
-                <div class="file-head-action col-md-3"><b>Actions</b></div>
-            </div>
             <div class="row loading text-center">
                 <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
@@ -108,22 +86,17 @@
             <div class="page-header">
                 <h3><i class="btn-icon fas fa-lock"></i> Datastore</h3>
             </div>
-            <div class="row file-head">
-                <div class="col-md-9">
-                    <div class="row">
-                        <div class="col-md-5"><b>Name</b></div>
-                        <div class="col-md-2"><b>Size</b></div>
-                        <div class="col-md-2"><b>Checksum</b></div>
-                        <div class="col-md-1"><b>Est.</b></div>
-                        <div class="col-md-2"><b>Time</b></div>
-                    </div>
-                </div>
-                <div class="file-head-action col-md-3"><b>Actions</b></div>
-            </div>
             <div class="row loading text-center">
                 <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
             <div class="datastore-files"></div>
+            <div class="row">
+                <div class="col-md-10"></div>
+                <div class="col-md-2">
+                    <button class="zip btn btn-success"><i class="btn-icon far fa-file-archive"></i><span>ZIP</span></button>
+                    <button class="unzip btn btn-success" style="display: none"><i class="btn-icon far fa-file-archive"></i><span>UNZIP</span></button>
+                </div>
+            </div>
         </section>
 
         <section class="document-upload-section">
@@ -131,8 +104,6 @@
                 <div class="col-md-6"></div>
                 <div class="col-md-6 file-actions">
                     <button class="validate-all file-action btn btn-primary"><i class="btn-icon fas fa-check"></i><span>VALIDATE ALL</span></button>
-                    <button class="zip file-action btn btn-success"><i class="btn-icon far fa-file-archive"></i><span>ZIP</span></button>
-                    <button class="unzip file-action btn btn-success" style="display: none"><i class="btn-icon far fa-file-archive"></i><span>UNZIP</span></button>
                     <a class="downloadChecksum file-action btn btn-success" href="get_checksum" download="checksums_${id}.csv"><i class="btn-icon fas fa-file-download"></i><span>DOWNLOAD CHECKSUM REPORT</span></a>
                 </div>
             </div>
