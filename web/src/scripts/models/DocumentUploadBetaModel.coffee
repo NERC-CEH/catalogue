@@ -45,21 +45,42 @@ define [
     datastore: 'move-metadata'
 
   messages:
-    CHANGED_HASH: 'The file has changed'
-    NO_HASH: 'This file has not been validated or failed to validate'
-    CHANGED_MTIME: 'The meta information about this file has changed'
-    UNKNOWN: 'This is an unknown file'
-    UNKNOWN_MISSING: 'This was an unknown file, but has been removed manually'
-    MISSING: 'This file is missing'
-    MISSING_UNKNOWN: 'This file was missing, but has been added manually'
-    MOVED_UNKNOWN: 'This file was moved, but has been added manually'
-    MOVED_UNKNOWN_MISSING: 'This file was moved, then added manually, now removed manually'
-    VALIDATING_HASH: 'This file is currently being validated, large files take a long time to process'
-    REMOVED_UNKNOWN: 'This file, previously removed, has now been manually added'
-    ZIPPED_UNKNOWN: 'This file was zipped and has been manually added'
-    ZIPPED_UNKNOWN_MISSING: 'This file was zipped, was been manually added, now manually removed'
-    INVLAID: 'Something went wrong with this file'
-    MOVING: 'The file is currently being moved'
+    CHANGED_MTIME:
+      title: 'Detected a possible file change'
+      content: """
+The meta information about this file has changed
+This could be as small as someone opening the file and saving it
+Or it could mean the file contents have changed
+Please "VALIDATE" this file then resolve any new errors
+"""
+    CHANGED_HASH:
+      content: 'The file has changed'
+    NO_HASH:
+      content: 'This file has not been validated or failed to validate'
+    UNKNOWN:
+      content: 'This is an unknown file'
+    UNKNOWN_MISSING:
+      content: 'This was an unknown file, but has been removed manually'
+    MISSING:
+      content: 'This file is missing'
+    MISSING_UNKNOWN:
+      content: 'This file was missing, but has been added manually'
+    MOVED_UNKNOWN:
+      content: 'This file was moved, but has been added manually'
+    MOVED_UNKNOWN_MISSING:
+      content: 'This file was moved, then added manually, now removed manually'
+    VALIDATING_HASH:
+      content: 'This file is currently being validated, large files take a long time to process'
+    REMOVED_UNKNOWN:
+      content: 'This file, previously removed, has now been manually added'
+    ZIPPED_UNKNOWN:
+      content: 'This file was zipped and has been manually added'
+    ZIPPED_UNKNOWN_MISSING:
+      content: 'This file was zipped, was been manually added, now manually removed'
+    INVLAID:
+      content: 'Something went wrong with this file'
+    MOVING:
+      content: 'The file is currently being moved'
 
   errorType:
     CHANGED_HASH: 'hash'

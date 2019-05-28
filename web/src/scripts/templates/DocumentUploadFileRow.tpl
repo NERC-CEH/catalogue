@@ -48,8 +48,10 @@
 
        <% if (message) { %>
         <div class="panel-file-message">
-            <!-- <span class="panel-file-message-title"><%= message %></span> -->
-            <p class="panel-file-message-body"><%= message %></p>
+            <% if (message.title) { %>
+            <span class="panel-file-message-title"><%= message.title %></span>
+            <% } %>
+            <p class="panel-file-message-body"><%= message.content %></p>
         </div>
         <% } %>
     </div>
