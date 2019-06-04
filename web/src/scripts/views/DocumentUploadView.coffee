@@ -149,10 +149,14 @@ define [
     "#{d}/#{M}/#{y} - #{h}:#{m}"
 
   render: ->
-    setTimeout(
-      =>  do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0,
-      500
-    )
+    try
+      do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0
+    catch err
+      console.log(err)
+      setTmieout(
+        => do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0,
+        500
+      )
 
     uploadFiles = @model.get('uploadFiles')
 
