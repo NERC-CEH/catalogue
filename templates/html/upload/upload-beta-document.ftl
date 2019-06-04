@@ -24,7 +24,7 @@
                 <div class="page-header">
                     <h3><i class="btn-icon fas fa-file-upload"></i> Upload</h3>
                 </div>
-                <div class='dropzone'>
+                <div class='dropzone-container'>
                     <div class="dropzone-files">
                         <div class="row file-head">
                             <div class="col-md-9">
