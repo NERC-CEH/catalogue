@@ -153,7 +153,7 @@ define [
       do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0
     catch err
       console.log(err)
-      setTmieout(
+      setTimeout(
         => do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0,
         500
       )
