@@ -2,6 +2,8 @@ define [
   'underscore'
   'jquery'
   'backbone'
+  'dropzone'
+  'bootstrap'
   'cs!views/StudyAreaView'
   'cs!models/MapViewerApp'
   'cs!views/MapViewerAppView'
@@ -47,10 +49,8 @@ define [
   'cs!views/DataTypeEditorView'
   'cs!views/DocumentUploadView'
   'cs!models/DocumentUploadBetaModel'
-  'bootstrap'
-  'dropzone'
 ], (
-  _, $, Backbone, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
+  _, $, Backbone, Dropzone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView,
     DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, DocumentsUploadReadOnlyModel, OsdpAgentEditorView,

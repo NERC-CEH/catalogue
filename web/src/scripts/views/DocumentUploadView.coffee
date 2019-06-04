@@ -11,9 +11,9 @@ define [
   DocumentUploadFileRowTemplate
   DropzoneFileTpl
 ) -> Backbone.View.extend
-  initialize: ->
-    Dropzone.autoDiscover = false
+  dropzone: null
 
+  initialize: ->
     setInterval(
       () => do @model.fetch
       1000
@@ -21,6 +21,7 @@ define [
 
     @model.on 'sync', =>
       do @render
+      do @initDropzone if @dropzone == null && $('.dropzone-container').length != 0
       do $('.loading').remove
       $('.messages').hide 'fast'
     do @model.fetch
@@ -71,15 +72,13 @@ define [
 
     $('.downloadChecksum').attr('href', href)
 
-  initDropzone: ->
+  initDropzone: (url) ->
     model = @model.bind @
     render = @render.bind @
 
-    $('.dropzone').addClass('is-ready')
-
-    new Dropzone '.dropzone',
+    options =
       timeout: -1
-      url: model.url() + '/add-upload-document'
+      url: window.location.origin + model.url() + '/add-upload-document'
       maxFilesize: 20 * 1000 * 1000
       autoQueue: yes
       previewTemplate: DropzoneFileTpl()
@@ -113,6 +112,8 @@ define [
           errorMessage = errorMessage
           errorMessage = errorMessages[xhr.status] || errorMessage if xhr
           $('.uploading-' + id + ' .file-message').text(errorMessage)
+
+    @dropzone = $('.dropzone-container').dropzone(options)
 
   renderZip: ->
     if @model.get('uploadFiles').datastore && @model.get('uploadFiles').datastore.zipped
@@ -148,27 +149,8 @@ define [
 
     "#{d}/#{M}/#{y} - #{h}:#{m}"
 
-  render: ->
-    try
-      do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0
-    catch err
-      console.log(err)
-      setTimeout(
-        => do @initDropzone if $('.dropzone-files').length && $('.dropzone.is-ready').length == 0,
-        500
-      )
-
+  renderFiles: ->
     uploadFiles = @model.get('uploadFiles')
-
-    @globalAction('move-all', 'moveToDatastore')
-    @globalAction('validate-all', 'validateFiles')
-    @globalAction('zip')
-    @globalAction('unzip')
-    @globalAction('finish')
-
-    do @renderChecksums
-    do @renderZip
-
     for name of uploadFiles
         filesEl = $(".#{name}-files")
         filesEl.html('')
@@ -222,3 +204,14 @@ define [
             filename = panel.data('filename')
             @model.open[filename] = !panel.hasClass('is-collapsed')
         )
+
+  render: ->
+    @globalAction 'move-all', 'moveToDatastore'
+    @globalAction 'validate-all', 'validateFiles'
+    @globalAction 'zip'
+    @globalAction 'unzip'
+    @globalAction 'finish'
+
+    do @renderChecksums
+    do @renderZip
+    do @renderFiles
