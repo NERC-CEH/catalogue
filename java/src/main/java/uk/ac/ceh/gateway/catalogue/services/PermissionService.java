@@ -1,17 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import static java.lang.String.format;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import lombok.NonNull;
 import lombok.val;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -19,10 +11,18 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.controllers.DataciteController;
+import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+
+import static java.lang.String.format;
 
 public class PermissionService {
     private final DataRepository<CatalogueUser> repo;
@@ -101,7 +101,7 @@ public class PermissionService {
     }
     
     public boolean userCanUpload(@NonNull String file) {
-        val isAdmin = userInGroup("ROLE_CIG_SYSTEM_ADMIN");
+        val isAdmin = userInGroup(DocumentController.MAINTENANCE_ROLE);
         if (isAdmin) return true;
         try {
             CatalogueUser user = getCurrentUser();

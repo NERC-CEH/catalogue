@@ -11,6 +11,7 @@ import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.controllers.DataciteController;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 /**
  * The following spring JavaConfig defines the beans required for the interacting
@@ -23,7 +24,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 @Profile("development")
 public class DevelopmentUserStoreConfig {
     public static final String CEH_GROUP_NAME = "CEH";
-    public static final String READONLY_ROLE = "ROLE_CIG_READONLY";
+    public static final String READONLY_ROLE = MetadataInfo.READONLY_GROUP;
     public static final String MAINTENANCE_ROLE = DocumentController.MAINTENANCE_ROLE;
     public static final String DATACITE_ROLE = DataciteController.DATACITE_ROLE;
     public static final String EIDC_EDITOR = "role_eidc_editor";
