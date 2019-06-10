@@ -27,7 +27,7 @@ public class MetadataInfo {
     @Getter(AccessLevel.NONE)
     private final Multimap<Permission, String> permissions;
     public static final String PUBLIC_GROUP = "public";
-    public static final String READONLY_GROUP = "role_cig_readonly";
+    public static final String READONLY_GROUP = "ROLE_CIG_READONLY";
     public static final String PUBLISHER_GROUP = "role_%s_publisher";
 
     @JsonCreator
