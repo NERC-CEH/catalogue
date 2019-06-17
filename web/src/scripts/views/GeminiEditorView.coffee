@@ -139,6 +139,14 @@ define [
           helpText: """
                     <p>The time period(s) the data resource covers.  This is often the same as the data capture period but it need not be so.</p>
                     """
+
+        new InputView
+          model: @model
+          modelAttribute: 'projectImageUrl'
+          label: 'Project Image URL'
+          helpText: """
+                    <p>URL of project image N.B. For SANH & INMS projects only.</p>
+                    """
       ]
     ,
       label: 'Authors & contacts'
