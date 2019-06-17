@@ -73,6 +73,9 @@
               <#include "gemini/_children.ftl">
               <#include "gemini/_related.ftl">
               <#include "gemini/_model.ftl">
+              <#if metadata.catalogue != "eidc" && projectImageUrl??>
+                <img src="${projectImageUrl}" alt="project image"/>
+              </#if>
             </div>
             <div class="col-sm-8 col-sm-pull-4">
               <#include "gemini/_extent.ftl">
