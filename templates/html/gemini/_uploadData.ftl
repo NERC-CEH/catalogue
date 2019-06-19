@@ -25,7 +25,7 @@
   </div>
 
 
-  <#if permission.userCanUpload(id)>
+  <#if flagUpload && permission.userCanUpload(id)>
   <div class="panel panel-default hidden-print" id="document-upload-panel">
     <div class="panel-body text-center">
       <i class="fas fa-car-crash text-warning"></i>
