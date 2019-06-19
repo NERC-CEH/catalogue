@@ -465,6 +465,7 @@ public class MetadataQualityService {
         }
     }
 
+
     Optional<List<MetadataCheck>> checkPointOfContact(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val pocs = parsed.read(
@@ -486,6 +487,13 @@ public class MetadataQualityService {
         if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "organisationName"))) {
             toReturn.add(new MetadataCheck("Point of contact organisation name is missing", ERROR));
         }
+
+        pocs.stream()
+        .filter(poc -> poc.containsKey("email"))
+        .map(poc -> poc.get("email"))
+        .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("eidc@ceh.ac.uk"))
+        .forEach(email -> toReturn.add(new MetadataCheck(format("Point of contact's email address is %s", email), ERROR)));
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
