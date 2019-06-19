@@ -12,6 +12,7 @@ services:
     environment:
       - spring.profiles.active=development
       - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
+      - flag.upload=false
   solr:
     # Expose the solr port for development
     ports:
