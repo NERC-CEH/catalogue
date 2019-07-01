@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.upload;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_VALUE;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,10 +90,8 @@ public class UploadController {
       @PathVariable("id") String id, @RequestParam("file") MultipartFile file)
       throws IOException, DocumentRepositoryException {
     userCanUpload(id);
-    try (InputStream in = file.getInputStream()) {
-      val filename = file.getOriginalFilename();
-      uploadDocumentService.add(id, filename, in);
-    }
+    val filename = file.getOriginalFilename();
+    uploadDocumentService.add(id, filename, file);
     val document = uploadDocumentService.get(id);
     return ResponseEntity.ok(document);
   }
