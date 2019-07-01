@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -93,18 +95,22 @@ public class UploadDocumentService {
   }
 
   @SneakyThrows
-  public UploadDocument add(String id, String filename, InputStream in) {
-    val directory = folders.get("documents");
-    val path = directory.getPath() + "/" + id + "/" + filename;
-    val file = new File(path);
-    file.setReadable(true);
-    file.setWritable(false, true);
-    file.setExecutable(false);
-    writing(id, String.format("/dropbox/%s/%s", id, filename), in.available());
-    FileUtils.copyInputStreamToFile(in, file);
+  public UploadDocument add(String id, String filename, MultipartFile f) {
     threadPool.execute(() -> {
-      accept(id, String.format("/dropbox/%s/%s", id, filename));
-      validateFile(id, String.format("/dropbox/%s/%s", id, filename));
+      try (InputStream in = f.getInputStream()) {
+        val directory = folders.get("documents");
+        val path = directory.getPath() + "/" + id + "/" + filename;
+        val file = new File(path);
+        file.setReadable(true);
+        file.setWritable(false, true);
+        file.setExecutable(false);
+        writing(id, String.format("/dropbox/%s/%s", id, filename), in.available());
+        FileUtils.copyInputStreamToFile(in, file);
+        accept(id, String.format("/dropbox/%s/%s", id, filename));
+        validateFile(id, String.format("/dropbox/%s/%s", id, filename));
+      } catch (IOException err) {
+        System.out.println(err);
+      }
     });
 
     return get(id);
