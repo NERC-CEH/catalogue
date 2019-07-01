@@ -27,14 +27,14 @@
                 <div class='dropzone-container'>
                     <div class="dropzone-files">
                         <div class="row file-head">
-                            <div class="col-md-9">
+                            <div class="col-md-7">
                                 <div class="row">
                                     <div class="col-md-6"><b>Name</b></div>
-                                    <div class="col-md-3"><b>Size</b></div>
-                                    <div class="col-md-3"><b>Status</b></div>
+                                    <div class="col-md-2"><b>Size</b></div>
+                                    <div class="col-md-4"><b>Status</b></div>
                                 </div>
                             </div>
-                            <div class="file-head-action col-md-3"><b>Actions</b></div>
+                            <div class="file-head-action col-md-5"><b>Actions</b></div>
                         </div>
                     </div>
                     <div class="row">

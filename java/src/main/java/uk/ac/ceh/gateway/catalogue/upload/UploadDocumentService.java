@@ -52,7 +52,7 @@ public class UploadDocumentService {
         uploadFile.setDestination(item.get("destination").asText());
       val status = item.get("status").asText();
       uploadFile.setType(status);
-      if (status.equals("VALID") || status.equals("VALIDATING_HASH") || status.equals("NO_HASH") || status.equals("MOVING"))
+      if (status.equals("WRITING") || status.equals("VALID") || status.equals("VALIDATING_HASH") || status.equals("NO_HASH") || status.equals("MOVING"))
         documents.put(path, uploadFile);
       else if (!status.equals("REMOVED") && !status.equals("MOVED") && !status.equals("ZIPPED")) {
         invalid.put(path, uploadFile);
@@ -97,9 +97,11 @@ public class UploadDocumentService {
     val directory = folders.get("documents");
     val path = directory.getPath() + "/" + id + "/" + filename;
     val file = new File(path);
-    file.setReadOnly();
+    file.setReadable(true);
+    file.setWritable(false, true);
+    file.setExecutable(false);
+    writing(id, String.format("/dropbox/%s/%s", id, filename), in.available());
     FileUtils.copyInputStreamToFile(in, file);
-
     threadPool.execute(() -> {
       accept(id, String.format("/dropbox/%s/%s", id, filename));
       validateFile(id, String.format("/dropbox/%s/%s", id, filename));
@@ -117,6 +119,13 @@ public class UploadDocumentService {
   public UploadDocument accept(String id, String filename) {
     if (!filename.startsWith("/")) filename = "/" + filename;
     hubbubService.post(String.format("/accept%s", filename));
+    return get(id);
+  }
+
+  @SneakyThrows
+  public UploadDocument writing(String id, String filename, int size) {
+    if (!filename.startsWith("/")) filename = "/" + filename;
+    hubbubService.postQuery(String.format("/writing%s", filename), "size", String.format("%d", size));
     return get(id);
   }
 

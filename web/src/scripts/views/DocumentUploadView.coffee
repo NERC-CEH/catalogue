@@ -86,12 +86,21 @@ define [
       clickable: '.fileinput-button'
       parallelUploads: 1
       init: ->
+        @on 'uploadprogress', (file) ->
+          id = file.name.replace(/[^\w?]/g, '-')
+          $(".uploading-#{id} .file-status").text("Uploaded #{filesize(file.upload.bytesSent)}")
+          if file.upload.progress == 100
+            $(".uploading-#{id} .file-status").text('Writing to Disk')
+            $(".uploading-#{id} .cancel").attr('disabled', true)
+
+
         @on 'addedfile', (file) ->
           last = $('.uploading').length - 1
           uploading = $($('.uploading')[last])
           id = file.name.replace(/[^\w?]/g, '-')
           uploading.addClass('uploading-' + id)
           uploading.find('.cancel').click => @removeFile file
+          $(".uploading-#{id} .file-size-value").text("#{filesize(file.size)}")
         
         @on 'success', (file, res) ->
           id = file.name.replace(/[^\w?]/g, '-')
@@ -113,7 +122,9 @@ define [
           errorMessage = errorMessages[xhr.status] || errorMessage if xhr
           $('.uploading-' + id + ' .file-message').text(errorMessage)
 
-    @dropzone = $('.dropzone-container').dropzone(options)
+    # @dropzone = $('.dropzone-container').dropzone(options)
+    @dropzone = new Dropzone('.dropzone-container', options)
+    
 
   renderZip: ->
     if @model.get('uploadFiles').datastore && @model.get('uploadFiles').datastore.zipped
@@ -173,7 +184,7 @@ define [
         for filename, data of uploadFiles[name].documents
             @model.open[filename] = false if typeof @model.open[filename] == 'undefined'
             data.errorType = 'valid'
-            data.moving = data.type == 'MOVING'
+            data.moving = data.type == 'MOVING' || data.type == 'WRITING'
             data.validating = data.type == 'VALIDATING_HASH'
             data.hash = data.hash || 'NO HASH'
             data.action = @model.keyToAction[name]
