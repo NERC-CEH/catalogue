@@ -81,6 +81,8 @@ Please "VALIDATE" this file then resolve any new errors
       content: 'Something went wrong with this file'
     MOVING:
       content: 'The file is currently being moved'
+    WRITING:
+      content: 'The file is currently being written to disk'
 
   errorType:
     CHANGED_HASH: 'hash'

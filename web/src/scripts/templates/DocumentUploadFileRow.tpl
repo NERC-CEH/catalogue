@@ -17,7 +17,7 @@
         <% } else if (type !== 'VALID') { %>
             <span class="panel-heading-filename"><%= name %></span>
             <span class="panel-heading-type"><%= type %></span>
-            <% if (type === 'MOVING') { %>
+            <% if (type === 'MOVING' || type === 'WRITING') { %>
             <span class="panel-heading-type"><%= size %></span>
             <% } %>
         <% } else { %>
