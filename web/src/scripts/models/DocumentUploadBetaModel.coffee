@@ -79,7 +79,9 @@ Please "VALIDATE" this file then resolve any new errors
       content: 'This file was zipped, was been manually added, now manually removed'
     INVLAID:
       content: 'Something went wrong with this file'
-    MOVING:
+    MOVING_FROM:
+      content: 'The file is currently being moved'
+    MOVING_TO:
       content: 'The file is currently being moved'
     WRITING:
       content: 'The file is currently being written to disk'
@@ -115,6 +117,22 @@ Please "VALIDATE" this file then resolve any new errors
     ZIPPED_UNKNOWN_MISSING: 'ignore'
   
   open: {}
+
+  cancel: (file, to) ->
+    @open[file] = false
+    url = @url() + '/cancel?filename=' + encodeURIComponent(file)
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) =>
+        @set(data)
+      error: (err) =>
+        console.error('error', err)
+        do @fetch
+  }
 
   move: (file, to) ->
     @open[file] = false

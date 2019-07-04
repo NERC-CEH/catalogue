@@ -17,7 +17,7 @@
         <% } else if (type !== 'VALID') { %>
             <span class="panel-heading-filename"><%= name %></span>
             <span class="panel-heading-type"><%= type %></span>
-            <% if (type === 'MOVING' || type === 'WRITING') { %>
+            <% if (type === 'MOVING_FROM' || type === 'MOVING_TO' || type === 'WRITING') { %>
             <span class="panel-heading-type"><%= size %></span>
             <% } %>
         <% } else { %>
@@ -58,9 +58,9 @@
     <div class="panel-footer">
         <div class="buttons">
             <% if (moving) { %>
-                <button disabled class="btn btn-success">
+                <button class="cancel btn btn-success" data-filename="<%= path %>">
                     <i class="btn-icon fas fa-ban"></i>
-                    <span>MOVING</span>
+                    <span>CANCEL</span>
                 </button>
             <% } else if (action === 'move-datastore') { %>
                 <button class="move-datastore btn btn-success" data-filename="<%= path %>">
