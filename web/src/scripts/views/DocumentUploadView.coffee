@@ -184,7 +184,7 @@ define [
         for filename, data of uploadFiles[name].documents
             @model.open[filename] = false if typeof @model.open[filename] == 'undefined'
             data.errorType = 'valid'
-            data.moving = data.type == 'MOVING' || data.type == 'WRITING'
+            data.moving = data.type.includes('MOVING') || data.type == 'WRITING'
             data.validating = data.type == 'VALIDATING_HASH'
             data.hash = data.hash || 'NO HASH'
             data.action = @model.keyToAction[name]
@@ -201,6 +201,7 @@ define [
         @fileAction('delete')
         @fileAction('validate')
         @fileAction('ignore')
+        @fileAction('cancel')
         @fileAction('move-metadata', 'move', 'supporting-documents')
         @fileAction('move-datastore', 'move', 'eidchub')
 

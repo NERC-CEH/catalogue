@@ -54,7 +54,7 @@ public class UploadDocumentService {
         uploadFile.setDestination(item.get("destination").asText());
       val status = item.get("status").asText();
       uploadFile.setType(status);
-      if (status.equals("WRITING") || status.equals("VALID") || status.equals("VALIDATING_HASH") || status.equals("NO_HASH") || status.equals("MOVING"))
+      if (status.equals("WRITING") || status.equals("VALID") || status.equals("VALIDATING_HASH") || status.equals("NO_HASH") || status.equals("MOVING_FROM") || status.equals("MOVING_TO"))
         documents.put(path, uploadFile);
       else if (!status.equals("REMOVED") && !status.equals("MOVED") && !status.equals("ZIPPED")) {
         invalid.put(path, uploadFile);
@@ -148,22 +148,37 @@ public class UploadDocumentService {
   }
 
   public UploadDocument zip(String id) {
-    hubbubService.post(String.format("/zip/%s", id));
+    threadPool.execute(() -> {
+      hubbubService.post(String.format("/zip/%s", id));
+    });
     return get(id);
   }
 
   public UploadDocument unzip(String id) {
-    hubbubService.post(String.format("/unzip/%s", id));
+    threadPool.execute(() -> {
+      hubbubService.post(String.format("/unzip/%s", id));
+    });
+    return get(id);
+  }
+
+  public UploadDocument cancel(String id, String filename) {
+    threadPool.execute(() -> {
+      hubbubService.post(String.format("/cancel%s", filename));
+    });
     return get(id);
   }
 
   public UploadDocument move(String id, String filename, String to) {
-    hubbubService.postQuery(String.format("/move%s", filename), "to", to);
+    threadPool.execute(() -> {
+      hubbubService.postQuery(String.format("/move%s", filename), "to", to);
+    });
     return get(id);
   }
 
   public UploadDocument moveToDataStore(String id) {
-    hubbubService.post(String.format("/move_all/%s", id));
+    threadPool.execute(() -> {
+      hubbubService.post(String.format("/move_all/%s", id));
+    });
     return get(id);
   }
 }

@@ -175,6 +175,15 @@ public class UploadController {
     return ResponseEntity.ok(document);
   }
 
+  @RequestMapping(value = "documents/{id}/cancel", method = RequestMethod.PUT,
+      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  cancel(@ActiveUser CatalogueUser user, @PathVariable("id") String id, @RequestParam("filename") String filename) {
+    userCanUpload(id);
+    val document = uploadDocumentService.cancel(id, filename);
+    return ResponseEntity.ok(document);
+  }
+
   @RequestMapping(value = "documents/{id}/move-upload-file", method = RequestMethod.PUT,
       consumes = UPLOAD_DOCUMENT_JSON_VALUE)
   public ResponseEntity<UploadDocument>
