@@ -45,7 +45,18 @@ define [
   globalAction: (name, action) ->
     action = action || name
     $(".#{name}").unbind('click')
-    $(".#{name}").click((evt) => @model[action]())
+    $(".#{name}").click((evt) =>
+      el = $(evt.target)
+      if !el.hasClass('btn')
+            el = $(evt.target).parent()
+      el.attr('disabled', !action.includes('show'))
+      current = el.children('i').attr('class')
+      el.children('i').attr('class', 'btn-icon fas fa-sync fa-spin') if (!action.includes('show'))
+      @model[action](->
+        el.children('i').attr('class', current)
+        el.attr('disabled', false)
+      )
+    )
 
   renderChecksums: ->
     checksums = []
@@ -122,7 +133,6 @@ define [
           errorMessage = errorMessages[xhr.status] || errorMessage if xhr
           $('.uploading-' + id + ' .file-message').text(errorMessage)
 
-    # @dropzone = $('.dropzone-container').dropzone(options)
     @dropzone = new Dropzone('.dropzone-container', options)
     
 
@@ -198,10 +208,10 @@ define [
             filesEl.append(row)
 
         @fileAction('accept')
-        @fileAction('delete')
+        @fileAction('delete', 'showDelete')
         @fileAction('validate')
-        @fileAction('ignore')
-        @fileAction('cancel')
+        @fileAction('ignore', 'showIgnore')
+        @fileAction('cancel', 'showCancel')
         @fileAction('move-metadata', 'move', 'supporting-documents')
         @fileAction('move-datastore', 'move', 'eidchub')
 
@@ -217,13 +227,37 @@ define [
             @model.open[filename] = !panel.hasClass('is-collapsed')
         )
 
+
+  renderModal: ->
+    modalName = @model.attributes.modal
+    hidden = $('#documentUploadModal').css('display') == 'none'
+    if modalName
+      $('#documentUploadModal').modal('show') if hidden
+      $('.modal-title').html @model.modalData.title
+      $('.modal-body').html @model.modalData.body
+      $('#documentUploadModal').unbind 'hidden.bs.modal'
+      $('#documentUploadModal').on 'hidden.bs.modal', =>
+        do @model.hideDialog
+
+      $('.modal-dismiss').unbind 'click'
+      $('.modal-dismiss').click =>
+        do @model.hideDialog
+
+      $('.modal-accept').unbind 'click'
+      $('.modal-accept').click =>
+        do @model.modalAction
+        $('.modal-accept').unbind 'click'
+
   render: ->
     @globalAction 'move-all', 'moveToDatastore'
     @globalAction 'validate-all', 'validateFiles'
     @globalAction 'zip'
     @globalAction 'unzip'
-    @globalAction 'finish'
+    @globalAction 'finish', 'showFinish'
+    @globalAction 'reschedule'
+    @globalAction 'schedule'
 
     do @renderChecksums
     do @renderZip
     do @renderFiles
+    do @renderModal

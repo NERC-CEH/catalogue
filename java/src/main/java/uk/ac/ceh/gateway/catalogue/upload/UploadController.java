@@ -36,6 +36,10 @@ import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 @AllArgsConstructor
 public class UploadController {
   private static final String START_PROGRESS = "751";
+  private static final String HOLD = "831";
+  private static final String UNHOLD = "811";
+  private static final String APPROVE = "711";
+  private static final String SCHEDULED = "741";
 
   private final UploadDocumentService uploadDocumentService;
   private final PermissionService permissionService;
@@ -118,15 +122,60 @@ public class UploadController {
     return ResponseEntity.ok(document);
   }
 
+
+  @RequestMapping(value = "documents/{id}/schedule", method = RequestMethod.PUT,
+  consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  schedule(@ActiveUser CatalogueUser user, @PathVariable("id") String id)
+    throws DocumentRepositoryException {
+    userCanUpload(id);
+    transitionIssueToSchedule(user, id);
+    removeUploadPermission(user, id);
+    val document = uploadDocumentService.get(id);
+    return ResponseEntity.ok(document);
+  }
+
+  @RequestMapping(value = "documents/{id}/reschedule", method = RequestMethod.PUT,
+  consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument>
+  reschedule(@ActiveUser CatalogueUser user, @PathVariable("id") String id)
+    throws DocumentRepositoryException {
+    userCanUpload(id);
+    transitionIssueToScheduled(user, id);
+    removeUploadPermission(user, id);
+    val document = uploadDocumentService.get(id);
+    return ResponseEntity.ok(document);
+  }
+
+  private void transitionIssueToSchedule(CatalogueUser user, String guid) {
+    transitionIssueTo(user, guid, APPROVE);
+    transitionIssueTo(user, guid, SCHEDULED, "%s has scheduled, ready for uploading");
+  }
+
+  private void transitionIssueToScheduled(CatalogueUser user, String guid) {
+    transitionIssueTo(user, guid, HOLD);
+    transitionIssueTo(user, guid, UNHOLD);
+    transitionIssueTo(user, guid, APPROVE);
+    transitionIssueTo(user, guid, SCHEDULED, "%s has reschduled, ready for uploading");
+  }
+
   private void transitionIssueToStartProgress(CatalogueUser user, String guid) {
+    transitionIssueTo(user, guid, START_PROGRESS, "%s has finished uploading the documents");
+  }
+
+  private void transitionIssueTo(CatalogueUser user, String guid, String status, String message) {
+    val key = transitionIssueTo(user, guid, status);
+    jiraService.comment(key, String.format(message, user.getEmail()));
+  }
+
+  private String transitionIssueTo(CatalogueUser user, String guid, String status) {
     val issues = jiraService.search(jql(guid));
     if (issues.size() != 1)
       throw new NonUniqueJiraIssue();
     val issue = issues.get(0);
     val key = issue.getKey();
-    jiraService.transition(key, START_PROGRESS);
-    jiraService.comment(
-        key, String.format("%s has finished uploading the documents to dropbox", user.getEmail()));
+    jiraService.transition(key, status);
+    return key;
   }
 
   @ResponseStatus(value = HttpStatus.BAD_REQUEST,
