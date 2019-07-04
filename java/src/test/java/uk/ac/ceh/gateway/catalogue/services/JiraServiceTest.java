@@ -1,25 +1,33 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import java.util.List;
-import java.util.ArrayList;
-import javax.ws.rs.core.MediaType;
 import org.mockito.junit.MockitoJUnitRunner;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueCreate;
 import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
-
-import static org.mockito.Mockito.*;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.CoreMatchers.equalTo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JiraServiceTest {

@@ -118,7 +118,49 @@ Please "VALIDATE" this file then resolve any new errors
   
   open: {}
 
-  cancel: (file, to) ->
+  modal: false
+
+  modalData:
+    title: 'title'
+    body: 'body'
+
+  showFinish: ->
+    @modalAction = @finish
+    @modalData.title = 'Have you finished uploading files?'
+    @modalData.body = 'You will no longer be able to add, remove or update files.'
+    @set 'modal', 'finish'
+  
+  showDelete: (filename) ->
+    @modalAction = => @delete(filename)
+    fileSplit = filename.split('/')
+    file = fileSplit[fileSplit.length - 1]
+
+    @modalData.title = "Delete #{file}?"
+    @modalData.body = "This will perminently delete the file <br /><b>#{filename}"
+    @set 'modal', 'delete'
+  
+  showCancel: (filename) ->
+    @modalAction = => @cancel(filename)
+    fileSplit = filename.split('/')
+    file = fileSplit[fileSplit.length - 1]
+    @modalData.title = "Cancel moving #{file}?"
+    @modalData.body = 'This will not stop the file from being moved.<br />Only do this if you feel the file is no longer moving to the desired destination, e.g. due to a server error.'
+    @set 'modal', 'cancel'
+  
+  showIgnore: (filename) ->
+    @modalAction = => @ignore(filename)
+    fileSplit = filename.split('/')
+    file = fileSplit[fileSplit.length - 1]
+    @modalData.title = "Ignore the error for #{file}?"
+    @modalData.body = "You are about to ignore the error for<br /><b>#{filename}</b><br />You will lose all infomation about this file if you continue with this action."
+    @set 'modal', 'ignore'
+  
+  hideDialog: ->
+    @modalData.title = 'title'
+    @modalData.body = 'body'
+    @set 'modal', off
+
+  cancel: (file) ->
     @open[file] = false
     url = @url() + '/cancel?filename=' + encodeURIComponent(file)
     $.ajax {
@@ -210,7 +252,7 @@ Please "VALIDATE" this file then resolve any new errors
         do @fetch
     }
   
-  moveToDatastore: () ->
+  moveToDatastore: (cb) ->
     url = @url() + '/move-to-datastore'
     $.ajax {
       url: url
@@ -220,12 +262,13 @@ Please "VALIDATE" this file then resolve any new errors
       type: 'PUT'
       success: (data) =>
         @set(data)
+        cb()
       error: (err) =>
         console.error('error', err)
         do @fetch
     }
   
-  validateFiles: () ->
+  validateFiles: (cb) ->
     url = @url() + '/validate'
     $.ajax {
       url: url
@@ -235,6 +278,7 @@ Please "VALIDATE" this file then resolve any new errors
       type: 'PUT'
       success: (data) =>
         @set(data)
+        cb()
       error: (err) =>
         console.error('error', err)
         do @fetch
@@ -272,6 +316,35 @@ Please "VALIDATE" this file then resolve any new errors
 
   finish: ->
     url = @url() + '/finish'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) ->
+        do window.location.reload
+      error: (err) ->
+        console.error('error', err)
+    }
+  
+
+  reschedule: ->
+    url = @url() + '/reschedule'
+    $.ajax {
+      url: url
+      headers:
+        'Accept': 'application/json'
+        'Content-Type': 'application/vnd.upload-document+json'
+      type: 'PUT'
+      success: (data) ->
+        do window.location.reload
+      error: (err) ->
+        console.error('error', err)
+    }
+
+  schedule: ->
+    url = @url() + '/schedule'
     $.ajax {
       url: url
       headers:

@@ -1,6 +1,8 @@
 <#import "../skeleton.ftl" as skeleton>
 <#assign issues=jira.search("project%3Deidchelp%20and%20component%3D%27data%20transfer%27%20and%20labels%3D" + id)>
+<#assign open=issues?size == 1 && issues[0].status == 'open'>
 <#assign scheduled=issues?size == 1 && issues[0].status == 'scheduled'>
+<#assign inProgress=issues?size == 1 && issues[0].status == 'in progress'>
 
 <@skeleton.master title=title>
 <div class="container" id="document-upload" data-guid='${id}'>
@@ -46,7 +48,7 @@
                             </button>
                         </div>
                         <div class="col-md-3">
-                        <button class="btn btn-primary finish">
+                        <button class="btn btn-primary finish" >
                             <i class="btn-icon fas fa-check"></i>
                             <span>FINISH UPLOADING</span>
                         </button>
@@ -64,14 +66,37 @@
                 <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
             <div class="documents-files"></div>
+            <#if inProgress>
+            <div class="row">
+                <div class="col-md-6"></div>
+                <div class="col-md-3">
+                    <button class="data-action move-all btn btn-success"><i class="btn-icon fas fa-level-down-alt"></i><span>MOVE ALL DATASTORE</span></button>
+                </div>
+                <div class="col-md-3">
+                    <button class="data-action reschedule btn btn-success"><i class="btn-icon fas fa-redo"></i><span>RESCHEDULE</span></button>
+                </div>
+            </div>
+            <#elseif open>
+            <div class="row">
+                <div class="col-md-6"></div>
+                <div class="col-md-3">
+                    <button class="data-action move-all btn btn-success"><i class="btn-icon fas fa-level-down-alt"></i><span>MOVE ALL DATASTORE</span></button>
+                </div>
+                <div class="col-md-3">
+                    <button class="data-action schedule btn btn-success"><i class="btn-icon far fa-calendar-check"></i><span>SCHEDULE</span></button>
+                </div>
+            </div>
+            <#else>
             <div class="row">
                 <div class="col-md-9"></div>
                 <div class="col-md-3">
-                    <button class="move-all btn btn-success"><i class="btn-icon fas fa-level-down-alt"></i><span>MOVE ALL DATASTORE</span></button>
+                    <button class="data-action move-all btn btn-success"><i class="btn-icon fas fa-level-down-alt"></i><span>MOVE ALL DATASTORE</span></button>
                 </div>
             </div>
+            </#if>
         </section>
 
+<#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
         <section class="document-upload-section">
             <div class="page-header">
                 <h3><i class="btn-icon far fa-copy"></i> Metadata <small>Supporting Documents</small></h3>
@@ -98,7 +123,7 @@
                 </div>
             </div>
         </section>
-
+</#if>
         <section class="document-upload-section">
             <div class="row">
                 <div class="col-md-6"></div>
@@ -108,6 +133,21 @@
                 </div>
             </div>
         </section>
+    </div>
+</div>
+<div class="modal fade" id="documentUploadModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-default modal-dismiss" data-dismiss="modal">NO</button>
+                <button class="btn btn-danger modal-accept"  data-dismiss="modal">YES</button>
+            </div>
+        </div>
     </div>
 </div>
 </@skeleton.master>
