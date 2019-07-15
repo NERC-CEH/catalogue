@@ -1,16 +1,21 @@
-<div class='uploading file'>
-    <div class='filename'>
-        <i class='far fa-file-alt'></i>
-        <span data-dz-name></span>
+<div class="uploading row file-row">
+    <div class="col-md-7">
+        <div class="row">
+            <div class="col-md-6 file-name">
+                <i class="fas fa-spinner fa-spin-2x"></i>
+                <span data-dz-name></span>
+            </div>
+            <div class="col-md-2 file-size">
+                <span class="file-size-value"></span>
+            </div>
+            <div class="col-md-4 file-status">Uploading</div>
+            <div class="col-md-12 file-message"></div>
+        </div>
     </div>
-    <b class='error text-danger'></b>
-    <div class='file-options'>
-        <a class="btn btn-danger cancel" role="button">
+    <div class="col-md-5 file-actions">
+        <a class="btn btn-danger cancel file-action" role="button">
             <i class="fas fa-times"></i>
             <span>Cancel</span>
         </a>
-    </div>
-    <div class="progress active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-        <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress>Uploading</div>
     </div>
 </div>

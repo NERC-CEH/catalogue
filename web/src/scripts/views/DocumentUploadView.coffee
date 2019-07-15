@@ -3,7 +3,7 @@ define [
   'backbone'
   'filesize'
   'tpl!templates/DocumentUploadFileRow.tpl'
-  'tpl!templates/BetaDropzoneFile.tpl'
+  'tpl!templates/DropzoneFile.tpl'
 ], (
   $
   Backbone
