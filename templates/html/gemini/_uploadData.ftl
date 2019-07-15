@@ -24,20 +24,4 @@
     </div>
   </div>
 
-
-  <#if flagUpload && permission.userCanUpload(id)>
-  <div class="panel panel-default hidden-print" id="document-upload-panel">
-    <div class="panel-body text-center">
-      <i class="fas fa-car-crash text-warning"></i>
-      <b class="text-warning">Under Development</b>
-      <p>
-        <a href="/upload/beta/${id}">
-          <i class="far fa-copy"></i>
-          <span>Manage Data</span>
-        </a>
-      </p>
-    </div>
-  </div>
-  </#if>
-
 </#if>

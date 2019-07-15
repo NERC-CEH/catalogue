@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,37 +48,15 @@ public class UploadController {
   private final JiraService jiraService;
 
 
-  @RequestMapping(value = "upload/beta/{id}", method = RequestMethod.GET)
-  @ResponseBody
-  public ModelAndView createOrGetUploadDocumentBeta(@ActiveUser CatalogueUser user,
-      @PathVariable("id") String id) throws DocumentRepositoryException {
-    val geminiDocument = (GeminiDocument) documentRepository.read(id);
-    val canUpload = permissionService.userCanUpload(id);
-    if (canUpload) {
-      Map<String, Object> model = new HashMap<>();
-      model.put("id", id);
-      model.put("title", geminiDocument.getTitle());
-      return new ModelAndView("/html/upload/upload-beta-document.ftl", model);
-    } else {
-      throw new PermissionDeniedException("Permissions denied");
-    }
-  }
-
+  @PreAuthorize("@permission.userCanUpload(#id)")
   @RequestMapping(value = "upload/{id}", method = RequestMethod.GET)
   @ResponseBody
-  public ModelAndView createOrGetUploadDocument(@ActiveUser CatalogueUser user,
-      @PathVariable("id") String id) throws DocumentRepositoryException {
+  public ModelAndView createOrGetUploadDocument(@ActiveUser CatalogueUser user, @PathVariable("id") String id) throws DocumentRepositoryException {
     val geminiDocument = (GeminiDocument) documentRepository.read(id);
-    val canUpload = permissionService.userCanUpload(id);
-    val canView = permissionService.userCanView(id);
-    if (canView || canUpload) {
-      Map<String, Object> model = new HashMap<>();
-      model.put("id", id);
-      model.put("title", geminiDocument.getTitle());
-      return new ModelAndView("/html/upload/upload-document.ftl", model);
-    } else {
-      throw new PermissionDeniedException("Permissions denied");
-    }
+    Map<String, Object> model = new HashMap<>();
+    model.put("id", id);
+    model.put("title", geminiDocument.getTitle());
+    return new ModelAndView("/html/upload/upload-document.ftl", model);
   }
 
   @RequestMapping(
@@ -130,7 +109,6 @@ public class UploadController {
     throws DocumentRepositoryException {
     userCanUpload(id);
     transitionIssueToSchedule(user, id);
-    removeUploadPermission(user, id);
     val document = uploadDocumentService.get(id);
     return ResponseEntity.ok(document);
   }
@@ -142,7 +120,6 @@ public class UploadController {
     throws DocumentRepositoryException {
     userCanUpload(id);
     transitionIssueToScheduled(user, id);
-    removeUploadPermission(user, id);
     val document = uploadDocumentService.get(id);
     return ResponseEntity.ok(document);
   }

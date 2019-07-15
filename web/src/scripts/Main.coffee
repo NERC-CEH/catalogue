@@ -26,12 +26,6 @@ define [
   'cs!models/LinkEditorMetadata'
   'cs!views/CehModelEditorView'
   'cs!views/CehModelApplicationEditorView'
-  'cs!views/DocumentsUploadScheduledView'
-  'cs!models/DocumentsUploadScheduledModel'
-  'cs!views/DocumentsUploadInProgressView'
-  'cs!models/DocumentsUploadInProgressModel'
-  'cs!views/DocumentsUploadReadOnlyView'
-  'cs!models/DocumentsUploadReadOnlyModel'
   'cs!views/OsdpAgentEditorView'
   'cs!views/OsdpDatasetEditorView'
   'cs!views/OsdpModelEditorView'
@@ -48,12 +42,11 @@ define [
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'cs!views/DocumentUploadView'
-  'cs!models/DocumentUploadBetaModel'
+  'cs!models/DocumentUploadModel'
 ], (
   _, $, Backbone, Dropzone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
-    ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, DocumentsUploadScheduledView,
-    DocumentsUploadScheduledModel, DocumentsUploadInProgressView, DocumentsUploadInProgressModel, DocumentsUploadReadOnlyView, DocumentsUploadReadOnlyModel, OsdpAgentEditorView,
+    ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, DepositRequestModel, DepositRequestView,
     ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel
@@ -69,10 +62,6 @@ define [
     # http://stackoverflow.com/a/646643
     String::startsWith ?= (s) -> @slice(0, s.length) == s
     String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
-
-    do @initScheduled if $('#documents-upload .scheduled').length
-    do @initInProgress if $('#documents-upload .in-progress').length
-    do @initReadOnly if $('#documents-upload .read-only').length
 
     do @initDocumentUpload if $('#document-upload').length
 
@@ -100,30 +89,6 @@ define [
   initDepositRequest: ->
     app = new DepositRequestModel
     view = new DepositRequestView model: app
-
-  initReadOnly: ->
-    id = $('#documents-upload').data('guid')
-    app = new DocumentsUploadReadOnlyModel null,
-        mediaType: 'application/vnd.upload-document+json'
-    app.id = id
-    app.set('id', id)
-    view = new DocumentsUploadReadOnlyView model: app
-
-  initScheduled: ->
-    id = $('#documents-upload').data('guid')
-    app = new DocumentsUploadScheduledModel null,
-        mediaType: 'application/vnd.upload-document+json'
-    app.id = id
-    app.set('id', id)
-    view = new DocumentsUploadScheduledView model: app
-
-  initInProgress: ->
-    id = $('#documents-upload').data('guid')
-    app = new DocumentsUploadInProgressModel null,
-        mediaType: 'application/vnd.upload-document+json'
-    app.id = id
-    app.set('id', id)
-    view = new DocumentsUploadInProgressView model: app
 
   initStudyAreaMap: ->
     view = new StudyAreaView
