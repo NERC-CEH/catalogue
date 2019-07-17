@@ -42,12 +42,12 @@ define [
 
   keyToName:
     documents: 'data'
-    plone: 'metadata'
+    'supporting-documents': 'metadata'
     datastore: 'datastore'
   
   keyToAction:
     documents: 'move-both'
-    plone: 'move-datastore'
+    'supporting-documents': 'move-datastore'
     datastore: 'move-metadata'
 
   messages:
