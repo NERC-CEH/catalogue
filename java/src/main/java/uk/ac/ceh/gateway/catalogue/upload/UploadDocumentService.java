@@ -69,7 +69,7 @@ public class UploadDocumentService {
 
     val eidchubFiles = new ObjectMapper().createArrayNode();
     val dropboxFiles = new ObjectMapper().createArrayNode();
-    val ploneFiles = new ObjectMapper().createArrayNode();
+    val supportingDocumentFiles = new ObjectMapper().createArrayNode();
 
     val data = (ArrayNode) hubbubService.get(id);
     data.forEach(item -> {
@@ -79,7 +79,7 @@ public class UploadDocumentService {
       if (path.contains("dropbox"))
         dropboxFiles.add(item);
       if (path.contains("supporting-documents"))
-        ploneFiles.add(item);
+        supportingDocumentFiles.add(item);
     });
 
     val eidchubUploadFiles = getUploadFiles("eidchub", id, eidchubFiles);
@@ -89,7 +89,7 @@ public class UploadDocumentService {
 
     document.getUploadFiles().put("datastore", eidchubUploadFiles);
     document.getUploadFiles().put("documents", getUploadFiles("dropbox", id, dropboxFiles));
-    document.getUploadFiles().put("plone", getUploadFiles("supporting-documents", id, ploneFiles));
+    document.getUploadFiles().put("supporting-documents", getUploadFiles("supporting-documents", id, supportingDocumentFiles));
 
     return document;
   }

@@ -227,12 +227,12 @@ public class ServiceConfig {
         Map<String, File> folders = Maps.newHashMap();
         folders.put("documents", new File("/var/ceh-catalogue/dropbox"));
         folders.put("datastore", new File("/var/ceh-catalogue/eidchub-rw"));
-        folders.put("plone", new File("/var/ceh-catalogue/plone"));
+        folders.put("supporting-documents", new File("/var/ceh-catalogue/supporting-documents"));
 
         Map<String, String> physicalLocations = Maps.newHashMap();
         physicalLocations.put("documents", "datastore/dropbox");
         physicalLocations.put("datastore", "datastore/eidchub");
-        physicalLocations.put("plone", "datastore/plone");
+        physicalLocations.put("supporting-documents", "datastore/supporting-documents");
 
         return new UploadDocumentService(hubbubService, folders,  Executors.newCachedThreadPool());
     }

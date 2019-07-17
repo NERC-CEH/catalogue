@@ -104,7 +104,7 @@
             <div class="row loading text-center">
                 <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
-            <div class="plone-files"></div>
+            <div class="supporting-documents-files"></div>
         </section>
 
         <section class="document-upload-section">

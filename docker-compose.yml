@@ -9,7 +9,7 @@ services:
       - 8080
     volumes:
       - ./datastore:/var/ceh-catalogue/datastore
-      - ./plone:/var/ceh-catalogue/plone
+      - ./supporting-documents:/var/ceh-catalogue/supporting-documents
       - ./dropbox:/var/ceh-catalogue/dropbox
       - ./eidchub-rw:/var/ceh-catalogue/eidchub-rw
       - mapfiles:/var/ceh-catalogue/mapfiles
