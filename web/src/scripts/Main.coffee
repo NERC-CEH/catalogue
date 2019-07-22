@@ -37,6 +37,7 @@ define [
   'cs!views/SampleArchiveEditorView'
   'cs!views/ErammpModelEditorView'
   'cs!views/ErammpDatacubeEditorView'
+  'cs!views/DepositAgreementEditorView'
   'cs!models/DepositRequestModel'
   'cs!views/DepositRequestView'
   'cs!views/ClipboardCopyView'
@@ -48,7 +49,7 @@ define [
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, DepositRequestModel, DepositRequestView,
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, DepositAgreementEditorView, DepositRequestModel, DepositRequestView,
     ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel
 ) ->
 
@@ -196,6 +197,10 @@ define [
         View: ErammpDatacubeEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.erammp-datacube+json'
+      'deposit-agreement':
+        View: DepositAgreementEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.deposit-agreement+json'
       'data-type':
         View: DataTypeEditorView
         Model: EditorMetadata

@@ -11,6 +11,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_PUBLICATION_SHOR
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_SAMPLE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ERAMMP_MODEL_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ERAMMP_DATACUBE_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DEPOSITAGREEMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_SHORT;
 
 import org.springframework.context.annotation.Bean;
@@ -108,6 +109,11 @@ public class CatalogueServiceConfig {
         DocumentType erammpDatacube = DocumentType.builder()
             .title("ERAMMP data cube")
             .type(ERAMMP_DATACUBE_SHORT)
+            .build();
+
+        DocumentType depositAgreement = DocumentType.builder()
+            .title("Deposit agreement")
+            .type(DEPOSITAGREEMENT_SHORT)
             .build();
 
         DocumentType sampleArchive = DocumentType.builder()
@@ -231,6 +237,7 @@ public class CatalogueServiceConfig {
                 .facetKey("status")
                 .facetKey("licence")
                 .documentType(gemini)
+                .documentType(depositAgreement)
                 .documentType(dataType)
                 .fileUpload(false)
                 .build(),

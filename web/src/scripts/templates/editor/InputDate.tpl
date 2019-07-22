@@ -1,0 +1,1 @@
+<input data-name="<%= data.modelAttribute %>" type="<%= data.typeAttribute %>" placeholder="<%= data.placeholderAttribute %>" class="editor-input datepicker" id="input-<%= data.modelAttribute %>" value="<%= data.value %>" <%= data.disabled%>>

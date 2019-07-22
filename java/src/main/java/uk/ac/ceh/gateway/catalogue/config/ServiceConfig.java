@@ -10,6 +10,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.LINK_DOC
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATA_TYPE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ERAMMP_DATACUBE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.ERAMMP_MODEL_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DEPOSITAGREEMENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_AGENT_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.OSDP_DATASET_SHORT;
@@ -79,6 +80,7 @@ import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
+import uk.ac.ceh.gateway.catalogue.eidc.DepositAgreement;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -312,6 +314,9 @@ public class ServiceConfig {
         converters.add(new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration()));
 
+        //EIDC
+        converters.add(new Object2TemplatedMessageConverter<>(DepositAgreement.class, freemarkerConfiguration()));
+
         //Sample Archive
         converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration()));
         
@@ -433,6 +438,7 @@ public class ServiceConfig {
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
                 .register(ERAMMP_MODEL_SHORT, ErammpModel.class)
                 .register(ERAMMP_DATACUBE_SHORT, ErammpDatacube.class)
+                .register(DEPOSITAGREEMENT_SHORT, DepositAgreement.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
 
                 .register(DATA_TYPE_SHORT, DataType.class);
