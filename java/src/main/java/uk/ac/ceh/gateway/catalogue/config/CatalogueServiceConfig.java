@@ -127,6 +127,7 @@ public class CatalogueServiceConfig {
                 .id("sa")
                 .title("Sample Archive")
                 .url("")
+                .facetKey("saTaxon")
                 .documentType(sampleArchive)
                 .fileUpload(false)
                 .build(),

@@ -49,6 +49,7 @@ public class SolrIndex {
     private @Field List<String> ncDrivers;
     private @Field List<String> ncEcosystemServices;
     private @Field List<String> ncGeographicalScale;
+    private @Field List<String> saTaxon;
     private @Field String condition;
 
     public SolrIndex addLocations(List<String> locations) {

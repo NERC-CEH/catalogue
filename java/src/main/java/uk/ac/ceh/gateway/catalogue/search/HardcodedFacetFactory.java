@@ -136,8 +136,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                 return Facet.builder()
                     .fieldName("ncCaseStudy")
                     .displayName("Case Study")
-                    .hierarchical(false)
-                    
+                    .hierarchical(false)          
                     .build();
 
             case "ncDrivers":
@@ -160,6 +159,13 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Geographical Scale")
                     .hierarchical(false)
                     .build();
+
+            case "saTaxon":
+                return Facet.builder()
+                    .fieldName("saTaxon")
+                    .displayName("Taxa")
+                    .hierarchical(false)
+                    .build();                    
         }
         return null;
     }
