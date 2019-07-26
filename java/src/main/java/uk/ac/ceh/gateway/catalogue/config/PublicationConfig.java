@@ -26,29 +26,29 @@ public class PublicationConfig {
         Transition draftToPending = Transition.builder()
             .toState(pending)
             .id("ykhm7b")
-            .title("Request publication of document")
-            .helpText("Requesting publication of this document. A Publisher will review this record for quality.")
+            .title("Request publication")
+            .helpText("Request publication - a Publisher will review it for quality before final publication")
             .build();
 
         Transition pendingToDraft = Transition.builder()
             .toState(draft)
             .id("gtkzpq")
-            .title("Retract document to Draft")
-            .helpText("Retract this document to Draft if you no longer want it published.")
+            .title("Retract record")
+            .helpText("Retract this record if you no longer want it published")
             .build();
 
         Transition pendingToPublished = Transition.builder()
             .toState(published)
             .id("re4vkb")
-            .title("Publish document")
-            .helpText("Only publish document after quality checks have been completed.")
+            .title("Publish record")
+            .helpText("Only publish document after quality checks have been completed")
             .build();
 
         Transition publishedToDraft = Transition.builder()
             .toState(draft)
             .id("qtak5r")
-            .title("Retract document from Published")
-            .helpText("Only retract this document from Published after you have checked it is not a DOI landing page. Create a JIRA issue to track what happens.")
+            .title("Retract record")
+            .helpText("Retract this record if you no longer want it published")
             .build();
 
         // Roles
