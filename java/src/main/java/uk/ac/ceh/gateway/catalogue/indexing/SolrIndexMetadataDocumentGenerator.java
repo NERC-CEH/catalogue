@@ -64,6 +64,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setView(getViews(document))
             .setCatalogue(document.getCatalogue())
             .setDocumentType(getDocumentType(document))
+            .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
             .setImpCaMMPIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_CAMMP_ISSUES_URL), Keyword::getValue))
             .setImpDataType(grab(getKeywordsFilteredByUrlFragment(document, IMP_DATA_TYPE_URL), Keyword::getValue))
             .setImpScale(impScale(document))
@@ -77,7 +78,6 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setNcDrivers(grab(getKeywordsByVocabulary(document, NC_DRIVERS_URL), Keyword::getValue))
             .setNcEcosystemServices(grab(getKeywordsByVocabulary(document, NC_ECOSYSTEM_SERVICES_URL), Keyword::getValue))
             .setNcGeographicalScale(grab(getKeywordsByVocabulary(document, NC_GEOGRAPHICAL_SCALE_URL), Keyword::getValue))
-            .setSaTaxon(grab(getKeywordsByVocabulary(document, SA_TAXON_URL), Keyword::getValue))
             .setCondition(getCondition(document));
     }
 
