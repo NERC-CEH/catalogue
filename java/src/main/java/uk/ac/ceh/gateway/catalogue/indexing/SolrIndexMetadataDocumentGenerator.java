@@ -78,8 +78,13 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setNcDrivers(grab(getKeywordsByVocabulary(document, NC_DRIVERS_URL), Keyword::getValue))
             .setNcEcosystemServices(grab(getKeywordsByVocabulary(document, NC_ECOSYSTEM_SERVICES_URL), Keyword::getValue))
             .setNcGeographicalScale(grab(getKeywordsByVocabulary(document, NC_GEOGRAPHICAL_SCALE_URL), Keyword::getValue))
+            .setSaTaxon(grab(getKeywordsByVocabulary(document, SA_TAXON_URL), Keyword::getValue))
+            //.setSaTissue(grab(getKeywordsByVocabulary(document, SA_TISSUE_URL), Keyword::getValue))
+            //.setSaPhysicalState(grab(getKeywordsByVocabulary(document, SA_PHYSICALSTATE_URL), Keyword::getValue))
+            //.setSaSpecimentType(grab(getKeywordsByVocabulary(document, SA_SPECIMENTYPE_URL), Keyword::getValue))
             .setCondition(getCondition(document));
     }
+
 
     private String getCondition(MetadataDocument document) {
         if(document instanceof ErammpDatacube){

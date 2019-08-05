@@ -92,6 +92,12 @@
     <#local lcontact = lcontact>
   </#if>
 
+
+  <#if contact.phone?? && contact.phone?has_content>
+    <#local lcontact = lcontact + "<div class='contactPhone'><i class='fas fa-phone'></i> &nbsp;" + contact.phone + "</div>">
+  </#if>
+
+
   <#if showEmail=true && (contact.email?has_content || metadata.catalogue = "eidc")>
     <#assign emailSubject= "?subject=" + title>
     <#if contact.email?has_content>
@@ -102,7 +108,7 @@
     <#if contact.individualName?has_content>
       <#assign emailSubject = emailSubject + " (FAO: " + contact.individualName + ")">
     </#if>
-    <#local lcontact = lcontact + "<a href='mailto:" + emailAddress + emailSubject  + "'><i class='far fa-envelope contactEmail'></i> " +  emailAddress + "</a>">
+    <#local lcontact = lcontact + "<a href='mailto:" + emailAddress + emailSubject  + "'><i class='far fa-envelope contactEmail'></i> &nbsp;" +  emailAddress + "</a>">
   </#if>
 
   <#return lcontact>

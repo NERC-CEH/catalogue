@@ -28,13 +28,12 @@ import java.util.stream.Collectors;
     @Template(called="html/sample_archive/sample_archive.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class SampleArchive extends AbstractMetadataDocument implements WellKnownText {
-  private String lineage, language, availability, accessRestrictions, storage, healthSafety, website;
-  private List<Keyword> specimenTypes, topicCategories, keywords;
+  private String lineage, availability, accessRestrictions, storage, healthSafety, website;
+  private List<Keyword>  taxa, tissues, specimenTypes, physicalStates, keywords;
   private TimePeriod temporalExtent;
   private List<BoundingBox> boundingBoxes;
-  private List<String> archiveLocations;
-  private List<ResponsibleParty> archiveContacts, metadataContacts;
-  private List<Link> resourceLocators;
+  private List<ResponsibleParty> archiveLocations, archiveContacts, metadataContacts;
+  private List<Link> resourceLocators, browseGraphic;
 
   @Override
   public List<String> getWKTs() {

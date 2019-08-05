@@ -108,7 +108,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("modelType")
                     .displayName("Model Type")
                     .hierarchical(false)
-                    
                     .build();
 
             case "documentType":
