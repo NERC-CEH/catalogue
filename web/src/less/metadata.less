@@ -196,13 +196,36 @@
   }
 
   #section-children{
-    margin-bottom:6em;
-      .children {
-        margin-left:3em;
-        margin-top:1em;
-        padding-top: 0.25em;
-        .childRecord {margin-bottom:0.25em;}
+    margin-top: 3em;
+    .children {
+      display:flex;
+      justify-content: space-evenly;
+      align-items: stretch; 
+      flex-wrap: wrap;
+      a.childRecord {
+        border:1px solid #DDD;
+        padding:1.6em;
+        width:19em;
+        border-radius:0.6em;
+        margin:1em 0;
+        &:hover{
+          background-color:#EEE;
+          color:#000;
+          text-decoration:none;
+        };
+      };
+      div{
+        &:first-child {
+          color:#999;
+          border-bottom:1px solid #DDD;
+          margin-bottom:.5em;
+          padding-bottom:.5em;
+        };
+        &:last-child {
+          color:#111;
+        };
     };
+  }
   }
 
   #adminPanel{
@@ -392,6 +415,13 @@
     };
   };
 };
+
+.browseGraphic {
+  .pull-right;
+  margin:0 0 1em 1em ;
+  max-width:30em;
+  max-height:30em; 
+}
 
 }
 

@@ -46,7 +46,13 @@
         <#include "gemini/_metadataqualityAlert.ftl">
       </#if>  
 
-        <@blocks.description description!"" />
+        <div id="document-description">
+          <#if resourceType.value = 'aggregate' || resourceType.value = 'collection'>
+            <#include "gemini/_browseGraphic.ftl">
+          </#if>
+          <@blocks.linebreaks description!"" />
+        </div>
+        
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "gemini/_dates.ftl">
           <div class="row">
