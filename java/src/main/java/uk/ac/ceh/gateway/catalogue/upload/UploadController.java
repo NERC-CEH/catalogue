@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -59,11 +60,15 @@ public class UploadController {
     return new ModelAndView("/html/upload/upload-document.ftl", model);
   }
 
-  @RequestMapping(
-      value = "documents/{id}", method = RequestMethod.GET, consumes = UPLOAD_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<UploadDocument>
-  get(@ActiveUser CatalogueUser user, @PathVariable("id") String id) {
-    val document = uploadDocumentService.get(id);
+  @GetMapping(value = "documents/{id}", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+  public ResponseEntity<UploadDocument> get(
+    @ActiveUser CatalogueUser user,
+    @PathVariable("id") String id,
+    @RequestParam(value = "documents_page", defaultValue = "1") int documentsPage,
+    @RequestParam(value = "datastore_page", defaultValue = "1") int datastorePage,
+    @RequestParam(value = "supporting_documents_page", defaultValue = "1") int supportingDocumentsPage
+  ) {
+    val document = uploadDocumentService.get(id, documentsPage, datastorePage, supportingDocumentsPage);
     return ResponseEntity.ok(document);
   }
 
