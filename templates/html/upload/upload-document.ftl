@@ -62,8 +62,6 @@
             <div class="page-header">
                 <h3><i class="btn-icon fas fa-archive"></i> Data</h3>
             </div>
-            <#assign pagId="documents">
-            <#include "_pagination.ftl">
             <div class="row loading text-center">
                 <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
@@ -103,8 +101,6 @@
             <div class="page-header">
                 <h3><i class="btn-icon far fa-copy"></i> Metadata <small>Supporting Documents</small></h3>
             </div>
-            <#assign pagId="supporting-documents">
-            <#include "_pagination.ftl">
             <div class="row loading text-center">
                 <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
@@ -115,8 +111,6 @@
             <div class="page-header">
                 <h3><i class="btn-icon fas fa-lock"></i> Datastore</h3>
             </div>
-            <#assign pagId="datastore">
-            <#include "_pagination.ftl">
             <div class="row loading text-center">
                 <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>

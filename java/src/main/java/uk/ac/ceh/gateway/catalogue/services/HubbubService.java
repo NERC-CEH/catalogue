@@ -75,11 +75,9 @@ public class HubbubService {
   }
 
   @SneakyThrows
-  public JsonNode get(String path, Integer page) {
+  public JsonNode get(String path) {
     return authenticated(() -> resource.path(path)
                    .queryParam("data", "true")
-                   .queryParam("size", "20")
-                   .queryParam("page", page.toString())
                    .accept(MediaType.APPLICATION_JSON_TYPE)
                    .header("Authorization", String.format("Bearer %s", accessToken))
                    .get(JsonNode.class));

@@ -1,12 +1,10 @@
 define [
-  'underscore'
   'jquery'
   'backbone'
   'filesize'
   'tpl!templates/DocumentUploadFileRow.tpl'
   'tpl!templates/DropzoneFile.tpl'
 ], (
-  _
   $
   Backbone
   filesize
@@ -15,25 +13,18 @@ define [
 ) -> Backbone.View.extend
   dropzone: null
 
-  
-
   initialize: ->
-    @fetch = _.debounce(
-      () => @model.fetch
-        data:
-          documents_page: @model.page.documentsPage
-          datastore_page: @model.page.datastorePage
-          supporting_documents_page: @model.page.supportingDocumentsPage
-      , 1000)
-
-    setInterval(@fetch, 3000)
+    setInterval(
+      () => do @model.fetch
+      1000
+    )
 
     @model.on 'sync', =>
       do @render
       do @initDropzone if @dropzone == null && $('.dropzone-container').length != 0
       do $('.loading').remove
       $('.messages').hide 'fast'
-    do @fetch
+    do @model.fetch
 
     @model.on 'change', => do @render
 
@@ -72,11 +63,19 @@ define [
 
     files = @model.get('uploadFiles').datastore.documents || {}
     files = (value for own prop, value of files)
+    files.sort (left, right) ->
+      return -1 if left.name < right.name
+      return 1 if left.name > right.name
+      return 0
     for index, file of files
       checksums.push file.name + ',' + file.hash
 
     files = @model.get('uploadFiles').datastore.invalid || {}
     files = (value for own prop, value of files)
+    files.sort (left, right) ->
+      return -1 if left.name < right.name
+      return 1 if left.name > right.name
+      return 0
     for index, file of files
       checksums.push file.name + ',' + file.hash
 
@@ -170,59 +169,6 @@ define [
     m = "0#{m}" if m < 10
 
     "#{d}/#{M}/#{y} - #{h}:#{m}"
-  
-  pagination: (name, pageName) ->
-    uploadFiles = @model.get('uploadFiles')
-    pagination = uploadFiles[name].pagination
-    page = pagination.page
-    pages = Math.ceil(pagination.total / pagination.size)
-
-    width = 38
-    if page >= 10000
-      width += 40
-    else if page >= 1000
-      width += 30
-    else if page >= 100
-      width += 20
-    else if page >= 10
-      width += 10
-
-    $("#pag-#{name} .pag-current").css("width", width)
-    $("#pag-#{name} .pag-current").val(page)
-    $("#pag-#{name} .pag-current").unbind('input')
-    $("#pag-#{name} .pag-current").on('input', (evt) =>
-      value = Number(evt.target.value)
-      if value > 0 and value <= pages
-        @model.page[pageName] = value
-        do @fetch
-    )
-    
-    $("#pag-#{name} .pag-next").attr('disabled', page == pages)
-    $("#pag-#{name} .pag-next").unbind('click')
-    $("#pag-#{name} .pag-next").click(() =>
-      @model.page[pageName] = @model.page[pageName] + 1
-      @model.page[pageName] = pages if @model.page[pageName] >= pages
-
-      $("#pag-#{name} .pag-current").val(@model.page[pageName])
-      do @fetch
-    )
-
-    $("#pag-#{name} .pag-previous").attr('disabled', page == 1)
-    $("#pag-#{name} .pag-previous").unbind('click')
-    $("#pag-#{name} .pag-previous").click(() =>
-      @model.page[pageName] = @model.page[pageName] - 1
-      @model.page[pageName] = 1 if @model.page[pageName] <= 1
-
-      $("#pag-#{name} .pag-current").val(@model.page[pageName])
-      do @fetch
-    )
-
-    $("#pag-#{name} .pag-count").text("/ #{pages}")
-
-  renderPagination: () ->
-    @pagination('documents', 'documentsPage')
-    @pagination('supporting-documents', 'supportingDocumentsPage')
-    @pagination('datastore', 'datastorePage')
 
   renderFiles: ->
     uploadFiles = @model.get('uploadFiles')
@@ -231,8 +177,7 @@ define [
         filesEl.html('')
         if typeof uploadFiles[name].documents == 'undefined' && typeof uploadFiles[name].invalid == 'undefined'
             filesEl.append($("<h3 class='no-documents'>NO FILES IN #{@model.keyToName[name].toUpperCase()}</h3>"))
-        for filename in Object.keys(uploadFiles[name].invalid || {}).sort()
-            data = uploadFiles[name].invalid[filename]
+        for filename, data of uploadFiles[name].invalid
             @model.open[filename] = true if typeof @model.open[filename] == 'undefined'
             data.moving = false
             data.errorType = @model.errorType[data.type] || ''
@@ -246,8 +191,7 @@ define [
             data.open = @model.open[filename]
             row = $(DocumentUploadFileRowTemplate data)
             filesEl.append(row)
-        for filename in Object.keys(uploadFiles[name].documents || {}).sort()
-            data = uploadFiles[name].documents[filename]
+        for filename, data of uploadFiles[name].documents
             @model.open[filename] = false if typeof @model.open[filename] == 'undefined'
             data.errorType = 'valid'
             data.moving = data.type.includes('MOVING') || data.type == 'WRITING'
@@ -316,5 +260,4 @@ define [
     do @renderChecksums
     do @renderZip
     do @renderFiles
-    do @renderPagination
     do @renderModal

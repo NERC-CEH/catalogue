@@ -2,11 +2,6 @@ define [
   'backbone'
   'cs!models/EditorMetadata'
 ], (Backbone, EditorMetadata) -> EditorMetadata.extend
-  page:
-    documentsPage: 1
-    datastorePage: 1
-    supportingDocumentsPage: 1
-
   defaults:
     cancel: no
     message: off
