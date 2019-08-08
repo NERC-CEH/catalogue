@@ -226,14 +226,6 @@ public class ServiceConfig {
     public UploadDocumentService uploadDocumentService(HubbubService hubbubService) {
         Map<String, File> folders = Maps.newHashMap();
         folders.put("documents", new File("/var/ceh-catalogue/dropbox"));
-        folders.put("datastore", new File("/var/ceh-catalogue/eidchub-rw"));
-        folders.put("supporting-documents", new File("/var/ceh-catalogue/supporting-documents"));
-
-        Map<String, String> physicalLocations = Maps.newHashMap();
-        physicalLocations.put("documents", "datastore/dropbox");
-        physicalLocations.put("datastore", "datastore/eidchub");
-        physicalLocations.put("supporting-documents", "datastore/supporting-documents");
-
         return new UploadDocumentService(hubbubService, folders,  Executors.newCachedThreadPool());
     }
     
@@ -247,6 +239,14 @@ public class ServiceConfig {
 
     @Bean
     public HubbubService hubbubService() {
+        Client client = Client.create();
+        WebResource hubbub = client.resource(hubbubUrl);
+        return new HubbubService(hubbub, hubbubUsername, hubbubPassword);
+    }
+
+    @Bean
+    @SneakyThrows
+    public HubbubService hubbubServiceInescure() {
         Client client = Client.create();
         WebResource hubbub = client.resource(hubbubUrl);
         return new HubbubService(hubbub, hubbubUsername, hubbubPassword);

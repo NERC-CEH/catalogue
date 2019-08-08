@@ -9,9 +9,7 @@ services:
       - 8080
     volumes:
       - ./datastore:/var/ceh-catalogue/datastore
-      - ./supporting-documents:/var/ceh-catalogue/supporting-documents
       - ./dropbox:/var/ceh-catalogue/dropbox
-      - ./eidchub-rw:/var/ceh-catalogue/eidchub-rw
       - mapfiles:/var/ceh-catalogue/mapfiles
     environment:
       - spring.profiles.active=development
