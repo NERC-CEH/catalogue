@@ -245,14 +245,6 @@ public class ServiceConfig {
     }
 
     @Bean
-    @SneakyThrows
-    public HubbubService hubbubServiceInescure() {
-        Client client = Client.create();
-        WebResource hubbub = client.resource(hubbubUrl);
-        return new HubbubService(hubbub, hubbubUsername, hubbubPassword);
-    }
-    
-    @Bean
     public CitationService citationService() {
         return new CitationService(doiPrefix);
     }
