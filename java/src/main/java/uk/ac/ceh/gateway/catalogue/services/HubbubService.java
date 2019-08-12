@@ -75,14 +75,25 @@ public class HubbubService {
   }
 
   @SneakyThrows
-  public JsonNode get(String path, Integer page) {
+  public JsonNode get(String path, Integer page, Integer size) {
     return authenticated(() -> resource.path(path)
                    .queryParam("data", "true")
-                   .queryParam("size", "20")
+                   .queryParam("size", size.toString())
                    .queryParam("page", page.toString())
                    .accept(MediaType.APPLICATION_JSON_TYPE)
                    .header("Authorization", String.format("Bearer %s", accessToken))
                    .get(JsonNode.class));
+  }
+
+
+  @SneakyThrows
+  public JsonNode get(String path, Integer page) {
+    return get(path, page, 20);
+  }
+
+  @SneakyThrows
+  public JsonNode get(String path) {
+    return get(path, 1, 20);
   }
 
   @SneakyThrows

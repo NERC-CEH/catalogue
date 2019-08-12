@@ -14,6 +14,9 @@
                 </button>
             </div>
         </div>
-        <p class="pag-per-page">20 Files Per Page</p>
+        <p class="pag-per-page">
+            <i class="fas fa-spinner fa-spin-2x" style='visibility: hidden'></i>
+            <span>20 Files Per Page</span>
+        </p>
     </div>
 </div>
