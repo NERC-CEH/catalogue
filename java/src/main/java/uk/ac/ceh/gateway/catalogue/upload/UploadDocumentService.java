@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.upload;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
@@ -97,6 +98,22 @@ public class UploadDocumentService {
     document.getUploadFiles().put("supporting-documents", getUploadFiles("supporting-documents", id, supportingDocumentFiles, (ObjectNode) supportingDocumentRes.get("pagination")));
 
     return document;
+  }
+
+  @SneakyThrows
+  public void getCsv(PrintWriter writer, String id) {
+    val first = hubbubService.get(id);
+    val total = first.get("pagination").get("total").asInt();
+    val eidchub = (ArrayNode) hubbubService.get(String.format("/eidchub/%s", id), 1, total).get("data");
+    eidchub.forEach(item -> {
+      val status = item.get("status").asText();
+      if (status.equals("VALID")) {
+        val path = item.get("path").asText().replace(String.format("/eidchub/%s/", id), "");
+        val hash = item.get("hash").asText();
+        writer.append(String.format("%s,%s", path, hash));
+        writer.append("\n\r");
+      }
+    });
   }
 
   @SneakyThrows

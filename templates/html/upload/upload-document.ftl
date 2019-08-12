@@ -135,7 +135,7 @@
                 <div class="col-md-6"></div>
                 <div class="col-md-6 file-actions">
                     <button class="validate-all file-action btn btn-primary"><i class="btn-icon fas fa-check"></i><span>VALIDATE ALL</span></button>
-                    <a class="downloadChecksum file-action btn btn-success" href="get_checksum" download="checksums_${id}.csv"><i class="btn-icon fas fa-file-download"></i><span>DOWNLOAD CHECKSUM REPORT</span></a>
+                    <a class="downloadChecksum file-action btn btn-success" href="documents/csv/${id}" download="checksums_${id}.csv"><i class="btn-icon fas fa-file-download"></i><span>DOWNLOAD CHECKSUM REPORT</span></a>
                 </div>
             </div>
         </section>

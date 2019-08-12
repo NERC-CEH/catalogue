@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,6 +73,18 @@ public class UploadController {
   ) {
     val document = uploadDocumentService.get(id, documentsPage, datastorePage, supportingDocumentsPage);
     return ResponseEntity.ok(document);
+  }
+
+  @GetMapping("upload/documents/csv/{id}")
+  public void exportCSV(
+    @ActiveUser CatalogueUser user,
+    @PathVariable("id") String id,
+    HttpServletResponse response
+  ) throws Exception {
+    val writer = response.getWriter();
+    uploadDocumentService.getCsv(writer, id);
+    response.setContentType("text/csv");
+    response.setHeader(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"checksums_%s.csv\"", id));	
   }
 
   @RequestMapping(value = "documents/{id}/add-upload-document", method = RequestMethod.POST)

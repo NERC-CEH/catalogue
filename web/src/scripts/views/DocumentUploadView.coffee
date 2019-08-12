@@ -14,25 +14,31 @@ define [
   DropzoneFileTpl
 ) -> Backbone.View.extend
   dropzone: null
+  pollingTimeout: null
+  fetchXhr: null
 
   
 
   initialize: ->
-    @fetch = _.debounce(
-      () => @model.fetch
+    @fetch = () =>
+      clearTimeout(@pollingTimeout)
+
+      if @fetchXhr != null && @fetchXhr.readyState > 0 && @fetchXhr.readyState < 4
+        @fetchXhr.abort()
+
+      @fetchXhr = @model.fetch
         data:
           documents_page: @model.page.documentsPage
           datastore_page: @model.page.datastorePage
           supporting_documents_page: @model.page.supportingDocumentsPage
-      , 1000)
-
-    setInterval(@fetch, 3000)
 
     @model.on 'sync', =>
       do @render
       do @initDropzone if @dropzone == null && $('.dropzone-container').length != 0
       do $('.loading').remove
       $('.messages').hide 'fast'
+      $('.pag-per-page .fa-spinner').css('visibility', 'hidden')
+      @pollingTimeout = setTimeout(@fetch, 1000)
     do @fetch
 
     @model.on 'change', => do @render
@@ -66,23 +72,6 @@ define [
         el.attr('disabled', false)
       )
     )
-
-  renderChecksums: ->
-    checksums = []
-
-    files = @model.get('uploadFiles').datastore.documents || {}
-    files = (value for own prop, value of files)
-    for index, file of files
-      checksums.push file.name + ',' + file.hash
-
-    files = @model.get('uploadFiles').datastore.invalid || {}
-    files = (value for own prop, value of files)
-    for index, file of files
-      checksums.push file.name + ',' + file.hash
-
-    href = 'data:text/csv;charset=utf-8,' + encodeURI(checksums.join('\n\r'))
-
-    $('.downloadChecksum').attr('href', href)
 
   initDropzone: (url) ->
     model = @model.bind @
@@ -194,6 +183,7 @@ define [
       value = Number(evt.target.value)
       if value > 0 and value <= pages
         @model.page[pageName] = value
+        $("#pag-#{name} .pag-per-page .fa-spinner").css('visibility', 'visible')
         do @fetch
     )
     
@@ -204,6 +194,7 @@ define [
       @model.page[pageName] = pages if @model.page[pageName] >= pages
 
       $("#pag-#{name} .pag-current").val(@model.page[pageName])
+      $("#pag-#{name} .pag-per-page .fa-spinner").css('visibility', 'visible')
       do @fetch
     )
 
@@ -214,6 +205,7 @@ define [
       @model.page[pageName] = 1 if @model.page[pageName] <= 1
 
       $("#pag-#{name} .pag-current").val(@model.page[pageName])
+      $("#pag-#{name} .pag-per-page .fa-spinner").css('visibility', 'visible')
       do @fetch
     )
 
@@ -283,7 +275,6 @@ define [
             @model.open[filename] = !panel.hasClass('is-collapsed')
         )
 
-
   renderModal: ->
     modalName = @model.attributes.modal
     hidden = $('#documentUploadModal').css('display') == 'none'
@@ -313,7 +304,6 @@ define [
     @globalAction 'reschedule'
     @globalAction 'schedule'
 
-    do @renderChecksums
     do @renderZip
     do @renderFiles
     do @renderPagination
