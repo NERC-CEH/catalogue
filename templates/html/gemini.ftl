@@ -85,13 +85,21 @@
             </div>
             <div class="col-sm-8 col-sm-pull-4">
               <#include "gemini/_extent.ftl">
-              <#include "gemini/_supplemental.ftl">
               <#include "gemini/_dataquality.ftl">
+              <#include "gemini/_supplemental.ftl">
               <#include "gemini/_contacts.ftl">
-              <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
-                <#include "gemini/_spatial.ftl">
+
+              <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
+                <h3>Additional metadata</h3>
+                <dl id="otherInfo" class="dl-horizontal">
+                  <#include "gemini/_tags.ftl">
+                  <#include "gemini/_funding.ftl">
+                  <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
+                    <#include "gemini/_spatial.ftl">
+                  </#if>
+                </dl>
               </#if>
-              <#include "gemini/_tags.ftl">
+
             </div>
           </div>
           

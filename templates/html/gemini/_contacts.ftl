@@ -13,7 +13,7 @@
 
 <#if authors?size gt 0 >
   <div id="document-authors">
-  <h3 id="authors">Authors</h3>
+  <h3 id="authors">Author<#if authors?size gt 1>s</#if></h3>
 
       <#list authors>
       <#assign authorMaxSize = 30 >
