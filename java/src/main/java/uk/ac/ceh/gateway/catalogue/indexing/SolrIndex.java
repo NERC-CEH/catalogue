@@ -22,9 +22,9 @@ public class SolrIndex {
     private @Field List<String> organisation;
     private @Field List<String> individual;
     private @Field List<String> orcid;
-    private @Field List<String> onlineResourceName;
-    private @Field List<String> onlineResourceDescription;
     private @Field List<String> resourceIdentifier;
+    private @Field List<String> grant;
+    private @Field List<String> funder;
     private @Field String resourceType;
     private @Field String recordType;
     private @Field List<String> locations = new ArrayList<>();

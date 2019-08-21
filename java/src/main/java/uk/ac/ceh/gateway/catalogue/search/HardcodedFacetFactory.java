@@ -32,7 +32,14 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Record type")
                     .hierarchical(false)
                     .build();
-                
+            
+            case "funder":
+                return Facet.builder()
+                    .fieldName("funder")
+                    .displayName("Funder")
+                    .hierarchical(false)
+                    .build();
+                 
             case "licence":
                 return Facet.builder()
                     .fieldName("licence")

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
@@ -40,9 +41,10 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setOrganisation(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
             .setIndividual(grab(document.getResponsibleParties(), ResponsibleParty::getIndividualName))
             .setOrcid(grab(document.getResponsibleParties(), ResponsibleParty::getNameIdentifier))
-            .setOnlineResourceName(grab(document.getOnlineResources(), OnlineResource::getName))
-            .setOnlineResourceDescription(grab(document.getOnlineResources(), OnlineResource::getDescription))
-            .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode));
+            .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
+            .setGrant(grab(document.getFunding(), Funding::getAwardNumber))
+            .setFunder(grab(document.getFunding(), Funding::getFunderName))
+            ;
     }
 
     private String getLicence(GeminiDocument document){

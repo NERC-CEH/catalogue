@@ -190,6 +190,11 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .orElse(Collections.emptyList());
     }
 
+    public List<Funding> getFunding() {
+        return Optional.ofNullable(funding)
+            .orElse(Collections.emptyList());
+    }
+
     @Override
     public List<String> getWKTs() {
         return Optional.ofNullable(boundingBoxes)

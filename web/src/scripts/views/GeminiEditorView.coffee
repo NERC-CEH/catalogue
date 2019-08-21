@@ -574,9 +574,30 @@ define [
           label: 'Funding'
           ObjectInputView: FundingView
           predefined:
+            'BBSRC':
+              funderName: 'Biotechnology and Biological Sciences Research Council'
+              funderIdentifier: 'https://ror.org/00cwqg982'
+            'Defra':
+              funderName: 'Department for Environment Food and Rural Affairs'
+              funderIdentifier: 'https://ror.org/00tnppw48'
+            'EPSRC':
+              funderName: 'Engineering and Physical Sciences Research Council'
+              funderIdentifier: 'https://ror.org/0439y7842'
+            'ESRC':
+              funderName: 'Economic and Social Research Council'
+              funderIdentifier: 'https://ror.org/03n0ht308'
+            'Innovate UK':
+              funderName: 'Innovate UK'
+              funderIdentifier: 'https://ror.org/05ar5fy68'
+            'MRC':
+              funderName: 'Medical Research Council'
+              funderIdentifier: 'https://ror.org/03x94j517'
             'NERC':
               funderName: 'Natural Environment Research Council'
               funderIdentifier: 'https://ror.org/02b5d8509'
+            'STFC':
+              funderName: 'Science and Technology Facilities Council'
+              funderIdentifier: 'https://ror.org/057g20z61'
           helpText: """
                     <p>Include here details of any grants or awards that were used to generate this resource.</p>
                     <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
