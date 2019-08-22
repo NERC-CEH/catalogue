@@ -5,6 +5,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
+import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
@@ -44,6 +45,8 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
             .setGrant(grab(document.getFunding(), Funding::getAwardNumber))
             .setFunder(grab(document.getFunding(), Funding::getFunderName))
+            .setSupplementalName(grab(document.getSupplemental(), Supplemental::getName))
+            .setSupplementalDescription(grab(document.getSupplemental(), Supplemental::getDescription))
             ;
     }
 

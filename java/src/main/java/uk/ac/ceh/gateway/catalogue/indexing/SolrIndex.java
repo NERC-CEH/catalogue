@@ -25,6 +25,8 @@ public class SolrIndex {
     private @Field List<String> resourceIdentifier;
     private @Field List<String> grant;
     private @Field List<String> funder;
+    private @Field List<String> supplementalName;
+    private @Field List<String> supplementalDescription;
     private @Field String resourceType;
     private @Field String recordType;
     private @Field List<String> locations = new ArrayList<>();

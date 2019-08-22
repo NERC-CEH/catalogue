@@ -14,6 +14,8 @@
       <field name="orcid" type="orcid" indexed="true" stored="true" multiValued="true"/>
       <field name="grant" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="funder" type="keyword" indexed="true" stored="true" multiValued="true"/>
+      <field name="supplementalName" type="text_general" indexed="true" stored="true" multiValued="true"/>
+      <field name="supplementalDescription" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="resourceIdentifier" type="keyword" indexed="true" stored="true" multiValued="true"/>
       <field name="resourceType" type="keyword" indexed="true" stored="true" multiValued="false"/>
       <field name="recordType" type="keyword" indexed="true" stored="true" multiValued="false"/>
