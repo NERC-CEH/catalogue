@@ -8,6 +8,7 @@
 <#macro facetResults results>
   <ul>
     <#list results as facet>
+      <#if facet.name?has_content>
       <li>
         <a href="${facet.url}">${facet.name}</a> <small class="text-muted">(${facet.count})</small>
         <#if facet.active >
@@ -19,6 +20,7 @@
           <@facetResults facet.subFacetResults/>
         </#if>
       </li>
+      </#if>
     </#list>
   </ul>
 </#macro> 
