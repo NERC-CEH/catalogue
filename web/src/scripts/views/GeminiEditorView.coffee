@@ -282,6 +282,11 @@ define [
           ObjectInputView: OnlineResourceView
           multiline: true
           predefined:
+            'Data package':
+              url: 'https://data-package.ceh.ac.uk/data/{fileIdentifier}'
+              name: 'Download the data'
+              description: 'Download a copy of this data'
+              function: 'download'
             'Order manager data':
               url: 'https://catalogue.ceh.ac.uk/download?fileIdentifier={fileIdentifier}'
               name: 'Download the data'
@@ -293,13 +298,13 @@ define [
               description: 'Download a copy of this data'
               function: 'download'
             'Supporting information':
-              url: 'http://eidc.ceh.ac.uk/metadata/{fileIdentifier}/zip_export/'
+              url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip'
               name: 'Supporting information'
               description: 'Supporting information available to assist in re-use of this dataset'
               function: 'information'
           helpText: """
-                    <p>Include addresses of web services used to access the data (e.g. order manager) and supporting information.</p>
-                    <p>Other links such as project websites or related journal articles should NOT be included here. You can add them to "Additional links"</p>
+                    <p>Include addresses of web services used to access the data and supporting information.</p>
+                    <p>Other links such as project websites or papers should <b>NOT</b> be included here. You can add them to "Additional information"</p>
                     """
           disabled: disabled
         
