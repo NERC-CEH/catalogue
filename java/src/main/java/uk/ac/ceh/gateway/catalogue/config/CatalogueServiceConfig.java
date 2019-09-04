@@ -127,6 +127,7 @@ public class CatalogueServiceConfig {
                 .id("sa")
                 .title("Sample Archive")
                 .url("")
+                .facetKey("saTaxon")
                 .documentType(sampleArchive)
                 .fileUpload(false)
                 .build(),
@@ -229,7 +230,7 @@ public class CatalogueServiceConfig {
                 .facetKey("topic")
                 .facetKey("recordType")
                 .facetKey("status")
-                .facetKey("licence")
+                .facetKey("funder")
                 .documentType(gemini)
                 .documentType(dataType)
                 .fileUpload(false)

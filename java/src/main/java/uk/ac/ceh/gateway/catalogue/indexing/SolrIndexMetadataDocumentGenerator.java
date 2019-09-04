@@ -44,6 +44,8 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static final String NC_ECOSYSTEM_SERVICES_URL = "http://vocabs.ceh.ac.uk/ncterms/ecosystemService";
     public static final String NC_GEOGRAPHICAL_SCALE_URL = "http://vocabs.ceh.ac.uk/ncterms/geographical_scale";
     
+    public static final String SA_TAXON_URL = "http://vocabs.ceh.ac.uk/esb/taxon";
+    
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     private final SolrGeometryService geometryService;
@@ -62,6 +64,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setView(getViews(document))
             .setCatalogue(document.getCatalogue())
             .setDocumentType(getDocumentType(document))
+            .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
             .setImpCaMMPIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_CAMMP_ISSUES_URL), Keyword::getValue))
             .setImpDataType(grab(getKeywordsFilteredByUrlFragment(document, IMP_DATA_TYPE_URL), Keyword::getValue))
             .setImpScale(impScale(document))
@@ -77,6 +80,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setNcGeographicalScale(grab(getKeywordsByVocabulary(document, NC_GEOGRAPHICAL_SCALE_URL), Keyword::getValue))
             .setCondition(getCondition(document));
     }
+
 
     private String getCondition(MetadataDocument document) {
         if(document instanceof ErammpDatacube){

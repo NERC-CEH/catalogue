@@ -10,7 +10,7 @@ import lombok.Builder;
 @Value
 @JsonIgnoreProperties({"roleDisplayName"})
 public class ResponsibleParty {
-    private final String individualName, organisationName, role, email, nameIdentifier;
+    private final String individualName, organisationName, role, email, phone, nameIdentifier;
     private final Address address;
     
     @Builder
@@ -20,12 +20,14 @@ public class ResponsibleParty {
         @JsonProperty("organisationName") String organisationName,
         @JsonProperty("role") String role,
         @JsonProperty("email") String email,
+        @JsonProperty("phone") String phone,
         @JsonProperty("nameIdentifier") String nameIdentifier,
         @JsonProperty("address") Address address) {
         this.individualName = nullToEmpty(individualName);
         this.organisationName = nullToEmpty(organisationName);
         this.role = nullToEmpty(role);
         this.email = nullToEmpty(email);
+        this.phone = nullToEmpty(phone);
         this.nameIdentifier = nullToEmpty(nameIdentifier);
         this.address = (address == null || address.isEmpty()) ? null : address;    
     }

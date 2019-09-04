@@ -32,7 +32,14 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Record type")
                     .hierarchical(false)
                     .build();
-                
+            
+            case "funder":
+                return Facet.builder()
+                    .fieldName("funder")
+                    .displayName("Funder")
+                    .hierarchical(false)
+                    .build();
+                 
             case "licence":
                 return Facet.builder()
                     .fieldName("licence")
@@ -108,7 +115,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("modelType")
                     .displayName("Model Type")
                     .hierarchical(false)
-                    
                     .build();
 
             case "documentType":
@@ -136,8 +142,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                 return Facet.builder()
                     .fieldName("ncCaseStudy")
                     .displayName("Case Study")
-                    .hierarchical(false)
-                    
+                    .hierarchical(false)          
                     .build();
 
             case "ncDrivers":
@@ -160,6 +165,13 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Geographical Scale")
                     .hierarchical(false)
                     .build();
+
+            case "saTaxon":
+                return Facet.builder()
+                    .fieldName("saTaxon")
+                    .displayName("Taxa")
+                    .hierarchical(false)
+                    .build();                    
         }
         return null;
     }

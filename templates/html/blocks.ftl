@@ -24,7 +24,7 @@ Create a description block, replace any carridge returns with link breaks
 -->
 <#macro description value>
   <#if value?has_content>
-    <p id="document-description">${value?html?replace("\n", "<br>")}</p>
+    <div id="document-description"><@linebreaks value!"" /></div>
   </#if>
 </#macro>
 
@@ -278,8 +278,10 @@ A list of Keywords
 <#--
 Replace \n with line breaks
 -->
-<#macro linebreaks content>
-    ${content?replace("\n", "<br>")}
+<#macro linebreaks value>
+    <#if value?has_content>
+      ${value?replace("\n", "<br>")}
+    </#if> 
 </#macro>
 
 <#--
@@ -378,14 +380,31 @@ Admin functions
 -->
 <#macro admin>
   <#if permission.userCanEdit(id)>
-    <@basicRow "hidden-print pull-right">
-      <a href="#" class="edit-control" data-document-type="${metadata.documentType}">Edit</a>
-      |
-      <a href="/documents/${id}/permission">Amend permissions</a>
-      |
-      <a href="/documents/${id}/catalogue" class="catalogue-control">Move catalogues</a>
-      |
-      <a href="/documents/${id}/publication">Publication status</a>
+     
+    <#assign pubText=""/>
+    <#if metadata.state == "published">
+      <#assign pubText="Retract this "/>
+    <#elseif metadata.state == "pending">
+      <#assign pubText="Publish this "/>
+    <#else>
+      <#assign pubText="Request publication of this "/>
+    </#if>
+
+    <@basicRow "hidden-print text-right adminToolbar">
+      <a class="btn btn-default edit-control"  href="#" data-document-type="${metadata.documentType}">Edit</a>&nbsp;&nbsp;  
+      <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Admin <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right">
+          <li><a href="/documents/${id}/publication">${pubText}record</a></li>
+          <li><a href="/documents/${id}/permission">Change access permissions</a></li>
+          <li><a href="/documents/${id}/catalogue">Move catalogues</a></li>
+        </ul>
+      </div>
+
+
+
     </@basicRow>
   </#if>
 </#macro>

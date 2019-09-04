@@ -142,6 +142,22 @@
           </div>
         </#if>
 
+        <#if processingSteps??>
+          <div class="section section-schema">
+            <div class="section-heading">
+              <h2><a data-toggle="collapse" href="#steps-collapse" aria-expanded="false" aria-controls="steps-collapse">Data processing steps <span class="caret" ></span></a></h2>
+            </div>
+            <div class="section-content collapse" id="steps-collapse">
+              <#list processingSteps as step>
+                <p class="processingStep">
+                  <span>${step?index + 1}.</span>
+                  ${step.step}
+                </p>
+              </#list>            
+          </div>
+        </#if>
+
+
         <div class="section section-metadata">
           <div class="section-heading">
             <h2>Metadata</h2>

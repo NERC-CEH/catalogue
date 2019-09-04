@@ -282,6 +282,11 @@ define [
           ObjectInputView: OnlineResourceView
           multiline: true
           predefined:
+            'Data package':
+              url: 'https://data-package.ceh.ac.uk/data/{fileIdentifier}'
+              name: 'Download the data'
+              description: 'Download a copy of this data'
+              function: 'download'
             'Order manager data':
               url: 'https://catalogue.ceh.ac.uk/download?fileIdentifier={fileIdentifier}'
               name: 'Download the data'
@@ -293,13 +298,13 @@ define [
               description: 'Download a copy of this data'
               function: 'download'
             'Supporting information':
-              url: 'http://eidc.ceh.ac.uk/metadata/{fileIdentifier}/zip_export/'
+              url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip'
               name: 'Supporting information'
               description: 'Supporting information available to assist in re-use of this dataset'
               function: 'information'
           helpText: """
-                    <p>Include addresses of web services used to access the data (e.g. order manager) and supporting information.</p>
-                    <p>Other links such as project websites or related journal articles should NOT be included here. You can add them to "Additional links"</p>
+                    <p>Include addresses of web services used to access the data and supporting information.</p>
+                    <p>Other links such as project websites or papers should <b>NOT</b> be included here. You can add them to "Additional information"</p>
                     """
           disabled: disabled
         
@@ -574,9 +579,30 @@ define [
           label: 'Funding'
           ObjectInputView: FundingView
           predefined:
+            'BBSRC':
+              funderName: 'Biotechnology and Biological Sciences Research Council'
+              funderIdentifier: 'https://ror.org/00cwqg982'
+            'Defra':
+              funderName: 'Department for Environment Food and Rural Affairs'
+              funderIdentifier: 'https://ror.org/00tnppw48'
+            'EPSRC':
+              funderName: 'Engineering and Physical Sciences Research Council'
+              funderIdentifier: 'https://ror.org/0439y7842'
+            'ESRC':
+              funderName: 'Economic and Social Research Council'
+              funderIdentifier: 'https://ror.org/03n0ht308'
+            'Innovate UK':
+              funderName: 'Innovate UK'
+              funderIdentifier: 'https://ror.org/05ar5fy68'
+            'MRC':
+              funderName: 'Medical Research Council'
+              funderIdentifier: 'https://ror.org/03x94j517'
             'NERC':
               funderName: 'Natural Environment Research Council'
               funderIdentifier: 'https://ror.org/02b5d8509'
+            'STFC':
+              funderName: 'Science and Technology Facilities Council'
+              funderIdentifier: 'https://ror.org/057g20z61'
           helpText: """
                     <p>Include here details of any grants or awards that were used to generate this resource.</p>
                     <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>

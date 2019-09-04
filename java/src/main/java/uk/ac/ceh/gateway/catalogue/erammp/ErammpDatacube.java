@@ -15,7 +15,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
-import uk.ac.ceh.gateway.catalogue.model.Provenance;
+import uk.ac.ceh.gateway.catalogue.erammp.ProcessingStep;
+import uk.ac.ceh.gateway.catalogue.erammp.DataLocation;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 
@@ -32,14 +33,14 @@ import java.util.stream.Collectors;
 public class ErammpDatacube extends AbstractMetadataDocument implements WellKnownText{
   private String version, dataFormat, spatialResolution, spatialRepresentationType, condition;
   private List<BoundingBox> boundingBoxes;
-  private List<String> dataLocations;
+  private List<DataLocation> dataLocations;
   private List<ResponsibleParty> provider;
   private List<Link> resourceLocators;
   private List<SpatialReferenceSystem> spatialReferenceSystems;
   private List<ResourceConstraint> useConstraints, accessConstraints;
   private List<DataTypeSchema> schema;
-  private List<Provenance> provenance;
-  private List<Keyword> keywords;
+  private List<ProcessingStep> processingSteps;
+
 
   @Override
   public List<String> getWKTs() {

@@ -13,7 +13,11 @@
         </#if>
       </#if>
       <#if author.organisationName?has_content>
-      <affiliation>${author.organisationName}</affiliation>
+        <#if author.organisationName = "Centre for Ecology & Hydrology" || author.organisationName = "UK Centre for Ecology & Hydrology">
+          <affiliation affiliationIdentifier="https://ror.org/00pggkr55" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">${author.organisationName}</affiliation>
+        <#else>
+          <affiliation>${author.organisationName}</affiliation>
+        </#if>
       </#if>
     </creator>
     </#if>
