@@ -3,7 +3,7 @@
 		<#list children?sort_by("title")>
 			<div class="children">
 			<#items as child>
-				<#if child.associationType = 'dataset'>
+				<#if child.associationType = 'dataset' ||  child.associationType = 'nonGeographicDataset' ||  child.associationType = 'signpost'>
 					<#assign type="Dataset" icon="fas fa-table" >
 				<#elseif child.associationType = "series" || child.associationType = "collection">
 					<#assign type="Data collection" icon="far fa-clone" >
