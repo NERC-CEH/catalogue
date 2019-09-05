@@ -12,13 +12,13 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class DownloadOrderDetailsServiceTest {
-    private final String eidchub = "http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*";
+    String supportingDoc = "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*";
     private final String orderMan = "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*";
     private DownloadOrderDetailsService service;
     
     @Before
     public void init() {
-        service = new DownloadOrderDetailsService(eidchub, orderMan);
+        service = new DownloadOrderDetailsService(supportingDoc, orderMan);
     }
     
     @Test
@@ -94,7 +94,7 @@ public class DownloadOrderDetailsServiceTest {
     @Test
     public void canReadSupportingDocumentation() {
         //Given
-        String orderUrl = "http://eidc.ceh.ac.uk/metadata/docs";
+        String orderUrl = "https://data-package.ceh.ac.uk/sd/docs";
         OnlineResource onlineResource = OnlineResource.builder()
                 .function("information").url(orderUrl).build();
         List<OnlineResource> onlineResources = Arrays.asList(onlineResource);

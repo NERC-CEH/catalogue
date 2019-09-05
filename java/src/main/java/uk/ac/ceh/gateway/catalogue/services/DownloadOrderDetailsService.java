@@ -22,13 +22,13 @@ import java.util.regex.Pattern;
  * variables (That is strings are never null)
  */
 public class DownloadOrderDetailsService {
-    private final Pattern eidchub, orderManager;
+    private final Pattern supportingDoc, orderManager;
 
     public DownloadOrderDetailsService(
         String eidcPattern,
         String orderManagerPattern
     ) {
-        this.eidchub = Pattern.compile(eidcPattern);
+        this.supportingDoc = Pattern.compile(eidcPattern);
         this.orderManager = Pattern.compile(orderManagerPattern);
     }
 
@@ -50,7 +50,7 @@ public class DownloadOrderDetailsService {
             supportingDocumentsUrl = onlineResources
                     .stream()
                     .filter(r -> r.getFunction().equals("information"))
-                    .filter(r -> eidchub.matcher(r.getUrl()).matches())
+                    .filter(r -> supportingDoc.matcher(r.getUrl()).matches())
                     .map(r -> r.getUrl())
                     .findFirst().orElse(null);
             

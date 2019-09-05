@@ -401,7 +401,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
         List<ResourceConstraint> expected = Arrays.asList(
             ResourceConstraint.builder()
-                .uri("http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
+                .uri("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
                 .value("Licence terms and conditions apply")
                 .build(),
             ResourceConstraint.builder()

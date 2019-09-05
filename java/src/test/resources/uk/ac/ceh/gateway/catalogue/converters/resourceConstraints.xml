@@ -19,7 +19,7 @@
 			<gmd:resourceConstraints>
 				<gmd:MD_Constraints>
 					<gmd:useLimitation>
-						<gmx:Anchor xlink:href="http://eidchub.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain" xlink:title="Licence terms and conditions apply">Licence terms and conditions apply</gmx:Anchor>
+						<gmx:Anchor xlink:href="http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain" xlink:title="Licence terms and conditions apply">Licence terms and conditions apply</gmx:Anchor>
 					</gmd:useLimitation>
 				</gmd:MD_Constraints>
 			</gmd:resourceConstraints>
