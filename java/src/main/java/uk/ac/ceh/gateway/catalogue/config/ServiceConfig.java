@@ -456,9 +456,9 @@ public class ServiceConfig {
     
     @Bean
     public DownloadOrderDetailsService downloadOrderDetailsService() {
-        String eidchub = "http:\\/\\/eidc\\.ceh\\.ac\\.uk\\/metadata.*";
+        String supportingDoc = "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*";
         String orderMan = "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*";
-        return new DownloadOrderDetailsService(eidchub, orderMan);
+        return new DownloadOrderDetailsService(supportingDoc, orderMan);
     }
     
     @Bean

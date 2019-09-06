@@ -418,7 +418,7 @@ http://eden.ign.fr/xsd/isotc211/isofull/20090316/srv/srv.xsd" xmlns:gss="http://
 				</gmd:EX_Extent>
 			</gmd:extent>
 			<gmd:supplementalInformation>
-				<gco:CharacterString>For further information about this test record, please contact eidchub@ceh.ac.uk</gco:CharacterString>
+				<gco:CharacterString>For further information about this test record, please contact eidc@ceh.ac.uk</gco:CharacterString>
 			</gmd:supplementalInformation>
 		</gmd:MD_DataIdentification>
 	</gmd:identificationInfo>
