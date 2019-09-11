@@ -97,6 +97,9 @@
                   <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
                     <#include "gemini/_spatial.ftl">
                   </#if>
+                   <#if metadataDateTime?has_content>
+                    <dt>Last updated</dt><dd>${metadataDateTime?date}</dd>
+                   </#if>
                 </dl>
               </#if>
 
