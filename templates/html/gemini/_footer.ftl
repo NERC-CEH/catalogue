@@ -12,10 +12,7 @@
       <a href="${uri}?format=json" class="label label-default">json</a>
     </p>
   </div>
-  <#if metadataDateTime?has_content>
-    <div class="pull-right">
-      <small>Last updated ${metadataDateTime?date}</small>
-    </div>
-  </#if>
+  <div class="pull-right">
+    <a href="http://eidc.ceh.ac.uk/policies/privacy" target="_blank" rel="noopener noreferrer">Privacy notice</a>
+  </div>
 </div>
-
