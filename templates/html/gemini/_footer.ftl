@@ -13,6 +13,14 @@
     </p>
   </div>
   <div class="pull-right">
-    <a href="http://eidc.ceh.ac.uk/policies/privacy" target="_blank" rel="noopener noreferrer">Privacy notice</a>
+    <#if catalogue.id == "eidc">
+      <#assign privacy="http://eidc.ceh.ac.uk/policies/privacy" />
+    <#else>
+      <#assign privacy="https://www.ceh.ac.uk/privacy-notice" />
+    </#if>
+    <a href="${privacy}" target="_blank" rel="noopener noreferrer">Privacy notice</a>
+    <#if catalogue.id != "eidc"> | 
+      Hosted by <a href="//www.ceh.ac.uk" target="_blank" rel="noopener noreferrer">CEH</a>
+    </#if>
   </div>
 </div>
