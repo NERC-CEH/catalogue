@@ -13,6 +13,7 @@
     originators = func.filter(responsibleParties, "role", "originator")
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
+    catalogue = catalogues.retrieve(metadata.catalogue)
 >
 <#if useConstraints?has_content>
   <#assign licences = func.filter(useConstraints, "code", "license")>
@@ -31,7 +32,7 @@
     </#if>
   </#list>
 </#macro>
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
+<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
 
   <div id="metadata">
     <div class="container">
