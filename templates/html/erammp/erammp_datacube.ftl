@@ -42,7 +42,16 @@
                   </#if>
 
                   <#if dataLocations?? && dataLocations?has_content>
-                    <@simplerow "Data location"><@commaList dataLocations /></@simplerow>
+                    <@simplerow "Data location">
+                      <#list dataLocations as dataLocation>
+                          <div>
+                            <#if dataLocation.name?has_content>${dataLocation.name}<br></#if>
+                            <#if dataLocation.purpose?has_content>${dataLocation.purpose}<br></#if>
+                            <#if dataLocation.fileLocation?has_content><small>${dataLocation.fileLocation}</small></#if>
+                          </div>
+                          <sep><br></sep>
+                      </#list>
+                    </@simplerow>
                   </#if>
 
                   <#if provider?? && provider?has_content>

@@ -18,7 +18,12 @@
             <div class="onlineResourceLinks">
             <#if (downloadOrder.orderable)?? && downloadOrder.orderable>
               <#list downloadOrder.orderResources as onlineResource>
-                <div class="order"><a href="${onlineResource.url?html}"><i class="fas fa-download text-info"></i>
+                <#if onlineResource.url?starts_with("https://data-package.ceh.ac.uk/data/") && (permission.userInGroup("Gast") || permission.userInGroup("CEH"))>
+                  <#assign onlineResourceUrl = onlineResource.url + '.zip'>
+                <#else>
+                  <#assign onlineResourceUrl = onlineResource.url>                    
+                </#if>
+                <div class="order"><a href="${onlineResourceUrl}"><i class="fas fa-download text-info"></i>
                   <#if onlineResource.name?has_content>
                     ${onlineResource.name?html}
                   <#else>

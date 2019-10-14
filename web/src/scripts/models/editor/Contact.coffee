@@ -17,10 +17,14 @@ define [
     orcidRegEx = ///
       ^https?:\/\/orcid.org\/(\d{4}-){3}\d{3}[\dX]$
     ///
+    rorRegEx = ///
+      ^https?:\/\/ror.org\/\w{8,10}$
+    ///
 
     errors = []
 
     organisationName = attrs.organisationName
+    organisationIdentifier =attrs.organisationIdentifier
     role = attrs.role
     email = attrs.email
     nameIdentifier = attrs.nameIdentifier
@@ -33,12 +37,15 @@ define [
 
     isValidORCID = (id) ->
       orcidRegEx.test id
+    
+    isValidROR = (id) ->
+      rorRegEx.test id
 
     if email && !isValidEmail email
       errors.push
         message:
           "That email address is wrong"
-
+    
     if nameIdentifier && !isValidORCID nameIdentifier
       errors.push
         message:
@@ -48,6 +55,11 @@ define [
       errors.push
         message:
           "Are you using the <i>fully-qualified</i> name identifier. For example, ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X"
+  
+    if organisationIdentifier && !isValidROR organisationIdentifier
+      errors.push
+        message:
+          "If that's supposed to be an ROR, it's not quite right!"
 
     if ! organisationName || ! role
       errors.push

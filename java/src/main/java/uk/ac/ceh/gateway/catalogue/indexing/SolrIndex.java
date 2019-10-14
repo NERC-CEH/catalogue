@@ -22,6 +22,7 @@ public class SolrIndex {
     private @Field List<String> organisation;
     private @Field List<String> individual;
     private @Field List<String> orcid;
+    private @Field List<String> ror;
     private @Field List<String> resourceIdentifier;
     private @Field List<String> grant;
     private @Field List<String> funder;

@@ -56,7 +56,7 @@ public class SolrIndexGeminiDocumentGeneratorTest {
                 .uri("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain")
                 .build(),
             ResourceConstraint.builder()
-                .uri("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
+                .uri("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data/plain")
                 .build(),
             ResourceConstraint.builder()
                 .value("More use limitations")
@@ -77,7 +77,7 @@ public class SolrIndexGeminiDocumentGeneratorTest {
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUseConstraints()).thenReturn(Arrays.asList(
             ResourceConstraint.builder()
-                .uri("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data")
+                .uri("http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence-non-ceh-data/plain")
                 .build(),
             ResourceConstraint.builder()
                 .value("More use limitations")
