@@ -44,15 +44,14 @@
       <#if poc.individualName?has_content>
         a vcard:Individual ;
         vcard:n "${poc.individualName}" ;
+        <#if poc.nameIdentifier?has_content && poc.nameIdentifier?starts_with("http")> vcard:hasUID <${poc.nameIdentifier}"> ;</#if>
         <#if poc.organisationName?has_content>vcard:organization-name "${poc.organisationName}" ;</#if>
       <#else>
         a vcard:Organization ;
         vcard:fn "${poc.organisationName}" ;
+        <#if poc.organisationIdentifier?has_content && poc.organisationIdentifier?starts_with("http")> vcard:hasUID <${poc.organisationIdentifier}"> ;</#if>
       </#if>
       <#if poc.email?has_content>vcard:hasEmail "${poc.email}" ;</#if>
-      <#if poc.nameIdentifier?has_content && poc.nameIdentifier?starts_with("http")>
-        vcard:hasUID <${poc.nameIdentifier}"> ;
-      </#if>
       ]<#sep>,
     </#list>
    ;
@@ -66,8 +65,7 @@
     a vcard:Organization ;
     vcard:fn "${publisher.organisationName}" ;
     <#if publisher.email?has_content>vcard:hasEmail "${publisher.email}" ;</#if>
-    <#if publisher.nameIdentifier?has_content && publisher.nameIdentifier?starts_with("http")>
-      vcard:hasUID <${publisher.nameIdentifier}> ;
+    <#if publisher.organisationIdentifier?has_content && publisher.organisationIdentifier?starts_with("http")> vcard:hasUID <${publisher.organisationIdentifier}> ;
     </#if>
     ]<#sep>,
   </#list>
