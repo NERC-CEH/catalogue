@@ -87,6 +87,9 @@
         ,"affiliation":{
           "@type":"Organization",
           "name":"${author.organisationName}"
+          <#if author.organisationIdentifier?has_content>
+          ,"identifier":"${author.organisationIdentifier}"
+          </#if>
         }
       </#if>
       }
@@ -97,8 +100,8 @@
       <#if author.organisationName?has_content>
       ,"email": "${author.email}"
       </#if>
-      <#if author.nameIdentifier?has_content>
-      ,"identifier": "${author.nameIdentifier}"
+      <#if author.organisationIdentifier?has_content>
+      ,"identifier":"${author.organisationIdentifier}"
       </#if>
       }
     </#if>
@@ -142,18 +145,10 @@
   </#if>
 
   <#if docType == "Dataset" || docType == "SoftwareSourceCode">
-    <#if licences?has_content>
-      "license":[
-      <#list licences as licence>
-      {
-        "@type":"DigitalDocument",
-        "name": "${licence.value}"
-        <#if licence.uri?has_content>
-        ,"url":"${licence.uri}"
-        </#if>
-      }<#sep>,
-      </#list>
-      ],
+    <#if licences?? && licences?has_content>
+      <#if licences?first.uri?? && licences?first.uri?has_content>
+        "license": "${licences?first.uri}",
+      </#if>
     </#if>
 
     <#if downloads?has_content>
@@ -162,22 +157,27 @@
         {
           "@type":"DataDownload",
           "contentUrl":"${download.url}"
+          <#if download.url?ends_with(".zip")>,"encodingFormat":"application/zip"</#if>
+          <#if download.url?ends_with(".csv")>,"encodingFormat":"text/csv"</#if>
+          <#if download.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"</#if>
         }<#sep>,
         </#list>
       ],
     </#if>
-  
   <#if publishers?has_content>
     <#assign publisher = publishers?first>
     "publisher":
         {
         "@type":"Organization","name":"${publisher.organisationName}"
+        <#if publisher.organisationIdentifier?has_content>
+        ,"identifier":"${publisher.organisationIdentifier}"
+        </#if>
         <#if publisher.organisationName?has_content>
         ,"email": "${publisher.email}"
         </#if>
         },
     </#if>
-  "provider" : {"@type":"Organization","name":"NERC Environmental Data Centre"},
+  "provider" : {"@type":"Organization","name":"NERC Environmental Information Data Centre"},
   "includedInDataCatalog":{"@type":"DataCatalog", "name":"Environmental Information Data Centre", "alternatename":"EIDC", "url":"https://catalogue.ceh.ac.uk/eidc/documents"},
   </#if>
   "@context":"http://schema.org/"

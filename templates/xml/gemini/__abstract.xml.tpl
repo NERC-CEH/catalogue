@@ -14,7 +14,10 @@
             <#assign statusMsg = statusMsg + " until "+ datasetReferenceDate.releasedDate?date?string.long>
         </#if>
     </#if>
-    <#assign abstract = "[" + statusMsg + "]. " + abstract >
+    
+    <#if statusMsg?has_content >
+        <#assign abstract = "[" + statusMsg + "]. " + abstract >
+    </#if>
 </#if>
 
 <#if citation?has_content>
