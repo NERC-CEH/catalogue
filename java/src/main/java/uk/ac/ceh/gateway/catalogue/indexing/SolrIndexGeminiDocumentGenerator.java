@@ -5,6 +5,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
@@ -20,9 +21,8 @@ import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGene
  */
 @AllArgsConstructor
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
-    private static final String OGL_URL_1 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/cehOGL";
-    private static final String OGL_URL_2 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL";
-    private static final String OGL_URL_3 = "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/open-government-licence";
+    private static final String OGL_PATTERN1 = ".*open-government-licence.*\\/plain$";
+    private static final String OGL_PATTERN2 = ".*OGL.*\\/plain$";
 
 
     private final TopicIndexer topicIndexer;
@@ -42,6 +42,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setOrganisation(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
             .setIndividual(grab(document.getResponsibleParties(), ResponsibleParty::getIndividualName))
             .setOrcid(grab(document.getResponsibleParties(), ResponsibleParty::getNameIdentifier))
+            .setRor(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationIdentifier))
             .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
             .setGrant(grab(document.getFunding(), Funding::getAwardNumber))
             .setFunder(grab(document.getFunding(), Funding::getFunderName))
@@ -61,9 +62,8 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .filter(k -> !k.getUri().isEmpty())
             .anyMatch(k -> {
                 String uri = k.getUri();
-                return uri.startsWith(OGL_URL_1)
-                    || uri.startsWith(OGL_URL_2)
-                    || uri.startsWith(OGL_URL_3);  
+                return uri.matches(OGL_PATTERN1) || uri.matches(OGL_PATTERN2);  
             });
     }
+    
 }

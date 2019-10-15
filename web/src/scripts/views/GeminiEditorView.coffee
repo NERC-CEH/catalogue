@@ -164,6 +164,7 @@ define [
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'author'
               email: 'enquiries@ceh.ac.uk'
+              organisationIdentifier: 'https://ror.org/00pggkr55'
             'Author - unaffiliated':
               organisationName: 'Unaffiliated'
               role: 'author'
@@ -175,6 +176,7 @@ define [
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
+              organisationIdentifier: 'https://ror.org/00pggkr55'
               address:
                 deliveryPoint: 'Environment Centre Wales, Deiniol Road'
                 postalCode: 'LL57 2UW'
@@ -185,6 +187,7 @@ define [
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
+              organisationIdentifier: 'https://ror.org/00pggkr55'
               address:
                 deliveryPoint: 'Bush Estate'
                 postalCode: 'EH26 0QB'
@@ -195,6 +198,7 @@ define [
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
+              organisationIdentifier: 'https://ror.org/00pggkr55'
               address:
                 deliveryPoint: 'Lancaster Environment Centre, Library Avenue, Bailrigg'
                 postalCode: 'LA1 4AP'
@@ -205,6 +209,7 @@ define [
               organisationName: 'Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
+              organisationIdentifier: 'https://ror.org/00pggkr55'
               address:
                 deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
                 postalCode: 'OX10 8BB'
@@ -297,7 +302,7 @@ define [
               name: 'Download the data'
               description: 'Download a copy of this data'
               function: 'download'
-            'Supporting information':
+            'Supporting documents':
               url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip'
               name: 'Supporting information'
               description: 'Supporting information available to assist in re-use of this dataset'

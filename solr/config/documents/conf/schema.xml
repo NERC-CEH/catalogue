@@ -12,6 +12,7 @@
       <field name="organisation" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
       <field name="individual" type="keyword" indexed="true" stored="true" multiValued="true"/>
       <field name="orcid" type="orcid" indexed="true" stored="true" multiValued="true"/>
+      <field name="ror" type="ror" indexed="true" stored="true" multiValued="true"/>
       <field name="grant" type="text_general" indexed="true" stored="true" multiValued="true"/>
       <field name="funder" type="keyword" indexed="true" stored="true" multiValued="true"/>
       <field name="supplementalName" type="text_general" indexed="true" stored="true" multiValued="true"/>
@@ -69,6 +70,11 @@
         <fieldType name="orcid" class="solr.TextField" sortMissingLast="true" omitNorms="true">
             <analyzer>
                 <tokenizer class="solr.PatternTokenizerFactory" pattern="^(https?:\/\/orcid.org\/)(0000-\d{4}-\d{4}-\d{3}[\d|X])$" group="2"/>
+            </analyzer>
+        </fieldType>
+        <fieldType name="ror" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+            <analyzer>
+                <tokenizer class="solr.PatternTokenizerFactory" pattern="^(https?:\/\/ror.org\/)(\w{8,10})$" group="2"/>
             </analyzer>
         </fieldType>
         <fieldType name="keyword" class="solr.TextField" sortMissingLast="true" omitNorms="true">

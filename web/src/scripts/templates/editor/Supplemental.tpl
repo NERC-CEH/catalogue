@@ -11,7 +11,7 @@
     </optgroup>
     <optgroup label="Other">
       <option value="relatedArticle">RELATED ARTICLE. An article (or grey literature) which is relevant but which DOESN'T cite this resource</option>
-      <option value="relatedDataset">RELATED DATASET. A dataset which is related but which is NOT hosted by EIDC)/option>
+      <option value="relatedDataset">RELATED DATASET. A dataset which is related but which is NOT hosted by EIDC)</option>
       <option value="website">RELATED WEBSITE. (e.g. project website)</option>
       <option value="">Miscellaneous</option>
     </optgroup>

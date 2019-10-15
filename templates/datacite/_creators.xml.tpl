@@ -12,16 +12,19 @@
           <nameIdentifier nameIdentifierScheme="ISNI" schemeURI="http://isni.org/">${author.nameIdentifier}</nameIdentifier>
         </#if>
       </#if>
+      
       <#if author.organisationName?has_content>
-        <#if author.organisationName = "Centre for Ecology & Hydrology" || author.organisationName = "UK Centre for Ecology & Hydrology">
-          <affiliation affiliationIdentifier="https://ror.org/00pggkr55" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">${author.organisationName}</affiliation>
+        <#if author.organisationIdentifier?has_content && author.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
+           <affiliation affiliationIdentifier="${author.organisationIdentifier}" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">${author.organisationName}</affiliation>
         <#else>
           <affiliation>${author.organisationName}</affiliation>
         </#if>
       </#if>
+
     </creator>
     </#if>
   </#list>
   </creators>
 </#if>
 </#escape>
+
