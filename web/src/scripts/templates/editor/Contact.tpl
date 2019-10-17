@@ -13,6 +13,8 @@
             <option value="pointOfContact">Point Of Contact</option>
             <option value="publisher">Publisher</option>
             <option value="resourceProvider">Resource Provider</option>
+            <option value="SRP">SRP</option>
+            <option value="SRO">SRO</option>
         </optgroup>
         <!-- OTHER USERS -->
         <optgroup label="Other">
