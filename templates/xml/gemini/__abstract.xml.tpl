@@ -24,9 +24,6 @@
     <#assign abstract = abstract  + "  Full details about this " + resourceType.value + " can be found at " + citation.url >
 </#if>
 
-
-<#escape x as x?xml>
 <gmd:abstract>
     <gco:CharacterString>${abstract}</gco:CharacterString>
 </gmd:abstract>
-</#escape>

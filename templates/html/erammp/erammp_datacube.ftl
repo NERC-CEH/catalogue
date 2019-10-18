@@ -89,8 +89,8 @@
             <thead>
               <tr>
                 <th>Field</th>
-                <th>Data type</th>
                 <th>Description</th>
+                <th>Data type</th>
                 <th>Constraints</th>
               </tr>
             </thead>
@@ -106,19 +106,19 @@
                   ${schemaItem.name}
                 </#if>
               </td>
+              <td>
+                <#if schemaItem.description?? && schemaItem.description?has_content>
+                  <span class="schema-description">${schemaItem.description}</span>
+                <#else>
+                  <span class="nodata" />
+                </#if>
+              </td>
               <td nowrap="nowrap">
                 <#if schemaItem.type?? && schemaItem.type?has_content>
                     ${schemaItem.type}
                     <#if schemaItem.format?? && schemaItem.format?has_content>
                       <span class="schema-format">(${schemaItem.format})</span>
                     </#if>          
-                </#if>
-              </td>
-              <td>
-                <#if schemaItem.description?? && schemaItem.description?has_content>
-                  <span class="schema-description">${schemaItem.description}</span>
-                <#else>
-                  <span class="nodata" />
                 </#if>
               </td>
               <td>

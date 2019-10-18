@@ -1,6 +1,14 @@
 <div class="datalocation">
   <div class="row">
     <div class="col-sm-1">
+      <label for="<%= data.modelAttribute %><%= data.index %>Uid">Unique ID</label>
+    </div>
+    <div class="col-sm-11">
+      <input data-name="uid" id="<%= data.modelAttribute %><%= data.index %>Uid" class="editor-input" value="<%= data.uid %>">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-1">
       <label for="<%= data.modelAttribute %><%= data.index %>Name">Name</label>
     </div>
     <div class="col-sm-11">
