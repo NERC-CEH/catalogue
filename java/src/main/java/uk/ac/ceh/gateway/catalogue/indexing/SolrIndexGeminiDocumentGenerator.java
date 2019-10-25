@@ -1,19 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.AllArgsConstructor;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.gemini.Funding;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
-import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
+import lombok.AllArgsConstructor;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
 /**
  * Processes a GeminiDocument and populates a SolrIndex object will all of the
@@ -39,6 +37,10 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setResourceStatus(document.getResourceStatus())
             .setVersion(document.getVersion())
             .setLicence(getLicence(document))
+            .setAuthorAffiliation(grab(document.getAuthors(), ResponsibleParty::getOrganisationName))
+            .setAuthorName(grab(document.getAuthors(), ResponsibleParty::getIndividualName))
+            .setAuthorOrcid(grab(document.getAuthors(), ResponsibleParty::getNameIdentifier))
+            .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
             .setOrganisation(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
             .setIndividual(grab(document.getResponsibleParties(), ResponsibleParty::getIndividualName))
             .setOrcid(grab(document.getResponsibleParties(), ResponsibleParty::getNameIdentifier))

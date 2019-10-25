@@ -99,7 +99,7 @@
                     <#include "gemini/_spatial.ftl">
                   </#if>
                    <#if metadataDateTime?has_content>
-                    <dt>Last updated</dt><dd>${metadataDateTime?date}</dd>
+                    <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
                    </#if>
                 </dl>
               </#if>

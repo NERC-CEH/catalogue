@@ -3,29 +3,38 @@ define [
   'cs!views/editor/InputView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentView'
+  'cs!views/editor/PredefinedParentView'
   'cs!views/editor/ParentStringView'
   'cs!views/editor/KeywordView'
   'cs!views/editor/SelectView'
   'cs!views/editor/ReferenceView'
+  'cs!views/editor/ContactView'
   'cs!models/editor/Reference'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/QaView'
   'cs!views/editor/VersionHistoryView'
   'cs!views/editor/ProjectUsageView'
+  'cs!views/editor/Model_LinkView'
+  'cs!models/editor/Contact'
+
 ], (
   EditorView,
   InputView,
   TextareaView,
   ParentView,
+  PredefinedParentView,
   ParentStringView,
   KeywordView,
   SelectView,
   ReferenceView,
+  ContactView,
   Reference,
   SingleObjectView,
   QaView,
   VersionHistoryView,
-  ProjectUsageView
+  ProjectUsageView,
+  Model_LinkView,
+  Contact
 ) -> EditorView.extend
 
   initialize: ->
@@ -33,8 +42,8 @@ define [
     @model.set('type', 'model') unless @model.has('type')
 
     @sections = [
-      label: 'Basic Info'
-      title: 'Basic Info'
+      label: 'Basic info'
+      title: 'Basic info'
       views: [
 
         new InputView
@@ -47,115 +56,20 @@ define [
 
         new TextareaView
           model: @model
-          modelAttribute: 'primaryPurpose'
-          label: 'Primary purpose'
-          rows: 17
+          modelAttribute: 'description'
+          label: 'Model description'
+          rows: 7
           helpText: """
-                    <p>Short phrase to describe primary aim of model</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'website'
-          label: 'Website url'
-          helpText: """
-                    <p>Link to outward facing model website if one exists e.g. https://jules.jchmr.org/</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'seniorResponsibleOfficer'
-          label: 'Senior responsible officer'
-          helpText: """
-                    <p>Senior responsible officer for the model (this should be the person who is the primary contact for the model)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'seniorResponsibleOfficerEmail'
-          label: 'Senior responsible officer email'
-          helpText: """
-                    <p>Email address of the Senior Responsible Officer e.g. someone@ceh.ac.uk</p>
-                    """
-
-        new ParentView
-          model: @model
-          modelAttribute: 'keywords'
-          label: 'Keywords'
-          ObjectInputView: KeywordView
-          helpText: """
-                    <p>5-10 keywords for model discovery e.g. rainfall; species distribution; nitrogen deposition; global circulation model</p>
-                    """
-
-        new SelectView
-          model: @model
-          modelAttribute: 'licenseType'
-          label: 'License'
-          options: [
-            {value: 'unknown', label: 'Unknown'},
-            {value: 'open', label: 'Open'},
-            {value: 'non-open', label: 'Non-open'}
-          ]
-          helpText: """
-                    <p>License type (open or non-open) under which the model is distributed</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'codeRepositoryUrl'
-          label: 'Code repository url'
-          helpText: """
-                    <p>Location of code repository e.g. https://github.com/NERC-CEH/Spatial-Upscaling-model.</p>
-                    <p>This does not need to be accessible by others but is to demonstrate that the model is under version control.</p>
-                    <p>If your model is not currently under version control and you are unsure about how to achieve this please talk to your Informatics Liaison representative.</p>
-                    <p>CEH currently supports version control primarily with git.</p>
-                    """
-
-      ]
-    ,
-      label: 'References'
-      title: 'References'
-      views: [
-        new ParentView
-          model: @model
-          ModelType: Reference
-          modelAttribute: 'references'
-          label: 'References'
-          ObjectInputView: ReferenceView
-          multiline: true
-          helpText: """
-                    <p>Citation - Add publication citations here</p>
-                    <p>DOI - DOI link for the citation e.g. https://doi.org/10.1111/journal-id.1882</p>
-                    <p>NORA - NORA links of the citation e.g. http://nora.nerc.ac.uk/513147/</p>
-                    """
-      ]
-    ,
-      label: 'Model Description'
-      title: 'Model Description'
-      views: [
-        new ParentStringView
-          model: @model
-          modelAttribute: 'keyInputVariables'
-          label: 'Key input variables'
-          helpText: """
-                    <p>Short phrases to describe basic types of model inputs e.g. rainfall; temperature; land use; atmospheric deposition</p>
-                    """
-
-        new ParentStringView
-          model: @model
-          modelAttribute: 'keyOutputVariables'
-          label: 'Key output variables'
-          helpText: """
-                    <p>Short phrases to describe basic types of model outputs e.g. nutrient runoff; deposition time series; species occurrence</p>
+                    <p>Longer description of model e.g. development history, use to answer science questions, overview of structure</p>
                     """
 
         new TextareaView
           model: @model
-          modelAttribute: 'description'
-          label: 'Model description'
-          rows: 17
+          modelAttribute: 'primaryPurpose'
+          label: 'Primary purpose'
+          rows: 7
           helpText: """
-                    <p>Longer description of model e.g. development history, use to answer science questions, overview of structure</p>
+                    <p>Short phrase to describe primary aim of model</p>
                     """
 
         new SelectView
@@ -185,9 +99,80 @@ define [
           modelAttribute: 'releaseDate'
           typeAttribute: 'date'
           label: 'Release date'
+          placeholderAttribute: 'yyyy-mm-dd'
           helpText: """
-                    <p>Date of release of current model version (if applicable) e.g. 2012-02-17</p>
+                    <p>Date of release of current model version (if applicable)</p>
                     """
+
+        new PredefinedParentView
+          model: @model
+          ModelType: Contact
+          modelAttribute: 'responsibleParties'
+          label: 'Contacts'
+          ObjectInputView: ContactView
+          multiline: true
+          predefined:
+            'SRO - CEH':
+              organisationName: 'UK Centre for Ecology & Hydrology'
+              role: 'owner'
+              organisationIdentifier: 'https://ror.org/00pggkr55'
+          helpText: """
+                    <p>Must include one <b>Senior responsible officer</b> (the person who is the "owner" and primary contact for the model)</p>
+                    """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'keywords'
+          label: 'Keywords'
+          ObjectInputView: KeywordView
+          helpText: """
+                    <p>5-10 keywords for model discovery e.g. rainfall; species distribution; nitrogen deposition; global circulation model</p>
+                    """
+        
+        new ParentView
+          model: @model
+          modelAttribute: 'resourceLocators'
+          label: 'resourceLocators'
+          ObjectInputView: Model_LinkView
+          multiline: true
+          helpText: """
+                    <p>You should include the location of the model code repository e.g. https://github.com/NERC-CEH/...</p>
+                    <p><b>If your model is not currently under version control and you are unsure about how to achieve this please talk to your Informatics Liaison representative.</b></p>
+                    """
+
+        new SelectView
+          model: @model
+          modelAttribute: 'licenseType'
+          label: 'License'
+          options: [
+            {value: 'unknown', label: 'Unknown'},
+            {value: 'open', label: 'Open'},
+            {value: 'non-open', label: 'Non-open'}
+          ]
+          helpText: """
+                    <p>License type (open or non-open) under which the model is distributed</p>
+                    """
+      ]
+    ,
+      label: 'Input/Output variables'
+      title: 'Input and output variables'
+      views: [
+        new ParentStringView
+          model: @model
+          modelAttribute: 'keyInputVariables'
+          label: 'Key input variables'
+          helpText: """
+                    <p>Short phrases to describe basic types of model inputs e.g. rainfall; temperature; land use; atmospheric deposition</p>
+                    """
+
+        new ParentStringView
+          model: @model
+          modelAttribute: 'keyOutputVariables'
+          label: 'Key output variables'
+          helpText: """
+                    <p>Short phrases to describe basic types of model outputs e.g. nutrient runoff; deposition time series; species occurrence</p>
+                    """
+
 
         new TextareaView
           model: @model
@@ -199,8 +184,8 @@ define [
                     """
       ]
     ,
-      label: 'Spatio-Temporal Info'
-      title: 'Spatio-Temporal Info'
+      label: 'Spatio-temporal Info'
+      title: 'Spatio-temporal Info'
       views: [
         new InputView
           model: @model
@@ -235,8 +220,8 @@ define [
                     """
       ]
     ,
-      label: 'Technical Info'
-      title: 'Technical Info'
+      label: 'Technical info'
+      title: 'Technical info'
       views: [
         new InputView
           model: @model
@@ -276,8 +261,8 @@ define [
           label: 'Documentation url'
       ]
     ,
-      label: 'QA Info'
-      title: 'QA Info'
+      label: 'QA'
+      title: 'Quality assurance'
       views: [
         new SingleObjectView
           model: @model
@@ -361,8 +346,25 @@ define [
                     """
       ]
     ,
-      label: 'Version Control History'
-      title: 'Version Control History'
+      label: 'References'
+      title: 'References'
+      views: [
+        new ParentView
+          model: @model
+          ModelType: Reference
+          modelAttribute: 'references'
+          label: 'References'
+          ObjectInputView: ReferenceView
+          multiline: true
+          helpText: """
+                    <p>Citation - Add publication citations here</p>
+                    <p>DOI - DOI link for the citation e.g. https://doi.org/10.1111/journal-id.1882</p>
+                    <p>NORA - NORA links of the citation e.g. http://nora.nerc.ac.uk/513147/</p>
+                    """
+      ]
+    ,
+      label: 'Version control'
+      title: 'Version control history'
       views: [
         new ParentView
           model: @model
@@ -375,8 +377,8 @@ define [
                     """
       ]
     ,
-      label: 'Project Usage'
-      title: 'Project Usage'
+      label: 'Project use'
+      title: 'Project use'
       views: [
         new ParentView
           model: @model

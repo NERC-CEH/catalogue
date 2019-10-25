@@ -20,7 +20,7 @@
     </#if>
     <a href="${privacy}" target="_blank" rel="noopener noreferrer">Privacy notice</a>
     <#if catalogue.id != "eidc"> | 
-      Hosted by <a href="//www.ceh.ac.uk" target="_blank" rel="noopener noreferrer">CEH</a>
+      Hosted by <a href="//www.ceh.ac.uk" target="_blank" rel="noopener noreferrer">UKCEH</a>
     </#if>
   </div>
 </div>

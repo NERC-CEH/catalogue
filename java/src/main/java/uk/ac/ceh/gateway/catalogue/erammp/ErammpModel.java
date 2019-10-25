@@ -12,8 +12,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Link;
-import uk.ac.ceh.gateway.catalogue.erammp.ErammpModelInput;
-import uk.ac.ceh.gateway.catalogue.erammp.ErammpModelOutput;
+import uk.ac.ceh.gateway.catalogue.erammp.ErammpModelParameters;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.Collections;
@@ -35,8 +34,8 @@ public class ErammpModel extends AbstractMetadataDocument implements WellKnownTe
   private List<String> outputFormats, sectors, programmingLanguages, operatingSystems, timeSteps;
   private List<ResponsibleParty> contacts;
   private List<Link> resourceLocators;
-  private List<ErammpModelInput> inputs;
-  private List<ErammpModelOutput> outputs;
+  private List<ErammpModelParameters> inputs;
+  private List<ErammpModelParameters> outputs;
   private boolean spatiallyExplicit, calibratedForWales;
 
   @Override

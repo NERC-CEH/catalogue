@@ -9,6 +9,10 @@
       <field name="lineage" type="text_general" indexed="true" stored="true" multiValued="false"/>
       <field name="resourceStatus" type="keyword" indexed="true" stored="true" multiValued="false"/>
       <field name="version" type="float" indexed="true" stored="true" multiValued="false" default="1"/>
+      <field name="authorAffiliation" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
+      <field name="authorName" type="keyword" indexed="true" stored="true" multiValued="true"/>
+      <field name="authorOrcid" type="orcid" indexed="true" stored="true" multiValued="true"/>
+      <field name="authorRor" type="ror" indexed="true" stored="true" multiValued="true"/>
       <field name="organisation" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
       <field name="individual" type="keyword" indexed="true" stored="true" multiValued="true"/>
       <field name="orcid" type="orcid" indexed="true" stored="true" multiValued="true"/>

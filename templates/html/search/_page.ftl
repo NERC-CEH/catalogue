@@ -15,10 +15,14 @@
         <#if (result.condition??) >
           <span class="label-${result.condition}">${result.condition}</span>
         </#if>
+        <#if (result.documentType?? && result.documentType == "LINK_DOCUMENT") >
+          <i class="fas fa-link"></i> Linked 
+        </#if>
         <span>${result.recordType!""}</span>
         <#if (result.resourceStatus??) >
           <span class="label-${result.resourceStatus}">${result.resourceStatus}</span>
         </#if>
+             
         <#if (result.state == 'draft' || result.state == 'pending') >
           <span class="text-${result.state}"><b>${codes.lookup('publication.state', result.state)?upper_case!''}</b> </span>
         </#if>

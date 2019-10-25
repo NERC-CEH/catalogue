@@ -1,13 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.modelceh;
 
+import java.util.List;
+
+import org.springframework.http.MediaType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-
-import java.util.List;
+import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -17,10 +20,10 @@ import java.util.List;
 public class CehModel extends AbstractMetadataDocument {
     private String 
         primaryPurpose,
+        seniorResponsibleOfficer,  //
+        seniorResponsibleOfficerEmail, //
+        licenseType, //
         website,
-        seniorResponsibleOfficer, 
-        seniorResponsibleOfficerEmail,
-        licenseType,
         codeRepositoryUrl,
         modelType,
         currentModelVersion,
@@ -41,6 +44,8 @@ public class CehModel extends AbstractMetadataDocument {
         keyInputVariables,
         keyOutputVariables;
     
+    private List<Link> resourceLocators;
+
     private List<Reference> references;
     
     private QualityAssurance
@@ -55,7 +60,7 @@ public class CehModel extends AbstractMetadataDocument {
         periodicReview;
     
     private List<VersionHistory> versionHistories;
-        
+    private List<ResponsibleParty> responsibleParties;
     private List<ProjectUsage> projectUsages;
     
     @Data

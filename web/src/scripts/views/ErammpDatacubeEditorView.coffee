@@ -81,8 +81,8 @@ define [
 					predefined:
 						'ADAS':
 							organisationName: 'ADAS'
-						'CEH':
-							organisationName: 'Centre for Ecology & Hydrology'
+						'UKCEH':
+							organisationName: 'UK Centre for Ecology & Hydrology'
 						'Cranfield':
 							organisationName: 'Cranfield'
 						'Forest Research':

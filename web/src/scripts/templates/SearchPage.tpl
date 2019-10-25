@@ -1,4 +1,4 @@
-<% /*
+s<% /*
  This underscore template generates the search results client side.
 
  IMPORTANT: If you change the structure of this, please update the 
@@ -15,11 +15,14 @@
       <% if (result.condition != '') {  %>
         <span class="label-<%=result.condition%>"><%=result.condition%></span>
       <% } %>
+      <% if (result.documentType != '' && result.documentType == "LINK_DOCUMENT") {  %>
+       <i class="fas fa-link"></i> Linked 
+      <% } %>
         <span><%=result.recordType%></span>
       <% if (result.resourceStatus != '') {  %>
         <span class="label-<%=result.resourceStatus%>"><%=result.resourceStatus%></span>
       <% } %>
-      <% if(result.state == 'draft') { %>
+      <% if(result.state == 'draft') { %>sdf
         <span class="text-draft"><b>DRAFT</b></span>
       <% } else if(result.state == 'pending') { %>
         <span class="text-pending"><b>PENDING PUBLICATION</b></span>

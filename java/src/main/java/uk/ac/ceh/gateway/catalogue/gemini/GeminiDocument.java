@@ -1,12 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_SCHEMAORG_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_TTL_VALUE;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.springframework.http.MediaType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
@@ -14,12 +29,6 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
-import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
 @Data 
 @EqualsAndHashCode(callSuper = true)
@@ -189,6 +198,15 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return Optional.ofNullable(responsibleParties)
             .orElse(Collections.emptyList());
     }
+
+    public List<ResponsibleParty> getAuthors() {
+        return Optional.ofNullable(responsibleParties)
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter((authors) -> authors.getRole().equalsIgnoreCase("author"))
+            .collect(Collectors.toList());
+    }
+
 
     public List<Funding> getFunding() {
         return Optional.ofNullable(funding)

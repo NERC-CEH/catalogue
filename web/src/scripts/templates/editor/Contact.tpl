@@ -13,7 +13,7 @@
             <option value="pointOfContact">Point Of contact</option>
             <option value="publisher">Publisher</option>
             <option value="resourceProvider">Resource provider</option>
-            <option value="modelSRO">Senior responsible owner (model SRO)</option>
+            <option value="owner">Senior Responsible Officer [SRO]</option>
         </optgroup>
         <!-- OTHER USERS -->
         <optgroup label="Other">
@@ -24,7 +24,6 @@
             <option value="funder">Funder</option>
             <option value="mediator">Mediator</option>
             <option value="originator">Originator</option>
-            <option value="owner">Owner</option>
             <option value="principalInvestigator">Principal investigator</option>
             <option value="processor">Processor</option>
             <option value="rightsHolder">Rights holder</option>
