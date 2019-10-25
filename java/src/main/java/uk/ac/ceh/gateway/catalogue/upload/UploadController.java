@@ -192,7 +192,7 @@ public class UploadController {
   }
 
   private String jql(String guid) {
-    String jqlTemplate = "project=eidchelp and component='data transfer' and labels=%s";
+    String jqlTemplate = "project=eidchelp and component='data transfer' and cf[13250]=%s";
     return String.format(jqlTemplate, guid);
   }
 
