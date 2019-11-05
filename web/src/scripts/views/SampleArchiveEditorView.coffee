@@ -26,8 +26,8 @@ define [
   'cs!views/editor/SaSpecimenTypeView'
   'cs!views/editor/SaTissueView'
   'cs!views/editor/PointOfContactView'
-  'cs!views/editor/LinkView'
-], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, PointOfContact, TopicCategory, SaTaxa, SaPhysicalState, SaSpecimenType, SaTissue, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, SaTaxaView, SaPhysicalStateView, SaSpecimenTypeView, SaTissueView, PointOfContactView, LinkView) -> EditorView.extend
+  'cs!views/editor/OnlineLinkView'
+], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, PointOfContact, TopicCategory, SaTaxa, SaPhysicalState, SaSpecimenType, SaTissue, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, SaTaxaView, SaPhysicalStateView, SaSpecimenTypeView, SaTissueView, PointOfContactView, OnlineLinkView) -> EditorView.extend
 
   initialize: ->
     @model.set('type', 'sampleArchive') unless @model.has('type')
@@ -198,22 +198,16 @@ define [
         
         new ParentView
           model: @model
-          modelAttribute: 'resourceLocators'
+          modelAttribute: 'onlineResources'
           label: 'Additional Resources'
-          ObjectInputView: LinkView
+          ObjectInputView: OnlineLinkView
+          listAttribute: """
+                    <option value='Website' />
+                    <option value='browseGraphic' />
+                    """
           helpText: """
                     <p>A list of websites that may be of use to the user</p>
                     """
-        
-        new ParentView
-          model: @model
-          modelAttribute: 'browseGraphic'
-          label: 'Logo/graphic'
-          ObjectInputView: LinkView
-          helpText: """
-                    <p>(optional) A publicly accessible to a logo or image that will be displayed on the record</p>
-                    """
-
      
      ]
     ,

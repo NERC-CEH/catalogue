@@ -3,8 +3,8 @@
 </#if>
 
 <#if doc.supplemental?has_content>
-  <#assign referencedBy = func.filter(doc.supplemental, "type", "isReferencedBy")>
-  <#assign supplementTo = func.filter(doc.supplemental, "type", "IsSupplementTo")>
+  <#assign referencedBy = func.filter(doc.supplemental, "function", "isReferencedBy")>
+  <#assign supplementTo = func.filter(doc.supplemental, "function", "IsSupplementTo")>
 </#if>
 
 <#if doc.revisionOfIdentifier?has_content || infoResources?has_content || referencedBy?has_content>

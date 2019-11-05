@@ -19,9 +19,9 @@
   <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
 <#if supplemental?has_content>
-  <#assign referencedBy = func.filter(supplemental, "type", "isReferencedBy")>
-  <#assign supplementTo = func.filter(supplemental, "type", "isSupplementTo")>
-  <#assign supOther = func.filter(supplemental, "type", "website") + func.filter(supplemental, "type", "") + func.filter(supplemental, "type", "relatedArticle") + func.filter(supplemental, "type", "relatedDataset")>
+  <#assign referencedBy = func.filter(supplemental, "function", "isReferencedBy")>
+  <#assign supplementTo = func.filter(supplemental, "function", "isSupplementTo")>
+  <#assign supOther = func.filter(supplemental, "function", "website") + func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")>
 </#if>
 
 <#macro getLabel val array>

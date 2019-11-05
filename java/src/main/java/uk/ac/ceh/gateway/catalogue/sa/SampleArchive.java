@@ -12,7 +12,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.Collections;
@@ -33,7 +33,7 @@ public class SampleArchive extends AbstractMetadataDocument implements WellKnown
   private TimePeriod temporalExtent;
   private List<BoundingBox> boundingBoxes;
   private List<ResponsibleParty> archiveLocations, archiveContacts, metadataContacts;
-  private List<Link> resourceLocators, browseGraphic;
+  private List<OnlineLink> onlineResources;
 
   @Override
   public List<String> getWKTs() {

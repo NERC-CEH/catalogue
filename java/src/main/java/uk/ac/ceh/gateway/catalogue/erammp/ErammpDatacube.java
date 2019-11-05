@@ -12,7 +12,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
-import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.erammp.ProcessingStep;
 import uk.ac.ceh.gateway.catalogue.erammp.DataLocation;
@@ -33,7 +33,7 @@ public class ErammpDatacube extends AbstractMetadataDocument implements WellKnow
   private List<BoundingBox> boundingBoxes;
   private List<DataLocation> dataLocations;
   private List<ResponsibleParty> provider;
-  private List<Link> resourceLocators;
+  private List<OnlineLink> onlineResources;
   private List<SpatialReferenceSystem> spatialReferenceSystems;
   private List<ResourceConstraint> useConstraints, accessConstraints;
   private List<DataTypeSchema> schema;

@@ -1,157 +1,249 @@
 <#import "skeleton.ftl" as skeleton>
 <#import "blocks.ftl" as b>
+<#import "../functions.tpl" as func>
 
+<!-- MACROS
+<#macro key key alt="" auto_esc=false>
+  <@b.basicRow "key-value">
+    <@keyContent key alt>
+      <#nested>
+    </@keyContent>
+  </@b.basicRow>
+</#macro>
+
+<#macro keyContent key alt>
+  <div class="col-sm-3 key">
+    <div class="key-name" title="${alt}">
+      ${key}
+    </div>
+  </div>
+  <div class="col-sm-9 value">
+    <#nested>
+  </div>
+</#macro>
+
+<#macro Url value newWindow=false>
+  <#if value?matches("^http(s)?://.*")>
+    <#if newWindow==true>
+      <a href="${value}" target="_blank" rel="noopener noreferrer">${value}</a>
+    <#else>
+      <a href="${value}">${value}</a>
+    </#if>
+  </#if>
+</#macro>
+
+<#macro commaList values>
+  <#list values>
+    <#items as value>
+      ${value}<sep>, </sep>
+    </#items>
+  </#list>
+</#macro>
+-->
+<#if responsibleParties?? && responsibleParties?has_content>
+  <#assign
+    SRO = func.filter(responsibleParties, "role", "owner")
+    otherContacts = func.filter(responsibleParties, "role", "owner", true)
+  >
+</#if>
+<#if onlineResources?? && onlineResources?has_content>
+  <#assign
+    image = func.filter(onlineResources, "function", "browseGraphic")
+    otherLinks = func.filter(onlineResources, "function", "browseGraphic", true)
+  >
+</#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
+
   <@b.metadataContainer "ceh-model">
-    <@b.admin />
+
+    <#if permission.userCanEdit(id)>
+    <div class="row hidden-print" id="adminPanel">
+        <div class="text-right" id="adminToolbar" role="toolbar">
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-default btn-wide edit-control"  data-document-type="${metadata.documentType}">Edit</button>
+            <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li><a href="/documents/${id?html}/permission"><i class="fas fa-users"></i> Permissions</a></li>
+              <li><a href="/documents/${id?html}/publication"><i class="fas fa-eye"></i> Publication status</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="/documents/${id?html}/catalogue" class="catalogue-control"><i class="fas fa-sign-out-alt"></i> Move to a different catalogue</a></li>
+            </ul>
+            </#if>
+          </div>
+        </div>
+    </div>
+    </#if>
 
       <#if title?? && title?has_content>
         <h1>${title}</h1>
       </#if>
 
-    <#if title?? || primaryPurpose?? || website?? || seniorResponsibleOfficer?? || organisations?? || keywords?? || licenseType?? || codeRepositoryUrl??>
-    <section>
-      <#if title?? && title?has_content>
-        <@b.key "Model name" "Name of the model">${title}</@b.key>
-      </#if>
-      <#if primaryPurpose?? && primaryPurpose?has_content>
-        <@b.key "Primary purpose" "Short phrase to describe primary aim of model">
-          <#noescape>
-            <@b.linebreaks primaryPurpose />
-          </#noescape>
-        </@b.key>
-      </#if>
-      <#if website?? && website?has_content>
-        <@b.key "Website" "Link to outward facing model website if one exists"><@b.bareUrl website /></@b.key>
-      </#if>
-      <#if seniorResponsibleOfficer??>
-        <@b.key "Senior Responsible Officer" "Senior responsible officer for the model (this should be the person who is the primary contact for the model)">
-          <#if seniorResponsibleOfficer?has_content>
-            ${seniorResponsibleOfficer}
-          </#if>
-          <#if seniorResponsibleOfficerEmail?? && seniorResponsibleOfficerEmail?has_content>
-            (${seniorResponsibleOfficerEmail})
-          </#if>
-        </@b.key>
-      </#if>
-      <#if organisations?? && organisations?has_content>
-        <@b.key "Organisations involved" "Organisations involved in model development"><@b.bareList organisations /></@b.key>
-      </#if>
-      <#if keywords?? && keywords?has_content>
-        <@b.key "Keywords" "Keywords for model discovery"><@b.keywords keywords/></@b.key>
-      </#if>
-      <#if licenseType?? && licenseType?has_content>
-        <@b.key "License" "License type (open or non-open) under which the model is distributed">${licenseType?cap_first}</@b.key>
-      </#if>
-      <#if codeRepositoryUrl?? && codeRepositoryUrl?has_content>
-        <@b.key "Code repository url" "Link to code version control repository. May be access controlled."><@b.bareUrl codeRepositoryUrl /></@b.key>
-      </#if>
-     </section>
-     </#if>
-
-    <#if keyInputVariables?? || keyOutputVariables?? || description?? || modelType?? || currentModelVersion?? || modelCalibration??>
-    <section>
-      <@b.sectionHeading>Model Description</@b.sectionHeading>
-      <#if keyInputVariables?? && keyInputVariables?has_content>
-        <@b.key "Key input variables" "Short phrases to describe basic types of model inputs"><@b.bareList keyInputVariables /></@b.key>
-      </#if>
-      <#if keyOutputVariables?? && keyOutputVariables?has_content>
-        <@b.key "Key output variables" "Short phrases to describe basic types of model outputs"><@b.bareList keyOutputVariables /></@b.key>
-      </#if>
       <#if description?? && description?has_content>
-        <@b.key "Model description" "Longer description of model e.g. development history, use to answer science questions, overview of structure">
-          <#noescape>
+        <#noescape>
+          <div class="description clearfix">
+            <#if image?? && image?has_content>
+              <#if image?first.url?matches("^http(|s)://.+(jpg|jpeg|gif|png)$")>
+                <img src="${image?first.url}" alt="${image?first.name}" class="browseGraphic" />
+              </#if>
+            </#if>
             <@b.linebreaks description />
-          </#noescape>
-        </@b.key>
+          </div>
+        </#noescape>
       </#if>
-      <#if modelType?? && modelType?has_content>
-        <@b.key "Model type" "Type which best fits model">${modelType?cap_first}</@b.key>
+
+      <#if primaryPurpose?? || SRO??|| otherContacts?? || licenseType?? || onlineResources??>
+      <section>
+        <#if primaryPurpose?? && primaryPurpose?has_content>
+          <@key "Primary purpose">
+            <#noescape>
+              <@b.linebreaks primaryPurpose />
+            </#noescape>
+          </@key>
+        </#if>
+
+        <#if otherLinks?? && otherLinks?has_content>
+          <@key "Web links">
+            <#list otherLinks as otherLink>
+              <p>
+                <#if otherLink.function?? && otherLink.function?has_content>
+                  ${otherLink.function?cap_first}: 
+                </#if>
+                <#if otherLink.url?? && otherLink.url?has_content>
+                  <@Url otherLink.url true/>
+                </#if>
+              </p>
+            </#list>
+          </@key>
+        </#if>
+
+        <#noescape>
+        <#if SRO?? && SRO?has_content>
+          <@key "Senior responsible officer">
+            <#list SRO as SRO>
+            ${func.displayContact(SRO, true, true, false)}
+            </#list>
+          </@key>
+        </#if>
+        <#if otherContacts?? && otherContacts?has_content>
+          <@key "Other contacts">
+          <#list otherContacts as otherContact>
+            <dt>${otherContact.roleDisplayName?html}</dt>
+            <dd>
+              <div class="responsibleParty">      
+                ${func.displayContact(otherContact, true, true, false)}
+              </div>
+            </dd>
+            </#list>
+          </@key>
+        </#if>
+        </#noescape>
+
+        <#if licenseType?? && licenseType?has_content>
+          <@key "License" "License type (open or non-open) under which the model is distributed">${licenseType?cap_first}</@key>
+        </#if>
+      </section>
       </#if>
-      <#if currentModelVersion?? && currentModelVersion?has_content>
-        <@b.key "Current model version" "Most recent release version">
-          ${currentModelVersion}
-          <#if releaseDate?? && releaseDate?has_content>
-          (${releaseDate})
-          </#if>
-        </@b.key>
+
+      <#if keyInputVariables?? || keyOutputVariables?? || description?? || modelType?? || currentModelVersion?? || modelCalibration??>
+      <section>
+        <h2>Model Description</h2>
+        <#if keyInputVariables?? && keyInputVariables?has_content>
+          <@key "Key input variables" "Short phrases to describe basic types of model inputs"><@commaList keyInputVariables /></@key>
+        </#if>
+        <#if keyOutputVariables?? && keyOutputVariables?has_content>
+          <@key "Key output variables" "Short phrases to describe basic types of model outputs"><@commaList keyOutputVariables /></@key>
+        </#if>
+        <#if modelType?? && modelType?has_content>
+          <@key "Model type" "Type which best fits model">${modelType?cap_first}</@key>
+        </#if>
+        <#if currentModelVersion?? && currentModelVersion?has_content>
+          <@key "Current model version" "Most recent release version">
+            ${currentModelVersion}
+            <#if releaseDate?? && releaseDate?has_content>
+            (${releaseDate})
+            </#if>
+          </@key>
+        </#if>
+        <#if modelCalibration?? && modelCalibration?has_content>
+          <@key "Model calibration" "Does the model need calibration before running? If so, what needs to be supplied to do this?">${modelCalibration}</@key>
+        </#if>
+      </section>
       </#if>
-      <#if modelCalibration?? && modelCalibration?has_content>
-        <@b.key "Model calibration" "Does the model need calibration before running? If so, what needs to be supplied to do this?">${modelCalibration}</@b.key>
-      </#if>
-    </section>
-    </#if>
 
     <#if spatialDomain?? || spatialResolution?? || temporalResolutionMin?? || temporalResolutionMax??>
     <section>
-      <@b.sectionHeading>Spatio-Temporal Information</@b.sectionHeading>
+      <h2>Spatio-Temporal Information</h2>
       <#if spatialDomain?? && spatialDomain?has_content>
-        <@b.key "Spatial domain" "Is the model only applicable to certain areas?">${spatialDomain}</@b.key>
+        <@key "Spatial domain" "Is the model only applicable to certain areas?">${spatialDomain}</@key>
       </#if>
       <#if spatialResolution?? && spatialResolution?has_content>
-        <@b.key "Spatial resolution" "Spatial resolution at which model works or at which model outputs are generated">${spatialResolution}</@b.key>
+        <@key "Spatial resolution" "Spatial resolution at which model works or at which model outputs are generated">${spatialResolution}</@key>
       </#if>
       <#if temporalResolutionMin?? && temporalResolutionMin?has_content>
-        <@b.key "Temporal resolution (min)" "Minimum time step supported by the model">${temporalResolutionMin}</@b.key>
+        <@key "Temporal resolution (min)" "Minimum time step supported by the model">${temporalResolutionMin}</@key>
       </#if>
       <#if temporalResolutionMax?? && temporalResolutionMax?has_content>
-        <@b.key "Temporal resolution (max)" "Maximum time step supported by the model ">${temporalResolutionMax}</@b.key>
+        <@key "Temporal resolution (max)" "Maximum time step supported by the model ">${temporalResolutionMax}</@key>
       </#if>
     </section>
     </#if>
 
     <#if language?? || compiler?? || operatingSystem?? || systemMemory?? || documentation??>
     <section>
-      <@b.sectionHeading>Technical Information</@b.sectionHeading>
+      <h2>Technical Information</h2>
       <#if language?? && language?has_content>
-        <@b.key "Language" "Computing language in which the model is written">${language}</@b.key>
+        <@key "Language" "Computing language in which the model is written">${language}</@key>
       </#if>
       <#if compiler?? && compiler?has_content>
-        <@b.key "Compiler" "Compiled required">${compiler}</@b.key>
+        <@key "Compiler" "Compiled required">${compiler}</@key>
       </#if>
       <#if operatingSystem?? && operatingSystem?has_content>
-        <@b.key "Operating system" "Operating system typically used to run the model">${operatingSystem}</@b.key>
+        <@key "Operating system" "Operating system typically used to run the model">${operatingSystem}</@key>
       </#if>
       <#if systemMemory?? && systemMemory?has_content>
-        <@b.key "System memory" "Memory required to run code">${systemMemory}</@b.key>
+        <@key "System memory" "Memory required to run code">${systemMemory}</@key>
       </#if>
       <#if documentation?? && documentation?has_content>
-        <@b.key "Documentation" "Location of technical documentation for the model"><@b.bareUrl documentation /></@b.key>
+        <@key "Documentation" "Location of technical documentation for the model"><@bareUrl documentation /></@key>
       </#if>
     </section>
     </#if>
 
     <section>
-      <@b.sectionHeading>QA Information</@b.sectionHeading>
-      <@b.key "Developer testing" "Use of a range of developer tools including parallel build and analytical review or sense check"><@b.qa developerTesting /></@b.key>
-      <@b.key "Internal peer review" "Obtaining a critical evaluation from a third party independent of the development of the model but from within the same organisation"><@b.qa internalPeerReview /></@b.key>
-      <@b.key "External peer review" "Formal or informationrmal engagement of a third party to conduct critical evaluation from outside the organisation in which the model is being developed"><@b.qa externalPeerReview /></@b.key>
-      <@b.key "Internal model audit" "Formal audit of a model within the organisation, perhaps involving use of internal audit functions"><@b.qa internalModelAudit /></@b.key>
-      <@b.key "External model audit" "Formal engagement of external professional to conduct a critical evaluation of the model, perhaps involving audit professionals;"><@b.qa externalModelAudit /></@b.key>
-      <@b.key "Quality assurance guidelines and checklists" "Model development refers to department’s guidance or other documented QA processes (e.g. third party publications)"><@b.qa qaGuidelinesAndChecklists /></@b.key>
-      <@b.key "Governance" "At least one of planning, design and/or sign-off of model for use is referred to a more senior person.  There is a clear line of accountability for the model"><@b.qa governance /></@b.key>
-      <@b.key "Transparency" "Model is placed in the wider domain for scrutiny, and/or results are published"><@b.qa transparency /></@b.key>
-      <@b.key "Periodic review" "Model is reviewed at intervals to ensure it remains fit for the intended purpose, if used on an ongoing basis"><@b.qa periodicReview /></@b.key>
+      <h2>QA Information</h2>
+      <@key "Developer testing" "Use of a range of developer tools including parallel build and analytical review or sense check"><@b.qa developerTesting /></@key>
+      <@key "Internal peer review" "Obtaining a critical evaluation from a third party independent of the development of the model but from within the same organisation"><@b.qa internalPeerReview /></@key>
+      <@key "External peer review" "Formal or informationrmal engagement of a third party to conduct critical evaluation from outside the organisation in which the model is being developed"><@b.qa externalPeerReview /></@key>
+      <@key "Internal model audit" "Formal audit of a model within the organisation, perhaps involving use of internal audit functions"><@b.qa internalModelAudit /></@key>
+      <@key "External model audit" "Formal engagement of external professional to conduct a critical evaluation of the model, perhaps involving audit professionals;"><@b.qa externalModelAudit /></@key>
+      <@key "Quality assurance guidelines and checklists" "Model development refers to department’s guidance or other documented QA processes (e.g. third party publications)"><@b.qa qaGuidelinesAndChecklists /></@key>
+      <@key "Governance" "At least one of planning, design and/or sign-off of model for use is referred to a more senior person.  There is a clear line of accountability for the model"><@b.qa governance /></@key>
+      <@key "Transparency" "Model is placed in the wider domain for scrutiny, and/or results are published"><@b.qa transparency /></@key>
+      <@key "Periodic review" "Model is reviewed at intervals to ensure it remains fit for the intended purpose, if used on an ongoing basis"><@b.qa periodicReview /></@key>
       <#if versionHistories?? && versionHistories?has_content>
-        <@b.sectionHeading>Version control change notes</@b.sectionHeading>
+        <h2>Version control change notes</h2>
         <#list versionHistories as history>
           <@b.versionHistory history /> 
         </#list>
       </#if>
       <#assign modelApplications=jena.modelApplications(uri)/>
       <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
-        <@b.sectionHeading>Project usage</@b.sectionHeading>
+        <h2>Project usage</h2>
         <#if projectUsages?? && projectUsages?has_content>
           <#list projectUsages as usage>
             <@b.projectUsage usage />    
           </#list>
         </#if>
         <#list modelApplications>
-          <@b.key "Model Applications" "Applications of the model">
+          <@key "Model Applications" "Applications of the model">
             <#items as md>
               <@b.blockUrl md/>
             </#items>
-          </@b.key>   
+          </@key>   
         </#list>
       </#if>
     </section>
@@ -159,17 +251,53 @@
 
     <#if references?? && references?has_content>
     <section>
-      <@b.sectionHeading>References</@b.sectionHeading>
+      <h2>References</h2>
+
       <#list references as ref>
-        <@b.reference ref />
+      <@b.repeatRow>
+        <#if ref.citation?? && ref.citation?has_content>
+          <span class="reference-citation">${ref.citation}</span>
+        </#if>
+        <#if ref.doi?? && ref.doi?has_content>
+          <span class="reference-doi"><@Url ref.doi true/></span>
+        </#if>
+        <#if ref.nora?? && ref.nora?has_content>
+          <span class="reference-nora">${ref.nora}</span>
+        </#if>
+      </@b.repeatRow>
       </#list>
     </section>
     </#if>
     
     <#if metadataDate?? && metadataDate?has_content>
     <section>
-      <@b.sectionHeading>Metadata</@b.sectionHeading>
-      <@b.key "Metadata Date" "Date metadata last updated">${metadataDateTime}</@b.key>
+      <h2>Additional metadata</h2>
+       
+      <#if keywords?? && keywords?has_content>
+      <@key "Keywords">
+        <#list keywords>
+          <#items as keyword>
+            <#if keyword.uri?? && keyword.uri?has_content>
+              <a href="${keyword.uri}">
+                <#if keyword.value?? && keyword.value?has_content>
+                  ${keyword.value}
+                <#else>
+                    ${keyword.uri}
+                </#if>
+              </a>
+            <#elseif keyword.value?? && keyword.value?has_content>
+              ${keyword.value}
+            <#else>
+              <span class="text-muted">empty</span>
+            </#if>
+            <#sep>, </#sep>
+          </#items>
+          </#list>
+      </@key>
+      </#if>
+
+      <@key "Last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@key>
+
     </section>
     </#if>
   </@b.metadataContainer>

@@ -94,7 +94,7 @@
   </div>
 </div>
 
-<datalist id="typeList">
+<datalist id="typeList"><!-- -->
   <option value="boolean">True or false</option>
   <option value="date">Date (without time)</option>
   <option value="datetime">Date AND time</option>

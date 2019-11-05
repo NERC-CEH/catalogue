@@ -1,4 +1,4 @@
-s<% /*
+<% /*
  This underscore template generates the search results client side.
 
  IMPORTANT: If you change the structure of this, please update the 

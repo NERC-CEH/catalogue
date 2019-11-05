@@ -1,5 +1,5 @@
 <#import "../skeleton.ftl" as skeleton>
-<#assign issues=jira.search("project%3Deidchelp%20and%20component%3D%27data%20transfer%27%20and%20labels%3D" + id)>
+<#assign issues=jira.search("project%3Deidchelp%20and%20component%3D%27data%20transfer%27%20and%20cf%5B13250%5D%3D" + id)>
 <#assign open=issues?size == 1 && issues[0].status == 'open'>
 <#assign scheduled=issues?size == 1 && issues[0].status == 'scheduled'>
 <#assign inProgress=issues?size == 1 && issues[0].status == 'in progress'>

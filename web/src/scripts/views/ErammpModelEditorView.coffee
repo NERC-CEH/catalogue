@@ -15,11 +15,11 @@ define [
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/SingleView'
   'cs!views/editor/ContactView'
-  'cs!views/editor/LinkView'
+  'cs!views/editor/OnlineLinkView'
   'cs!views/editor/ErammpModelInputView'
   'cs!views/editor/ErammpModelOutputView'
   'cs!views/editor/ReadOnlyView'
-], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, ContactView, LinkView, ErammpModelInputView, ErammpModelOutputView, ReadOnlyView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, ContactView, OnlineLinkView, ErammpModelInputView, ErammpModelOutputView, ReadOnlyView) -> EditorView.extend
 
   initialize: ->
     @model.set('type', 'erammpModel') unless @model.has('type')
@@ -272,9 +272,9 @@ define [
 
         new ParentView
           model: @model
-          modelAttribute: 'resourceLocators'
+          modelAttribute: 'onlineResources'
           label: 'Additional Resources'
-          ObjectInputView: LinkView
+          ObjectInputView: OnlineLinkView
           helpText: """
                     <p>A list of links to additional resources that may be of use to the user. These are in the form of name: url pairs.</p>
                     """

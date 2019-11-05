@@ -15,6 +15,6 @@
     <label for="projectUsage<%= data.index %>Date">Date</label>
   </div>
   <div class="col-sm-2 col-lg-2">
-    <input data-name="date" id="projectUsage<%= data.index %>Date" class="editor-input" value="<%= data.date %>">
+    <input data-name="date" type="date" id="projectUsage<%= data.index %>Date" class="editor-input" value="<%= data.date %>">
   </div>
 </div>
