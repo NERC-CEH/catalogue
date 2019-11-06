@@ -174,9 +174,20 @@
       </section>
       </#if>
 
-    <#if spatialDomain?? || spatialResolution?? || temporalResolutionMin?? || temporalResolutionMax??>
+    <#if spatialDomain?? || spatialResolution?? || temporalResolutionMin?? || temporalResolutionMax?? || boundingBoxes??>
     <section>
       <h2>Spatio-Temporal Information</h2>
+
+      <#if boundingBoxes?has_content>
+        <@key "Spatial extent">
+          <div id="studyarea-map">
+            <#list boundingBoxes as extent>
+              <span content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
+            </#list>
+          </div>
+        </@key>
+      </#if>
+
       <#if spatialDomain?? && spatialDomain?has_content>
         <@key "Spatial domain" "Is the model only applicable to certain areas?">${spatialDomain}</@key>
       </#if>

@@ -22,7 +22,7 @@
       <% if (result.resourceStatus != '') {  %>
         <span class="label-<%=result.resourceStatus%>"><%=result.resourceStatus%></span>
       <% } %>
-      <% if(result.state == 'draft') { %>sdf
+      <% if(result.state == 'draft') { %>
         <span class="text-draft"><b>DRAFT</b></span>
       <% } else if(result.state == 'pending') { %>
         <span class="text-pending"><b>PENDING PUBLICATION</b></span>
