@@ -1,26 +1,36 @@
 package uk.ac.ceh.gateway.catalogue.modelceh;
 
+import java.util.List;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+
+import org.springframework.http.MediaType;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-
-import java.util.List;
+import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
     @Template(called="html/ceh-model.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
-public class CehModel extends AbstractMetadataDocument {
+public class CehModel extends AbstractMetadataDocument implements WellKnownText {
     private String 
         primaryPurpose,
-        website,
         seniorResponsibleOfficer, 
-        seniorResponsibleOfficerEmail,
+        seniorResponsibleOfficerEmail, 
         licenseType,
+        website,
         codeRepositoryUrl,
         modelType,
         currentModelVersion,
@@ -36,11 +46,19 @@ public class CehModel extends AbstractMetadataDocument {
         documentation,
         releaseDate;
     
+    private List<BoundingBox> boundingBoxes;
+
+    private List<DataTypeSchema>
+        inputVariables,
+        outputVariables;
+
     private List<String>
         organisations,
         keyInputVariables,
         keyOutputVariables;
     
+    private List<OnlineLink> onlineResources;
+
     private List<Reference> references;
     
     private QualityAssurance
@@ -55,7 +73,7 @@ public class CehModel extends AbstractMetadataDocument {
         periodicReview;
     
     private List<VersionHistory> versionHistories;
-        
+    private List<ResponsibleParty> responsibleParties;
     private List<ProjectUsage> projectUsages;
     
     @Data
@@ -90,5 +108,14 @@ public class CehModel extends AbstractMetadataDocument {
             project,
             version,
             date;
+    }
+
+    @Override
+    public List<String> getWKTs() {
+        return Optional.ofNullable(boundingBoxes)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(BoundingBox::getWkt)
+            .collect(Collectors.toList());
     }
 }

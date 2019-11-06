@@ -25,5 +25,5 @@
 </#if>
 
 <gmd:abstract>
-    <gco:CharacterString>${abstract}</gco:CharacterString>
+    <gco:CharacterString><#escape x as x?xml>${abstract}</#escape></gco:CharacterString>
 </gmd:abstract>

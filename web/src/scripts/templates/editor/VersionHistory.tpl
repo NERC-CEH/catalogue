@@ -9,7 +9,7 @@
     <label for="versionHistory<%= data.index %>Date">Date</label>
   </div>
   <div class="col-sm-4 col-lg-4">
-    <input data-name="date" id="versionHistory<%= data.index %>Date" class="editor-input" value="<%= data.date %>">
+    <input data-name="date" type="date" id="versionHistory<%= data.index %>Date" class="editor-input" value="<%= data.date %>">
   </div>
 </div>
 <div class="row">

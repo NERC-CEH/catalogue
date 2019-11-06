@@ -106,7 +106,7 @@ define [
           modelAttribute: 'contactName'
           label: 'Contact name'
           helpText: """
-                    <p>Name of CEH PI/project representative</p>
+                    <p>Name of UKCEH PI/project representative</p>
                     """
 
         new InputView
@@ -114,7 +114,7 @@ define [
           modelAttribute: 'contactEmail'
           label: 'Contact email'
           helpText: """
-                    <p>Email of CEH PI/project representative e.g. someone@ceh.ac.uk</p>
+                    <p>Email of UKCEH PI/project representative e.g. someone@ceh.ac.uk</p>
                     """
 
         new TextareaView

@@ -7,5 +7,5 @@ define [
 
   render: ->
     ObjectInputView.prototype.render.apply @
-    @$('select.type').val @model.get 'type'
+    @$('select.function').val @model.get 'function'
     @

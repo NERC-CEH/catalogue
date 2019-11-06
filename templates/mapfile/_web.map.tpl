@@ -18,7 +18,7 @@ WEB
     "wms_contactorganization"          "Environmental Information Data Centre"
     "wms_contactposition"              "pointOfContact"
     "wms_addresstype"                  "Postal"
-    "wms_address"                      "Centre for Ecology & Hydrology, Lancaster Environment Centre, Library Avenue, Bailrigg"
+    "wms_address"                      "UK Centre for Ecology & Hydrology, Lancaster Environment Centre, Library Avenue, Bailrigg"
     "wms_city"                         "Lancaster"
     "wms_stateorprovince"              "Lancashire"
     "wms_postcode"                     "LA1 4AP"

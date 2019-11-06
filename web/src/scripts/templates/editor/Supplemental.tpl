@@ -1,9 +1,9 @@
 <div class="row">
   <div class="col-sm-2">
-    <label class="control-label" for="supplemental<%= data.index %>Type">Type</label>
+    <label class="control-label" for="supplemental<%= data.index %>Function">Type</label>
   </div>
   <div class="col-sm-10">
-    <select data-name="type" class="editor-input type" id="supplemental<%= data.index %>Type">
+    <select data-name="function" class="editor-input function" id="supplemental<%= data.index %>Function">
     <option value="" selected>-- Choose one --</option>
     <optgroup label="Citation">
       <option value="isReferencedBy">REFERENCED IN. The data is referenced/cited in this article.</option>

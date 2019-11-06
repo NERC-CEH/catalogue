@@ -89,10 +89,10 @@
                   <th>Name</th>
                   <th>Definition</th>
                   <th>Unit</th>
-              erammp-metadata  </tr>
-            </erammp-metadatathead>
-            <terammp-metadatabody>
-              erammp-metadata<#list inputs as input>
+                </tr>
+            </thead>
+            <tbody>
+              <#list inputs as input>
                 <tr>
                   <td><#if input.externalName?has_content>${input.externalName}</#if></td>
                   <td><#if input.definition?has_content>${input.definition}</#if></td>

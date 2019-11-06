@@ -16,6 +16,14 @@
 </div>
 <div class="row">
   <div class="col-sm-3">
+    <label for="<%= data.datatype %><%= data.index %>Datatype">Data type</label>
+  </div>
+  <div class="col-sm-9">
+    <input data-name="datatype" id="<%= data.modelAttribute %><%= data.index %>Datatype" class="editor-input" value="<%= data.datatype %>">
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-3">
     <label for="<%= data.modelAttribute %><%= data.index %>Unit">Unit</label>
   </div>
   <div class="col-sm-9">

@@ -20,14 +20,14 @@ define [
 	'cs!views/editor/SingleView'
 	'cs!views/editor/SelectView'
 	'cs!views/editor/PointOfContactView'
-	'cs!views/editor/LinkView'
+	'cs!views/editor/OnlineLinkView'
 	'cs!views/editor/DataTypeSchemaView'
 	'cs!models/editor/DataTypeSchema'
 	'cs!views/editor/ProcessingStepView'
 	'cs!views/editor/DataLocationView'
 	'cs!views/editor/ReadOnlyView'
 
-], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, ResourceConstraintView, SpatialReferenceSystemView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, SelectView, PointOfContactView, LinkView, DataTypeSchemaView, DataTypeSchema, ProcessingStepView, DataLocationView, ReadOnlyView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, KeywordView, CheckboxView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, ResourceConstraintView, SpatialReferenceSystemView, BoundingBox, PointOfContact, MultipleDate, BoundingBoxView, SingleObjectView, SingleView, SelectView, PointOfContactView, OnlineLinkView, DataTypeSchemaView, DataTypeSchema, ProcessingStepView, DataLocationView, ReadOnlyView) -> EditorView.extend
 
 	initialize: ->
 		@model.set('type', 'erammpDatacube') unless @model.has('type')
@@ -81,8 +81,8 @@ define [
 					predefined:
 						'ADAS':
 							organisationName: 'ADAS'
-						'CEH':
-							organisationName: 'Centre for Ecology & Hydrology'
+						'UKCEH':
+							organisationName: 'UK Centre for Ecology & Hydrology'
 						'Cranfield':
 							organisationName: 'Cranfield'
 						'Forest Research':
@@ -275,9 +275,9 @@ define [
 
 				new ParentView
 					model: @model
-					modelAttribute: 'resourceLocators'
+					modelAttribute: 'onlineResources'
 					label: 'Additional links'
-					ObjectInputView: LinkView
+					ObjectInputView: OnlineLinkView
 					helpText: """
 					          <p>A list of links to additional resources that may be of use to the user.</p>
 					          """

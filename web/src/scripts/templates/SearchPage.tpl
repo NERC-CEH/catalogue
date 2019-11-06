@@ -15,6 +15,9 @@
       <% if (result.condition != '') {  %>
         <span class="label-<%=result.condition%>"><%=result.condition%></span>
       <% } %>
+      <% if (result.documentType != '' && result.documentType == "LINK_DOCUMENT") {  %>
+       <i class="fas fa-link"></i> Linked 
+      <% } %>
         <span><%=result.recordType%></span>
       <% if (result.resourceStatus != '') {  %>
         <span class="label-<%=result.resourceStatus%>"><%=result.resourceStatus%></span>

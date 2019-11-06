@@ -1,12 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.google.common.base.Strings;
-import lombok.Data;
-import lombok.experimental.Accessors;
-import org.apache.solr.client.solrj.beans.Field;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.base.Strings;
+
+import org.apache.solr.client.solrj.beans.Field;
+
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain=true)
@@ -19,6 +21,10 @@ public class SolrIndex {
     private @Field String lineage;
     private @Field String resourceStatus;
     private @Field Number version;
+    private @Field List<String> authorAffiliation;
+    private @Field List<String> authorName;
+    private @Field List<String> authorOrcid;
+    private @Field List<String> authorRor;
     private @Field List<String> organisation;
     private @Field List<String> individual;
     private @Field List<String> orcid;

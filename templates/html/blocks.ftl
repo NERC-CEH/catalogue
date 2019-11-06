@@ -110,31 +110,7 @@ A repeated row
   </@basicRow>
 </#macro>
 
-<#--
-A CEH Model reference
--->
-<#macro reference ref>
-  <@repeatRow>
-    <#if ref.citation?? && ref.citation?has_content>
-      <@basicRow>
-        <@keyContent "Citation" "Publication citation">${ref.citation}</@keyContent>
-      </@basicRow>
-    </#if>
-    <#if ref.doi?? && ref.doi?has_content>
-      <@basicRow>
-        <@keyContent "DOI" "DOI link for the citation"><@bareUrl ref.doi /></@keyContent>
-      </@basicRow>
-    </#if>
-    <#if ref.nora?? && ref.nora?has_content>
-      <@basicRow>
-        <@keyContent "NORA" "NORA link for the citation"><@bareUrl ref.nora /></@keyContent>
-      </@basicRow>
-    </#if>
-  </@repeatRow>
-</#macro>
-
-<#--
-A CEH Model Application model info
+ A CEH Model Application model info
 -->
 <#macro modelInfo modelInfo>
   <@repeatRow>

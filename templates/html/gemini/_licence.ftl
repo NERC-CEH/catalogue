@@ -9,7 +9,7 @@
       </#if>
 
 
-        <#if licence.uri?has_content><a href="${licence.uri}"></#if>
+        <#if licence.uri?has_content><a rel="license" href="${licence.uri}"></#if>
           ${licenceText?replace("resource",recordType)?html}
           <#if licenceText?contains("Open Government Licence")>
             <img class="ogl-logo" src='/static/img/ogl_16.png' alt='OGL'>

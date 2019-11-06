@@ -2,6 +2,13 @@
 <#import "../blocks.ftl" as b>
 <#import "/../../functions.tpl" as func>
 
+<#if onlineResources?? && onlineResources?has_content>
+  <#assign
+    image = func.filter(onlineResources, "function", "browseGraphic")
+    otherLinks = func.filter(onlineResources, "function", "browseGraphic", true)
+  >
+</#if>
+
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
   <@b.metadataContainer "sample-archive">
     <@b.admin />
@@ -9,10 +16,9 @@
     <section>
       <#if title?? && title?has_content><h1>${title}</h1></#if>
       
-      <#if browseGraphic?? && browseGraphic?has_content>
-        <#assign logo = browseGraphic?first>
-        <#if logo.href?matches("^.+(jpg|jpeg|gif|png)$")>
-        <img src="${logo.href}" alt="${logo.title}" class="browseGraphic" />
+      <#if image?? && image?has_content>
+        <#if image?first.url?matches("^.+(jpg|jpeg|gif|png)$")>
+          <img src="${image?first.url}" alt="${image?first.name}" class="browseGraphic" />
         </#if>
       </#if>
 
@@ -108,13 +114,13 @@
       </@key>
     </#if>
 
-    <#if resourceLocators?? && resourceLocators?has_content>
+    <#if onlineResources?? && onlineResources?has_content>
       <@key "Further information">
-        <#list resourceLocators as resourceLocator>
-          <div><a href="${resourceLocator.href}" target="_blank" rel="noopener noreferrer">${resourceLocator.title}</a></div>
+        <#list onlineResources as onlineResource>
+          <div><a href="${onlineResource.url}" target="_blank" rel="noopener noreferrer">${onlineResource.name}</a></div>
         </#list>
       </@key>
-    </#if>
+    </#if> 
 
     <section class="record-metadata">
       <#if metadataContacts?? && metadataContacts?has_content>
