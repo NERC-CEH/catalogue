@@ -200,7 +200,7 @@ public class CatalogueServiceConfig {
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
                 .documentType(link)
-                .fileUpload(false)
+                .fileUpload(true)
                 .build(),
 
             Catalogue.builder()
