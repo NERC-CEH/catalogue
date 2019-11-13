@@ -1,4 +1,4 @@
-FROM tomcat:8.5.31-jre8
+FROM tomcat:8.5.47-jdk8-openjdk
 LABEL maintainer="oss@ceh.ac.uk"
 
 RUN rm -Rf /usr/local/tomcat/webapps/*
