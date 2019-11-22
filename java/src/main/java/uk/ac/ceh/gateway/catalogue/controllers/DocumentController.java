@@ -39,18 +39,23 @@ public class DocumentController extends AbstractDocumentController {
     public DocumentController(DocumentRepository documentRepository) {
         super(documentRepository);
     }
-    
-    @RequestMapping (value = "id/{id}",
-                     method = RequestMethod.GET)
-    public RedirectView redirectToResource(
-            @PathVariable("id") String id,
-            HttpServletRequest request
-    ) {
+
+    @GetMapping("id/{id}.xml")
+    public RedirectView redirectXmlToResource(@PathVariable String id, HttpServletRequest request) {
+        return redirect(id + ".xml", request);
+    }
+
+    @GetMapping("id/{id}")
+    public RedirectView redirectToResource(@PathVariable String id, HttpServletRequest request) {
+        return redirect(id, request);
+    }
+
+    private RedirectView redirect(String path, HttpServletRequest request) {
         UriComponentsBuilder url = ServletUriComponentsBuilder
-                                            .fromRequest(request)
-                                            .scheme("https")
-                                            .replacePath("documents/{id}");
-        RedirectView toReturn = new RedirectView(url.buildAndExpand(id).toUriString());
+            .fromRequest(request)
+            .scheme("https")
+            .replacePath("documents/{path}");
+        RedirectView toReturn = new RedirectView(url.buildAndExpand(path).toUriString());
         toReturn.setStatusCode(HttpStatus.SEE_OTHER);
         return toReturn;
     }

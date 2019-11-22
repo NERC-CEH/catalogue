@@ -1,18 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +19,18 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 public class DocumentControllerTest {
     
     @Mock DocumentRepository documentRepository;
@@ -39,6 +41,22 @@ public class DocumentControllerTest {
     public void initMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
         controller = new DocumentController(documentRepository);
+    }
+
+    @Test
+    public void checkItCanRewriteIdToDocumentWithFileExtension() {
+        //Given
+        String id = "M3tADATA_ID";
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setServerName("hostname");
+        request.setPathInfo("id/" + id + ".xml");
+        request.setQueryString("query=string");
+
+        //When
+        RedirectView view = controller.redirectXmlToResource(id, request);
+
+        //Then
+        assertThat(view.getUrl(), equalTo("https://hostname/documents/M3tADATA_ID.xml?query=string"));
     }
     
     @Test
