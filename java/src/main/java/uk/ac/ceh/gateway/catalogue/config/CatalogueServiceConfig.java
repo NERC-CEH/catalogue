@@ -215,8 +215,8 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id("ceh")
-                .title("Centre for Ecology & Hydrology")
-                .url("https://eip.ceh.ac.uk")
+                .title("UK Centre for Ecology & Hydrology")
+                .url("https://www.ceh.ac.uk")
                 .facetKey("topic")
                 .facetKey("resourceType")
                 .facetKey("licence")
@@ -267,7 +267,7 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id("inlicensed")
-                .title("CEH In-licensed Datasets")
+                .title("UKCEH In-licensed Datasets")
                 .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
                 .facetKey("resourceType")
                 .documentType(gemini)

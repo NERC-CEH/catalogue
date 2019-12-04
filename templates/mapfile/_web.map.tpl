@@ -15,7 +15,7 @@ WEB
     "wms_keywordlist_vocabulary"       "ISO"
     "wms_keywordlist_ISO_items"        "infoMapAccessService"
     "wms_contactperson"                ""
-    "wms_contactorganization"          "Environmental Information Data Centre"
+    "wms_contactorganization"          "NERC Environmental Information Data Centre"
     "wms_contactposition"              "pointOfContact"
     "wms_addresstype"                  "Postal"
     "wms_address"                      "UK Centre for Ecology & Hydrology, Lancaster Environment Centre, Library Avenue, Bailrigg"

@@ -10,9 +10,10 @@
             <option value="custodian">Custodian</option>
             <option value="depositor">Depositor</option>
             <option value="distributor">Distributor</option>
-            <option value="pointOfContact">Point Of contact</option>
+            <option value="pointOfContact">Point of contact</option>
             <option value="publisher">Publisher</option>
             <option value="resourceProvider">Resource provider</option>
+            <option value="rightsHolder">Rights holder</option>
             <option value="owner">Senior Responsible Officer [SRO]</option>
         </optgroup>
         <!-- OTHER USERS -->

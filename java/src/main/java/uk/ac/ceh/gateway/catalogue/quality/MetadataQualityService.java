@@ -393,7 +393,7 @@ public class MetadataQualityService {
             typeRefStringString
         );
         distributors.stream()
-            .filter(distributor -> fieldNotEqual(distributor, "organisationName", "Environmental Information Data Centre"))
+            .filter(distributor -> fieldNotEqual(distributor, "organisationName", "NERC Environmental Information Data Centre"))
             .map(distributor -> distributor.getOrDefault("organisationName", "unknown"))
             .forEach(organisationName -> toReturn.add(new MetadataCheck("Distributor name is " + organisationName, INFO)));
 
@@ -449,7 +449,7 @@ public class MetadataQualityService {
             toReturn.add(new MetadataCheck("Custodian email address is missing", ERROR));
         }
         custodians.stream()
-            .filter(custodian -> fieldNotEqual(custodian, "organisationName", "Environmental Information Data Centre"))
+            .filter(custodian -> fieldNotEqual(custodian, "organisationName", "NERC Environmental Information Data Centre"))
             .map(custodian -> custodian.getOrDefault("organisationName", "unknown"))
             .forEach(organisationName -> toReturn.add(new MetadataCheck("Custodian name is " + organisationName, INFO)));
 
