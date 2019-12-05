@@ -334,7 +334,7 @@ Please "VALIDATE" this file then resolve any new errors
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) ->
-        do window.location.reload
+        window.location.href = '/documents/' + @id
       error: (err) ->
         console.error('error', err)
     }
