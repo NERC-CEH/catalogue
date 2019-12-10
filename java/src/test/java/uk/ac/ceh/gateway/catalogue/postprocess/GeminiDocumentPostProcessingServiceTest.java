@@ -98,6 +98,7 @@ public class GeminiDocumentPostProcessingServiceTest {
                 .associationType("person")
                 .title("Baby")
                 .href("http://doc1")
+                .rel("http://purl.org/dc/terms/isPartOf")
                 .build()));
     }
     
@@ -122,6 +123,7 @@ public class GeminiDocumentPostProcessingServiceTest {
                 .associationType("CITY")
                 .title("Big City")
                 .href("http://man")
+                .rel("http://purl.org/dc/terms/relation")
                 .build()));
     }
        
@@ -146,6 +148,7 @@ public class GeminiDocumentPostProcessingServiceTest {
                 .associationType("TOWN")
                 .title("Town")
                 .href("http://altrincham")
+                .rel("http://purl.org/dc/terms/relation")
                 .build()));
     }
     
@@ -170,6 +173,7 @@ public class GeminiDocumentPostProcessingServiceTest {
                 .associationType("model")
                 .title("Model")
                 .href("http://model")
+                .rel("http://purl.org/dc/terms/references")
                 .build()));
     }
 }

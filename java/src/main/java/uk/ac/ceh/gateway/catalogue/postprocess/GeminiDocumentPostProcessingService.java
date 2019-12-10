@@ -79,13 +79,14 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     
     private Set<Link> findLinksWhere(String identifier, ParameterizedSparqlString pss, Property rel) {
         pss.setIri("me", identifier);
-        pss.setParam("rel", rel);
+//        pss.setParam("rel", rel);
         Set<Link> toReturn = new HashSet<>();
         try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
             qexec.execSelect().forEachRemaining(s -> {
               toReturn.add(Link.builder()
                       .associationType(s.getLiteral("type").getString())
                       .href(s.getResource("node").getURI())
+                      .rel(s.getResource("rel").getURI())
                       .title(s.getLiteral("title").getString())
                       .build());
             });
@@ -107,7 +108,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
      */
     private ParameterizedSparqlString has() {
         return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
+            "SELECT ?node ?type ?title ?rel " +
             "WHERE { " +
             "  ?me ?rel ?node . " +
             "  ?node <http://purl.org/dc/terms/title> ?title ; " +
@@ -130,7 +131,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
      */
     private ParameterizedSparqlString isHadBy() {
         return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
+            "SELECT ?node ?type ?title ?rel " +
             "WHERE { " +
             "  ?node ?rel ?me . " +
             "  ?node <http://purl.org/dc/terms/title> ?title ; " +
@@ -144,7 +145,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
      */
     private ParameterizedSparqlString isComposedOf() {
         return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
+            "SELECT ?node ?type ?title ?rel " +
             "WHERE { " +
             "  ?node ?rel ?me ; " +
             "        <http://purl.org/dc/terms/title> ?title ; " +
@@ -159,7 +160,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
      */
     private ParameterizedSparqlString parent() {
         return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
+            "SELECT ?node ?type ?title ?rel " +
             "WHERE { " +
             "  ?me ?rel ?node . " +
             "  ?node <http://purl.org/dc/terms/title> ?title ; " +
@@ -174,7 +175,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
      */
     private ParameterizedSparqlString children() {
         return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
+            "SELECT ?node ?type ?title ?rel " +
             "WHERE { " +
             "  ?node ?rel ?me ; " +
             "        <http://purl.org/dc/terms/title> ?title ; " +
@@ -190,7 +191,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
      */
     private ParameterizedSparqlString models() {
         return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
+            "SELECT ?node ?type ?title ?rel " +
             "WHERE { " +
             "  ?node ?rel ?me ; " +
             "        <http://purl.org/dc/terms/title> ?title ; " +
@@ -206,7 +207,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
      */
     private ParameterizedSparqlString connectedBy() {
         return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
+            "SELECT ?node ?type ?title ?rel " +
             "WHERE { " +
             "  { ?me ?rel ?node } UNION { ?node ?rel ?me } . " +
             "  ?node <http://purl.org/dc/terms/title> ?title ; " +
