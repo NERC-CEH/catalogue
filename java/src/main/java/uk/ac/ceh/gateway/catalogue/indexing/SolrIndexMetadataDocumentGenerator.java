@@ -55,30 +55,31 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public SolrIndex generateIndex(MetadataDocument document) {
         log.info("{} is a {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
         return new SolrIndex()
-            .setDescription(document.getDescription())
-            .setTitle(document.getTitle())
-            .setIdentifier(identifierService.generateFileId(document.getId()))
-            .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
-            .setRecordType(codeLookupService.lookup("metadata.recordType", document.getType()))
-            .setState(getState(document))
-            .setView(getViews(document))
             .setCatalogue(document.getCatalogue())
+            .setCondition(getCondition(document))
+            .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
-            .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
+            .setIdentifier(identifierService.generateFileId(document.getId()))
             .setImpCaMMPIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_CAMMP_ISSUES_URL), Keyword::getValue))
             .setImpDataType(grab(getKeywordsFilteredByUrlFragment(document, IMP_DATA_TYPE_URL), Keyword::getValue))
             .setImpScale(impScale(document))
             .setImpTopic(grab(getKeywordsFilteredByUrlFragment(document, IMP_TOPIC_URL, INMS_TOPIC_URL), Keyword::getValue))
             .setImpWaterPollutant(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_POLLUTANT_URL, INMS_WATER_POLLUTANT_URL), Keyword::getValue))
             .setInmsDemonstrationRegion(grab(getKeywordsFilteredByUrlFragment(document, INMS_REGION_URL), Keyword::getValue))
-            .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue))
+            .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
             .setLocations(getLocations(document))
+            .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue))
             .setNcAssets(grab(getKeywordsByVocabulary(document, NC_ASSETS_URL), Keyword::getValue))
             .setNcCaseStudy(grab(getKeywordsByVocabulary(document, NC_CASE_STUDY_URL), Keyword::getValue))
             .setNcDrivers(grab(getKeywordsByVocabulary(document, NC_DRIVERS_URL), Keyword::getValue))
             .setNcEcosystemServices(grab(getKeywordsByVocabulary(document, NC_ECOSYSTEM_SERVICES_URL), Keyword::getValue))
             .setNcGeographicalScale(grab(getKeywordsByVocabulary(document, NC_GEOGRAPHICAL_SCALE_URL), Keyword::getValue))
-            .setCondition(getCondition(document));
+            .setRecordType(codeLookupService.lookup("metadata.recordType", document.getType()))
+            .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
+            .setState(getState(document))
+            .setTitle(document.getTitle())
+            .setView(getViews(document))
+            ;
     }
 
 

@@ -1,3 +1,6 @@
-FROM registry.gitlab.ceh.ac.uk/eip/solr:2
+FROM solr:8.3
+LABEL maintainer="oss@ceh.ac.uk"
 
-COPY config /var/solr
+COPY documents /opt/solr/server/solr/configsets/documents
+
+CMD ["solr-precreate", "documents", "/opt/solr/server/solr/configsets/documents"]
