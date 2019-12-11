@@ -1,14 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import javax.servlet.http.HttpServletRequest;
-import org.apache.solr.client.solrj.SolrServer;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import org.junit.Test;
+import org.apache.solr.client.solrj.SolrClient;
 import org.junit.Before;
-import static org.mockito.BDDMockito.given;
+import org.junit.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.view.RedirectView;
@@ -18,8 +13,15 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 
+import javax.servlet.http.HttpServletRequest;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
 public class SearchControllerTest {
-    @Mock private SolrServer solrServer;
+    @Mock private SolrClient solrClient;
     @Mock private GroupStore<CatalogueUser> groupStore;
     @Mock private CatalogueService catalogueService;
     @Mock private FacetFactory facetFactory;
@@ -28,11 +30,11 @@ public class SearchControllerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        controller = new SearchController(solrServer, groupStore, catalogueService, facetFactory);
+        controller = new SearchController(solrClient, groupStore, catalogueService, facetFactory);
     }
 
     @Test
-    public void redriectToDefaultCatalogue() {
+    public void redirectToDefaultCatalogue() {
         //given
         HttpServletRequest request = new MockHttpServletRequest(
             "GET",

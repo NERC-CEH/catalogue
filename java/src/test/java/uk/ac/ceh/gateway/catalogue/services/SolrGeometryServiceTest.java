@@ -29,7 +29,7 @@ public class SolrGeometryServiceTest {
         String actual = service.toSolrGeometry(boundingBox.getWkt());
         
         //Then
-        assertThat("Solr geometry produced", actual, equalTo("-1.3425 56.1234 2.3492 57.0021"));
+        assertThat("Solr geometry produced", actual, equalTo("ENVELOPE(-1.3425,2.3492,57.0021,56.1234)"));
     }
     
     @Test
@@ -61,7 +61,7 @@ public class SolrGeometryServiceTest {
         //Given
         BoundingBox boundingBox = BoundingBox.builder()
             .westBoundLongitude("-1.33")
-            .eastBoundLongitude("-1.33")
+            .eastBoundLongitude("1.4")
             .southBoundLatitude("51.77")
             .northBoundLatitude("51.88")
             .build();
@@ -70,6 +70,6 @@ public class SolrGeometryServiceTest {
         String actual = service.toSolrGeometry(boundingBox.getWkt());
         
         //Then
-        assertThat("Solr geometry produced", actual, equalTo("-1.33 51.77 -1.33 51.88"));
+        assertThat("Solr geometry produced", actual, equalTo("ENVELOPE(-1.33,1.4,51.88,51.77)"));
     }
 }

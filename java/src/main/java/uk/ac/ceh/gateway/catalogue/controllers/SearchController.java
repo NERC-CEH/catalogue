@@ -1,30 +1,24 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import lombok.NonNull;
+import lombok.SneakyThrows;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
-import uk.ac.ceh.gateway.catalogue.search.FacetFilter;
-import uk.ac.ceh.gateway.catalogue.search.SearchResults;
-import uk.ac.ceh.gateway.catalogue.search.SearchQuery;
-import uk.ac.ceh.gateway.catalogue.search.SpatialOperation;
+import uk.ac.ceh.gateway.catalogue.search.*;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Controller
 public class SearchController {
@@ -42,20 +36,20 @@ public class SearchController {
     public static final int PAGE_DEFAULT = Integer.parseInt(PAGE_DEFAULT_STRING);
     public static final int ROWS_DEFAULT = Integer.parseInt(ROWS_DEFAULT_STRING);
     
-    private final SolrServer solrServer;
+    private final SolrClient solrClient;
     private final GroupStore<CatalogueUser> groupStore;
     private final CatalogueService catalogueService;
     private final FacetFactory facetFactory;
       
     @Autowired
     public SearchController(
-        @NonNull SolrServer solrServer,
+        @NonNull SolrClient solrClient,
         @NonNull GroupStore<CatalogueUser> groupStore,
         @NonNull CatalogueService catalogueService,
         @NonNull FacetFactory facetFactory
     )
     {
-        this.solrServer = solrServer;
+        this.solrClient = solrClient;
         this.groupStore = groupStore;
         this.catalogueService = catalogueService;
         this.facetFactory = facetFactory;
@@ -76,9 +70,9 @@ public class SearchController {
                 .toUriString()
         );
     }
-    
-    @RequestMapping(value = "{catalogue}/documents",
-                    method = RequestMethod.GET)
+
+    @SneakyThrows
+    @GetMapping(value = "{catalogue}/documents")
     public @ResponseBody SearchResults searchDocuments(
             @ActiveUser CatalogueUser user,
             @PathVariable("catalogue") String catalogueKey,
@@ -125,7 +119,7 @@ public class SearchController {
             facetFactory.newInstances(catalogue.getFacetKeys())
         );
         return new SearchResults(
-            solrServer.query(
+            solrClient.query(
                 searchQuery.build(),
                 SolrRequest.METHOD.POST
             ),

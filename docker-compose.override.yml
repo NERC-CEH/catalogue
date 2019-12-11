@@ -15,7 +15,7 @@ services:
   solr:
     # Expose the solr port for development
     ports:
-      - "7000:8080"
+      - "8983:8983"
 
   mapserver:
     # Expose mapserver port during development

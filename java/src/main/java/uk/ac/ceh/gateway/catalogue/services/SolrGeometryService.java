@@ -35,19 +35,21 @@ public class SolrGeometryService {
             }
             else if (envelope instanceof LineString) {
                 Coordinate[] coordinates = envelope.getCoordinates();
-                return new StringBuilder()
-                        .append(coordinates[0].x).append(" ")
-                        .append(coordinates[0].y).append(" ")
-                        .append(coordinates[1].x).append(" ")
-                        .append(coordinates[1].y).toString();
+                return new StringBuilder("ENVELOPE(")
+                        .append(coordinates[0].x).append(",")
+                        .append(coordinates[1].x).append(",")
+                        .append(coordinates[1].y).append(",")
+                        .append(coordinates[0].y).append(")")
+                        .toString();
             }
             else {
                 Coordinate[] coordinates = envelope.getCoordinates();
-                return new StringBuilder()
-                        .append(coordinates[0].x).append(" ")
-                        .append(coordinates[0].y).append(" ")
-                        .append(coordinates[2].x).append(" ")
-                        .append(coordinates[2].y).toString();
+                return new StringBuilder("ENVELOPE(")
+                        .append(coordinates[0].x).append(",")
+                        .append(coordinates[2].x).append(",")
+                        .append(coordinates[2].y).append(",")
+                        .append(coordinates[0].y).append(")")
+                        .toString();
             }
         }
         catch(NullPointerException | ParseException e) {

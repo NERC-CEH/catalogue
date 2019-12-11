@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,11 +12,11 @@ import org.springframework.context.annotation.Configuration;
  * properties file
  */
 @Configuration
-public class HttpSolrServerConfig {
+public class HttpSolrClientConfig {
     @Value("${solr.server.documents.url}") String solrDocumentServerUrl;
     
     @Bean(name="documents")
-    public SolrServer solrDocumentsServer(){
-        return new HttpSolrServer(solrDocumentServerUrl);
+    public SolrClient solrDocumentsServer(){
+        return new HttpSolrClient.Builder(solrDocumentServerUrl).build();
     }
 }

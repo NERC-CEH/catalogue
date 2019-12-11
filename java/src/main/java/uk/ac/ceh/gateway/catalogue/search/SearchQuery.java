@@ -1,5 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.springframework.web.util.UriComponentsBuilder;
+import uk.ac.ceh.components.userstore.Group;
+import uk.ac.ceh.components.userstore.GroupStore;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+
+import javax.validation.constraints.NotNull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -7,24 +18,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.springframework.web.util.UriComponentsBuilder;
-import uk.ac.ceh.components.userstore.Group;
-import uk.ac.ceh.components.userstore.GroupStore;
-import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.BBOX_QUERY_PARAM;
-import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.FACET_QUERY_PARAM;
-import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.OP_QUERY_PARAM;
-import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.PAGE_DEFAULT;
-import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.PAGE_QUERY_PARAM;
-import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_DEFAULT;
-import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.ROWS_QUERY_PARAM;
-import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.TERM_QUERY_PARAM;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+
+import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.*;
 
 @Value
 @Slf4j
@@ -75,7 +70,7 @@ public class SearchQuery {
                 .setQuery(term)
                 .setParam("defType", "edismax")
                 .setParam("qf", "title^50 description^25 keyword^2 lineage organisation individual surname altTitle resourceIdentifier identifier supplementalDescription supplementalName")
-                .setParam("bq", "resourceStatus:Superseded^-15")
+                .setParam("bq", "resourceStatus:Superseded^0.1")
                 .setParam("bf", "version")
                 .setParam("ps", "5")
                 .setParam("pf", "title^50 description^25 keyword^2 supplementalDescription")

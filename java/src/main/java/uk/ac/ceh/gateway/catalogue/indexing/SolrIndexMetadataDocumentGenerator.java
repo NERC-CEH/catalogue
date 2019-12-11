@@ -91,11 +91,12 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
         }
     }
 
-    private List<String> getLocations(MetadataDocument document) {
+    private String getLocations(MetadataDocument document) {
         if (document instanceof WellKnownText) {
-            return geometryService.toSolrGeometry(((WellKnownText) document).getWKTs());
+            return geometryService.toSolrGeometry(((WellKnownText) document).getWKTs())
+                .stream().findFirst().orElse("");
         } else {
-            return Collections.emptyList();
+            return "";
         }
     }
     

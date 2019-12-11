@@ -69,7 +69,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), hasItem("WKT"));
+        assertThat("locations transferred to index", actual.getLocations(), equalTo("WKT"));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), hasItem("WKT"));
+        assertThat("locations transferred to index", actual.getLocations(), equalTo("WKT"));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), hasItem("WKT"));
+        assertThat("locations transferred to index", actual.getLocations(), equalTo("WKT"));
     }
 
     @Test
