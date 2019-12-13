@@ -120,7 +120,12 @@
 					</gmd:CI_Contact>
 				</gmd:contactInfo>
 				<gmd:role>
-					<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="${responsibleParty.role}">${responsibleParty.role}</gmd:CI_RoleCode>
+				<#if responsibleParty.role = "rightsHolder" >
+					<#assign role='owner'>
+				<#else>
+					<#assign role=responsibleParty.role >
+				</#if>
+					<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="${role}">${role}</gmd:CI_RoleCode>
 				</gmd:role>
 			</gmd:CI_ResponsibleParty>
 		</gmd:pointOfContact>

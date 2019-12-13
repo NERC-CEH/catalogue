@@ -109,7 +109,7 @@ A repeated row
     </div>
   </@basicRow>
 </#macro>
-
+<!--
  A CEH Model Application model info
 -->
 <#macro modelInfo modelInfo>
