@@ -27,7 +27,7 @@
   </#if>
   <gmd:contact>
     <gmd:CI_ResponsibleParty>
-      <gmd:organisationName><gco:CharacterString>NERC Environmental Information Data Centre</gco:CharacterString></gmd:organisationName>
+      <gmd:organisationName><gco:CharacterString>Environmental Information Data Centre</gco:CharacterString></gmd:organisationName>
       <gmd:contactInfo>
         <gmd:CI_Contact>
           <gmd:address>

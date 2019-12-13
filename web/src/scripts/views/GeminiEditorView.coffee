@@ -169,14 +169,9 @@ define [
               organisationName: 'Unaffiliated'
               role: 'author'
             'Custodian - EIDC':
-              organisationName: 'NERC Environmental Information Data Centre'
+              organisationName: 'Environmental Information Data Centre'
               role: 'custodian'
               email: 'eidc@ceh.ac.uk'
-            'Rights holder - UKCEH':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'rightsHolder'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
             'Point of contact - UKCEH Bangor':
               organisationName: 'UK Centre for Ecology & Hydrology'
               role: 'pointOfContact'
@@ -222,9 +217,14 @@ define [
                 administrativeArea: 'Oxfordshire'
                 country: 'United Kingdom'
             'Publisher - EIDC':
-              organisationName: 'NERC Environmental Information Data Centre'
+              organisationName: 'Environmental Information Data Centre'
               role: 'publisher'
               email: 'eidc@ceh.ac.uk'
+            'Rights holder - UKCEH':
+              organisationName: 'UK Centre for Ecology & Hydrology'
+              role: 'rightsHolder'
+              email: 'enquiries@ceh.ac.uk'
+              organisationIdentifier: 'https://ror.org/00pggkr55'
           helpText: """
                     <p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
                     <p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
@@ -377,7 +377,7 @@ define [
           multiline: true
           predefined:
             'EIDC':
-              organisationName: 'NERC Environmental Information Data Centre'
+              organisationName: 'Environmental Information Data Centre'
               role: 'distributor'
               email: 'eidc@ceh.ac.uk'
             'EMBL-EBI':
