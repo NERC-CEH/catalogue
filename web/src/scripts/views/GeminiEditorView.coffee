@@ -217,7 +217,7 @@ define [
                 administrativeArea: 'Oxfordshire'
                 country: 'United Kingdom'
             'Publisher - EIDC':
-              organisationName: 'Environmental Information Data Centre'
+              organisationName: 'NERC Environmental Information Data Centre'
               role: 'publisher'
               email: 'eidc@ceh.ac.uk'
             'Rights holder - UKCEH':

@@ -424,7 +424,7 @@ public class MetadataQualityService {
             toReturn.add(new MetadataCheck("Publisher email address is missing", ERROR));
         }
         publishers.stream()
-            .filter(publisher -> fieldNotEqual(publisher, "organisationName", "Environmental Information Data Centre"))
+            .filter(publisher -> fieldNotEqual(publisher, "organisationName", "NERC Environmental Information Data Centre"))
             .map(publisher -> publisher.getOrDefault("organisationName", "unknown"))
             .forEach(organisationName -> toReturn.add(new MetadataCheck("Publisher name is " + organisationName, INFO)));
 
