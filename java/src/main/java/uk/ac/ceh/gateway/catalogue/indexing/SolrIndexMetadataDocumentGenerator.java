@@ -12,7 +12,6 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 
 import java.util.*;
@@ -48,7 +47,6 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
-    private final SolrGeometryService geometryService;
     private final VocabularyService vocabularyService;
 
     @Override
@@ -93,8 +91,10 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
 
     private String getLocations(MetadataDocument document) {
         if (document instanceof WellKnownText) {
-            return geometryService.toSolrGeometry(((WellKnownText) document).getWKTs())
-                .stream().findFirst().orElse("");
+            return new StringBuilder("GEOMETRYCOLLECTION(")
+                .append(String.join(", ", ((WellKnownText) document).getWKTs()))
+                .append(")")
+                .toString();
         } else {
             return "";
         }

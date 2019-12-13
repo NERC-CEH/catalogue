@@ -394,11 +394,6 @@ public class ServiceConfig {
     }
     
     @Bean
-    public SolrGeometryService solrGeometryService() {
-        return new SolrGeometryService();
-    }
-    
-    @Bean
     public PostProcessingService postProcessingService() {
         ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
                 .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), dataciteService(), jenaTdb, documentIdentifierService()))
@@ -427,7 +422,6 @@ public class ServiceConfig {
         SolrIndexMetadataDocumentGenerator metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(
             codeLookupService,
             documentIdentifierService(),
-            solrGeometryService(),
             vocabularyService()
         );
         SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator();

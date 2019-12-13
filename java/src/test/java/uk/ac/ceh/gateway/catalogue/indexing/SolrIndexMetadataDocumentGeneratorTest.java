@@ -18,7 +18,6 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.osdp.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.SolrGeometryService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 
 import java.util.Arrays;
@@ -27,8 +26,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +33,6 @@ import static org.mockito.Mockito.when;
 public class SolrIndexMetadataDocumentGeneratorTest {
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
-    @Mock SolrGeometryService solrGeometryService;
     @Mock VocabularyService vocabularyService;
     private SolrIndexMetadataDocumentGenerator generator;
     
@@ -45,7 +41,6 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         generator = new SolrIndexMetadataDocumentGenerator(
             codeLookupService,
             documentIdentifierService,
-            solrGeometryService,
             vocabularyService
         );
     }
@@ -62,14 +57,13 @@ public class SolrIndexMetadataDocumentGeneratorTest {
             .westBoundLongitude("-0.5")
             .build()
         );
-        document.setGeometry("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))");
-        given(solrGeometryService.toSolrGeometry(anyList())).willReturn(Arrays.asList("WKT", "WKT"));
+        document.setGeometry("POLYGON((30 10, 40 40, 20 40, 10 20, 30 10))");
 
         //When
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), equalTo("WKT"));
+        assertThat("locations transferred to index", actual.getLocations(), equalTo("GEOMETRYCOLLECTION(POLYGON((30 10, 40 40, 20 40, 10 20, 30 10)), POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3)))"));
     }
 
     @Test
@@ -78,13 +72,12 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         //Given
         MonitoringFacility document = new MonitoringFacility();
         document.setGeometry("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))");
-        given(solrGeometryService.toSolrGeometry(anyList())).willReturn(Arrays.asList("WKT"));
 
         //When
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), equalTo("WKT"));
+        assertThat("locations transferred to index", actual.getLocations(), equalTo("GEOMETRYCOLLECTION(POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10)))"));
     }
 
     @Test
@@ -99,13 +92,12 @@ public class SolrIndexMetadataDocumentGeneratorTest {
             .westBoundLongitude("-0.5")
             .build()
         );
-        given(solrGeometryService.toSolrGeometry(anyList())).willReturn(Arrays.asList("WKT"));
 
         //When
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), equalTo("WKT"));
+        assertThat("locations transferred to index", actual.getLocations(), equalTo("GEOMETRYCOLLECTION(POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3)))"));
     }
 
     @Test

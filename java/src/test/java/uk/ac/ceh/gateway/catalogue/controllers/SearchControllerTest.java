@@ -3,8 +3,9 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import org.apache.solr.client.solrj.SolrClient;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.GroupStore;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.Strict.class)
 public class SearchControllerTest {
     @Mock private SolrClient solrClient;
     @Mock private GroupStore<CatalogueUser> groupStore;
@@ -29,7 +31,6 @@ public class SearchControllerTest {
     
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         controller = new SearchController(solrClient, groupStore, catalogueService, facetFactory);
     }
 
