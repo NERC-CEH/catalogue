@@ -54,23 +54,6 @@ define [
       expect(view.highlightedLayer.getDataExtent).toHaveBeenCalled()
       expect(view.map.zoomToExtent).toHaveBeenCalledWith 'extent'
 
-    it "delegates to setHighlighted when using boxes", ->
-      spyOn(view, 'setHighlighted')
-
-      view.setHighlightedBoxes ['-180 -90 180 80']
-
-      expect(view.setHighlighted).toHaveBeenCalledWith [
-        'POLYGON((-180 -90, -180 80, 180 80, 180 -90, -180 -90))'
-      ]
-
-    it "can transform a location string into a wkt representation", ->
-      wkt = view.solr2WKT '-180 -90 180 90'
-      expect(wkt).toBe 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
-
-    it "can transform a point string into a wkt representation", ->
-      wkt = view.solr2WKT '10 0'
-      expect(wkt).toBe 'POINT(10 0)'
-
     it "can read wkt to openlayers feature", ->
       vector = view.readWKT 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
 

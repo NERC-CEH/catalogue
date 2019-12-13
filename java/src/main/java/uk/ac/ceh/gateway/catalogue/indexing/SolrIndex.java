@@ -33,7 +33,7 @@ public class SolrIndex {
     private @Field List<String> keyword;
     private @Field String licence;
     private @Field String lineage;
-    private @Field String locations;
+    private @Field List<String> locations;
     private @Field List<String> modelType;
     private @Field List<String> ncAssets;
     private @Field List<String> ncCaseStudy;
@@ -55,6 +55,16 @@ public class SolrIndex {
     private @Field List<String> topic;
     private @Field Number version;
     private @Field List<String> view;
+
+    public SolrIndex addLocations(List<String> locations) {
+        this.locations.addAll(locations);
+        return this;
+    }
+
+    public SolrIndex addLocation(String location) {
+        this.locations.add(location);
+        return this;
+    }
 
     public String getShortenedDescription(){
         return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);

@@ -39,8 +39,8 @@ define [
   updateDrawingLayer: ->
     do @drawingLayer.removeAllFeatures # Remove all the drawn features
     if @model.has 'bbox'               # Draw the bbox if specified
-      bbox = @model.get('bbox').replace /,/g, ' '  # TODO: STANDARDISE BBOX OUTPUT
-      @drawingLayer.addFeatures @readWKT @solr2WKT bbox
+      @drawingLayer.addFeatures @readWKT @model.get 'bbox'
+
 
   ###
   Toggle the drawing control depending on weather or not the model is in 
@@ -57,13 +57,10 @@ define [
   handleDrawnFeature: (evt) ->
     feature = evt.feature.clone() #clone the feature so we can perform a transformation
     feature.geometry.transform @map.getProjectionObject(), @epsg4326 #convert to 4326
-
-    extent = feature.geometry.getBounds()
-    viewportArr = [extent.left, extent.bottom, extent.right, extent.top]
-    @model.set 'bbox', _.map(viewportArr, (num) -> num.toFixed(3)).join ','
+    @model.set 'bbox', feature.geometry.toString()
 
   ###
   Set the highlighted records based upon the current search result's locations
   ###
   updateHighlightedRecord: ->
-    @setHighlightedBoxes @model.getResults()?.getSelectedResult()?.locations
+    @setHighlighted @model.getResults()?.getSelectedResult()?.locations if @model.getResults()?.getSelectedResult()?.locations?

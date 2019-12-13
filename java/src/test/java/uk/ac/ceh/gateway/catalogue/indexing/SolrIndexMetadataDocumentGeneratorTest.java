@@ -63,7 +63,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), equalTo("GEOMETRYCOLLECTION(POLYGON((30 10, 40 40, 20 40, 10 20, 30 10)), POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3)))"));
+        assertThat("locations transferred to index", actual.getLocations(), hasItems("POLYGON((30 10, 40 40, 20 40, 10 20, 30 10))", "POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3))"));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), equalTo("GEOMETRYCOLLECTION(POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10)))"));
+        assertThat("locations transferred to index", actual.getLocations(), hasItems("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))"));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), equalTo("GEOMETRYCOLLECTION(POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3)))"));
+        assertThat("locations transferred to index", actual.getLocations(), hasItems("POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3))"));
     }
 
     @Test

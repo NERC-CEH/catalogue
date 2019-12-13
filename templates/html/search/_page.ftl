@@ -9,7 +9,7 @@
   <span id="num-records">${numFound}</span> records found
 </div>
 <#list results as result>
-  <div class="result result-${result.state}" data-location="${(result.locations?join(','))!}" id="${result.identifier}">
+  <div class="result result-${result.state}" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
     <h2 class="resultTitle">
       <small>
         <#if (result.condition??) >

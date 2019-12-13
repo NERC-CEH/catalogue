@@ -52,7 +52,7 @@ define [
         identifier:  $(r).attr('id')
         title:       $('.resultTitle', r).text()
         description: $('.resultDescription', r).text()
-        locations:   $(r).attr('data-location').split ','
+        locations:   $(r).attr('data-location').split '|'
 
   ###
   Event listener for when the selected id has changed on the search page model.

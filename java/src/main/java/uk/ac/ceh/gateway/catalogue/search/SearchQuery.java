@@ -276,8 +276,7 @@ public class SearchQuery {
     
     private void setSpatialFilter(SolrQuery query) {
         if(bbox != null) {
-            validateBBox(bbox);
-            query.addFilterQuery(String.format("locations:\"%s(%s)\"", spatialOperation.getOperation(), bbox.replace(',', ' ')));
+            query.addFilterQuery(String.format("locations:\"%s(%s)\"", spatialOperation.getOperation(), bbox));
         }
     }
     private void setRecordVisibility(SolrQuery query) {
@@ -357,21 +356,5 @@ public class SearchQuery {
     private int getRandomSeed(){
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.DAY_OF_YEAR);
-    }
-    
-    private void validateBBox(String bbox) {
-        //Validate that the bbox is in the format minx,miny,maxx,maxxy
-        String[] bboxParts = bbox.split(",");
-        if(bboxParts.length != 4) {
-            throw new IllegalArgumentException("The bbox must be in the form minx,miny,maxx,maxy");
-        }
-        for(String bboxPart :bboxParts) {
-            try {
-                Double.parseDouble(bboxPart);
-            }
-            catch(NumberFormatException ex) {
-                throw new IllegalArgumentException("The bbox must be in the form minx,miny,maxx,maxy", ex);
-            }
-        }
     }
 }
