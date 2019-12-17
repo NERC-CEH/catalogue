@@ -1,9 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import static com.google.common.base.Preconditions.checkNotNull;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Value;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -12,6 +9,11 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A search results object for documents

@@ -1,13 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import java.io.IOException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -19,14 +12,23 @@ import org.xml.sax.SAXException;
 import uk.ac.ceh.gateway.catalogue.converters.wmsCapabilities.LayerConverter;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConverter<WmsCapabilities> {
     private static final String MAP_URL = "//wms:GetMap/*/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href";
     private static final String FEATURE_INFO_URL = "//wms:GetFeatureInfo/*/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href";
     
     private final LayerConverter layerConverter;
     private final XPathExpression map, featureInfo;
-    
-    public Xml2WmsCapabilitiesMessageConverter() throws XPathExpressionException {
+
+    @SneakyThrows
+    public Xml2WmsCapabilitiesMessageConverter() {
         super(MediaType.TEXT_XML, MediaType.APPLICATION_XML);
 
         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -37,7 +39,8 @@ public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConv
     }
     
     @Override
-    protected WmsCapabilities readInternal(Class<? extends WmsCapabilities> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    @SneakyThrows
+    protected WmsCapabilities readInternal(Class<? extends WmsCapabilities> clazz, HttpInputMessage inputMessage) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -60,7 +63,8 @@ public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConv
     }
 
     @Override
-    protected void writeInternal(WmsCapabilities t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    @SneakyThrows
+    protected void writeInternal(WmsCapabilities t, HttpOutputMessage outputMessage) {
         throw new HttpMessageNotWritableException("I will not be able to write that document for you");
     }
     

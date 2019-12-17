@@ -1,7 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import lombok.SneakyThrows;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
  * @param <D> type of documents to be read from the DataRepository
  */
 public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex> {
-    private final SolrServer solrServer;
+    private final SolrClient solrClient;
     private final JenaLookupService lookupService;
     private final DocumentIdentifierService identifierService;
 
@@ -29,20 +30,21 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
             DocumentListingService listingService,
             DataRepository<?> repo,
             IndexGenerator<D, SolrIndex> indexGenerator,
-            SolrServer solrServer,
+            SolrClient solrClient,
             JenaLookupService lookupService,
             DocumentIdentifierService identifierService
     ) {
         super(reader, listingService, repo, indexGenerator);
-        this.solrServer = solrServer;
+        this.solrClient = solrClient;
         this.lookupService = lookupService;
         this.identifierService = identifierService;
     }
-    
+
+    @SneakyThrows
     @Override
     public boolean isIndexEmpty() throws DocumentIndexingException {
         try {
-            return solrServer.query(new SolrQuery("*:*")).getResults().isEmpty();
+            return solrClient.query(new SolrQuery("*:*")).getResults().isEmpty();
         }
         catch(SolrServerException ex) {
             throw new DocumentIndexingException(ex);
@@ -62,7 +64,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     @Override
     public void unindexDocuments(List<String> documents) throws DocumentIndexingException {
         try {            
-            solrServer.deleteById(documents);
+            solrClient.deleteById(documents);
             commit();
         } catch (IOException | SolrServerException ex) {
             throw new DocumentIndexingException(ex);
@@ -72,7 +74,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     @Override
     protected void clearIndex() throws DocumentIndexingException {
         try {
-            solrServer.deleteByQuery("*:*");
+            solrClient.deleteByQuery("*:*");
         } catch (IOException | SolrServerException ex) {
             throw new DocumentIndexingException(ex);
         }
@@ -80,7 +82,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
 
     @Override
     protected void index(SolrIndex toIndex) throws Exception {
-        solrServer.addBean(toIndex);
+        solrClient.addBean(toIndex);
     }
     
     @Override
@@ -90,7 +92,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     
     private void commit() throws DocumentIndexingException {
         try {
-            solrServer.commit();
+            solrClient.commit();
         } catch (IOException | SolrServerException ex) {
             throw new DocumentIndexingException(ex);
         }

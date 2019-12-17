@@ -31,7 +31,7 @@ define [
 
     it "can populate the model from the dom", ->
       result = $('''
-        <div class="result" id="27" data-location="1 2 3 4,5 6 7 8">
+        <div class="result" id="27" data-location="1 2 3 4|5 6 7 8">
           <h1 class="resultTitle">mr title</h1>
           <p class="resultDescription">whatever</p>
         </div>

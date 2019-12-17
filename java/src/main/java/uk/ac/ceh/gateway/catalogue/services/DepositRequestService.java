@@ -1,19 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.List;
-import org.apache.solr.client.solrj.SolrServer;
 import lombok.AllArgsConstructor;
 import lombok.val;
+import org.apache.solr.client.solrj.SolrClient;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
+import java.util.List;
+
 @AllArgsConstructor
 public class DepositRequestService {
 
     private final DocumentRepository documentRepository;
-    private final SolrServer solrServer;
+    private final SolrClient solrServer;
 
     public void save(CatalogueUser user, DepositRequestDocument depositRequest) {
         try {

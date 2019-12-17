@@ -1,16 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
-
-import java.io.IOException;
 
 @AllArgsConstructor
 public class MetadataInfoBundledReaderService implements BundledReaderService<MetadataDocument> {
@@ -18,20 +15,23 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
     private final DocumentReadingService documentReader;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final DocumentTypeLookupService representationService;
-    private final PostProcessingService postProcessingService;
+    private final PostProcessingService<MetadataDocument> postProcessingService;
     private final DocumentIdentifierService documentIdentifierService;
     
     @Override
-    public MetadataDocument readBundle(String file) throws DataRepositoryException, IOException, PostProcessingException {
+    @SneakyThrows
+    public MetadataDocument readBundle(String file) {
         return readBundle(file, repo.getLatestRevision().getRevisionID(), false);
     }
     
     @Override
-    public MetadataDocument readBundle(String file, String revision) throws DataRepositoryException, IOException, PostProcessingException, UnknownContentTypeException {
+    @SneakyThrows
+    public MetadataDocument readBundle(String file, String revision) {
         return readBundle(file, revision, true);
     }
-    
-    private MetadataDocument readBundle(String file, String revision, boolean history) throws DataRepositoryException, IOException, PostProcessingException, UnknownContentTypeException {
+
+    @SneakyThrows
+    private MetadataDocument readBundle(String file, String revision, boolean history) {
         MetadataInfo documentInfo = documentInfoMapper.readInfo(
                                         repo.getData(revision, file + ".meta")
                                             .getInputStream());

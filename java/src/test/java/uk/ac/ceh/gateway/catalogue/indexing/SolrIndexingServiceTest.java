@@ -1,24 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import lombok.SneakyThrows;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
-
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -26,11 +16,17 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
-import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
-import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
+import uk.ac.ceh.gateway.catalogue.services.*;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 public class SolrIndexingServiceTest {
     
@@ -38,7 +34,7 @@ public class SolrIndexingServiceTest {
     @Mock DocumentListingService listingService;
     @Mock DataRepository<?> repo;
     @Mock IndexGenerator<GeminiDocument, SolrIndex> indexGenerator;
-    @Mock SolrServer solrServer;
+    @Mock SolrClient solrClient;
     @Mock JenaLookupService lookupService;
     @Mock DocumentIdentifierService identifierService;
     
@@ -52,7 +48,7 @@ public class SolrIndexingServiceTest {
             listingService,
             repo,
             indexGenerator,
-            solrServer,
+            solrClient,
             lookupService,
             identifierService
         ));
@@ -68,8 +64,8 @@ public class SolrIndexingServiceTest {
         service.rebuildIndex();
         
         //Then
-        verify(solrServer).deleteByQuery("*:*");
-        verify(solrServer).commit();
+        verify(solrClient).deleteByQuery("*:*");
+        verify(solrClient).commit();
     }
     
     @Test
@@ -115,9 +111,9 @@ public class SolrIndexingServiceTest {
         service.indexDocuments(documents, revId);
         
         //Then
-        verify(solrServer).addBean(document1Index);
-        verify(solrServer).addBean(document2Index);
-        verify(solrServer).commit();
+        verify(solrClient).addBean(document1Index);
+        verify(solrClient).addBean(document2Index);
+        verify(solrClient).commit();
     }
     
     @Test
@@ -125,7 +121,7 @@ public class SolrIndexingServiceTest {
         //Given
         String revId = "Latest";
         List<String> documents = Arrays.asList("doc1", "doc2");
-        when(solrServer.addBean(any(Object.class))).thenThrow(new SolrServerException("Please carry on"))
+        when(solrClient.addBean(any(Object.class))).thenThrow(new SolrServerException("Please carry on"))
                                                    .thenReturn(new UpdateResponse());
         
         //When
@@ -135,7 +131,7 @@ public class SolrIndexingServiceTest {
         catch(DocumentIndexingException ex) {}
         
         //Then
-        verify(solrServer).commit();
+        verify(solrClient).commit();
     }
     
     @Test(expected=DocumentIndexingException.class)
@@ -144,7 +140,7 @@ public class SolrIndexingServiceTest {
         String revId = "Latest";
         List<String> documents = Arrays.asList("doc1", "doc2");
 
-        when(solrServer.addBean(any())).thenThrow(new SolrServerException("Please carry on"))
+        when(solrClient.addBean(any())).thenThrow(new SolrServerException("Please carry on"))
                                                    .thenReturn(null);
         
         //When
@@ -164,16 +160,17 @@ public class SolrIndexingServiceTest {
         service.unindexDocuments(documents);
         
         //Then
-        verify(solrServer).deleteById(documents);
-        verify(solrServer).commit();
+        verify(solrClient).deleteById(documents);
+        verify(solrClient).commit();
     }
     
     @Test
-    public void checkThatEmptySolrIndexResultsInEmptyService() throws SolrServerException, DocumentIndexingException {
+    @SneakyThrows
+    public void checkThatEmptySolrIndexResultsInEmptyService() {
         //Given
         QueryResponse queryResponse = mock(QueryResponse.class, RETURNS_DEEP_STUBS);
         when(queryResponse.getResults().isEmpty()).thenReturn(true);
-        when(solrServer.query(any(SolrQuery.class))).thenReturn(queryResponse);
+        when(solrClient.query(any(SolrQuery.class))).thenReturn(queryResponse);
         
         //When
         boolean isEmpty = service.isIndexEmpty();
@@ -183,11 +180,12 @@ public class SolrIndexingServiceTest {
     }
     
     @Test
-    public void checkThatPopulatedSolrIndexResultsInPopulatedService() throws SolrServerException, DocumentIndexingException {
+    @SneakyThrows
+    public void checkThatPopulatedSolrIndexResultsInPopulatedService() {
         //Given
         QueryResponse queryResponse = mock(QueryResponse.class, RETURNS_DEEP_STUBS);
         when(queryResponse.getResults().isEmpty()).thenReturn(false);
-        when(solrServer.query(any(SolrQuery.class))).thenReturn(queryResponse);
+        when(solrClient.query(any(SolrQuery.class))).thenReturn(queryResponse);
         
         //When
         boolean isEmpty = service.isIndexEmpty();
@@ -197,18 +195,19 @@ public class SolrIndexingServiceTest {
     }
     
     @Test
-    public void checkThatWeQueryForAllDocumentsWhenCheckingIfSolrIndexIsEmpty() throws SolrServerException, DocumentIndexingException  {
+    @SneakyThrows
+    public void checkThatWeQueryForAllDocumentsWhenCheckingIfSolrIndexIsEmpty() {
         //Given
         QueryResponse queryResponse = mock(QueryResponse.class, RETURNS_DEEP_STUBS);
-        when(solrServer.query(any(SolrQuery.class))).thenReturn(queryResponse);
+        when(solrClient.query(any(SolrQuery.class))).thenReturn(queryResponse);
         
         //When
         service.isIndexEmpty();
         
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
-        verify(solrServer).query(solrQuery.capture());
-        assertEquals("Expecte a wildcard query for the solr search", "*:*", solrQuery.getValue().getQuery());
+        verify(solrClient).query(solrQuery.capture());
+        assertEquals("Expect a wildcard query for the solr search", "*:*", solrQuery.getValue().getQuery());
     }
     
     @Test

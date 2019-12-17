@@ -88,7 +88,7 @@ dependencies {
     implementation "org.springframework.security:spring-security-core:${springSecurityVersion}"
     implementation "org.springframework.security:spring-security-config:${springSecurityVersion}"
     implementation "net.sf.ehcache:ehcache:2.10.4"
-    implementation("org.apache.solr:solr-solrj:4.10.4") {
+    implementation("org.apache.solr:solr-solrj:8.3.1") {
         exclude(module: 'slf4j-api')
         exclude(module: 'slf4j-log4j12')
         exclude(module: 'log4j')

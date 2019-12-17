@@ -26,11 +26,11 @@ define [
       expect(view.drawingControl.active).not.toBeTruthy()
 
     it "can set the defined bounding box on the drawing layer", ->
-      model.set bbox: '-180,-90,180,90'
+      model.set bbox: 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
       expect(view.drawingLayer.features.length).toBe 1
 
     it "can remove the defined bounding box on the drawing layer", ->
-      model.set bbox: '-180,-90,180,90'
+      model.set bbox: 'POLYGON((-180 -90, -180 90, 180 90, 180 -90, -180 -90))'
       model.unset 'bbox'
       expect(view.drawingLayer.features.length).toBe 0
 

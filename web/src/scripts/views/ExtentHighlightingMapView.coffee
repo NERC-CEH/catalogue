@@ -52,15 +52,6 @@ define [
   ###
   Given an array of locations in the form:
 
-    ["-9.227701 49.83726 2.687637 60.850441", "-1.50 51.51 -1.47 51.54"]
-
-  Transform these to wkt and then call setHighlighted
-  ###
-  setHighlightedBoxes: (boxes = []) -> @setHighlighted _.map boxes, @solr2WKT
-
-  ###
-  Given an array of locations in the form:
-
     ["POLYGON((1 2 ...))", "POLYGON((1 2 ...))"]
 
   Draw these on the map. If this method is called with null or an empty array
@@ -72,7 +63,10 @@ define [
 
     # Loop round all the locations and set as a marker and polygon
     _.each locations, (location) =>
+      if location == "" 
+        return
       vector = @readWKT location
+
       # Calculate the average length of the height and width of the bounds
       bounds = vector.geometry.getBounds().toGeometry()
       vector.attributes = 
@@ -104,3 +98,4 @@ define [
                             #{c[2]} #{c[3]}, \
                             #{c[2]} #{c[1]}, \
                             #{c[0]} #{c[1]}))"""
+

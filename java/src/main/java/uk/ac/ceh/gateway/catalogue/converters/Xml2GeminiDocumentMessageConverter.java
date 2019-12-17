@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -61,7 +62,8 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final LegalConstraintsWithAnchorConverter useConstraintsConverter;
     private final LegalConstraintsWithAnchorConverter accessConstraintsConverter;
     
-    public Xml2GeminiDocumentMessageConverter(CodeLookupService codeLookupService) throws XPathExpressionException {
+    @SneakyThrows
+    public Xml2GeminiDocumentMessageConverter(CodeLookupService codeLookupService) {
         super(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
 
         XPath xpath = XPathFactory.newInstance().newXPath();

@@ -1,65 +1,60 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.base.Strings;
-
-import org.apache.solr.client.solrj.beans.Field;
-
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.apache.solr.client.solrj.beans.Field;
+
+import java.util.List;
 
 @Data
 @Accessors(chain=true)
 public class SolrIndex {
     protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 265;
-    private @Field String identifier;
-    private @Field String title;
     private @Field List<String> altTitle;
-    private @Field String description;
-    private @Field String lineage;
-    private @Field String resourceStatus;
-    private @Field Number version;
     private @Field List<String> authorAffiliation;
     private @Field List<String> authorName;
     private @Field List<String> authorOrcid;
     private @Field List<String> authorRor;
-    private @Field List<String> organisation;
-    private @Field List<String> individual;
-    private @Field List<String> orcid;
-    private @Field List<String> ror;
-    private @Field List<String> resourceIdentifier;
-    private @Field List<String> grant;
-    private @Field List<String> funder;
-    private @Field List<String> supplementalName;
-    private @Field List<String> supplementalDescription;
-    private @Field String resourceType;
-    private @Field String recordType;
-    private @Field List<String> locations = new ArrayList<>();
-    private @Field String licence;
-    private @Field String state;
-    private @Field List<String> topic;
-    private @Field List<String> keyword;
-    private @Field List<String> view;
     private @Field String catalogue;
+    private @Field String condition;
+    private @Field String description;
     private @Field String documentType;
+    private @Field List<String> funder;
+    private @Field List<String> grant;
+    private @Field String identifier;
     private @Field List<String> impCaMMPIssues;
     private @Field List<String> impDataType;
     private @Field List<String> impScale;
     private @Field List<String> impTopic;
     private @Field List<String> impWaterPollutant;
-    private @Field List<String> modelType;
+    private @Field List<String> individual;
     private @Field List<String> inmsDemonstrationRegion;
-    private @Field String manufacturer;
-    private @Field String manufacturerName;
+    private @Field List<String> keyword;
+    private @Field String licence;
+    private @Field String lineage;
+    private @Field List<String> locations;
+    private @Field List<String> modelType;
     private @Field List<String> ncAssets;
     private @Field List<String> ncCaseStudy;
     private @Field List<String> ncDrivers;
     private @Field List<String> ncEcosystemServices;
     private @Field List<String> ncGeographicalScale;
+    private @Field List<String> orcid;
+    private @Field List<String> organisation;
+    private @Field String recordType;
+    private @Field List<String> resourceIdentifier;
+    private @Field String resourceStatus;
+    private @Field String resourceType;
+    private @Field List<String> ror;
     private @Field List<String> saTaxon;
-    private @Field String condition;
+    private @Field String state;
+    private @Field List<String> supplementalDescription;
+    private @Field List<String> supplementalName;
+    private @Field String title;
+    private @Field List<String> topic;
+    private @Field Number version;
+    private @Field List<String> view;
 
     public SolrIndex addLocations(List<String> locations) {
         this.locations.addAll(locations);
