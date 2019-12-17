@@ -9,6 +9,7 @@
       <field name="lineage" type="text_general" indexed="true" stored="true" multiValued="false"/>
       <field name="resourceStatus" type="keyword" indexed="true" stored="true" multiValued="false"/>
       <field name="version" type="float" indexed="true" stored="true" multiValued="false" default="1"/>
+      <field name="rightsHolder" type="keyword" indexed="true" stored="true" multiValued="true"/>
       <field name="authorAffiliation" type="keyword_lowercase" indexed="true" stored="true" multiValued="true"/>
       <field name="authorName" type="keyword" indexed="true" stored="true" multiValued="true"/>
       <field name="authorOrcid" type="orcid" indexed="true" stored="true" multiValued="true"/>
@@ -72,7 +73,7 @@
             </analyzer>
         </fieldType>
         <fieldType name="orcid" class="solr.TextField" sortMissingLast="true" omitNorms="true">
-            <analyzer>
+            <analyzer >
                 <tokenizer class="solr.PatternTokenizerFactory" pattern="^(https?:\/\/orcid.org\/)(0000-\d{4}-\d{4}-\d{3}[\d|X])$" group="2"/>
             </analyzer>
         </fieldType>

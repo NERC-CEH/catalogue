@@ -43,8 +43,8 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, lineage, reasonChanged,
-        metadataStandardName, metadataStandardVersion, parentIdentifier, revisionOfIdentifier,
-        projectImageUrl;
+        metadataStandardName, metadataStandardVersion, projectImageUrl;
+    private String parentIdentifier, revisionOfIdentifier; //need to get rid of these later
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
       securityConstraints;      
@@ -55,11 +55,9 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
-    private List<ResponsibleParty> distributorContacts;
-    private List<ResponsibleParty> responsibleParties;
+    private List<ResponsibleParty> distributorContacts, responsibleParties;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
-    private Link parent;
     private Set<Link> modelLinks, modelApplicationLinks, incomingRelationships;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<Supplemental> supplemental;
@@ -140,9 +138,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         if (incomingRelationships != null) {
             toReturn.addAll(incomingRelationships);
         }
-        if (parent != null) {
-            toReturn.add(parent);
-        }
         return toReturn;
     }
     
@@ -202,7 +197,14 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .filter((authors) -> authors.getRole().equalsIgnoreCase("author"))
             .collect(Collectors.toList());
     }
-
+   
+    public List<ResponsibleParty> getRightsHolders() {
+        return Optional.ofNullable(responsibleParties)
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter((authors) -> authors.getRole().equalsIgnoreCase("rightsHolder"))
+            .collect(Collectors.toList());
+    }
 
     public List<Funding> getFunding() {
         return Optional.ofNullable(funding)

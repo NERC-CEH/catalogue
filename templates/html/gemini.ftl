@@ -15,8 +15,17 @@
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
     catalogue = catalogues.retrieve(metadata.catalogue)
     
-    allRelationships=jena.allRelatedRecords(uri)
->
+    rel_all=jena.allRelatedRecords(uri)
+    rel_related=jena.inverseRelationships(uri, "http://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "http://vocabs.ceh.ac.uk/eidc#relatedTo")
+    rel_supersedes = jena.relationships(uri, "http://vocabs.ceh.ac.uk/eidc#produces")
+    rel_produces = jena.relationships(uri, "http://vocabs.ceh.ac.uk/eidc#supersedes")
+    rel_uses = jena.relationships(uri, "http://vocabs.ceh.ac.uk/eidc#uses")
+    rel_partOf = jena.relationships(uri, "http://vocabs.ceh.ac.uk/eidc#partOf")
+    rel_supersededBy = jena.inverseRelationships(uri, "http://vocabs.ceh.ac.uk/eidc#produces")
+    rel_producedBy = jena.inverseRelationships(uri, "http://vocabs.ceh.ac.uk/eidc#supersedes")
+    rel_usedBy = jena.inverseRelationships(uri, "http://vocabs.ceh.ac.uk/eidc#uses")
+    rel_hasPart = jena.inverseRelationships(uri, "http://vocabs.ceh.ac.uk/eidc#partOf")
+/>
 <#if useConstraints?has_content>
   <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
@@ -56,10 +65,6 @@
           </#if>
           <@blocks.linebreaks description!"" />
         </div>
-        
-        <#if allRelationships?has_content>
-          <#include "gemini/_relatedRecords.ftl" />
-        </#if>
 
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "gemini/_dates.ftl">

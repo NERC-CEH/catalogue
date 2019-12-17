@@ -62,14 +62,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     }
     
     private void process(GeminiDocument document, String id) {
-        findLinksWhere(id, parent(), IS_PART_OF).stream()
-                .findFirst().ifPresent( p -> document.setParent(p));
-
-        //document.setChildren(findLinksWhere(id, children(), IS_PART_OF));  
-        //document.setDocumentLinks(findLinksWhere(id, connectedBy(), RELATION));
-        //.setComposedOf(findLinksWhere(id, isComposedOf(), IS_PART_OF));
         document.setModelLinks(findLinksWhere(id, models(), REFERENCES));
-        
         document.setIncomingRelationships(findLinksWhere(id, eidcIncomingRelationships(), ANYREL));
     }
     

@@ -21,6 +21,7 @@ public class SolrIndex {
     private @Field String lineage;
     private @Field String resourceStatus;
     private @Field Number version;
+    private @Field List<String> rightsHolder;
     private @Field List<String> authorAffiliation;
     private @Field List<String> authorName;
     private @Field List<String> authorOrcid;
