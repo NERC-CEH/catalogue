@@ -1,9 +1,0 @@
-{
-	"id": "5b4d0ee4-49ed-4fb4-b2f6-e390ef42c00c",
-	"title": "Catchment Management Platform",
-	"alternateTitles": ["CMP"],
-	"resourceType": {
-		"value": "repository"
-	},
-	"type": "repository"
-}
