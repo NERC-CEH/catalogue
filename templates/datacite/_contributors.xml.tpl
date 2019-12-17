@@ -9,7 +9,7 @@
                 <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${contact.nameIdentifier}</nameIdentifier>
             </#if>
             <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
-                <affilation affiliationIdentifier="${contact.organisationIdentifier}" affiliationIdentifierScheme="ROR" SchemeURI="http://ror.org/">${contact.organisationName}</affilation>
+                <affiliation affiliationIdentifier="${contact.organisationIdentifier}" affiliationIdentifierScheme="ROR" SchemeURI="http://ror.org/">${contact.organisationName}</affiliation>
             <#else>
                 <affiliation>${contact.organisationName}</affiliation>
             </#if>
