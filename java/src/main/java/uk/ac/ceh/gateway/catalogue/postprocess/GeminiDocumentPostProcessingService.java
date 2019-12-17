@@ -65,21 +65,16 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         findLinksWhere(id, parent(), IS_PART_OF).stream()
                 .findFirst().ifPresent( p -> document.setParent(p));
 
-        document.setChildren(findLinksWhere(id, children(), IS_PART_OF));  
-        document.setDocumentLinks(findLinksWhere(id, connectedBy(), RELATION));
-        document.setComposedOf(findLinksWhere(id, isComposedOf(), IS_PART_OF));
+        //document.setChildren(findLinksWhere(id, children(), IS_PART_OF));  
+        //document.setDocumentLinks(findLinksWhere(id, connectedBy(), RELATION));
+        //.setComposedOf(findLinksWhere(id, isComposedOf(), IS_PART_OF));
         document.setModelLinks(findLinksWhere(id, models(), REFERENCES));
-
-        findLinksWhere(id, has(), REPLACES).stream()
-                .findFirst().ifPresent( r -> document.setRevisionOf(r));
-
-        findLinksWhere(id, isHadBy(), REPLACES).stream()
-                .findFirst().ifPresent( r -> document.setRevised(r));
+        
+        document.setIncomingRelationships(findLinksWhere(id, eidcIncomingRelationships(), ANYREL));
     }
     
     private Set<Link> findLinksWhere(String identifier, ParameterizedSparqlString pss, Property rel) {
         pss.setIri("me", identifier);
-//        pss.setParam("rel", rel);
         Set<Link> toReturn = new HashSet<>();
         try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
             qexec.execSelect().forEachRemaining(s -> {
@@ -94,51 +89,6 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         return toReturn;
     }
     
-    /**
-     * @return a sparql query which finds gemini links which are tightly coupled
-     * from the document represented by ?id by ?rel e.g.
-     * 
-     *    <http://document1> <IDENTIFIER> "doc1ID"
-     *    <http://document1> <CONNECTED_TO> <http://document2>
-     *    <http://document2> <IDENTIFIER> "doc2ID"
-     *    ...
-     * 
-     * Looking up document with id "doc1ID" and relationship <CONNECTED_TO> 
-     * will locate <http://document2>
-     */
-    private ParameterizedSparqlString has() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title ?rel " +
-            "WHERE { " +
-            "  ?me ?rel ?node . " +
-            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "}"
-        );
-    }
-    
-    /**
-     * @return a sparql query which finds gemini links which are tightly linked 
-     * to the concept specified by ?id with relationship ?rel. e.g.
-     * 
-     *    <http://document1> <IDENTIFIER> "doc1ID"
-     *    <http://document1> <CONNECTED_TO> <http://document2>
-     *    <http://document2> <IDENTIFIER> "doc2ID"
-     *    ...
-     * 
-     * Looking up document with id "doc1ID" and relationship <CONNECTED_TO> 
-     * will locate <http://document2>
-     */
-    private ParameterizedSparqlString isHadBy() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title ?rel " +
-            "WHERE { " +
-            "  ?node ?rel ?me . " +
-            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "}"
-        );
-    }
     
     /**
      * @return sparql query to find resources linked to a repository
@@ -182,6 +132,37 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
             "        <http://purl.org/dc/terms/type>  ?type . " +
             "   ?me <http://purl.org/dc/terms/type> ?myType" +
             "   FILTER ( ?myType != 'repository' )" +
+            "}"
+        );
+    }
+    
+    /**
+     * @return sparql query to find ultimate superseding resource
+     */
+    private ParameterizedSparqlString ultimateParent() {
+        return new ParameterizedSparqlString(
+            "PREFIX dc: <http://purl.org/dc/terms/> " +
+            "PREFIX : <http://vocabs.ceh.ac.uk/eidc#> " +
+            "SELECT DISTINCT ?node ?type ?title ?rel " +
+            "WHERE { " +
+            "      ?node :supersedes+ ?me; dc:title ?title; dc:type ?type." +
+            "      BIND( :supersedes as ?rel)" +
+            "    FILTER (!EXISTS {?x :supersedes ?node})" +
+            "}"
+        );
+    }
+    
+    /**
+     * @return sparql query to find relationships defined by the EIDC ontology
+     */
+    private ParameterizedSparqlString eidcIncomingRelationships() {
+        return new ParameterizedSparqlString(
+            "SELECT ?node ?type ?title ?rel " +
+            "WHERE { " +
+            "  ?node ?rel ?me . " +
+            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
+            "        <http://purl.org/dc/terms/type>  ?type . " +
+            "FILTER(regex( str(?rel), '^http://vocabs.ceh.ac.uk/eidc#' ) )" +
             "}"
         );
     }

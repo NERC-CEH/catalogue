@@ -57,7 +57,7 @@ public class JenaLookupService {
      * @return list of Links to modelApplications
      */
     public List<Link> modelApplications(String uri) {
-        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE { ?node dc:references ?me . ?node dc:title ?title . ?node dc:type 'modelApplication' }");
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {?node ?rel ?me; dc:references ?me; dc:title ?title; dc:type ?type; dc:type 'modelApplication'}");
     }
     
     /**
@@ -66,32 +66,52 @@ public class JenaLookupService {
      * @return list of Links to models
      */
     public List<Link> models(String uri) {
-        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE { ?me dc:references ?node . ?node dc:title ?title . ?node dc:type 'model' }");
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE { ?me ?rel ?node; dc:references ?node. ?node dc:title ?title; dc:type ?type; dc:type 'model'}");
     }
     
     public List<Link> datasets(String uri) {
-        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE {{{ ?me dc:references ?node } UNION { ?node dc:references ?me } ?node dc:title ?title . ?node dc:type 'dataset' } UNION { ?me dc:references ?node . ?node dc:source _:n . _:n dc:title ?title . _:n dc:type 'dataset' }}");
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {{{?me ?rel ?node; dc:references ?node.}UNION{?node ?rel ?me; dc:references ?me.} ?node dc:title ?title; dc:type ?type; dc:type 'dataset'.}UNION{?me ?rel ?node; dc:references ?node. ?node dc:source _:n . _:n dc:title ?title; dc:type ?type; dc:type 'dataset'.}}");
     }
 
     public List<Link> relationships(String uri, String relation) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE {?me ?rel ?node . ?node dc:title ?title}";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {?me ?rel ?node; ?relation ?node . ?node dc:title ?title; dc:type ?type.} ORDER BY ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
-        pss.setIri("rel", relation);
+        pss.setIri("relation", relation);
         return links(pss);
     }
 
     public List<Link> inverseRelationships(String uri, String relation) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE {?node ?rel ?me . ?node dc:title ?title}";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {?node ?rel ?me; ?relation ?me . ?node dc:title ?title; dc:type ?type.} ORDER BY ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
-        pss.setIri("rel", relation);
+        pss.setIri("relation", relation);
         return links(pss);
     }
-    
+
+    public List<Link> allRelatedRecords(String uri) {
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?rel ?title ?type WHERE {{?me ?rel ?node. ?node dc:title ?title; dc:type ?type.} UNION {?node ?rel ?me. ?node dc:title ?title; dc:type ?type.}FILTER(REGEX(STR(?rel),'^http://vocabs.ceh.ac.uk/eidc#'))}";
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
+        pss.setIri("me", uri);
+        return links(pss);
+    }
+
+
+    /**
+     * This finds the most recent version of a superseded resource
+     * i.e. if a superseded recource is iteself superseded, it will return 
+     * only the last in the chain
+     */
+    public List<Link> superseded(String uri) {
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX : <http://vocabs.ceh.ac.uk/eidc#> SELECT DISTINCT ?node ?type ?title ?rel WHERE {?node :supersedes+ ?me; dc:title ?title; dc:type ?type.BIND( :supersedes as ?rel)FILTER (!EXISTS {?x :supersedes ?node})}";
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
+        pss.setIri("me", uri);
+        return links(pss);
+    }
+
     public Link metadata(String id) {
         id = nullToEmpty(id);
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title WHERE { ?node dc:identifier ?id ; dc:title ?title . }";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {?node dc:identifier ?id; dc:title ?title; dc:type ?type. BIND(<https://vocabs.ceh.ac.uk/eidc#> as ?rel)}";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);  
         pss.setLiteral("id", id);
         return links(pss).stream().findFirst().orElse(null);
@@ -112,6 +132,8 @@ public class JenaLookupService {
                     Link.builder()
                         .title(s.getLiteral("title").getString())
                         .href(s.getResource("node").getURI())
+                        .associationType(s.getLiteral("type").getString())
+                        .rel(s.getResource("rel").getURI())
                         .build()
                 );
             });
@@ -120,7 +142,7 @@ public class JenaLookupService {
         }
         return toReturn;
     }
-    
+
     /**
      * Performs a literal lookup from the jena database for literals associated 
      * to the given uri with a specified relationship

@@ -47,7 +47,8 @@ define [
   'cs!models/editor/Service'
   'cs!models/editor/MapDataSource'
   'cs!views/editor/MapDataSourceView'
-], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView) -> EditorView.extend
+  'cs!views/editor/RelatedRecordView'
+], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView) -> EditorView.extend
 
   initialize: ->
 
@@ -68,7 +69,7 @@ define [
           ModelType: ResourceType
           label: 'Resource Type'
           ObjectInputView: ResourceTypeView
-               
+
         new InputView
           model: @model
           modelAttribute: 'title'
@@ -404,22 +405,12 @@ define [
                     """
           disabled: disabled
 
-        new InputView
+        new ParentView
           model: @model
-          modelAttribute: 'parentIdentifier'
-          label: 'Parent identifier'
-          helpText: """
-                    <p>File identifier of parent series.</p>
-                    """
-          disabled: disabled
-
-        new InputView
-          model: @model
-          modelAttribute: 'revisionOfIdentifier'
-          label: 'Revision of'
-          helpText: """
-                    <p>File Identifier of data resource being revised.</p>
-                    """
+          modelAttribute: 'relatedRecords'
+          label: 'Related records'
+          ObjectInputView: RelatedRecordView
+          multiline: true
           disabled: disabled
       ]
     ,

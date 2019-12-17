@@ -3,8 +3,9 @@
         <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
             <p>
             <i class="fas fa-info-circle fa-lg"></i> <b>THIS ${recordType?upper_case} HAS BEEN ${resourceStatus?upper_case}</b>
-                <#if revised??>
-                by <a href="${revised.href}">${revised.title}</a>
+                <#assign superseded=jena.superseded(uri) />
+                <#if superseded?has_content>
+                    by <a href="${superseded?first.href}">${superseded?first.title}</a>
                 </#if>
             </p>
             <#if reasonChanged??>

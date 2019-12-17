@@ -4,7 +4,7 @@
 </#if>
 
 
-<#if resourceStatus??>
+<#if resourceStatus?? && resourceStatus?has_content>
   <div class="panel panel-default hidden-print" id="document-distribution">
     <div class="panel-heading">
       <p class="panel-title">Get the data</p>

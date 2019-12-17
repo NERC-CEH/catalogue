@@ -1,3 +1,4 @@
+<#-- NEEDS UPDATING  -->
 <#if doc.onlineResources?has_content>
 <#assign infoResources = func.filterRegex(func.filter(doc.onlineResources, "function", "information"), "url", "https://data-package.ceh.ac.uk/sd/")>
 </#if>

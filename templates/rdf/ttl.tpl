@@ -73,6 +73,7 @@
   </#if>
   
   dct:language "eng" ;
+  <#-- NEEDS UPDATING  -->
   <#if parentIdentifier?has_content>
    dct:isPartOf <https://catalogue.ceh.ac.uk/id/${parentIdentifier}> ;
   </#if>

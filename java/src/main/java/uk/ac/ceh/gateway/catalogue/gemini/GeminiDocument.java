@@ -42,7 +42,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 })
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
-    private String otherCitationDetails, browseGraphicUrl, lineage, reasonChanged,
+    private String otherCitationDetails, lineage, reasonChanged,
         metadataStandardName, metadataStandardVersion, parentIdentifier, revisionOfIdentifier,
         projectImageUrl;
     private Number version;
@@ -59,10 +59,11 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
-    private Link parent, revised, revisionOf;
-    private Set<Link> documentLinks, children, composedOf, modelLinks, modelApplicationLinks;
+    private Link parent;
+    private Set<Link> modelLinks, modelApplicationLinks, incomingRelationships;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<Supplemental> supplemental;
+    private List<RelatedRecord> relatedRecords;
     @JsonIgnore
     private Citation citation;
     @JsonIgnore
@@ -77,6 +78,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
+
     
     @Override
     public String getType() {
@@ -135,17 +137,11 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     
     public Set<Link> getAssociatedResources() {
         Set<Link> toReturn = new HashSet<>();
-        if (children != null) {
-            toReturn.addAll(children);
-        }
-        if (documentLinks != null) {
-            toReturn.addAll(documentLinks);
+        if (incomingRelationships != null) {
+            toReturn.addAll(incomingRelationships);
         }
         if (parent != null) {
             toReturn.add(parent);
-        }
-        if (revisionOf != null) {
-            toReturn.add(revisionOf);
         }
         return toReturn;
     }

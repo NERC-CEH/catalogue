@@ -15,6 +15,8 @@ public class Ontology {
     public static final Property REFERENCES = ResourceFactory.createProperty("http://purl.org/dc/terms/references");
     public static final Property SOURCE = ResourceFactory.createProperty("http://purl.org/dc/terms/source");
 
+    public static final Property ANYREL = ResourceFactory.createProperty("http://vocabs.ceh.ac.uk/eidc#");
+
     public static final Property SET_UP_FOR = ResourceFactory.createProperty("http://purl.org/voc/ef#setUpFor");
     public static final Property USES = ResourceFactory.createProperty("http://purl.org/voc/ef#uses");
     public static final Property INVOLVED_IN = ResourceFactory.createProperty("http://purl.org/voc/ef#involvedIn");

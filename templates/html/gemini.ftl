@@ -14,6 +14,8 @@
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
     catalogue = catalogues.retrieve(metadata.catalogue)
+    
+    allRelationships=jena.allRelatedRecords(uri)
 >
 <#if useConstraints?has_content>
   <#assign licences = func.filter(useConstraints, "code", "license")>
@@ -32,6 +34,7 @@
     </#if>
   </#list>
 </#macro>
+
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
 
   <div id="metadata">
@@ -54,6 +57,10 @@
           <@blocks.linebreaks description!"" />
         </div>
         
+        <#if allRelationships?has_content>
+          <#include "gemini/_relatedRecords.ftl" />
+        </#if>
+
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "gemini/_dates.ftl">
           <div class="row">
@@ -77,9 +84,12 @@
                  <#include "gemini/_distribution_signpost.ftl">
               </#if>
 
-              <#include "gemini/_children.ftl">
-              <#include "gemini/_related.ftl">
-              <#include "gemini/_model.ftl">
+              <#-- to be replaced with related records -->
+                <#include "gemini/_children.ftl">
+                <#include "gemini/_related.ftl">
+                <#include "gemini/_model.ftl">
+              <#-- END OF to be replaced -->
+
               <#if metadata.catalogue != "eidc" && projectImageUrl??>
                 <img src="${projectImageUrl}" alt="project image"/>
               </#if>

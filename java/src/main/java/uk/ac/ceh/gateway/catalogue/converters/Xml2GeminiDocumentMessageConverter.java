@@ -33,7 +33,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final XPathExpression description;
     private final XPathExpression alternateTitle;
     private final XPathExpression resourceType;
-    private final XPathExpression browseGraphicUrl;
     private final XPathExpression resourceStatus;
     private final XPathExpression metadataDate;
     private final XPathExpression lineage;
@@ -77,7 +76,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.distributorConverter = new ResponsiblePartyConverter(xpath, XPaths.DISTRIBUTOR);
         this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath, XPaths.RESPONSIBLE_PARTY);
         this.boundingBoxesConverter = new BoundingBoxesConverter(xpath);
-        this.browseGraphicUrl = xpath.compile(XPaths.BROWSE_GRAPHIC_URL);
         this.temporalExtentConverter = new TemporalExtentConverter(xpath);
         this.resourceStatus = xpath.compile(XPaths.RESOURCE_STATUS);
         this.spatialReferenceSystem = new SpatialReferenceSystemConverter(xpath);
@@ -128,7 +126,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setResourceIdentifiers(resourceIdentifierConverter.convert(document));
             toReturn.setDistributorContacts(distributorConverter.convert(document));
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
-            toReturn.setBrowseGraphicUrl(emptyToNull(browseGraphicUrl.evaluate(document)));
             toReturn.setTemporalExtents(temporalExtentConverter.convert(document));
             toReturn.setSpatialReferenceSystems(spatialReferenceSystem.convert(document));
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));

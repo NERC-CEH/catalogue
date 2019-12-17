@@ -95,6 +95,7 @@ dcat:contributor
 ;
 </#if>
 
+<#-- NEEDS UPDATING  -->
 <#--Associated resources-->
 <#if associatedResources?has_content>
 <#assign parents = func.filter(associatedResources, "associationType", "series") + func.filter(associatedResources, "associationType", "aggregate") + func.filter(associatedResources, "associationType", "collection")>

@@ -1,6 +1,8 @@
-<#if children??>
+<#assign childRecords = jena.inverseRelationships(uri, "http://vocabs.ceh.ac.uk/eidc#partOf")  >
+
+<#if childRecords??>
 	<div id="section-children">
-		<#list children?sort_by("title")>
+		<#list childRecords?sort_by("title")>
 			<div class="children">
 			<#items as child>
 				<#if child.associationType = 'dataset' ||  child.associationType = 'nonGeographicDataset' ||  child.associationType = 'signpost'>
@@ -23,4 +25,5 @@
 		</#list>
 	</div>
 </#if>
+
 <#include "_supplemental.ftl">
