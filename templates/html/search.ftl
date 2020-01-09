@@ -1,7 +1,7 @@
 <#import "skeleton.ftl" as skeleton>
 <#assign docroot="documents">
 
-<@skeleton.master title="Search" catalogue=catalogue searching=true>
+<@skeleton.master title="Search" catalogue=catalogue searching=true containerClass="container-fluid">
   <div class="search facets-mode" id="search">
 
     <div class="filters-panel">

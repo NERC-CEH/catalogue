@@ -90,7 +90,7 @@ public class JenaLookupService {
     }
 
     public List<Link> allRelatedRecords(String uri) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?rel ?title ?type WHERE {{?me ?rel ?node. ?node dc:title ?title; dc:type ?type.} UNION {?node ?rel ?me. ?node dc:title ?title; dc:type ?type.}FILTER(REGEX(STR(?rel),'^http://vocabs.ceh.ac.uk/eidc#'))}";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?rel ?title ?type WHERE {{?me ?rel ?node. ?node dc:title ?title; dc:type ?type.} UNION {?node ?rel ?me. ?node dc:title ?title; dc:type ?type.}FILTER(REGEX(STR(?rel),'^https://vocabs.ceh.ac.uk/eidc#'))}";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);
@@ -103,7 +103,7 @@ public class JenaLookupService {
      * only the last in the chain
      */
     public List<Link> superseded(String uri) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX : <http://vocabs.ceh.ac.uk/eidc#> SELECT DISTINCT ?node ?type ?title ?rel WHERE {?node :supersedes+ ?me; dc:title ?title; dc:type ?type.BIND( :supersedes as ?rel)FILTER (!EXISTS {?x :supersedes ?node})}";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT DISTINCT ?node ?type ?title ?rel WHERE {?node :supersedes+ ?me; dc:title ?title; dc:type ?type.BIND( :supersedes as ?rel)FILTER (!EXISTS {?x :supersedes ?node})}";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);

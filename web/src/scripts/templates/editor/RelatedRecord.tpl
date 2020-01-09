@@ -13,11 +13,11 @@
    </div>
    <div class="col-sm-10">
     <select  data-name="rel" id="relationship<%= data.index %>Rel" class="editor-input rel">
-        <option value='http://vocabs.ceh.ac.uk/eidc#produces'>PRODUCES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a model produces a dataset)</option>
-        <option value='http://vocabs.ceh.ac.uk/eidc#relatedTo'>RELATED TO</option>
-        <option value='http://vocabs.ceh.ac.uk/eidc#supersedes'>SUPERSEDES</option>
-        <option value='http://vocabs.ceh.ac.uk/eidc#uses'>USES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a service uses a dataset)</option>
-        <option value='http://vocabs.ceh.ac.uk/eidc#partOf'>PART OF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a dataset is part of a data collection)</option>
+        <option value='https://vocabs.ceh.ac.uk/eidc#generates'>GENERATES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a model generates a dataset)</option>
+        <option value='https://vocabs.ceh.ac.uk/eidc#relatedTo'>RELATED TO</option>
+        <option value='https://vocabs.ceh.ac.uk/eidc#supersedes'>SUPERSEDES</option>
+        <option value='https://vocabs.ceh.ac.uk/eidc#uses'>USES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a service uses a dataset)</option>
+        <option value='https://vocabs.ceh.ac.uk/eidc#memberOf'>MEMBER OF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a dataset is a member of a data collection)</option>
       </select>
   </div>
 </div>

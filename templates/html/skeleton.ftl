@@ -1,7 +1,7 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false>
+<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container">
 <#compress>
 <!DOCTYPE html>
 <html lang="en-GB" <#if catalogue?has_content>data-catalogue=${catalogue.id}</#if>>
@@ -42,7 +42,7 @@
   </head>
   <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-      <div class="container-fluid">
+      <div class="${containerClass}">
         <div id="sso-brand" class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>

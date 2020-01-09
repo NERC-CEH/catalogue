@@ -5,14 +5,12 @@
 
 
 <#if resourceStatus?? && resourceStatus?has_content>
-  <div class="panel panel-default hidden-print" id="document-distribution">
-    <div class="panel-heading">
+  <div class=" hidden-print" id="document-distribution">
+    
       <p class="panel-title">Get the data</p>
-    </div>
-    <div class="panel-body">
       <div class="distribution-dataset">
         <#include "_status.ftl">
-        <#include "_licence.ftl">
+        
         <#if resourceStatus == "Available" || resourceStatus == "Controlled">
           <#if offlineOrders?? || downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) || mapViewable?? >
             <div class="onlineResourceLinks">
@@ -49,15 +47,18 @@
             <#if mapViewable>
               <div class="preview"><a href="${mapViewerUrl?html}"><i class="fas fa-eye text-info"></i> Preview</a></div>
             </#if>
+      
             </div>
           </#if>
 
-        <div class="divider"></div>
+          <div class="divider"></div>
+          <#include "_licence.ftl">
         </#if>
+        
         <#include "_formats.ftl">
         <#include "_citation.ftl">
         <#include "_otherUseConstraints.ftl">
       </div>
-    </div>
+    
   </div>
   </#if>

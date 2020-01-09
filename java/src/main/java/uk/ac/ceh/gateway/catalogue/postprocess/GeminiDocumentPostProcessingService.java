@@ -62,7 +62,6 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     }
     
     private void process(GeminiDocument document, String id) {
-        document.setModelLinks(findLinksWhere(id, models(), REFERENCES));
         document.setIncomingRelationships(findLinksWhere(id, eidcIncomingRelationships(), ANYREL));
     }
     
@@ -135,7 +134,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     private ParameterizedSparqlString ultimateParent() {
         return new ParameterizedSparqlString(
             "PREFIX dc: <http://purl.org/dc/terms/> " +
-            "PREFIX : <http://vocabs.ceh.ac.uk/eidc#> " +
+            "PREFIX : <https://vocabs.ceh.ac.uk/eidc#> " +
             "SELECT DISTINCT ?node ?type ?title ?rel " +
             "WHERE { " +
             "      ?node :supersedes+ ?me; dc:title ?title; dc:type ?type." +
@@ -155,7 +154,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
             "  ?node ?rel ?me . " +
             "  ?node <http://purl.org/dc/terms/title> ?title ; " +
             "        <http://purl.org/dc/terms/type>  ?type . " +
-            "FILTER(regex( str(?rel), '^http://vocabs.ceh.ac.uk/eidc#' ) )" +
+            "FILTER(regex( str(?rel), '^https://vocabs.ceh.ac.uk/eidc#' ) )" +
             "}"
         );
     }
