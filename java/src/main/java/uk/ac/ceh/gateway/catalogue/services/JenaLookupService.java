@@ -96,14 +96,25 @@ public class JenaLookupService {
         return links(pss);
     }
 
-
     /**
      * This finds the most recent version of a superseded resource
-     * i.e. if a superseded recource is iteself superseded, it will return 
+     * i.e. if a superseded recource is itself superseded, it will return 
      * only the last in the chain
      */
     public List<Link> superseded(String uri) {
         String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT DISTINCT ?node ?type ?title ?rel WHERE {?node :supersedes+ ?me; dc:title ?title; dc:type ?type.BIND( :supersedes as ?rel)FILTER (!EXISTS {?x :supersedes ?node})}";
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
+        pss.setIri("me", uri);
+        return links(pss);
+    }
+
+    /**
+     * This finds resources that the current resource supersedes
+     * (if the resource is not itself superseded)
+     * and orders them by distance to the most recent version
+     */
+    public List<Link> supersedes(String uri) {
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT ?node ?type ?title ?rel WHERE {?me (:supersedes)+ ?mid. ?mid(:supersedes)* ?node. ?node dc:title ?title; dc:type ?type. BIND( :supersededBy as ?rel) FILTER (!EXISTS {?x :supersedes ?me})} GROUP BY ?node ?type ?title ?rel HAVING (COUNT(?mid) > 0) ORDER BY COUNT(?mid)";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);

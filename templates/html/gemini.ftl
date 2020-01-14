@@ -18,13 +18,13 @@
     rel_all=jena.allRelatedRecords(uri)
     rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
     rel_generates = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
-    rel_supersedes = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
     rel_uses = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
     rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
     rel_generatedBy= jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
     rel_supersededBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
     rel_usedBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
     rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
+    rel_supersedes = jena.supersedes(uri)
 />
 <#if useConstraints?has_content>
   <#assign licences = func.filter(useConstraints, "code", "license")>
@@ -54,7 +54,12 @@
       <#include "gemini/_admin.ftl">
       <div id="section-Top">
         <#include "gemini/_title.ftl">
+
       </div>
+
+      <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
+        <#include "gemini/_latestVersion.ftl">
+      </#if>
 
       <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
         <#include "gemini/_metadataqualityAlert.ftl">
@@ -70,6 +75,7 @@
 
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "gemini/_dates.ftl">
+                    
           <div class="row">
             <div class="col-sm-4 col-sm-push-8 panel-right">
               <#include "gemini/_uploadData.ftl">
