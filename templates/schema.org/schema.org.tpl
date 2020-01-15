@@ -177,7 +177,7 @@
         </#if>
         },
     </#if>
-  "provider" : {"@type":"Organization","name":"NERC Environmental Information Data Centre"},
+  "provider" : {"@type":"Organization","name":"Environmental Information Data Centre"},
   "includedInDataCatalog":{"@type":"DataCatalog", "name":"Environmental Information Data Centre", "alternatename":"EIDC", "url":"https://catalogue.ceh.ac.uk/eidc/documents"},
   </#if>
   "@context":"http://schema.org/"

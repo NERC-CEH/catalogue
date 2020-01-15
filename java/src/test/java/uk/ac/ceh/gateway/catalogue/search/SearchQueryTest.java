@@ -1,28 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.solr.client.solrj.SolrQuery;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasItemInArray;
-import static org.junit.Assert.*;
-import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.BDDMockito.given;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.BDDMockito.given;
+
+@RunWith(MockitoJUnitRunner.Strict.class)
 public class SearchQueryTest {
     static final String ENDPOINT = "http://catalogue.com/documents";
     static final String DEFAULT_BBOX = null;
@@ -34,11 +31,6 @@ public class SearchQueryTest {
     static final List<Facet> DEFAULT_FACETS = FACET_FACTORY.newInstances(
         Arrays.asList("resourceType","licence")
     );
-    
-    @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-    }
     
     @Test
     public void queryHasCatalogueAsViewFilter() {
@@ -308,37 +300,6 @@ public class SearchQueryTest {
         assertThat("Solr query should have resourceType filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=resourceType}dataset"));
     }
     
-    @Test(expected=IllegalArgumentException.class)
-    public void exceptionThrownWhenBBOXIsContainsText() {
-        //Given
-        String bbox = "my,invalid,bbox,attempt";
-        
-        SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            bbox,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
-                .builder()
-                .id("eidc")
-                .title("Environmental Information Data Centre")
-                .url("https://eidc-catalogue.ceh.ac.uk")
-                .build(),
-            DEFAULT_FACETS
-        );
-        
-        //When
-        SolrQuery solrQuery = query.build();
-        
-        //Then
-        fail("Expected to get an illegal argument exception");
-    }
-    
     @Test
     public void noExceptionThrownWhenBBoxIsValid() {
         //Given
@@ -367,7 +328,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Expected to fild a solr bbox filter", solrQuery.getFilterQueries(), hasItemInArray("locations:\"IsWithin(1.11 2.22 3.33 4.44)\""));
+        assertThat("Expected to fild a solr bbox filter", solrQuery.getFilterQueries(), hasItemInArray("locations:\"IsWithin(1.11,2.22,3.33,4.44)\""));
     }
     
      @Test
@@ -398,7 +359,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Expected to fild a solr bbox filter", solrQuery.getFilterQueries(), hasItemInArray("locations:\"Intersects(1.11 2.22 3.33 4.44)\""));
+        assertThat("Expected to find a solr bbox filter", solrQuery.getFilterQueries(), hasItemInArray("locations:\"Intersects(1.11,2.22,3.33,4.44)\""));
     }
     
     @Test

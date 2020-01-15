@@ -217,5 +217,5 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['clean:test', 'coffee', 'jasmine']);
   grunt.registerTask('develop', ['less', 'copy:requirejs', 'concurrent:watch']);
   grunt.registerTask('build', ['clean', 'less', 'cssmin', 'requirejs']);
-  grunt.registerTask('default', ['prep', 'build', 'test']);
+  grunt.registerTask('default', ['prep', 'test', 'build']);
 };

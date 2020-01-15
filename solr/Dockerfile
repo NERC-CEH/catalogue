@@ -1,3 +1,7 @@
-FROM registry.gitlab.ceh.ac.uk/eip/solr:2
+FROM solr:8.3
+LABEL maintainer="oss@ceh.ac.uk"
 
-COPY config /var/solr
+COPY jts-core-1.16.1.jar /opt/solr/server/solr-webapp/webapp/WEB-INF/lib/
+COPY documents /opt/solr/server/solr/configsets/documents
+
+CMD ["solr-precreate", "documents", "/opt/solr/server/solr/configsets/documents"]

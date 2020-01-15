@@ -1,13 +1,22 @@
+<#--
 <#import "../underscore.tpl" as _>
+<#assign authors = _.filter(doc.responsibleParties, _.isAuthor)>
+-->
 <#import "../functions.tpl" as func>
-<#assign authors = _.filter(doc.responsibleParties, _.isAuthor) >
+<#assign authors = func.filter(doc.responsibleParties, "role", "author")>
+<#assign pocs = func.filter(doc.responsibleParties, "role", "pointOfContact")>
+<#assign rightsHolders = func.filter(doc.responsibleParties, "role", "rightsHolder")>
+<#assign custodians = func.filter(doc.responsibleParties, "role", "custodian")>
+
 <#compress>
 <#escape x as x?xml>
 <?xml version="1.0" encoding="UTF-8"?>
 <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.2/metadata.xsd">
   <identifier identifierType="DOI">${doi}</identifier>
   
-  <#include "_creators.xml.tpl">
+  <#if authors?has_content>
+    <#include "_creators.xml.tpl">
+  </#if>
 
   <titles>
     <title>${doc.title}</title>
@@ -29,6 +38,11 @@
     </#list>
   </subjects>
   </#if>
+
+  <#if (pocs?? && pocs?has_content) || (rightsHolders?? && rightsHolders?has_content) || (custodians?? && custodians?has_content) >
+    <#include "_contributors.xml.tpl">
+  </#if>
+
   <dates>
     <#setting date_format = 'yyyy-MM-dd'>
     <date dateType="Submitted">${doc.datasetReferenceDate.publicationDate}</date>
@@ -43,6 +57,7 @@
   <#if resourceType?has_content>
     <resourceType resourceTypeGeneral="${resourceType}"/>
   </#if>
+
   <#if doc.resourceIdentifiers?has_content>
   <alternateIdentifiers>
     <#list doc.resourceIdentifiers as uri>
@@ -83,26 +98,26 @@
   </#if>
   <#if doc.funding?has_content>
   <fundingReferences>
-  <#list doc.funding as funder>
-    <fundingReference>
-      <funderName>${funder.funderName}</funderName>
-      <#if funder.funderIdentifier?has_content>
-        <#if funder.funderIdentifier?matches("^http(|s)://ror.org/[0-9a-z]+$")>
-          <funderIdentifier funderIdentifierType="Other">${funder.funderIdentifier}</funderIdentifier>
-        <#elseif funder.funderIdentifier?matches("^http(|s)://(|dx.)doi.org/10.13039/\\d+$")>
-          <funderIdentifier funderIdentifierType="Crossref Funder">${funder.funderIdentifier}</funderIdentifier>
-        <#else>
-          <funderIdentifier funderIdentifierType="Other">${funder.funderIdentifier}</funderIdentifier>
+    <#list doc.funding as funder>
+      <fundingReference>
+        <funderName>${funder.funderName}</funderName>
+        <#if funder.funderIdentifier?has_content>
+          <#if funder.funderIdentifier?matches("^http(|s)://ror.org/[0-9a-z]+$")>
+            <funderIdentifier funderIdentifierType="Other">${funder.funderIdentifier}</funderIdentifier>
+          <#elseif funder.funderIdentifier?matches("^http(|s)://(|dx.)doi.org/10.13039/\\d+$")>
+            <funderIdentifier funderIdentifierType="Crossref Funder">${funder.funderIdentifier}</funderIdentifier>
+          <#else>
+            <funderIdentifier funderIdentifierType="Other">${funder.funderIdentifier}</funderIdentifier>
+          </#if>
         </#if>
-      </#if>
-      <#if funder.awardNumber?has_content>
-        <awardNumber>${funder.awardNumber}</awardNumber>
-      </#if>
-      <#if funder.awardTitle?has_content>
-        <awardTitle>${funder.awardTitle}</awardTitle>
-      </#if>
-    </fundingReference>
-  </#list>
+        <#if funder.awardNumber?has_content>
+          <awardNumber>${funder.awardNumber}</awardNumber>
+        </#if>
+        <#if funder.awardTitle?has_content>
+          <awardTitle>${funder.awardTitle}</awardTitle>
+        </#if>
+      </fundingReference>
+    </#list>
   </fundingReferences>
   </#if>
 </resource>

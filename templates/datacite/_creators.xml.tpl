@@ -1,5 +1,4 @@
 <#escape x as x?xml>
-<#if authors?has_content>
   <creators>
   <#list authors as author>
     <#if author.individualName?has_content>
@@ -11,8 +10,7 @@
         <#elseif author.nameIdentifier?matches("^http://isni.org/\\d{16}$")>
           <nameIdentifier nameIdentifierScheme="ISNI" schemeURI="http://isni.org/">${author.nameIdentifier}</nameIdentifier>
         </#if>
-      </#if>
-      
+      </#if> 
       <#if author.organisationName?has_content>
         <#if author.organisationIdentifier?has_content && author.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
            <affiliation affiliationIdentifier="${author.organisationIdentifier}" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">${author.organisationName}</affiliation>
@@ -20,11 +18,9 @@
           <affiliation>${author.organisationName}</affiliation>
         </#if>
       </#if>
-
     </creator>
     </#if>
   </#list>
   </creators>
-</#if>
 </#escape>
 

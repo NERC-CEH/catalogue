@@ -161,8 +161,8 @@ define [
           ObjectInputView: ContactView
           multiline: true
           predefined:
-            'Author - CEH':
-              organisationName: 'Centre for Ecology & Hydrology'
+            'Author - UKCEH':
+              organisationName: 'UK Centre for Ecology & Hydrology'
               role: 'author'
               email: 'enquiries@ceh.ac.uk'
               organisationIdentifier: 'https://ror.org/00pggkr55'
@@ -173,8 +173,8 @@ define [
               organisationName: 'Environmental Information Data Centre'
               role: 'custodian'
               email: 'eidc@ceh.ac.uk'
-            'Point of contact - CEH Bangor':
-              organisationName: 'Centre for Ecology & Hydrology'
+            'Point of contact - UKCEH Bangor':
+              organisationName: 'UK Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
               organisationIdentifier: 'https://ror.org/00pggkr55'
@@ -184,8 +184,8 @@ define [
                 city: 'Bangor'
                 administrativeArea: 'Gwynedd'
                 country: 'United Kingdom'
-            'Point of contact - CEH Edinburgh':
-              organisationName: 'Centre for Ecology & Hydrology'
+            'Point of contact - UKCEH Edinburgh':
+              organisationName: 'UK Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
               organisationIdentifier: 'https://ror.org/00pggkr55'
@@ -195,8 +195,8 @@ define [
                 city: 'Penicuik'
                 administrativeArea: 'Midlothian'
                 country: 'United Kingdom'
-            'Point of contact - CEH Lancaster':
-              organisationName: 'Centre for Ecology & Hydrology'
+            'Point of contact - UKCEH Lancaster':
+              organisationName: 'UK Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
               organisationIdentifier: 'https://ror.org/00pggkr55'
@@ -206,8 +206,8 @@ define [
                 city: 'Lancaster'
                 administrativeArea: 'Lancashire'
                 country: 'United Kingdom'
-            'Point of contact - CEH Wallingford':
-              organisationName: 'Centre for Ecology & Hydrology'
+            'Point of contact - UKCEH Wallingford':
+              organisationName: 'UK Centre for Ecology & Hydrology'
               role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
               organisationIdentifier: 'https://ror.org/00pggkr55'
@@ -221,6 +221,11 @@ define [
               organisationName: 'NERC Environmental Information Data Centre'
               role: 'publisher'
               email: 'eidc@ceh.ac.uk'
+            'Rights holder - UKCEH':
+              organisationName: 'UK Centre for Ecology & Hydrology'
+              role: 'rightsHolder'
+              email: 'enquiries@ceh.ac.uk'
+              organisationIdentifier: 'https://ror.org/00pggkr55'
           helpText: """
                     <p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
                     <p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
@@ -349,12 +354,6 @@ define [
           ObjectInputView: ResourceConstraintView
           multiline: true
           predefined:
-            'Copyright - CEH (NERC)':
-              value: '© Centre for Ecology & Hydrology (Natural Environment Research Council)'
-              code: 'copyright'
-            'Copyright - NERC':
-              value: '© Natural Environment Research Council'
-              code: 'copyright'
             'Licence - OGL':
               value: 'This resource is available under the terms of the Open Government Licence'
               uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL/plain'

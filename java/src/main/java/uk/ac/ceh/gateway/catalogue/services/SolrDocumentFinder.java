@@ -1,23 +1,21 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.response.QueryResponse;
-
 import lombok.val;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
+import java.util.List;
+
 public class SolrDocumentFinder<T extends MetadataDocument> {
-  private final SolrServer solrServer;
+  private final SolrClient solrClient;
   private final DocumentReader<T> documentReader;
   private final Class<T> clazz;
 
-  public SolrDocumentFinder(SolrServer solrServer, Class<T> clazz) {
-    this.solrServer = solrServer;
+  public SolrDocumentFinder(SolrClient solrClient, Class<T> clazz) {
+    this.solrClient = solrClient;
     this.clazz = clazz;
     this.documentReader = new DocumentReader<T>();
   }
@@ -33,7 +31,7 @@ public class SolrDocumentFinder<T extends MetadataDocument> {
     solrQuery.setStart(start);
     solrQuery.setQuery(query);
     try {
-      QueryResponse qr = solrServer.query(solrQuery);
+      QueryResponse qr = solrClient.query(solrQuery);
       val solrDocumentList = qr.getResults();
       for (val solrDocument : solrDocumentList) {
         String guid = (String) solrDocument.getFieldValue("identifier");
