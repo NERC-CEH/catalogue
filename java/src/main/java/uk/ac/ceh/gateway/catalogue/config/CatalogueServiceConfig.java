@@ -233,7 +233,6 @@ public class CatalogueServiceConfig {
                 .facetKey("funder")
                 .documentType(gemini)
                 .documentType(dataType)
-                .documentType(cehModel)
                 .fileUpload(false)
                 .build(),
 

@@ -27,7 +27,7 @@ import uk.ac.ceh.gateway.catalogue.services.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 public class GeminiDocumentPostProcessingServiceTest {    
- /*    @Mock CitationService citationService;
+    @Mock CitationService citationService;
     @Mock DataciteService dataciteService;
     @Mock DocumentIdentifierService documentIdentifierService;
     private Dataset jenaTdb;
@@ -41,7 +41,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         service = new GeminiDocumentPostProcessingService(citationService, dataciteService, jenaTdb, documentIdentifierService);
     }
     
-    @Ignore
+    
     @Test
     public void checkAddsCitationInIfPresent() throws PostProcessingException {
         //Given
@@ -57,6 +57,7 @@ public class GeminiDocumentPostProcessingServiceTest {
         verify(document).setCitation(citation);
     }
     
+/* I think these will have to be rewritten but I don't really understand what they are for
     @Test
     public void checkThatCanScanLinksToFindParent() throws PostProcessingException {
         //Given
@@ -78,7 +79,6 @@ public class GeminiDocumentPostProcessingServiceTest {
         assertThat(document.getParent().getAssociationType(), equalTo("Person"));
     }
     
-    @Ignore
     @Test
     public void checkThatCanFindChildren() throws PostProcessingException {
         //Given
@@ -105,7 +105,6 @@ public class GeminiDocumentPostProcessingServiceTest {
                 .build()));
     }
     
-    @Ignore
     @Test
     public void checkThatCanFindDocumentsLinkedTo() throws PostProcessingException {
         //Given
@@ -131,7 +130,6 @@ public class GeminiDocumentPostProcessingServiceTest {
                 .build()));
     }
        
-    @Ignore
     @Test
     public void checkThatCanFindDocumentsLinkedFrom() throws PostProcessingException {
         //Given
@@ -157,7 +155,6 @@ public class GeminiDocumentPostProcessingServiceTest {
                 .build()));
     }
    
-    @Ignore
     @Test
     public void checkCanFindModelLinks() throws PostProcessingException {
         //Given
@@ -181,5 +178,5 @@ public class GeminiDocumentPostProcessingServiceTest {
                 .href("http://model")
                 .rel("http://purl.org/dc/terms/references")
                 .build()));
-    } */
-}
+    }
+ */}

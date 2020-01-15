@@ -38,7 +38,7 @@ public class JenaLookupServiceTest {
         jenaTdb = TDBFactory.createDataset();
         service = new JenaLookupService(jenaTdb);
     }
-/* 
+/*  Presumably these need re-writing but I don't understand them
     @Test
     public void lookupRelationships() {
         //Given

@@ -61,7 +61,7 @@
         <#include "gemini/_latestVersion.ftl">
       </#if>
 
-      <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+      <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
         <#include "gemini/_metadataqualityAlert.ftl">
       </#if>  
 
@@ -126,7 +126,7 @@
             </div>
           </div>
           
-          <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+          <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
             <#include "gemini/_metadataqualityReport.ftl">
           </#if>
 

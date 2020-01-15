@@ -72,13 +72,13 @@ public class MetadataQualityService {
             if (isQualifyingDocument(parsedDoc, parsedMeta)) {
                 val checks = new ArrayList<MetadataCheck>();
                 checkBasics(parsedDoc).ifPresent(checks::addAll);
-                checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
-                checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
-                checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
+                checkPublishedData(parsedDoc).ifPresent(checks::addAll);
                 checkDataset(parsedDoc).ifPresent(checks::addAll);
                 checkService(parsedDoc).ifPresent(checks::addAll);
-                checkStuff(parsedDoc).ifPresent(checks::addAll);
+                checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
                 checkSignpost(parsedDoc).ifPresent(checks::addAll);
+                checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
+                checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
                 checkDownloadAndOrderLinks(parsedDoc).ifPresent(checks::addAll);
                 checkEmbargo(parsedDoc).ifPresent(checks::addAll);
                 return new Results(checks, id);
@@ -99,10 +99,10 @@ public class MetadataQualityService {
     }
 
     Optional<List<MetadataCheck>> checkBasics(DocumentContext parsedDoc) {
-        val requiredKeys = ImmutableSet.of("title", "description", "lineage", "resourceStatus", "resourceType");
+        val requiredKeys = ImmutableSet.of("title", "description", "resourceType");
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsedDoc.read(
-            "$.['title','description','lineage','resourceStatus']",
+            "$.['title','description']",
             new TypeRef<Map<String, String>>() {}
             );
         toCheck.put("resourceType", parsedDoc.read("$.resourceType.value", String.class));
@@ -111,13 +111,6 @@ public class MetadataQualityService {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
             }
         });
-        val licences = parsedDoc.read("$.useConstraints[*][?(@.code == 'license')]", typeRefStringString);
-        if (licences == null || licences.isEmpty()) {
-            toReturn.add(new MetadataCheck("Licence is missing", ERROR));
-        }
-        if (licences != null && licences.size() > 1) {
-            toReturn.add(new MetadataCheck("There should be only ONE licence", ERROR));
-        }
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -135,6 +128,7 @@ public class MetadataQualityService {
             return Optional.empty();
         }
     }
+
 
     private Optional<List<MetadataCheck>> checkTemporalExtents(DocumentContext parsedDoc) {
         if ( !notRequiredResourceTypes(parsedDoc, "application")) {
@@ -307,11 +301,30 @@ public class MetadataQualityService {
         }
     }
 
-    Optional<List<MetadataCheck>> checkStuff(DocumentContext parsed) {
+    Optional<List<MetadataCheck>> checkPublishedData(DocumentContext parsed) {
         if (notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return Optional.empty();
         }
+
+        val requiredKeys = ImmutableSet.of("resourceStatus", "lineage");
         val toReturn = new ArrayList<MetadataCheck>();
+        val toCheck = parsed.read(
+            "$.['resourceStatus', 'lineage']",
+            new TypeRef<Map<String, String>>() {}
+            );
+        requiredKeys.forEach(key -> {
+            if (fieldIsMissing(toCheck, key)) {
+                toReturn.add(new MetadataCheck(key + " is missing", ERROR));
+            }
+        });
+        val licences = parsed.read("$.useConstraints[*][?(@.code == 'license')]", typeRefStringString);
+        if (licences == null || licences.isEmpty()) {
+            toReturn.add(new MetadataCheck("Licence is missing", ERROR));
+        }
+        if (licences != null && licences.size() > 1) {
+            toReturn.add(new MetadataCheck("There should be only ONE licence", ERROR));
+        }
+
         checkAuthors(parsed).ifPresent(toReturn::addAll);        
         checkKeywords(parsed).ifPresent(toReturn::add);
         checkTopicCategories(parsed).ifPresent(toReturn::add);
