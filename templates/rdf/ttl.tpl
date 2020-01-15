@@ -73,9 +73,13 @@
   </#if>
   
   dct:language "eng" ;
-  <#-- NEEDS UPDATING  -->
-  <#if parentIdentifier?has_content>
-   dct:isPartOf <https://catalogue.ceh.ac.uk/id/${parentIdentifier}> ;
+  <#assign rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
+  <#if rel_memberOf?has_content && rel_memberOf?size gt 0>
+  dct:isPartOf
+    <#list rel_memberOf as item>
+      <${item.href}><#sep>,
+    </#list>
+  ;
   </#if>
 
   <#-- Subjects -->

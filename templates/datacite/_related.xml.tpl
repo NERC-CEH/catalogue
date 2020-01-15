@@ -1,14 +1,18 @@
-<#-- NEEDS UPDATING  -->
 <#if doc.onlineResources?has_content>
-<#assign infoResources = func.filterRegex(func.filter(doc.onlineResources, "function", "information"), "url", "https://data-package.ceh.ac.uk/sd/")>
+  <#assign infoResources = func.filterRegex(func.filter(doc.onlineResources, "function", "information"), "url", "https://data-package.ceh.ac.uk/sd/")>
 </#if>
-
+<#if doc.incomingRelationships?has_content>
+  <#assign rel_supersededBy = func.filter(doc.incomingRelationships, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
+</#if>
+<#if doc.relatedRecords?has_content>
+  <#assign rel_supersedes = func.filter(doc.relatedRecords, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
+</#if>
 <#if doc.supplemental?has_content>
   <#assign referencedBy = func.filter(doc.supplemental, "function", "isReferencedBy")>
   <#assign supplementTo = func.filter(doc.supplemental, "function", "IsSupplementTo")>
 </#if>
 
-<#if doc.revisionOfIdentifier?has_content || infoResources?has_content || referencedBy?has_content>
+<#if supplementTo?has_content || infoResources?has_content || referencedBy?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>
   <relatedIdentifiers>
     
     <#if infoResources?has_content>
@@ -17,8 +21,16 @@
       </#list>
     </#if>
 
-    <#if doc.revisionOfIdentifier?has_content>
-      <relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf" resourceTypeGeneral="Dataset">10.5285/${doc.revisionOfIdentifier}</relatedIdentifier>   
+    <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
+      <#list rel_supersedes as item>
+        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf" resourceTypeGeneral="Dataset">${item.href?replace("https://catalogue.ceh.ac.uk/id/","10.5285/")}</relatedIdentifier>  
+      </#list> 
+    </#if>
+
+    <#if rel_supersededBy?has_content && rel_supersededBy?size gt 0>
+      <#list rel_supersededBy as item>
+        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsPreviousVersionOf" resourceTypeGeneral="Dataset">${item.href?replace("https://catalogue.ceh.ac.uk/id/","10.5285/")}</relatedIdentifier>  
+      </#list> 
     </#if>
 
     <#if referencedBy?has_content>
@@ -42,5 +54,6 @@
         <relatedIdentifier relatedIdentifierType="${idtype}" relationType="IsSupplementTo" resourceTypeGeneral="Text">${uri}</relatedIdentifier>
       </#list>
     </#if>
+    
   </relatedIdentifiers>
 </#if>

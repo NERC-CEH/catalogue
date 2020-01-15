@@ -95,15 +95,11 @@ dcat:contributor
 ;
 </#if>
 
-<#-- NEEDS UPDATING  -->
-<#--Associated resources-->
-<#if associatedResources?has_content>
-<#assign parents = func.filter(associatedResources, "associationType", "series") + func.filter(associatedResources, "associationType", "aggregate") + func.filter(associatedResources, "associationType", "collection")>
-  <#if parents?has_content>
-  dct:isPartOf
-    <#list parents as parent>
-    <${parent.href}><#sep>,
-    </#list>
-  ;
-  </#if>
+<#assign rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
+<#if rel_memberOf?has_content && rel_memberOf?size gt 0>
+dct:isPartOf
+  <#list rel_memberOf as item>
+    <${item.href}><#sep>,
+  </#list>
+;
 </#if>
