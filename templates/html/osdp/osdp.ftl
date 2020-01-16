@@ -150,10 +150,10 @@ Temporal Extent
   </#if>
 </#macro>
 
-<#macro relationships title description relation>
+<#macro relationships title description relation> <#--UPDATE-->
   <#local links=jena.relationships(uri, relation) />
   <#if links?has_content>
-    <@b.key title description>
+    <@b.key description "">
       <#list links as link>
         <@b.blockUrl link /> 
       </#list>
@@ -161,10 +161,10 @@ Temporal Extent
   </#if>
 </#macro>
 
-<#macro inverseRelationships title description relation>
+<#macro inverseRelationships title description relation> <#--UPDATE-->
   <#local links=jena.inverseRelationships(uri, relation) />
   <#if links?has_content>
-    <@b.key title description>
+    <@b.key description  "">
       <#list links as link>
         <@b.blockUrl link /> 
       </#list>

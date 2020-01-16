@@ -452,7 +452,7 @@ public class ServiceConfig {
         
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
                 .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(metadataDocument))
-                .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument))
+                .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument, baseUri))
                 .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(metadataDocument))
                 .register(MetadataDocument.class, metadataDocument);
 

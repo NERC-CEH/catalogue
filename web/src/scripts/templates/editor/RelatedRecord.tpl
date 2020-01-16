@@ -8,24 +8,24 @@
   </div>
 </div>
  <div class="row">
-   <div class="col-sm-1 col-sm-offset-1">
+   <div class="col-sm-2 col-sm-offset-1">
     <label>Relationship</label>
    </div>
-   <div class="col-sm-10">
+   <div class="col-sm-9">
     <select  data-name="rel" id="relationship<%= data.index %>Rel" class="editor-input rel">
         <option value='https://vocabs.ceh.ac.uk/eidc#generates'>GENERATES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a model generates a dataset)</option>
+        <option value='https://vocabs.ceh.ac.uk/eidc#memberOf'>MEMBER OF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a dataset is a member of a data collection)</option>
         <option value='https://vocabs.ceh.ac.uk/eidc#relatedTo'>RELATED TO</option>
         <option value='https://vocabs.ceh.ac.uk/eidc#supersedes'>SUPERSEDES</option>
         <option value='https://vocabs.ceh.ac.uk/eidc#uses'>USES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a service uses a dataset)</option>
-        <option value='https://vocabs.ceh.ac.uk/eidc#memberOf'>MEMBER OF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a dataset is a member of a data collection)</option>
       </select>
   </div>
 </div>
 <div class="row">
-   <div class="col-sm-1 col-sm-offset-1">
+   <div class="col-sm-2 col-sm-offset-1">
     <label>Name</label>
    </div>
-   <div class="col-sm-10">
+   <div class="col-sm-9">
     <input data-name="title" id="relationship<%= data.index %>Title" class="editor-input title" value="<%= data.title %>" autocomplete="off" disabled="true">
   </div>
  </div>
