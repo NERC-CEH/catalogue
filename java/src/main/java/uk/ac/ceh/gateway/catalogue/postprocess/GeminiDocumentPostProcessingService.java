@@ -81,69 +81,6 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
         return toReturn;
     }
     
-    
-    /**
-     * @return sparql query to find resources linked to a repository
-     */
-    private ParameterizedSparqlString isComposedOf() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title ?rel " +
-            "WHERE { " +
-            "  ?node ?rel ?me ; " +
-            "        <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "  ?me <http://purl.org/dc/terms/type> 'repository' " +
-            "}"
-        );
-    }
-    
-    /**
-     * @return sparql query to find parent resource
-     */
-    private ParameterizedSparqlString parent() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title ?rel " +
-            "WHERE { " +
-            "  ?me ?rel ?node . " +
-            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "   FILTER ( ?type != 'repository' )" +
-            "}"
-        );
-    }
-    
-    /**
-     * @return sparql query to find child resources
-     */
-    private ParameterizedSparqlString children() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title ?rel " +
-            "WHERE { " +
-            "  ?node ?rel ?me ; " +
-            "        <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "   ?me <http://purl.org/dc/terms/type> ?myType" +
-            "   FILTER ( ?myType != 'repository' )" +
-            "}"
-        );
-    }
-    
-    /**
-     * @return sparql query to find ultimate superseding resource
-     */
-    private ParameterizedSparqlString ultimateParent() {
-        return new ParameterizedSparqlString(
-            "PREFIX dc: <http://purl.org/dc/terms/> " +
-            "PREFIX : <https://vocabs.ceh.ac.uk/eidc#> " +
-            "SELECT DISTINCT ?node ?type ?title ?rel " +
-            "WHERE { " +
-            "      ?node :supersedes+ ?me; dc:title ?title; dc:type ?type." +
-            "      BIND( :supersedes as ?rel)" +
-            "    FILTER (!EXISTS {?x :supersedes ?node})" +
-            "}"
-        );
-    }
-    
     /**
      * @return sparql query to find relationships defined by the EIDC ontology
      */
@@ -155,36 +92,6 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
             "  ?node <http://purl.org/dc/terms/title> ?title ; " +
             "        <http://purl.org/dc/terms/type>  ?type . " +
             "FILTER(regex( str(?rel), '^https://vocabs.ceh.ac.uk/eidc#' ) )" +
-            "}"
-        );
-    }
-    
-    /**
-     * @return sparql query to find model resources
-     */
-    private ParameterizedSparqlString models() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title ?rel " +
-            "WHERE { " +
-            "  ?node ?rel ?me ; " +
-            "        <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "   FILTER ( ?type = 'model' )" +
-            "}"
-        );
-    }
-    
-    /**
-     * @return returns the union query of #isHadBy and #has. Essentially this 
-     * finds links which are linked from either source or target
-     */
-    private ParameterizedSparqlString connectedBy() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title ?rel " +
-            "WHERE { " +
-            "  { ?me ?rel ?node } UNION { ?node ?rel ?me } . " +
-            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
             "}"
         );
     }

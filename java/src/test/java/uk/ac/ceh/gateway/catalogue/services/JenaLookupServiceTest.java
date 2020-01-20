@@ -38,6 +38,7 @@ public class JenaLookupServiceTest {
         jenaTdb = TDBFactory.createDataset();
         service = new JenaLookupService(jenaTdb);
     }
+    
 /*  Presumably these need re-writing but I don't understand them
     @Test
     public void lookupRelationships() {
@@ -68,7 +69,8 @@ public class JenaLookupServiceTest {
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
         assertThat("Tile should be Dataset 1", actual.stream().findFirst().get().getTitle(), equalTo("Monitoring Activity"));
     }
-    
+
+
     @Test
     public void lookupMetadata() {
         //Given 
@@ -85,7 +87,7 @@ public class JenaLookupServiceTest {
         assertThat("title should be equal", actual.getTitle(), is("Model"));
         assertThat("href should be equal", actual.getHref(), is("http://model"));
     }
-    
+*/            
     @Test
     public void lookupNonExistantMetadata() {
         //Given 
@@ -171,7 +173,7 @@ public class JenaLookupServiceTest {
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
     }
-    
+
     @Test
     public void checkThatCanLookupWkt() {
         //Given
@@ -185,7 +187,7 @@ public class JenaLookupServiceTest {
         assertThat(wkt.size(), is(1));
         assertThat(wkt.get(0), equalTo("Polygon(12,23)"));
     }
-    
+
     @Test
     public void CanLookupLinked() {
         //Given
@@ -211,5 +213,5 @@ public class JenaLookupServiceTest {
         
         //Then
         assertThat("should contain two plain identifiers", actual, contains("049283da-ee18-4b46-b714-d76f9a1ee479", "d8234690-1b61-4084-a349-eb53467383fe"));
-    } */
+    } 
 }
