@@ -1,29 +1,23 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.Arrays;
-import java.util.List;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-import static org.apache.jena.rdf.model.ResourceFactory.createResource;
-import static org.apache.jena.rdf.model.ResourceFactory.createStatement;
-import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
-
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.tdb.TDBFactory;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.model.Link;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.apache.jena.rdf.model.ResourceFactory.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 
 public class JenaLookupServiceTest {
@@ -38,14 +32,14 @@ public class JenaLookupServiceTest {
         jenaTdb = TDBFactory.createDataset();
         service = new JenaLookupService(jenaTdb);
     }
-    
-/*  Presumably these need re-writing but I don't understand them
+
     @Test
     public void lookupRelationships() {
         //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
+        triples.add(createResource("http://dataset1"), TYPE, "dataset");
 
         //When
         List<Link> actual = service.relationships("http://monitoringActivity", OSDP_PRODUCES.toString());
@@ -61,6 +55,7 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://monitoringActivity"), TITLE, "Monitoring Activity");
         triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
+        triples.add(createResource("http://monitoringActivity"), TYPE, "dataset");
 
         //When
         List<Link> actual = service.inverseRelationships("http://dataset1", OSDP_PRODUCES.toString());
@@ -78,6 +73,7 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://model"), TITLE, "Model");
         triples.add(createResource("http://model"), IDENTIFIER, id);
+        triples.add(createResource("http://model"), TYPE, "dataset");
         
         //When
         Link actual = service.metadata(id);
@@ -87,9 +83,9 @@ public class JenaLookupServiceTest {
         assertThat("title should be equal", actual.getTitle(), is("Model"));
         assertThat("href should be equal", actual.getHref(), is("http://model"));
     }
-*/            
+
     @Test
-    public void lookupNonExistantMetadata() {
+    public void lookupNonExistentMetadata() {
         //Given 
         String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
         Model triples = jenaTdb.getDefaultModel();
@@ -213,5 +209,5 @@ public class JenaLookupServiceTest {
         
         //Then
         assertThat("should contain two plain identifiers", actual, contains("049283da-ee18-4b46-b714-d76f9a1ee479", "d8234690-1b61-4084-a349-eb53467383fe"));
-    } 
+    }
 }
