@@ -20,6 +20,7 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 @AllArgsConstructor
 public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;
+    private final String baseUri;
 
     @Override
     public List<Statement> generateIndex(GeminiDocument document) {
@@ -48,6 +49,10 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         
         document.getCoupledResources().stream().filter(r -> !r.isEmpty()).forEach( r -> {
             toReturn.add(createStatement(me, RELATION, createResource(r)));
+        });
+
+        Optional.ofNullable(document.getRelatedRecords()).orElse(Collections.emptyList()).forEach(rr -> {
+            toReturn.add(createStatement(me, createProperty(rr.getRel()), createProperty(baseUri + "/id/" + rr.getIdentifier())));
         });
         
         return toReturn;

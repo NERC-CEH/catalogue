@@ -230,6 +230,7 @@ public class CatalogueServiceConfig {
                 .facetKey("topic")
                 .facetKey("recordType")
                 .facetKey("status")
+                .facetKey("rightsHolder")
                 .facetKey("funder")
                 .documentType(gemini)
                 .documentType(dataType)

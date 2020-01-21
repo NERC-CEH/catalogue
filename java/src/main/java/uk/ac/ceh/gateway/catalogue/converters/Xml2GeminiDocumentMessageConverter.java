@@ -34,7 +34,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final XPathExpression description;
     private final XPathExpression alternateTitle;
     private final XPathExpression resourceType;
-    private final XPathExpression browseGraphicUrl;
     private final XPathExpression resourceStatus;
     private final XPathExpression metadataDate;
     private final XPathExpression lineage;
@@ -56,7 +55,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final DistributionInfoConverter distributionInfoConverter;
     private final SpatialResolutionConverter spatialResolutionConverter;
     private final RevisionOfConverter revisionOfConverter;
-    private final ResourceMaintenanceConverter resourceMaintenaceConverter;
+    private final ResourceMaintenanceConverter resourceMaintenanceConverter;
     private final ServiceConverter serviceConverter;
     private final TopicCategoriesConverter topicCategoriesConverter;
     private final LegalConstraintsWithAnchorConverter useConstraintsConverter;
@@ -79,7 +78,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.distributorConverter = new ResponsiblePartyConverter(xpath, XPaths.DISTRIBUTOR);
         this.responsiblePartyConverter = new ResponsiblePartyConverter(xpath, XPaths.RESPONSIBLE_PARTY);
         this.boundingBoxesConverter = new BoundingBoxesConverter(xpath);
-        this.browseGraphicUrl = xpath.compile(XPaths.BROWSE_GRAPHIC_URL);
         this.temporalExtentConverter = new TemporalExtentConverter(xpath);
         this.resourceStatus = xpath.compile(XPaths.RESOURCE_STATUS);
         this.spatialReferenceSystem = new SpatialReferenceSystemConverter(xpath);
@@ -96,7 +94,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.securityConstraints = xpath.compile(XPaths.SECURITY_CONSTRAINT);
         this.parentIdentifier = xpath.compile(XPaths.PARENT_IDENTIFIER);
         this.revisionOfConverter = new RevisionOfConverter(xpath);
-        this.resourceMaintenaceConverter = new ResourceMaintenanceConverter(xpath);
+        this.resourceMaintenanceConverter = new ResourceMaintenanceConverter(xpath);
         this.serviceConverter = new ServiceConverter(xpath);
         this.useConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.USE_CONSTRAINT);
         this.accessConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.ACCESS_CONSTRAINT);
@@ -130,7 +128,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setResourceIdentifiers(resourceIdentifierConverter.convert(document));
             toReturn.setDistributorContacts(distributorConverter.convert(document));
             toReturn.setBoundingBoxes(boundingBoxesConverter.convert(document));
-            toReturn.setBrowseGraphicUrl(emptyToNull(browseGraphicUrl.evaluate(document)));
             toReturn.setTemporalExtents(temporalExtentConverter.convert(document));
             toReturn.setSpatialReferenceSystems(spatialReferenceSystem.convert(document));
             toReturn.setDatasetReferenceDate(datasetReferenceDatesConverter.convert(document));
@@ -146,7 +143,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setSecurityConstraints(getListOfStrings(document, securityConstraints));
             toReturn.setParentIdentifier(emptyToNull(parentIdentifier.evaluate(document)));
             toReturn.setRevisionOfIdentifier(emptyToNull(revisionOfConverter.convert(document)));
-            toReturn.setResourceMaintenance(resourceMaintenaceConverter.convert(document));
+            toReturn.setResourceMaintenance(resourceMaintenanceConverter.convert(document));
             toReturn.setService(serviceConverter.convert(document));
             return toReturn;
         }

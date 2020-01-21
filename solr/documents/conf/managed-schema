@@ -79,6 +79,7 @@
     <field name="description" type="text_general" multiValued="false"/>
     <field name="documentType" type="keywords" multiValued="false"/>
     <field name="funder" type="keywords"/>
+    <field name="rightsHolder" type="keywords"/>
     <field name="grant" type="text_general"/>
     <field name="identifier" type="keywords" required="true" multiValued="false"/>
     <field name="impCaMMPIssues" type="keywords"/>

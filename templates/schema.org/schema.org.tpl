@@ -184,3 +184,12 @@
 }
 </#if>
 </#compress>
+
+
+
+
+<#-- NEEDS UPDATING  -->
+<#-- Parent/child resources  NEED ADDING?  
+http://schema.org/isPartOf 
+http://schema.org/hasPart
+-->

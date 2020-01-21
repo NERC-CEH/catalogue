@@ -261,126 +261,28 @@ Replace \n with line breaks
 </#macro>
 
 <#--
-CEH model QA
--->
-<#macro qa qa={"done": "unknown"}>
-  <div>
-    <#if qa.done?? && qa.done?has_content>
-      <span class="key">done?</span> ${qa.done?cap_first}
-    </#if>
-    <#if qa.modelVersion?? && qa.modelVersion?has_content>
-      <span class="key">model version</span> ${qa.modelVersion}
-    </#if>
-    <#if qa.owner?? && qa.owner?has_content>
-      <span class="key">owner</span> ${qa.owner}
-    </#if>
-    <#if qa.date?? && qa.date?has_content>
-      <span class="key">date</span> ${qa.date}
-    </#if>
-  </div>
-  <div>
-    <#if qa.note?? && qa.note?has_content>
-      <span class="key">note</span> ${qa.note}
-    </#if>
-  </div>
-</#macro>
-  
-<#--
-CEH model application - dataInfo
--->
-<#macro dataInfo di>
-  <div>
-    <#if di.variableName?? && di.variableName?has_content>
-      <span class="key">Variable</span> ${di.variableName}
-    </#if>
-    <#if di.units?? && di.units?has_content>
-      <span class="key">Units</span> ${di.units}
-    </#if>
-    <#if di.fileFormat?? && di.fileFormat?has_content>
-      <span class="key">File format</span> ${di.fileFormat}
-    </#if>
-    <#if di.url?? && di.url?has_content>
-      <span class="key">Url</span> <@bareUrl di.url/>
-    </#if>
-  </div>
-</#macro>
-
-<#--
-CEH model version history
--->
-<#macro versionHistory history>
-  <@repeatRow>
-    <#if history.version?? && history.version?has_content>
-      <@basicRow>
-        <@keyContent "Version" "Model version">${history.version}</@keyContent>
-      </@basicRow>
-    </#if>
-    <#if history.date?? && history.date?has_content>
-      <@basicRow>
-        <@keyContent "Date" "Version date">${history.date}</@keyContent>
-      </@basicRow>
-    </#if>
-    <#if history.note?? && history.note?has_content>
-      <@basicRow>
-        <@keyContent "Note" "">${history.note}</@keyContent>
-      </@basicRow>
-    </#if>
-  </@repeatRow>
-</#macro>
-
-<#--
-CEH model project usage
--->
-<#macro projectUsage projectUsage>
-  <@repeatRow>
-    <#if projectUsage.project?? && projectUsage.project?has_content>
-      <@basicRow>
-        <@keyContent "Project" "Project name and number">${projectUsage.project}</@keyContent>
-      </@basicRow>
-    </#if>
-    <#if projectUsage.version?? && projectUsage.version?has_content>
-      <@basicRow>
-        <@keyContent "Version" "Model version">${projectUsage.version}</@keyContent>
-      </@basicRow>
-    </#if>
-    <#if projectUsage.date?? && projectUsage.date?has_content>
-      <@basicRow>
-        <@keyContent "Date" "Date of usage">${projectUsage.date}</@keyContent>
-      </@basicRow>
-    </#if> 
-  </@repeatRow>
-</#macro>
-
-<#--
-Admin functions
+Admin toolbar
 -->
 <#macro admin>
   <#if permission.userCanEdit(id)>
-     
-    <#assign pubText=""/>
-    <#if metadata.state == "published">
-      <#assign pubText="Retract this "/>
-    <#elseif metadata.state == "pending">
-      <#assign pubText="Publish this "/>
-    <#else>
-      <#assign pubText="Request publication of this "/>
+    <div class="row hidden-print" id="adminPanel">
+        <div class="text-right" id="adminToolbar" role="toolbar">
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-default btn-wide edit-control"  data-document-type="${metadata.documentType}">Edit</button>
+            <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li><a href="/documents/${id?html}/permission"><i class="fas fa-users"></i> Permissions</a></li>
+              <li><a href="/documents/${id?html}/publication"><i class="fas fa-eye"></i> Publication status</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="/documents/${id?html}/catalogue" class="catalogue-control"><i class="fas fa-sign-out-alt"></i> Move to a different catalogue</a></li>
+            </ul>
+            </#if>
+          </div>
+        </div>
+    </div>
     </#if>
-
-    <@basicRow "hidden-print text-right adminToolbar">
-      <a class="btn btn-default edit-control"  href="#" data-document-type="${metadata.documentType}">Edit</a>&nbsp;&nbsp;  
-      <div class="btn-group">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Admin <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-right">
-          <li><a href="/documents/${id}/publication">${pubText}record</a></li>
-          <li><a href="/documents/${id}/permission">Change access permissions</a></li>
-          <li><a href="/documents/${id}/catalogue">Move catalogues</a></li>
-        </ul>
-      </div>
-
-
-
-    </@basicRow>
-  </#if>
 </#macro>

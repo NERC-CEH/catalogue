@@ -1,6 +1,6 @@
-<#if children??>
+<#if rel_hasMember??>
 	<div id="section-children">
-		<#list children?sort_by("title")>
+		<#list rel_hasMember?sort_by("title")>
 			<div class="children">
 			<#items as child>
 				<#if child.associationType = 'dataset' ||  child.associationType = 'nonGeographicDataset' ||  child.associationType = 'signpost'>

@@ -26,13 +26,15 @@ import static org.mockito.Mockito.mock;
 @RunWith(MockitoJUnitRunner.class)
 public class JenaIndexGeminiDocumentGeneratorTest {
   @Mock private DocumentIdentifierService service;
+  private String baseURI = "https://example.com";
   private JenaIndexGeminiDocumentGenerator generator;
-  
+
   @Before
   public void setup() {
-    generator = new JenaIndexGeminiDocumentGenerator(new JenaIndexMetadataDocumentGenerator(service));
+    generator = new JenaIndexGeminiDocumentGenerator(new JenaIndexMetadataDocumentGenerator(service),baseURI);
   }
   
+
   @Test
   public void blankStringResourceIdentifiersNotIndexed() {
     //Given
@@ -50,5 +52,5 @@ public class JenaIndexGeminiDocumentGeneratorTest {
     assertThat("Statement literal should be identifier", actual.get(1).getLiteral().getString(), equalTo("t"));
     // No resource identifiers added to statements
   }
-  
+
 }

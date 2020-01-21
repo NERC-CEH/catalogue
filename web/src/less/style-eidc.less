@@ -1,42 +1,133 @@
 @import "style-ceh";
 
-@brand-success: #4999E1;
+@brand-success: #337085;
 @gray-lighter: @brand-success;
 @header-text: #fff;
+@link-hover-color: #E75F22;
 @panel-default-text: @header-text;
-.text-red {color:#EE0000;}
+
+.text-red {
+    color: #EE0000;
+}
+
+h1#document-title {
+    color: @link-hover-color;
+}
+
+.panel-right {
+    >div {
+        margin: 1em 0;
+        background-color: #F5F5F5;
+        padding: 1em;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .panel-title {
+        font-size: 1.4em;
+        font-weight: normal;
+        color: @link-hover-color;
+        margin-bottom: 0.5em;
+    }
+
+    #document-metrics {
+
+        h2 {
+            margin: 0;
+            font-size: 1.25em;
+
+            i {
+                margin-right: 0.35em;
+                font-size: 1.85em;
+                color: @brand-success;
+            }
+
+            ;
+
+            span {
+                font-size: 1.85em;
+                color: @brand-success;
+            }
+
+            ;
+        }
+
+        ;
+    }
+
+    ;
+}
+
+#document-upload-panel {
+    a {
+        &:hover {
+            color: @header-text;
+            text-decoration: none;
+        }
+
+        div {
+            &:hover {
+                background-color: @brand-success;
+            }
+        }
+    }
+}
 
 .datatype {
     .admin {
-        margin-top:1em;
-    };
+        margin-top: 1em;
+    }
+
+    ;
+
     .schemaItem {
         border-bottom: 1px solid #eee;
-        margin:0.5em;
-        padding:0.5em;
-    };
+        margin: 0.5em;
+        padding: 0.5em;
+    }
+
+    ;
+
     .section {
-        margin-top:3em;
+        margin-top: 3em;
+
         .section-content {
-            margin-left:4em;
-        };
-    };
+            margin-left: 4em;
+        }
+
+        ;
+    }
+
+    ;
+
     .section-schema {
         .table-schema {
             .table-condensed;
-        };
-    };
+        }
+
+        ;
+    }
+
+    ;
+
     .section-provenance {
-        display: table ;
+        display: table;
+
         div {
-            display:table-row ;
+            display: table-row;
+
             span:first-child {
-               font-weight: bold;
-               text-align: right;
-            };
+                font-weight: bold;
+                text-align: right;
+            }
+
+            ;
+
             span {
-                display:table-cell;
-                padding: 0.35em 1em ;
+                display: table-cell;
+                padding: 0.35em 1em;
             }
         }
     }
@@ -47,35 +138,45 @@
     .navbar-header {
         float: none;
     }
-    .navbar-left,.navbar-right {
+
+    .navbar-left,
+    .navbar-right {
         float: none !important;
     }
+
     .navbar-toggle {
         display: block;
     }
+
     .navbar-collapse {
         border-top: 1px solid transparent;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
+
     .navbar-fixed-top {
         top: 0;
         border-width: 0 0 1px;
     }
+
     .navbar-collapse.collapse {
-        display: none!important;
+        display: none !important;
     }
+
     .navbar-nav {
-        float: none!important;
+        float: none !important;
         margin-top: 7.5px;
     }
+
     .navbar-nav>li {
         float: none;
     }
+
     .navbar-nav>li>a {
         padding-top: 10px;
         padding-bottom: 10px;
     }
-    .collapse.in{
-        display:block !important;
+
+    .collapse.in {
+        display: block !important;
     }
-  }
+}

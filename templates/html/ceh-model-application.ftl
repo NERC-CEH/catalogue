@@ -1,128 +1,212 @@
 <#import "skeleton.ftl" as skeleton>
 <#import "blocks.ftl" as b>
+<#import "ceh-model-macros.ftl" as m>
+<#import "../functions.tpl" as func>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
   <@b.metadataContainer "ceh-model">
+    
     <@b.admin />
+
     <#if title?? || projectCode?? || projectObjectives?? || description?? || keywords?? || projectCompletionDate?? || projectWebsite?? || funderDetails?? || contactName?? || multipleModelsUsed?? || multipleModelLinkages??>
-      <@b.sectionHeading>Project Information</@b.sectionHeading>
+    <section>
+      <h2>Project Information</h2>
+
       <#if title?? && title?has_content>
-        <@b.key "Project title" "Title of project">${title}</@b.key>
+        <@m.key "Project title" "Title of project">${title}</@m.key>
       </#if>
+
       <#if projectCode?? && projectCode?has_content>
-        <@b.key "Project code" "RMS project code">${projectCode}</@b.key>
+        <@m.key "Project code" "RMS project code">${projectCode}</@m.key>
       </#if>
+
       <#if projectObjectives?? && projectObjectives?has_content>
-        <@b.key "Project objectives" "Brief description of main objectives">
+        <@m.key "Project objectives" "Brief description of main objectives">
           <#noescape>
             <@b.linebreaks projectObjectives />
           </#noescape>
-        </@b.key>
+        </@m.key>
       </#if>
       <#if description?? && description?has_content>
-        <@b.key "Project description" "Longer description of project including why models were used to answer the science question, assumptions made, key outputs">
+        <@m.key "Project description" "Longer description of project including why models were used to answer the science question, assumptions made, key outputs">
           <#noescape>
             <@b.linebreaks description />
           </#noescape>
-        </@b.key>
-      </#if>
-      <#if keywords?? && keywords?has_content>
-        <@b.key "Keywords" "Keywords to enable searching for the project"><@b.keywords keywords/></@b.key>
+        </@m.key>
       </#if>
       <#if projectCompletionDate?? && projectCompletionDate?has_content>
-        <@b.key "Project completion date" "Project end date">${projectCompletionDate}</@b.key>
+        <@m.key "Project completion date" "Project end date">${projectCompletionDate}</@m.key>
       </#if>
       <#if projectWebsite?? && projectWebsite?has_content>
-        <@b.key "Project website" "Link to public-facing website if available"><@b.bareUrl projectWebsite /></@b.key>
+        <@m.key "Project website" "Link to public-facing website if available"><@b.bareUrl projectWebsite /></@m.key>
       </#if>
       <#if funderDetails?? && funderDetails?has_content>
-        <@b.key "Funder details" "Funder details including grant number if appropriate">
+        <@m.key "Funder details" "Funder details including grant number if appropriate">
           <#noescape>
             <@b.linebreaks funderDetails />
           </#noescape>
-        </@b.key>
+        </@m.key>
       </#if>
       <#if contactName??>
-        <@b.key "Contact name" "Name of CEH PI/project representative">
+        <@m.key "Contact name" "Name of CEH PI/project representative">
           <#if contactName?has_content>
             ${contactName}
           </#if>
           <#if contactEmail?? && contactEmail?has_content>
             (${contactEmail})
           </#if>
-        </@b.key>
+        </@m.key>
       </#if>
       <#if multipleModelsUsed?? && multipleModelsUsed?has_content>
-        <@b.key "Multiple models used?" "Were multiple models used in the project? If so, which ones?">
+        <@m.key "Multiple models used?" "Were multiple models used in the project? If so, which ones?">
           <#noescape>
             <@b.linebreaks multipleModelsUsed />
           </#noescape>
-        </@b.key>
+        </@m.key>
       </#if>
       <#if multipleModelLinkages?? && multipleModelLinkages?has_content>
-        <@b.key "Multiple model linkages" "If multiple models were used how was this done e.g. chained, independent runs, comparisons, ensemble">
+        <@m.key "Multiple model linkages" "If multiple models were used how was this done e.g. chained, independent runs, comparisons, ensemble">
           <#noescape>
             <@b.linebreaks multipleModelLinkages />
           </#noescape>
-        </@b.key>
+        </@m.key>
       </#if>
+    </section>
     </#if>
+
     <#if references?? && references?has_content>
-      <@b.sectionHeading>References</@b.sectionHeading>
+    <section>
+      <h2>References</h2>
+
       <#list references as ref>
-        <@b.reference ref />
+      <@b.repeatRow>
+        <#if ref.citation?? && ref.citation?has_content>
+          <span class="reference-citation">${ref.citation}</span>
+        </#if>
+        <#if ref.doi?? && ref.doi?has_content>
+          <span class="reference-doi"><@m.Url ref.doi true/></span>
+        </#if>
+        <#if ref.nora?? && ref.nora?has_content>
+          <span class="reference-nora">${ref.nora}</span>
+        </#if>
+      </@b.repeatRow>
       </#list>
-    </#if>
+    </section>
+    </#if>    
+
     <#if modelInfos?? && modelInfos?has_content>
-      <@b.sectionHeading>Model Information</@b.sectionHeading>
-      <#list modelInfos as modelInfo>
-        <@b.modelInfo modelInfo />
-      </#list>
+    
+      <section>
+      <h2>Model Information</h2>
+        <#list modelInfos as modelInfo>
+        <@b.repeatRow>
+         <#if (modelInfo.id?? && modelInfo.id?has_content) || (modelInfo.name?? && modelInfo.name?has_content)>
+            <#assign model=jena.metadata(modelInfo.id)!""/>
+            <@b.basicRow>
+              <@m.keyContent "Model name">
+                <#if model?has_content>
+                  <a href="${model.href}">${model.title}</a>
+                <#else>
+                  ${modelInfo.name}
+                  <#if modelInfo.id?? && modelInfo.id?has_content>
+                    (${modelInfo.id})
+                  </#if>
+                </#if>
+              </@m.keyContent>
+            </@b.basicRow>
+          </#if>
+          <#if modelInfo.version?? && modelInfo.version?has_content>
+            <@b.basicRow>
+              <@m.keyContent "Version">${modelInfo.version}</@m.keyContent>
+            </@b.basicRow>
+          </#if>
+          <#if modelInfo.rationale?? && modelInfo.rationale?has_content>
+            <@b.basicRow>
+              <@m.keyContent "Rationale">${modelInfo.rationale}</@m.keyContent>
+            </@b.basicRow>
+          </#if>
+          <#if modelInfo.spatialExtentOfApplication?? && modelInfo.spatialExtentOfApplication?has_content>
+            <@b.basicRow>
+              <@m.keyContent "Spatial extent of application">${modelInfo.spatialExtentOfApplication?cap_first}</@m.keyContent>
+            </@b.basicRow>
+          </#if>
+          <#if modelInfo.availableSpatialData?? && modelInfo.availableSpatialData?has_content>
+            <@b.basicRow>
+              <@m.keyContent "Available spatial data">${modelInfo.availableSpatialData?cap_first}</@m.keyContent>
+            </@b.basicRow>
+          </#if>
+          <#if modelInfo.spatialResolutionOfApplication?? && modelInfo.spatialResolutionOfApplication?has_content>
+            <@b.basicRow>
+              <@m.keyContent "Spatial resolution of application" >${modelInfo.spatialResolutionOfApplication}</@m.keyContent>
+            </@b.basicRow>
+          </#if>
+          <#if modelInfo.temporalExtentOfApplicationStartDate?? && modelInfo.temporalExtentOfApplicationStartDate?has_content>
+            <@b.basicRow>
+              <@m.keyContent "Temporal extent of application (start date)">${modelInfo.temporalExtentOfApplicationStartDate}</@m.keyContent>
+            </@b.basicRow>
+          </#if>
+          <#if modelInfo.temporalExtentOfApplicationEndDate?? && modelInfo.temporalExtentOfApplicationEndDate?has_content>
+            <@b.basicRow>
+              <@m.keyContent "Temporal extent of application (end date)">${modelInfo.temporalExtentOfApplicationEndDate}</@m.keyContent>
+            </@b.basicRow>
+          </#if>
+          <#if modelInfo.temporalResolutionOfApplication?? && modelInfo.temporalResolutionOfApplication?has_content>
+            <@b.basicRow>
+              <@m.keyContent "Temporal resolution of application">${modelInfo.temporalResolutionOfApplication}</@m.keyContent>
+            </@b.basicRow>
+          </#if>
+          <#if modelInfo.calibrationConditions?? && modelInfo.calibrationConditions?has_content>
+            <@b.basicRow>
+              <@m.keyContent "Calibration conditions">${modelInfo.calibrationConditions}</@m.keyContent>
+            </@b.basicRow>
+          </#if>
+        </@b.repeatRow>
+        </#list>
+      </section>
     </#if>
+
     <#if inputData?? || outputData??>
-      <@b.sectionHeading>Data Information</@b.sectionHeading>
-      <#if inputData?? && inputData?has_content>
-        <@b.key "Input data" "Detailed description of input data including: variable name, units, file format, URL to data catalogue record for each input">
-            <#list inputData as input>
-              <@b.dataInfo input/>
-            </#list>
-        </@b.key>
-      </#if>
-      <#if outputData?? && outputData?has_content>
-        <@b.key "Output data" "Detailed description of model outputs incling: variable name, units, file format, URL to data catalogue record for each output (or alternative location of model outputs from this application)">
-            <#list inputData as input>
-              <@b.dataInfo input/>
-            </#list>
-        </@b.key>
-      </#if>
+    <section>
+      <h2>Data Information</h2>
+
+        <@m.key "Input data">
+          <@m.dataInfoTable inputData />
+        </@m.key>
+        
+        <@m.key "Output data">
+          <@m.dataInfoTable outputData />
+        </@m.key>
+    </section>
     </#if>
+   
     <#if sensitivityAnalysis?? || uncertaintyAnalysis?? || validation??>
-      <@b.sectionHeading>Evaluation Information</@b.sectionHeading>
+    <section>
+      <h2>Evaluation Information</h2>
       <#if sensitivityAnalysis?? && sensitivityAnalysis?has_content>
-        <@b.key "Sensitivity analysis" "Details of any sensitivity analysis performed, or link to appropriate documentation">
+        <@m.key "Sensitivity analysis" "Details of any sensitivity analysis performed, or link to appropriate documentation">
           <#noescape>
             <@b.linebreaks sensitivityAnalysis />
           </#noescape>
-        </@b.key>
+        </@m.key>
       </#if>
       <#if uncertaintyAnalysis?? && uncertaintyAnalysis?has_content>
-        <@b.key "Uncertainty analysis" "How was uncertainty in the model captured and represented? Give links to any appropriate documentation">
+        <@m.key "Uncertainty analysis" "How was uncertainty in the model captured and represented? Give links to any appropriate documentation">
           <#noescape>
             <@b.linebreaks uncertaintyAnalysis />
           </#noescape>
-        </@b.key>
+        </@m.key>
       </#if>
       <#if validation?? && validation?has_content>
-        <@b.key "Uncertainty analysis" "Was the model validated against data not used for model building or parameterisation? If so, provide links to any documentation of results">
+        <@m.key "Uncertainty analysis" "Was the model validated against data not used for model building or parameterisation? If so, provide links to any documentation of results">
           <#noescape>
             <@b.linebreaks validation />
           </#noescape>
-        </@b.key>
+        </@m.key>
       </#if>
+    </section>
     </#if>
-    <#if metadataDate?? && metadataDate?has_content>
-      <@b.sectionHeading>Metadata</@b.sectionHeading>
-      <@b.key "Metadata Date" "Date metadata last updated">${metadataDateTime}</@b.key>
-    </#if>
+
+    <@m.additionalMetadata />
+    
   </@b.metadataContainer>
 </#escape></@skeleton.master>

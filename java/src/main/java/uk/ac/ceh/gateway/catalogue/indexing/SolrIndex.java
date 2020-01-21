@@ -12,13 +12,16 @@ import java.util.List;
 public class SolrIndex {
     protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 265;
     private @Field List<String> altTitle;
+    private @Field String description;
+    private @Field String lineage;
+    private @Field String resourceStatus;
+    private @Field List<String> rightsHolder;
     private @Field List<String> authorAffiliation;
     private @Field List<String> authorName;
     private @Field List<String> authorOrcid;
     private @Field List<String> authorRor;
     private @Field String catalogue;
     private @Field String condition;
-    private @Field String description;
     private @Field String documentType;
     private @Field List<String> funder;
     private @Field List<String> grant;
@@ -32,7 +35,6 @@ public class SolrIndex {
     private @Field List<String> inmsDemonstrationRegion;
     private @Field List<String> keyword;
     private @Field String licence;
-    private @Field String lineage;
     private @Field List<String> locations;
     private @Field List<String> modelType;
     private @Field List<String> ncAssets;
@@ -44,7 +46,6 @@ public class SolrIndex {
     private @Field List<String> organisation;
     private @Field String recordType;
     private @Field List<String> resourceIdentifier;
-    private @Field String resourceStatus;
     private @Field String resourceType;
     private @Field List<String> ror;
     private @Field List<String> saTaxon;

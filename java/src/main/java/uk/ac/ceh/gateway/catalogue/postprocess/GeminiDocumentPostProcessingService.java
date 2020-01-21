@@ -62,30 +62,18 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     }
     
     private void process(GeminiDocument document, String id) {
-        findLinksWhere(id, parent(), IS_PART_OF).stream()
-                .findFirst().ifPresent( p -> document.setParent(p));
-
-        document.setChildren(findLinksWhere(id, children(), IS_PART_OF));  
-        document.setDocumentLinks(findLinksWhere(id, connectedBy(), RELATION));
-        document.setComposedOf(findLinksWhere(id, isComposedOf(), IS_PART_OF));
-        document.setModelLinks(findLinksWhere(id, models(), REFERENCES));
-
-        findLinksWhere(id, has(), REPLACES).stream()
-                .findFirst().ifPresent( r -> document.setRevisionOf(r));
-
-        findLinksWhere(id, isHadBy(), REPLACES).stream()
-                .findFirst().ifPresent( r -> document.setRevised(r));
+        document.setIncomingRelationships(findLinksWhere(id, eidcIncomingRelationships(), ANYREL));
     }
     
     private Set<Link> findLinksWhere(String identifier, ParameterizedSparqlString pss, Property rel) {
         pss.setIri("me", identifier);
-        pss.setParam("rel", rel);
         Set<Link> toReturn = new HashSet<>();
         try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
             qexec.execSelect().forEachRemaining(s -> {
               toReturn.add(Link.builder()
                       .associationType(s.getLiteral("type").getString())
                       .href(s.getResource("node").getURI())
+                      .rel(s.getResource("rel").getURI())
                       .title(s.getLiteral("title").getString())
                       .build());
             });
@@ -94,123 +82,16 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     }
     
     /**
-     * @return a sparql query which finds gemini links which are tightly coupled
-     * from the document represented by ?id by ?rel e.g.
-     * 
-     *    <http://document1> <IDENTIFIER> "doc1ID"
-     *    <http://document1> <CONNECTED_TO> <http://document2>
-     *    <http://document2> <IDENTIFIER> "doc2ID"
-     *    ...
-     * 
-     * Looking up document with id "doc1ID" and relationship <CONNECTED_TO> 
-     * will locate <http://document2>
+     * @return sparql query to find relationships defined by the EIDC ontology
      */
-    private ParameterizedSparqlString has() {
+    private ParameterizedSparqlString eidcIncomingRelationships() {
         return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
-            "WHERE { " +
-            "  ?me ?rel ?node . " +
-            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "}"
-        );
-    }
-    
-    /**
-     * @return a sparql query which finds gemini links which are tightly linked 
-     * to the concept specified by ?id with relationship ?rel. e.g.
-     * 
-     *    <http://document1> <IDENTIFIER> "doc1ID"
-     *    <http://document1> <CONNECTED_TO> <http://document2>
-     *    <http://document2> <IDENTIFIER> "doc2ID"
-     *    ...
-     * 
-     * Looking up document with id "doc1ID" and relationship <CONNECTED_TO> 
-     * will locate <http://document2>
-     */
-    private ParameterizedSparqlString isHadBy() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
+            "SELECT ?node ?type ?title ?rel " +
             "WHERE { " +
             "  ?node ?rel ?me . " +
             "  ?node <http://purl.org/dc/terms/title> ?title ; " +
             "        <http://purl.org/dc/terms/type>  ?type . " +
-            "}"
-        );
-    }
-    
-    /**
-     * @return sparql query to find resources linked to a repository
-     */
-    private ParameterizedSparqlString isComposedOf() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
-            "WHERE { " +
-            "  ?node ?rel ?me ; " +
-            "        <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "  ?me <http://purl.org/dc/terms/type> 'repository' " +
-            "}"
-        );
-    }
-    
-    /**
-     * @return sparql query to find parent resource
-     */
-    private ParameterizedSparqlString parent() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
-            "WHERE { " +
-            "  ?me ?rel ?node . " +
-            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "   FILTER ( ?type != 'repository' )" +
-            "}"
-        );
-    }
-    
-    /**
-     * @return sparql query to find child resources
-     */
-    private ParameterizedSparqlString children() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
-            "WHERE { " +
-            "  ?node ?rel ?me ; " +
-            "        <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "   ?me <http://purl.org/dc/terms/type> ?myType" +
-            "   FILTER ( ?myType != 'repository' )" +
-            "}"
-        );
-    }
-    
-    /**
-     * @return sparql query to find model resources
-     */
-    private ParameterizedSparqlString models() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
-            "WHERE { " +
-            "  ?node ?rel ?me ; " +
-            "        <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
-            "   FILTER ( ?type = 'model' )" +
-            "}"
-        );
-    }
-    
-    /**
-     * @return returns the union query of #isHadBy and #has. Essentially this 
-     * finds links which are linked from either source or target
-     */
-    private ParameterizedSparqlString connectedBy() {
-        return new ParameterizedSparqlString(
-            "SELECT ?node ?type ?title " +
-            "WHERE { " +
-            "  { ?me ?rel ?node } UNION { ?node ?rel ?me } . " +
-            "  ?node <http://purl.org/dc/terms/title> ?title ; " +
-            "        <http://purl.org/dc/terms/type>  ?type . " +
+            "FILTER(regex( str(?rel), '^https://vocabs.ceh.ac.uk/eidc#' ) )" +
             "}"
         );
     }

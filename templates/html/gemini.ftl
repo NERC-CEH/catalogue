@@ -15,14 +15,26 @@
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders + rightsHolders
     catalogue = catalogues.retrieve(metadata.catalogue)
->
+    
+    rel_all=jena.allRelatedRecords(uri)
+    rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
+    rel_generates = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
+    rel_uses = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
+    rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
+    rel_generatedBy= jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
+    rel_supersededBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
+    rel_usedBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
+    rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
+    rel_supersedes = jena.supersedes(uri)
+/>
 <#if useConstraints?has_content>
   <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
 <#if supplemental?has_content>
-  <#assign referencedBy = func.filter(supplemental, "function", "isReferencedBy")>
-  <#assign supplementTo = func.filter(supplemental, "function", "isSupplementTo")>
-  <#assign supOther = func.filter(supplemental, "function", "website") + func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")>
+  <#assign
+  referencedBy = func.filter(supplemental, "function", "isReferencedBy")
+  supplementTo = func.filter(supplemental, "function", "isSupplementTo")
+  supOther = func.filter(supplemental, "function", "website") + func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")>
 </#if>
 
 <#macro getLabel val array>
@@ -33,32 +45,40 @@
     </#if>
   </#list>
 </#macro>
+
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
 
-  <div id="metadata">
+  <div id="metadata" class="${metadata.state?lower_case}">
     <div class="container">
       <#if resourceType?has_content && resourceType.value !=''>
       <#assign recordType = codes.lookup('metadata.recordType',resourceType.value)?lower_case>
       <#include "gemini/_admin.ftl">
       <div id="section-Top">
         <#include "gemini/_title.ftl">
+
       </div>
 
-      <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+      <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
+        <#include "gemini/_latestVersion.ftl">
+      </#if>
+
+      <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
         <#include "gemini/_metadataqualityAlert.ftl">
       </#if>  
 
-        <div id="document-description">
-          <#if resourceType.value = 'aggregate' || resourceType.value = 'collection'>
-            <#include "gemini/_browseGraphic.ftl">
-          </#if>
+        <div id="document-description" class="clearfix">
+          <#include "gemini/_browseGraphic.ftl">
+           <#if metadata.catalogue != "eidc" && projectImageUrl??>
+              <img src="${projectImageUrl}" alt="project image" class="browseGraphic"/>
+            </#if>
           <@blocks.linebreaks description!"" />
         </div>
-        
+
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "gemini/_dates.ftl">
+                    
           <div class="row">
-            <div class="col-sm-4 col-sm-push-8">
+            <div class="col-sm-4 col-sm-push-8 panel-right">
               <#include "gemini/_uploadData.ftl">
               <#include "gemini/_metrics.ftl">
 
@@ -78,16 +98,15 @@
                  <#include "gemini/_distribution_signpost.ftl">
               </#if>
 
-              <#include "gemini/_children.ftl">
-              <#include "gemini/_related.ftl">
-              <#include "gemini/_model.ftl">
-              <#if metadata.catalogue != "eidc" && projectImageUrl??>
-                <img src="${projectImageUrl}" alt="project image"/>
-              </#if>
             </div>
             <div class="col-sm-8 col-sm-pull-4">
               <#include "gemini/_extent.ftl">
               <#include "gemini/_dataquality.ftl">
+
+              <#-- to be replaced with related records -->
+                <#include "gemini/_related.ftl">
+              <#-- END OF to be replaced -->
+
               <#include "gemini/_supplemental.ftl">
               <#include "gemini/_contacts.ftl">
 
@@ -108,7 +127,7 @@
             </div>
           </div>
           
-          <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+          <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
             <#include "gemini/_metadataqualityReport.ftl">
           </#if>
 
