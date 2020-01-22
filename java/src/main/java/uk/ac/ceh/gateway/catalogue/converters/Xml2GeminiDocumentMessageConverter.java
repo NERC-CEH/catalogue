@@ -42,7 +42,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final XPathExpression spatialRepresentationType;
     private final XPathExpression datasetLanguage;
     private final XPathExpression securityConstraints;
-    private final XPathExpression parentIdentifier;
     private final ResourceIdentifierConverter resourceIdentifierConverter;
     private final DescriptiveKeywordsConverter descriptiveKeywordsConverter;
     private final ResponsiblePartyConverter distributorConverter;
@@ -92,7 +91,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.spatialRepresentationType = xpath.compile(XPaths.SPATIAL_REPRESENTATION_TYPE);
         this.datasetLanguage = xpath.compile(XPaths.DATASET_LANGUAGE);
         this.securityConstraints = xpath.compile(XPaths.SECURITY_CONSTRAINT);
-        this.parentIdentifier = xpath.compile(XPaths.PARENT_IDENTIFIER);
         this.revisionOfConverter = new RevisionOfConverter(xpath);
         this.resourceMaintenanceConverter = new ResourceMaintenanceConverter(xpath);
         this.serviceConverter = new ServiceConverter(xpath);
@@ -141,8 +139,6 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             toReturn.setSpatialRepresentationTypes(getListOfStrings(document, spatialRepresentationType));
             toReturn.setUseConstraints(useConstraintsConverter.convert(document));
             toReturn.setSecurityConstraints(getListOfStrings(document, securityConstraints));
-            toReturn.setParentIdentifier(emptyToNull(parentIdentifier.evaluate(document)));
-            toReturn.setRevisionOfIdentifier(emptyToNull(revisionOfConverter.convert(document)));
             toReturn.setResourceMaintenance(resourceMaintenanceConverter.convert(document));
             toReturn.setService(serviceConverter.convert(document));
             return toReturn;

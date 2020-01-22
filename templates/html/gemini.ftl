@@ -68,9 +68,6 @@
 
         <div id="document-description" class="clearfix">
           <#include "gemini/_browseGraphic.ftl">
-           <#if metadata.catalogue != "eidc" && projectImageUrl??>
-              <img src="${projectImageUrl}" alt="project image" class="browseGraphic"/>
-            </#if>
           <@blocks.linebreaks description!"" />
         </div>
 

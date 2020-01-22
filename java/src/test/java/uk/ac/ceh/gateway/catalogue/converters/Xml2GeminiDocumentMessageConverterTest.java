@@ -180,37 +180,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertThat("Expected resourceMaintenance should equal actual", actual, equalTo(expected));
-    }
-    
-    @Test
-    public void canGetParentIdentifier() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("parentIdentifier.xml"));
-        String expected = "fc77c9b3-570d-4314-82ba-bc914538a748";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getParentIdentifier();
-        
-        //Then
-        assertThat("ParentIdentifier 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
-    
-    @Test
-    public void canGetRevisionOfIdentifier() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("revisionOf.xml"));
-        String expected = "CEH:EIDC:#1252065579651";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getRevisionOfIdentifier();
-        
-        //Then
-        assertThat("RevisionOfIdentifier 'actual' should be equal to 'expected'", actual, equalTo(expected));
-    }
+    }    
     
     @Test
     public void canGetDistributionInfo() throws IOException {
@@ -744,57 +714,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         //Then
         assertThat("actual spatialResolutions are equal to expected", actual, equalTo(expected));
     }
-    
-    @Test
-    public void spatialReference() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReference.xml"));
-        String expected = "OSGB 1936 / British National Grid";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getSpatialReferenceSystems().get(0).getTitle();
-
-        //Then
-        assertThat("Actual title is as expected", actual, equalTo(expected));
-    }
-    
-    @Test
-    public void spatialReferenceDefaultTitle() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReferenceUnknown.xml"));
-        String expected = "";
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        String actual = document.getSpatialReferenceSystems().get(0).getTitle();
-
-        //Then
-        assertThat("Actual title is as expected", actual, equalTo(expected));
-    }
-    
-     @Test
-    public void spatialReferenceReferenceString() throws IOException {
-        //Given
-        HttpInputMessage message = mock(HttpInputMessage.class);
-        when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReferenceUnknown.xml"));
-        List<SpatialReferenceSystem> expected = Arrays.asList(
-            SpatialReferenceSystem.builder()
-                .code("123456")
-                .codeSpace("urn:ogc:def:crs:MadeUpCodeSpace")
-                .build()
-        );
-        
-        //When
-        GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<SpatialReferenceSystem> actual = document.getSpatialReferenceSystems();
-
-        //Then
-        assertThat("Actual reference is equal to expected", actual, equalTo(expected));
-    }
-    
+            
     @Test
     public void datasetReferenceDatesPublication() throws IOException {
         //Given

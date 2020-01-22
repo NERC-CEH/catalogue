@@ -43,8 +43,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, lineage, reasonChanged,
-        metadataStandardName, metadataStandardVersion, projectImageUrl;
-    private String parentIdentifier, revisionOfIdentifier; //need to get rid of these later
+        metadataStandardName, metadataStandardVersion;
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
       securityConstraints;      

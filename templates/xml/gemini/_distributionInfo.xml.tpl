@@ -6,10 +6,10 @@
     <gmd:distributionFormat>
       <gmd:MD_Format>
         <gmd:name><gco:CharacterString>${distributionFormat.name}</gco:CharacterString></gmd:name>
-        <#if distributionFormat.version?has_content>
-        <gmd:version><gco:CharacterString>${distributionFormat.version}</gco:CharacterString></gmd:version>
+        <#if distributionFormat.version?has_content && distributionFormat.version?lower_case !='unknown'>
+          <gmd:version><gco:CharacterString>${distributionFormat.version}</gco:CharacterString></gmd:version>
         <#else>
-        <gmd:version><gco:CharacterString>unknown</gco:CharacterString></gmd:version>
+          <gmd:version gco:nilReason="unknown"/>
         </#if>
       </gmd:MD_Format>
     </gmd:distributionFormat>
