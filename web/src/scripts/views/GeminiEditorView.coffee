@@ -476,6 +476,12 @@ define [
             'British National Grid (EPSG::27700)':
               code: 'http://www.opengis.net/def/crs/EPSG/0/27700'
               title: 'OSGB 1936 / British National Grid'
+            'GB place names' :
+              code: 'https://data.ordnancesurvey.co.uk/datasets/opennames'
+              title: 'GB place names'
+            'GB postcodes' :
+              code: 'https://data.ordnancesurvey.co.uk/datasets/os-linked-data'
+              title: 'GB postcodes'
             'Lat/long (WGS84) (EPSG::4326)' :
               code: 'http://www.opengis.net/def/crs/EPSG/0/4326'
               title: 'WGS 84'
