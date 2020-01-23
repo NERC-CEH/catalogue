@@ -29,14 +29,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         Resource me = generator.resource(document.getId());
         toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
         
-        Optional.ofNullable(emptyToNull(document.getParentIdentifier())).ifPresent( p -> {
-            toReturn.add(createStatement(me, IS_PART_OF, generator.resource(p)));
-        });
-
-        Optional.ofNullable(emptyToNull(document.getRevisionOfIdentifier())).ifPresent( r -> {
-            toReturn.add(createStatement(me, REPLACES, generator.resource(r)));
-        });
-        
         Optional.ofNullable(document.getBoundingBoxes()).orElse(Collections.emptyList()).forEach(b -> {
             toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getWkt(), WKT_LITERAL)));
         });

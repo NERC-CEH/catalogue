@@ -3,7 +3,7 @@
     <p>View as
       <#if resourceType??>
         <#if ['service', 'series', 'dataset']?seq_contains(resourceType.value) >
-          <a href="${uri}.xml?format=gemini" class="label label-default">GEMINI 2.1 (XML)</a>
+          <a href="${uri}.xml?format=gemini" class="label label-default">GEMINI 2.3 (XML)</a>
         <#else>
           <a href="${uri}.xml?format=gemini" class="label label-default">ISO 19115 (XML)</a>
         </#if>

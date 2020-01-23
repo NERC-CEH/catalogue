@@ -140,14 +140,6 @@ define [
           helpText: """
                     <p>The time period(s) the data resource covers.  This is often the same as the data capture period but it need not be so.</p>
                     """
-
-        new InputView
-          model: @model
-          modelAttribute: 'projectImageUrl'
-          label: 'Project Image URL'
-          helpText: """
-                    <p>URL of project image N.B. For SANH & INMS projects only.</p>
-                    """
       ]
     ,
       label: 'Authors & contacts'
@@ -481,21 +473,21 @@ define [
           label: 'Spatial reference systems'
           ObjectInputView: SpatialReferenceSystemView
           predefined:
-            'British National Grid':
-              code: 27700
-              codeSpace: 'urn:ogc:def:crs:EPSG'
-            'Latitude/longitude (WGS84)':
-              code: 4326
-              codeSpace: 'urn:ogc:def:crs:EPSG'
-            'Spherical mercator':
-              code: 3857
-              codeSpace: 'urn:ogc:def:crs:EPSG'
-            'Irish National Grid (Northern Ireland, UK)':
-              code: 29901
-              codeSpace: 'urn:ogc:def:crs:EPSG'
-            'Irish grid (Ireland) ':
-              code: 29902
-              codeSpace: 'urn:ogc:def:crs:EPSG'
+            'British National Grid (EPSG::27700)':
+              code: 'http://www.opengis.net/def/crs/EPSG/0/27700'
+              title: 'OSGB 1936 / British National Grid'
+            'GB place names' :
+              code: 'https://data.ordnancesurvey.co.uk/datasets/opennames'
+              title: 'GB place names'
+            'GB postcodes' :
+              code: 'https://data.ordnancesurvey.co.uk/datasets/os-linked-data'
+              title: 'GB postcodes'
+            'Lat/long (WGS84) (EPSG::4326)' :
+              code: 'http://www.opengis.net/def/crs/EPSG/0/4326'
+              title: 'WGS 84'
+            'Web mercator (EPSG::3857)':
+              code: 'http://www.opengis.net/def/crs/EPSG/0/3857'
+              title: 'WGS 84 / Pseudo-Mercator'
           helpText: """
                     <p>The spatial referencing system used within the data resource.  <strong>This is mandatory for datasets</strong>; if the dataset has no spatial component (e.g. if it is a laboratory study) the resource type ‘non-geographic data’ should be used instead.</p>
                     """

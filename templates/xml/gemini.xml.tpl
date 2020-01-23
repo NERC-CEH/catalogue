@@ -12,10 +12,10 @@
 </#if>
 
 <?xml version="1.0" encoding="UTF-8"?>
-<gmd:MD_Metadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink">
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://inspire.ec.europa.eu/draft-schemas/inspire-md-schemas/apiso-inspire/apiso-inspire.xsd">
   <gmd:fileIdentifier><gco:CharacterString>${id}</gco:CharacterString></gmd:fileIdentifier>
   <gmd:language>
-    <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">eng</gmd:LanguageCode>
+    <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">English</gmd:LanguageCode>
   </gmd:language>
   <gmd:characterSet>
     <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
@@ -50,10 +50,10 @@
     <gco:DateTime>${metadataDateTime}</gco:DateTime>
   </gmd:dateStamp>
   <gmd:metadataStandardName>
-    <gco:CharacterString>ISO 19115 (UK GEMINI)</gco:CharacterString>
+      <gmx:Anchor xlink:href="http://vocab.nerc.ac.uk/collection/MD1/current/GEMINI/">UK GEMINI</gmx:Anchor>
   </gmd:metadataStandardName>
   <gmd:metadataStandardVersion>
-    <gco:CharacterString>1.0 (2.2)</gco:CharacterString>
+      <gco:CharacterString>2.3</gco:CharacterString>
   </gmd:metadataStandardVersion>
   <#if spatialReferenceSystems??>
     <#list spatialReferenceSystems as SRS>
@@ -61,11 +61,13 @@
       <gmd:MD_ReferenceSystem>
         <gmd:referenceSystemIdentifier>
           <gmd:RS_Identifier>
-            <gmd:code><gco:CharacterString>${SRS.code}</gco:CharacterString></gmd:code>
-            <gmd:codeSpace><gco:CharacterString>${SRS.codeSpace}</gco:CharacterString></gmd:codeSpace>
-            <#if SRS.version?has_content>
-              <gmd:version><gco:CharacterString>${SRS.version}</gco:CharacterString></gmd:version>
-            </#if>
+            <gmd:code>
+              <#if SRS.code?has_content && SRS.code?starts_with("http")>
+                <gmx:Anchor xlink:href="${SRS.code}">${SRS.title}</gmx:Anchor>
+              <#else>
+                <gco:CharacterString>${SRS.title}</gco:CharacterString>
+              </#if>
+            </gmd:code>
           </gmd:RS_Identifier>
         </gmd:referenceSystemIdentifier>
       </gmd:MD_ReferenceSystem>

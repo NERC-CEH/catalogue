@@ -13,43 +13,38 @@
 				</gmd:levelDescription>
 			</gmd:DQ_Scope>
 		</gmd:scope>
-		<#--if conformanceResults?has_content>
-		<#list conformanceResults as conformanceResult>
+		<#--
+		Conformity (gmd:report) is mandatory for GEMINI 2.3 
+		But we don't yet evaluate (or record) conformity so this is
+		a boilerplate statement specifying that conformity has not been evaluated
+		-->
 		<gmd:report>
-		<gmd:DQ_DomainConsistency>
-			<gmd:result>
-				<gmd:DQ_ConformanceResult>
-					<gmd:specification>
-						<gmd:CI_Citation>
-							<gmd:title>
-								<gco:CharacterString>${conformanceResult.title}</gco:CharacterString>
-							</gmd:title>
-              <#if conformanceResult.date??>
-							<gmd:date>
-								<gmd:CI_Date>
-									<gmd:date>
-										<gco:Date>${conformanceResult.date}</gco:Date>
-									</gmd:date>
-									<gmd:dateType>
-										<gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="${conformanceResult.dateType}">${conformanceResult.dateType}</gmd:CI_DateTypeCode>
-									</gmd:dateType>
-								</gmd:CI_Date>
-							</gmd:date>
-              </#if>
-						</gmd:CI_Citation>
-					</gmd:specification>
-					<gmd:explanation>
-						<gco:CharacterString>${conformanceResult.explanation}</gco:CharacterString>
-					</gmd:explanation>
-					<gmd:pass>
-						<gco:Boolean>${conformanceResult.pass?c}</gco:Boolean>
-					</gmd:pass>
-				</gmd:DQ_ConformanceResult>
-			</gmd:result>
-		</gmd:DQ_DomainConsistency>
+			<gmd:DQ_DomainConsistency>
+				<gmd:result>
+					<gmd:DQ_ConformanceResult>
+						<gmd:specification>
+							<gmd:CI_Citation>
+								<gmd:title>
+									<gmx:Anchor xlink:href="http://data.europa.eu/eli/reg/2010/1089">Commission Regulation (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial datasets and services</gmx:Anchor>
+								</gmd:title>
+								<gmd:date>
+									<gmd:CI_Date>
+										<gmd:date>
+											<gco:Date>2010-12-08</gco:Date>
+										</gmd:date>
+										<gmd:dateType>
+											<gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+										</gmd:dateType>
+									</gmd:CI_Date>
+								</gmd:date>
+							</gmd:CI_Citation>
+						</gmd:specification>
+						<gmd:explanation gco:nilReason="inapplicable"/>
+						<gmd:pass gco:nilReason="unknown"/>
+					</gmd:DQ_ConformanceResult>
+				</gmd:result>
+			</gmd:DQ_DomainConsistency>
 		</gmd:report>
-		</#list>
-		</#if-->
 		<#if lineage?has_content>
 		<gmd:lineage>
 			<gmd:LI_Lineage>

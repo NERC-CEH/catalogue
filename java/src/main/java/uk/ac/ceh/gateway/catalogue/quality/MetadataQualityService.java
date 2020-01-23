@@ -539,7 +539,7 @@ public class MetadataQualityService {
             typeRefStringString
         );
         if (dataFormats.isEmpty()) {
-            return Optional.of(new MetadataCheck("Data format is missing", INFO));
+            return Optional.of(new MetadataCheck("Data format is missing", ERROR));
         }
         if (dataFormats.stream().anyMatch(format -> fieldIsMissing(format, "version"))) {
             return Optional.of(new MetadataCheck("Format version is empty", ERROR));
