@@ -39,8 +39,9 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                     toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(r.getCoupledResource())));
         });
         
+
         document.getCoupledResources().stream().filter(r -> !r.isEmpty()).forEach( r -> {
-            toReturn.add(createStatement(me, RELATION, createResource(r)));
+            toReturn.add(createStatement(me, EIDCUSES, createResource(r)));
         });
 
         Optional.ofNullable(document.getRelatedRecords()).orElse(Collections.emptyList()).forEach(rr -> {

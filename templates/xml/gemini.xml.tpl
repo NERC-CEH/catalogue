@@ -24,6 +24,9 @@
     <gmd:hierarchyLevel>
       <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="${recordType}">${recordType}</gmd:MD_ScopeCode>
     </gmd:hierarchyLevel>
+      <#if recordType=="service">
+        <gmd:hierarchyLevelName><gco:CharacterString>service</gco:CharacterString></gmd:hierarchyLevelName>
+      </#if>
   </#if>
   <gmd:contact>
     <gmd:CI_ResponsibleParty>
@@ -57,6 +60,7 @@
   </gmd:metadataStandardVersion>
   <#if spatialReferenceSystems??>
     <#list spatialReferenceSystems as SRS>
+    <#if SRS.title??>
     <gmd:referenceSystemInfo>
       <gmd:MD_ReferenceSystem>
         <gmd:referenceSystemIdentifier>
@@ -72,6 +76,7 @@
         </gmd:referenceSystemIdentifier>
       </gmd:MD_ReferenceSystem>
     </gmd:referenceSystemInfo>
+    </#if>
     </#list>
   </#if>
   <#--identificationInfo -->

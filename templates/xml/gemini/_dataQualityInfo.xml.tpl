@@ -25,7 +25,7 @@
 						<gmd:specification>
 							<gmd:CI_Citation>
 								<gmd:title>
-									<gmx:Anchor xlink:href="http://data.europa.eu/eli/reg/2010/1089">Commission Regulation (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services</gmx:Anchor>
+									<gco:CharacterString>Commission Regulation (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services</gco:CharacterString>
 								</gmd:title>
 								<gmd:date>
 									<gmd:CI_Date>
@@ -40,9 +40,38 @@
 							</gmd:CI_Citation>
 						</gmd:specification>
 						<gmd:explanation gco:nilReason="inapplicable"/>
-						<gmd:pass gco:nilReason="unknown"/>
+						<#if recordType="service">
+							<gmd:pass><gco:Boolean>false</gco:Boolean></gmd:pass>
+						<#else>
+							<gmd:pass gco:nilReason="unknown"/>
+						</#if>
 					</gmd:DQ_ConformanceResult>
 				</gmd:result>
+				<#if recordType="service">
+				<gmd:result>
+					<gmd:DQ_ConformanceResult>
+						<gmd:specification>
+							<gmd:CI_Citation>
+								<gmd:title>
+									<gco:CharacterString>Technical Guidance for the implementation of INSPIRE View Services Version 3.0</gco:CharacterString>
+								</gmd:title>
+								<gmd:date>
+									<gmd:CI_Date>
+										<gmd:date>
+											<gco:Date>2011-03-21</gco:Date>
+										</gmd:date>
+										<gmd:dateType>
+											<gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" >publication</gmd:CI_DateTypeCode>
+										</gmd:dateType>
+									</gmd:CI_Date>
+								</gmd:date>
+							</gmd:CI_Citation>
+						</gmd:specification>
+						<gmd:explanation gco:nilReason="inapplicable"/>
+						<gmd:pass><gco:Boolean>false</gco:Boolean></gmd:pass>
+					</gmd:DQ_ConformanceResult>
+				</gmd:result>
+				</#if>
 			</gmd:DQ_DomainConsistency>
 		</gmd:report>
 		<#if lineage?has_content>

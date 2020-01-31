@@ -1,4 +1,4 @@
-@data{${doi},
+@misc{${doi},
         doi = {${doi}},
         url = {${url}},
      author = {${authors?join(';')}},

@@ -57,6 +57,7 @@ public class CitationService {
                         .title(     geminiDocument.getTitle())
                         .year(      pubDate.get().getYear())
                         .publisher( publisher.get().getOrganisationName())
+                        .resourceTypeGeneral( geminiDocument.getType())
                         .bibtex(    getInAlternateFormat(geminiDocument, WebConfig.BIBTEX_SHORT))
                         .ris(       getInAlternateFormat(geminiDocument, WebConfig.RESEARCH_INFO_SYSTEMS_SHORT))
                         .build()
