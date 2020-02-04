@@ -2,6 +2,12 @@
   "resourceType": {
     "value": "dataset"
   },
+  "distributionFormats": [
+    {
+      "name": "Comma-separated values (CSV)",
+      "version": "unknown"
+    }
+  ],
   "descriptiveKeywords": [
     {
       "keywords": [
@@ -15,8 +21,7 @@
   "inspireThemes": [
     {
       "theme": "Bio-geographical Regions",
-      "uri": "http://inspire.ec.europa.eu/theme/br",
-      "conformity": "Not conformant"
+      "uri": "http://inspire.ec.europa.eu/theme/br"
     }
   ],
   "boundingBoxes": [
@@ -38,8 +43,8 @@
     "String1"
   ],
   "spatialReferenceSystems": [
-    {"code": "abc123", "codeSpace": "URN:EPSG"},
-    {"code": "abc001", "codeSpace": "URN:EPSG"}
+    {"code": "http://www.opengis.net/def/crs/EPSG/0/4326","title": "WGS 84"},
+    {"code": "https://data.ordnancesurvey.co.uk/datasets/opennames","title": "GB place names"}
   ],
   "spatialResolutions": [
     {"distance": "11"},

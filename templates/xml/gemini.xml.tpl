@@ -18,15 +18,15 @@
     <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">English</gmd:LanguageCode>
   </gmd:language>
   <gmd:characterSet>
-    <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
-  </gmd:characterSet>
+    <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="8859part1">ISO/IEC 8859-1 (also known as Latin 1)</gmd:MD_CharacterSetCode>
+  </gmd:characterSet>  
   <#if recordType??>
     <gmd:hierarchyLevel>
       <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="${recordType}">${recordType}</gmd:MD_ScopeCode>
     </gmd:hierarchyLevel>
-      <#if recordType=="service">
-        <gmd:hierarchyLevelName><gco:CharacterString>service</gco:CharacterString></gmd:hierarchyLevelName>
-      </#if>
+    <gmd:hierarchyLevelName>
+      <gco:CharacterString>${recordType}</gco:CharacterString>
+    </gmd:hierarchyLevelName>
   </#if>
   <gmd:contact>
     <gmd:CI_ResponsibleParty>
