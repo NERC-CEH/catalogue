@@ -3,11 +3,9 @@
     <select data-index="<%= data.index %>" class="editor-input">
       <option value="">- Select Spatial Representation Type -</option>
       <option value="grid">Raster (grid)</option>
-      <option value="stereoModel">stereoModel (a three-dimensional view formed by overlapping pairs of images)</option>
       <option value="textTable">Tabular data (e.g. a spreadsheet)</option>
       <option value="tin">Triangular Irregular Network</option>
       <option value="vector">Vector (e.g. Shape file)</option>
-      <option value="video">Video</option>
     </select>
   </div>
   <div class="col-sm-1">

@@ -18,7 +18,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 @JsonIgnoreProperties({"doiDisplay"})
 public class Citation {
     private final List<String> authors;
-    private final String doi, coupled, title, publisher;
+    private final String doi, coupled, title, publisher, resourceTypeGeneral;
     private final Integer year;
     private final URI bibtex, ris;
     

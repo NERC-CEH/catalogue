@@ -13,7 +13,7 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="CLose"><i aria-hidden="true" class="fas fa-times"></i></button>
           <p><strong>Cite this dataset as</strong></p>
           <p id="citation-text">
-            ${citation.authors?join('; ')?html} (${citation.year?string["0000"]?html}). <b>${citation.title?html}</b>. ${citation.publisher?html}.  ${citation.url?html}
+            ${citation.authors?join('; ')?html} (${citation.year?string["0000"]?html}). <b>${citation.title?html}</b>. ${citation.publisher?html}.  (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url?html}
           </p>
           <p><small>
             Import this citation into your reference management software:<br>

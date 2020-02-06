@@ -73,7 +73,7 @@ public class MetadataQualityService {
                 val checks = new ArrayList<MetadataCheck>();
                 checkBasics(parsedDoc).ifPresent(checks::addAll);
                 checkPublishedData(parsedDoc).ifPresent(checks::addAll);
-                checkDataset(parsedDoc).ifPresent(checks::addAll);
+                checkSpatialDataset(parsedDoc).ifPresent(checks::addAll);
                 checkService(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
                 checkSignpost(parsedDoc).ifPresent(checks::addAll);
@@ -111,6 +111,12 @@ public class MetadataQualityService {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
             }
         });
+
+        val description = parsedDoc.read("$.description", String.class).trim();
+        if (description.length() < 100) {
+            toReturn.add(new MetadataCheck("Description is too short (minimum 100 characters)", ERROR));
+        } 
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -159,6 +165,7 @@ public class MetadataQualityService {
         return validResourceTypes.contains(parsed.read("$.resourceType.value", String.class));
     }
 
+
     Optional<List<MetadataCheck>> checkAddress(List<Map<String, String>> addresses, String element) {
         val toReturn = new ArrayList<MetadataCheck>();
         if (addresses == null || addresses.isEmpty()) {
@@ -195,17 +202,17 @@ public class MetadataQualityService {
         }
     }
 
-    Optional<List<MetadataCheck>> checkDataset(DocumentContext parsed) {
+    Optional<List<MetadataCheck>> checkSpatialDataset(DocumentContext parsed) {
         if (notRequiredResourceTypes(parsed, "dataset")) {
             return Optional.empty();
         }
-        val requiredKeys = ImmutableSet.of("boundingBoxes", "spatialRepresentationTypes", "spatialReferenceSystems");
+        val requiredKeys = ImmutableSet.of("boundingBoxes", "spatialRepresentationTypes");
         Boolean notGEMINI = parsed.read("$.notGEMINI", boolean.class);
         val toReturn = new ArrayList<MetadataCheck>();
        
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
         val spatial = parsed.read(
-            "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems','spatialResolutions']",
+            "$.['boundingBoxes','spatialRepresentationTypes']",
             new TypeRef<Map<String, List>>() {}
             );
         requiredKeys.forEach(key -> {
@@ -213,12 +220,11 @@ public class MetadataQualityService {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
             }
         });
-        if (fieldListIsMissing(spatial, "spatialResolutions")) {
-            toReturn.add(new MetadataCheck("Spatial resolution is missing", INFO));
-        }
         
         if (notGEMINI ==  null || notGEMINI == false) {
-            checkInspireTheme(parsed).ifPresent(toReturn::add);
+            checkInspireThemes(parsed).ifPresent(toReturn::add);
+            checkSpatialResolutions(parsed).ifPresent(toReturn::add);
+            checkSpatialReferenceSystems(parsed).ifPresent(toReturn::add);
         }
         
         if (toReturn.isEmpty()) {
@@ -521,13 +527,46 @@ public class MetadataQualityService {
             || !map.get(key).equals(value);
     }
 
-    Optional<MetadataCheck> checkInspireTheme(DocumentContext parsed) {
-        val inspireTheme = parsed.read(
+    Optional<MetadataCheck> checkInspireThemes(DocumentContext parsed) {
+        val inspireThemes = parsed.read(
             "$.inspireThemes[*]",
             typeRefStringString
         );
-        if (inspireTheme.isEmpty()) {
-            return Optional.of(new MetadataCheck("INSPIRE Theme is missing", WARNING));
+        if (inspireThemes.isEmpty()) {
+            return Optional.of(new MetadataCheck("INSPIRE Theme is missing", ERROR));
+        }
+        if (inspireThemes.stream().anyMatch(inspireTheme -> fieldIsMissing(inspireTheme, "theme"))) {
+            return Optional.of(new MetadataCheck("INSPIRE Theme is empty", ERROR));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    Optional<MetadataCheck> checkSpatialResolutions(DocumentContext parsed) {
+        val spatialResolutions = parsed.read(
+            "$.spatialResolutions[*]",
+            typeRefStringString
+        );
+        if (spatialResolutions.isEmpty()) {
+            return Optional.of(new MetadataCheck("Spatial resolutions is missing", WARNING));
+        }
+        if (spatialResolutions.stream().anyMatch(spatialResolution -> fieldIsMissing(spatialResolution, "distance"))) {
+            return Optional.of(new MetadataCheck("Spatial resolutions is empty", ERROR));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    Optional<MetadataCheck> checkSpatialReferenceSystems(DocumentContext parsed) {
+        val spatialReferenceSystems = parsed.read(
+            "$.spatialReferenceSystems[*]",
+            typeRefStringString
+        );
+        if (spatialReferenceSystems.isEmpty()) {
+            return Optional.of(new MetadataCheck("Spatial reference systems are missing", ERROR));
+        }
+        if (spatialReferenceSystems.stream().anyMatch(spatialReferenceSystem -> fieldIsMissing(spatialReferenceSystem, "code"))) {
+            return Optional.of(new MetadataCheck("Spatial reference system is empty", ERROR));
         } else {
             return Optional.empty();
         }
@@ -540,6 +579,9 @@ public class MetadataQualityService {
         );
         if (dataFormats.isEmpty()) {
             return Optional.of(new MetadataCheck("Data format is missing", ERROR));
+        }
+        if (dataFormats.stream().anyMatch(format -> fieldIsMissing(format, "name"))) {
+            return Optional.of(new MetadataCheck("Format name is empty", ERROR));
         }
         if (dataFormats.stream().anyMatch(format -> fieldIsMissing(format, "version"))) {
             return Optional.of(new MetadataCheck("Format version is empty", ERROR));
@@ -693,7 +735,6 @@ public class MetadataQualityService {
         }
     }
 
-
     private boolean fieldNotStartingWith(Map<String, String> map, String key, String value) {
         return !map.containsKey(key)
             || map.get(key) == null
@@ -708,6 +749,11 @@ public class MetadataQualityService {
     boolean resourceStatusIsEmbargoed(DocumentContext parsed) {
         val resourceStatus = parsed.read("$.resourceStatus", String.class);
         return resourceStatus != null && resourceStatus.equals("Embargoed");
+    }
+
+    boolean descriptionTooShort(DocumentContext parsed) {
+        val description = parsed.read("$.description", String.class);
+        return description.length()<5;
     }
 
     private boolean notRequiredResourceTypes(DocumentContext parsed, String... resourceTypes) {

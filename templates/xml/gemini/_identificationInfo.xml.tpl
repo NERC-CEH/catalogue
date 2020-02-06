@@ -153,11 +153,13 @@
 		<#include "_descriptiveKeywords.xml.tpl">
 		<#include "_resourceConstraints.xml.tpl">
 		<#if spatialRepresentationTypes?has_content>
-		<#list spatialRepresentationTypes as spatialRepresentationType>
-		<gmd:spatialRepresentationType>
-		<gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="${spatialRepresentationType}">${spatialRepresentationType}</gmd:MD_SpatialRepresentationTypeCode>
-		</gmd:spatialRepresentationType>
-		</#list>
+			<#list spatialRepresentationTypes as spatialRepresentationType>
+			<#if spatialRepresentationType??>
+				<gmd:spatialRepresentationType>
+				<gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="${spatialRepresentationType}">${spatialRepresentationType}</gmd:MD_SpatialRepresentationTypeCode>
+				</gmd:spatialRepresentationType>
+			</#if>
+			</#list>
 		</#if>
 		<#if spatialResolutions?has_content>
 		<#list spatialResolutions as spatialResolution>

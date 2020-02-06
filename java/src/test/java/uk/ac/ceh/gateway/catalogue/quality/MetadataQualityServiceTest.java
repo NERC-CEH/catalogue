@@ -213,7 +213,7 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("datasetCorrect.json"), this.config);
 
         //when
-        val actual = this.service.checkDataset(parsed).isPresent();
+        val actual = this.service.checkSpatialDataset(parsed).isPresent();
 
         //then
         assertFalse(actual);
@@ -225,7 +225,7 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("datasetWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkDataset(parsed).isPresent();
+        val actual = this.service.checkSpatialDataset(parsed).isPresent();
 
         //then
         assertTrue(actual);
