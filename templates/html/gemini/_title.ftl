@@ -36,7 +36,15 @@
       <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
     </#if>
     ${title}
+    <#if alternateTitles?? && alternateTitles?has_content>
+      <br><small class="alternateTitles">
+        <#list alternateTitles as altTitle>
+          (${altTitle})<#sep><br></#sep>
+        </#list>
+      </small>
+    </#if>
   </h1>
+  
   <#if citation?has_content>
     <div class="doi">
       <a href="${citation.url?html}">${citation.url?html}</a>
