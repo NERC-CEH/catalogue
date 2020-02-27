@@ -5,11 +5,12 @@
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 <#escape x as x?html>
   <div id="metadata" class="container">
+    <#include "imp/_admin.ftl">
     <@blocks.title title type />
     <@blocks.description description!"" />
+
     <div class="row">
       <div class="col-sm-4 col-sm-push-8">
-        <#include "imp/_admin.ftl">
         <@blocks.links jena.datasets(uri) "Datasets" />
         <@blocks.links jena.modelApplications(uri) "Model Applications" />
       </div>

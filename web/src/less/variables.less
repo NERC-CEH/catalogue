@@ -7,14 +7,20 @@
 //
 //## Gray and brand colors for use across Bootstrap.
 
-@gray-darker:            lighten(#000, 13.5%); // #222
-@gray-dark:              #333;   // #333
-@gray:                   #828c7f; // #555
-@gray-light:             #9da09e;   // #999
-@gray-lighter:           #a5d4a0; // #eee
+@ukceh-blue:           #2f7ece;
+@ukceh-green:          #4da43a;
+@green-light:           lighten(@ukceh-green, 17%); 
+@green-lighter:         lighten(@ukceh-green, 25%); 
+@blue-light:            lighten(@ukceh-blue, 17%);
+@blue-lighter:          lighten(@ukceh-blue, 25%);
 
-@brand-primary:         #3fc3cb;
-@brand-success:         #5cb85c;
+@gray-darker:           lighten(#000, 13.5%);
+@gray-dark:             #333;  
+@gray:                  #828c7f; 
+@gray-light:            #9da09e;   
+
+@brand-primary:         @ukceh-blue;
+@brand-success:         @ukceh-green;
 @brand-info:            #5bc0de;
 @brand-warning:         #f0ad4e;
 @brand-danger:          #d9534f;
@@ -172,7 +178,7 @@
 //** `<input>` background color
 @input-bg:                       #fff;
 //** `<input disabled>` background color
-@input-bg-disabled:              @gray-lighter;
+@input-bg-disabled:              @green-lighter;
 
 //** Text color for `<input>`s
 @input-color:                    @gray;
@@ -197,7 +203,7 @@
 @legend-border-color:            #e5e5e5;
 
 //** Background color for textual input addons
-@input-group-addon-bg:           @gray-lighter;
+@input-group-addon-bg:           @green-light;
 //** Border color for textual input addons
 @input-group-addon-border-color: @input-border;
 
@@ -365,7 +371,7 @@
 // Inverted navbar
 // Reset inverted navbar basics
 @navbar-inverse-color:             #777;
-@navbar-inverse-bg:                @gray-lighter;
+@navbar-inverse-bg:                @green-light;
 @navbar-inverse-border:            darken(@navbar-inverse-bg, 6.5%);
 
 // Inverted navbar links
@@ -393,7 +399,7 @@
 
 //=== Shared nav styles
 @nav-link-padding:                          10px 15px;
-@nav-link-hover-bg:                         @gray-lighter;
+@nav-link-hover-bg:                         @green-light;
 
 @nav-disabled-link-color:                   @gray-light;
 @nav-disabled-link-hover-color:             @gray-light;
@@ -403,7 +409,7 @@
 //== Tabs
 @nav-tabs-border-color:                     #ddd;
 
-@nav-tabs-link-hover-border-color:          @gray-lighter;
+@nav-tabs-link-hover-border-color:          @green-light;
 
 @nav-tabs-active-link-hover-bg:             @body-bg;
 @nav-tabs-active-link-hover-color:          @gray;
@@ -427,7 +433,7 @@
 @pagination-border:                    #ddd;
 
 @pagination-hover-color:               @link-hover-color;
-@pagination-hover-bg:                  @gray-lighter;
+@pagination-hover-bg:                  @green-lighter;
 @pagination-hover-border:              #ddd;
 
 @pagination-active-color:              #fff;
@@ -461,7 +467,7 @@
 
 @jumbotron-padding:              30px;
 @jumbotron-color:                inherit;
-@jumbotron-bg:                   @gray-lighter;
+@jumbotron-bg:                   @green-light;
 @jumbotron-heading-color:        inherit;
 @jumbotron-font-size:            ceil((@font-size-base * 1.5));
 
@@ -661,7 +667,7 @@
 //** Text color of disabled list items
 @list-group-disabled-color:      @gray-light;
 //** Background color of disabled list items
-@list-group-disabled-bg:         @gray-lighter;
+@list-group-disabled-bg:         @green-light;
 //** Text color for content within disabled list items
 @list-group-disabled-text-color: @list-group-disabled-color;
 
@@ -686,7 +692,7 @@
 
 @panel-default-text:          @gray-dark;
 @panel-default-border:        #ddd;
-@panel-default-heading-bg:    @gray-lighter;
+@panel-default-heading-bg:    @green-light;
 
 @panel-primary-text:          #fff;
 @panel-primary-border:        @brand-primary;
@@ -830,10 +836,10 @@
 //** Blockquote font size
 @blockquote-font-size:        (@font-size-base * 1.25);
 //** Blockquote border color
-@blockquote-border-color:     @gray-lighter;
+@blockquote-border-color:     @green-light;
 //** Page header border color
-@page-header-border-color:    @gray-lighter;
+@page-header-border-color:    @green-light;
 //** Width of horizontal description list titles
 @dl-horizontal-offset:        @component-offset-horizontal;
 //** Horizontal line color.
-@hr-border:                   @gray-lighter;
+@hr-border:                   @green-light;

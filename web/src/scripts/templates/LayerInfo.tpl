@@ -1,15 +1,11 @@
 <div class="layerInfo">
   <h2>Legend</h2>
   <div class="legendContainer">
-    <%=onlineResource.collection.metadataDocument.get('title')%>
-    <img src="<%=getLegend()%>"/>
+    <div><%=onlineResource.collection.metadataDocument.get('title')%></div>
+    <div><img src="<%=getLegend()%>"/></div>
   </div>
   
-  <h2>Online Resource</h2>
-  <a href="<%=onlineResource.get('url')%>"><%=onlineResource.get('name')%></a>
+  <p><a href="<%=onlineResource.get('url')%>">Request</a></p>
 
-  <h2>Metadata Record</h2>
-  <a href="<%=onlineResource.collection.metadataDocument.url()%>">
-    <%=onlineResource.collection.metadataDocument.get('title')%>
-  </a>
+  <p><a href="<%=onlineResource.collection.metadataDocument.url()%>">Back to metadata record</a></p>
 </div>

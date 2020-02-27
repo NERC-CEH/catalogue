@@ -8,34 +8,31 @@
     
     <@b.admin />
 
-    <#if title?? || projectCode?? || projectObjectives?? || description?? || keywords?? || projectCompletionDate?? || projectWebsite?? || funderDetails?? || contactName?? || multipleModelsUsed?? || multipleModelLinkages??>
+    <#if title?? || projectCode?? || projectObjectives?? || description?? || keywords?? || projectCompletionDate?? || projectWebsite?? || funderDetails?? || multipleModelsUsed?? || multipleModelLinkages??>
     <section>
+      <h1 class="document-title"><small>Model implementation</small>${title}</h1>
       <h2>Project Information</h2>
-
-      <#if title?? && title?has_content>
-        <@m.key "Project title" "Title of project">${title}</@m.key>
-      </#if>
 
       <#if projectCode?? && projectCode?has_content>
         <@m.key "Project code" "RMS project code">${projectCode}</@m.key>
       </#if>
 
       <#if projectObjectives?? && projectObjectives?has_content>
-        <@m.key "Project objectives" "Brief description of main objectives">
+        <@m.key "Objectives" "Brief description of main objectives">
           <#noescape>
             <@b.linebreaks projectObjectives />
           </#noescape>
         </@m.key>
       </#if>
       <#if description?? && description?has_content>
-        <@m.key "Project description" "Longer description of project including why models were used to answer the science question, assumptions made, key outputs">
+        <@m.key "Description" "Longer description of project including why models were used to answer the science question, assumptions made, key outputs">
           <#noescape>
             <@b.linebreaks description />
           </#noescape>
         </@m.key>
       </#if>
       <#if projectCompletionDate?? && projectCompletionDate?has_content>
-        <@m.key "Project completion date" "Project end date">${projectCompletionDate}</@m.key>
+        <@m.key "Project completion date" "Project end date">${projectCompletionDate?date?string['d MMMM yyyy']}</@m.key>
       </#if>
       <#if projectWebsite?? && projectWebsite?has_content>
         <@m.key "Project website" "Link to public-facing website if available"><@b.bareUrl projectWebsite /></@m.key>
@@ -47,16 +44,20 @@
           </#noescape>
         </@m.key>
       </#if>
-      <#if contactName??>
-        <@m.key "Contact name" "Name of CEH PI/project representative">
-          <#if contactName?has_content>
-            ${contactName}
-          </#if>
-          <#if contactEmail?? && contactEmail?has_content>
-            (${contactEmail})
-          </#if>
+     
+      <#if responsibleParties??>
+        <@m.key "Contact" "">
+          <#list responsibleParties as item>
+              ${item.individualName}
+              <#if item.email?has_content && item.email?matches("\\b[\\w\\.-]+@[\\w\\.-]+\\.\\w{2,4}\\b")>
+                (<a href="mailto:${item.email}">${item.email}</a>)
+              <#sep><br></#sep>
+              </#if>
+          </#list>
         </@m.key>
       </#if>
+
+
       <#if multipleModelsUsed?? && multipleModelsUsed?has_content>
         <@m.key "Multiple models used?" "Were multiple models used in the project? If so, which ones?">
           <#noescape>
@@ -74,20 +75,20 @@
     </section>
     </#if>
 
-    <#if references?? && references?has_content>
+    <#if supplemental?? && supplemental?has_content>
     <section>
       <h2>References</h2>
 
-      <#list references as ref>
+      <#list supplemental as item>
       <@b.repeatRow>
-        <#if ref.citation?? && ref.citation?has_content>
-          <span class="reference-citation">${ref.citation}</span>
+        <#if item.description?? && item.description?has_content>
+          <span class="reference-description">${item.description}</span>
         </#if>
-        <#if ref.doi?? && ref.doi?has_content>
-          <span class="reference-doi"><@m.Url ref.doi true/></span>
+        <#if item.url?? && item.url?has_content>
+          <span class="reference-url"><@m.Url item.url true/></span>
         </#if>
-        <#if ref.nora?? && ref.nora?has_content>
-          <span class="reference-nora">${ref.nora}</span>
+        <#if item.noraID?? && item.noraID?has_content>
+          <span class="reference-nora">${item.noraID}</span>
         </#if>
       </@b.repeatRow>
       </#list>
@@ -103,7 +104,7 @@
          <#if (modelInfo.id?? && modelInfo.id?has_content) || (modelInfo.name?? && modelInfo.name?has_content)>
             <#assign model=jena.metadata(modelInfo.id)!""/>
             <@b.basicRow>
-              <@m.keyContent "Model name">
+              <@m.keyContent "Model">
                 <#if model?has_content>
                   <a href="${model.href}">${model.title}</a>
                 <#else>
@@ -127,7 +128,7 @@
           </#if>
           <#if modelInfo.spatialExtentOfApplication?? && modelInfo.spatialExtentOfApplication?has_content>
             <@b.basicRow>
-              <@m.keyContent "Spatial extent of application">${modelInfo.spatialExtentOfApplication?cap_first}</@m.keyContent>
+              <@m.keyContent "Spatial extent">${modelInfo.spatialExtentOfApplication?cap_first}</@m.keyContent>
             </@b.basicRow>
           </#if>
           <#if modelInfo.availableSpatialData?? && modelInfo.availableSpatialData?has_content>
@@ -137,22 +138,24 @@
           </#if>
           <#if modelInfo.spatialResolutionOfApplication?? && modelInfo.spatialResolutionOfApplication?has_content>
             <@b.basicRow>
-              <@m.keyContent "Spatial resolution of application" >${modelInfo.spatialResolutionOfApplication}</@m.keyContent>
+              <@m.keyContent "Spatial resolution" >${modelInfo.spatialResolutionOfApplication}</@m.keyContent>
             </@b.basicRow>
           </#if>
-          <#if modelInfo.temporalExtentOfApplicationStartDate?? && modelInfo.temporalExtentOfApplicationStartDate?has_content>
-            <@b.basicRow>
-              <@m.keyContent "Temporal extent of application (start date)">${modelInfo.temporalExtentOfApplicationStartDate}</@m.keyContent>
-            </@b.basicRow>
-          </#if>
-          <#if modelInfo.temporalExtentOfApplicationEndDate?? && modelInfo.temporalExtentOfApplicationEndDate?has_content>
-            <@b.basicRow>
-              <@m.keyContent "Temporal extent of application (end date)">${modelInfo.temporalExtentOfApplicationEndDate}</@m.keyContent>
-            </@b.basicRow>
+          <#if modelInfo.temporalExtentOfApplicationStartDate??||  modelInfo.temporalExtentOfApplicationEndDate?? >
+            <@b.basicRow><@m.keyContent "Temporal extent">
+                <#if modelInfo.temporalExtentOfApplicationStartDate?? && modelInfo.temporalExtentOfApplicationStartDate?has_content>
+                  From <span>${modelInfo.temporalExtentOfApplicationStartDate?date?string['d MMMM yyyy']}</span>
+                <#else>
+                &hellip;
+                </#if>
+                <#if modelInfo.temporalExtentOfApplicationEndDate?? && modelInfo.temporalExtentOfApplicationEndDate?has_content>
+                  to <span>${modelInfo.temporalExtentOfApplicationEndDate?date?string['d MMMM yyyy']}</span>
+                </#if>
+            </@m.keyContent></@b.basicRow>
           </#if>
           <#if modelInfo.temporalResolutionOfApplication?? && modelInfo.temporalResolutionOfApplication?has_content>
             <@b.basicRow>
-              <@m.keyContent "Temporal resolution of application">${modelInfo.temporalResolutionOfApplication}</@m.keyContent>
+              <@m.keyContent "Temporal resolution">${modelInfo.temporalResolutionOfApplication}</@m.keyContent>
             </@b.basicRow>
           </#if>
           <#if modelInfo.calibrationConditions?? && modelInfo.calibrationConditions?has_content>
@@ -165,17 +168,17 @@
       </section>
     </#if>
 
-    <#if inputData?? || outputData??>
+    <#if inputData?? && inputData?size gt 0 >
     <section>
-      <h2>Data Information</h2>
+      <h2>Input data</h2>
+      <@dataInfoTable inputData />
+    </section>
+    </#if>
 
-        <@m.key "Input data">
-          <@m.dataInfoTable inputData />
-        </@m.key>
-        
-        <@m.key "Output data">
-          <@m.dataInfoTable outputData />
-        </@m.key>
+    <#if outputData?? && outputData?size gt 0>
+    <section>
+      <h2>Output data</h2>
+      <@dataInfoTable outputData />
     </section>
     </#if>
    
@@ -210,3 +213,28 @@
     
   </@b.metadataContainer>
 </#escape></@skeleton.master>
+
+
+<#macro dataInfoTable data> 
+<table class="table table-condensed">
+<thead><tr><th>variable name</th><th>units</th><th>file format</th><th>url</th></tr></thead>
+<tbody>
+  <#list data as item>
+    <tr>
+      <td>
+        <#if item.variableName?? && item.variableName?has_content>${item.variableName}</#if>
+      </td>
+      <td>
+        <#if item.units?? && item.units?has_content>${item.units}</#if>
+      </td>
+      <td>
+        <#if item.fileFormat?? && item.fileFormat?has_content>${item.fileFormat}</#if>
+      </td>
+      <td>
+        <#if item.url?? && item.url?has_content><@b.bareUrl item.url/></#if>
+      </td>
+    </tr>
+  </#list>
+</tbody>
+</table>
+</#macro>

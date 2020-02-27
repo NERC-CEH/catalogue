@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
@@ -27,11 +28,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 public class CehModel extends AbstractMetadataDocument implements WellKnownText {
     private String 
         primaryPurpose,
-        seniorResponsibleOfficer, 
-        seniorResponsibleOfficerEmail, 
         licenseType,
-        website,
-        codeRepositoryUrl,
         modelType,
         currentModelVersion,
         modelCalibration,
@@ -43,8 +40,12 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
         compiler,
         operatingSystem,
         systemMemory,
-        documentation,
-        releaseDate;
+        releaseDate,
+        seniorResponsibleOfficer, // replaced by responsibleParties - when data is updated this can be deleted
+        seniorResponsibleOfficerEmail,  // replaced by responsibleParties - when data is updated this can be deleted
+        website,  //replaced by onlineResources - when data is updated this can be deleted 
+        codeRepositoryUrl, //replaced by onlineResources - when data is updated this can be deleted
+        documentation;  //replaced by onlineResources - when data is updated this can be deleted
     
     private List<BoundingBox> boundingBoxes;
 
@@ -52,14 +53,16 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
         inputVariables,
         outputVariables;
 
+     //when data is updated these can be deleted
     private List<String>
-        organisations,
-        keyInputVariables,
-        keyOutputVariables;
+        organisations, //replaced by responsibleParties
+        keyInputVariables, //replaced by inputVariables
+        keyOutputVariables; //replaced by outputVariables
     
-    private List<OnlineLink> onlineResources;
+    private List<OnlineLink> onlineResources; 
 
-    private List<Reference> references;
+    private List<Reference> references; //replaced by supplemental - when data is updated this can be deleted
+    private List<Supplemental> supplemental;
     
     private QualityAssurance
         developerTesting,

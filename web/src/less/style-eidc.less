@@ -1,9 +1,12 @@
 @import "style-ceh";
 
-@brand-success: #337085;
-@gray-lighter: @brand-success;
+@eidc-orange: #E75F22;
+@eidc-blue: #337085;
+
+@brand-success:@eidc-blue;
+@green-light: @brand-success;
 @header-text: #fff;
-@link-hover-color: #E75F22;
+@link-hover-color: @eidc-orange;
 @panel-default-text: @header-text;
 
 .text-red {
@@ -11,7 +14,7 @@
 }
 
 h1#document-title {
-    color: @link-hover-color;
+    color: @eidc-orange;
 }
 
 .panel-right {
@@ -134,7 +137,7 @@ h1#document-title {
 }
 
 /*Change menu collapse breakpoint */
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
     .navbar-header {
         float: none;
     }

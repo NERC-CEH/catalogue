@@ -38,7 +38,7 @@ define [
           modelAttribute: 'type'
           label: 'Type'
           options: [
-            {value: 'modelApplication', label: 'Model Application'},
+            {value: 'modelApplication', label: 'Model implementation'},
             {value: 'caseStudy', label: 'Case Study'},
             {value: 'model', label: 'Model'}
           ]
@@ -265,8 +265,8 @@ define [
 
         ]
       ,
-        label: 'Model Application'
-        title: 'Model application only'
+        label: 'Model implementation'
+        title: 'Model implementation only'
         views: [
           new InputView
             model: @model

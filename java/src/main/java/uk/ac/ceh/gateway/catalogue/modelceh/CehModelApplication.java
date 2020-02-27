@@ -7,7 +7,12 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -19,29 +24,36 @@ import java.util.stream.Collectors;
 @ConvertUsing({
     @Template(called="html/ceh-model-application.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
-public class CehModelApplication extends AbstractMetadataDocument {
+
+public class CehModelApplication extends AbstractMetadataDocument implements WellKnownText {
     private String
         projectCode,
         projectObjectives,
         projectCompletionDate,
         projectWebsite,
         funderDetails,
-        contactName,
-        contactEmail,
+        contactName, //replaced by responsibleParties - when data is updated this can be deleted
+        contactEmail, //replaced by responsibleParties - when data is updated this can be deleted
         multipleModelsUsed,
         multipleModelLinkages,
         sensitivityAnalysis,
         uncertaintyAnalysis,
         validation;
-    
-    private List<CehModel.Reference> references;
-    
+
+    private List<ResponsibleParty> responsibleParties;
+
+    private List<BoundingBox> boundingBoxes;    
+
     private List<ModelInfo> modelInfos;
     
     private List<DataInfo>
         inputData,
         outputData;
-    
+
+    private List<CehModel.Reference> references; //replaced by supplemental - when data is updated this can be deleted
+    private List<Supplemental> supplemental;
+        
+        
     @JsonIgnore
     @Override
     public Set<Relationship> getRelationships() {
@@ -82,6 +94,15 @@ public class CehModelApplication extends AbstractMetadataDocument {
             units,
             fileFormat,
             url;
+    }
+    
+    @Override
+    public List<String> getWKTs() {
+        return Optional.ofNullable(boundingBoxes)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(BoundingBox::getWkt)
+            .collect(Collectors.toList());
     }
 
 }

@@ -6,9 +6,7 @@ define [
   'cs!views/editor/PredefinedParentView'
   'cs!views/editor/ParentStringView'
   'cs!views/editor/KeywordView'
-  'cs!views/editor/ReferenceView'
   'cs!views/editor/ContactView'
-  'cs!models/editor/Reference'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/QaView'
   'cs!views/editor/VersionHistoryView'
@@ -19,6 +17,8 @@ define [
   'cs!views/editor/DataTypeSchemaSimpleView'
   'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
+  'cs!models/editor/Supplemental'
+  'cs!views/editor/SupplementalView'
 
 ], (
   EditorView,
@@ -28,9 +28,7 @@ define [
   PredefinedParentView,
   ParentStringView,
   KeywordView,
-  ReferenceView,
   ContactView,
-  Reference,
   SingleObjectView,
   QaView,
   VersionHistoryView,
@@ -40,7 +38,9 @@ define [
   DataTypeSchema,
   DataTypeSchemaSimpleView,
   BoundingBox,
-  BoundingBoxView
+  BoundingBoxView,
+  Supplemental,
+  SupplementalView
 ) -> EditorView.extend
 
   initialize: ->
@@ -56,9 +56,6 @@ define [
           model: @model
           modelAttribute: 'title'
           label: 'Title'
-          helpText: """
-                    <p>Name of the model</p>
-                    """
 
         new TextareaView
           model: @model
@@ -66,7 +63,7 @@ define [
           label: 'Model description'
           rows: 7
           helpText: """
-                    <p>Longer description of model e.g. development history, use to answer science questions, overview of structure</p>
+                    Longer description of model e.g. development history, use to answer science questions, overview of structure
                     """
 
         new TextareaView
@@ -88,7 +85,7 @@ define [
                     <option value='Stochastic' />
                     """
           helpText: """
-                    <p>Type which best fits the model</p>
+                    Type which best fits the model<
                     """
 
         new InputView
@@ -97,7 +94,7 @@ define [
           label: 'Current model version'
           placeholderAttribute: 'e.g. 2.5.10'
           helpText: """
-                    <p>Most recent release version (if applicable)</p>
+                    Most recent release version (if applicable)
                     """
 
         new InputView
@@ -107,7 +104,7 @@ define [
           label: 'Release date'
           placeholderAttribute: 'yyyy-mm-dd'
           helpText: """
-                    <p>Date of release of current model version (if applicable)</p>
+                    Date of release of current model version (if applicable)
                     """
 
         new PredefinedParentView
@@ -123,7 +120,7 @@ define [
               role: 'owner'
               organisationIdentifier: 'https://ror.org/00pggkr55'
           helpText: """
-                    <p>You <b>must</b> include one Senior Responsible Officer (SRO) - the person who is the "owner" and primary contact for the model</p>
+                    You <b>must</b> include one Senior Responsible Officer (SRO) - the person who is the "owner" and primary contact for the model
                     """
 
         new ParentView
@@ -132,7 +129,7 @@ define [
           label: 'Keywords'
           ObjectInputView: KeywordView
           helpText: """
-                    <p>Keywords for model discovery e.g. rainfall; species distribution; nitrogen deposition; global circulation model</p>
+                    Keywords or phrases to help model discovery
                     """
         
         new ParentView
@@ -156,14 +153,11 @@ define [
         new InputView
           model: @model
           modelAttribute: 'licenseType'
-          label: 'License'
+          label: 'License type'
           listAttribute: """
                     <option value='unknown' />
                     <option value='open' />
                     <option value='non-open' />
-                    """
-          helpText: """
-                    <p>License type (open or non-open) under which the model is distributed</p>
                     """
       ]
     ,
@@ -311,7 +305,7 @@ define [
                     <option value='Global' />
                     """
           helpText: """
-                    <p>Is the model only applicable to certain areas?</p>
+                    Is the model only applicable to certain areas?
                     """
 
         new InputView
@@ -320,25 +314,25 @@ define [
           label: 'Spatial resolution'
           placeholderAttribute: 'e.g. 1km2 or 5m2;'
           helpText: """
-                    <p>Spatial resolution at which model works or at which model outputs are generated (if applicable)</p>
+                    Spatial resolution at which model works or at which model outputs are generated (if applicable)
                     """
 
         new InputView
           model: @model
           modelAttribute: 'temporalResolutionMin'
-          label: 'Temporal resolution (min)'
+          label: 'Minimimum temporal resolution'
           placeholderAttribute: 'e.g. 1 second or 10 days'
           helpText: """
-                    <p>Minimum time step supported by the model (if applicable) </p>
+                    Minimum time step supported by the model (if applicable)
                     """
 
         new InputView
           model: @model
           modelAttribute: 'temporalResolutionMax'
-          label: 'Temporal resolution (max)'
+          label: 'Maximum temporal resolution'
           placeholderAttribute: 'e.g. annual or decadal '
           helpText: """
-                    <p>Maximum time step supported by the model (if applicable) </p>
+                    Maximum time step supported by the model (if applicable)
                     """
 
       ]
@@ -352,7 +346,7 @@ define [
           label: 'Model calibration'
           rows: 7
           helpText: """
-                    <p>Does the model need calibration before running? If so, what needs to be supplied to do this? (if applicable)</p>
+                    Does the model need calibration before running? If so, what needs to be supplied to do this? (if applicable)
                     """
 
         new InputView
@@ -361,7 +355,7 @@ define [
           label: 'Language'
           placeholderAttribute: 'e.g. Python 2.7, C++, R 3.6'
           helpText: """
-                    <p>Language in which the model is written.  You should include the release number if relevant</p>
+                    Language in which the model is written.  You should include the release number if relevant
                     """
 
         new InputView
@@ -370,7 +364,7 @@ define [
           label: 'Compiler'
           placeholderAttribute: 'e.g. C++ compiler'
           helpText: """
-                    <p>Compiler required (if applicable)</p>
+                    Compiler required (if applicable)
                     """
 
         new InputView
@@ -378,7 +372,7 @@ define [
           modelAttribute: 'operatingSystem'
           label: 'Operating system'
           helpText: """
-                    <p>Operating system typically used to run the model</p>
+                    Operating system typically used to run the model
                     """
 
          new InputView
@@ -386,7 +380,7 @@ define [
           modelAttribute: 'systemMemory'
           label: 'System memory'
           helpText: """
-                    <p>Memory required to run code (if known)</p>
+                    Memory required to run code (if known)
                     """
       ]
     ,
@@ -399,7 +393,7 @@ define [
           label: 'Developer testing'
           ObjectInputView: QaView
           helpText: """
-                    <p>Use of a range of developer tools including parallel build and analytical review or sense check</p>
+                    Use of a range of developer tools including parallel build and analytical review or sense check
                     """
 
         new SingleObjectView
@@ -408,7 +402,7 @@ define [
           label: 'Internal peer review'
           ObjectInputView: QaView
           helpText: """
-                    <p>Obtaining a critical evaluation from a third party independent of the development of the model but from within the same organisation</p>
+                    Obtaining a critical evaluation from a third party independent of the development of the model but from within the same organisation
                     """
 
         new SingleObjectView
@@ -417,7 +411,7 @@ define [
           label: 'External peer review'
           ObjectInputView: QaView
           helpText: """
-                    <p>Formal or informal engagement of a third party to conduct critical evaluation from outside the organisation in which the model is being developed</p>
+                    Formal or informal engagement of a third party to conduct critical evaluation from outside the organisation in which the model is being developed
                     """
 
         new SingleObjectView
@@ -426,7 +420,7 @@ define [
           label: 'Internal model audit'
           ObjectInputView: QaView
           helpText: """
-                    <p>Formal audit of a model within the organisation, perhaps involving use of internal audit functions</p>
+                    Formal audit of a model within the organisation, perhaps involving use of internal audit functions
                     """
 
         new SingleObjectView
@@ -435,7 +429,7 @@ define [
           label: 'External model audit'
           ObjectInputView: QaView
           helpText: """
-                    <p>Formal engagement of external professional to conduct a critical evaluation of the model, perhaps involving audit professionals</p>
+                    Formal engagement of external professional to conduct a critical evaluation of the model, perhaps involving audit professionals
                     """
 
         new SingleObjectView
@@ -444,7 +438,7 @@ define [
           label: 'Quality assurance guidelines & checklists'
           ObjectInputView: QaView
           helpText: """
-                    <p>Model development refers to department’s guidance or other documented QA processes (e.g. third party publications)</p>
+                    Model development refers to department’s guidance or other documented QA processes (e.g. third party publications)
                     """
 
         new SingleObjectView
@@ -453,7 +447,7 @@ define [
           label: 'Governance'
           ObjectInputView: QaView
           helpText: """
-                    <p>At least one of planning, design and/or sign-off of model for use is referred to a more senior person.  There is a clear line of accountability for the model</p>
+                    At least one of planning, design and/or sign-off of model for use is referred to a more senior person.  There is a clear line of accountability for the model
                     """
 
         new SingleObjectView
@@ -462,7 +456,7 @@ define [
           label: 'Transparency'
           ObjectInputView: QaView
           helpText: """
-                    <p>Model is placed in the wider domain for scrutiny, and/or results are published</p>
+                    Model is placed in the wider domain for scrutiny, and/or results are published
                     """
 
         new SingleObjectView
@@ -471,7 +465,7 @@ define [
           label: 'Periodic review'
           ObjectInputView: QaView
           helpText: """
-                    <p>Model is reviewed at intervals to ensure it remains fit for the intended purpose, if used on an ongoing basis</p>
+                    Model is reviewed at intervals to ensure it remains fit for the intended purpose, if used on an ongoing basis
                     """
       ]
     ,
@@ -480,10 +474,10 @@ define [
       views: [
         new ParentView
           model: @model
-          ModelType: Reference
-          modelAttribute: 'references'
+          ModelType: Supplemental
+          modelAttribute: 'supplemental'
           label: 'References'
-          ObjectInputView: ReferenceView
+          ObjectInputView: SupplementalView
           multiline: true
       ]
     ,
@@ -496,9 +490,6 @@ define [
           label: 'Version control change notes'
           ObjectInputView: VersionHistoryView
           multiline: true
-          helpText: """
-                    <p>Use a unique identifier for different versions of a model</p>
-                    """
       ]
     ,
       label: 'Project use'
@@ -507,11 +498,8 @@ define [
         new ParentView
           model: @model
           modelAttribute: 'projectUsages'
-          label: 'Project usage'
+          label: 'Project use'
           ObjectInputView: ProjectUsageView
-          helpText: """
-                    <p>Use of model in projects</p>
-                    """
       ]
     ]
 

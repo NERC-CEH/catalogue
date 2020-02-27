@@ -51,7 +51,7 @@ public class CatalogueServiceConfig {
             .build();
 
         DocumentType cehModelApplication = DocumentType.builder()
-            .title("Model Application")
+            .title("Model implementation")
             .type(CEH_MODEL_APPLICATION)
             .build();
 
@@ -234,6 +234,8 @@ public class CatalogueServiceConfig {
                 .facetKey("funder")
                 .documentType(gemini)
                 .documentType(dataType)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
                 .fileUpload(false)
                 .build(),
 

@@ -56,6 +56,13 @@ public class DevelopmentUserStoreConfig {
         groupStore().grantGroupToUser(superadmin, EIDC_PUBLISHER);
         groupStore().grantGroupToUser(superadmin, MAINTENANCE_ROLE);
         groupStore().grantGroupToUser(superadmin, DATACITE_ROLE);
+        groupStore().grantGroupToUser(superadmin, CMP_PUBLISHER);
+        groupStore().grantGroupToUser(superadmin, ERAMMP_PUBLISHER);
+        groupStore().grantGroupToUser(superadmin, NC_PUBLISHER);
+        groupStore().grantGroupToUser(superadmin, M_PUBLISHER);
+        groupStore().grantGroupToUser(superadmin, INMS_PUBLISHER);
+        groupStore().grantGroupToUser(superadmin, OSDP_PUBLISHER);
+        groupStore().grantGroupToUser(superadmin, SA_PUBLISHER);
         userStore().addUser(superadmin, "superadminpassword");
         return superadmin;
     }

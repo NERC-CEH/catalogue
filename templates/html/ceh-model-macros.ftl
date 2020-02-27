@@ -1,16 +1,17 @@
 
-<#macro key key alt="" auto_esc=false>
-  <@b.basicRow "key-value">
-    <@m.keyContent key>
+<#macro key key definition="" auto_esc=false>
+  <@b.basicRow "key-value"> 
+    <@keyContent key definition>
       <#nested>
-    </@m.keyContent>
+    </@keyContent>
   </@b.basicRow>
 </#macro>
 
-<#macro keyContent key>
+<#macro keyContent key definition="">
   <div class="col-sm-3 key">
     <div class="key-name">
-      ${key}
+      ${key} 
+      <#if definition?has_content><span class="moreinfo" title="${definition}"><i class="fas fa-info-circle"> </i></span></#if>
     </div>
   </div>
   <div class="col-sm-9 value">
@@ -39,54 +40,26 @@
 <#--
 CEH model QA
 -->
-<#macro qa qa={"done": "unknown"}>
-  <div>
+<#macro qa qa={"done": "Not specified"}>
+  <dl class="dl-qa">
     <#if qa.done?? && qa.done?has_content>
-      <span class="key">done?</span> ${qa.done?cap_first}
+      <dt>Done?</dt><dd>${qa.done?cap_first}</dd>
     </#if>
     <#if qa.modelVersion?? && qa.modelVersion?has_content>
-      <span class="key">model version</span> ${qa.modelVersion}
+      <dt>Model version</dt><dd>${qa.modelVersion}</dd>
     </#if>
     <#if qa.owner?? && qa.owner?has_content>
-      <span class="key">owner</span> ${qa.owner}
+      <dt>Owner</dt><dd>${qa.owner}</dd>
     </#if>
     <#if qa.date?? && qa.date?has_content>
-      <span class="key">date</span> ${qa.date}
+      <dt>Date</dt><dd>${qa.date?date?string['d MMM yyyy']}</dd>
     </#if>
-  </div>
-  <div>
     <#if qa.note?? && qa.note?has_content>
-      <span class="key">note</span> ${qa.note}
+      <dt>Notes</dt><dd>${qa.note}</dd>
     </#if>
-  </div>
+  </dl>
 </#macro>
-  
-<#--
-CEH dataInfo table
--->
-<#macro dataInfoTable data>
-<table class="table table-condensed">
-<thead><tr><th>variable name</th><th>units</th><th>file format</th><th>url</th></tr></thead>
-<tbody>
-  <#list data as item>
-    <tr>
-      <td>
-        <#if item.variableName?? && item.variableName?has_content>${item.variableName}</#if>
-      </td>
-      <td>
-        <#if item.units?? && item.units?has_content>${item.units}</#if>
-      </td>
-      <td>
-        <#if item.fileFormat?? && item.fileFormat?has_content>${item.fileFormat}</#if>
-      </td>
-      <td>
-        <#if item.url?? && item.url?has_content><@b.bareUrl item.url/></#if>
-      </td>
-    </tr>
-  </#list>
-</tbody>
-</table>
-</#macro>
+
 
 <!-- additional metadata -->
 <#macro additionalMetadata>

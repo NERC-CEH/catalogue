@@ -3,6 +3,9 @@ define [
   'backbone'
 ], (_, Backbone) -> Backbone.Model.extend {
 
+  defaults:
+    function: 'reference'
+
   validate: (attrs) ->
 
     # from https://github.com/jzaefferer/jquery-validation/blob/043fb91da7dab0371fded5e2a9fa7ebe4c836210/src/core.js#L1180

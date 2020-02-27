@@ -12,7 +12,9 @@
 <#if onlineResources?? && onlineResources?has_content>
   <#assign
     image = func.filter(onlineResources, "function", "browseGraphic")
-    otherLinks = func.filter(onlineResources, "function", "browseGraphic", true)
+    repo = func.filter(onlineResources, "function", "code")
+    documentation = func.filter(onlineResources, "function", "documentation")
+    otherLinks = func.filter(func.filter(func.filter(onlineResources, "function", "documentation", true), "function", "code", true), "function", "browseGraphic", true)
   >
 </#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
@@ -22,7 +24,7 @@
     <@b.admin/>
 
     <#if title?? && title?has_content>
-      <h1>${title}</h1>
+      <h1 class="document-title"><small>Model</small> ${title}</h1>
     </#if>
 
     <#if description?? && description?has_content>
@@ -38,58 +40,101 @@
       </#noescape>
     </#if>
 
-      <#if primaryPurpose?? || SRO??|| otherContacts?? || licenseType?? || onlineResources??>
-      <section>
-        <#if primaryPurpose?? && primaryPurpose?has_content>
-          <@m.key "Primary purpose">
-            <#noescape>
-              <@b.linebreaks primaryPurpose />
-            </#noescape>
-          </@m.key>
-        </#if>
 
-        <#if otherLinks?? && otherLinks?has_content>
-          <@m.key "Web links">
-            <#list otherLinks as otherLink>
-              <p>
-                <#if otherLink.function?? && otherLink.function?has_content>
-                  ${otherLink.function?cap_first}: 
-                </#if>
-                <#if otherLink.url?? && otherLink.url?has_content>
-                  <@m.Url otherLink.url true/>
-                </#if>
-              </p>
-            </#list>
-          </@m.key>
-        </#if>
+    <div class="row">
+      <div class="col-sm-4 col-sm-push-8 panel-right">
+        <#if repo?? || documentation?? || licenseType?? >
+        <div class="distribution"> 
+            <#if repo?? && repo?has_content>
+            <p class="panel-title">Get the code</p> 
+              <ul class="list-unstyled">
+              <#list repo as link>
+                <li>
+                  <#if link.url?? && link.url?has_content>
+                    <@m.Url link.url true/>
+                  </#if>
+                </li>
+              </#list>
+              </ul>
+            </#if>
+            <#if documentation?? && documentation?has_content>
+              <p class="panel-title">Documentation</p> 
+              <ul class="list-unstyled">
+              <#list documentation as link>
+                <li>
+                  <#if link.url?? && link.url?has_content>
+                    <@m.Url link.url true/>
+                  </#if>
+                </li>
+              </#list>
+              </ul>
+            </#if>
+            <#if licenseType?? && licenseType?has_content>
+             <p class="panel-title">Licence</p> 
+             <p>${licenseType?cap_first}</p>
+            </#if>
+          </div>
+          </#if>
+      </div>
 
-        <#noescape>
-        <#if SRO?? && SRO?has_content>
+      <div class="col-sm-8 col-sm-pull-4 ">
+        <#if primaryPurpose?? || SRO??>
+          
+          <#if primaryPurpose?? && primaryPurpose?has_content>
+            <@m.key "Primary purpose">
+                <@b.linebreaks primaryPurpose />
+            </@m.key>
+          </#if>
+
           <@m.key "Senior responsible officer">
-            <#list SRO as SRO>
-            ${func.displayContact(SRO, true, true, false)}
-            </#list>
+            <#if SRO?? && SRO?has_content>
+              <#noescape>
+                <#list SRO as SRO>
+                  ${func.displayContact(SRO, true, true, false)}
+                </#list>
+              </#noescape>
+            <#else>
+              <b class="text-danger"><i class="fas fa-exclamation"> </i> There is no SRO</b>
+            </#if>
           </@m.key>
         </#if>
-        <#if otherContacts?? && otherContacts?has_content>
-          <@m.key "Other contacts">
-          <#list otherContacts as otherContact>
-            <dt>${otherContact.roleDisplayName?html}</dt>
-            <dd>
-              <div class="responsibleParty">      
-                ${func.displayContact(otherContact, true, true, false)}
-              </div>
-            </dd>
-            </#list>
-          </@m.key>
-        </#if>
-        </#noescape>
+      </div>
+    </div>
 
-        <#if licenseType?? && licenseType?has_content>
-          <@m.key "License" "License type (open or non-open) under which the model is distributed">${licenseType?cap_first}</@m.key>
-        </#if>
-      </section>
+
+    <#if  otherContacts?? || otherLinks??>
+      <section>  
+      <#if otherContacts?? && otherContacts?has_content>
+        <@m.key "Other contacts">
+        <#noescape>
+        <#list otherContacts as otherContact>
+          <dt>${otherContact.roleDisplayName?html}</dt>
+          <dd>
+            <div class="responsibleParty">      
+              ${func.displayContact(otherContact, true, true, false)}
+            </div>
+          </dd>
+          </#list>
+        </#noescape>
+        </@m.key>
       </#if>
+
+      <#if otherLinks?? && otherLinks?has_content>
+        <@m.key "Other links">
+          <#list otherLinks as link>
+            <p>
+              <#if link.function?? && link.function?has_content>
+                <span>${link.function?cap_first}</span>
+              </#if>
+              <#if link.url?? && link.url?has_content>
+                <@m.Url link.url true/>
+              </#if>
+            </p>
+          </#list>
+        </@m.key>
+      </#if>
+      </section> 
+    </#if>
 
       <#if keyInputVariables?? || keyOutputVariables?? || description?? || modelType?? || currentModelVersion?? || modelCalibration??>
       <section>
@@ -146,7 +191,7 @@
     </section>
     </#if>
 
-    <#if language?? || compiler?? || operatingSystem?? || systemMemory?? || documentation??>
+    <#if language?? || compiler?? || operatingSystem?? || systemMemory?? >
     <section>
       <h2>Technical Information</h2>
       <#if language?? && language?has_content>
@@ -160,9 +205,6 @@
       </#if>
       <#if systemMemory?? && systemMemory?has_content>
         <@m.key "System memory" "Memory required to run code">${systemMemory}</@m.key>
-      </#if>
-      <#if documentation?? && documentation?has_content>
-        <@m.key "Documentation" "Location of technical documentation for the model"><@bareUrl documentation /></@m.key>
       </#if>
     </section>
     </#if>
@@ -200,23 +242,22 @@
         </@b.repeatRow>
         </#list>
       </#if>
+      
       <#assign modelApplications=jena.modelApplications(uri)/>
       <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
-        <h2>Project usage</h2>
+        <h2>Project use</h2>
         <#if projectUsages?? && projectUsages?has_content>
-          <#list projectUsages as usage>
-            <p>
-              <#if projectUsage.project?? && projectUsage.project?has_content>
-                ${projectUsage.project}
-              </#if>
-              <#if projectUsage.date?? && projectUsage.date?has_content>
-                (${projectUsage.date?date?string['MMMM yyyy']})
-              </#if> 
-            </p>
-          </#list>
+          <@m.key "Projects">
+            <#list projectUsages as usage>
+                <#if usage.project??>${usage.project}</#if>
+                <#if usage.version??>version ${usage.version}</#if>
+                <#if usage.date??>(${usage.date?date?string['MMMM yyyy']})</#if>
+                <#sep><br></#sep>
+            </#list>
+          </@m.key>
         </#if>
         <#list modelApplications>
-          <@m.key "Model Applications" "Applications of the model">
+          <@m.key "Model implementations">
             <#items as md>
               <@b.blockUrl md/>
             </#items>
@@ -226,27 +267,22 @@
     </section>
 
 
-    <#if references?? && references?has_content>
+    <#if supplemental?? && supplemental?has_content>
     <section>
       <h2>References</h2>
-
-      <#list references as ref>
-      <@b.repeatRow>
-        <#if ref.citation?? && ref.citation?has_content>
-          <span class="reference-citation">${ref.citation}</span>
-        </#if>
-        <#if ref.doi?? && ref.doi?has_content>
-          <span class="reference-doi"><@m.Url ref.doi true/></span>
-        </#if>
-        <#if ref.nora?? && ref.nora?has_content>
-          <span class="reference-nora">${ref.nora}</span>
-        </#if>
-      </@b.repeatRow>
-      </#list>
+        <#list supplemental as item>
+        <@b.repeatRow>
+          <#if item.description?? && item.description?has_content>
+            <span class="supplemental-description">${item.description}</span>
+          </#if>
+          <#if item.url?? && item.url?has_content>
+            <span class="supplemental-url"><@m.Url item.url true/></span>
+          </#if>
+        </@b.repeatRow>
+        </#list>
     </section>
     </#if>
-    
-    
+  
    
     <@m.additionalMetadata />
 

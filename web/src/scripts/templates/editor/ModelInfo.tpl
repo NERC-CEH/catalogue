@@ -35,7 +35,7 @@
 </div>
 <div class="row">
   <div class="col-sm-3 col-lg-3">
-    <label for="modelInfo<%= data.index %>spatialExtentOfApplication">Spatial extent of application</label>
+    <label for="modelInfo<%= data.index %>spatialExtentOfApplication">Spatial extent of implementation</label>
   </div>
   <div class="col-sm-9 col-lg-9">
     <input list="modelInfo<%= data.index %>SpatialExtentOfApplicationList" data-name="spatialExtentOfApplication" id="modelInfo<%= data.index %>SpatialExtentOfApplication" class="editor-input"/>
@@ -66,7 +66,7 @@
 </div>
 <div class="row">
   <div class="col-sm-3 col-lg-3">
-    <label for="modelInfo<%= data.index %>SpatialResolutionOfApplication">Spatial resolution of application</label>
+    <label for="modelInfo<%= data.index %>SpatialResolutionOfApplication">Spatial resolution of implementation</label>
   </div>
   <div class="col-sm-9 col-lg-9">
     <input data-name="spatialResolutionOfApplication" id="modelInfo<%= data.index %>SpatialResolutionOfApplication" class="editor-input" value="<%= data.spatialResolutionOfApplication %>">
@@ -74,23 +74,23 @@
 </div>
 <div class="row">
   <div class="col-sm-3 col-lg-3">
-    <label for="modelInfo<%= data.index %>TemporalExtentOfApplicationStartDate">Temporal extent of application (start date)</label>
+    <label for="modelInfo<%= data.index %>TemporalExtentOfApplicationStartDate">Temporal extent of implementation (start date)</label>
   </div>
   <div class="col-sm-9 col-lg-9">
-    <input data-name="temporalExtentOfApplicationStartDate" id="modelInfo<%= data.index %>TemporalExtentOfApplicationStartDate" class="editor-input" value="<%= data.temporalExtentOfApplicationStartDate %>">
+    <input type="date" data-name="temporalExtentOfApplicationStartDate" id="modelInfo<%= data.index %>TemporalExtentOfApplicationStartDate" class="editor-input" value="<%= data.temporalExtentOfApplicationStartDate %>">
   </div>
 </div>
 <div class="row">
   <div class="col-sm-3 col-lg-3">
-    <label for="modelInfo<%= data.index %>TemporalExtentOfApplicationEndDate">Temporal extent of application (end date)</label>
+    <label for="modelInfo<%= data.index %>TemporalExtentOfApplicationEndDate">Temporal extent of implementation (end date)</label>
   </div>
   <div class="col-sm-9 col-lg-9">
-    <input data-name="temporalExtentOfApplicationEndDate" id="modelInfo<%= data.index %>TemporalExtentOfApplicationEndDate" class="editor-input" value="<%= data.temporalExtentOfApplicationEndDate %>">
+    <input type="date" data-name="temporalExtentOfApplicationEndDate" id="modelInfo<%= data.index %>TemporalExtentOfApplicationEndDate" class="editor-input" value="<%= data.temporalExtentOfApplicationEndDate %>">
   </div>
 </div>
 <div class="row">
   <div class="col-sm-3 col-lg-3">
-    <label for="modelInfo<%= data.index %>TemporalResolutionOfApplication">Temporal resolution of application</label>
+    <label for="modelInfo<%= data.index %>TemporalResolutionOfApplication">Temporal resolution of implementation</label>
   </div>
   <div class="col-sm-9 col-lg-9">
     <input data-name="temporalResolutionOfApplication" id="modelInfo<%= data.index %>TemporalResolutionOfApplication" class="editor-input" value="<%= data.temporalResolutionOfApplication %>">
