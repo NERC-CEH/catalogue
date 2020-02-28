@@ -173,12 +173,12 @@
     {
       "organisationName": "EIDC Hub",
       "role": "custodian",
-      "email": "eidc@ceh.ac.uk"
+      "email": "info@eidc.ac.uk"
     },
     {
       "organisationName": "NERC Environmental Information Data Centre",
       "role": "publisher",
-      "email": "eidc@ceh.ac.uk"
+      "email": "info@eidc.ac.uk"
     }
   ],
   "temporalExtents": [
@@ -189,7 +189,7 @@
   ],
   "onlineResources": [
     {
-      "url": "http://eidc.ceh.ac.uk/metadata/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/zip",
+      "url": "https://data-package.ceh.ac.uk/sd/2d023ce9-6dbe-4b4f-a0cd-34768e1455ae/zip",
       "name": "Supporting information",
       "description": "Supporting information available to assist in re-use of this dataset and also link to data citation details",
       "function": "information",
