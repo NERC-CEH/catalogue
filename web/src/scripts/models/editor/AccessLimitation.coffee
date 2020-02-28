@@ -6,9 +6,9 @@ define [
     value: null
 
   uris:
-    'Registration is required to access this data':'http://eidc.ceh.ac.uk/help/faq/registration'
+    'Registration is required to access this data':'https://www.eidc.ac.uk/help/faq/registration'
     'no limitations to public access':'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations'
-    'embargoed':'http://eidc.ceh.ac.uk/help/faq/embargos'
+    'embargoed':'https://www.eidc.ac.uk/help/faq/embargos'
     'public access limited according to Article 13(1)(a) of the INSPIRE Directive':'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1a'
     'public access limited according to Article 13(1)(b) of the INSPIRE Directive':'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1b'
     'public access limited according to Article 13(1)(c) of the INSPIRE Directive':'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1c'

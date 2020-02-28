@@ -39,7 +39,7 @@
               <gmd:city><gco:CharacterString>Lancaster</gco:CharacterString></gmd:city>
               <gmd:postalCode><gco:CharacterString>LA1 4AP</gco:CharacterString></gmd:postalCode>
               <gmd:country><gco:CharacterString>UK</gco:CharacterString></gmd:country>
-              <gmd:electronicMailAddress><gco:CharacterString>eidc@ceh.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
+              <gmd:electronicMailAddress><gco:CharacterString>info@eidc.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
             </gmd:CI_Address>
           </gmd:address>
         </gmd:CI_Contact>

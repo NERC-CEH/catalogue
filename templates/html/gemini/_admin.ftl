@@ -54,7 +54,7 @@
                   <#else>
                     <#if !datacitable >
                       <li><div class="msg text-red"><i class="fas fa-exclamation"></i> Conditions for assigning a <br>DOI have not been met</div></li>
-                      <li><a href="http://eidc.ceh.ac.uk/administration-folder/eidc-operations-procedures/mintADOI" target="_blank" rel="noopener noreferrer">Help</a></li>
+                      <li><a href="https://www.eidc.ac.uk/admin/guidance/mintADOI" target="_blank" rel="noopener noreferrer">Help</a></li>
                     </#if>
                   </#if>
                   <#if datacitable>

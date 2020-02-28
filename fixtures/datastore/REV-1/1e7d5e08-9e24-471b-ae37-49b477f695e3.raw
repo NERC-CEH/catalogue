@@ -86,7 +86,7 @@
     {
       "organisationName": "Environmental Information Data Centre",
       "role": "distributor",
-      "email": "eidc@ceh.ac.uk"
+      "email": "info@eidc.ac.uk"
     }
   ],
   "responsibleParties": [
@@ -99,7 +99,7 @@
     {
       "organisationName": "Environmental Information Data Centre",
       "role": "custodian",
-      "email": "eidc@ceh.ac.uk"
+      "email": "info@eidc.ac.uk"
     },
     {
       "individualName": "Morton, R.D.",
@@ -152,7 +152,7 @@
     {
       "organisationName": "NERC Environmental Information Data Centre",
       "role": "publisher",
-      "email": "eidc@ceh.ac.uk"
+      "email": "info@eidc.ac.uk"
     }
   ],
   "temporalExtents": [
@@ -176,7 +176,7 @@
       "type": "WMS_GET_CAPABILITIES"
     },
     {
-      "url": "http://eidc.ceh.ac.uk/metadata/1e7d5e08-9e24-471b-ae37-49b477f695e3",
+      "url": "https://data-package.ceh.ac.uk/sd/1e7d5e08-9e24-471b-ae37-49b477f695e3",
       "name": "Documents",
       "description": "Documents available to assist with re-use of this dataset. Link to data citation details.",
       "function": "information",
@@ -202,7 +202,7 @@
     {
       "value": "This resource is made available under the terms of the Open Government Licence",
       "code": "license",
-      "uri": "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/ceh-open-government-licence/plain"
+      "uri": "http://eidc.ceh.ac.uk/admin/licences/ceh-open-government-licence/plain"
     },
     {
       "value": "If you reuse this data, you must cite: Morton, R.D., Rowland, C., Wood, C., Meek, L., Marston, G., Smith, G., Wadsworth, R., Simpson, I. (2011). Land Cover Map 2007 (1km raster, percentage aggregate class, N.Ireland). NERC Environmental Information Data Centre 10.5285/1e7d5e08-9e24-471b-ae37-49b477f695e3",
@@ -214,7 +214,7 @@
   },"accessLimitation": {
     "value":"Registration is required to access this data",
     "code":"Available",
-    "uri":"http://eidc.ceh.ac.uk/help/faq/registration"
+    "uri":"https://www.eidc.ac.uk/help/faq/registration"
 },
   "datacitable": true,
   "dataciteMintable": false,

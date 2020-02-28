@@ -25,7 +25,7 @@ WEB
     "wms_country"                      "UK"
     "wms_contactvoicetelephone"        ""
     "wms_contactfacsimiletelephone"    ""
-    "wms_contactelectronicmailaddress" "eidc@ceh.ac.uk"
+    "wms_contactelectronicmailaddress" "info@eidc.ac.uk"
     "wms_accessconstraints"            "[#if accessConstraints??]${doc.accessConstraints?first.value}[#else]None[/#if]"
     "wms_fess"                         "None"
     "wms_enable_request"               "GetCapabilities GetMap GetLegendGraphic GetFeatureInfo"
