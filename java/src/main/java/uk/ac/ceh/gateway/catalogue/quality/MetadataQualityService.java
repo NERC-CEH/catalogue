@@ -447,6 +447,11 @@ public class MetadataQualityService {
             .map(publisher -> publisher.getOrDefault("organisationName", "unknown"))
             .forEach(organisationName -> toReturn.add(new MetadataCheck("Publisher name is " + organisationName, INFO)));
 
+        publishers.stream()
+            .filter(publisher -> fieldNotEqual(publisher, "email", "info@eidc.ac.uk"))
+            .map(publisher -> publisher.getOrDefault("email", "unknown"))
+            .forEach(email -> toReturn.add(new MetadataCheck("Publishers email address is " + email, INFO)));
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -510,7 +515,7 @@ public class MetadataQualityService {
         pocs.stream()
         .filter(poc -> poc.containsKey("email"))
         .map(poc -> poc.get("email"))
-        .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("info@eidc.ac.uk"))
+        .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk"))
         .forEach(email -> toReturn.add(new MetadataCheck(format("Point of contact's email address is %s", email), ERROR)));
 
         if (toReturn.isEmpty()) {
