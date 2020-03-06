@@ -81,9 +81,10 @@
                     </#if>
                   </#list>
                 </#if>
-                <#if custodianEIDC?size gte 1>
+
+                 <#if (metadata.state == 'draft' || custodianEIDC?size gte 1 ) >
                   <li><a href="https://jira.ceh.ac.uk/issues/?jql=cf%5B13250%5D%3D%22${id?html}%22" target="_blank" rel="noopener noreferrer">Jira issues for this resource</a></li>
-                  <li><a href="http://eidc.ceh.ac.uk/metadata/${id?html}/privatefolder" target="_blank" rel="noopener noreferrer">DRH admin folder</a></li>
+                  <li><a href="https://eidc.ceh.ac.uk/metadata/${id?html}/" target="_blank" rel="noopener noreferrer">DRH admin folder</a></li>
                 </#if>
               </ul>
           </div>

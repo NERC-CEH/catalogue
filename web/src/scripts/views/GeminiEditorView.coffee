@@ -350,7 +350,7 @@ define [
           predefined:
             'Licence - OGL':
               value: 'This resource is available under the terms of the Open Government Licence'
-              uri: 'https://www.eidc.ac.uk/licences/OGL/plain'
+              uri: 'https://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL/plain'
               code: 'license'
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
