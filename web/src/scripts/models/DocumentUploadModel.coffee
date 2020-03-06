@@ -303,7 +303,7 @@ Please "VALIDATE" this file then resolve any new errors
         'Accept': 'application/json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
-      success: (data) ->
+      success: (data) =>
         window.location.href = '/documents/' + @id
       error: (err) ->
         console.error('error', err)
