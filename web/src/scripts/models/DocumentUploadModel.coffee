@@ -295,36 +295,6 @@ Please "VALIDATE" this file then resolve any new errors
         do @fetch
     }
 
-  zip: ->
-    url = @url() + '/zip-upload-files'
-    $.ajax {
-      url: url
-      headers:
-        'Accept': 'application/json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
-      success: (data) =>
-        @set(data)
-      error: (err) =>
-        console.error('error', err)
-        do @fetch
-    }
-
-  unzip: ->
-    url = @url() + '/unzip-upload-files'
-    $.ajax {
-      url: url
-      headers:
-        'Accept': 'application/json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
-      success: (data) =>
-        @set(data)
-      error: (err) =>
-        console.error('error', err)
-        do @fetch
-    }
-
   finish: ->
     url = @url() + '/finish'
     $.ajax {

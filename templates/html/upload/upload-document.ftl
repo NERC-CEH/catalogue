@@ -121,13 +121,6 @@
                 <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
             <div class="datastore-files"></div>
-            <div class="row">
-                <div class="col-md-10"></div>
-                <div class="col-md-2">
-                    <button class="zip btn btn-success"><i class="btn-icon far fa-file-archive"></i><span>ZIP</span></button>
-                    <button class="unzip btn btn-success" style="display: none"><i class="btn-icon far fa-file-archive"></i><span>UNZIP</span></button>
-                </div>
-            </div>
         </section>
 </#if>
         <section class="document-upload-section">
