@@ -14,6 +14,5 @@ public class UploadFiles {
     private String physicalLocation;
     private Map<String, UploadFile> documents = Maps.newHashMap();
     private Map<String, UploadFile> invalid = Maps.newHashMap();
-    private boolean zipped;
     private UploadDocumentPagination pagination;
 }
