@@ -54,7 +54,7 @@
                   <#else>
                     <#if !datacitable >
                       <li><div class="msg text-red"><i class="fas fa-exclamation"></i> Conditions for assigning a <br>DOI have not been met</div></li>
-                      <li><a href="http://eidc.ceh.ac.uk/administration-folder/eidc-operations-procedures/mintADOI" target="_blank" rel="noopener noreferrer">Help</a></li>
+                      <li><a href="https://www.eidc.ac.uk/admin/guidance/mintADOI" target="_blank" rel="noopener noreferrer">Help</a></li>
                     </#if>
                   </#if>
                   <#if datacitable>
@@ -81,9 +81,10 @@
                     </#if>
                   </#list>
                 </#if>
-                <#if custodianEIDC?size gte 1>
+
+                 <#if (metadata.state == 'draft' || custodianEIDC?size gte 1 ) >
                   <li><a href="https://jira.ceh.ac.uk/issues/?jql=cf%5B13250%5D%3D%22${id?html}%22" target="_blank" rel="noopener noreferrer">Jira issues for this resource</a></li>
-                  <li><a href="http://eidc.ceh.ac.uk/metadata/${id?html}/privatefolder" target="_blank" rel="noopener noreferrer">DRH admin folder</a></li>
+                  <li><a href="https://eidc.ceh.ac.uk/metadata/${id?html}/" target="_blank" rel="noopener noreferrer">DRH admin folder</a></li>
                 </#if>
               </ul>
           </div>

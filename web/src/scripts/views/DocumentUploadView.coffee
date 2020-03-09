@@ -124,19 +124,7 @@ define [
           $('.uploading-' + id + ' .file-message').text(errorMessage)
 
     @dropzone = new Dropzone('.dropzone-container', options)
-    
 
-  renderZip: ->
-    if @model.get('uploadFiles').datastore && @model.get('uploadFiles').datastore.zipped
-      $('.datastore-icon .far').removeClass('fa-file')
-      $('.datastore-icon .far').addClass('fa-file-archive')
-      do $('.zip').hide
-      do $('.unzip').show
-    else
-      $('.datastore-icon .far').removeClass('fa-file-archive')
-      $('.datastore-icon .far').addClass('fa-file')
-      do $('.zip').show
-      do $('.unzip').hide
 
   sizeToTime: (size) ->
     time = ''
@@ -298,13 +286,10 @@ define [
   render: ->
     @globalAction 'move-all', 'moveToDatastore'
     @globalAction 'validate-all', 'validateFiles'
-    @globalAction 'zip'
-    @globalAction 'unzip'
     @globalAction 'finish', 'showFinish'
     @globalAction 'reschedule'
     @globalAction 'schedule'
 
-    do @renderZip
     do @renderFiles
     do @renderPagination
     do @renderModal

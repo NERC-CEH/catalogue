@@ -257,22 +257,4 @@ public class UploadController {
     val document = uploadDocumentService.validate(id);
     return ResponseEntity.ok(document);
   }
-
-  @RequestMapping(value = "documents/{id}/zip-upload-files", method = RequestMethod.PUT,
-      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<UploadDocument>
-  zip(@ActiveUser CatalogueUser user, @PathVariable("id") String id) {
-    userCanUpload(id);
-    val document = uploadDocumentService.zip(id);
-    return ResponseEntity.ok(document);
-  }
-
-  @RequestMapping(value = "documents/{id}/unzip-upload-files", method = RequestMethod.PUT,
-      consumes = UPLOAD_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<UploadDocument>
-  unzip(@ActiveUser CatalogueUser user, @PathVariable("id") String id) {
-    userCanUpload(id);
-    val document = uploadDocumentService.unzip(id);
-    return ResponseEntity.ok(document);
-  }
 }

@@ -96,9 +96,6 @@ public class UploadDocumentService {
     val eidchub = (ArrayNode) eidchubRes.get("data");
     eidchub.forEach(item -> { eidchubFiles.add(item); });
     val eidchubUploadFiles = getUploadFiles("eidchub", id, eidchubFiles, (ObjectNode) eidchubRes.get("pagination"));
-    val isZipped = eidchubUploadFiles.getDocuments().keySet().contains(
-        String.format("/eidchub/%s/%s.zip", id, id));
-    eidchubUploadFiles.setZipped(isZipped);
     document.getUploadFiles().put("datastore", eidchubUploadFiles);
 
     val supportingDocumentRes = hubbubService.get(String.format("/supporting-documents/%s", id), supportingDocumentsPage, VISIBLE_STATUS);
@@ -147,9 +144,6 @@ public class UploadDocumentService {
     val eidchub = (ArrayNode) eidchubRes.get("data");
     eidchub.forEach(item -> { eidchubFiles.add(item); });
     val eidchubUploadFiles = getUploadFiles("eidchub", id, eidchubFiles, (ObjectNode) eidchubRes.get("pagination"));
-    val isZipped = eidchubUploadFiles.getDocuments().keySet().contains(
-        String.format("/eidchub/%s/%s.zip", id, id));
-    eidchubUploadFiles.setZipped(isZipped);
     document.getUploadFiles().put("datastore", eidchubUploadFiles);
 
     val supportingDocumentRes = hubbubService.get(String.format("/supporting-documents/%s", id), supportingDocumentsPage);
@@ -208,19 +202,6 @@ public class UploadDocumentService {
     return get(id);
   }
 
-  public UploadDocument zip(String id) {
-    threadPool.execute(() -> {
-      hubbubService.post(String.format("/zip/%s", id));
-    });
-    return get(id);
-  }
-
-  public UploadDocument unzip(String id) {
-    threadPool.execute(() -> {
-      hubbubService.post(String.format("/unzip/%s", id));
-    });
-    return get(id);
-  }
 
   public UploadDocument cancel(String id, String filename) {
     threadPool.execute(() -> {

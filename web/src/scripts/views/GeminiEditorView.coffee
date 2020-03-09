@@ -78,7 +78,6 @@ define [
                     <p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
                     <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
                     <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
-                    <p>Please refer to <a href="http://eidc.ceh.ac.uk/help/createedit/metadataauthorguide" target="_blank" rel="noopener">guidance for metadata authors</a></p>
                     """
 
         new ParentStringView
@@ -98,7 +97,7 @@ define [
           helpText: """
                     <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
                     <p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
-                    <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure - see <a href="http://eidc.ceh.ac.uk/help/createedit/metadataauthorguide" target="_blank" rel="noopener">guidance for metadata authors</a></p>
+                    <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure.</p>
                     """
                     
         new SingleObjectView
@@ -164,7 +163,8 @@ define [
             'Custodian - EIDC':
               organisationName: 'Environmental Information Data Centre'
               role: 'custodian'
-              email: 'eidc@ceh.ac.uk'
+              email: 'info@eidc.ac.uk'
+              organisationIdentifier: 'https://ror.org/04xw4m193'
             'Point of contact - UKCEH Bangor':
               organisationName: 'UK Centre for Ecology & Hydrology'
               role: 'pointOfContact'
@@ -212,7 +212,8 @@ define [
             'Publisher - EIDC':
               organisationName: 'NERC Environmental Information Data Centre'
               role: 'publisher'
-              email: 'eidc@ceh.ac.uk'
+              email: 'info@eidc.ac.uk'
+              organisationIdentifier: 'https://ror.org/04xw4m193'
             'Rights holder - UKCEH':
               organisationName: 'UK Centre for Ecology & Hydrology'
               role: 'rightsHolder'
@@ -348,7 +349,7 @@ define [
           predefined:
             'Licence - OGL':
               value: 'This resource is available under the terms of the Open Government Licence'
-              uri: 'http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL/plain'
+              uri: 'https://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL/plain'
               code: 'license'
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
@@ -372,7 +373,8 @@ define [
             'EIDC':
               organisationName: 'Environmental Information Data Centre'
               role: 'distributor'
-              email: 'eidc@ceh.ac.uk'
+              email: 'info@eidc.ac.uk'
+              organisationIdentifier: 'https://ror.org/04xw4m193'
             'EMBL-EBI':
               organisationName: 'The European Bioinformatics Institute (EMBL-EBI)'
               role: 'distributor'
@@ -519,7 +521,6 @@ define [
           helpText: """
                     <p>Information about the source data used in the construction of this data resource.</p>
                     <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>
-                    <p>See <a href="http://eidc.ceh.ac.uk/help/createedit/metadataauthorguide" target="_blank" rel="noopener">guidance for metadata authors</a>.</p>
                     """
 
         new TextareaView

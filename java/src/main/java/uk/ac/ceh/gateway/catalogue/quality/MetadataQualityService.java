@@ -39,7 +39,7 @@ public class MetadataQualityService {
     );
     private final Set<String> allowedEmails = ImmutableSet.of(
         "enquiries@ceh.ac.uk",
-        "eidc@ceh.ac.uk"
+        "info@eidc.ac.uk"
     );
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<List<Map<String, String>>>() {};
 
@@ -417,7 +417,7 @@ public class MetadataQualityService {
             .forEach(organisationName -> toReturn.add(new MetadataCheck("Distributor name is " + organisationName, INFO)));
 
         distributors.stream()
-            .filter(distributor -> fieldNotEqual(distributor, "email", "eidc@ceh.ac.uk"))
+            .filter(distributor -> fieldNotEqual(distributor, "email", "info@eidc.ac.uk"))
             .map(distributor -> distributor.getOrDefault("email", "unknown"))
             .forEach(email -> toReturn.add(new MetadataCheck("Distributor's email address is " + email, INFO)));
 
@@ -447,6 +447,11 @@ public class MetadataQualityService {
             .map(publisher -> publisher.getOrDefault("organisationName", "unknown"))
             .forEach(organisationName -> toReturn.add(new MetadataCheck("Publisher name is " + organisationName, INFO)));
 
+        publishers.stream()
+            .filter(publisher -> fieldNotEqual(publisher, "email", "info@eidc.ac.uk"))
+            .map(publisher -> publisher.getOrDefault("email", "unknown"))
+            .forEach(email -> toReturn.add(new MetadataCheck("Publishers email address is " + email, INFO)));
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -473,7 +478,7 @@ public class MetadataQualityService {
             .forEach(organisationName -> toReturn.add(new MetadataCheck("Custodian name is " + organisationName, INFO)));
 
         custodians.stream()
-            .filter(custodian -> fieldNotEqual(custodian, "email", "eidc@ceh.ac.uk"))
+            .filter(custodian -> fieldNotEqual(custodian, "email", "info@eidc.ac.uk"))
             .map(custodian -> custodian.getOrDefault("email", "unknown"))
             .forEach(email -> toReturn.add(new MetadataCheck("Custodian email address is " + email, INFO)));
 
@@ -510,7 +515,7 @@ public class MetadataQualityService {
         pocs.stream()
         .filter(poc -> poc.containsKey("email"))
         .map(poc -> poc.get("email"))
-        .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("eidc@ceh.ac.uk"))
+        .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk"))
         .forEach(email -> toReturn.add(new MetadataCheck(format("Point of contact's email address is %s", email), ERROR)));
 
         if (toReturn.isEmpty()) {
@@ -647,7 +652,7 @@ public class MetadataQualityService {
         authors.stream()
             .filter(author -> author.containsKey("email"))
             .map(author -> author.get("email"))
-            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("eidc@ceh.ac.uk"))
+            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("info@eidc.ac.uk"))
             .forEach(email -> toReturn.add(new MetadataCheck(format("Author's email address is %s", email), ERROR)));
 
         if (toReturn.isEmpty()) {

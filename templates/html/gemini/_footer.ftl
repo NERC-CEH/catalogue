@@ -14,7 +14,7 @@
   </div>
   <div class="pull-right">
     <#if catalogue.id == "eidc">
-      <#assign privacy="http://eidc.ceh.ac.uk/policies/privacy" />
+      <#assign privacy="https://www.eidc.ac.uk/policies/privacy" />
     <#else>
       <#assign privacy="https://www.ceh.ac.uk/privacy-notice" />
     </#if>
