@@ -92,6 +92,10 @@ Please "VALIDATE" this file then resolve any new errors
       content: 'Something went wrong with this file'
     MOVING_FROM:
       content: 'The file is currently being moved'
+    MOVING_FROM_ERROR:
+      content: 'The file failed to move'
+    MOVING_TO_ERROR:
+      content: 'The file failed to move'
     MOVING_TO:
       content: 'The file is currently being moved'
     WRITING:
@@ -114,6 +118,8 @@ Please "VALIDATE" this file then resolve any new errors
 
   errorActions:
     CHANGED_HASH: 'accept'
+    MOVING_FROM_ERROR: 'accept'
+    MOVING_TO_ERROR: 'ignore'
     NO_HASH: 'validate'
     CHANGED_MTIME: 'validate'
     UNKNOWN: 'accept'

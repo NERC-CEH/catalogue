@@ -26,7 +26,7 @@ public class UploadDocumentService {
   private final Map<String, File> folders;
   private final ExecutorService threadPool;
 
-  private static final String[] VISIBLE_STATUS = new String[]{"VALID", "MOVING_FROM", "MOVING_TO", "VALIDATING_HASH", "NO_HASH", "WRITING", "REMOVED_UNKNOWN", "ZIPPED_UNKNOWN", "ZIPPED_UNKNOWN_MISSING", "MOVED_UNKNOWN", "MOVED_UNKNOWN_MISSING", "UNKNOWN", "UNKNOWN_MISSING", "MISSING", "MISSING_UNKNOWN", "CHANGED_MTIME", "CHANGED_HASH", "INVALID"};
+  private static final String[] VISIBLE_STATUS = new String[]{"VALID", "MOVING_FROM", "MOVING_TO", "VALIDATING_HASH", "NO_HASH", "WRITING", "REMOVED_UNKNOWN", "ZIPPED_UNKNOWN", "ZIPPED_UNKNOWN_MISSING", "MOVED_UNKNOWN", "MOVED_UNKNOWN_MISSING", "UNKNOWN", "UNKNOWN_MISSING", "MISSING", "MISSING_UNKNOWN", "CHANGED_MTIME", "CHANGED_HASH", "INVALID", "MOVING_FROM_ERROR", "MOVING_TO_ERROR"};
 
   private UploadFile convertJSONToUploadFile(String folder, JsonNode item) {
     val uploadFile = new UploadFile();
