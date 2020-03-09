@@ -5,8 +5,11 @@
 <#assign inProgress=issues?size == 1 && issues[0].status == 'in progress'>
 
 <@skeleton.master title=title>
-<div class="container" id="document-upload" data-guid='${id}'>
-
+<#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
+<div class="container is-admin" id="document-upload" data-guid='${id}'>
+<#else>
+<div class="container is-non-admin" id="document-upload" data-guid='${id}'>
+</#if>
     <#if scheduled>
     <div class="container-fluid document-upload is-scheduled">
     <#else>
