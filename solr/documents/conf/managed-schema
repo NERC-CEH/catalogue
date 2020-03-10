@@ -89,6 +89,7 @@
     <field name="impWaterPollutant" type="keywords"/>
     <field name="individual" type="keywords"/>
     <field name="inmsDemonstrationRegion" type="keywords"/>
+    <field name="inmsProject" type="keywords"/>
     <field name="keyword" type="keywords_lowercase"/>
     <field name="licence" type="keywords" multiValued="false"/>
     <field name="lineage" type="text_general" multiValued="false"/>

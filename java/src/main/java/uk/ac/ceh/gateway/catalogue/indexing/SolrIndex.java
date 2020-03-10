@@ -33,6 +33,7 @@ public class SolrIndex {
     private @Field List<String> impWaterPollutant;
     private @Field List<String> individual;
     private @Field List<String> inmsDemonstrationRegion;
+    private @Field List<String> inmsProject;
     private @Field List<String> keyword;
     private @Field String licence;
     private @Field List<String> locations;
