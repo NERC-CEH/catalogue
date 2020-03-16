@@ -8,7 +8,7 @@ import lombok.Builder;
 
 @Value
 public class Supplemental {
-    private final String name, description, url, noraID, type, function;
+    private final String name, description, url, noraID, source, function;
 
     @Builder
     @JsonCreator
@@ -17,13 +17,13 @@ public class Supplemental {
         @JsonProperty("description") String description,
         @JsonProperty("url") String url,
         @JsonProperty("noraID") String noraID,
-        @JsonProperty("type") String type,
+        @JsonProperty("source") String source,
         @JsonProperty("function") String function){
         this.name = nullToEmpty(name);
         this.description = nullToEmpty(description);
         this.url = nullToEmpty(url);
         this.noraID = nullToEmpty(noraID);
-        this.type = nullToEmpty(type);
+        this.source = nullToEmpty(source);
         this.function = nullToEmpty(function);
     }   
 }

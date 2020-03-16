@@ -3,7 +3,9 @@ define [
   'cs!views/editor/InputView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentView'
+  'cs!views/editor/ParentLargeView'
   'cs!views/editor/PredefinedParentView'
+  'cs!views/editor/PredefinedParentLargeView'
   'cs!views/editor/ParentStringView'
   'cs!views/editor/KeywordView'
   'cs!views/editor/SupplementalView'
@@ -15,14 +17,23 @@ define [
   'cs!models/editor/Contact'
   'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
-
+  'cs!views/editor/OnlineResourceView'
+  'cs!models/editor/OnlineResource'
+  'cs!views/editor/FundingView'
+  'cs!models/editor/Funding'
+  'cs!models/editor/DataTypeSchema'
+  'cs!views/editor/DataTypeSchemaView'
+  'cs!models/editor/MultipleDate'
+  'cs!views/editor/TemporalExtentView'
 
 ], (
   EditorView,
   InputView,
   TextareaView,
   ParentView,
+  ParentLargeView,
   PredefinedParentView,
+  PredefinedParentLargeView,
   ParentStringView,
   KeywordView,
   SupplementalView,
@@ -33,7 +44,15 @@ define [
   ContactView,
   Contact,
   BoundingBox,
-  BoundingBoxView
+  BoundingBoxView,
+  OnlineResourceView,
+  OnlineResource, 
+  FundingView,
+  Funding,
+  DataTypeSchema,
+  DataTypeSchemaView,
+  MultipleDate,
+  TemporalExtentView
 ) -> EditorView.extend
 
   initialize: ->
@@ -73,15 +92,6 @@ define [
                     <p>Longer description of project including why models were used to answer the science question, assumptions made, key outputs, etc.</p>
                     """
 
-        new ParentView
-          model: @model
-          modelAttribute: 'keywords'
-          label: 'Keywords'
-          ObjectInputView: KeywordView
-          helpText: """
-                    <p>5-10 keywords to enable searching for the project</p>
-                    """
-
         new InputView
           model: @model
           modelAttribute: 'projectCompletionDate'
@@ -90,21 +100,54 @@ define [
           placeholderAttribute: 'yyyy-mm-dd'
 
 
-        new InputView
+        new PredefinedParentView
           model: @model
-          modelAttribute: 'projectWebsite'
-          label: 'Project website'
-          helpText: """
-                    <p>Public-facing website if available e.g. http://www.ceh.ac.uk/our-science/projects/upscape</p>
-                    """
+          modelAttribute: 'onlineResources'
+          ModelType: OnlineResource
+          label: 'Websites/online resources'
+          ObjectInputView: OnlineResourceView
+          multiline: true
+          predefined:
+            'Project website':
+              name: 'Project website'
+              function: 'information'
 
-        new TextareaView
+        new PredefinedParentView
           model: @model
-          modelAttribute: 'funderDetails'
-          label: 'Funder details'
-          rows: 3
+          modelAttribute: 'funding'
+          ModelType: Funding
+          multiline: true
+          label: 'Funding'
+          ObjectInputView: FundingView
+          predefined:
+            'BBSRC':
+              funderName: 'Biotechnology and Biological Sciences Research Council'
+              funderIdentifier: 'https://ror.org/00cwqg982'
+            'Defra':
+              funderName: 'Department for Environment Food and Rural Affairs'
+              funderIdentifier: 'https://ror.org/00tnppw48'
+            'EPSRC':
+              funderName: 'Engineering and Physical Sciences Research Council'
+              funderIdentifier: 'https://ror.org/0439y7842'
+            'ESRC':
+              funderName: 'Economic and Social Research Council'
+              funderIdentifier: 'https://ror.org/03n0ht308'
+            'Innovate UK':
+              funderName: 'Innovate UK'
+              funderIdentifier: 'https://ror.org/05ar5fy68'
+            'MRC':
+              funderName: 'Medical Research Council'
+              funderIdentifier: 'https://ror.org/03x94j517'
+            'NERC':
+              funderName: 'Natural Environment Research Council'
+              funderIdentifier: 'https://ror.org/02b5d8509'
+            'STFC':
+              funderName: 'Science and Technology Facilities Council'
+              funderIdentifier: 'https://ror.org/057g20z61'
           helpText: """
-                    <p>Funder details, including grant number if appropriate</p>
+                    <p>Include here details of any grants or awards that were used to generate this resource.</p>
+                    <p>If you include funding information, the Funding body is MANDATORY.</p>
+                    <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>
                     """
 
         new ParentView
@@ -118,49 +161,6 @@ define [
                     <p>Contact details for the PI/project representative</p>
                     """
 
-        new TextareaView
-          model: @model
-          modelAttribute: 'multipleModelsUsed'
-          label: 'Multiple models used?'
-          rows: 4
-          helpText: """
-                    <p>Were multiple models used in the project? If so, specify which ones?</p>
-                    """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'multipleModelLinkages'
-          label: 'Multiple model linkages'
-          rows: 4
-          helpText: """
-                    <p>If multiple models were used how was this done e.g. chained, independent runs, comparisons, ensemble</p>
-                    """
-
-      ]
-    ,
-      label: 'Model Info'
-      title: 'Model Info'
-      views: [
-        new ParentView
-          model: @model
-          modelAttribute: 'modelInfos'
-          label: 'Model info'
-          ObjectInputView: ModelInfoView
-          multiline: true
-          helpText: """
-                    <p>Models used in the project</p>
-                    <dl><dt>Name</dt><dd>Name of model (searches catalogue for matching models)</dd>
-                    <dt>Version</dt><dd>Version of the model used for the implementation (not necessarily the current release version) e.g. v1.5.2 (if applicable)</dd>
-                    <dt>Rationale</dt><dd>Why was this model chosen for use in this project?</dd>
-                    <dt>Spatial extent of implementation</dt><dd>What spatial extent best describes the implementation?</dd>
-                    <dt>Available spatial data</dt><dd>Can the application be described by either a shapefile/polygon or bounding box coordinates?</dd>
-                    <dt>Spatial resolution of the implementation</dt><dd>Spatial resolution at which model outputs were generated e.g. 1km²; 5m² (if applicable)</dd>
-                    <dt>Temporal extent of the implementation (start date)</dt><dd>Start date of implementation (if applicable)</dd>
-                    <dt>Temporal extent of the implementation (end date)</dt><dd>End date of implementation (if applicable)</dd>
-                    <dt>Temporal resolution of the implementation</dt><dd>Time step used in the model implementation e.g. 1s; annual (if applicable)</dd>
-                    <dt>Calibration conditions</dt><dd>How was the model calibrated (if applicable)?</dd></dl>
-                    """
-                    
         new PredefinedParentView
           model: @model
           modelAttribute: 'boundingBoxes'
@@ -215,39 +215,147 @@ define [
               eastBoundLongitude: 180.00
               southBoundLatitude: -90.00
               westBoundLongitude: -180.00
+
+        new InputView
+          model: @model
+          modelAttribute: 'spatialResolution'
+          label: 'Spatial resolution'
+
+        new ParentView
+          model: @model
+          modelAttribute: 'temporalExtents'
+          ModelType: MultipleDate
+          label: 'Temporal extent'
+          ObjectInputView: TemporalExtentView
+
+        new InputView
+          model: @model
+          modelAttribute: 'temporalResolution'
+          label: 'Temporal resolution'
+
+        new ParentView
+          model: @model
+          modelAttribute: 'keywords'
+          label: 'Keywords'
+          ObjectInputView: KeywordView
           helpText: """
-                    <p>A bounding box representing the limits of the data resource's study area.</p>
-                    <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
+                    <p>5-10 keywords to enable searching for the project</p>
                     """
 
       ]
     ,
-      label: 'Input data'
-      title: 'Input data'
+      label: 'Model Info'
+      title: 'Model Info'
       views: [
+        new TextareaView
+          model: @model
+          modelAttribute: 'multipleModelsUsed'
+          label: 'Multiple models used?'
+          rows: 4
+          helpText: """
+                    <p>Were multiple models used in the project? If so, specify which ones?</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'multipleModelLinkages'
+          label: 'Multiple model linkages'
+          rows: 4
+          helpText: """
+                    <p>If multiple models were used how was this done e.g. chained, independent runs, comparisons, ensemble</p>
+                    """
+
         new ParentView
           model: @model
-          modelAttribute: 'inputData'
-          label: 'Input Data'
-          ObjectInputView: DataInfoView
+          modelAttribute: 'modelInfos'
+          label: 'Model info'
+          ObjectInputView: ModelInfoView
           multiline: true
           helpText: """
-                    <p>Detailed description of input data including: variable name, units, file format, URL to data catalogue record for each input</p>
+                    <p>Models used in the project</p>
+                    <dl><dt>Name</dt><dd>Name of model (searches catalogue for matching models)</dd>
+                    <dt>Version</dt><dd>Version of the model used for the implementation (not necessarily the current release version) e.g. v1.5.2 (if applicable)</dd>
+                    <dt>Rationale</dt><dd>Why was this model chosen for use in this project?</dd>
+                    <dt>Spatial extent of implementation</dt><dd>What spatial extent best describes the implementation?</dd>
+                    <dt>Available spatial data</dt><dd>Can the application be described by either a shapefile/polygon or bounding box coordinates?</dd>
+                    <dt>Spatial resolution of the implementation</dt><dd>Spatial resolution at which model outputs were generated e.g. 1km²; 5m² (if applicable)</dd>
+                    <dt>Temporal extent of the implementation (start date)</dt><dd>Start date of implementation (if applicable)</dd>
+                    <dt>Temporal extent of the implementation (end date)</dt><dd>End date of implementation (if applicable)</dd>
+                    <dt>Temporal resolution of the implementation</dt><dd>Time step used in the model implementation e.g. 1s; annual (if applicable)</dd>
+                    <dt>Calibration conditions</dt><dd>How was the model calibrated (if applicable)?</dd></dl>
                     """
       ]
     ,
-      label: 'Output data'
-      title: 'Output data'
+      label: 'Input variables'
+      title: 'Input variables'
       views: [
-        new ParentView
+        new PredefinedParentLargeView
           model: @model
-          modelAttribute: 'outputData'
-          label: 'Output Data'
-          ObjectInputView: DataInfoView
+          ModelType: DataTypeSchema
+          modelAttribute: 'inputVariables'
           multiline: true
-          helpText: """
-                    <p>Detailed description of model outputs including: variable name, units, file format, URL to data catalogue record for each output (or alternative location of model outputs from this application)</p>
-                    """
+          label: 'Input variables'
+          ObjectInputView: DataTypeSchemaView
+          predefined:
+            'Boolean (true/false)':
+              type: 'boolean'
+            'Date':
+              type: 'date'
+            'Date & time':
+              type: 'datetime'
+            'Decimal number':
+              type: 'number'
+            'Geographic point':
+              type: 'geopoint'
+            'Integer':
+              type: 'integer'
+            'Text':
+              type: 'string'
+            'Time':
+              type: 'time'
+              format: 'hh:mm:ss'
+            'URI':
+              type: 'string'
+              format: 'uri'
+            'UUID':
+              type: 'string'
+              format: 'uuid'
+      ]
+    ,
+      label: 'Output variables'
+      title: 'Output variables'
+      views: [
+        new PredefinedParentLargeView
+          model: @model
+          ModelType: DataTypeSchema
+          modelAttribute: 'outputVariables'
+          multiline: true
+          label: 'Output variables'
+          ObjectInputView: DataTypeSchemaView
+          predefined:
+            'Boolean (true/false)':
+              type: 'boolean'
+            'Date':
+              type: 'date'
+            'Date & time':
+              type: 'datetime'
+            'Decimal number':
+              type: 'number'
+            'Geographic point':
+              type: 'geopoint'
+            'Integer':
+              type: 'integer'
+            'Text':
+              type: 'string'
+            'Time':
+              type: 'time'
+              format: 'hh:mm:ss'
+            'URI':
+              type: 'string'
+              format: 'uri'
+            'UUID':
+              type: 'string'
+              format: 'uuid'
       ]
     ,
       label: 'Quality'

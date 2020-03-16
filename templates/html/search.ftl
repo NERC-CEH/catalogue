@@ -10,11 +10,13 @@
       </div>
       <div class="facet-filter"><#include "search/_facets.ftl"></div>
 
-      <div class="header map-heading">
-        <div class="drawing-control pull-right"><#include "search/_drawing.ftl"></div>
-        <h3>Map Search</h3>
+      <div class="map-search">
+        <div class="header map-heading">
+          <div class="drawing-control pull-right"><#include "search/_drawing.ftl"></div>
+          <h3>Map Search</h3>
+        </div>
+        <div class="map-filter openlayers"></div>
       </div>
-      <div class="map-filter openlayers"></div>
     </div>
 
     <div class="results"><#include "search/_page.ftl"></div>

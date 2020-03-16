@@ -42,65 +42,60 @@
 
 
     <div class="row">
-      <div class="col-sm-4 col-sm-push-8 panel-right">
-        <#if repo?? || documentation?? || licenseType?? >
-        <div class="distribution"> 
+      <div class="col-sm-4 col-sm-push-8">
+        <#if onlineResources?size gte 1 || licenseType?? >
+          <div class="panel-right distribution">
             <#if repo?? && repo?has_content>
-            <p class="panel-title">Get the code</p> 
-              <ul class="list-unstyled">
-              <#list repo as link>
-                <li>
-                  <#if link.url?? && link.url?has_content>
-                    <@m.Url link.url true/>
-                  </#if>
-                </li>
-              </#list>
-              </ul>
-            </#if>
-            <#if documentation?? && documentation?has_content>
-              <p class="panel-title">Documentation</p> 
-              <ul class="list-unstyled">
-              <#list documentation as link>
-                <li>
-                  <#if link.url?? && link.url?has_content>
-                    <@m.Url link.url true/>
-                  </#if>
-                </li>
-              </#list>
-              </ul>
-            </#if>
-            <#if licenseType?? && licenseType?has_content>
-             <p class="panel-title">Licence</p> 
-             <p>${licenseType?cap_first}</p>
-            </#if>
+              <p class="panel-title">Get the code</p> 
+                <ul class="list-unstyled">
+                <#list repo as link>
+                  <li>
+                    <#if link.url?? && link.url?has_content>
+                      <@m.Url link.url true/>
+                    </#if>
+                  </li>
+                </#list>
+                </ul>
+              </#if>
+              <!--<#if documentation?? && documentation?has_content>
+                <p class="panel-title">Documentation</p> 
+                <ul class="list-unstyled">
+                <#list documentation as link>
+                  <li>
+                    <#if link.url?? && link.url?has_content>
+                      <@m.Url link.url true/>
+                    </#if>
+                  </li>
+                </#list>
+                </ul>
+              </#if>-->
+              <#if licenseType?? && licenseType?has_content>
+              <p class="panel-title">Licence</p> 
+              <p>${licenseType?cap_first}</p>
+              </#if>
           </div>
           </#if>
       </div>
-
-      <div class="col-sm-8 col-sm-pull-4 ">
-        <#if primaryPurpose?? || SRO??>
-          
-          <#if primaryPurpose?? && primaryPurpose?has_content>
-            <@m.key "Primary purpose">
-                <@b.linebreaks primaryPurpose />
-            </@m.key>
-          </#if>
-
-          <@m.key "Senior responsible officer">
-            <#if SRO?? && SRO?has_content>
-              <#noescape>
-                <#list SRO as SRO>
-                  ${func.displayContact(SRO, true, true, false)}
-                </#list>
-              </#noescape>
-            <#else>
-              <b class="text-danger"><i class="fas fa-exclamation"> </i> There is no SRO</b>
-            </#if>
+      <div class="col-sm-8 col-sm-pull-4">
+        <#if primaryPurpose?? && primaryPurpose?has_content>
+          <@m.key "Primary purpose">
+              <@b.linebreaks primaryPurpose />
           </@m.key>
         </#if>
-      </div>
-    </div>
+        <@m.key "Senior responsible officer">
+          <#if SRO?? && SRO?has_content>
+            <#noescape>
+              <#list SRO as SRO>
+                ${func.displayContact(SRO, true, true, false)}
+              </#list>
+            </#noescape>
+          <#else>
+            <b class="text-danger"><i class="fas fa-exclamation"> </i> There is no SRO</b>
+          </#if>
+        </@m.key>
 
+      </div>
+     </div>
 
     <#if  otherContacts?? || otherLinks??>
       <section>  
@@ -277,6 +272,9 @@
           </#if>
           <#if item.url?? && item.url?has_content>
             <span class="supplemental-url"><@m.Url item.url true/></span>
+          </#if>
+          <#if item.noraID?? && item.noraID?has_content && item.noraID?matches("\\d{3,10}")>
+            <span class="supplemental-nora"><br><a href="http://nora.nerc.ac.uk/id/eprint/${item.noraID}">View in NORA &raquo;</a></span>
           </#if>
         </@b.repeatRow>
         </#list>

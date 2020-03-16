@@ -12,7 +12,7 @@ define [
       supersededDate: 'Date superseded'
       deprecatedDate: 'Date deprecated'
       releasedDate: 'Date released'
-      begin: 'Begin'
+      begin: 'Start'
       end: 'End'
 
     dateRegExp = ///
@@ -47,7 +47,7 @@ define [
       if begin > end
         errors.push
           message:
-            "Collection of this data finished before it started!"
+            "Start date is later than end date!"
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

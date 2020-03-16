@@ -14,7 +14,7 @@ define [
   'cs!views/editor/OnlineLinkView'
   'cs!models/editor/Contact'
   'cs!models/editor/DataTypeSchema'
-  'cs!views/editor/DataTypeSchemaSimpleView'
+  'cs!views/editor/DataTypeSchemaView'
   'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
   'cs!models/editor/Supplemental'
@@ -36,7 +36,7 @@ define [
   OnlineLinkView,
   Contact,
   DataTypeSchema,
-  DataTypeSchemaSimpleView,
+  DataTypeSchemaView,
   BoundingBox,
   BoundingBoxView,
   Supplemental,
@@ -170,7 +170,7 @@ define [
           modelAttribute: 'inputVariables'
           multiline: true
           label: 'Input variables'
-          ObjectInputView: DataTypeSchemaSimpleView
+          ObjectInputView: DataTypeSchemaView
           predefined:
             'Boolean (true/false)':
               type: 'boolean'
@@ -206,7 +206,7 @@ define [
           modelAttribute: 'outputVariables'
           multiline: true
           label: 'Output variables'
-          ObjectInputView: DataTypeSchemaSimpleView
+          ObjectInputView: DataTypeSchemaView
           predefined:
             'Boolean (true/false)':
               type: 'boolean'

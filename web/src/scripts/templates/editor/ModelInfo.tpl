@@ -33,6 +33,7 @@
     <textarea data-name="rationale" rows="7" id="modelInfo<%= data.index %>Rationale" class="editor-textarea"><%= data.rationale %></textarea>
   </div>
 </div>
+<!--This may not be needed
 <div class="row">
   <div class="col-sm-3 col-lg-3">
     <label for="modelInfo<%= data.index %>spatialExtentOfApplication">Spatial extent of implementation</label>
@@ -96,6 +97,7 @@
     <input data-name="temporalResolutionOfApplication" id="modelInfo<%= data.index %>TemporalResolutionOfApplication" class="editor-input" value="<%= data.temporalResolutionOfApplication %>">
   </div>
 </div>
+-->
 <div class="row">
   <div class="col-sm-3 col-lg-3">
     <label for="modelInfo<%= data.index %>CalibrationConditions">Calibration conditions</label>

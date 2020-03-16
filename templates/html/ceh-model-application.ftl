@@ -8,34 +8,68 @@
     
     <@b.admin />
 
-    <#if title?? || projectCode?? || projectObjectives?? || description?? || keywords?? || projectCompletionDate?? || projectWebsite?? || funderDetails?? || multipleModelsUsed?? || multipleModelLinkages??>
+    <#if title?? || projectCode?? || projectObjectives?? || description?? || keywords?? || projectCompletionDate?? || boundingBoxes?? ||projectWebsite?? || funderDetails?? || multipleModelsUsed?? || multipleModelLinkages??>
     <section>
       <h1 class="document-title"><small>Model implementation</small>${title}</h1>
       <h2>Project Information</h2>
 
-      <#if projectCode?? && projectCode?has_content>
-        <@m.key "Project code" "RMS project code">${projectCode}</@m.key>
-      </#if>
-
-      <#if projectObjectives?? && projectObjectives?has_content>
-        <@m.key "Objectives" "Brief description of main objectives">
-          <#noescape>
-            <@b.linebreaks projectObjectives />
-          </#noescape>
-        </@m.key>
-      </#if>
       <#if description?? && description?has_content>
-        <@m.key "Description" "Longer description of project including why models were used to answer the science question, assumptions made, key outputs">
+        <@m.key "Description">
           <#noescape>
             <@b.linebreaks description />
           </#noescape>
         </@m.key>
       </#if>
+      <#if projectObjectives?? && projectObjectives?has_content>
+        <@m.key "Objectives">
+          <#noescape>
+            <@b.linebreaks projectObjectives />
+          </#noescape>
+        </@m.key>
+      </#if>
+      <#if boundingBoxes?has_content>
+        <@m.key "Spatial extent">
+          <div id="studyarea-map">
+            <#list boundingBoxes as extent>
+              <span content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
+            </#list>
+          </div>
+        </@m.key>
+      </#if>
+
+      <#if spatialResolution?? && spatialResolution?has_content>
+        <@m.key "Spatial resolution">${spatialResolution}</@m.key>
+      </#if>
+      <#if temporalExtents?? && temporalExtents?has_content>
+        <@m.key "Temporal extent">
+         <#list temporalExtents as extent>
+            <p>
+            <#if extent.begin?has_content>
+              <#if !extent.end?has_content>Starts </#if>
+              <span class="extentBegin">${extent.begin?date?string['d MMMM yyyy']}</span>
+              <#if extent.end?has_content> to </#if>
+            </#if>
+            <#if extent.end?has_content>
+              <#if !extent.begin?has_content>Ends </#if>
+              <span class="extentEnd">${extent.end?date?string['d MMMM yyyy']}</span>
+            </#if>
+            </p>         
+          </#list>
+        </@m.key>
+      </#if>
+      <#if temporalResolution?? && temporalResolution?has_content>
+        <@m.key "Temporal resolution">${temporalResolution}</@m.key>
+      </#if>
+
+
       <#if projectCompletionDate?? && projectCompletionDate?has_content>
-        <@m.key "Project completion date" "Project end date">${projectCompletionDate?date?string['d MMMM yyyy']}</@m.key>
+        <@m.key "Completion date">${projectCompletionDate?date?string['d MMMM yyyy']}</@m.key>
       </#if>
       <#if projectWebsite?? && projectWebsite?has_content>
         <@m.key "Project website" "Link to public-facing website if available"><@b.bareUrl projectWebsite /></@m.key>
+      </#if>
+      <#if projectCode?? && projectCode?has_content>
+        <@m.key "Project code" "RMS project code">${projectCode}</@m.key>
       </#if>
       <#if funderDetails?? && funderDetails?has_content>
         <@m.key "Funder details" "Funder details including grant number if appropriate">
@@ -98,7 +132,7 @@
     <#if modelInfos?? && modelInfos?has_content>
     
       <section>
-      <h2>Model Information</h2>
+      <h2>Model<#if modelInfos?size gt 1>s</#if></h2>
         <#list modelInfos as modelInfo>
         <@b.repeatRow>
          <#if (modelInfo.id?? && modelInfo.id?has_content) || (modelInfo.name?? && modelInfo.name?has_content)>
@@ -126,38 +160,6 @@
               <@m.keyContent "Rationale">${modelInfo.rationale}</@m.keyContent>
             </@b.basicRow>
           </#if>
-          <#if modelInfo.spatialExtentOfApplication?? && modelInfo.spatialExtentOfApplication?has_content>
-            <@b.basicRow>
-              <@m.keyContent "Spatial extent">${modelInfo.spatialExtentOfApplication?cap_first}</@m.keyContent>
-            </@b.basicRow>
-          </#if>
-          <#if modelInfo.availableSpatialData?? && modelInfo.availableSpatialData?has_content>
-            <@b.basicRow>
-              <@m.keyContent "Available spatial data">${modelInfo.availableSpatialData?cap_first}</@m.keyContent>
-            </@b.basicRow>
-          </#if>
-          <#if modelInfo.spatialResolutionOfApplication?? && modelInfo.spatialResolutionOfApplication?has_content>
-            <@b.basicRow>
-              <@m.keyContent "Spatial resolution" >${modelInfo.spatialResolutionOfApplication}</@m.keyContent>
-            </@b.basicRow>
-          </#if>
-          <#if modelInfo.temporalExtentOfApplicationStartDate??||  modelInfo.temporalExtentOfApplicationEndDate?? >
-            <@b.basicRow><@m.keyContent "Temporal extent">
-                <#if modelInfo.temporalExtentOfApplicationStartDate?? && modelInfo.temporalExtentOfApplicationStartDate?has_content>
-                  From <span>${modelInfo.temporalExtentOfApplicationStartDate?date?string['d MMMM yyyy']}</span>
-                <#else>
-                &hellip;
-                </#if>
-                <#if modelInfo.temporalExtentOfApplicationEndDate?? && modelInfo.temporalExtentOfApplicationEndDate?has_content>
-                  to <span>${modelInfo.temporalExtentOfApplicationEndDate?date?string['d MMMM yyyy']}</span>
-                </#if>
-            </@m.keyContent></@b.basicRow>
-          </#if>
-          <#if modelInfo.temporalResolutionOfApplication?? && modelInfo.temporalResolutionOfApplication?has_content>
-            <@b.basicRow>
-              <@m.keyContent "Temporal resolution">${modelInfo.temporalResolutionOfApplication}</@m.keyContent>
-            </@b.basicRow>
-          </#if>
           <#if modelInfo.calibrationConditions?? && modelInfo.calibrationConditions?has_content>
             <@b.basicRow>
               <@m.keyContent "Calibration conditions">${modelInfo.calibrationConditions}</@m.keyContent>
@@ -168,17 +170,17 @@
       </section>
     </#if>
 
-    <#if inputData?? && inputData?size gt 0 >
+    <#if inputVariables?? && inputVariables?size gt 0 >
     <section>
-      <h2>Input data</h2>
-      <@dataInfoTable inputData />
+      <h2>Input variables</h2>
+      <@variablesTable inputVariables />
     </section>
     </#if>
 
-    <#if outputData?? && outputData?size gt 0>
+    <#if outputVariables?? && outputVariables?size gt 0>
     <section>
-      <h2>Output data</h2>
-      <@dataInfoTable outputData />
+      <h2>Output variables</h2>
+      <@variablesTable outputVariables />
     </section>
     </#if>
    
@@ -214,25 +216,22 @@
   </@b.metadataContainer>
 </#escape></@skeleton.master>
 
-
-<#macro dataInfoTable data> 
+<#macro variablesTable data> 
 <table class="table table-condensed">
-<thead><tr><th>variable name</th><th>units</th><th>file format</th><th>url</th></tr></thead>
+<thead><tr><th>Variable</th><th>Units</th><th>Format</th></tr></thead>
 <tbody>
   <#list data as item>
     <tr>
       <td>
-        <#if item.variableName?? && item.variableName?has_content>${item.variableName}</#if>
+        <#if item.name?? && item.name?has_content>${item.name}</#if>
       </td>
       <td>
-        <#if item.units?? && item.units?has_content>${item.units}</#if>
+        <#if item.type?? && item.type?has_content>${item.type}</#if>
       </td>
       <td>
-        <#if item.fileFormat?? && item.fileFormat?has_content>${item.fileFormat}</#if>
+        <#if item.format?? && item.format?has_content>${item.format}</#if>
       </td>
-      <td>
-        <#if item.url?? && item.url?has_content><@b.bareUrl item.url/></#if>
-      </td>
+      
     </tr>
   </#list>
 </tbody>

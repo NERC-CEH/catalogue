@@ -5,7 +5,7 @@
 			<#items as child>
 				<#if child.associationType = 'dataset' ||  child.associationType = 'nonGeographicDataset' ||  child.associationType = 'signpost'>
 					<#assign type="Dataset" icon="fas fa-table" >
-				<#elseif child.associationType = "series" || child.associationType = "collection">
+				<#elseif child.associationType = "series" || child.associationType = "collection" || child.associationType = "aggregate">
 					<#assign type="Data collection" icon="far fa-clone" >
 				<#elseif child.associationType = "application">
 					<#assign type="Model code" icon="fas fa-terminal" >

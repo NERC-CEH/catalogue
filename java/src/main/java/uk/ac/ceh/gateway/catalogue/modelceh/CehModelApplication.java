@@ -11,7 +11,12 @@ import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
+import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
+
 
 import java.util.Collections;
 import java.util.List;
@@ -30,10 +35,12 @@ public class CehModelApplication extends AbstractMetadataDocument implements Wel
         projectCode,
         projectObjectives,
         projectCompletionDate,
-        projectWebsite,
-        funderDetails,
+        projectWebsite, //replaced by onlineResources - when data is updated this can be deleted
+        funderDetails,  //replaced by Funding - when data is updated this can be deleted
         contactName, //replaced by responsibleParties - when data is updated this can be deleted
         contactEmail, //replaced by responsibleParties - when data is updated this can be deleted
+        spatialResolution,
+        temporalResolution,
         multipleModelsUsed,
         multipleModelLinkages,
         sensitivityAnalysis,
@@ -41,15 +48,17 @@ public class CehModelApplication extends AbstractMetadataDocument implements Wel
         validation;
 
     private List<ResponsibleParty> responsibleParties;
-
+    private List<OnlineResource> onlineResources;    
     private List<BoundingBox> boundingBoxes;    
-
+    private List<Funding> funding;
     private List<ModelInfo> modelInfos;
-    
-    private List<DataInfo>
+    private List<TimePeriod> temporalExtents;
+    private List<DataTypeSchema>
+        inputVariables,
+        outputVariables;
+    private List<DataInfo> //replaced by inputVariables/outputVariables - when data is updated could this be deleted ???
         inputData,
         outputData;
-
     private List<CehModel.Reference> references; //replaced by supplemental - when data is updated this can be deleted
     private List<Supplemental> supplemental;
         
@@ -78,12 +87,12 @@ public class CehModelApplication extends AbstractMetadataDocument implements Wel
             id,
             version,
             rationale,
-            spatialExtentOfApplication,
-            availableSpatialData,
-            spatialResolutionOfApplication,
-            temporalExtentOfApplicationStartDate,
-            temporalExtentOfApplicationEndDate,
-            temporalResolutionOfApplication,
+            spatialExtentOfApplication, // may be removed
+            availableSpatialData, // may be removed
+            spatialResolutionOfApplication, // may be removed
+            temporalExtentOfApplicationStartDate, // may be removed
+            temporalExtentOfApplicationEndDate, // may be removed
+            temporalResolutionOfApplication, // may be removed
             calibrationConditions;
     }
     
