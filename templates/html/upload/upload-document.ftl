@@ -5,8 +5,11 @@
 <#assign inProgress=issues?size == 1 && issues[0].status == 'in progress'>
 
 <@skeleton.master title=title>
-<div class="container" id="document-upload" data-guid='${id}'>
-
+<#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
+<div class="container is-admin" id="document-upload" data-guid='${id}'>
+<#else>
+<div class="container is-non-admin" id="document-upload" data-guid='${id}'>
+</#if>
     <#if scheduled>
     <div class="container-fluid document-upload is-scheduled">
     <#else>
@@ -68,7 +71,7 @@
                 <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
             </div>
             <div class="documents-files"></div>
-            <#if inProgress>
+            <#if inProgress && permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
             <div class="row">
                 <div class="col-md-6"></div>
                 <div class="col-md-3">
@@ -78,7 +81,7 @@
                     <button class="data-action reschedule btn btn-success"><i class="btn-icon fas fa-redo"></i><span>RESCHEDULE</span></button>
                 </div>
             </div>
-            <#elseif open>
+            <#elseif open && permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
             <div class="row">
                 <div class="col-md-6"></div>
                 <div class="col-md-3">
@@ -88,7 +91,7 @@
                     <button class="data-action schedule btn btn-success"><i class="btn-icon far fa-calendar-check"></i><span>SCHEDULE</span></button>
                 </div>
             </div>
-            <#else>
+            <#elseif permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
             <div class="row">
                 <div class="col-md-9"></div>
                 <div class="col-md-3">
@@ -125,11 +128,18 @@
 </#if>
         <section class="document-upload-section">
             <div class="row">
+                <#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
                 <div class="col-md-6"></div>
                 <div class="col-md-6 file-actions">
                     <button class="validate-all file-action btn btn-primary"><i class="btn-icon fas fa-check"></i><span>VALIDATE ALL</span></button>
                     <a class="downloadChecksum file-action btn btn-success" href="documents/csv/${id}" download="checksums_${id}.csv"><i class="btn-icon fas fa-file-download"></i><span>DOWNLOAD CHECKSUM REPORT</span></a>
                 </div>
+                <#else>
+                <div class="col-md-9"></div>
+                <div class="col-md-3">
+                    <a class="downloadChecksum btn btn-success" href="documents/csv/${id}" download="checksums_${id}.csv"><i class="btn-icon fas fa-file-download"></i><span>DOWNLOAD CHECKSUM REPORT</span></a>
+                </div>
+                </#if>
             </div>
         </section>
     </div>

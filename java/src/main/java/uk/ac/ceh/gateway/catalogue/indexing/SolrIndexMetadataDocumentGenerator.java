@@ -36,6 +36,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static final String INMS_MODEL_TYPE_URL = "http://vocabs.ceh.ac.uk/inms/model_type";
     public static final String INMS_WATER_POLLUTANT_URL = "http://vocabs.ceh.ac.uk/inms/wp/";
     public static final String INMS_REGION_URL = "http://vocabs.ceh.ac.uk/inms/region";
+    public static final String INMS_PROJECT_URL = "http://vocabs.ceh.ac.uk/inms/project";
 
     public static final String NC_ASSETS_URL = "http://vocabs.ceh.ac.uk/ncterms/asset";
     public static final String NC_CASE_STUDY_URL = "http://vocabs.ceh.ac.uk/ncterms/caseStudy";
@@ -64,6 +65,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setImpTopic(grab(getKeywordsFilteredByUrlFragment(document, IMP_TOPIC_URL, INMS_TOPIC_URL), Keyword::getValue))
             .setImpWaterPollutant(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_POLLUTANT_URL, INMS_WATER_POLLUTANT_URL), Keyword::getValue))
             .setInmsDemonstrationRegion(grab(getKeywordsFilteredByUrlFragment(document, INMS_REGION_URL), Keyword::getValue))
+            .setInmsProject(grab(getKeywordsByVocabulary(document, INMS_PROJECT_URL), Keyword::getValue))
             .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
             .setLocations(getLocations(document))
             .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue))

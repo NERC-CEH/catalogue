@@ -1,10 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import lombok.NonNull;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import lombok.NonNull;
 
 public class HardcodedFacetFactory implements FacetFactory {
 
@@ -114,6 +114,13 @@ public class HardcodedFacetFactory implements FacetFactory {
                 return Facet.builder()
                     .fieldName("inmsDemonstrationRegion")
                     .displayName("Demonstration Region")
+                    .hierarchical(false)
+                    .build();
+
+            case "inmsProject":
+                return Facet.builder()
+                    .fieldName("inmsProject")
+                    .displayName("Project")
                     .hierarchical(false)
                     .build();
                 
