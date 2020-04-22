@@ -65,7 +65,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setImpTopic(grab(getKeywordsFilteredByUrlFragment(document, IMP_TOPIC_URL, INMS_TOPIC_URL), Keyword::getValue))
             .setImpWaterPollutant(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_POLLUTANT_URL, INMS_WATER_POLLUTANT_URL), Keyword::getValue))
             .setInmsDemonstrationRegion(grab(getKeywordsFilteredByUrlFragment(document, INMS_REGION_URL), Keyword::getValue))
-            .setInmsProject(grab(getKeywordsByVocabulary(document, INMS_PROJECT_URL), Keyword::getValue))
+            .setInmsProject(grab(getKeywordsFilteredByUrlFragment(document, INMS_PROJECT_URL), Keyword::getValue))
             .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
             .setLocations(getLocations(document))
             .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue))
