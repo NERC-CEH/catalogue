@@ -121,7 +121,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                 return Facet.builder()
                     .fieldName("inmsProject")
                     .displayName("Project")
-                    .hierarchical(false)
+                    .hierarchical(true)
                     .build();
                 
             case "modelType":
