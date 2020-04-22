@@ -177,7 +177,7 @@ public class CatalogueServiceConfig {
             Catalogue.builder()
                 .id("inms")
                 .title("International Nitrogen Management System")
-                .url("http://www.inms.international/")
+                .url("https://data.inms.international/")
                 .facetKey("recordType")
                 .facetKey("impScale")
                 .facetKey("impTopic")
