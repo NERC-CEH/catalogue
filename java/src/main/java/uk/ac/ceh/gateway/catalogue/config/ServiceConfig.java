@@ -105,7 +105,12 @@ public class ServiceConfig {
     @Autowired private CatalogueService catalogueService;
     @Autowired @Qualifier("gemini") private Schema geminiSchema;
     @Autowired private MetadataQualityService metadataQualityService;
-    
+
+    @Bean
+    public SolrScheduledReindexService solrScheduledReindexService() {
+        return new SolrScheduledReindexService(documentIndexingService());
+    }
+
     @Bean
     FacetFactory facetFactory() {
         return new HardcodedFacetFactory();
