@@ -20,7 +20,18 @@
       </div>
     </#if>
 
-    <#if supOther?has_content || website?has_content>
+    <#if websites?has_content>
+      <div class="supplemental-block">
+        <h4>Related websites:</h4>
+        <#if websites?has_content >
+          <#list websites as supplement>
+              ${func.displaySupplemental(supplement true)}
+          </#list>
+        </#if>
+      </div>
+    </#if>
+
+    <#if supOther?has_content>
       <div class="supplemental-block">
         <h4>Other useful information regarding this ${recordType}:</h4>
         <#if supOther?has_content >
