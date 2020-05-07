@@ -34,7 +34,8 @@
   <#assign
   referencedBy = func.filter(supplemental, "function", "isReferencedBy")
   supplementTo = func.filter(supplemental, "function", "isSupplementTo")
-  supOther = func.filter(supplemental, "function", "website") + func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")>
+  websites = func.filter(supplemental, "function", "website")
+  supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")>
 </#if>
 
 <#macro getLabel val array>
@@ -93,6 +94,10 @@
                 </#if>
               <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
                  <#include "gemini/_distribution_signpost.ftl">
+              </#if>
+
+              <#if resourceType.value == 'thirdPartyDataset'>
+                <#include "gemini/_third_party.ftl">
               </#if>
 
             </div>
