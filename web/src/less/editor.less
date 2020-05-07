@@ -6,6 +6,7 @@
 
 #editorAjax {
   display: none;
+
   &.visible {
     display: inline;
   }
@@ -13,34 +14,39 @@
 
 #editor {
   padding-bottom: 70px;
+
   .editor-input {
     .form-control;
     .input-sm;
-    color:#000;
+    color: #000;
   }
+
   .editor-textarea {
     .form-control;
     .input-sm;
     height: auto;
-    color:#000;
+    color: #000;
   }
-  .ui-sortable {
-      .row {
-        .provenance {
-          border-bottom:1px solid #EEE;
-          margin-bottom:.25em;
-          padding:.5em 0;
-        };
-        &:last-child {
-          .provenance {
-            border-bottom: none;
-            padding-bottom:0;
-          }
-        }
-      };
-      
-    };
 
+  .ui-sortable {
+    .row {
+      .provenance {
+        border-bottom: 1px solid #EEE;
+        margin-bottom: .25em;
+        padding: .5em 0;
+      }
+
+      ;
+
+      &:last-child {
+        .provenance {
+          border-bottom: none;
+          padding-bottom: 0;
+        }
+      }
+    }
+
+  }
 
   .editor-button {
     .btn;
@@ -64,102 +70,136 @@
     line-height: 1.5;
   }
 
-  .component  {
+  .component {
     border-bottom: 1px solid lighten(@gray-light, 25%);
-    padding-bottom:1.25em;
+    padding-bottom: 1.25em;
     .form-group;
     display: none;
+
     &.visible {
       display: block;
     }
-    .component  {
-    border-style: solid;
-    border-width: 1px;
-    border-color: lighten(@gray-light, 15%);
-    border-radius: 5px;
-    padding: 0.5em;
-    margin-bottom: 1.25em;
+
+    .component {
+      border-style: solid;
+      border-width: 1px;
+      border-color: lighten(@gray-light, 15%);
+      border-radius: 5px;
+      padding: 0.5em;
+      margin-bottom: 1.25em;
     }
+
     .row {
       @spacer: 3px;
       margin-bottom: @spacer;
+
       label {
         padding-top: @spacer;
       }
     }
+
     .dataentry {
       label {
         font-size: 12px;
       }
+
       &.child {
         z-index: 0;
+
         hr {
-          border-color:#DDD;
-          margin:.6em 0;
-        };
+          border-color: #DDD;
+          margin: .6em 0;
+        }
+
       }
     }
+
     .btnSchemaDetail {
       .btn;
       .btn-default;
       .btn-xs;
       text-align: right;
-      span:before{
-        content:"hide ";
-      };
-    };
+
+      span:before {
+        content: "hide ";
+      }
+
+      ;
+    }
+
+    ;
+
     .btnSchemaDetail.collapsed {
-        span:before {
-          content:"show " !important;
-        };
-      };
+      span:before {
+        content: "show " !important;
+      }
+    }
   }
-  .multiline .existing > .row {
+
+  .multiline .existing>.row {
     border-style: solid;
     border-width: 1px;
     border-color: lighten(@gray-light, 15%);
     border-radius: 5px;
     padding: 4px;
   }
+
   .dropdown {
     .pull-right;
     display: inline-block;
   }
 
-  .resourcetypes-eidc,
-  .resourcetypes-inms,
-  .resourcetypes-iso19115 {
-    display:none;
-  };
-  .keywords {
-    margin-top:1em;
+  .resourcetypes {
+
+    &-eidc,
+    &-inms,
+    &-assist,
+    &-iso19115 {
+      display: none;
+    }
   }
+
+  .keywords {
+    margin-top: 1em;
+  }
+
   .keyword-add {
     display: inline-block;
     .pull-left;
   }
+
   .dropdown-menu.predefined {
     margin-bottom: 70px;
-    max-height:350px;
-    overflow:auto;
+    max-height: 350px;
+    overflow: auto;
   }
+
   .validation {
     display: none;
-  };
+  }
+
   .readonly {
     font-size: 90%;
     color: #AAA;
     line-height: 2.5em;
-  };
-  .extentName {};
+  }
+
+  .extentName {}
+
+  ;
+
   .extentUri {
     margin-left: 2em;
-    font-size:80%;
+    font-size: 80%;
     color: @gray-light;
-  };
-  .ui-sortable, .ui-sortable-handle {
+  }
+
+  ;
+
+  .ui-sortable,
+  .ui-sortable-handle {
     cursor: move;
-  };
+  }
 
   .catalogueSearch {
     margin-bottom: 1em;
@@ -168,22 +208,21 @@
       font-size: 0.9em;
     }
   }
-
 }
 
 .form-control {
+
   &[readonly],
-  &[disabled] { 
+  &[disabled] {
     background-color: lighten(@gray-light, 30%);
     color: @gray;
-  };
-
+  }
 }
 
 #editorValidationMessage {
-  .modal-body{
-    color:#F00;
-    font-weight:bold;
+  .modal-body {
+    color: #F00;
+    font-weight: bold;
   }
 }
 
@@ -194,5 +233,3 @@ ul.ui-autocomplete {
     font-family: @font-family-sans-serif;
   }
 }
-
-

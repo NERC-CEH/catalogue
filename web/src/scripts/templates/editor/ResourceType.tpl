@@ -15,6 +15,11 @@
     <option value="aggregate">Data collection (aggregation)</option>
     <option value="service">Map (web service)</option>
   </optgroup>
+  <optgroup label="ASSIST resource types" class="resourcetypes-assist">
+    <option value="dataset">Dataset</option>
+    <option value="thirdPartyDataset">Third-party dataset</option>
+    <option value="aggregate">Data collection (aggregation)</option>
+  </optgroup>
   <optgroup label="All ISO 19115 resource types" class="resourcetypes-iso19115">
     <option value="aggregate">Aggregate</option>
     <option value="application">Application</option>
