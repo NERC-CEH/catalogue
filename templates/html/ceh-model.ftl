@@ -204,16 +204,17 @@
       <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
         <h2>Project usage</h2>
         <#if projectUsages?? && projectUsages?has_content>
+          <div class="projectList">
           <#list projectUsages as usage>
-            <p>
-              <#if projectUsage.project?? && projectUsage.project?has_content>
-                ${projectUsage.project}
-              </#if>
-              <#if projectUsage.date?? && projectUsage.date?has_content>
-                (${projectUsage.date?date?string['MMMM yyyy']})
-              </#if> 
-            </p>
+            <#if usage.project?? && usage.project?has_content>
+              <div class="row key-value"><div class="col-sm-12 project">
+                <#if usage.date?? && usage.date?has_content><span class="project__date">${usage.date?date?string['MMMM yyyy']}</span></#if>
+                <span class="project__project">${usage.project}</span>
+                <#if usage.version?? && usage.version?has_content><span class="project__version">(version: ${usage.version})</span></#if>
+               </div> </div>
+            </#if>
           </#list>
+          </div>
         </#if>
         <#list modelApplications>
           <@m.key "Model Applications" "Applications of the model">
@@ -246,8 +247,6 @@
     </section>
     </#if>
     
-    
-   
     <@m.additionalMetadata />
 
       
