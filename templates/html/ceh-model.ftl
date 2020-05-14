@@ -201,20 +201,18 @@
         </#list>
       </#if>
       <#assign modelApplications=jena.modelApplications(uri)/>
-      <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
-        <h2>Project usage</h2>
+        <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
+        <h2>Project use</h2>
         <#if projectUsages?? && projectUsages?has_content>
-          <div class="projectList">
-          <#list projectUsages as usage>
-            <#if usage.project?? && usage.project?has_content>
-              <div class="row key-value"><div class="col-sm-12 project">
-                <#if usage.date?? && usage.date?has_content><span class="project__date">${usage.date?date?string['MMMM yyyy']}</span></#if>
-                <span class="project__project">${usage.project}</span>
-                <#if usage.version?? && usage.version?has_content><span class="project__version">(version: ${usage.version})</span></#if>
-               </div> </div>
-            </#if>
-          </#list>
-          </div>
+          <@m.key "Projects">
+            <#list projectUsages as usage>
+              <div class="projectList">
+                <#if usage.project??><span class="projectList__project">${usage.project}</span></#if>
+                <#if usage.version??><span class="projectList_version">version ${usage.version}</span></#if>
+                <#if usage.date??><span class="projectList__date">(${usage.date?date?string['MMMM yyyy']})</span></#if>
+              </div>
+            </#list>
+          </@m.key>
         </#if>
         <#list modelApplications>
           <@m.key "Model Applications" "Applications of the model">
@@ -225,6 +223,10 @@
         </#list>
       </#if>
     </section>
+
+
+
+
 
 
     <#if references?? && references?has_content>
