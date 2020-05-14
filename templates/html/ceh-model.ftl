@@ -201,19 +201,18 @@
         </#list>
       </#if>
       <#assign modelApplications=jena.modelApplications(uri)/>
-      <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
-        <h2>Project usage</h2>
+        <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
+        <h2>Project use</h2>
         <#if projectUsages?? && projectUsages?has_content>
-          <#list projectUsages as usage>
-            <p>
-              <#if projectUsage.project?? && projectUsage.project?has_content>
-                ${projectUsage.project}
-              </#if>
-              <#if projectUsage.date?? && projectUsage.date?has_content>
-                (${projectUsage.date?date?string['MMMM yyyy']})
-              </#if> 
-            </p>
-          </#list>
+          <@m.key "Projects">
+            <#list projectUsages as usage>
+              <div class="projectList">
+                <#if usage.project??><span class="projectList__project">${usage.project}</span></#if>
+                <#if usage.version??><span class="projectList_version">version ${usage.version}</span></#if>
+                <#if usage.date??><span class="projectList__date">(${usage.date?date?string['MMMM yyyy']})</span></#if>
+              </div>
+            </#list>
+          </@m.key>
         </#if>
         <#list modelApplications>
           <@m.key "Model Applications" "Applications of the model">
@@ -224,6 +223,10 @@
         </#list>
       </#if>
     </section>
+
+
+
+
 
 
     <#if references?? && references?has_content>
@@ -246,8 +249,6 @@
     </section>
     </#if>
     
-    
-   
     <@m.additionalMetadata />
 
       
