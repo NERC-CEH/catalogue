@@ -240,14 +240,23 @@
       
       <#assign modelApplications=jena.modelApplications(uri)/>
       <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
+
         <h2>Project use</h2>
         <#if projectUsages?? && projectUsages?has_content>
           <@m.key "Projects">
             <#list projectUsages as usage>
+
                 <#if usage.project??>${usage.project}</#if>
                 <#if usage.version??>version ${usage.version}</#if>
                 <#if usage.date??>(${usage.date?date?string['MMMM yyyy']})</#if>
                 <#sep><br></#sep>
+
+              <div class="projectList">
+                <#if usage.project??><span class="projectList__project">${usage.project}</span></#if>
+                <#if usage.version??><span class="projectList_version">version ${usage.version}</span></#if>
+                <#if usage.date??><span class="projectList__date">(${usage.date?date?string['MMMM yyyy']})</span></#if>
+              </div>
+
             </#list>
           </@m.key>
         </#if>
@@ -262,7 +271,9 @@
     </section>
 
 
-    <#if supplemental?? && supplemental?has_content>
+
+    <#if references?? && references?has_content>
+
     <section>
       <h2>References</h2>
         <#list supplemental as item>
@@ -280,8 +291,7 @@
         </#list>
     </section>
     </#if>
-  
-   
+
     <@m.additionalMetadata />
 
       

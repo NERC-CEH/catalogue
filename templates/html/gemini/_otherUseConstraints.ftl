@@ -1,15 +1,13 @@
-<#if useConstraints?has_content>
+<#if otherConstraints?has_content>
   <div class="" id="section-otherUseConstraints">
-  <#list useConstraints as otherUseConstraint>
-    <#if otherUseConstraint.code != 'license'>
-      <p class="otherUseConstraint">
-      <#if otherUseConstraint.uri?has_content>
-        <a href="${otherUseConstraint.uri}">${otherUseConstraint.value?html}</a>
-      <#else>
-        ${otherUseConstraint.value?html}
-      </#if>
-      </p>
+  <#list otherConstraints as otherUseConstraint>
+    <p class="otherUseConstraint">
+    <#if otherUseConstraint.uri?has_content>
+      <a href="${otherUseConstraint.uri}">${otherUseConstraint.value?html}</a>
+    <#else>
+      ${otherUseConstraint.value?html}
     </#if>
+    </p>
   </#list>
   </div>
 </#if>

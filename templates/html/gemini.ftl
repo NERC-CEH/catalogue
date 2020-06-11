@@ -28,7 +28,9 @@
     rel_supersedes = jena.supersedes(uri)
 />
 <#if useConstraints?has_content>
-  <#assign licences = func.filter(useConstraints, "code", "license")>
+  <#assign
+    licences = func.filter(useConstraints, "code", "license")
+    otherConstraints =  func.filter(useConstraints, "code", "license", true)>
 </#if>
 <#if supplemental?has_content>
   <#assign

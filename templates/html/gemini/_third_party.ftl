@@ -1,18 +1,65 @@
+<#if onlineResources??>
+    <#assign distributionURLs = func.filter(onlineResources, "function", "browseGraphic", true)>
+</#if>
+<#if distributorContacts??>
+    <#assign dataDistributors = func.filter(distributorContacts, "role", "distributor") >
+</#if>
+
 <div id="document-thirdParty">   
-    <p class="panel-title"><i class="fas fa-info-circle"> </i> This is a dataset managed by a third party</p>
-    
-    <#if distributorContacts?? &&  distributorContacts?has_content >
-    <div class="distributors">
-        <h3>Distributor<#if distributorContacts?size gt 1>s</#if></h3>
-            <#list distributorContacts as distributorContact>
-                <div class="distributor">
-                <#if distributorContact.individualName??>${distributorContact.individualName}<br></#if>
-                <#if distributorContact.organisationName??>${distributorContact.organisationName}<br></#if>
-                <#if distributorContact.email??><a href="mailto:${distributorContact.email}">${distributorContact.email}</a></#if>
+    <div class="panel panel-default hidden-print" id="document-distribution">
+        <div class="panel-body">
+            <#assign distributor = "a third party">
+            <#if dataDistributors?has_content>
+                <#if dataDistributors?first.organisationName?has_content>
+                    <#assign distributor = dataDistributors?first.organisationName>
+                </#if>
+                
+                <#if dataDistributors?first.email?has_content>
+                    <#assign distributor = " <a href='mailto:" + dataDistributors?first.email + "' title='" + dataDistributors?first.email + "'>" + distributor + "</a>" >
+                </#if>
+            </#if>
+            <p class="panel-title"> <i class="fas fa-info-circle"> </i> This is a dataset managed by ${distributor}</p>
+            
+            <#if distributionURLs?has_content>
+                <div class="signpostURL">To access the data visit <a href="${distributionURLs?first.url}">${distributionURLs?first.url}</a></div>
+            </#if>
+
+            
+            <#if licences?has_content>
+                <div class="licenceText">
+                    <div class="divider"></div>
+                    <#list licences as licence>
+                        <#if licence.code == 'license'>
+                        <p>
+                            <#if licence.uri?has_content><a rel="license" href="${licence.uri}"></#if>
+                                ${licence.value?replace("resource",recordType)?html}
+                                <#if licence.value?contains("Open Government Licence")>
+                                    <img class="ogl-logo" src='/static/img/ogl_16.png' alt='OGL'>
+                                </#if>
+                            <#if licence.uri?has_content></a></#if>
+                        </p>
+                        </#if>
+                    </#list>
                 </div>
-            </#list>
+            </#if>
+
+            <#if otherConstraints?has_content>
+                <div class="otherConstraints">
+                    <div class="divider"></div>
+                    <#list otherConstraints as otherUseConstraint>
+                        <p class="otherUseConstraint">
+                        <#if otherUseConstraint.uri?has_content>
+                            <a href="${otherUseConstraint.uri}">${otherUseConstraint.value?html}</a>
+                        <#else>
+                            ${otherUseConstraint.value?html}
+                        </#if>
+                        </p>
+                    </#list>
+                </div>
+            </#if>
         </div>
-    </#if>
+    </div>
+
 
     <#if websites?? &&  websites?has_content >
     <div class="websites">
@@ -30,6 +77,4 @@
             </#list>
         </div>
     </#if>
-
-
 </div>
