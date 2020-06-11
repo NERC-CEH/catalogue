@@ -1,4 +1,4 @@
-<#if supplemental?has_content>
+<#if supplemental?has_content && catalogue.id=="eidc">
   <#assign referenceCount= referencedBy?size + supplementTo?size>
   <#if referenceCount gt 0 >
     <div id="document-metrics">
