@@ -2,6 +2,8 @@
 
 The CEH metadata catalogue project.
 
+[Introduction for developers](docs/introduction.md)
+
 ## Project Structure
 
 - **/docs**       - Documentation
