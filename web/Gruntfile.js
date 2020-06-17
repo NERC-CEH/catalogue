@@ -85,6 +85,11 @@ module.exports = function(grunt) {
           'src/css/style-nc.css': 'src/less/style-nc.less'
         }
       },
+      nc: {
+        files: {
+          'src/css/style-nm.css': 'src/less/style-nm.less'
+        }
+      },
       m: {
         files: {
           'src/css/style-m.css': 'src/less/style-m.less'
@@ -145,6 +150,11 @@ module.exports = function(grunt) {
       nc: {
         files: {
           'src/css/style-nc.css': 'src/css/style-nc.css'
+        }
+      },
+      nc: {
+        files: {
+          'src/css/style-nm.css': 'src/css/style-nm.css'
         }
       },
       m: {

@@ -112,6 +112,19 @@ public class CatalogueServiceConfig {
             defaultCatalogueKey,
 
             Catalogue.builder()
+                .id("nm")
+                .title("NERC Models Sandpit")
+                .url("")
+                .facetKey("topic")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .documentType(gemini)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
+                .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
                 .id("sa")
                 .title("Sample Archive")
                 .url("")
