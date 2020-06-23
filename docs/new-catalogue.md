@@ -213,7 +213,7 @@ which should have
 </@skeleton.master>
 ```
 
-you can get access to your values of the focument on the root level, in the above example `title` is a value on the document
+you can get access to your values of the document on the root level, in the above example `title` is a value on the document
 
 Anything else is up to you
 

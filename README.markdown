@@ -61,7 +61,7 @@ the EIDC catalogue is then available on:
 
     ./gradlew :web:grunt_concurrent
 
-will run a process that watches the javascript and less directories and recompiles the files on an changes.
+will run a process that watches the javascript and less directories and recompiles the files on any changes.
 
 ## Developing just Javascript
 
@@ -102,7 +102,7 @@ Can use package names and * in the name
 
 Multiple catalogues are supported by this software.
 
-A catalogue has it's own:
+A catalogue has its own:
 - search page
 - style
 - editor and publisher groups
@@ -121,7 +121,7 @@ The catalogue is designed to sit behind a **Security Proxy** (see [RequestHeader
 
 To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for chrome**.
 
-Then set the a request header:
+Then set the request header:
 
     Remote-User: superadmin
 
