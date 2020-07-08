@@ -361,9 +361,13 @@ public class ServiceConfig {
     
     @Bean
     public DownloadOrderDetailsService downloadOrderDetailsService() {
-        String supportingDoc = "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*";
-        String orderMan = "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*";
-        return new DownloadOrderDetailsService(supportingDoc, orderMan);
+        return new DownloadOrderDetailsService(
+            "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*",
+            Arrays.asList(
+                "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*",
+                "https:\\/\\/order-eidc.ceh.ac.uk\\/resources\\/.{8}\\/order\\?*.*"
+            )
+        );
     }
     
     @Bean

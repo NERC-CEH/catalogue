@@ -12,17 +12,20 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class DownloadOrderDetailsServiceTest {
-    String supportingDoc = "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*";
-    private final String orderMan = "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*";
+    String supportingDocUrlPattern = "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*";
+    private final List<String> orderManagerUrlPatterns = Arrays.asList(
+        "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*",
+        "https:\\/\\/order-eidc.ceh.ac.uk\\/resources\\/.{8}\\/order\\?*.*"
+    );
     private DownloadOrderDetailsService service;
     
     @Before
     public void init() {
-        service = new DownloadOrderDetailsService(supportingDoc, orderMan);
+        service = new DownloadOrderDetailsService(supportingDocUrlPattern, orderManagerUrlPatterns);
     }
     
     @Test
-    public void canDownloadOrderWithOrderableResource() {
+    public void canDownloadOrderWithOrderableResourceOldOrderManager() {
         //Given
         String orderUrl = "http://catalogue.ceh.ac.uk/download?fileIdentifier=downloadMe";
         String orderMessage = "Message";
@@ -33,6 +36,40 @@ public class DownloadOrderDetailsServiceTest {
         //When
         DownloadOrder order = service.from(onlineResources);
         
+        //Then
+        assertThat(order.isOrderable(), is(true));
+        assertThat(order.getOrderResources(), contains(onlineResource));
+    }
+
+    @Test
+    public void canDownloadOrderWithOrderableResourceNewOrderManager() {
+        //Given
+        String orderUrl = "https://order-eidc.ceh.ac.uk/resources/ABCDEFGH/order";
+        String orderMessage = "Message";
+        OnlineResource onlineResource = OnlineResource.builder()
+                .function("order").url(orderUrl).description(orderMessage).build();
+        List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
+
+        //When
+        DownloadOrder order = service.from(onlineResources);
+
+        //Then
+        assertThat(order.isOrderable(), is(true));
+        assertThat(order.getOrderResources(), contains(onlineResource));
+    }
+
+    @Test
+    public void canDownloadOrderWithOrderableResourceNewOrderManagerWithQueryParams() {
+        //Given
+        String orderUrl = "https://order-eidc.ceh.ac.uk/resources/ABCDEFGH/order?test=true";
+        String orderMessage = "Message";
+        OnlineResource onlineResource = OnlineResource.builder()
+                .function("order").url(orderUrl).description(orderMessage).build();
+        List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
+
+        //When
+        DownloadOrder order = service.from(onlineResources);
+
         //Then
         assertThat(order.isOrderable(), is(true));
         assertThat(order.getOrderResources(), contains(onlineResource));
@@ -56,7 +93,7 @@ public class DownloadOrderDetailsServiceTest {
     }
     
     @Test
-    public void checkThatOrderableResourceTakesPresedentOverNonOrderable() {
+    public void checkThatOrderableResourceTakesPrecedentOverNonOrderable() {
         //Given
         String orderUrl = "http://catalogue.ceh.ac.uk/download?fileIdentifier=downloadMe";
         String orderMessage = "Message";
