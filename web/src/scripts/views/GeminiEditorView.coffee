@@ -292,7 +292,7 @@ define [
               description: 'Download a copy of this data'
               function: 'download'
             'Order manager data':
-              url: 'https://catalogue.ceh.ac.uk/download?fileIdentifier={fileIdentifier}'
+              url: 'https://order-eidc.ceh.ac.uk/resources/{ORDER_REF}}/order'
               name: 'Download the data'
               description: 'Download a copy of this data'
               function: 'order'
