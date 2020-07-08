@@ -1,6 +1,6 @@
 <div id="pag-${pagId}">
     <div class="pag">
-        <div class="pag-pages">
+        <div class="pag-pages">#
             <div class="pag-number input-group">
                 <input type="text" class="form-control pag-current">
                 <span class="input-group-addon pag-count">/ 1</span>

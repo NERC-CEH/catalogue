@@ -3,7 +3,9 @@ define [
   'cs!views/editor/InputView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentView'
+  'cs!views/editor/ParentLargeView'
   'cs!views/editor/PredefinedParentView'
+  'cs!views/editor/PredefinedParentLargeView'
   'cs!views/editor/ParentStringView'
   'cs!views/editor/KeywordView'
   'cs!views/editor/ContactView'
@@ -25,7 +27,9 @@ define [
   InputView,
   TextareaView,
   ParentView,
+  ParentLargeView,
   PredefinedParentView,
+  PredefinedParentLargeView,
   ParentStringView,
   KeywordView,
   ContactView,
@@ -115,7 +119,15 @@ define [
           ObjectInputView: ContactView
           multiline: true
           predefined:
-            'SRO - CEH':
+            'SRO - BGS':
+              organisationName: 'British Geological Survey'
+              role: 'owner'
+              organisationIdentifier: 'https://ror.org/04a7gbp98'
+            'SRO - NOC':
+              organisationName: 'National Oceanography Centre'
+              role: 'owner'
+              organisationIdentifier: 'https://ror.org/00874hx02'
+            'SRO - UKCEH':
               organisationName: 'UK Centre for Ecology & Hydrology'
               role: 'owner'
               organisationIdentifier: 'https://ror.org/00pggkr55'
@@ -164,7 +176,7 @@ define [
       label: 'Input variables'
       title: 'Input variables'
       views: [
-        new PredefinedParentView
+        new PredefinedParentLargeView
           model: @model
           ModelType: DataTypeSchema
           modelAttribute: 'inputVariables'
@@ -200,7 +212,7 @@ define [
       label: 'Output variables'
       title: 'Output variables'
       views: [
-        new PredefinedParentView
+        new PredefinedParentLargeView
           model: @model
           ModelType: DataTypeSchema
           modelAttribute: 'outputVariables'

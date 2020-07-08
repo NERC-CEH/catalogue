@@ -1,0 +1,274 @@
+{
+  "id": "2cbbe520-2aa6-4b20-bea0-b764faf63128",
+  "uri": "https://catalogue.ceh.ac.uk/id/2cbbe520-2aa6-4b20-bea0-b764faf63128",
+  "type": "erammpDatacube",
+  "title": "ESC (Ecological Site Classification)",
+  "description": "ESC is a Decision Support System tool estimating the suitability and productivity of multiple tree species driven by climatic, soil, and site condition",
+  "metadataDate": "2020-05-27T10:27:50",
+  "resourceIdentifiers": [
+    {
+      "code": "https://catalogue.ceh.ac.uk/id/2cbbe520-2aa6-4b20-bea0-b764faf63128"
+    }
+  ],
+  "version": "2",
+  "dataFormat": "csv",
+  "spatialResolution": "250m",
+  "spatialRepresentationType": "textTable",
+  "condition": "Current",
+  "boundingBoxes": [
+    {
+      "westBoundLongitude": -5.473,
+      "eastBoundLongitude": -2.654,
+      "southBoundLatitude": 51.375,
+      "northBoundLatitude": 53.434
+    }
+  ],
+  "dataLocations": [
+    {
+      "fileLocation": "https://nercacuk.sharepoint.com/sites/CEHFutureWalesGroup/modellers/Model%20Runs%20Data/Forms/AllItems.aspx?id=%2Fsites%2FCEHFutureWalesGroup%2Fmodellers%2FModel%20Runs%20Data%2FForest%20Research%20IMP"
+    }
+  ],
+  "provider": [
+    {
+      "individualName": "Kate Beauchamp",
+      "organisationName": "Forest Research",
+      "role": "pointOfContact",
+      "email": "kate.beauchamp@forestresearch.gov.uk"
+    }
+  ],
+  "onlineResources": [
+    {
+      "name": "National Forest Inventory",
+      "url": "https://www.forestresearch.gov.uk/documents/2773/NFI-Description-of-attributes.pdf  "
+    },
+    {
+      "description": "Pyatt, G., Ray, D., Fletcher, J., 2001. An Ecological Site Classification for Forestry in Great Britain. Forestry Commission, Edinburgh. ",
+      "url": "https://www.forestresearch.gov.uk/documents/6593/FCBU124.pdf"
+    }
+  ],
+  "spatialReferenceSystems": [
+    {
+      "code": "27700",
+      "codeSpace": "urn:ogc:def:crs:EPSG"
+    }
+  ],
+  "schema": [
+    {
+      "name": "XCoord",
+      "description": "OSGB y-coordinate. Easting coordinate represents lower left corner of grid cell",
+      "type": "integer"
+    },
+    {
+      "name": "YCoord",
+      "description": "OSGB y-coordinate. Northing coordinate represents lower left corner of grid cell",
+      "type": "integer"
+    },
+    {
+      "name": "XYCOORD",
+      "description": "unique location identifier, XCoord and YCoord joined with an underscore: XCoord_YCoord",
+      "type": "string"
+    },
+    {
+      "name": "WOODLAND",
+      "description": "Type of woodland (public, private, or no woodland) based on National Forest Inventory dataset (2016). ",
+      "type": "string"
+    },
+    {
+      "name": "previous_land_use",
+      "description": "Land use value based on LCM2015 with records for arable and grassland. Arable was represented by LCM2015 target class 3 “Arable and Horticulture”; and grassland was represented by LCM2014 target classes 4 – 8 from “Improved Grassland” to “Fen, Marsh and Swamp”. NA indicates other land use.",
+      "type": "string"
+    },
+    {
+      "name": "land_cover",
+      "description": "woodland or open, based on WOODLAND ",
+      "type": "string"
+    },
+    {
+      "name": "IFT_IOA",
+      "description": "Type of woodland using “Interpreted Forest Type” (IFT) using National Forest Inventory. Description of fields available at: https://www.forestresearch.gov.uk/documents/2773/NFI-Description-of-attributes.pdf  These values can be used to calculate IFT_CAT as in quickstart",
+      "type": "string"
+    },
+    {
+      "name": "forest_type",
+      "description": "Forest type: three different potential forest types (productive conifers (prod_conifer), native broadleaves (nat_broadleaf), and short rotation forestry(srf)).",
+      "type": "string"
+    },
+    {
+      "name": "management",
+      "description": "Forest management 4 catageories: thin_fell, no_thin_fell, SRF, LISS. also rewild_broadleaf to represent the rewilidng scenario",
+      "type": "string"
+    },
+    {
+      "name": "type_management",
+      "description": "forest_type and management seperated by an underscore, 5 levels: 'nat_broadleaf_LISS' , 'nat_broadleaf_no_thin_fell', 'prod_conifer_LISS', 'prod_conifer_thin_fell', 'srf_srf' ",
+      "type": "string"
+    },
+    {
+      "name": "Rotation",
+      "description": "Rotation length for type_management. SRF 25, no thin no fell is NA, LISS is NA. thin_fell species dependent",
+      "type": "string"
+    },
+    {
+      "name": "Species",
+      "description": "most productive tree species selected for each 'management' category",
+      "type": "string"
+    },
+    {
+      "name": "YC",
+      "description": "yield class; the potential productivity (growth rate) of a species on a site. Calculated as the maximum achievable species yield class multiplied by ecological suitability. YC doesnt change with Time Horizon in this version",
+      "type": "integer"
+    },
+    {
+      "name": "YC_reclass",
+      "description": "Adjusted yield class to allow integration with CARBINE, rounded to nearest even number and capped at maximum for each species.",
+      "type": "integer"
+    },
+    {
+      "name": "SUIT",
+      "description": "ESC output measuring how ecologically suitabile a tree species is for site conditions on a scale of 0-1. The limiting factor (lowest value) of 6 criteria determines suitability. YC doesnt change with TIme Horizon in this version. ",
+      "type": "number"
+    },
+    {
+      "name": "Time_Horizon",
+      "description": "Three time periods – 2025 (5 years), 2050 (30), and 2100 (80). These represent three pre-defined time horizons applied across ERAMMP, to represent i)current agri-environment agreement ii)long term agreements iii)wellbeing in future generations act.",
+      "type": "integer"
+    },
+    {
+      "name": "CARBINE_soil",
+      "description": "ESC soil category mapped to CARBINE soil category.",
+      "type": "string"
+    },
+    {
+      "name": "Recreation",
+      "description": "value for forest recreation based on attractiveness to forest visitors. Weighted mean index scores (1 - 10 ) based on a function of tree age and forest management type. Changes with stand age",
+      "type": "number"
+    },
+    {
+      "name": "Biodiversity",
+      "description": "biodiversity score; index score based on management type and stand age. changes with stand age.",
+      "type": "number"
+    },
+    {
+      "name": "RECREATION_OLD",
+      "description": "value for forest recreation based on attractiveness to forest visitors. Scores calculated as in Quickstart, i.e. dont change with age. ",
+      "type": "number"
+    },
+    {
+      "name": "BIODIVERSITY_OLD",
+      "description": "biodiversity score; based on management type. values are average of all ages, therefore dont change with stand age, as in quickstart",
+      "type": "number"
+    },
+    {
+      "name": "Climate_zone",
+      "description": "ESC climate zone based on AT and MD values. passed to CARBINE",
+      "type": "integer"
+    },
+    {
+      "name": "Climate_scenario",
+      "description": "Baseline climate period or +4C. Baseline or Plus4C",
+      "type": "string"
+    },
+    {
+      "name": "Wood.production.over.time.horizon..m3.ha.yr.",
+      "description": "Wood production over time horizon (m3/ha/yr)",
+      "type": "number",
+      "units": "m3/ha/yr"
+    },
+    {
+      "name": "Carbon.stock.in.trees...deadwood.and.litter.at.end.of.time.horizon..tC.ha.",
+      "description": "Carbon stock in trees, deadwood and litter at end of time horizon (tC/ha)",
+      "type": "number",
+      "units": "tC/ha"
+    },
+    {
+      "name": "Carbon.stock.in.soil.at.end.of.time.horizon..tC.ha.",
+      "description": "Carbon stock in soil at end of time horizon (tC/ha)",
+      "type": "number",
+      "units": "tC/ha"
+    },
+    {
+      "name": "Carbon.stock.in.harvested.wood.products.at.end.of.time.horizon..tC.ha.",
+      "description": "Carbon stock in harvested wood products at end of time horizon (tC/ha)",
+      "type": "number",
+      "units": "tC/ha"
+    },
+    {
+      "name": "Change.in.carbon.stock.in.trees...deadwood.and.litter.over.time.horizon..tCO2.ha.yr.",
+      "description": "Change in carbon stock in trees, deadwood and litter over time horizon (tCO2/ha/yr)",
+      "type": "number",
+      "units": "tCO2/ha/yr"
+    },
+    {
+      "name": "Change.in.carbon.stock.in.soil.over.time.horizon..tCO2.ha.yr.",
+      "description": "Change in carbon stock in soil over time horizon (tCO2/ha/yr)",
+      "type": "number",
+      "units": "tCO2/ha/yr"
+    },
+    {
+      "name": "Change.in.carbon.stock.in.harvested.wood.products.over.time.horizon..tCO2.ha.yr.",
+      "description": "Change in carbon stock in harvested wood products over time horizon (tCO2/ha/yr)",
+      "type": "number",
+      "units": "tCO2/ha/yr"
+    },
+    {
+      "name": "GHG.emissions.due.to.forest.operations..tCO2.eq..ha.yr.",
+      "description": "GHG emissions due to forest operations (tCO2-eq./ha/yr)",
+      "type": "number",
+      "units": "tCO2-eq./ha/yr"
+    },
+    {
+      "name": "GHG.emissions.mitigated.in.energy.sector.over.time.horizon..tCO2.eq..yr.",
+      "description": "GHG emissions mitigated in energy sector over time horizon (tCO2-eq./ha/yr)",
+      "type": "number",
+      "units": "tCO2-eq./ha/yr"
+    },
+    {
+      "name": "GHG.emissions.mitigated.in.construction.sector.over.time.horizon..tCO2.eq..yr.",
+      "description": "GHG emissions mitigated in construction sector over time horizon (tCO2-eq./ha/yr)",
+      "type": "number",
+      "units": "tCO2-eq./ha/yr"
+    },
+    {
+      "name": "Net.Present.Value..Â.2019.ha...discount.rate...0.",
+      "description": "Net Present Value (£2019/ha/yr): discount rate = 0%",
+      "type": "number",
+      "units": "£2019/ha/yr"
+    },
+    {
+      "name": "Net.Present.Value..Â.2019.ha...discount.rate...3.",
+      "description": "Net Present Value (£2019/ha/yr): discount rate = 3%",
+      "type": "number",
+      "units": "£2019/ha/yr"
+    },
+    {
+      "name": "Net.Present.Value..Â.2019.ha...discount.rate...3.1.2.",
+      "description": "Net Present Value (£2019/ha/yr): discount rate = 3.5%",
+      "type": "number",
+      "units": "£2019/ha/yr"
+    },
+    {
+      "name": "Net.Present.Value..Â.2019.ha...discount.rate...5.",
+      "description": "Net Present Value (£2019/ha/yr): discount rate = 5%",
+      "type": "number",
+      "units": "£2019/ha/yr"
+    },
+    {
+      "name": "Net.Present.Value..Â.2019.ha...discount.rate...6.",
+      "description": "Net Present Value (£2019/ha/yr): discount rate = 6%",
+      "type": "number",
+      "units": "£2019/ha/yr"
+    },
+    {
+      "name": "Net.Present.Value..Â.2019.ha...discount.rate...10.",
+      "description": "Net Present Value (£2019/ha/yr): discount rate = 10%",
+      "type": "number",
+      "units": "£2019/ha/yr"
+    },
+    {
+      "name": "Net.Present.Value..Â.2019.ha...discounting.according.to.Treasury.Green.Book.methodology",
+      "description": "Net Present Value (£2019/ha/yr): discounting according to Treasury Green Book methodology",
+      "type": "number",
+      "units": "£2019/ha/yr"
+    }
+  ]
+}

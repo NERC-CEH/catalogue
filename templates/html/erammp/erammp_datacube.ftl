@@ -25,48 +25,15 @@
 
         <#if description?? && description?has_content>
         <div class="section">
-          <div class="section-content">
-              <div class="description">
-                <@renderLinebreaks description/>
-              </div>
-          </div>
-        </div>
-        </#if>
-
-        <div class="section">
-          <div class="section-content">
+          <div class="section--content">
             <div class="row">
-              <div class="col-md-9 col-sm-12">
-                  <#if dataFormat?? && dataFormat?has_content>
-                    <@simplerow "Data format">${dataFormat}</@simplerow>
-                  </#if>
-
-                  <#if dataLocations?? && dataLocations?has_content>
-                    <@simplerow "Data location">
-                      <#list dataLocations as dataLocation>
-                          <div>
-                            <#if dataLocation.name?has_content>${dataLocation.name}<br></#if>
-                            <#if dataLocation.purpose?has_content>${dataLocation.purpose}<br></#if>
-                            <#if dataLocation.fileLocation?has_content><small>${dataLocation.fileLocation}</small></#if>
-                          </div>
-                          <sep><br></sep>
-                      </#list>
-                    </@simplerow>
-                  </#if>
-
-                  <#if provider?? && provider?has_content>
-                    <@simplerow "Data provider${(provider?size > 1)?then('s', '')}">
-                      <#list provider as contact>
-                        <#noescape>
-                          <div class="responsibleParty">      
-                            ${func.displayContact(contact, false, true)}
-                          </div>
-                        </#noescape>
-                      </#list>
-                    </@simplerow>
-                  </#if>
+              <div class="col-sm-9 col-xs-12">
+                <div class="description">
+                  <@renderLinebreaks description/>
+                </div>
               </div>
-              <div class="col-md-3 col-sm-12">
+
+              <div class="col-sm-3 hidden-xs">
               <#if boundingBoxes?? && boundingBoxes?has_content>
                 <div id="studyarea-map" title="Spatial coverage of the data">
                 <#list boundingBoxes as extent>
@@ -75,103 +42,118 @@
                 </div>
               </#if>
               </div>
-            </div>
-         </div>
-        </div>
 
-        <#if schema??>
-          <div class="section section-schema">
-            <div class="section-heading">
-              <h2>Schema</h2>
-            </div>
-            <div class="section-content">
-            <table class="table table-schema">
-            <thead>
-              <tr>
-                <th>Field</th>
-                <th>Description</th>
-                <th>Data type</th>
-                <th>Constraints</th>
-              </tr>
-            </thead>
-            <tbody>
-            <#list schema as schemaItem>
-            <#assign rowClass="">
-            <#if schemaItem.constraints?? && schemaItem.constraints.unique=true>
-              <#assign rowClass="unique">
-            </#if>
-            <tr class="${rowClass}">
-              <td nowrap="nowrap">
-                <#if schemaItem.name?? && schemaItem.name?has_content>
-                  ${schemaItem.name}
-                </#if>
-              </td>
-              <td>
-                <#if schemaItem.description?? && schemaItem.description?has_content>
-                  <span class="schema-description">${schemaItem.description}</span>
-                <#else>
-                  <span class="nodata" />
-                </#if>
-              </td>
-              <td nowrap="nowrap">
-                <#if schemaItem.type?? && schemaItem.type?has_content>
-                    ${schemaItem.type}
-                    <#if schemaItem.format?? && schemaItem.format?has_content>
-                      <span class="schema-format">(${schemaItem.format})</span>
-                    </#if>          
-                </#if>
-              </td>
-              <td>
-                <#if schemaItem.constraints?? && schemaItem.constraints?has_content>
-                  <div class="schema-constraints">
-                    <#if schemaItem.constraints.minimum?has_content>
-                      <div><span>Min value</span><span>${schemaItem.constraints.minimum}</span></div>
-                    </#if>
-                    <#if schemaItem.constraints.maximum?has_content>
-                      <div><span>Max value</span><span>${schemaItem.constraints.maximum}</span></div>
-                    </#if>
-                    <#if schemaItem.constraints.minLength?has_content>
-                      <div><span>Min length</span><span>${schemaItem.constraints.minLength}</span></div>
-                    </#if>
-                    <#if schemaItem.constraints.maxLength?has_content>
-                      <div><span>Max length</span><span>${schemaItem.constraints.maxLength}</span></div>
-                    </#if>
-                    <#if schemaItem.constraints.unique=true>
-                      <div><span>IS UNIQUE</span></div>
-                    </#if>
-                  </div>
-                <#else>
-                  <span class="nodata" />
-                </#if>
-              </td>
-            </tr>    
-            </#list>
-            </tbody></table>
             </div>
           </div>
+        </div>
+        </#if>
+   
+        <div class="section">
+          <div class="section--content">
+            <#if provider?? && provider?has_content>
+              <@simplerow "Data provider${(provider?size > 1)?then('s', '')}">
+                <#list provider as contact>
+                  <#noescape>
+                    <div class="responsibleParty">      
+                      ${func.displayContact(contact, false, true)}
+                    </div>
+                  </#noescape>
+                </#list>
+              </@simplerow>
+            </#if>
+                
+            <#if dataFormat?? && dataFormat?has_content>
+              <@simplerow "Data format">${dataFormat}</@simplerow>
+            </#if>
+
+            <#if dataLocations?? && dataLocations?has_content>
+              <@simplerow "Data location">
+                <#list dataLocations as dataLocation>
+                    <p>
+                      <#if dataLocation.name?has_content><span>Name:</span> ${dataLocation.name}<br></#if>
+                      <#if dataLocation.purpose?has_content><span>Purpose:</span> ${dataLocation.purpose}<br></#if>
+                      <#if dataLocation.fileLocation?has_content><span>Location:</span>
+                          <#if dataLocation.fileLocation?matches("^http(|s)://\\S+$")>
+                            <a href="${dataLocation.fileLocation}" target="_blank" rel="noopener noreferrer" title="${dataLocation.fileLocation}">
+                            <#if dataLocation.fileLocation?matches("^https://nercacuk.sharepoint.com\\S+$")>
+                              ERAMMP Sharepoint site
+                            <#else>
+                              ${dataLocation.fileLocation}
+                            </#if>
+                            </a>                        
+                          <#else>
+                            ${dataLocation.fileLocation}
+                          </#if>
+                      </#if>
+                    </p>
+                </#list>
+              </@simplerow>
+            </#if>
+            <#if onlineResources?? && onlineResources?has_content>
+              <@simplerow "Additional information">
+                <#list onlineResources as item>
+                  <p>
+                    <#if item.url?has_content>
+                    <a href="${item.url}" target="_blank" rel="noopener noreferrer" title="${item.url}">
+                      <#if item.name?has_content>
+                        ${item.name}
+                      <#else>
+                        ${item.url}
+                      </#if>
+                    </a>
+                    </#if>
+                    <#if item.description?has_content><br>${item.description}</#if>
+                  </p>
+                </#list>
+              </@simplerow>
+            </#if>
+          </div>
+         </div>
+
+        <#if schema??>
+        <div class="section">
+          <div class="section--heading ">
+            <h2>Data structure</h2>
+          </div>
+          <div class="section--content schema">
+            <div class="schema--head">
+              <div>Field</div>
+              <div>Description</div>
+              <div>Type</div>
+            </div>
+            <#list schema as schemaItem>
+            <div class="schema--row">
+              <#if schemaItem.name?? && schemaItem.name?has_content><div><span>Field:</span><span>${schemaItem.name}</span></div></#if>
+              <#if schemaItem.description?? && schemaItem.description?has_content><div><span>Description:</span><span><@renderLinebreaks schemaItem.description/></span></div></#if>
+              <#if schemaItem.type?? && schemaItem.type?has_content><div><span>Type:</span><span>${schemaItem.type}</span></div></#if>
+            </div>
+            </#list>
+          </div>
+        </div>
         </#if>
 
         <#if processingSteps??>
-          <div class="section section-schema">
-            <div class="section-heading">
-              <h2><a data-toggle="collapse" href="#steps-collapse" aria-expanded="false" aria-controls="steps-collapse">Data processing steps <span class="caret" ></span></a></h2>
+          <div class="section section-processing">
+            <div class="section--heading">
+              <h2>Data processing steps</h2>
             </div>
-            <div class="section-content collapse" id="steps-collapse">
+            <div class="section--content">
               <#list processingSteps as step>
                 <p class="processingStep">
                   <span>${step?index + 1}.</span>
                   ${step.step}
                 </p>
               </#list>            
+            </div>
           </div>
         </#if>
 
 
         <div class="section section-metadata">
-          <div class="section-heading">
+          <div class="section--heading">
             <h2>Metadata</h2>
           </div>
-          <div class="section-content">
+          <div class="section--content">
             <@simplerow "Record ID">${id}</@simplerow>
             <@simplerow "URL">${uri}</@simplerow>
             <#if keywords?? && keywords?has_content>

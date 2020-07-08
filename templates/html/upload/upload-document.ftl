@@ -63,7 +63,7 @@
 
         <section class="document-upload-section">
             <div class="page-header">
-                <h3><i class="btn-icon fas fa-archive"></i> Data</h3>
+                <h3><i class="btn-icon fas fa-box-open"></i> <#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>Dropbox<#else>Data</#if></h3>
             </div>
             <#assign pagId="documents">
             <#include "_pagination.ftl">
@@ -104,7 +104,7 @@
 <#if permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
         <section class="document-upload-section">
             <div class="page-header">
-                <h3><i class="btn-icon far fa-copy"></i> Metadata <small>Supporting Documents</small></h3>
+                <h3><i class="btn-icon fas fa-file"></i> Metadata <small>Supporting Documents</small></h3>
             </div>
             <#assign pagId="supporting-documents">
             <#include "_pagination.ftl">
@@ -116,7 +116,7 @@
 
         <section class="document-upload-section">
             <div class="page-header">
-                <h3><i class="btn-icon fas fa-lock"></i> Datastore</h3>
+                <h3><i class="btn-icon fas fa-key"></i> Datastore</h3>
             </div>
             <#assign pagId="datastore">
             <#include "_pagination.ftl">

@@ -75,6 +75,7 @@ define [
 					modelAttribute: 'provider'
 					label: 'Data provider'
 					ObjectInputView: PointOfContactView
+					multiline: true
 					helpText: """
 					          <p>The contact(s) responsible for this model and who can be contacted if there are questions about it.  A <b>named</b> person is recommended</p>
 					          """
@@ -87,6 +88,17 @@ define [
 							organisationName: 'Cranfield'
 						'Forest Research':
 							organisationName: 'Forest Research'
+
+				new ParentView
+					model: @model
+					modelAttribute: 'onlineResources'
+					label: 'Additional links'
+					ObjectInputView: OnlineLinkView
+					multiline: true
+					helpText: """
+					          <p>A list of links to additional resources that may be of use to the user.</p>
+					          """
+
 			]
 		, 
 			label: 'Data access'
@@ -189,14 +201,14 @@ define [
 					ObjectInputView: SpatialReferenceSystemView
 					predefined:
 						'British National Grid':
-							code: 27700
-							codeSpace: 'urn:ogc:def:crs:EPSG'
+							name: 'OSGB 1936 / British National Grid'
+							code: 'EPSG:27700'
 						'Latitude/longitude (WGS84)':
-							code: 4326
-							codeSpace: 'urn:ogc:def:crs:EPSG'
-						'Spherical mercator':
-							code: 3857
-							codeSpace: 'urn:ogc:def:crs:EPSG'
+							name: 'WGS 84 (GPS)'
+							code: EPSG:4326
+						'Spherical mercator (Google Maps, OpenStreetMap, etc)':
+							name: 'WGS 84 / Pseudo-Mercator'
+							code: EPSG:3857
 					helpText: """
 					          <p>The spatial referencing system used by the data resource.</p>
 					          """
@@ -271,15 +283,6 @@ define [
 					ObjectInputView: KeywordView
 					helpText: """
 					          <p>A list of keywords that help to identify and describe the model - used to improve search results and filtering. A keyword may be an entry from a vocabulary (with a uri) or just plain text.</p>
-					          """
-
-				new ParentView
-					model: @model
-					modelAttribute: 'onlineResources'
-					label: 'Additional links'
-					ObjectInputView: OnlineLinkView
-					helpText: """
-					          <p>A list of links to additional resources that may be of use to the user.</p>
 					          """
 
 				new ReadOnlyView

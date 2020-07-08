@@ -8,6 +8,7 @@
 <div class="search-results-heading">
   <span id="num-records">${numFound}</span> records found
 </div>
+<div class="result-list">
 <#list results as result>
   <div class="result result-${result.state}" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
     <h2 class="resultTitle">
@@ -32,6 +33,7 @@
     <div class="resultDescription">${result.shortenedDescription}</div>
   </div>
 </#list>
+</div>
 <ul class="pager">
   <#if prevPage?has_content>
     <li class="previous"><a href="${prevPage}">&larr; Previous</a></li>

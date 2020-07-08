@@ -51,23 +51,21 @@
 				<#if resourceIdentifiers?has_content>
 				<#list resourceIdentifiers as uri>
 				<gmd:identifier>
-				<#if uri.code?starts_with("http://") || uri.code?starts_with("https://")>
 				   <gmd:MD_Identifier>
-				      <gmd:code>
-					     <gco:CharacterString>${uri.code}</gco:CharacterString>
-					</gmd:code>
-				   </gmd:MD_Identifier>
-				<#else>
-					<gmd:RS_Identifier>
-						<gmd:code><gco:CharacterString>${uri.code}</gco:CharacterString></gmd:code>
-						<#if uri.codeSpace?has_content>
-						<gmd:codeSpace><gco:CharacterString>${uri.codeSpace}</gco:CharacterString></gmd:codeSpace>
+						<#if uri.code?starts_with("http://") || uri.code?starts_with("https://")>
+						<gmd:code>
+							<gco:CharacterString>${uri.code}</gco:CharacterString>
+						</gmd:code>
+						<#else>
+							<gmd:code><gco:CharacterString>${uri.code}</gco:CharacterString></gmd:code>
+							<#if uri.codeSpace?has_content>
+							<gmd:codeSpace><gco:CharacterString>${uri.codeSpace}</gco:CharacterString></gmd:codeSpace>
+							</#if>
+							<#if uri.version?has_content>
+							<gmd:version><gco:CharacterString>${uri.version}</gco:CharacterString></gmd:version>
+							</#if>
 						</#if>
-						<#if uri.version?has_content>
-						<gmd:version><gco:CharacterString>${uri.version}</gco:CharacterString></gmd:version>
-						</#if>
-					</gmd:RS_Identifier>
-				</#if>
+					</gmd:MD_Identifier>
 				</gmd:identifier>
 				</#list>
 				</#if>

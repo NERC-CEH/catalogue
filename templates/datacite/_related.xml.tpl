@@ -9,7 +9,7 @@
 </#if>
 <#if doc.supplemental?has_content>
   <#assign referencedBy = func.filter(doc.supplemental, "function", "isReferencedBy")>
-  <#assign supplementTo = func.filter(doc.supplemental, "function", "IsSupplementTo")>
+  <#assign supplementTo = func.filter(doc.supplemental, "function", "isSupplementTo")>
 </#if>
 
 <#if supplementTo?has_content || infoResources?has_content || referencedBy?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>

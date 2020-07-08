@@ -36,10 +36,10 @@
       <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
     </#if>
     ${title}
-    <#if alternateTitles?? && alternateTitles?has_content>
+    <#if alternateTitles??>
       <br><small class="alternateTitles">
         <#list alternateTitles as altTitle>
-          (${altTitle})<#sep><br></#sep>
+          <#if altTitle?length gt 0 >(${altTitle})<#sep><br></#sep></#if>
         </#list>
       </small>
     </#if>

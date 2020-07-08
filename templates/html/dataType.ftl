@@ -32,7 +32,7 @@
 
       <#if schema??>
       <div class="section section-schema">
-        <h2 class="section-heading">Schema</h2>
+        <h2 class="section-heading">Data structure</h2>
         <div class="section-content">
         <table class="table table-schema">
         <thead>

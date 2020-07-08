@@ -64,17 +64,17 @@ public class CatalogueServiceConfig {
             .build();
 
         DocumentType monitoringActivity = DocumentType.builder()
-            .title("Monitoring Activity")
+            .title("Monitoring activity")
             .type(OSDP_MONITORING_ACTIVITY_SHORT)
             .build();
 
         DocumentType monitoringFacility = DocumentType.builder()
-            .title("Monitoring Facility")
+            .title("Monitoring facility")
             .type(OSDP_MONITORING_FACILITY_SHORT)
             .build();
 
         DocumentType monitoringProgramme = DocumentType.builder()
-            .title("Monitoring Programme")
+            .title("Monitoring programme")
             .type(OSDP_MONITORING_PROGRAMME_SHORT)
             .build();
 
@@ -89,12 +89,12 @@ public class CatalogueServiceConfig {
             .build();
 
         DocumentType erammpModel = DocumentType.builder()
-            .title("ERAMMP model")
+            .title("Model (ERAMMP)")
             .type(ERAMMP_MODEL_SHORT)
             .build();
 
         DocumentType erammpDatacube = DocumentType.builder()
-            .title("ERAMMP data cube")
+            .title("Data cube (ERAMMP)")
             .type(ERAMMP_DATACUBE_SHORT)
             .build();
 
@@ -110,6 +110,19 @@ public class CatalogueServiceConfig {
 
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            Catalogue.builder()
+                .id("nm")
+                .title("NERC Models Sandpit")
+                .url("")
+                .facetKey("topic")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .documentType(gemini)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
+                .fileUpload(false)
+                .build(),
 
             Catalogue.builder()
                 .id("sa")
@@ -135,10 +148,10 @@ public class CatalogueServiceConfig {
                 .facetKey("resourceType")
                 .fileUpload(false)
                 .build(),
-
+            
             Catalogue.builder()
                 .id("m")
-                .title("Model Management")
+                .title("Model management")
                 .url("http://intranet.ceh.ac.uk/procedures/science-information-management/science-information-management-full-procedures/model-management-procedures")
                 .facetKey("resourceType")
                 .documentType(cehModel)
@@ -146,7 +159,7 @@ public class CatalogueServiceConfig {
                 .fileUpload(false)
                 .build(),
 
-                Catalogue.builder()
+            Catalogue.builder()
                 .id("nc")
                 .title("Natural Capital")
                 .url("http://www.ceh.ac.uk")
@@ -162,12 +175,13 @@ public class CatalogueServiceConfig {
                 .fileUpload(false)
                 .build(),
 
-                Catalogue.builder()
+            Catalogue.builder()
                 .id("erammp")
                 .title("ERAMMP")
                 .url("")
                 .facetKey("recordType")
                 .facetKey("condition")
+                .documentType(cehModel)
                 .documentType(erammpModel)
                 .documentType(erammpDatacube)
                 .documentType(link)

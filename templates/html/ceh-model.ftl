@@ -17,6 +17,9 @@
     otherLinks = func.filter(func.filter(func.filter(onlineResources, "function", "documentation", true), "function", "code", true), "function", "browseGraphic", true)
   >
 </#if>
+<#if supplemental?? && supplemental?has_content>
+  <#assign referenceList = func.filter(supplemental, "function", "reference")>
+</#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
 
   <@b.metadataContainer "ceh-model">
@@ -43,7 +46,7 @@
 
     <div class="row">
       <div class="col-sm-4 col-sm-push-8">
-        <#if onlineResources?size gte 1 || licenseType?? >
+        <#if (onlineResources?? && onlineResources?size gte 1) || licenseType?? >
           <div class="panel-right distribution">
             <#if repo?? && repo?has_content>
               <p class="panel-title">Get the code</p> 
@@ -51,24 +54,13 @@
                 <#list repo as link>
                   <li>
                     <#if link.url?? && link.url?has_content>
-                      <@m.Url link.url true/>
+                      <@m.Url link.url false link.name/>
                     </#if>
                   </li>
                 </#list>
                 </ul>
               </#if>
-              <!--<#if documentation?? && documentation?has_content>
-                <p class="panel-title">Documentation</p> 
-                <ul class="list-unstyled">
-                <#list documentation as link>
-                  <li>
-                    <#if link.url?? && link.url?has_content>
-                      <@m.Url link.url true/>
-                    </#if>
-                  </li>
-                </#list>
-                </ul>
-              </#if>-->
+              
               <#if licenseType?? && licenseType?has_content>
               <p class="panel-title">Licence</p> 
               <p>${licenseType?cap_first}</p>
@@ -115,7 +107,7 @@
       </#if>
 
       <#if otherLinks?? && otherLinks?has_content>
-        <@m.key "Other links">
+        <@m.key "Links">
           <#list otherLinks as link>
             <p>
               <#if link.function?? && link.function?has_content>
@@ -204,6 +196,9 @@
     </section>
     </#if>
 
+
+
+
     <section>
       <h2>QA Information</h2>
       <@m.key "Developer testing" "Use of a range of developer tools including parallel build and analytical review or sense check"><@m.qa developerTesting /></@m.key>
@@ -239,24 +234,16 @@
       </#if>
       
       <#assign modelApplications=jena.modelApplications(uri)/>
-      <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
-
+        <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
         <h2>Project use</h2>
         <#if projectUsages?? && projectUsages?has_content>
           <@m.key "Projects">
             <#list projectUsages as usage>
-
-                <#if usage.project??>${usage.project}</#if>
-                <#if usage.version??>version ${usage.version}</#if>
-                <#if usage.date??>(${usage.date?date?string['MMMM yyyy']})</#if>
-                <#sep><br></#sep>
-
               <div class="projectList">
                 <#if usage.project??><span class="projectList__project">${usage.project}</span></#if>
                 <#if usage.version??><span class="projectList_version">version ${usage.version}</span></#if>
                 <#if usage.date??><span class="projectList__date">(${usage.date?date?string['MMMM yyyy']})</span></#if>
               </div>
-
             </#list>
           </@m.key>
         </#if>
@@ -272,26 +259,25 @@
 
 
 
-    <#if references?? && references?has_content>
-
+    <#if referenceList?? && referenceList?has_content>
     <section>
       <h2>References</h2>
-        <#list supplemental as item>
+        <#list referenceList as item>
         <@b.repeatRow>
           <#if item.description?? && item.description?has_content>
-            <span class="supplemental-description">${item.description}</span>
+            <span class="references-description">${item.description}</span>
           </#if>
           <#if item.url?? && item.url?has_content>
-            <span class="supplemental-url"><@m.Url item.url true/></span>
+            <span class="references-url"><@m.Url item.url true/></span>
           </#if>
           <#if item.noraID?? && item.noraID?has_content && item.noraID?matches("\\d{3,10}")>
-            <span class="supplemental-nora"><br><a href="http://nora.nerc.ac.uk/id/eprint/${item.noraID}">View in NORA &raquo;</a></span>
+            <span class="references-nora"><br><a href="http://nora.nerc.ac.uk/id/eprint/${item.noraID}">View in NORA &raquo;</a></span>
           </#if>
         </@b.repeatRow>
         </#list>
     </section>
     </#if>
-
+ 
     <@m.additionalMetadata />
 
       

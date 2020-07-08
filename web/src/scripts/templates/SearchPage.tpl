@@ -7,8 +7,9 @@
 <div class="search-results-heading">
   <span id="num-records"><%=numFound%></span> records found
 </div>
-<% _.each(results, function(result) { %>
 
+<div class="result-list">
+<% _.each(results, function(result) { %>
   <div class="result result-<%=result.state%>" id="<%=result.identifier%>">
     <h2 class="resultTitle">
       <small>
@@ -33,6 +34,7 @@
     <div class="resultDescription"><%=result.shortenedDescription%></div>
   </div>
 <% }); %>
+</div>
 <ul class="pager">
   <% if(prevPage) { %>
     <li class="previous"><a href="<%=prevPage%>">&larr; Previous</a></li>

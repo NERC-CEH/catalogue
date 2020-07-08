@@ -10,21 +10,30 @@
 <#macro keyContent key definition="">
   <div class="col-sm-3 key">
     <div class="key-name">
-      ${key} 
-      <#if definition?has_content><span class="moreinfo" title="${definition}"><i class="fas fa-info-circle"> </i></span></#if>
+      <#if definition?has_content>
+        <span title="${definition}">${key} <i class="moreinfo fas fa-info" title="${definition}"></i></span>
+      <#else>
+        ${key}
+      </#if>
     </div>
   </div>
   <div class="col-sm-9 value">
     <#nested>
   </div>
-</#macro>
+</#macro>l
 
-<#macro Url value newWindow=false>
+<#macro Url value newWindow=false name="" >
+  <#if name?has_content>
+    <#local linkname = name>
+  <#else>
+    <#local linkname = value>
+  </#if>
+
   <#if value?matches("^http(s)?://.*")>
     <#if newWindow==true>
-      <a href="${value}" target="_blank" rel="noopener noreferrer">${value}</a>
+      <a href="${value}" target="_blank" rel="noopener noreferrer">${linkname}</a>
     <#else>
-      <a href="${value}">${value}</a>
+      <a href="${value}">${linkname}</a>
     </#if>
   </#if>
 </#macro>
@@ -41,10 +50,20 @@
 CEH model QA
 -->
 <#macro qa qa={"done": "Not specified"}>
-  <dl class="dl-qa">
+  <dl class="dl-horizontal dl-horizontal--compact">
+    <dt>Done?</dt><dd>
     <#if qa.done?? && qa.done?has_content>
-      <dt>Done?</dt><dd>${qa.done?cap_first}</dd>
-    </#if>
+      <#if qa.done?matches("yes")>
+        <i class="fas fa-check text-success"></i>
+      <#elseif qa.done?matches("no")>
+        <i class="fas fa-times text-danger"></i>
+      <#else>
+        <i class="fas fa-question text-info"></i>
+      </#if>
+      ${qa.done?cap_first}
+    <#else>
+      <i class="fas fa-question text-info"></i> Not specified
+    </#if></dd>
     <#if qa.modelVersion?? && qa.modelVersion?has_content>
       <dt>Model version</dt><dd>${qa.modelVersion}</dd>
     </#if>
@@ -55,7 +74,7 @@ CEH model QA
       <dt>Date</dt><dd>${qa.date?date?string['d MMM yyyy']}</dd>
     </#if>
     <#if qa.note?? && qa.note?has_content>
-      <dt>Notes</dt><dd>${qa.note}</dd>
+      <dt>Notes</dt><dd>${qa.note?replace("\n", "<br>")}</dd>
     </#if>
   </dl>
 </#macro>
