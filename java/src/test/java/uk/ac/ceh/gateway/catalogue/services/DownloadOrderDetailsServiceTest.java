@@ -14,8 +14,8 @@ import static org.junit.Assert.assertThat;
 public class DownloadOrderDetailsServiceTest {
     String supportingDocUrlPattern = "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*";
     private final List<String> orderManagerUrlPatterns = Arrays.asList(
-        "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*",
-        "https:\\/\\/order-eidc.ceh.ac.uk\\/resources\\/.{8}\\/order\\?*.*"
+        "http(s?):\\/\\/catalogue\\.ceh\\.ac\\.uk\\/download\\?fileIdentifier=.*",
+        "https:\\/\\/order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.{8}\\/order\\?*.*"
     );
     private DownloadOrderDetailsService service;
     
