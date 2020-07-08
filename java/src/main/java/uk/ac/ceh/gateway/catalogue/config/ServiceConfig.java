@@ -364,8 +364,8 @@ public class ServiceConfig {
         return new DownloadOrderDetailsService(
             "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*",
             Arrays.asList(
-                "http(s?):\\/\\/catalogue.ceh.ac.uk\\/download\\?fileIdentifier=.*",
-                "https:\\/\\/order-eidc.ceh.ac.uk\\/resources\\/.{8}\\/order\\?*.*"
+                "http(s?):\\/\\/catalogue\\.ceh\\.ac\\.uk\\/download\\?fileIdentifier=.*",
+                "https:\\/\\/order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.{8}\\/order\\?*.*"
             )
         );
     }
