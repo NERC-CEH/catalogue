@@ -70,6 +70,11 @@ module.exports = function(grunt) {
           'src/css/style-inlicensed.css': 'src/less/style-inlicensed.less'
         }
       },
+      elter: {
+        files: {
+          'src/css/style-elter.css': 'src/less/style-elter.less'
+        }
+      },
       edge: {
         files: {
           'src/css/style-edge.css': 'src/less/style-edge.less'
@@ -120,6 +125,11 @@ module.exports = function(grunt) {
       cmp: {
         files: {
           'src/css/style-cmp.css': 'src/css/style-cmp.css'
+        }
+      },
+      elter: {
+        files: {
+          'src/css/style-elter.css': 'src/css/style-elter.css'
         }
       },
       erammp: {

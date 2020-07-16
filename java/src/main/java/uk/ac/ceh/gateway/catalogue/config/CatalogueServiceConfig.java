@@ -112,6 +112,15 @@ public class CatalogueServiceConfig {
             defaultCatalogueKey,
 
             Catalogue.builder()
+                .id("elter")
+                .title("eLTER")
+                .url("")
+                .facetKey("elterDeimsSite")
+                .documentType(gemini)
+                .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
                 .id("nm")
                 .title("NERC Models Sandpit")
                 .url("")
