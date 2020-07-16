@@ -24,23 +24,27 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 @Profile("development")
 public class DevelopmentUserStoreConfig {
     public static final String CEH_GROUP_NAME = "CEH";
-    public static final String READONLY_ROLE = MetadataInfo.READONLY_GROUP;
-    public static final String MAINTENANCE_ROLE = DocumentController.MAINTENANCE_ROLE;
     public static final String DATACITE_ROLE = DataciteController.DATACITE_ROLE;
-    public static final String EIDC_EDITOR = "role_eidc_editor";
-    public static final String EIDC_PUBLISHER = "role_eidc_publisher";
-    public static final String CMP_EDITOR = "role_cmp_editor";
-    public static final String CMP_PUBLISHER = "role_cmp_publisher";
-    public static final String ERAMMP_EDITOR = "role_erammp_editor";
-    public static final String ERAMMP_PUBLISHER = "role_erammp_publisher";
+    public static final String MAINTENANCE_ROLE = DocumentController.MAINTENANCE_ROLE;
+    public static final String READONLY_ROLE = MetadataInfo.READONLY_GROUP;
+
+    // Catalogue specific roles
     public static final String ASSIST_EDITOR = "role_assist_editor";
     public static final String ASSIST_PUBLISHER = "role_assist_publisher";
-    public static final String NC_EDITOR = "role_nc_editor";
-    public static final String NC_PUBLISHER = "role_nc_publisher";
-    public static final String M_EDITOR = "role_m_editor";
-    public static final String M_PUBLISHER = "role_m_publisher";
+    public static final String CMP_EDITOR = "role_cmp_editor";
+    public static final String CMP_PUBLISHER = "role_cmp_publisher";
+    public static final String EIDC_EDITOR = "role_eidc_editor";
+    public static final String EIDC_PUBLISHER = "role_eidc_publisher";
+    public static final String ELTER_EDITOR = "role_elter_editor";
+    public static final String ELTER_PUBLISHER = "role_elter_publisher";
+    public static final String ERAMMP_EDITOR = "role_erammp_editor";
+    public static final String ERAMMP_PUBLISHER = "role_erammp_publisher";
     public static final String INMS_EDITOR = "role_inms_editor";
     public static final String INMS_PUBLISHER = "role_inms_publisher";
+    public static final String M_EDITOR = "role_m_editor";
+    public static final String M_PUBLISHER = "role_m_publisher";
+    public static final String NC_EDITOR = "role_nc_editor";
+    public static final String NC_PUBLISHER = "role_nc_publisher";
     public static final String OSDP_EDITOR = "role_osdp_editor";
     public static final String OSDP_PUBLISHER = "role_osdp_publisher";
     public static final String SA_EDITOR = "role_sa_editor";
@@ -132,6 +136,31 @@ public class DevelopmentUserStoreConfig {
 
         groupStore().grantGroupToUser(publisher, CMP_EDITOR);
         groupStore().grantGroupToUser(publisher, CMP_PUBLISHER);
+        userStore().addUser(publisher, "publisherpassword");
+        return publisher;
+    }
+
+    @Bean
+    @Qualifier("elter-editor")
+    public CatalogueUser elterEditor() throws UsernameAlreadyTakenException {
+        CatalogueUser editor = new CatalogueUser()
+                .setUsername("elter-editor")
+                .setEmail("elter-editor@ceh.ac.uk");
+
+        groupStore().grantGroupToUser(editor, ELTER_EDITOR);
+        userStore().addUser(editor, "editorpassword");
+        return editor;
+    }
+
+    @Bean
+    @Qualifier("elter-publisher")
+    public CatalogueUser elterPublisher() throws UsernameAlreadyTakenException {
+        CatalogueUser publisher = new CatalogueUser()
+                .setUsername("elter-publisher")
+                .setEmail("elter-publisher@ceh.ac.uk");
+
+        groupStore().grantGroupToUser(publisher, ELTER_EDITOR);
+        groupStore().grantGroupToUser(publisher, ELTER_PUBLISHER);
         userStore().addUser(publisher, "publisherpassword");
         return publisher;
     }
@@ -285,6 +314,8 @@ public class DevelopmentUserStoreConfig {
         toReturn.createGroup(EIDC_PUBLISHER, "EIDC Publisher Role");
         toReturn.createGroup(CMP_EDITOR, "CMP Editor Role");
         toReturn.createGroup(CMP_PUBLISHER, "CMP Publisher Role");
+        toReturn.createGroup(ELTER_EDITOR, "ELTER Editor Role");
+        toReturn.createGroup(ELTER_PUBLISHER, "ELTER Publisher Role");
         toReturn.createGroup(ERAMMP_EDITOR, "ERAMMP Editor Role");
         toReturn.createGroup(ERAMMP_PUBLISHER, "ERAMMP Publisher Role");
         toReturn.createGroup(ASSIST_EDITOR, "ASSIST Editor Role");

@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Slf4j
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
+    public static final String DEIMS_URL = "https://deims.org/";
+
     public static final String IMP_CAMMP_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/ci/";
     public static final String IMP_DATA_TYPE_URL = "http://vocabs.ceh.ac.uk/imp/dt/";
     public static final String IMP_SCALE_URL = "http://vocabs.ceh.ac.uk/imp/scale/";
@@ -58,6 +60,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setCondition(getCondition(document))
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
+            .setElterDeimsSite(grab(getKeywordsFilteredByUrlFragment(document, DEIMS_URL), Keyword::getValue))
             .setIdentifier(identifierService.generateFileId(document.getId()))
             .setImpCaMMPIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_CAMMP_ISSUES_URL), Keyword::getValue))
             .setImpDataType(grab(getKeywordsFilteredByUrlFragment(document, IMP_DATA_TYPE_URL), Keyword::getValue))
