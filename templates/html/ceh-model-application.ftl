@@ -169,13 +169,17 @@
     <section>
       <h2>Data Information</h2>
 
-        <@m.key "Input data">
-          <@m.dataInfoTable inputData />
-        </@m.key>
-        
-        <@m.key "Output data">
-          <@m.dataInfoTable outputData />
-        </@m.key>
+        <#if inputData??>
+          <@m.key "Input data">
+            <@m.dataInfoTable inputData />
+          </@m.key>
+         </#if>
+          
+        <#if outputData??>
+          <@m.key "Output data">
+            <@m.dataInfoTable outputData />
+          </@m.key>
+         </#if>
     </section>
     </#if>
    
