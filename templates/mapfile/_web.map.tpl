@@ -10,7 +10,7 @@ WEB
     "wms_inspire_metadataurl_href"     "${doc.uri}"
     "wms_inspire_metadataurl_format"   "application/vnd.iso.19139+xml"
     "wms_title"                        "${doc.title}"
-    "wms_abstract"                     "${doc.description}"
+    "wms_abstract"                     "${doc.description!''}"
     "wms_keywordlist"                  "${geminiHelper.getKeywords(doc)?join(',')}"
     "wms_keywordlist_vocabulary"       "ISO"
     "wms_keywordlist_ISO_items"        "infoMapAccessService"
