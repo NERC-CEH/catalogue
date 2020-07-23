@@ -1,4 +1,5 @@
 # Ignore the built content
+dist
 src/vendor
 src/scripts/main-out.js
 src/css/*
