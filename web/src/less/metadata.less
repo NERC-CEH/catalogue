@@ -133,7 +133,7 @@
     display: block;
   }
   #section-children {
-    margin-top: 5em;
+    margin: 3em auto;
   }
 
   #section-supplemental {
@@ -229,6 +229,53 @@
     margin-top: 2.5em;
     border-bottom: 1px solid @light-gray-border;
     padding-bottom: 6px;
+  }
+
+  .aggregate-children {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    gap: 1em;
+
+    .aggregate-child {
+      border: 2px solid @brand-success;
+      display: grid;
+      grid-template-columns: 7rem auto;
+      border-radius: 1rem;
+      color: @brand-success;
+
+      &--icon,
+      &--type,
+      &--title {
+        margin: 0.75em;
+      }
+
+      &--icon i {
+        background-color: @brand-success;
+        border-radius: 50%;
+        border: 2px solid white;
+        color: white;
+        font-size: 2.2rem;
+        font-style: normal;
+        line-height: 4.5rem;
+        width: 5rem;
+        height: 5rem;
+        text-align: center;
+      }
+
+      &--type {
+        font-weight: 300;
+        color: gray;
+      }
+
+      &:hover {
+        background-color: @brand-success;
+        color: white;
+        text-decoration: none;
+      }
+      &:hover .aggregate-child--type {
+        color: white;
+      }
+    }
   }
 
   .panel-right {

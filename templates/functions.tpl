@@ -17,7 +17,7 @@
 <#function filterRegex things name regex >
     <#local result = []>
     <#list things as thing>
-        <#if thing[name]?starts_with(regex) >
+        <#if thing[name]?matches(regex) >
             <#local result = result + [thing]>
         </#if>
     </#list>

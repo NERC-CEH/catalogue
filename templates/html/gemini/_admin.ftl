@@ -1,7 +1,8 @@
 <#assign custodianEIDC = func.filter(func.filter(otherContacts, "role", "custodian"), "organisationName", "Environmental Information Data Centre") >
 
 <#if onlineResources?has_content>
-  <#assign orders = func.filterRegex(func.filter(onlineResources, "function", "order"), "url", "http://catalogue.ceh.ac.uk/download")+func.filterRegex(func.filter(onlineResources, "function", "order"), "url", "https://catalogue.ceh.ac.uk/download")>
+  <#assign orders = 
+  func.filterRegex(func.filter(onlineResources, "function", "order"), "url", "^http[s?]://catalogue.ceh.ac.uk/download.+") + func.filterRegex(func.filter(onlineResources, "function", "order"), "url", "^https://order-eidc.ceh.ac.uk/resources/[A-Z0-9a-z]{8}/order")>
 </#if>
 
 

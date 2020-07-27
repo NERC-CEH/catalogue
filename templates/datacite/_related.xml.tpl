@@ -1,5 +1,5 @@
 <#if doc.onlineResources?has_content>
-  <#assign infoResources = func.filterRegex(func.filter(doc.onlineResources, "function", "information"), "url", "https://data-package.ceh.ac.uk/sd/")>
+  <#assign infoResources = func.filterRegex(func.filter(doc.onlineResources, "function", "information"), "url", "^https://data-package.ceh.ac.uk/sd/.+")>
 </#if>
 <#if doc.incomingRelationships?has_content>
   <#assign rel_supersededBy = func.filter(doc.incomingRelationships, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
