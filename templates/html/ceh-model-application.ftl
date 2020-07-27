@@ -177,10 +177,17 @@
     </section>
     </#if>
 
-    <#if outputVariables?? && outputVariables?size gt 0>
-    <section>
-      <h2>Output variables</h2>
-      <@variablesTable outputVariables />
+        <#if inputData??>
+          <@m.key "Input data">
+            <@m.dataInfoTable inputData />
+          </@m.key>
+         </#if>
+          
+        <#if outputData??>
+          <@m.key "Output data">
+            <@m.dataInfoTable outputData />
+          </@m.key>
+         </#if>
     </section>
     </#if>
    

@@ -23,6 +23,7 @@ public class SolrIndex {
     private @Field String catalogue;
     private @Field String condition;
     private @Field String documentType;
+    private @Field List<String> elterDeimsSite;
     private @Field List<String> funder;
     private @Field List<String> grant;
     private @Field String identifier;

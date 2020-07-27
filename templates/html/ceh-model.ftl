@@ -259,7 +259,10 @@
 
 
 
-    <#if referenceList?? && referenceList?has_content>
+
+
+
+    <#if references?? && references?has_content>
     <section>
       <h2>References</h2>
         <#list referenceList as item>
@@ -277,7 +280,7 @@
         </#list>
     </section>
     </#if>
- 
+    
     <@m.additionalMetadata />
 
       

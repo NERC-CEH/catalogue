@@ -1,11 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import lombok.Value;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The following class will process a list of OnlineResources to identify: 
@@ -22,14 +24,17 @@ import java.util.regex.Pattern;
  * variables (That is strings are never null)
  */
 public class DownloadOrderDetailsService {
-    private final Pattern supportingDoc, orderManager;
+    private final Pattern supportingDocUrlPattern;
+    private final List<Pattern> orderManagerUrlPatterns;
 
     public DownloadOrderDetailsService(
-        String eidcPattern,
-        String orderManagerPattern
+        String supportingDocUrlPattern,
+        List <String> orderManagerUrlPatterns
     ) {
-        this.supportingDoc = Pattern.compile(eidcPattern);
-        this.orderManager = Pattern.compile(orderManagerPattern);
+        this.supportingDocUrlPattern = Pattern.compile(supportingDocUrlPattern);
+        this.orderManagerUrlPatterns = orderManagerUrlPatterns.stream()
+            .map(Pattern::compile)
+            .collect(Collectors.toList());
     }
 
     public DownloadOrder from(List<OnlineResource> onlineResources) {
@@ -38,47 +43,55 @@ public class DownloadOrderDetailsService {
 
     @Value
     public class DownloadOrder {
-        private final String supportingDocumentsUrl;
-        private final List<OnlineResource> orderResources;
+        String supportingDocumentsUrl;
+        List<OnlineResource> orderResources;
 
         // Decide if we should show an unavailable message on the UI. This value 
         // will be false if the dataset is embargoed or unavailable
-        private final boolean isOrderable;
+        boolean isOrderable;
 
         public DownloadOrder(List<OnlineResource> onlineResources) {
-            //Read out the supportingDocumentationUrl (If present)
-            supportingDocumentsUrl = onlineResources
-                    .stream()
-                    .filter(r -> r.getFunction().equals("information"))
-                    .filter(r -> supportingDoc.matcher(r.getUrl()).matches())
-                    .map(r -> r.getUrl())
-                    .findFirst().orElse(null);
-            
-            // Locate online resources which are defined as DOWNLOAD
-            orderResources = new ArrayList<>();
-            onlineResources
-                    .stream()
-                    .filter(r -> r.getFunction().equals("download"))
-                    .forEach(orderResources::add);
-            
-            // Locate online resources which are defined as ORDER and connect
-            // to order manager
-            onlineResources
-                    .stream()
-                    .filter(r -> r.getFunction().equals("order"))
-                    .filter(r -> orderManager.matcher(r.getUrl()).matches())
-                    .forEach(orderResources::add);
-
+            supportingDocumentsUrl = extractSupportingDocumentUrl(onlineResources);
+            orderResources = Lists.newArrayList(Iterables.concat(
+                extractDownloadUrl(onlineResources),
+                extractOrderUrl(onlineResources)
+            ));
             isOrderable = !orderResources.isEmpty();
 
             if (!isOrderable) {
                 // No DOWNLOADs or order manager ORDERs were found. Does a 
                 // message exist as a dummy order?
                 onlineResources
-                        .stream()
-                        .filter(r -> r.getFunction().equals("offlineAccess"))
-                        .forEach(orderResources::add);
+                    .stream()
+                    .filter(r -> r.getFunction().equals("offlineAccess"))
+                    .forEach(orderResources::add);
             }
+        }
+
+        private String extractSupportingDocumentUrl(List<OnlineResource> onlineResources) {
+            return onlineResources
+                .stream()
+                .filter(r -> r.getFunction().equals("information"))
+                .filter(r -> supportingDocUrlPattern.matcher(r.getUrl()).matches())
+                .map(OnlineResource::getUrl)
+                .findFirst().orElse(null);
+        }
+
+        private List<OnlineResource> extractDownloadUrl(List<OnlineResource> onlineResources) {
+            return onlineResources
+                .stream()
+                .filter(r -> r.getFunction().equals("download"))
+                .collect(Collectors.toList());
+        }
+
+        private List<OnlineResource> extractOrderUrl(List<OnlineResource> onlineResources) {
+            return onlineResources
+                .stream()
+                .filter(r -> r.getFunction().equals("order"))
+                .filter(r -> orderManagerUrlPatterns.stream()
+                    .anyMatch(p -> p.matcher(r.getUrl()).matches())
+                )
+                .collect(Collectors.toList());
         }
     }
 }

@@ -699,7 +699,7 @@ public class MetadataQualityService {
         }
         
         if(orders.stream()
-            .anyMatch(order -> fieldNotStartingWith(order, "url", "https://catalogue.ceh.ac.uk/download"))) {
+            .anyMatch(order -> fieldNotStartingWith(order, "url", "https://order-eidc.ceh.ac.uk/resources"))) {
             toReturn.add(new MetadataCheck("Orders do not have a valid EIDC url", INFO));
         }
         if(downloads.stream()
