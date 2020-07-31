@@ -144,8 +144,9 @@ public class ServiceConfig {
     @Bean
     public HubbubService hubbubService() {
         Client client = Client.create();
+        client.addFilter(new HTTPBasicAuthFilter(hubbubUsername, hubbubPassword));
         WebResource hubbub = client.resource(hubbubUrl);
-        return new HubbubService(hubbub, hubbubUsername, hubbubPassword);
+        return new HubbubService(hubbub);
     }
 
     @Bean
