@@ -31,7 +31,7 @@ java:
   image: docker
   before_script:
     - echo jira.password=$JIRA_PASSWORD >> secrets.env
-    - echo hubbub.password=$NEW_HUBBUB_PASSWORD >> secrets.env
+    - echo hubbub.password=$HUBBUB_PASSWORD >> secrets.env
     - echo doi.password= >> secrets.env
   
   script:
