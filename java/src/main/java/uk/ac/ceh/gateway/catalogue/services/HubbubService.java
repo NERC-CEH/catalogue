@@ -22,11 +22,12 @@ public class HubbubService {
 
   @SneakyThrows
   public JsonNode get(String path, Integer page, Integer size, String[] status) {
-    WebResource query = resource.path(path);
+    WebResource query = resource.path("/");
     for (val s : status)
       query = query.queryParam("status", s);
 
     return query.queryParam("data", "true")
+        .queryParam("path", path)
         .queryParam("size", size.toString())
         .queryParam("page", page.toString())
         .accept(MediaType.APPLICATION_JSON_TYPE)
@@ -55,23 +56,26 @@ public class HubbubService {
 
   @SneakyThrows
   public JsonNode delete(String path) {
-    return resource.path(path)
+    return resource.path("/delete")
+        .queryParam("path", path)
         .accept(MediaType.APPLICATION_JSON_TYPE)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .delete(JsonNode.class);
   }
 
   @SneakyThrows
-  public JsonNode post(String path) {
-    return resource.path(path)
+  public JsonNode post(String url, String path) {
+    return resource.path(url)
+        .queryParam("path", path)
         .accept(MediaType.APPLICATION_JSON_TYPE)
         .type(MediaType.APPLICATION_JSON_TYPE)
         .post(JsonNode.class);
   }
 
   @SneakyThrows
-  public JsonNode postQuery(String path, String queryKey, String queryValue) {
-    return resource.path(path)
+  public JsonNode postQuery(String url, String path, String queryKey, String queryValue) {
+    return resource.path(url)
+        .queryParam("path", path)
         .queryParam(queryKey, queryValue)
         .accept(MediaType.APPLICATION_JSON_TYPE)
         .type(MediaType.APPLICATION_JSON_TYPE)
