@@ -61,6 +61,7 @@ import uk.ac.ceh.gateway.catalogue.services.*;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
 import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
 import uk.ac.ceh.gateway.catalogue.upload.UploadDocumentService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
@@ -105,6 +106,7 @@ public class ServiceConfig {
     @Autowired private CatalogueService catalogueService;
     @Autowired @Qualifier("gemini") private Schema geminiSchema;
     @Autowired private MetadataQualityService metadataQualityService;
+    @Autowired private GeminiExtractor geminiExtractor;
 
     @Bean
     public SolrScheduledReindexService solrScheduledReindexService() {
@@ -144,8 +146,9 @@ public class ServiceConfig {
     @Bean
     public HubbubService hubbubService() {
         Client client = Client.create();
+        client.addFilter(new HTTPBasicAuthFilter(hubbubUsername, hubbubPassword));
         WebResource hubbub = client.resource(hubbubUrl);
-        return new HubbubService(hubbub, hubbubUsername, hubbubPassword);
+        return new HubbubService(hubbub);
     }
 
     @Bean
@@ -263,7 +266,7 @@ public class ServiceConfig {
         shared.put("permission", permission());
         shared.put("jira", jiraService());
         shared.put("mapServerDetails", mapServerDetailsService());
-        shared.put("geminiHelper", geminiExtractorService());
+        shared.put("geminiHelper", geminiExtractor);
         shared.put("catalogues", catalogueService);
         shared.put("metadataQuality", metadataQualityService);
         
@@ -352,11 +355,6 @@ public class ServiceConfig {
     @Bean
     public TMSToWMSGetMapService tmsToWmsGetMapService() {
         return new TMSToWMSGetMapService();
-    }
-    
-    @Bean
-    public GeminiExtractorService geminiExtractorService() {
-        return new GeminiExtractorService();
     }
     
     @Bean

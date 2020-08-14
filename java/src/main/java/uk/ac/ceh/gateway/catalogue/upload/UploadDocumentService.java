@@ -182,44 +182,44 @@ public class UploadDocumentService {
 
   public UploadDocument accept(String id, String filename) {
     if (!filename.startsWith("/")) filename = "/" + filename;
-    hubbubService.post(String.format("/accept%s", filename));
+    hubbubService.post("/accept", filename);
     return get(id);
   }
 
   public UploadDocument writing(String id, String filename, int size) {
     if (!filename.startsWith("/")) filename = "/" + filename;
-    hubbubService.postQuery(String.format("/writing%s", filename), "size", String.format("%d", size));
+    hubbubService.postQuery("/writing", filename, "size", String.format("%d", size));
     return get(id);
   }
 
   public UploadDocument validate(String id) {
-    hubbubService.postQuery(String.format("/validate/%s", id), "force", "true");
+    hubbubService.postQuery("/validate", id, "force", "true");
     return get(id);
   }
 
   public UploadDocument validateFile(String id, String filename) {
-    hubbubService.postQuery(String.format("/validate%s", filename), "force", "true");
+    hubbubService.postQuery("/validate", filename, "force", "true");
     return get(id);
   }
 
 
   public UploadDocument cancel(String id, String filename) {
     threadPool.execute(() -> {
-      hubbubService.post(String.format("/cancel%s", filename));
+      hubbubService.post("/cancel", filename);
     });
     return get(id);
   }
 
   public UploadDocument move(String id, String filename, String to) {
     threadPool.execute(() -> {
-      hubbubService.postQuery(String.format("/move%s", filename), "to", to);
+      hubbubService.postQuery("/move", filename, "to", to);
     });
     return get(id);
   }
 
   public UploadDocument moveToDataStore(String id) {
     threadPool.execute(() -> {
-      hubbubService.post(String.format("/move_all/%s", id));
+      hubbubService.post("/move_all", id);
     });
     return get(id);
   }
