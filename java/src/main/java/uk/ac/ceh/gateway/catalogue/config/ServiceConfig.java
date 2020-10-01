@@ -62,6 +62,7 @@ import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
+import uk.ac.ceh.gateway.catalogue.upload.HubbubService;
 import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
 import uk.ac.ceh.gateway.catalogue.upload.UploadDocumentService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
@@ -78,27 +79,23 @@ import java.util.concurrent.Executors;
 
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.*;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
-@SuppressWarnings("Unused")
+
 @Configuration
 public class ServiceConfig {
     @Value("${documents.baseUri}") private String baseUri;
     @Value("${template.location}") private File templates;
     @Value("${maps.location}") private File mapsLocation;
     @Value("${doi.prefix}") private String doiPrefix;
-    @Value("${doi.username}") private String doiUsername;
-    @Value("${doi.password}") private String doiPassword;
     @Value("${jira.username}") private String jiraUsername;
     @Value("${jira.password}") private String jiraPassword;
     @Value("${jira.address}") private String jiraAddress;
     @Value("${sparql.endpoint}") private String sparqlEndpoint;
     @Value("${sparql.graph}") private String sparqlGraph;
 
-    @Value("${hubbub.url}") private String hubbubUrl;
-    @Value("${hubbub.username}") private String hubbubUsername;
-    @Value("${hubbub.password}") private String hubbubPassword;
-    
+    @Autowired private DataciteService dataciteService;
     @Autowired private ObjectMapper jacksonMapper;
     @Autowired private DataRepository<CatalogueUser> dataRepository;
+    @Autowired private HubbubService hubbubService;
     @Autowired private Dataset jenaTdb;
     @Autowired private SolrClient solrClient;
     @Autowired private CodeLookupService codeLookupService;
@@ -129,7 +126,7 @@ public class ServiceConfig {
     }
 
     @Bean
-    public UploadDocumentService uploadDocumentService(HubbubService hubbubService) {
+    public UploadDocumentService uploadDocumentService() {
         Map<String, File> folders = Maps.newHashMap();
         folders.put("documents", new File("/var/ceh-catalogue/dropbox"));
         return new UploadDocumentService(hubbubService, folders,  Executors.newCachedThreadPool());
@@ -144,14 +141,6 @@ public class ServiceConfig {
     }
 
     @Bean
-    public HubbubService hubbubService() {
-        Client client = Client.create();
-        client.addFilter(new HTTPBasicAuthFilter(hubbubUsername, hubbubPassword));
-        WebResource hubbub = client.resource(hubbubUrl);
-        return new HubbubService(hubbub);
-    }
-
-    @Bean
     public CitationService citationService() {
         return new CitationService(doiPrefix);
     }
@@ -160,20 +149,12 @@ public class ServiceConfig {
     public MapServerDetailsService mapServerDetailsService() {
         return new MapServerDetailsService(baseUri);
     }
-    
+
     @Bean
+    @Qualifier("datacite")
     @SneakyThrows
-    public DataciteService dataciteService() {
-        Template dataciteTemplate = freemarkerConfiguration().getTemplate("/datacite/datacite.xml.tpl");
-        return new DataciteService(
-                doiPrefix, 
-                "NERC Environmental Information Data Centre", 
-                doiUsername, 
-                doiPassword,
-                documentIdentifierService(),
-                dataciteTemplate, 
-                new RestTemplate()
-        );
+    public Template dataciteTemplate() {
+        return freemarkerConfiguration().getTemplate("/datacite/datacite.xml.tpl");
     }
     
     @Bean
@@ -403,7 +384,7 @@ public class ServiceConfig {
     @Bean
     public PostProcessingService postProcessingService() {
         ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
-                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), dataciteService(), jenaTdb, documentIdentifierService()))
+                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), dataciteService, jenaTdb, documentIdentifierService()))
                 .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb));
         return new ClassMapPostProcessingService(mappings);
     }
@@ -476,7 +457,7 @@ public class ServiceConfig {
     @Bean @Qualifier("datacite-index")
     public DocumentIndexingService dataciteIndexingService() {
         return new AsyncDocumentIndexingService(
-                new DataciteIndexingService(bundledReaderService(), dataciteService())
+                new DataciteIndexingService(bundledReaderService(), dataciteService)
         );
     }
     

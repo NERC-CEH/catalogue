@@ -40,7 +40,7 @@ java:
       -v /var/run/docker.sock:/var/run/docker.sock
       -v "$(pwd)":"$(pwd)"
       -w "$(pwd)"
-      registry.gitlab.ceh.ac.uk/eip/catalogue-builder:0.0.1 ./gradlew -g ./cache/gradle clean prepFixtures build grunt_default integrationTest
+      registry.gitlab.ceh.ac.uk/eip/catalogue-builder:0.0.1 ./gradlew -g ./cache/gradle clean prepFixtures build grunt_default
   artifacts:
     when: always
     expire_in: 2 hrs

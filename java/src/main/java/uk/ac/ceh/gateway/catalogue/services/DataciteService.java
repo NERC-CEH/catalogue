@@ -3,17 +3,20 @@ package uk.ac.ceh.gateway.catalogue.services;
 import com.google.common.base.Strings;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
+import lombok.val;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -23,58 +26,76 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static java.lang.String.format;
+import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 /**
- * A service which interacts with the datacite rest api to obtain a DOI for a 
+ * A service which interacts with the datacite rest api to obtain a DOI for a
  * GeminiMetadata record
  */
 @Slf4j
-@AllArgsConstructor
+@Service
 public class DataciteService {
-    private final static String DATACITE_API = "https://mds.datacite.org";
+    private final String doiApi;
     private final String doiPrefix;
     private final String publisher;
     private final String username;
     private final String password;
     private final DocumentIdentifierService identifierService;
     private final Template template;
-    private final RestTemplate rest;
+    private final RestTemplate restTemplate;
+
+    public DataciteService(
+            @Value("${doi.api}") String doiApi,
+            @Value("${doi.prefix}") String doiPrefix,
+            @Value("${doi.publisher}") String publisher,
+            @Value("${doi.username}") String username,
+            @Value("${doi.password}") String password,
+            @NonNull DocumentIdentifierService identifierService,
+            @NonNull @Qualifier("datacite") Template template,
+            @NonNull RestTemplate restTemplate
+    ) {
+        this.doiApi = doiApi;
+        this.doiPrefix = doiPrefix;
+        this.publisher = publisher;
+        this.username = username;
+        this.password = password;
+        this.identifierService = identifierService;
+        this.template = template;
+        this.restTemplate = restTemplate;
+        log.info("Datacite service created");
+    }
 
     /**
      * Contacts the DATACITE rest api and uploads a datacite requests and then
      * gets the that request minted
-     * @param document
-     * @return
-     * @throws DataciteException 
      */
     public ResourceIdentifier generateDoi(GeminiDocument document) throws DataciteException {
         ResourceIdentifier doi = updateDoiMetadata(document);
         mintDoiRequest(document);
         return doi;
     }
-    
+
     /**
      * Grab the current metadata document from the datacite api. If this gemini
      * document does not have a doi, then return null
-     * @param document
      * @return string containing a doi metadata request, or null if nothing there
      */
     public String getDoiMetadata(GeminiDocument document) {
         String doi = getDoi(document);
         if (doi != null) {
+            val url = UriComponentsBuilder
+                    .fromHttpUrl(doiApi)
+                    .pathSegment("metadata", doi)
+                    .toUriString();
             try {
-                return rest.exchange(
-                        DATACITE_API + "/metadata/{doi}", 
-                        HttpMethod.GET, 
-                        new HttpEntity<>(getBasicAuth()), 
-                        String.class, 
-                        doi
+                return restTemplate.exchange(
+                        url,
+                        HttpMethod.GET,
+                        new HttpEntity<>(withBasicAuth(username, password)),
+                        String.class
                 ).getBody();
             }
             catch(RestClientException ex) {
@@ -85,7 +106,7 @@ public class DataciteService {
             return null;
         }
     }
-    
+
     /**
      * Contact the datacite rest api and submit a metadata request. This is only
      * possible if the document is in the correct format
@@ -95,11 +116,18 @@ public class DataciteService {
     public ResourceIdentifier updateDoiMetadata(GeminiDocument document) {
         if(isDatacitable(document)) {
             try {
-                HttpHeaders headers = getBasicAuth();
+                val headers = withBasicAuth(username, password);
                 headers.setContentType(MediaType.valueOf("application/xml;charset=UTF-8"));
-
-                String request = getDatacitationRequest(document);
-                rest.postForEntity(DATACITE_API + "/metadata", new HttpEntity<>(request, headers), String.class);
+                val request = getDatacitationRequest(document);
+                val url = UriComponentsBuilder
+                        .fromHttpUrl(doiApi)
+                        .path("metadata")
+                        .toUriString();
+                restTemplate.postForEntity(
+                        url,
+                        new HttpEntity<>(request, headers),
+                        String.class
+                );
 
                 return ResourceIdentifier
                         .builder()
@@ -109,7 +137,7 @@ public class DataciteService {
             }
             catch(HttpClientErrorException ex) {
                 log.error("Failed to upload doi: {} - {}", generateDoiString(document), ex.getResponseBodyAsString());
-                throw new DataciteException("Failed to submit the doi metdata, please review the datacite.xml (is it valid?) then try again", ex);
+                throw new DataciteException("Failed to submit the doi metadata, please review the datacite.xml (is it valid?) then try again", ex);
             }
             catch(RestClientException ex) {
                 throw new DataciteException("Failed to communicate with the datacite api when trying to upload a record", ex);
@@ -119,21 +147,28 @@ public class DataciteService {
             throw new DataciteException("This record does not meet the requirements for datacite updating");
         }
     }
-    
+
     /**
      * Mints a datacite metadata request for a given document.
      * @param document the document which should be doi minted
      */
     public void mintDoiRequest(GeminiDocument document) {
         if(isDataciteMintable(document)) {
-            String doi = generateDoiString(document);
-            String request = format("doi=%s\nurl=%s", doi, identifierService.generateUri(document.getId()));
+            val doi = generateDoiString(document);
+            val request = format("doi=%s\nurl=%s", doi, identifierService.generateUri(document.getId()));
             log.info("Requesting mint of doi: {}", request);
+            val url = UriComponentsBuilder
+                    .fromHttpUrl(doiApi)
+                    .path("doi")
+                    .toUriString();
             try {
-                HttpHeaders headers = getBasicAuth();
+                val headers = withBasicAuth(username, password);
                 headers.setContentType(MediaType.TEXT_PLAIN);
-
-                rest.postForEntity(DATACITE_API + "/doi", new HttpEntity<>(request, headers), String.class);
+                restTemplate.postForEntity(
+                        url,
+                        new HttpEntity<>(request, headers),
+                        String.class
+                );
             }
             catch(HttpClientErrorException ex) {
                 log.error("Failed to mint doi: {} - {}", doi, ex.getResponseBodyAsString());
@@ -147,9 +182,9 @@ public class DataciteService {
             throw new DataciteException("This record does not meet the requirements for datacite minting");
         }
     }
-        
+
     /**
-     * Determines if the specified gemini document can be datacited by this 
+     * Determines if the specified gemini document can be datacited by this
      * datacite service
      * @param document to test if ready for data citation
      * @return true if this GeminiDocument can be submitted to datacite
@@ -172,38 +207,36 @@ public class DataciteService {
                 .map(DatasetReferenceDate::getPublicationDate)
                 .map((d) -> !d.isAfter(LocalDate.now()))
                 .orElse(false);
-        
+
         return isPubliclyViewable
-            && hasNonEmptyTitle
-            && hasAuthor
-            && hasCorrectPublisher
-            && hasPublicationYear;
+                && hasNonEmptyTitle
+                && hasAuthor
+                && hasCorrectPublisher
+                && hasPublicationYear;
     }
-    
+
     /**
      * Determine if this geminidocument is datacitable and has already had a doi
      * attached to it.
-     * @param document
-     * @return true if the GeminiDocument has already been submitted for a doi 
+     * @return true if the GeminiDocument has already been submitted for a doi
      */
     public boolean isDatacited(GeminiDocument document) {
         return isDatacitable(document) && hasDoi(document);
     }
-    
+
     /**
-     * Determine if this geminidocument can be submitted for a fresh doi. This 
+     * Determine if this geminidocument can be submitted for a fresh doi. This
      * means it means the doi requirements and doesn't already have a doi
-     * @param document
      * @return true if the GeminiDocument can be submitted for a doi
      */
     public boolean isDataciteMintable(GeminiDocument document) {
         return isDatacitable(document) && !hasDoi(document);
     }
-    
+
     private boolean hasDoi(GeminiDocument document) {
         return getDoi(document) != null;
     }
-    
+
     private String getDoi(GeminiDocument document) {
         return Optional.ofNullable(document.getResourceIdentifiers())
                 .orElse(Collections.emptyList())
@@ -214,9 +247,9 @@ public class DataciteService {
                 .findFirst()
                 .orElse(null);
     }
-    
+
     /**
-     * Process the datacitation request template for the given document and 
+     * Process the datacitation request template for the given document and
      * return the request as a string.
      * @param document to get the prepare a datacitation request for
      * @return an xml datacite request
@@ -234,10 +267,10 @@ public class DataciteService {
             throw new DataciteException(ex);
         }
     }
-        
+
     private String getDataciteResourceType(MetadataDocument document) {
         switch(document.getType()) {
-            case "nonGeographicDataset": return "Dataset";
+            case "nonGeographicDataset":
             case "dataset":              return "Dataset";
             case "application":          return "Other";
             case "model":                return "Model";
@@ -246,19 +279,8 @@ public class DataciteService {
             default:                     return null;
         }
     }
-    
+
     private String generateDoiString(GeminiDocument document) {
         return doiPrefix + document.getId();
-    }
-    
-    protected HttpHeaders getBasicAuth() {
-        String plainCreds = username + ':' + password;
-        byte[] plainCredsBytes = plainCreds.getBytes();
-        byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
-        String base64Creds = new String(base64CredsBytes);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + base64Creds);
-        return headers;
     }
 }

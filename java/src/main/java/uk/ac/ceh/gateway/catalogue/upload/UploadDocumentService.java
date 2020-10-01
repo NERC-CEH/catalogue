@@ -1,5 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.val;
+import org.apache.commons.io.FileUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,22 +17,10 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import org.apache.commons.io.FileUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.val;
-import uk.ac.ceh.gateway.catalogue.services.HubbubService;
-
 @AllArgsConstructor
 public class UploadDocumentService {
   private final HubbubService hubbubService;
+  // TODO: Only one folder is now used so this can be simplified. The folder is mounted in docker so could be a hardwired location
   private final Map<String, File> folders;
   private final ExecutorService threadPool;
 
