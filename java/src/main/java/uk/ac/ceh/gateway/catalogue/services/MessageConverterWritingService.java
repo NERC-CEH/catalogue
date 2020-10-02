@@ -1,30 +1,30 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Document Writing service which will write a given document to an inputstream
+ * A Document Writing service which will write a given document to an inputStream
  * of the requested mediatype
  */
+@Service
 public class MessageConverterWritingService implements DocumentWritingService {
     private final List<HttpMessageConverter<?>> messageConverters;
-    
-    public MessageConverterWritingService() {
-        this(new ArrayList<>());
-    }
-    
-    public MessageConverterWritingService(List<HttpMessageConverter<?>> messageConverters) {
+
+    public MessageConverterWritingService(
+            @Qualifier("writing") List<HttpMessageConverter<?>> messageConverters
+    ) {
         this.messageConverters = messageConverters;
     }
-    
+
     public MessageConverterWritingService addMessageConverter(HttpMessageConverter<?> converter) {
         messageConverters.add(converter);
         return this;

@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -9,6 +10,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 
+@Service
 @AllArgsConstructor
 public class GitRepoWrapper {
     private final DataRepository<CatalogueUser> repo;

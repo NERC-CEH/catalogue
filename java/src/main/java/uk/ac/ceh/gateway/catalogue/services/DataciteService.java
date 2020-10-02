@@ -1,12 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import com.google.common.base.Strings;
-import freemarker.template.Template;
+import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -26,7 +25,10 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
@@ -38,32 +40,35 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 @Slf4j
 @Service
 public class DataciteService {
-    private final String doiApi;
-    private final String doiPrefix;
+    private final String api;
+    private final String prefix;
     private final String publisher;
     private final String username;
     private final String password;
+    private final String templateLocation;
     private final DocumentIdentifierService identifierService;
-    private final Template template;
+    private final Configuration configuration;
     private final RestTemplate restTemplate;
 
     public DataciteService(
-            @Value("${doi.api}") String doiApi,
-            @Value("${doi.prefix}") String doiPrefix,
+            @Value("${doi.api}") String api,
+            @Value("${doi.prefix}") String prefix,
             @Value("${doi.publisher}") String publisher,
             @Value("${doi.username}") String username,
             @Value("${doi.password}") String password,
+            @Value("${doi.templateLocation}") String templateLocation,
             @NonNull DocumentIdentifierService identifierService,
-            @NonNull @Qualifier("datacite") Template template,
+            @NonNull Configuration configuration,
             @NonNull RestTemplate restTemplate
     ) {
-        this.doiApi = doiApi;
-        this.doiPrefix = doiPrefix;
+        this.api = api;
+        this.prefix = prefix;
         this.publisher = publisher;
         this.username = username;
         this.password = password;
+        this.templateLocation = templateLocation;
         this.identifierService = identifierService;
-        this.template = template;
+        this.configuration = configuration;
         this.restTemplate = restTemplate;
         log.info("Datacite service created");
     }
@@ -87,7 +92,7 @@ public class DataciteService {
         String doi = getDoi(document);
         if (doi != null) {
             val url = UriComponentsBuilder
-                    .fromHttpUrl(doiApi)
+                    .fromHttpUrl(api)
                     .pathSegment("metadata", doi)
                     .toUriString();
             try {
@@ -120,7 +125,7 @@ public class DataciteService {
                 headers.setContentType(MediaType.valueOf("application/xml;charset=UTF-8"));
                 val request = getDatacitationRequest(document);
                 val url = UriComponentsBuilder
-                        .fromHttpUrl(doiApi)
+                        .fromHttpUrl(api)
                         .path("metadata")
                         .toUriString();
                 restTemplate.postForEntity(
@@ -158,7 +163,7 @@ public class DataciteService {
             val request = format("doi=%s\nurl=%s", doi, identifierService.generateUri(document.getId()));
             log.info("Requesting mint of doi: {}", request);
             val url = UriComponentsBuilder
-                    .fromHttpUrl(doiApi)
+                    .fromHttpUrl(api)
                     .path("doi")
                     .toUriString();
             try {
@@ -242,7 +247,7 @@ public class DataciteService {
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter((i) -> i.getCodeSpace().equals("doi:"))
-                .filter((i) -> i.getCode().startsWith(doiPrefix))
+                .filter((i) -> i.getCode().startsWith(prefix))
                 .map(ResourceIdentifier::getCode)
                 .findFirst()
                 .orElse(null);
@@ -261,7 +266,10 @@ public class DataciteService {
             data.put("doc", document);
             data.put("resourceType", getDataciteResourceType(document));
             data.put("doi", doi);
-            return FreeMarkerTemplateUtils.processTemplateIntoString(template, data);
+            return FreeMarkerTemplateUtils.processTemplateIntoString(
+                    configuration.getTemplate(templateLocation),
+                    data
+            );
         }
         catch(IOException | TemplateException ex) {
             throw new DataciteException(ex);
@@ -281,6 +289,6 @@ public class DataciteService {
     }
 
     private String generateDoiString(GeminiDocument document) {
-        return doiPrefix + document.getId();
+        return prefix + document.getId();
     }
 }

@@ -1,13 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.xml.xpath.XPathExpressionException;
-
 import com.google.common.collect.ImmutableMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -27,15 +20,16 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
-
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
-import uk.ac.ceh.gateway.catalogue.config.ServiceConfig.MessageConvertersHolder;
 import uk.ac.ceh.gateway.catalogue.converters.Gml2WmsFeatureInfoMessageConverter;
 import uk.ac.ceh.gateway.catalogue.util.ForgivingParameterContentNegotiationStrategy;
 import uk.ac.ceh.gateway.catalogue.util.MapServerGetFeatureInfoErrorHandler;
 import uk.ac.ceh.gateway.catalogue.util.WmsFormatContentNegotiationStrategy;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebMvc
@@ -98,33 +92,17 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String DATA_TYPE_JSON_VALUE = "application/vnd.data-type+json";
     public static final String DATA_TYPE_SHORT = "data-type";
     
-    @Autowired MessageConvertersHolder messageConvertersHolder;
-    @Autowired freemarker.template.Configuration freemarkerConfiguration;
+    @Autowired List<HttpMessageConverter<?>> messageConverters;
     
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.addAll(messageConvertersHolder.getConverters());
-    }
-    
-    @Bean
-    public FreeMarkerViewResolver configureFreeMarkerViewResolver() {
-        FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
-        resolver.setCache(true);
-        resolver.setContentType("text/html;charset=UTF-8");
-        return resolver;
-    }
-    
-    @Bean
-    public FreeMarkerConfigurer configureFreeMarker() {
-        FreeMarkerConfigurer freemarkerConfig = new FreeMarkerConfigurer();
-        freemarkerConfig.setConfiguration(freemarkerConfiguration);
-        return freemarkerConfig;
+        converters.addAll(messageConverters);
     }
 
     @Bean(name="getfeatureinfo-rest")
     public RestTemplate getFeatureInfoRestTemplate() throws XPathExpressionException {
         RestTemplate toReturn = new RestTemplate();
-        toReturn.setMessageConverters(Arrays.asList(
+        toReturn.setMessageConverters(Collections.singletonList(
                 new Gml2WmsFeatureInfoMessageConverter()
         ));
         toReturn.setErrorHandler(new MapServerGetFeatureInfoErrorHandler());
@@ -133,7 +111,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     
     @Bean
     public CommonsMultipartResolver multipartResolver() {
-        CommonsMultipartResolver resolver=new CommonsMultipartResolver();
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setDefaultEncoding("utf-8");
         return resolver;
     }

@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -24,15 +26,22 @@ import java.util.function.Predicate;
 
 import static java.lang.String.format;
 
+@Slf4j
+@Service("permission")
 public class PermissionService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final GroupStore<CatalogueUser> groupStore;
 
-    public PermissionService(DataRepository<CatalogueUser> repo, DocumentInfoMapper documentInfoMapper, GroupStore<CatalogueUser> groupStore) {
+    public PermissionService(
+            @NonNull DataRepository<CatalogueUser> repo,
+            @NonNull DocumentInfoMapper<MetadataInfo> documentInfoMapper,
+            @NonNull GroupStore<CatalogueUser> groupStore
+    ) {
         this.repo = repo;
         this.documentInfoMapper = documentInfoMapper;
         this.groupStore = groupStore;
+        log.info("Permission service created");
     }
     
     public boolean toAccess(CatalogueUser user, String file, String permission) {
@@ -177,6 +186,8 @@ public class PermissionService {
         if (user.isPublic()) {
             return false;
         } else {
+            log.debug("getting groups for: {}", user);
+            log.debug("available groups: {}", groupStore.getGroups(user));
             return groupStore.getGroups(user)
                 .stream()
                 .map(Group::getName)

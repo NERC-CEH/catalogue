@@ -13,10 +13,6 @@ import uk.ac.ceh.components.userstore.crowd.CrowdGroupStore;
 import uk.ac.ceh.components.userstore.crowd.CrowdUserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
-/**
- * The following spring JavaConfig defines the beans required for the interacting
- * with a crowd userstore
- */
 @Configuration
 @Profile("production")
 public class CrowdUserStoreConfig {
@@ -37,9 +33,8 @@ public class CrowdUserStoreConfig {
                                     phantomUserBuilderFactory, 
                                     phantomUserBuilderFactory);
     }
-    
-    @Bean
-    public CrowdApplicationCredentials crowdCredentials() {
+
+    private CrowdApplicationCredentials crowdCredentials() {
         return new CrowdApplicationCredentials(address, username, password);
     }
 }

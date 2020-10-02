@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
@@ -16,9 +17,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
+@Service
 public class CitationService {
     public final String nercDoiPrefix;
+
+    public CitationService(
+            @Value("${doi.prefix}") String nercDoiPrefix
+    ) {
+        this.nercDoiPrefix = nercDoiPrefix;
+    }
     
     /**
      * Generate a citation value for the current geminidocument. If the document

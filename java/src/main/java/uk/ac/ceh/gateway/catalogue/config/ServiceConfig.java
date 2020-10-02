@@ -5,15 +5,9 @@ import com.google.common.collect.Maps;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import freemarker.cache.FileTemplateLoader;
-import freemarker.template.Template;
-import freemarker.template.TemplateExceptionHandler;
-import lombok.Data;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.solr.client.solrj.SolrClient;
@@ -23,22 +17,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.ResourceHttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.gateway.catalogue.converters.*;
-import uk.ac.ceh.gateway.catalogue.ef.*;
+import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
+import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
-import uk.ac.ceh.gateway.catalogue.imp.Model;
-import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
 import uk.ac.ceh.gateway.catalogue.indexing.*;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -48,22 +37,13 @@ import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingS
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
-import uk.ac.ceh.gateway.catalogue.publication.StateResource;
-import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
-import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
-import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
-import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
-import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.services.*;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
 import uk.ac.ceh.gateway.catalogue.upload.HubbubService;
-import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
 import uk.ac.ceh.gateway.catalogue.upload.UploadDocumentService;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
@@ -73,57 +53,40 @@ import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
 
 import javax.xml.validation.Schema;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.*;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
+@Slf4j
 @Configuration
 public class ServiceConfig {
     @Value("${documents.baseUri}") private String baseUri;
-    @Value("${template.location}") private File templates;
     @Value("${maps.location}") private File mapsLocation;
-    @Value("${doi.prefix}") private String doiPrefix;
     @Value("${jira.username}") private String jiraUsername;
     @Value("${jira.password}") private String jiraPassword;
     @Value("${jira.address}") private String jiraAddress;
     @Value("${sparql.endpoint}") private String sparqlEndpoint;
     @Value("${sparql.graph}") private String sparqlGraph;
 
-    @Autowired private DataciteService dataciteService;
-    @Autowired private ObjectMapper jacksonMapper;
-    @Autowired private DataRepository<CatalogueUser> dataRepository;
-    @Autowired private HubbubService hubbubService;
-    @Autowired private Dataset jenaTdb;
-    @Autowired private SolrClient solrClient;
+    @Autowired private CitationService citationService;
     @Autowired private CodeLookupService codeLookupService;
-    @Autowired private GroupStore<CatalogueUser> groupStore;
-    @Autowired private CatalogueService catalogueService;
+    @Autowired private DataciteService dataciteService;
+    @Autowired private DataRepository<CatalogueUser> dataRepository;
+    @Autowired private DocumentInfoMapper<MetadataInfo> documentInfoMapper;
+    @Autowired private DocumentRepository documentRepository;
+    @Autowired private freemarker.template.Configuration freemarkerConfiguration;
     @Autowired @Qualifier("gemini") private Schema geminiSchema;
-    @Autowired private MetadataQualityService metadataQualityService;
-    @Autowired private GeminiExtractor geminiExtractor;
-
-    @Bean
-    public SolrScheduledReindexService solrScheduledReindexService() {
-        return new SolrScheduledReindexService(documentIndexingService());
-    }
-
-    @Bean
-    FacetFactory facetFactory() {
-        return new HardcodedFacetFactory();
-    }
-    
-    @Bean
-    public PermissionService permission() {
-        return new PermissionService(dataRepository, documentInfoMapper(), groupStore);
-    }
-
-    @Bean
-    public DepositRequestService depositRequestService() {
-        return new DepositRequestService(documentRepository(), solrClient);
-    }
+    @Autowired private HubbubService hubbubService;
+    @Autowired private ObjectMapper jacksonMapper;
+    @Autowired private JenaLookupService jenaLookupService;
+    @Autowired private Dataset jenaTdb;
+    @Autowired private MapServerDetailsService mapServerDetailsService;
+    @Autowired private SolrClient solrClient;
 
     @Bean
     public UploadDocumentService uploadDocumentService() {
@@ -139,147 +102,6 @@ public class ServiceConfig {
         WebResource jira = client.resource(jiraAddress);
         return new JiraService(jira);
     }
-
-    @Bean
-    public CitationService citationService() {
-        return new CitationService(doiPrefix);
-    }
-    
-    @Bean
-    public MapServerDetailsService mapServerDetailsService() {
-        return new MapServerDetailsService(baseUri);
-    }
-
-    @Bean
-    @Qualifier("datacite")
-    @SneakyThrows
-    public Template dataciteTemplate() {
-        return freemarkerConfiguration().getTemplate("/datacite/datacite.xml.tpl");
-    }
-    
-    @Bean
-    public MessageConvertersHolder messageConverters() {
-        List<HttpMessageConverter<?>> converters = new ArrayList<>();
-        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
-        mappingJackson2HttpMessageConverter.setObjectMapper(jacksonMapper);
-
-        // EF Message Converters  
-        converters.add(new Object2TemplatedMessageConverter<>(Activity.class,  freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(Facility.class,  freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(Network.class,   freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(Programme.class, freemarkerConfiguration()));
-        converters.add(new UkeofXml2EFDocumentMessageConverter());
-        
-        // IMP Message Converters
-        converters.add(new Object2TemplatedMessageConverter<>(Model.class,            freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(ModelApplication.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(CaseStudy.class,        freemarkerConfiguration()));
-        
-        // CEH model catalogue
-        converters.add(new Object2TemplatedMessageConverter<>(CehModel.class,             freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(CehModelApplication.class,  freemarkerConfiguration()));
-
-        //OSDP
-        converters.add(new Object2TemplatedMessageConverter<>(Agent.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(uk.ac.ceh.gateway.catalogue.osdp.Dataset.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(uk.ac.ceh.gateway.catalogue.osdp.Model.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(MonitoringActivity.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(MonitoringFacility.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(MonitoringProgramme.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(Publication.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration()));
-
-        //ERAMMP
-        converters.add(new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration()));
-
-        //Sample Archive
-        converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration()));
-        
-        // Gemini Message Converters
-        converters.add(new Object2TemplatedMessageConverter<>(GeminiDocument.class,       freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(LinkDocument.class,         freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class,        freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(Citation.class,             freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(StateResource.class,        freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(PermissionResource.class,   freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(CatalogueResource.class,    freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(MaintenanceResponse.class,  freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(SparqlResponse.class,       freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(ValidationResponse.class,   freemarkerConfiguration()));
-        converters.add(new Object2TemplatedMessageConverter<>(ErrorResponse.class,        freemarkerConfiguration()));
-        converters.add(new TransparentProxyMessageConverter(httpClient()));
-        converters.add(new ResourceHttpMessageConverter());
-        converters.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
-        converters.add(new WmsFeatureInfo2XmlMessageConverter());
-        converters.add(mappingJackson2HttpMessageConverter);
-
-        converters.add(new Object2TemplatedMessageConverter<>(UploadDocument.class, freemarkerConfiguration()));
-
-        converters.add(new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration()));
-
-        return new MessageConvertersHolder(converters);
-    }
-    
-    @Data
-    public static class MessageConvertersHolder {
-        private final List<HttpMessageConverter<?>> converters;
-    }
-        
-    @Bean
-    public CloseableHttpClient httpClient() {
-        PoolingHttpClientConnectionManager connPool = new PoolingHttpClientConnectionManager();
-        connPool.setMaxTotal(100);
-        connPool.setDefaultMaxPerRoute(20);
-        
-        return HttpClients.custom()
-                          .setConnectionManager(connPool)
-                          .build();
-    }
-    
-    @Bean
-    @SneakyThrows
-    public freemarker.template.Configuration freemarkerConfiguration() {
-        Map<String, Object> shared = new HashMap<>();
-        shared.put("jena", jenaLookupService());
-        shared.put("codes", codeLookupService);
-        shared.put("downloadOrderDetails", downloadOrderDetailsService());
-        shared.put("permission", permission());
-        shared.put("jira", jiraService());
-        shared.put("mapServerDetails", mapServerDetailsService());
-        shared.put("geminiHelper", geminiExtractor);
-        shared.put("catalogues", catalogueService);
-        shared.put("metadataQuality", metadataQualityService);
-        
-        freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
-        config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        config.setSharedVaribles(shared);
-        config.setDefaultEncoding("UTF-8");
-        config.setTemplateLoader(new FileTemplateLoader(templates));
-        return config;
-    }
-    
-    @Bean
-    public DataRepositoryOptimizingService dataRepositoryOptimizingService() {
-        return new DataRepositoryOptimizingService(dataRepository);
-    }
-    
-    @Bean
-    GitRepoWrapper gitRepoWrapper() {
-        return new GitRepoWrapper(dataRepository, documentInfoMapper());
-    }
-    
-    @Bean
-    DocumentRepository documentRepository() {
-        return new GitDocumentRepository(
-            metadataRepresentationService(),
-            documentReadingService(),
-            documentIdentifierService(),
-            documentWritingService(),
-            bundledReaderService(),
-            gitRepoWrapper()
-        );
-    }
     
     @Bean
     public DocumentReadingService documentReadingService() {
@@ -287,11 +109,6 @@ public class ServiceConfig {
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService))
                 .addMessageConverter(new UkeofXml2EFDocumentMessageConverter())
                 .addMessageConverter(new MappingJackson2HttpMessageConverter(jacksonMapper));
-    }
-    
-    @Bean
-    public DocumentWritingService documentWritingService() {
-        return new MessageConverterWritingService(messageConverters().getConverters());
     }
     
     @Bean
@@ -315,7 +132,6 @@ public class ServiceConfig {
                 .register(ERAMMP_MODEL_SHORT, ErammpModel.class)
                 .register(ERAMMP_DATACUBE_SHORT, ErammpDatacube.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
-
                 .register(DATA_TYPE_SHORT, DataType.class);
     }
     
@@ -325,7 +141,7 @@ public class ServiceConfig {
         restTemplate.setMessageConverters(Arrays.asList(
                 new Xml2WmsCapabilitiesMessageConverter()
         ));
-        return new GetCapabilitiesObtainerService(restTemplate, mapServerDetailsService());
+        return new GetCapabilitiesObtainerService(restTemplate, mapServerDetailsService);
     }
     
     @Bean
@@ -349,17 +165,14 @@ public class ServiceConfig {
         );
     }
     
-    @Bean
-    public DocumentInfoMapper<MetadataInfo> documentInfoMapper() {
-        return new JacksonDocumentInfoMapper<>(jacksonMapper, MetadataInfo.class);
-    }
+
     
     @Bean
     public MetadataInfoBundledReaderService bundledReaderService() {
         return new MetadataInfoBundledReaderService(
             dataRepository,
             documentReadingService(),
-            documentInfoMapper(),
+            documentInfoMapper,
             metadataRepresentationService(),
             postProcessingService(),
             documentIdentifierService()
@@ -377,14 +190,9 @@ public class ServiceConfig {
     }
     
     @Bean
-    public JenaLookupService jenaLookupService() {
-        return new JenaLookupService(jenaTdb);
-    }
-    
-    @Bean
     public PostProcessingService postProcessingService() {
         ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
-                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService(), dataciteService, jenaTdb, documentIdentifierService()))
+                .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService, dataciteService, jenaTdb, documentIdentifierService()))
                 .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(jenaTdb));
         return new ClassMapPostProcessingService(mappings);
     }
@@ -413,7 +221,7 @@ public class ServiceConfig {
             vocabularyService()
         );
         SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
-        solrIndexLinkDocumentGenerator.setRepository(documentRepository());
+        solrIndexLinkDocumentGenerator.setRepository(documentRepository);
         
         ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
@@ -429,7 +237,7 @@ public class ServiceConfig {
             dataRepository,
             indexGeneratorRegistry,
             solrClient,
-            jenaLookupService(),
+            jenaLookupService,
             documentIdentifierService()
         );
     }
@@ -468,7 +276,7 @@ public class ServiceConfig {
     
     @Bean(initMethod = "initialIndex") @Qualifier("mapserver-index")
     public MapServerIndexingService mapServerIndexingService() {
-        MapServerIndexGenerator generator = new MapServerIndexGenerator(freemarkerConfiguration(), mapServerDetailsService());
+        MapServerIndexGenerator generator = new MapServerIndexGenerator(freemarkerConfiguration, mapServerDetailsService);
         return new MapServerIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),

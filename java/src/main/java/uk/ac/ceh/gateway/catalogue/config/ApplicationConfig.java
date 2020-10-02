@@ -18,7 +18,10 @@ import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.UsernameAlreadyTakenException;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.JacksonDocumentInfoMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +57,11 @@ public class ApplicationConfig {
             .registerModule(new GuavaModule())
             .registerModule(new JaxbAnnotationModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    @Bean
+    public DocumentInfoMapper<MetadataInfo> documentInfoMapper() {
+        return new JacksonDocumentInfoMapper<>(objectMapper(), MetadataInfo.class);
     }
     
     @Bean
