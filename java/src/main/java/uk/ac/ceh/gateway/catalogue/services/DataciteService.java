@@ -4,9 +4,11 @@ import com.google.common.base.Strings;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -25,10 +27,7 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
@@ -39,6 +38,7 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
  */
 @Slf4j
 @Service
+@ToString
 public class DataciteService {
     private final String api;
     private final String prefix;
@@ -58,7 +58,7 @@ public class DataciteService {
             @Value("${doi.password}") String password,
             @Value("${doi.templateLocation}") String templateLocation,
             @NonNull DocumentIdentifierService identifierService,
-            @NonNull Configuration configuration,
+            @Lazy Configuration configuration,
             @NonNull RestTemplate restTemplate
     ) {
         this.api = api;

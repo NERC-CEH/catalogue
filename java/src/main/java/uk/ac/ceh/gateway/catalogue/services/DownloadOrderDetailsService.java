@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import lombok.ToString;
 import lombok.Value;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  * The logic in this class makes use of the fact that OnlineResources have safe
  * variables (That is strings are never null)
  */
+@ToString
 public class DownloadOrderDetailsService {
     private final Pattern supportingDocUrlPattern;
     private final List<Pattern> orderManagerUrlPatterns;

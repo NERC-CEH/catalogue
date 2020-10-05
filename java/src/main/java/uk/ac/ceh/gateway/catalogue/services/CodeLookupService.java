@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Properties;
 
@@ -11,10 +12,16 @@ import java.util.Properties;
  * This service is useful for looking up the English textual value for some 
  * internal code
  */
-@AllArgsConstructor
+@ToString
+@Slf4j
 public class CodeLookupService {
     private final Properties properties;
-    
+
+    public CodeLookupService(Properties properties) {
+        this.properties = properties;
+        log.info("Created: {}", this);
+    }
+
     /**
      * Looks up a value from the property value where the key is in the 
      * form: [key].[value]

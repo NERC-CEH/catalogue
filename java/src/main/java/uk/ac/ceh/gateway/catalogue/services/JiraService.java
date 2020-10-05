@@ -1,19 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.List;
-
-import javax.ws.rs.core.MediaType;
-
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueCreate;
 import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
 
+import javax.ws.rs.core.MediaType;
+import java.util.List;
+
+@ToString
 @AllArgsConstructor
 public class JiraService {
     private final WebResource resource;

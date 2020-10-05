@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 import lombok.AllArgsConstructor;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -10,6 +11,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import java.util.List;
 
+@Service
 @AllArgsConstructor
 public class DepositRequestService {
 

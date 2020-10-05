@@ -1,11 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 import static java.lang.String.format;
 
 @Slf4j
-@Service("permission")
+@ToString
 public class PermissionService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
@@ -187,7 +187,9 @@ public class PermissionService {
             return false;
         } else {
             log.debug("getting groups for: {}", user);
-            log.debug("available groups: {}", groupStore.getGroups(user));
+            if (log.isDebugEnabled()) {
+                groupStore.getGroups(user).forEach(group -> log.debug(group.getName()));
+            }
             return groupStore.getGroups(user)
                 .stream()
                 .map(Group::getName)

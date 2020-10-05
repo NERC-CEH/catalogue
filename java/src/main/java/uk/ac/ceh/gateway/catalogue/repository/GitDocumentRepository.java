@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.repository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Service
 @AllArgsConstructor
 public class GitDocumentRepository implements DocumentRepository {
     private final DocumentTypeLookupService documentTypeLookupService;

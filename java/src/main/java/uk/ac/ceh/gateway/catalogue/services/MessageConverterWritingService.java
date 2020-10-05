@@ -6,7 +6,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.List;
  * A Document Writing service which will write a given document to an inputStream
  * of the requested mediatype
  */
-@Service
 public class MessageConverterWritingService implements DocumentWritingService {
     private final List<HttpMessageConverter<?>> messageConverters;
 
@@ -31,6 +29,7 @@ public class MessageConverterWritingService implements DocumentWritingService {
     }
     
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <T> void write(T document, MediaType contentType, OutputStream output) throws IOException, UnknownContentTypeException {
         for(HttpMessageConverter converter: messageConverters) {
             if(converter.canWrite(document.getClass(), contentType)) {

@@ -19,7 +19,7 @@ import uk.ac.ceh.components.userstore.springsecurity.PreAuthenticatedUsernameAut
 import uk.ac.ceh.components.userstore.springsecurity.RestAuthenticationEntryPoint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * The following spring JavaConfig defines the beans required the spring security
@@ -28,13 +28,13 @@ import java.util.Arrays;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired private UserStore<CatalogueUser> userstore;
-    @Autowired private GroupStore<CatalogueUser> groupstore;
+    @Autowired private UserStore<CatalogueUser> userStore;
+    @Autowired private GroupStore<CatalogueUser> groupStore;
     
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() {
-        return new ProviderManager(Arrays.asList(new PreAuthenticatedUsernameAuthenticationProvider<>(userstore, groupstore)));
+        return new ProviderManager(Collections.singletonList(new PreAuthenticatedUsernameAuthenticationProvider<>(userStore, groupStore)));
     }
     
     @Bean

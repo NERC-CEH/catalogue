@@ -5,13 +5,8 @@ import com.google.common.collect.ImmutableSet;
 import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import lombok.NonNull;
-import lombok.SneakyThrows;
-import lombok.Value;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
 
@@ -20,13 +15,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.ERROR;
-import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.WARNING;
-import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.INFO;
+import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.*;
 
 @Slf4j
 @SuppressWarnings({"unused", "WeakerAccess"})
-@Service
+@ToString
 public class MetadataQualityService {
     private final DocumentReader documentReader;
     private final Configuration config;
@@ -43,7 +36,6 @@ public class MetadataQualityService {
     );
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<List<Map<String, String>>>() {};
 
-    @Autowired
     public MetadataQualityService(@NonNull DocumentReader documentReader, @NonNull ObjectMapper objectMapper) {
         this.documentReader = documentReader;
         this.config = Configuration.defaultConfiguration()

@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import freemarker.template.Configuration;
+import lombok.val;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,25 @@ public class ApplicationContextTest {
 
     @Test
     public void testContext() {
+        assertNotNull(applicationContext.getBean("catalogueService"));
+        assertNotNull(applicationContext.getBean("codeNameLookupService"));
+        assertNotNull(applicationContext.getBean("dataciteService"));
+        assertNotNull(applicationContext.getBean("jenaLookupService"));
         assertNotNull(applicationContext.getBean("permission"));
+    }
+
+    @Test
+    public void freemarkerConfiguredCorrectly() {
+        val freemarkerConfiguration = (Configuration)applicationContext.getBean("freemarkerConfiguration");
+        assertNotNull(freemarkerConfiguration);
+        assertNotNull(freemarkerConfiguration.getSharedVariable("catalogues"));
+        assertNotNull(freemarkerConfiguration.getSharedVariable("codes"));
+        assertNotNull(freemarkerConfiguration.getSharedVariable("downloadOrderDetails"));
+        assertNotNull(freemarkerConfiguration.getSharedVariable("geminiHelper"));
+        assertNotNull(freemarkerConfiguration.getSharedVariable("jena"));
+        assertNotNull(freemarkerConfiguration.getSharedVariable("jira"));
+        assertNotNull(freemarkerConfiguration.getSharedVariable("mapServerDetails"));
+        assertNotNull(freemarkerConfiguration.getSharedVariable("metadataQuality"));
+        assertNotNull(freemarkerConfiguration.getSharedVariable("permission"));
     }
 }
