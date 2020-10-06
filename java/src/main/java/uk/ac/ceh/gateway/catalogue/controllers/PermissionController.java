@@ -1,47 +1,37 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
-
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import lombok.SneakyThrows;
-import lombok.val;
+import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.CataloguePermission;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
+import java.util.Optional;
+
+import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
+
+@Slf4j
+@ToString
 @Controller
 public class PermissionController {
     private final PermissionService permissionService;
     private final DocumentRepository documentRepository;
 
-    @Autowired
     public PermissionController(PermissionService permissionService,
                                 DocumentRepository documentRepository)
     {
         this.permissionService = permissionService;
         this.documentRepository = documentRepository;
+        log.info("Creating {}", this);
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")

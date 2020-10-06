@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
 import lombok.SneakyThrows;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -20,6 +22,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+@Slf4j
+@ToString
 public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConverter<WmsCapabilities> {
     private static final String MAP_URL = "//wms:GetMap/*/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href";
     private static final String FEATURE_INFO_URL = "//wms:GetFeatureInfo/*/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href";
@@ -36,6 +40,7 @@ public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConv
         this.layerConverter = new LayerConverter(xpath);
         this.map = xpath.compile(MAP_URL);
         this.featureInfo = xpath.compile(FEATURE_INFO_URL);
+        log.info("Creating {}", this);
     }
     
     @Override

@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.springframework.stereotype.Service;
@@ -12,11 +13,17 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class DepositRequestService {
-
     private final DocumentRepository documentRepository;
     private final SolrClient solrServer;
+
+    public DepositRequestService(DocumentRepository documentRepository, SolrClient solrServer) {
+        this.documentRepository = documentRepository;
+        this.solrServer = solrServer;
+        log.info("Creating {}", this);
+    }
 
     public void save(CatalogueUser user, DepositRequestDocument depositRequest) {
         try {

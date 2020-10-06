@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.io.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +18,8 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class UploadDocumentService {
   private final HubbubService hubbubService;
   // TODO: Only one folder is now used so this can be simplified. The folder is mounted in docker so could be a hardwired location
@@ -25,6 +27,13 @@ public class UploadDocumentService {
   private final ExecutorService threadPool;
 
   private static final String[] VISIBLE_STATUS = new String[]{"VALID", "MOVING_FROM", "MOVING_TO", "VALIDATING_HASH", "NO_HASH", "WRITING", "REMOVED_UNKNOWN", "ZIPPED_UNKNOWN", "ZIPPED_UNKNOWN_MISSING", "MOVED_UNKNOWN", "MOVED_UNKNOWN_MISSING", "UNKNOWN", "UNKNOWN_MISSING", "MISSING", "MISSING_UNKNOWN", "CHANGED_MTIME", "CHANGED_HASH", "INVALID", "MOVING_FROM_ERROR", "MOVING_TO_ERROR"};
+
+  public UploadDocumentService(HubbubService hubbubService, Map<String, File> folders, ExecutorService threadPool) {
+    this.hubbubService = hubbubService;
+    this.folders = folders;
+    this.threadPool = threadPool;
+    log.info("Creating {}", this);
+  }
 
   private UploadFile convertJSONToUploadFile(String folder, JsonNode item) {
     val uploadFile = new UploadFile();

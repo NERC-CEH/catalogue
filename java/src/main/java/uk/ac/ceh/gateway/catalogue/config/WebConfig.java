@@ -95,6 +95,7 @@ import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
 
+import javax.annotation.PostConstruct;
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -191,6 +192,24 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired private DocumentWritingService documentWritingService;
     @Autowired private GroupStore<CatalogueUser> groupStore;
     @Autowired private HubbubService hubbubService;
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.addAll(messageConverters());
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new ActiveUserHandlerMethodArgumentResolver());
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry
+                .addResourceHandler("/static/**")
+                .addResourceLocations("/static/")
+                .setCacheControl(CacheControl.maxAge(2, TimeUnit.DAYS));
+    }
 
     @Bean
     public DocumentRepository documentRepository() {
@@ -290,8 +309,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    @SneakyThrows
     public freemarker.template.Configuration freemarkerConfiguration() {
+        return new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
+    }
+
+    @SneakyThrows
+    @PostConstruct
+    public void configureFreemarker() {
         Map<String, Object> shared = new HashMap<>();
         shared.put("catalogues", catalogueService);
         shared.put("codes", codeNameLookupService());
@@ -305,12 +329,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         log.info("Freemarker shared variables:");
         shared.forEach((key, value) -> log.info("{}: {}", key, value));
 
-        freemarker.template.Configuration config = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_22);
+        val config = freemarkerConfiguration();
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         config.setSharedVaribles(shared);
         config.setDefaultEncoding("UTF-8");
         config.setTemplateLoader(new FileTemplateLoader(templates));
-        return config;
     }
 
     @Bean
@@ -535,21 +558,21 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Bean(initMethod = "initialIndex") @Qualifier("solr-index")
     public SolrIndexingService<MetadataDocument> documentIndexingService() {
-        SolrIndexMetadataDocumentGenerator metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(
+        val metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(
                 codeNameLookupService(),
                 documentIdentifierService(),
                 vocabularyService()
         );
-        SolrIndexLinkDocumentGenerator solrIndexLinkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
-        solrIndexLinkDocumentGenerator.setRepository(documentRepository());
+        val linkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
+        linkDocumentGenerator.setRepository(documentRepository());
 
-        ClassMap<IndexGenerator<?, SolrIndex>> mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
+        val mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
                 .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeNameLookupService()))
-                .register(LinkDocument.class, solrIndexLinkDocumentGenerator)
+                .register(LinkDocument.class, linkDocumentGenerator)
                 .register(MetadataDocument.class, metadataDocumentGenerator);
 
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry<>(mappings);
-        solrIndexLinkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
+        linkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
 
         return new SolrIndexingService<>(
                 bundledReaderService(),
@@ -695,23 +718,5 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                     new HeaderContentNegotiationStrategy(),
                     new FixedContentNegotiationStrategy(MediaType.TEXT_HTML)
             ));
-    }
-
-    @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.addAll(messageConverters());
-    }
-    
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new ActiveUserHandlerMethodArgumentResolver());
-    }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry
-            .addResourceHandler("/static/**")
-            .addResourceLocations("/static/")
-            .setCacheControl(CacheControl.maxAge(2, TimeUnit.DAYS));
     }
 }

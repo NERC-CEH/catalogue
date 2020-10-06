@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +28,10 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_SHORT;
  * The following emulates a Web accessible Folder of metadata records 
  * for NERC from the current catalogue
  */
+@Slf4j
+@ToString
 @Controller
 @RequestMapping("documents/nerc/waf")
-@SuppressWarnings("unused")
 public class NERCWafController {
     private final DataRepository<CatalogueUser> repo;
     private final MetadataListingService listing;
@@ -38,6 +41,7 @@ public class NERCWafController {
                                 MetadataListingService listing) {
         this.repo = repo;
         this.listing = listing;
+        log.info("Creating {}", this);
     }
     
     @RequestMapping(value="/",

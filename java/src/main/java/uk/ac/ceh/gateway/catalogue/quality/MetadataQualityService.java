@@ -18,7 +18,6 @@ import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.*;
 
 @Slf4j
-@SuppressWarnings({"unused", "WeakerAccess"})
 @ToString
 public class MetadataQualityService {
     private final DocumentReader documentReader;
@@ -45,6 +44,7 @@ public class MetadataQualityService {
                 Option.DEFAULT_PATH_LEAF_TO_NULL,
                 Option.SUPPRESS_EXCEPTIONS
             );
+        log.info("Creating {}", this);
     }
 
     @SneakyThrows

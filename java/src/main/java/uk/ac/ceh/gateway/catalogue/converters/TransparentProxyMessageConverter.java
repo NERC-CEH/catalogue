@@ -1,11 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
-import lombok.Data;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -18,12 +14,24 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
+import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
 import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
 
-@Data
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
+
+@Slf4j
+@ToString
 public class TransparentProxyMessageConverter implements HttpMessageConverter<TransparentProxy> {
     private final CloseableHttpClient httpClient;
-    
+
+    public TransparentProxyMessageConverter(CloseableHttpClient httpClient) {
+        this.httpClient = httpClient;
+        log.info("Creating {}", this);
+    }
+
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return false;

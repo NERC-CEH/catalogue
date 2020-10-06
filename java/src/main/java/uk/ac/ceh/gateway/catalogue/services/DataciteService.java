@@ -8,7 +8,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -27,7 +26,10 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
@@ -36,9 +38,9 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
  * A service which interacts with the datacite rest api to obtain a DOI for a
  * GeminiMetadata record
  */
-@Slf4j
 @Service
-@ToString
+@Slf4j
+@ToString(exclude = "password")
 public class DataciteService {
     private final String api;
     private final String prefix;
@@ -58,7 +60,7 @@ public class DataciteService {
             @Value("${doi.password}") String password,
             @Value("${doi.templateLocation}") String templateLocation,
             @NonNull DocumentIdentifierService identifierService,
-            @Lazy Configuration configuration,
+            @NonNull Configuration configuration,
             @NonNull RestTemplate restTemplate
     ) {
         this.api = api;
@@ -70,7 +72,7 @@ public class DataciteService {
         this.identifierService = identifierService;
         this.configuration = configuration;
         this.restTemplate = restTemplate;
-        log.info("Datacite service created");
+        log.info("Creating {}", this);
     }
 
     /**

@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import lombok.ToString;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
  * The logic in this class makes use of the fact that OnlineResources have safe
  * variables (That is strings are never null)
  */
+@Slf4j
 @ToString
 public class DownloadOrderDetailsService {
     private final Pattern supportingDocUrlPattern;
@@ -37,6 +39,7 @@ public class DownloadOrderDetailsService {
         this.orderManagerUrlPatterns = orderManagerUrlPatterns.stream()
             .map(Pattern::compile)
             .collect(Collectors.toList());
+        log.info("Creating {}", this);
     }
 
     public DownloadOrder from(List<OnlineResource> onlineResources) {

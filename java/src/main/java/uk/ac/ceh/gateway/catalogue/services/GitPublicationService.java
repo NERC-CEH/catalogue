@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
@@ -16,11 +17,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class GitPublicationService implements PublicationService {
     private final GroupStore<CatalogueUser> groupStore;
     private final Workflow workflow;
     private final DocumentRepository documentRepository;
+
+    public GitPublicationService(GroupStore<CatalogueUser> groupStore, Workflow workflow, DocumentRepository documentRepository) {
+        this.groupStore = groupStore;
+        this.workflow = workflow;
+        this.documentRepository = documentRepository;
+        log.info("Creating {}", this);
+    }
 
     @Override
     public StateResource current(CatalogueUser user, String fileIdentifier) {

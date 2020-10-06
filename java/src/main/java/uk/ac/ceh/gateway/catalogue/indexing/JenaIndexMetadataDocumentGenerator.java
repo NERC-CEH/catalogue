@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -17,9 +18,15 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 /**
  * A triple extractor for generic metadata documents.
  */
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, List<Statement>> {
     private final DocumentIdentifierService documentIdentifierService;
+
+    public JenaIndexMetadataDocumentGenerator(DocumentIdentifierService documentIdentifierService) {
+        this.documentIdentifierService = documentIdentifierService;
+        log.info("Creating {}", this);
+    }
 
     @Override
     public List<Statement> generateIndex(MetadataDocument document) {

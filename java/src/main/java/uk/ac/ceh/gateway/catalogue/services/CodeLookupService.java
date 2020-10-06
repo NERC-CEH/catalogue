@@ -12,14 +12,14 @@ import java.util.Properties;
  * This service is useful for looking up the English textual value for some 
  * internal code
  */
-@ToString
 @Slf4j
+@ToString
 public class CodeLookupService {
     private final Properties properties;
 
     public CodeLookupService(Properties properties) {
         this.properties = properties;
-        log.info("Created: {}", this);
+        log.info("Creating {}", this);
     }
 
     /**

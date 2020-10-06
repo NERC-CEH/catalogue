@@ -1,42 +1,36 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueException;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
+@Slf4j
+@ToString
 public class CatalogueController {
     private final DocumentRepository documentRepository;
     private final CatalogueService catalogueService;
 
-    @Autowired
     public CatalogueController(
         @NonNull DocumentRepository documentRepository,
         @NonNull CatalogueService catalogueService
     ) {
         this.documentRepository = documentRepository;
         this.catalogueService = catalogueService;
+        log.info("Creating {}", this);
     }
 
     @RequestMapping(value = "catalogues", method = RequestMethod.GET)
@@ -44,7 +38,7 @@ public class CatalogueController {
     public  HttpEntity<List<Catalogue>> catalogues(
         @RequestParam(value = "catalogue", required = false) String catalogue,
         @RequestParam(value = "identifier", required = false)String identifier
-    ) throws DocumentRepositoryException {
+    ) {
         List<Catalogue> catalogues = new ArrayList<>(catalogueService.retrieveAll());
         
         try {

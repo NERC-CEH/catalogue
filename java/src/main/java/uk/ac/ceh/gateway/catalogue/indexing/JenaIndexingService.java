@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.ReadWrite;
@@ -19,6 +21,8 @@ import java.util.List;
  * will then go into a Jena Triple Store for later retrieval.
  * @param <D> type of documents to be read from the DataRepository
  */
+@Slf4j
+@ToString
 public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Statement>> {
     private final DocumentIdentifierService documentIdentifierService;
     private final Dataset jenaTdb;
@@ -33,6 +37,7 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
         super(reader, listingService, repo, indexGenerator);
         this.documentIdentifierService = documentIdentifierService;
         this.jenaTdb = jenaTdb;
+        log.info("Creating {}", this);
     }
     
     @Override

@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.upload;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 @Slf4j
 @Service
+@ToString(exclude = "password")
 public class HubbubService {
     private final RestTemplate restTemplate;
     private final String address;
@@ -35,8 +37,7 @@ public class HubbubService {
         this.address = address;
         this.username = username;
         this.password = password;
-        log.info("Hubbub client created for: {}", this.address);
-        log.debug("RestTemplate: {}", restTemplate);
+        log.info("Creating {}", this);
     }
 
     public JsonNode get(String path, Integer page, Integer size, String... status) {

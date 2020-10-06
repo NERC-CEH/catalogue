@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -18,6 +20,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
+@ToString
 public class CitationService {
     public final String nercDoiPrefix;
 
@@ -25,6 +29,7 @@ public class CitationService {
             @Value("${doi.prefix}") String nercDoiPrefix
     ) {
         this.nercDoiPrefix = nercDoiPrefix;
+        log.info("Creating {}", this);
     }
     
     /**

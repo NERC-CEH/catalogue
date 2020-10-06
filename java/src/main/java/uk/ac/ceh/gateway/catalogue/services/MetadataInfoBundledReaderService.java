@@ -1,7 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -9,7 +10,8 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class MetadataInfoBundledReaderService implements BundledReaderService<MetadataDocument> {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentReadingService documentReader;
@@ -17,7 +19,22 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
     private final DocumentTypeLookupService representationService;
     private final PostProcessingService<MetadataDocument> postProcessingService;
     private final DocumentIdentifierService documentIdentifierService;
-    
+
+    public MetadataInfoBundledReaderService(DataRepository<CatalogueUser> repo, DocumentReadingService documentReader,
+                                            DocumentInfoMapper<MetadataInfo> documentInfoMapper,
+                                            DocumentTypeLookupService representationService,
+                                            PostProcessingService<MetadataDocument> postProcessingService,
+                                            DocumentIdentifierService documentIdentifierService
+    ) {
+        this.repo = repo;
+        this.documentReader = documentReader;
+        this.documentInfoMapper = documentInfoMapper;
+        this.representationService = representationService;
+        this.postProcessingService = postProcessingService;
+        this.documentIdentifierService = documentIdentifierService;
+        log.info("Creating {}", this);
+    }
+
     @Override
     @SneakyThrows
     public MetadataDocument readBundle(String file) {

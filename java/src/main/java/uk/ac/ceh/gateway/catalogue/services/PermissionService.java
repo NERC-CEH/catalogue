@@ -41,7 +41,7 @@ public class PermissionService {
         this.repo = repo;
         this.documentInfoMapper = documentInfoMapper;
         this.groupStore = groupStore;
-        log.info("Permission service created");
+        log.info("Creating {}", this);
     }
     
     public boolean toAccess(CatalogueUser user, String file, String permission) {

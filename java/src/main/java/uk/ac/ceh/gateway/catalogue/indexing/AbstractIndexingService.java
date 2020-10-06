@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.AllArgsConstructor;
-import lombok.val;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -27,13 +27,26 @@ import java.util.List;
  * @param <I> indexable representation of a given document
  */
 @Slf4j
-@AllArgsConstructor
+@ToString
 public abstract class AbstractIndexingService<D, I> implements DocumentIndexingService {
     private final BundledReaderService<D> reader;
     private final DocumentListingService listingService;
     private final DataRepository<?> repo;
     private final IndexGenerator<D, I> indexGenerator;
-    
+
+    public AbstractIndexingService(
+            BundledReaderService<D> reader,
+            DocumentListingService listingService,
+            DataRepository<?> repo,
+            IndexGenerator<D, I> indexGenerator
+    ) {
+        this.reader = reader;
+        this.listingService = listingService;
+        this.repo = repo;
+        this.indexGenerator = indexGenerator;
+        log.info("Creating {}", this);
+    }
+
     protected abstract void clearIndex() throws DocumentIndexingException;
     protected abstract void index(I toIndex) throws Exception;
     

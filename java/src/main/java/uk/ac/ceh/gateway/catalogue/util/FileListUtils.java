@@ -1,27 +1,23 @@
 package uk.ac.ceh.gateway.catalogue.util;
 
-import java.io.File;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileListUtils {
 
     public static List<File> listFilesAndDirs (File directory, IOFileFilter fileFilter, IOFileFilter directoryFilter) {
-        return FileUtils.listFilesAndDirs(directory, fileFilter, fileFilter)
-            .stream()
-            .collect(Collectors.toList());
+        return new ArrayList<>(FileUtils.listFilesAndDirs(directory, fileFilter, fileFilter));
     }
 
     public static List<File> listFiles (File directory, IOFileFilter fileFilter, IOFileFilter directoryFilter) {
-        return FileUtils.listFiles(directory, fileFilter, fileFilter)
-            .stream()
-            .collect(Collectors.toList());
+        return new ArrayList<>(FileUtils.listFiles(directory, fileFilter, fileFilter));
     }
 
     public static List<File> listFilesAndDirs (File directory) {
@@ -36,7 +32,7 @@ public class FileListUtils {
         if (!directory.exists()) return Lists.newArrayList();
         return listFiles(directory, fileFilter, fileFilter)
             .stream()
-            .map(file -> { return file.getAbsolutePath(); })
+            .map(File::getAbsolutePath)
             .collect(Collectors.toList());
     }
 
@@ -44,7 +40,7 @@ public class FileListUtils {
         if (!directory.exists()) return Lists.newArrayList();
         return listFilesAndDirs(directory, fileFilter, fileFilter)
             .stream()
-            .map(file -> { return file.getAbsolutePath(); })
+            .map(File::getAbsolutePath)
             .collect(Collectors.toList());
     }
 

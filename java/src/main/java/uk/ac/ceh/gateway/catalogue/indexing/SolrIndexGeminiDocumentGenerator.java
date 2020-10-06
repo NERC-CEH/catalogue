@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -17,7 +18,8 @@ import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGene
  * Processes a GeminiDocument and populates a SolrIndex object will all of the
  * bits of the document transferred. Ready to be indexed by Solr
  */
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
     private static final String OGL_PATTERN1 = ".*open-government-licence.*\\/plain$";
     private static final String OGL_PATTERN2 = ".*OGL.*\\/plain$";
@@ -26,7 +28,18 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     private final TopicIndexer topicIndexer;
     private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;
     private final CodeLookupService codeLookupService;
-    
+
+    public SolrIndexGeminiDocumentGenerator(
+            TopicIndexer topicIndexer,
+            SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex,
+            CodeLookupService codeLookupService
+    ) {
+        this.topicIndexer = topicIndexer;
+        this.metadataDocumentSolrIndex = metadataDocumentSolrIndex;
+        this.codeLookupService = codeLookupService;
+        log.info("Creating {}", this);
+    }
+
     @Override
     public SolrIndex generateIndex(GeminiDocument document) {
         return metadataDocumentSolrIndex

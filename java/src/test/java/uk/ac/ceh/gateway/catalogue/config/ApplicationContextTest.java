@@ -37,15 +37,44 @@ public class ApplicationContextTest {
     @Test
     public void freemarkerConfiguredCorrectly() {
         val freemarkerConfiguration = (Configuration)applicationContext.getBean("freemarkerConfiguration");
-        assertNotNull(freemarkerConfiguration);
-        assertNotNull(freemarkerConfiguration.getSharedVariable("catalogues"));
-        assertNotNull(freemarkerConfiguration.getSharedVariable("codes"));
-        assertNotNull(freemarkerConfiguration.getSharedVariable("downloadOrderDetails"));
-        assertNotNull(freemarkerConfiguration.getSharedVariable("geminiHelper"));
-        assertNotNull(freemarkerConfiguration.getSharedVariable("jena"));
-        assertNotNull(freemarkerConfiguration.getSharedVariable("jira"));
-        assertNotNull(freemarkerConfiguration.getSharedVariable("mapServerDetails"));
-        assertNotNull(freemarkerConfiguration.getSharedVariable("metadataQuality"));
-        assertNotNull(freemarkerConfiguration.getSharedVariable("permission"));
+        assertNotNull(
+                "Freemarker configuration not found",
+                freemarkerConfiguration
+        );
+        assertNotNull(
+                "Freemarker missing shared variable: catalogue",
+                freemarkerConfiguration.getSharedVariable("catalogues")
+        );
+        assertNotNull(
+                "Freemarker missing shared variable: codes",
+                freemarkerConfiguration.getSharedVariable("codes")
+        );
+        assertNotNull("Freemarker missing shared variable: downloadOrderDetails",
+                freemarkerConfiguration.getSharedVariable("downloadOrderDetails")
+        );
+        assertNotNull(
+                "Freemarker missing shared variable: geminiHelper",
+                freemarkerConfiguration.getSharedVariable("geminiHelper")
+        );
+        assertNotNull(
+                "Freemarker missing shared variable: jena",
+                freemarkerConfiguration.getSharedVariable("jena")
+        );
+        assertNotNull(
+                "Freemarker missing shared variable: jira",
+                freemarkerConfiguration.getSharedVariable("jira")
+        );
+        assertNotNull(
+                "Freemarker missing shared variable: mapServerDetails",
+                freemarkerConfiguration.getSharedVariable("mapServerDetails")
+        );
+        assertNotNull(
+                "Freemarker missing shared variable: metadataQuality",
+                freemarkerConfiguration.getSharedVariable("metadataQuality")
+        );
+        assertNotNull(
+                "Freemarker missing shared variable: permission",
+                freemarkerConfiguration.getSharedVariable("permission")
+        );
     }
 }

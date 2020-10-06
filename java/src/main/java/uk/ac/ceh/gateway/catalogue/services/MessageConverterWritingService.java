@@ -1,7 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -14,17 +15,21 @@ import java.util.List;
  * A Document Writing service which will write a given document to an inputStream
  * of the requested mediatype
  */
+@Slf4j
+@ToString
 public class MessageConverterWritingService implements DocumentWritingService {
     private final List<HttpMessageConverter<?>> messageConverters;
 
     public MessageConverterWritingService(
-            @Qualifier("writing") List<HttpMessageConverter<?>> messageConverters
+            List<HttpMessageConverter<?>> messageConverters
     ) {
         this.messageConverters = messageConverters;
+        log.info("Creating {}", this);
     }
 
     public MessageConverterWritingService addMessageConverter(HttpMessageConverter<?> converter) {
         messageConverters.add(converter);
+        log.info("Adding {}", converter);
         return this;
     }
     

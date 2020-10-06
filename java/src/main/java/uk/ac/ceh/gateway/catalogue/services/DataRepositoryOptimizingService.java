@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,14 @@ import java.util.Date;
 
 @Slf4j
 @Service
+@ToString
 public class DataRepositoryOptimizingService {
     private final DataRepository<CatalogueUser> repo;
     private Date lastOptimized;
 
     public DataRepositoryOptimizingService(DataRepository<CatalogueUser> repo) {
         this.repo = repo;
+        log.info("Creating {}", this);
     }
 
     @Scheduled(cron="0 0 0 * * ?")

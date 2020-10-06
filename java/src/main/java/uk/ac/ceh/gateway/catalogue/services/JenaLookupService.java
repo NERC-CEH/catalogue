@@ -20,14 +20,14 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
  * A simple lookup service powered by the jena linking database. This just looks
  * up any literals associated to a given uri
  */
-@ToString
 @Slf4j
+@ToString
 public class JenaLookupService {
     private final Dataset jenaTdb;
 
     public JenaLookupService(@NonNull Dataset jenaTdb) {
         this.jenaTdb = jenaTdb;
-        log.info("Created: {}", this);
+        log.info("Creating {}", this);
     }
 
     /**

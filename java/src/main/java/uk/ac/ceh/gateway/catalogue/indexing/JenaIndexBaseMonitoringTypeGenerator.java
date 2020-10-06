@@ -1,39 +1,36 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-import static org.apache.jena.rdf.model.ResourceFactory.createStatement;
 import org.apache.jena.rdf.model.Statement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.time.LocalDate;
-import uk.ac.ceh.gateway.catalogue.ef.Activity;
-import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
+import uk.ac.ceh.gateway.catalogue.ef.*;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.ef.Facility;
-import uk.ac.ceh.gateway.catalogue.ef.Geometry;
-import uk.ac.ceh.gateway.catalogue.ef.Link;
 import uk.ac.ceh.gateway.catalogue.ef.Link.TimedLink;
-import uk.ac.ceh.gateway.catalogue.ef.Network;
-import uk.ac.ceh.gateway.catalogue.ef.Programme;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
-import static org.apache.jena.rdf.model.ResourceFactory.createResource;
-import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
 
 /**
  * The following code is a Jena translation of the linking mechanism defined for
  * UKEOF. This is defined in uk.ac.ceh.ukeof.linkstore.guava.Linker
  */
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<BaseMonitoringType, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;
-    
+
+    public JenaIndexBaseMonitoringTypeGenerator(JenaIndexMetadataDocumentGenerator generator) {
+        this.generator = generator;
+        log.info("Creating {}", this);
+    }
+
     @Override
     public List<Statement> generateIndex(BaseMonitoringType baseMonitoringType) throws DocumentIndexingException {
         List<Statement> links = generator.generateIndex(baseMonitoringType);

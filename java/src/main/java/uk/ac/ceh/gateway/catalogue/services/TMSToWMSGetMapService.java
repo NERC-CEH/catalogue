@@ -1,5 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -8,6 +11,8 @@ import java.util.stream.Collectors;
  * The following service will take a wms url, layer and tms coordiantes then
  * return a WMS GetMap Request url for the desired tile.
  */
+@Slf4j
+@ToString
 public class TMSToWMSGetMapService {
     private final DecimalFormat bboxPartFormat;
     private final int height, width;
@@ -16,22 +21,22 @@ public class TMSToWMSGetMapService {
         this. bboxPartFormat = new DecimalFormat("#.##");
         this.height = 256;
         this.width = 256;
+        log.info("Creating {}", this);
     }
     
     public String getWMSMapRequest(String url, String layer, int z, int x, int y) {
-        return new StringBuilder(convertToValidWMSEndpoint(url))
-                .append("LAYERS=").append(layer)
-                .append("&BBOX=").append(getBBoxParam(z,x,y))
-                .append("&WIDTH=").append(Integer.toString(width))
-                .append("&HEIGHT=").append(Integer.toString(height))
-                .append("&STYLES=")
-                .append("&TRANSPARENT=TRUE")
-                .append("&FORMAT=image%2Fpng")
-                .append("&SRS=EPSG%3A3857")
-                .append("&VERSION=1.1.1")
-                .append("&SERVICE=WMS")
-                .append("&REQUEST=GetMap&")
-                .toString();
+        return convertToValidWMSEndpoint(url) +
+                "LAYERS=" + layer +
+                "&BBOX=" + getBBoxParam(z, x, y) +
+                "&WIDTH=" + width +
+                "&HEIGHT=" + height +
+                "&STYLES=" +
+                "&TRANSPARENT=TRUE" +
+                "&FORMAT=image%2Fpng" +
+                "&SRS=EPSG%3A3857" +
+                "&VERSION=1.1.1" +
+                "&SERVICE=WMS" +
+                "&REQUEST=GetMap&";
     }
     
     /**
@@ -44,7 +49,7 @@ public class TMSToWMSGetMapService {
      */
     public String getBBoxParam(int z, int x, int y) {
         return Arrays.stream(getBBox(z,x,y))
-                     .mapToObj((p) -> bboxPartFormat.format(p))
+                     .mapToObj(bboxPartFormat::format)
                      .collect(Collectors.joining(","));
     }
     

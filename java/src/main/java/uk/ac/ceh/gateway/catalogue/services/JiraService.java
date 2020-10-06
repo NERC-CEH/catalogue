@@ -2,8 +2,8 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import lombok.AllArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
@@ -13,10 +13,15 @@ import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+@Slf4j
 @ToString
-@AllArgsConstructor
 public class JiraService {
     private final WebResource resource;
+
+    public JiraService(WebResource resource) {
+        this.resource = resource;
+        log.info("Creating {}", this);
+    }
 
     public JiraIssueCreate create (JiraIssueBuilder builder) {
         String path = "issue";

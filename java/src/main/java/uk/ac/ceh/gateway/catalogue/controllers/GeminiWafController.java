@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,17 +27,19 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_SHORT;
  * The following emulates a Web accessible Folder of gemini metadata records 
  * from the current catalogue
  */
+@Slf4j
+@ToString
 @Controller
 @RequestMapping("documents/gemini/waf")
 public class GeminiWafController {
     private final DataRepository<CatalogueUser> repo;
     private final MetadataListingService listing;
-    
-    @Autowired
+
     public GeminiWafController( DataRepository<CatalogueUser> repo,
                                 MetadataListingService listing) {
         this.repo = repo;
         this.listing = listing;
+        log.info("Creating {}", this);
     }
     
     @RequestMapping(value="/",

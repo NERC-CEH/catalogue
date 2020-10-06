@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -19,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class GitDocumentRepository implements DocumentRepository {
     private final DocumentTypeLookupService documentTypeLookupService;
     private final DocumentReadingService documentReader;
@@ -27,7 +29,24 @@ public class GitDocumentRepository implements DocumentRepository {
     private final DocumentWritingService documentWriter;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final GitRepoWrapper repo;
-    
+
+    public GitDocumentRepository(
+            DocumentTypeLookupService documentTypeLookupService,
+            DocumentReadingService documentReader,
+            DocumentIdentifierService documentIdentifierService,
+            DocumentWritingService documentWriter,
+            BundledReaderService<MetadataDocument> documentBundleReader,
+            GitRepoWrapper repo
+    ) {
+        this.documentTypeLookupService = documentTypeLookupService;
+        this.documentReader = documentReader;
+        this.documentIdentifierService = documentIdentifierService;
+        this.documentWriter = documentWriter;
+        this.documentBundleReader = documentBundleReader;
+        this.repo = repo;
+        log.info("Creating {}", this);
+    }
+
     @Override
     public MetadataDocument read(
         String file
