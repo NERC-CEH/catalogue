@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.Data;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
 import java.util.Arrays;
@@ -14,9 +16,15 @@ import java.util.stream.Collectors;
  * Defines a listing service which will filter a list of filenames into a list
  * of document names if there exists filenames with the given extensions
  */
+@Slf4j
+@ToString
 public class ExtensionDocumentListingService implements DocumentListingService {
     private final List<String> extensions = Arrays.asList("meta", "raw");
-    
+
+    public ExtensionDocumentListingService() {
+        log.info("Creating {}", this);
+    }
+
     @Override
     public List<String> filterFilenames(Collection<String> files) {
         //Scan through the files list, return any which there exists a .meta and .raw

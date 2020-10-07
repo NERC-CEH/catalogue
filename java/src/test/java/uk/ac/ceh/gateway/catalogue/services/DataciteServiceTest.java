@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -24,8 +25,8 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
@@ -36,7 +37,8 @@ public class DataciteServiceTest {
     private MockRestServiceServer mockServer;
     @Mock
     DocumentIdentifierService identifierService;
-    @Mock Template template;
+    @Mock
+    Configuration configuration;
 
     @Before
     @SneakyThrows
@@ -48,8 +50,9 @@ public class DataciteServiceTest {
                 "Test publisher",
                 "username",
                 "password",
+                "datacite/datacite.ftl",
                 identifierService,
-                template,
+                configuration,
                 restTemplate
         );
         mockServer = MockRestServiceServer.createServer(restTemplate);
@@ -73,6 +76,7 @@ public class DataciteServiceTest {
 
         //Then
         assertTrue("Expected document to be updatable", dataciteUpdatable);
+        verifyZeroInteractions(configuration, identifierService);
     }
 
     @Test
@@ -93,6 +97,7 @@ public class DataciteServiceTest {
 
         //Then
         assertFalse("Expected document to not be updatable", dataciteUpdatable);
+        verifyZeroInteractions(configuration, identifierService);
     }
 
     @Test
@@ -113,6 +118,7 @@ public class DataciteServiceTest {
 
         //Then
         assertTrue("Expected document to be updatable", dataciteUpdatable);
+        verifyZeroInteractions(configuration, identifierService);
     }
 
     @Test
@@ -126,9 +132,11 @@ public class DataciteServiceTest {
 
         //Then
         assertFalse("Expected document to not be updatable", dataciteUpdatable);
+        verifyZeroInteractions(configuration, identifierService);
     }
 
     @Test
+    @SneakyThrows
     public void checkThatPostsToRestEndpointWhenValid() {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
@@ -140,6 +148,7 @@ public class DataciteServiceTest {
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
+        given(configuration.getTemplate("datacite/datacite.ftl")).willReturn(mock(Template.class));
 
         // TODO: in future could look at the xml content sent to Datacite
         mockServer

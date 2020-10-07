@@ -1,21 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+@Slf4j
+@ToString
 public class HashMapDocumentTypeLookupService implements DocumentTypeLookupService {
     private final Map<String, Class<? extends MetadataDocument>> lookup;
     
     public HashMapDocumentTypeLookupService() {
         lookup = new HashMap<>();
+        log.info("Creating {}", this);
     }
     
     @Override
     public HashMapDocumentTypeLookupService register(String name, Class<? extends MetadataDocument> metadataType) {
         lookup.put(name, metadataType);
+        log.info("Registering {} for {}", name, metadataType);
         return this;
     }
     

@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -25,10 +25,16 @@ import static java.util.Objects.nonNull;
  * The following service is a 'helper' which produces text which is useful in
  * the creation of map server mapfiles.
  */
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class MapServerDetailsService {
     private final String hostUrl;
-    
+
+    public MapServerDetailsService(String hostUrl) {
+        this.hostUrl = hostUrl;
+        log.info("Creating {}", this);
+    }
+
     /**
      * For the given document, return the potential wms endpoint where the 
      * service could be hosted.
@@ -159,7 +165,7 @@ public class MapServerDetailsService {
                 .toUriString();
     }
     
-    @Value
+    @lombok.Value
     public static class MapBucketDetails {
         private final BigDecimal min, max;
         private final int buckets;

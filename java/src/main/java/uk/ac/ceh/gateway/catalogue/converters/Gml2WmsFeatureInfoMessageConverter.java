@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -26,6 +28,8 @@ import java.util.Map;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
 
+@Slf4j
+@ToString
 public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConverter<WmsFeatureInfo> {
     private static final String LAYERS = "//msGMLOutput/*";
     private static final String FEATURES = "*[substring(name(),string-length(name())-7) = '_feature']";
@@ -39,6 +43,7 @@ public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConve
         this.layers = xpath.compile(LAYERS);
         this.features = xpath.compile(FEATURES);
         this.attributes = xpath.compile(ATTRIBUTES);
+        log.info("Creating {}", this);
     }
     
     @Override
@@ -89,7 +94,7 @@ public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConve
         return toReturn;
     }
 
-    private Map<String,String> getAttributes(NodeList nodes) throws XPathExpressionException {
+    private Map<String,String> getAttributes(NodeList nodes) {
         Map<String,String> attrs = new HashMap<>();
         for(int i=0; i<nodes.getLength(); i++){
             Node node = nodes.item(i);
@@ -99,7 +104,7 @@ public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConve
     }
 
     @Override
-    protected void writeInternal(WmsFeatureInfo t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    protected void writeInternal(WmsFeatureInfo t, HttpOutputMessage outputMessage) throws HttpMessageNotWritableException {
         throw new HttpMessageNotWritableException("I will not be able to write that document for you");
     }
     

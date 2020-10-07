@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.quality;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,11 +18,20 @@ import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 import java.util.stream.Collectors;
 
 @Controller
-@SuppressWarnings("unused")
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class QualityController {
     private final MetadataQualityService metadataQualityService;
     private final MetadataListingService metadataListingService;
+
+    public QualityController(
+            MetadataQualityService metadataQualityService,
+            MetadataListingService metadataListingService
+    ) {
+        this.metadataQualityService = metadataQualityService;
+        this.metadataListingService = metadataListingService;
+        log.info("Creating {}", this);
+    }
 
     @PreAuthorize("@permission.userCanEditRestrictedFields(#catalogue)")
     @GetMapping(value = "{catalogue}/quality", produces = "application/json")
@@ -33,7 +43,7 @@ public class QualityController {
         return ResponseEntity.ok(
             new CatalogueResults(
                 metadataListingService.getPublicDocumentsOfCatalogue(catalogue).stream()
-                    .map(id -> metadataQualityService.check(id))
+                    .map(metadataQualityService::check)
                     .collect(Collectors.toList())
             )
         );
@@ -48,5 +58,9 @@ public class QualityController {
         @PathVariable("id") String id
     ) {
         return ResponseEntity.ok(metadataQualityService.check(id));
+    }
+
+    public MetadataListingService getMetadataListingService() {
+        return metadataListingService;
     }
 }

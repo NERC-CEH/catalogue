@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -14,10 +14,16 @@ import java.util.concurrent.Executors;
  * methods to return without blocking.
  */
 @Slf4j
-@AllArgsConstructor
+@ToString
 public class AsyncDocumentIndexingService implements DocumentIndexingService {
     private final DocumentIndexingService proxy;
     private final ExecutorService executor;
+
+    public AsyncDocumentIndexingService(DocumentIndexingService proxy, ExecutorService executor) {
+        this.proxy = proxy;
+        this.executor = executor;
+        log.info("Crating {}", this);
+    }
 
     /**
      * Create an async document indexing service which uses a single thread

@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -24,6 +26,8 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATACITE_XML_VALUE;
 /**
  * The following controller will handle the generation of Datacite requests.
  */
+@Slf4j
+@ToString
 @Controller
 public class DataciteController {
     public final static String DATACITE_ROLE = "ROLE_DATACITE";
@@ -40,6 +44,7 @@ public class DataciteController {
         this.repo = repo;
         this.identifierService = identifierService;
         this.dataciteService = dataciteService;
+        log.info("Creating {}", this);
     }
         
     @RequestMapping(value    = "documents/{file}/datacite.xml",

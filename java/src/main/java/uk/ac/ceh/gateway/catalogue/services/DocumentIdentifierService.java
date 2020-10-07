@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
@@ -18,12 +19,19 @@ import java.util.UUID;
  * which can be used to create a valid url in the above scheme. This class is
  * responsible for doing just that.
  */
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class DocumentIdentifierService {
     @Getter
     private final String baseUri;
     private final char replacement;
-    
+
+    public DocumentIdentifierService(String baseUri, char replacement) {
+        this.baseUri = baseUri;
+        this.replacement = replacement;
+        log.info("Creating {}", this);
+    }
+
     /**
      * Takes a document describing identifier and derives a new one which 
      * replaces any url (or filesystem) invalid characters

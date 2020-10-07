@@ -1,31 +1,32 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
+import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
+import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
+
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
+
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
-import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
-import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
-import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
 /**
  * The following simple controller just hands off a request to on of our 
  * templates
  */
+@Slf4j
+@ToString
 @CrossOrigin
 @Controller
 @RequestMapping(value="maps")
@@ -33,11 +34,11 @@ public class MapViewerController {
     private final static String INFO_FORMAT = "INFO_FORMAT";
     private final RestTemplate rest;
     private final MapServerDetailsService mapServerDetailsService;
-    
-    @Autowired
+
     public MapViewerController(RestTemplate rest, MapServerDetailsService mapServerDetailsService) {
         this.rest = rest;
         this.mapServerDetailsService = mapServerDetailsService;
+        log.info("Creating {}", this);
     }
    
     @RequestMapping(method = RequestMethod.GET)

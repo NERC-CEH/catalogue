@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.converters;
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -20,14 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@ToString
 public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConverter<T> {
-    
     private final Configuration configuration;
     private final Class<T> clazz;
     
     public Object2TemplatedMessageConverter(Class<T> clazz, Configuration configuration) {
         this.clazz = clazz;
         this.configuration = configuration;
+        log.info("Creating {}", this);
     }  
 
     @Override

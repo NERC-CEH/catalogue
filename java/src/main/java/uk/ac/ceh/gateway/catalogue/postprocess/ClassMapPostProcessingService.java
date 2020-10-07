@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 
 /**
@@ -8,10 +9,17 @@ import uk.ac.ceh.gateway.catalogue.util.ClassMap;
  * which is located from the given ClassMap Lookup
  * @see ClassMap
  */
-@AllArgsConstructor
+@Slf4j
+@ToString
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ClassMapPostProcessingService implements PostProcessingService<Object> {
     private final ClassMap<PostProcessingService> lookup;
-    
+
+    public ClassMapPostProcessingService(ClassMap<PostProcessingService> lookup) {
+        this.lookup = lookup;
+        log.info("Creating {}", this);
+    }
+
     @Override
     public void postProcess(Object value) throws PostProcessingException {
         PostProcessingService bestService = lookup.get(value.getClass());

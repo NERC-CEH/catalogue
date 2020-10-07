@@ -1,28 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.postprocess;
 
-import org.apache.jena.query.Dataset;
-import org.apache.jena.query.ParameterizedSparqlString;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ReadWrite;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import uk.ac.ceh.gateway.catalogue.ef.*;
+import uk.ac.ceh.gateway.catalogue.ef.Link.TimedLink;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import lombok.Data;
-import java.time.LocalDate;
-import uk.ac.ceh.gateway.catalogue.ef.Activity;
-import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
-import uk.ac.ceh.gateway.catalogue.ef.Facility;
-import uk.ac.ceh.gateway.catalogue.ef.Lifespan;
-import uk.ac.ceh.gateway.catalogue.ef.Link;
-import uk.ac.ceh.gateway.catalogue.ef.Link.TimedLink;
-import uk.ac.ceh.gateway.catalogue.ef.Network;
-import uk.ac.ceh.gateway.catalogue.ef.Programme;
+
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 /**
@@ -31,13 +23,19 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
  * 
  * The logic in here is based upon: uk.ac.ceh.ukeof.linkstore.guava.LinkWrapper
  */
-@Data
+@Slf4j
+@ToString
 public class BaseMonitoringTypePostProcessingService implements PostProcessingService<BaseMonitoringType> {
     private final Dataset jenaTdb;
-    
+
+    public BaseMonitoringTypePostProcessingService(Dataset jenaTdb) {
+        this.jenaTdb = jenaTdb;
+        log.info("Creating {}", this);
+    }
+
     @Override
     public void postProcess(BaseMonitoringType document) {
-        Resource uri = ResourceFactory.createResource(document.getUri().toString());
+        Resource uri = ResourceFactory.createResource(document.getUri());
         jenaTdb.begin(ReadWrite.READ);
         try {
             if (document instanceof Activity) {
@@ -80,8 +78,9 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
      * @param a List which will contain all of the processed links
      * @param b The list with prospective links to add
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void appendLinks(List a, List b) {
-        b.stream().filter(e -> !a.contains(e)).forEach(e -> a.add(e));
+        b.stream().filter(e -> !a.contains(e)).forEach(a::add);
     }
     
     /**

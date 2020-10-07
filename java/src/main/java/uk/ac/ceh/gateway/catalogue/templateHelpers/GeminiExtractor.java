@@ -5,8 +5,9 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -20,9 +21,14 @@ import java.util.stream.Collectors;
  * from Gemini Documents and returning these as easy to use entities. Designed
  * to be freemarker friendly.
  */
-@Service
+@Slf4j
+@ToString
 public class GeminiExtractor {
     private final static Envelope GLOBAL_EXTENT = new Envelope(-180, 180, -90, 90);
+
+    public GeminiExtractor() {
+        log.info("Creating {}", this);
+    }
 
     public List<String> getKeywords(GeminiDocument document) {
         return Optional.ofNullable(document.getDescriptiveKeywords())

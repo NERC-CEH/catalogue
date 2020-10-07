@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -21,12 +21,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
+@ToString
 @Controller
-@AllArgsConstructor
 public class SitemapController {
     private final CatalogueService catalogueService;
     private final DocumentIdentifierService identifierService;
     private final MetadataListingService listingService;
+
+    public SitemapController(
+            CatalogueService catalogueService,
+            DocumentIdentifierService identifierService,
+            MetadataListingService listingService
+    ) {
+        this.catalogueService = catalogueService;
+        this.identifierService = identifierService;
+        this.listingService = listingService;
+        log.info("Creating {}", this);
+    }
 
     @RequestMapping(value = "robots.txt", method = RequestMethod.GET)
     public ModelAndView robots(

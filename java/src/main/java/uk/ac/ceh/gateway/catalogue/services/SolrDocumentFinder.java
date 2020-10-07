@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import com.google.common.collect.Lists;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -9,6 +11,8 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 import java.util.List;
 
+@Slf4j
+@ToString
 public class SolrDocumentFinder<T extends MetadataDocument> {
   private final SolrClient solrClient;
   private final DocumentReader<T> documentReader;
@@ -18,6 +22,7 @@ public class SolrDocumentFinder<T extends MetadataDocument> {
     this.solrClient = solrClient;
     this.clazz = clazz;
     this.documentReader = new DocumentReader<T>();
+    log.info("Creating {}", this);
   }
 
   public List<T> find(String query) {

@@ -1,44 +1,33 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_VALUE;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
-import lombok.AllArgsConstructor;
-import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
+
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_VALUE;
+
 @Controller
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class UploadController {
   private static final String START_PROGRESS = "751";
   private static final String HOLD = "831";
@@ -51,6 +40,18 @@ public class UploadController {
   private final DocumentRepository documentRepository;
   private final JiraService jiraService;
 
+  public UploadController(
+          UploadDocumentService uploadDocumentService,
+          PermissionService permissionService,
+          DocumentRepository documentRepository,
+          JiraService jiraService
+  ) {
+    this.uploadDocumentService = uploadDocumentService;
+    this.permissionService = permissionService;
+    this.documentRepository = documentRepository;
+    this.jiraService = jiraService;
+    log.info("Creating {}", this);
+  }
 
   @PreAuthorize("@permission.userCanUpload(#id)")
   @RequestMapping(value = "upload/{id}", method = RequestMethod.GET)
@@ -91,7 +92,7 @@ public class UploadController {
   @ResponseBody
   public ResponseEntity<UploadDocument> addFile(@ActiveUser CatalogueUser user,
       @PathVariable("id") String id, @RequestParam("file") MultipartFile file)
-      throws IOException, DocumentRepositoryException {
+  {
     userCanUpload(id);
     val filename = file.getOriginalFilename();
     uploadDocumentService.add(id, filename, file);
@@ -126,7 +127,7 @@ public class UploadController {
   consumes = UPLOAD_DOCUMENT_JSON_VALUE)
   public ResponseEntity<UploadDocument>
   schedule(@ActiveUser CatalogueUser user, @PathVariable("id") String id)
-    throws DocumentRepositoryException {
+  {
     userCanUpload(id);
     transitionIssueToSchedule(user, id);
     val document = uploadDocumentService.get(id);
@@ -137,7 +138,7 @@ public class UploadController {
   consumes = UPLOAD_DOCUMENT_JSON_VALUE)
   public ResponseEntity<UploadDocument>
   reschedule(@ActiveUser CatalogueUser user, @PathVariable("id") String id)
-    throws DocumentRepositoryException {
+  {
     userCanUpload(id);
     transitionIssueToScheduled(user, id);
     val document = uploadDocumentService.get(id);
@@ -177,7 +178,7 @@ public class UploadController {
 
   @ResponseStatus(value = HttpStatus.BAD_REQUEST,
       reason = "Can not finish, contact admin to resolve issue clash")
-  class NonUniqueJiraIssue extends RuntimeException {
+  static class NonUniqueJiraIssue extends RuntimeException {
     static final long serialVersionUID = 1L;
   }
 

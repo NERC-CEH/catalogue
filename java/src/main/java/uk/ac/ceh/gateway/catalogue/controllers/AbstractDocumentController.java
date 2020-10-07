@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -9,13 +10,15 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import java.net.URI;
 
+@Slf4j
+@ToString
 public abstract class AbstractDocumentController {
   protected final DocumentRepository documentRepository;
   protected String catalogue;
 
-  @Autowired
   public AbstractDocumentController(DocumentRepository documentRepository) {
     this.documentRepository = documentRepository;
+    log.info("Creating {}", this);
   }
 
   protected ResponseEntity<MetadataDocument> saveNewMetadataDocument(

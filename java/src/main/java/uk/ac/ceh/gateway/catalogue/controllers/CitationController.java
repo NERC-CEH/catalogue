@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,12 +18,19 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
 
+@Slf4j
+@ToString
 @Controller
-@AllArgsConstructor
 public class CitationController {
     private final DocumentRepository documentRepository;
     private final CitationService citationService;
-    
+
+    public CitationController(DocumentRepository documentRepository, CitationService citationService) {
+        this.documentRepository = documentRepository;
+        this.citationService = citationService;
+        log.info("Creating {}", this);
+    }
+
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @RequestMapping(value  = "documents/{file}/citation",
                     method = RequestMethod.GET)

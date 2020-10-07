@@ -1,18 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import lombok.val;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
@@ -21,6 +16,11 @@ import uk.ac.ceh.gateway.catalogue.services.DepositRequestService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@Slf4j
+@ToString
 @Controller
 public class DepositRequestController {
 
@@ -28,11 +28,11 @@ public class DepositRequestController {
     private final PermissionService permissionService;
     private final JiraService jiraService;
 
-    @Autowired
     public DepositRequestController(DepositRequestService depositRequestService, PermissionService permissionService, JiraService jiraService) {
         this.depositRequestService = depositRequestService;
         this.permissionService = permissionService;
         this.jiraService = jiraService;
+        log.info("Creating {}", this);
     }
 
     @RequestMapping(value = "deposit-requests", method = RequestMethod.GET)

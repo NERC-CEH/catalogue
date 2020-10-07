@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.Data;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
@@ -15,6 +17,8 @@ import java.util.List;
  * A Document Reading Service which delegates reading to Springs 
  * HttpMessageConverters
  */
+@Slf4j
+@ToString
 public class MessageConverterReadingService implements DocumentReadingService {
     private final List<HttpMessageConverter<?>> messageConverters;
     
@@ -24,14 +28,17 @@ public class MessageConverterReadingService implements DocumentReadingService {
     
     protected MessageConverterReadingService(List<HttpMessageConverter<?>> messageConverters) {
         this.messageConverters = messageConverters;
+        log.info("Creating {}", this);
     }
     
     public MessageConverterReadingService addMessageConverter(HttpMessageConverter<?> converter) {
         messageConverters.add(converter);
+        log.info("Adding {}", converter);
         return this;
     }
     
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <T> T read(InputStream inputStream, MediaType contentType, Class<T> clazz) throws IOException, UnknownContentTypeException {
         for(HttpMessageConverter converter: messageConverters) {
             if(converter.canRead(clazz, contentType)) {

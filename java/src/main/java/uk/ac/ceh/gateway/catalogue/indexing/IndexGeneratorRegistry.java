@@ -1,12 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class IndexGeneratorRegistry<D, I> implements IndexGenerator<D, I> {
     private final ClassMap<IndexGenerator<?, I>> lookup;
-        
+
+    public IndexGeneratorRegistry(ClassMap<IndexGenerator<?, I>> lookup) {
+        this.lookup = lookup;
+        log.info("Creating {}", this);
+    }
+
     @Override
     public I generateIndex(D toIndex) throws DocumentIndexingException {
         @SuppressWarnings("unchecked")

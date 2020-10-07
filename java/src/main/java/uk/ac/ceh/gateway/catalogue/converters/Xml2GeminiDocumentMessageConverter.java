@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
 import lombok.SneakyThrows;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -28,6 +29,7 @@ import java.util.List;
 import static com.google.common.base.Strings.emptyToNull;
 
 @Slf4j
+@ToString()
 public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConverter<GeminiDocument> {
     private final XPathExpression id;
     private final XPathExpression title;
@@ -96,6 +98,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.serviceConverter = new ServiceConverter(xpath);
         this.useConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.USE_CONSTRAINT);
         this.accessConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.ACCESS_CONSTRAINT);
+        log.info("Creating {}", this);
     }
     
     @Override
@@ -153,7 +156,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     }
     
     @Override
-    protected void writeInternal(GeminiDocument t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    protected void writeInternal(GeminiDocument t, HttpOutputMessage outputMessage) throws HttpMessageNotWritableException {
         throw new HttpMessageNotWritableException("I will not be able to write that document for you");
     }
     
