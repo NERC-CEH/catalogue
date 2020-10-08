@@ -133,7 +133,7 @@
     display: block;
   }
   #section-children {
-    margin: 3em auto;
+    margin-top: 5em;
   }
 
   #section-supplemental {
@@ -231,52 +231,52 @@
     padding-bottom: 6px;
   }
 
-  .aggregate-children {
+  .grid {
     display: grid;
+    gap: 2em;
     grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
-    gap: 1em;
 
-    .aggregate-child {
-      border: 1px solid @brand-success;
-      display: grid;
-      grid-template-columns: 7rem auto;
-      box-shadow: 0.35em 0.65em 0.5em lightgray;
-      color: @brand-success;
+    &-compact {
+      gap: 0.7em;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+  }
 
-      &--icon,
-      &--type,
-      &--title {
-        margin: 0.75em;
-      }
+  .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    padding: 1em;
+    overflow: hidden;
+    border: 1px solid #353535;
+    border-radius: 4px;
+    box-shadow: rgba(3, 8, 20, 0.1) 0px 0.15rem 0.5rem,
+      rgba(2, 8, 20, 0.1) 0px 0.075rem 0.175rem;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    justify-content: top;
 
-      &--icon i {
-        background-color: @brand-success;
-        border-radius: 50%;
-        border: 2px solid white;
-        color: white;
-        font-size: 2.2rem;
-        font-style: normal;
-        line-height: 4.5rem;
-        width: 5rem;
-        height: 5rem;
-        text-align: center;
-      }
+    &-header,
+    &-footer {
+      flex-shrink: 0;
+    }
 
-      &--type {
-        font-weight: 300;
-        color: gray;
-      }
+    &-body {
+      flex-grow: 1;
+      padding: 1em;
+      font-weight: bold;
+    }
+  }
 
-      &:hover,
-      &:focus {
-        background-color: @brand-success;
-        color: white;
-        text-decoration: none;
-        box-shadow: 0.35em 0.65em 0.5em gray;
-        .aggregate-child--type {
-          color: white;
-        }
-      }
+  a.card {
+    color: #777;
+
+    &:hover {
+      background-color: #eee;
+      color: #000;
+      text-decoration: none;
     }
   }
 

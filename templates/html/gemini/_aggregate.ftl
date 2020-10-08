@@ -1,7 +1,7 @@
 <#if rel_hasMember??>
 	<div id="section-children">
 		<#list rel_hasMember?sort_by("title")>
-			<div class="aggregate-children">
+			<div class="grid">
 			<#items as child>
 				<#if child.associationType = 'dataset' ||  child.associationType = 'nonGeographicDataset' ||  child.associationType = 'signpost'>
 					<#assign type="Dataset" icon="fas fa-table" >
@@ -14,12 +14,9 @@
 				<#else>
 					<#assign type=child.associationType icon="" >
 				</#if>
-				<a href="${child.href}" class="aggregate-child">
-					<div class="aggregate-child--icon"><i class="${icon}"></i></div>
-					<div>
-						<div class="aggregate-child--type">${type}</div>
-						<div class="aggregate-child--title">${child.title}</div>
-					</div>
+				<a href="${child.href}" class="card">
+					<div class="card-header"><i class="${icon}"></i> <span>${type}</span></div>
+					<div class="card-body">${child.title}</div>
 				</a>
 			</#items>
 			</div>
