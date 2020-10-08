@@ -41,7 +41,7 @@ public class DocumentReader<T extends MetadataDocument> {
       .put("osdp-monitoring-activity", "application/vnd.osdp.monitoring-activity+json")
       .put("osdp-monitoring-programme", "application/vnd.osdp.monitoring-programme+json")
       .put("osdp-monitoring-facility", "application/vnd.osdp.monitoring-facility+json")
-      .put("sample-archive", "application/vnd.sample-archive+json")
+      .put("specimen-bank", "application/vnd.specimen-bank+json")
       .put("data-type", "application/vnd.data-type+json")
       .build();
 

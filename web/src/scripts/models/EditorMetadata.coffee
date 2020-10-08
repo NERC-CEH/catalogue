@@ -16,6 +16,7 @@ define [
     if arguments.length > 1
       @mediaType = arguments[1].mediaType
       @title = arguments[2]
+      @description = arguments[3]
     else
       @mediaType = 'application/json'
 
@@ -29,6 +30,9 @@ define [
     errors = []
     unless attrs?.title?
       errors.push 'A title is mandatory'
+
+    unless attrs?.description?
+      errors.push 'A description is mandatory'
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate because returning something signals a validation error.

@@ -6,22 +6,24 @@ The CEH metadata catalogue project.
 
 ## Project Structure
 
-- **/docs**       - Documentation
-- **/web**        - Location of the web component of the project, this is mainly `coffeescript` and `less` style sheets
-- **/java**       - Standard `gradle` project which powers the server side of the catalogue
-- **/templates**  - `Freemarker` templates which are used by the `java` application for generating the different metadata views
-- **/schemas**    - XSD Schemas which are used to validate the various output xml files
-- **/solr**       - `Solr Server` web application, this handles the free-text indexing and searching of the application
-- **/mapserver**  - `Map Server` web application which is responsible for hosting WMS's from metadata records
-- **/fixtures**   - Test data used by the `rspec` suite
-- **/spec**       - RSpec end-to-end test suite
+- **/docs** - Documentation
+- **/web** - Location of the web component of the project, this is mainly `coffeescript` and `less` style sheets
+- **/java** - Standard `gradle` project which powers the server side of the catalogue
+- **/templates** - `Freemarker` templates which are used by the `java` application for generating the different metadata views
+- **/schemas** - XSD Schemas which are used to validate the various output xml files
+- **/solr** - `Solr Server` web application, this handles the free-text indexing and searching of the application
+- **/mapserver** - `Map Server` web application which is responsible for hosting WMS's from metadata records
+- **/fixtures** - Test data used by the `rspec` suite
+- **/spec** - RSpec end-to-end test suite
 
 **NB:** `web/src/vendor/requirejs` needs to be left alone otherwise the build breaks
 
 ## API
+
 [API documentation](docs/api.md)
 
 ## Endpoints
+
 [Endpoint documentation](docs/endpoints.md)
 
 ## Usernames and Passwords
@@ -68,7 +70,7 @@ will run a process that watches the javascript and less directories and recompil
     ./gradlew
     ./gradlew :web:grunt_copy
 
-Probably need to do first command in one terminal and after it has run do the second.  I used this as I couldn't get ./gradlew :web:grunt_concurrent working.
+Probably need to do first command in one terminal and after it has run do the second. I used this as I couldn't get ./gradlew :web:grunt_concurrent working.
 
 ## Java
 
@@ -83,16 +85,16 @@ to have this continuously watch for changes in the java code (not including test
 You may need to increase your watches see the answer [here](https://askubuntu.com/questions/770374/user-limit-of-inotify-watches-reached-on-ubuntu-16-04) for more details on this
 
 If using System.out.println('foo'), you can grep it out like this:
-    
+
     docker logs catalogue_web_1 > stdout.log 2>stderr.log && cat stdout.log | grep foo
 
 Run single tests:
-    
+
     ./gradlew -Dtest.single=JiraService --info test -t
 
 --info spits out the error message and -t is watching for file changes and will re-run then
 
-Can use package names and * in the name
+Can use package names and \* in the name
 
 [More info](https://stackoverflow.com/questions/22505533/how-to-run-only-one-test-class-on-gradle) about single file tests
 
@@ -103,6 +105,7 @@ Can use package names and * in the name
 Multiple catalogues are supported by this software.
 
 A catalogue has it's own:
+
 - search page
 - style
 - editor and publisher groups
@@ -140,12 +143,11 @@ Other available users are:
 - m-publisher
 - inms-publisher
 - osdp-publisher
-- sa-publisher
-
+- esb-publisher
 
 Also, be sure to go to http://foo.ceh.ac.uk:8080/documents rather than http://localhost:8080/documents, which needs an edit to your hosts file:
 
-eg 127.0.0.1       localhost foo.ceh.ac.uk
+eg 127.0.0.1 localhost foo.ceh.ac.uk
 
 ## Map Viewer
 
@@ -156,21 +158,25 @@ The Catalogue api will gracefully handle certain upstream mapping failures. Thes
 Below are the images which are displayed and there meaning:
 
 ### Legend not found
+
 ![Legend not found](java/src/main/resources/legend-not-found.png)
 
 Displayed when a Legend image is requested but one has not been specified in the GetCapabilities
 
 ### Upstream Failure
+
 ![Upstream Failure](java/src/main/resources/proxy-failure.png)
 
 The call to the server failed for some unspecified reason, this may be because the connection failed.
 
 ### Invalid response
+
 ![Invalid response](java/src/main/resources/proxy-invalid-response.png)
 
 The upstream service returned some content, but it was not in the format which was expected. It maybe that the upstream service replied with an error message rather than an image.
 
 ### Invalid Resource
+
 ![Invalid Resource](java/src/main/resources/proxy-invalid-resource.png)
 
 The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or an corrupt external get capabilities.

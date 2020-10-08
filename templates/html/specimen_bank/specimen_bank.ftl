@@ -10,7 +10,7 @@
 </#if>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
-  <@b.metadataContainer "sample-archive">
+  <@b.metadataContainer "specimen-bank">
     <@b.admin />
     
     <section>

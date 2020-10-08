@@ -72,8 +72,8 @@ module.exports = function (grunt) {
       },
       elter: {
         files: {
-          'src/css/style-elter.css': 'src/less/style-elter.less'
-        }
+          "src/css/style-elter.css": "src/less/style-elter.less",
+        },
       },
       edge: {
         files: {
@@ -92,13 +92,13 @@ module.exports = function (grunt) {
       },
       nc: {
         files: {
-          'src/css/style-nm.css': 'src/less/style-nm.less'
-        }
+          "src/css/style-nm.css": "src/less/style-nm.less",
+        },
       },
       nc: {
         files: {
-          'src/css/style-nm.css': 'src/less/style-nm.less'
-        }
+          "src/css/style-nm.css": "src/less/style-nm.less",
+        },
       },
       m: {
         files: {
@@ -110,9 +110,9 @@ module.exports = function (grunt) {
           "src/css/style-osdp.css": "src/less/style-osdp.less",
         },
       },
-      sa: {
+      esb: {
         files: {
-          "src/css/style-sa.css": "src/less/style-sa.less",
+          "src/css/style-esb.css": "src/less/style-esb.less",
         },
       },
     },
@@ -134,8 +134,8 @@ module.exports = function (grunt) {
       },
       elter: {
         files: {
-          'src/css/style-elter.css': 'src/css/style-elter.css'
-        }
+          "src/css/style-elter.css": "src/css/style-elter.css",
+        },
       },
       erammp: {
         files: {
@@ -169,13 +169,13 @@ module.exports = function (grunt) {
       },
       nc: {
         files: {
-          'src/css/style-nm.css': 'src/css/style-nm.css'
-        }
+          "src/css/style-nm.css": "src/css/style-nm.css",
+        },
       },
       nc: {
         files: {
-          'src/css/style-nm.css': 'src/css/style-nm.css'
-        }
+          "src/css/style-nm.css": "src/css/style-nm.css",
+        },
       },
       m: {
         files: {
@@ -187,9 +187,9 @@ module.exports = function (grunt) {
           "src/css/style-osdp.css": "src/css/style-osdp.css",
         },
       },
-      sa: {
+      esb: {
         files: {
-          "src/css/style-sa.css": "src/css/style-sa.css",
+          "src/css/style-esb.css": "src/css/style-esb.css",
         },
       },
     },

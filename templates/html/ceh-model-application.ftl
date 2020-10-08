@@ -66,13 +66,13 @@
         <@m.key "Completion date">${projectCompletionDate?date?string['d MMMM yyyy']}</@m.key>
       </#if>
       <#if projectWebsite?? && projectWebsite?has_content>
-        <@m.key "Project website" "Link to public-facing website if available"><@b.bareUrl projectWebsite /></@m.key>
+        <@m.key "Project website"><@b.bareUrl projectWebsite /></@m.key>
       </#if>
       <#if projectCode?? && projectCode?has_content>
-        <@m.key "Project code" "RMS project code">${projectCode}</@m.key>
+        <@m.key "Project code">${projectCode}</@m.key>
       </#if>
       <#if funderDetails?? && funderDetails?has_content>
-        <@m.key "Funder details" "Funder details including grant number if appropriate">
+        <@m.key "Funder details">
           <#noescape>
             <@b.linebreaks funderDetails />
           </#noescape>
@@ -93,14 +93,14 @@
 
 
       <#if multipleModelsUsed?? && multipleModelsUsed?has_content>
-        <@m.key "Multiple models used?" "Were multiple models used in the project? If so, which ones?">
+        <@m.key "Multiple models used?">
           <#noescape>
             <@b.linebreaks multipleModelsUsed />
           </#noescape>
         </@m.key>
       </#if>
       <#if multipleModelLinkages?? && multipleModelLinkages?has_content>
-        <@m.key "Multiple model linkages" "If multiple models were used how was this done e.g. chained, independent runs, comparisons, ensemble">
+        <@m.key "Multiple model linkages">
           <#noescape>
             <@b.linebreaks multipleModelLinkages />
           </#noescape>
@@ -170,27 +170,22 @@
       </section>
     </#if>
 
+
     <#if inputVariables?? && inputVariables?size gt 0 >
     <section>
       <h2>Input variables</h2>
-      <@variablesTable inputVariables />
+      <@variablesgrid inputVariables />
     </section>
     </#if>
 
-        <#if inputData??>
-          <@m.key "Input data">
-            <@m.dataInfoTable inputData />
-          </@m.key>
-         </#if>
-          
-        <#if outputData??>
-          <@m.key "Output data">
-            <@m.dataInfoTable outputData />
-          </@m.key>
-         </#if>
+    <#if outputVariables?? && outputVariables?size gt 0 >
+    <section>
+      <h2>Output variables</h2>
+      <@variablesTable outputVariables />
     </section>
     </#if>
-   
+
+
     <#if sensitivityAnalysis?? || uncertaintyAnalysis?? || validation??>
     <section>
       <h2>Evaluation Information</h2>
@@ -218,6 +213,38 @@
     </section>
     </#if>
 
+<div class="testingout">
+    <div class="file file__VALID">
+        <div class="filename" data-toggle="collapse" data-target="#collapse1"><span class="status">VALID</span>filename</div>
+        <div class="collapse" id="collapse1"><div class="file--collapse">
+            <div class="path"><span>Path</span><span>path</span></div>
+            <div class="hash"><span>Checksum</span><span>hash</span></div>
+            <div class="filesize"><span>Size</span><span>size</span></div>
+            <div class="lastValid"><span>Last validated</span><span>yyyy-mm-dd</span></div>
+            <div class="time"><span>Time to validate</span><span>time</span></div>
+            <div class="buttons"><button class="btn btn-default">buttons</button> <button class="btn btn-default">buttons</button></div>
+        </div> </div>
+    </div>
+
+
+    <div class="file file__ERROR">
+        <div class="filename" data-toggle="collapse" data-target="#collapse2">
+          <span class="status">ERROR</span>MidCent_GlaciersProjection_C09.csv
+        </div>
+        <div class="collapse" id="collapse2">
+          <div class="file--collapse">
+              <div class="path">
+                  <span>Path</span><span>/dropbox/715db0b2-1d63-4842-ab80-f0f33b39e5e0/MidCent_GlaciersProjection_C09.csv</span>
+              </div>
+              <div class="hash"><span>Checksum</span><span>036981bfef5d518bb4e70e26e144ae42</span></div>
+              <div class="filesize"><span>Size</span><span>7.25 KB</span></div>
+              <div class="lastValid"><span>Last validated</span><span>20/7/20 - 16:03</span></div>
+              <div class="time"><span>Time to validate</span><span>1s</span></div>
+              <div class="buttons"><button class="btn btn-default">buttons</button> <button class="btn btn-default">buttons</button></div>
+          </div>
+        </div>
+    </div>
+</div>
     <@m.additionalMetadata />
     
   </@b.metadataContainer>
@@ -225,12 +252,18 @@
 
 <#macro variablesTable data> 
 <table class="table table-condensed">
-<thead><tr><th>Variable</th><th>Units</th><th>Format</th></tr></thead>
+<thead><tr><th>Name</th><th>Title</th><th>Description</th><th>Units</th><th>Format</th></tr></thead>
 <tbody>
   <#list data as item>
     <tr>
       <td>
         <#if item.name?? && item.name?has_content>${item.name}</#if>
+      </td>
+      <td>
+        <#if item.title?? && item.title?has_content>${item.title}</#if>
+      </td>
+      <td>
+        <#if item.description?? && item.description?has_content>${item.description}</#if>
       </td>
       <td>
         <#if item.type?? && item.type?has_content>${item.type}</#if>
@@ -243,4 +276,32 @@
   </#list>
 </tbody>
 </table>
+</#macro>
+
+
+<#macro variablesgrid data> 
+<div class="variable-grid">
+  <#list data as item>
+    <div class="variable">
+        <#if item.name?? && item.name?has_content><div class="variable--label">Name</div><div class="variable--value">${item.name}</div></#if>
+        <#if item.title?? && item.title?has_content><div class="variable--label">Title</div><div class="variable--value">${item.title}</div></#if>
+        <#if item.description?? && item.description?has_content><div class="variable--label">Description</div><div class="variable--value">${item.description}</div></#if>
+        <#if item.type?? && item.type?has_content><div class="variable--label">Type</div><div class="variable--value">${item.type}</div></#if>
+        <#if item.format?? && item.format?has_content><div class="variable--label">Format</div><div class="variable--value">${item.format}</div></#if>
+        <#if item.constraints?? && item.constraints?has_content>
+        <div class="variable--label">Constraints</div>
+        <div class="variable--constraints">
+          <#if item.constraints.minimum?? && item.constraints.minimum?has_content><div class="variable--label">Minimum</div><div class="variable--value">${item.constraints.minimum}</div></#if>
+          <#if item.constraints.maximum?? && item.constraints.maximum?has_content><div class="variable--label">Maximum</div><div class="variable--value">${item.constraints.maximum}</div></#if>
+          <#if item.constraints.minLength?? && item.constraints.minLength?has_content><div class="variable--label">Min length</div><div class="variable--value">${item.constraints.minLength}</div></#if>
+          <#if item.constraints.maxLength?? && item.constraints.maxLength?has_content><div class="variable--label">Max length</div><div class="variable--value">${item.constraints.maxLength}</div></#if>
+          <#if item.constraints.unique?? && item.constraints.unique==true><div class="variable--label">Unique</div><div class="variable--value">Yes</div></#if>
+        </div>
+        </#if>
+
+
+    </div>
+  </#list>
+
+</div>
 </#macro>

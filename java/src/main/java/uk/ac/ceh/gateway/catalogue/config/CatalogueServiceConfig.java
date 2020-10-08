@@ -98,9 +98,9 @@ public class CatalogueServiceConfig {
             .type(ERAMMP_DATACUBE_SHORT)
             .build();
 
-        DocumentType sampleArchive = DocumentType.builder()
-            .title("Sample Archive")
-            .type(SAMPLE_ARCHIVE_SHORT)
+        DocumentType specimenBank = DocumentType.builder()
+            .title("UK Environmental Specimen Bank")
+            .type(SPECIMEN_BANK_SHORT)
             .build();
 
         DocumentType dataType = DocumentType.builder()
@@ -134,11 +134,10 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
-                .id("sa")
-                .title("Sample Archive")
+                .id("esb")
+                .title("UK Environmental Specimen Bank")
                 .url("")
-                .facetKey("saTaxon")
-                .documentType(sampleArchive)
+                .documentType(specimenBank)
                 .fileUpload(false)
                 .build(),
 

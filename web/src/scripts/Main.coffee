@@ -34,7 +34,7 @@ define [
   'cs!views/OsdpMonitoringActivityEditorView'
   'cs!views/OsdpMonitoringProgrammeEditorView'
   'cs!views/OsdpMonitoringFacilityEditorView'
-  'cs!views/SampleArchiveEditorView'
+  'cs!views/SpecimenBankEditorView'
   'cs!views/ErammpModelEditorView'
   'cs!views/ErammpDatacubeEditorView'
   'cs!models/DepositRequestModel'
@@ -48,7 +48,7 @@ define [
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, DepositRequestModel, DepositRequestView,
+    OsdpMonitoringFacilityEditorView, SpecimenBankEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, DepositRequestModel, DepositRequestView,
     ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel
 ) ->
 
@@ -184,10 +184,10 @@ define [
         View: OsdpMonitoringFacilityEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.osdp.monitoring-facility+json'
-      'sample-archive':
-        View: SampleArchiveEditorView
+      'specimen-bank':
+        View: SpecimenBankEditorView
         Model: EditorMetadata
-        mediaType: 'application/vnd.sample-archive+json'
+        mediaType: 'application/vnd.specimen-bank+json'
       'erammp-model':
         View: ErammpModelEditorView
         Model: EditorMetadata

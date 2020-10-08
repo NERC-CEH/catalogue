@@ -78,7 +78,7 @@
                 <#if orders?has_content>
                   <#list orders as testLink>
                     <#if testLink.function == "order">
-                      <li><a href="${testLink.url?html}&test=true">Test order</a></li>
+                      <li><a href="${testLink.url?html}?test=true">Test order</a></li>
                     </#if>
                   </#list>
                 </#if>

@@ -655,6 +655,12 @@ public class MetadataQualityService {
             .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("info@eidc.ac.uk"))
             .forEach(email -> toReturn.add(new MetadataCheck(format("Author's email address is %s", email), ERROR)));
 
+        authors.stream()
+            .filter(author -> author.containsKey("individualName"))
+            .map(author -> author.get("individualName"))
+            .filter(individualName -> !individualName.endsWith("."))
+            .forEach(individualName -> toReturn.add(new MetadataCheck(format("Author's name (%s) does not end with '.', check the format", individualName), WARNING)));
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {

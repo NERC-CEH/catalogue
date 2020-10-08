@@ -53,7 +53,7 @@ import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
-import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
+import uk.ac.ceh.gateway.catalogue.esb.SpecimenBank;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.HardcodedFacetFactory;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
@@ -212,8 +212,8 @@ public class ServiceConfig {
         converters.add(new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration()));
 
-        //Sample Archive
-        converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration()));
+        //Speciment bank
+        converters.add(new Object2TemplatedMessageConverter<>(SpecimenBank.class, freemarkerConfiguration()));
         
         // Gemini Message Converters
         converters.add(new Object2TemplatedMessageConverter<>(GeminiDocument.class,       freemarkerConfiguration()));
@@ -333,8 +333,7 @@ public class ServiceConfig {
                 .register(OSDP_SAMPLE_SHORT, Sample.class)
                 .register(ERAMMP_MODEL_SHORT, ErammpModel.class)
                 .register(ERAMMP_DATACUBE_SHORT, ErammpDatacube.class)
-                .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
-
+                .register(SPECIMEN_BANK_SHORT, SpecimenBank.class)
                 .register(DATA_TYPE_SHORT, DataType.class);
     }
     

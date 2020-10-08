@@ -2,7 +2,6 @@ define [
   'cs!views/EditorView'
   'cs!views/editor/InputView'
   'cs!views/editor/TextareaView'
-  'cs!views/editor/KeywordView'
   'cs!views/editor/ParentView'
   'cs!views/editor/ParentStringView'
   'cs!views/editor/ParentStringTextboxView'
@@ -10,27 +9,22 @@ define [
   'cs!models/editor/BoundingBox'
   'cs!models/editor/Contact'
   'cs!models/editor/MultipleDate'
-  'cs!models/editor/PointOfContact'
+  'cs!models/editor/Contact'
   'cs!models/editor/TopicCategory'
-  'cs!models/editor/SaTaxa'
-  'cs!models/editor/SaPhysicalState'
-  'cs!models/editor/SaSpecimenType'
-  'cs!models/editor/SaTissue'
+  'cs!models/editor/DescriptiveKeyword'
+  'cs!views/editor/ESBKeywordView'
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/SingleView'
   'cs!views/editor/TopicCategoryView'
-  'cs!views/editor/SaTaxaView'
-  'cs!views/editor/SaPhysicalStateView'
-  'cs!views/editor/SaSpecimenTypeView'
-  'cs!views/editor/SaTissueView'
-  'cs!views/editor/PointOfContactView'
+  'cs!views/editor/ContactView'
   'cs!views/editor/OnlineLinkView'
-], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, PointOfContact, TopicCategory, SaTaxa, SaPhysicalState, SaSpecimenType, SaTissue, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, SaTaxaView, SaPhysicalStateView, SaSpecimenTypeView, SaTissueView, PointOfContactView, OnlineLinkView) -> EditorView.extend
+
+], (EditorView, InputView, TextareaView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, PointOfContact, TopicCategory, DescriptiveKeyword, ESBKeywordView, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, ContactView, OnlineLinkView) -> EditorView.extend
 
   initialize: ->
-    @model.set('type', 'sampleArchive') unless @model.has('type')
+    @model.set('type', 'specimenBank') unless @model.has('type')
 
     @sections = [
       label: 'About'
@@ -60,10 +54,10 @@ define [
 
         new ParentView
           model: @model
-          ModelType: PointOfContact
+          ModelType: Contact
           modelAttribute: 'archiveLocations'
           label: 'Archive locations'
-          ObjectInputView: PointOfContactView
+          ObjectInputView: ContactView
           multiline: true
           helpText: """
                     <p>Location(s) of the archiving facility</p>
@@ -71,13 +65,13 @@ define [
 
         new ParentView
           model: @model
-          ModelType: PointOfContact
+          ModelType: Contact
           modelAttribute: 'archiveContacts'
           label: 'Contacts'
-          ObjectInputView: PointOfContactView
+          ObjectInputView: ContactView
           multiline: true
           helpText: """
-                    <p>Person/organisation to contact for more information about or access to the sample archive</p>
+                    <p>Person/organisation to contact for more information about or access to the archive</p>
                     """
 
         new TextareaView
@@ -215,42 +209,21 @@ define [
       title:  'Cataloguing and classification'
       views: [
 
-        new ParentView
+        new PredefinedParentView
           model: @model
-          ModelType: SaTaxa
-          modelAttribute: 'taxa'
-          label: 'Taxa'
-          ObjectInputView: SaTaxaView
+          ModelType: DescriptiveKeyword
+          modelAttribute: 'descriptiveKeywords'
+          label: 'Keywords'
+          ObjectInputView: ESBKeywordView
+          multiline: true
+          predefined:
+            'Taxa':
+              type: 'taxon'
+            'Physical state':
+              type: 'physicalState'
+            'Sample type':
+              type: 'sampleType'
 
-        new ParentView
-          model: @model
-          ModelType: SaPhysicalState
-          modelAttribute: 'physicalStates'
-          label: 'Physical state'
-          ObjectInputView: SaPhysicalStateView
-
-        new ParentView
-          model: @model
-          ModelType: SaSpecimenType
-          modelAttribute: 'specimenTypes'
-          label: 'Specimen type'
-          ObjectInputView: SaSpecimenTypeView
-
-        new ParentView
-          model: @model
-          ModelType: SaTissue
-          modelAttribute: 'tissues'
-          label: 'Tissue'
-          ObjectInputView: SaTissueView
-
-        new ParentView
-          model: @model
-          modelAttribute: 'keywords'
-          label: 'Other keywords'
-          ObjectInputView: KeywordView
-          helpText: """
-                    <p>A list of words and phrases that help to identify and describe the archive - useful for improving search results</p>
-                    """
      ]
     ,
       label: 'Metadata'
@@ -259,10 +232,10 @@ define [
 
         new ParentView
           model: @model
-          ModelType: PointOfContact
+          ModelType: Contact
           modelAttribute: 'metadataContacts'
           label: 'Record owner'
-          ObjectInputView: PointOfContactView
+          ObjectInputView: ContactView
           multiline: true
           helpText: """
                     <p>Person responsible for maintaining this metadata record</p>

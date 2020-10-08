@@ -29,7 +29,7 @@ define [
 
 
   ###
-  The Sample Archive (and possibly other catalogues) does not have any facets
+  The Specimen bank (and possibly other catalogues) does not have any facets
   to filter by.  So make the Map Search the default tab when there are no facets
   and hide the Filter search
   ###

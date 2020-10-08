@@ -20,11 +20,11 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .build();
                 
             case "state":
-            return Facet.builder()
-                .fieldName("state")
-                .displayName("Status")
-                .hierarchical(false)
-                .build();
+                return Facet.builder()
+                    .fieldName("state")
+                    .displayName("Status")
+                    .hierarchical(false)
+                    .build();
                     
             case "recordType":
                 return Facet.builder()
@@ -187,12 +187,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .hierarchical(false)
                     .build();
 
-            case "saTaxon":
-                return Facet.builder()
-                    .fieldName("saTaxon")
-                    .displayName("Taxa")
-                    .hierarchical(false)
-                    .build();                    
         }
         return null;
     }

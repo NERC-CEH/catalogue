@@ -89,8 +89,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String ERAMMP_MODEL_JSON_VALUE      = "application/vnd.erammp-model+json";
     public static final String ERAMMP_DATACUBE_SHORT        = "erammp-datacube";
     public static final String ERAMMP_DATACUBE_JSON_VALUE   = "application/vnd.erammp-datacube+json";
-    public static final String SAMPLE_ARCHIVE_SHORT         = "sample-archive";
-    public static final String SAMPLE_ARCHIVE_JSON_VALUE         = "application/vnd.sample-archive+json";
+    public static final String SPECIMEN_BANK_SHORT          = "specimen-bank";
+    public static final String SPECIMEN_BANK_JSON_VALUE     = "application/vnd.specimen-bank+json";
     
     public static final String UPLOAD_DOCUMENT_JSON_VALUE = "application/vnd.upload-document+json";
     public static final String UPLOAD_DOCUMENT_SHORT = "Upload";
@@ -166,7 +166,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                         .put(OSDP_SAMPLE_SHORT, MediaType.parseMediaType(OSDP_SAMPLE_JSON_VALUE))
                         .put(ERAMMP_MODEL_SHORT, MediaType.parseMediaType(ERAMMP_MODEL_JSON_VALUE))
                         .put(ERAMMP_DATACUBE_SHORT, MediaType.parseMediaType(ERAMMP_DATACUBE_JSON_VALUE))
-                        .put(SAMPLE_ARCHIVE_SHORT, MediaType.parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE))
+                        .put(SPECIMEN_BANK_SHORT, MediaType.parseMediaType(SPECIMEN_BANK_JSON_VALUE))
                         .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
                         .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
                         .build()

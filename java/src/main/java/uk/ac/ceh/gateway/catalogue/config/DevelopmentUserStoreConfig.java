@@ -47,8 +47,8 @@ public class DevelopmentUserStoreConfig {
     public static final String NC_PUBLISHER = "role_nc_publisher";
     public static final String OSDP_EDITOR = "role_osdp_editor";
     public static final String OSDP_PUBLISHER = "role_osdp_publisher";
-    public static final String SA_EDITOR = "role_sa_editor";
-    public static final String SA_PUBLISHER = "role_sa_publisher";
+    public static final String ESB_EDITOR = "role_esb_editor";
+    public static final String ESB_PUBLISHER = "role_esb_publisher";
 
     @Bean
     @Qualifier("superadmin")
@@ -68,7 +68,7 @@ public class DevelopmentUserStoreConfig {
         groupStore().grantGroupToUser(superadmin, M_PUBLISHER);
         groupStore().grantGroupToUser(superadmin, INMS_PUBLISHER);
         groupStore().grantGroupToUser(superadmin, OSDP_PUBLISHER);
-        groupStore().grantGroupToUser(superadmin, SA_PUBLISHER);
+        groupStore().grantGroupToUser(superadmin, ESB_PUBLISHER);
         userStore().addUser(superadmin, "superadminpassword");
         return superadmin;
     }
@@ -287,14 +287,14 @@ public class DevelopmentUserStoreConfig {
     }
 
     @Bean
-    @Qualifier("sa-publisher")
-    public CatalogueUser saPublisher() throws UsernameAlreadyTakenException {
+    @Qualifier("esb-publisher")
+    public CatalogueUser esbPublisher() throws UsernameAlreadyTakenException {
         CatalogueUser publisher = new CatalogueUser()
-            .setUsername("sa-publisher")
-            .setEmail("sa-publisher@ceh.ac.uk");
+            .setUsername("esb-publisher")
+            .setEmail("esb-publisher@ceh.ac.uk");
 
-        groupStore().grantGroupToUser(publisher, SA_EDITOR);
-        groupStore().grantGroupToUser(publisher, SA_PUBLISHER);
+        groupStore().grantGroupToUser(publisher, ESB_EDITOR);
+        groupStore().grantGroupToUser(publisher, ESB_PUBLISHER);
         userStore().addUser(publisher, "publisherpassword");
         return publisher;
     }
@@ -335,8 +335,8 @@ public class DevelopmentUserStoreConfig {
         toReturn.createGroup(INMS_PUBLISHER, "INMS Publisher Role");
         toReturn.createGroup(OSDP_EDITOR, "OSDP Editor Role");
         toReturn.createGroup(OSDP_PUBLISHER, "OSDP Publisher Role");
-        toReturn.createGroup(SA_EDITOR, "SA Editor Role");
-        toReturn.createGroup(SA_PUBLISHER, "SA Publisher Role");
+        toReturn.createGroup(ESB_EDITOR, "ESB Editor Role");
+        toReturn.createGroup(ESB_PUBLISHER, "ESB Publisher Role");
         toReturn.createGroup(MAINTENANCE_ROLE, "System Admin Role");
         toReturn.createGroup(DATACITE_ROLE, "Datacite Role");
         return toReturn;

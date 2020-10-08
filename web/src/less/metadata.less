@@ -237,10 +237,10 @@
     gap: 1em;
 
     .aggregate-child {
-      border: 2px solid @brand-success;
+      border: 1px solid @brand-success;
       display: grid;
       grid-template-columns: 7rem auto;
-      border-radius: 1rem;
+      box-shadow: 0.35em 0.65em 0.5em lightgray;
       color: @brand-success;
 
       &--icon,
@@ -267,13 +267,15 @@
         color: gray;
       }
 
-      &:hover {
+      &:hover,
+      &:focus {
         background-color: @brand-success;
         color: white;
         text-decoration: none;
-      }
-      &:hover .aggregate-child--type {
-        color: white;
+        box-shadow: 0.35em 0.65em 0.5em gray;
+        .aggregate-child--type {
+          color: white;
+        }
       }
     }
   }

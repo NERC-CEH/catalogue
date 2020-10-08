@@ -50,7 +50,6 @@ public class SolrIndex {
     private @Field List<String> resourceIdentifier;
     private @Field String resourceType;
     private @Field List<String> ror;
-    private @Field List<String> saTaxon;
     private @Field String state;
     private @Field List<String> supplementalDescription;
     private @Field List<String> supplementalName;

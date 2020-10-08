@@ -26,4 +26,20 @@
 		</#list>
 	</div>
 </#if>
+
+<#if rel_memberOf?has_content && rel_memberOf?size gt 0>
+	<div id="associations-parents" class="aggregate-children">
+		<#list rel_memberOf as item>
+			<a href="${item.href?html}" class="aggregate-child">
+				<div class="aggregate-child--icon"><i class="fas fa-level-up-alt"></i></div>
+				<div>
+					<div class="aggregate-child--type">This ${recordType} is part of</div>
+					<div class="aggregate-child--title">${item.title?html}</div>
+				</div>
+			</a>
+		</#list>
+	</div>
+</#if>
+
+
 <#include "_supplemental.ftl">
