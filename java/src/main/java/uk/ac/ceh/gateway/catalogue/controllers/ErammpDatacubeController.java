@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
+@ToString(callSuper = true)
 @Controller
 public class ErammpDatacubeController extends AbstractDocumentController {
 

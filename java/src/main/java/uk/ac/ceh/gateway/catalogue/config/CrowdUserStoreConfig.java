@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,12 +14,9 @@ import uk.ac.ceh.components.userstore.crowd.CrowdGroupStore;
 import uk.ac.ceh.components.userstore.crowd.CrowdUserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
-/**
- * The following spring JavaConfig defines the beans required for the interacting
- * with a crowd userstore
- */
 @Configuration
 @Profile("production")
+@Slf4j
 public class CrowdUserStoreConfig {
     @Value("${crowd.address}") String address;
     @Value("${crowd.username}") String username;
@@ -28,6 +26,7 @@ public class CrowdUserStoreConfig {
     
     @Bean
     public GroupStore<CatalogueUser> groupStore() {
+        log.info("Creating CrowdGroupStore(address={}, username={}", address, username);
         return new CrowdGroupStore<>(crowdCredentials());
     }
     
@@ -37,7 +36,7 @@ public class CrowdUserStoreConfig {
                                     phantomUserBuilderFactory, 
                                     phantomUserBuilderFactory);
     }
-    
+
     @Bean
     public CrowdApplicationCredentials crowdCredentials() {
         return new CrowdApplicationCredentials(address, username, password);

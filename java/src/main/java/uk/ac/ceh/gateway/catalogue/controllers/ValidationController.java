@@ -1,13 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,16 +14,21 @@ import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 import uk.ac.ceh.gateway.catalogue.validation.ValidatorResult;
 import uk.ac.ceh.gateway.catalogue.validation.ValidatorResult.ValidatorState;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Controller
 @Slf4j
+@ToString
 @RequestMapping("maintenance/validation")
 @Secured(DocumentController.MAINTENANCE_ROLE)
 public class ValidationController {
     private final ValidationIndexingService<?> validationIndexingService;
-    
-    @Autowired
+
+    @SuppressWarnings("rawtypes")
     public ValidationController(ValidationIndexingService validationIndexingService) {
         this.validationIndexingService = validationIndexingService;
+        log.info("Creating {}", this);
     }
     
     @RequestMapping(method = RequestMethod.GET)

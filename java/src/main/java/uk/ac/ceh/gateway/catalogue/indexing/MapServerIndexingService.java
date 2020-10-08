@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import lombok.ToString;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -23,6 +24,7 @@ import static java.lang.String.format;
  * in a specified directory.
  * @param <D> Document type which a map service can be created from
  */
+@ToString(callSuper = true)
 public class MapServerIndexingService<D extends MetadataDocument> extends AbstractIndexingService<D, MapFile> {
     private static final Pattern MAP_FILE_PATTERN = Pattern.compile("_.*\\.map$");
     private static final String MAP_FILE_EXTENSION = ".map";

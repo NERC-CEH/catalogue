@@ -1,14 +1,22 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import java.io.IOException;
-import javax.xml.bind.*;
-import javax.xml.transform.*;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.emptyToNull;
-import org.springframework.http.*;
-import org.springframework.http.converter.*;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.util.ClassUtils;
+
+import javax.xml.bind.*;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import java.io.IOException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.emptyToNull;
 
 /**
  * The following abstracts Springs Jaxb2RootElementHttpMessageConverter and allows
@@ -17,12 +25,15 @@ import org.springframework.util.ClassUtils;
  * 
  * This class therefore adheres the @XmlAlsoSee annotation
  */
+@Slf4j
+@ToString
 public class Jaxb2HttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
     private final String namespace, schemaLocation;
     
     public Jaxb2HttpMessageConverter(String namespace, String schemaLocation) {
         this.namespace = checkNotNull(emptyToNull(namespace));
         this.schemaLocation = checkNotNull(emptyToNull(schemaLocation));
+        log.info("Creating {}", this);
     }
     
     @Override

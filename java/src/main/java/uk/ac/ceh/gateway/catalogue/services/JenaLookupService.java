@@ -1,7 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
@@ -19,9 +20,15 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
  * A simple lookup service powered by the jena linking database. This just looks
  * up any literals associated to a given uri
  */
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class JenaLookupService {
     private final Dataset jenaTdb;
+
+    public JenaLookupService(@NonNull Dataset jenaTdb) {
+        this.jenaTdb = jenaTdb;
+        log.info("Creating {}", this);
+    }
 
     /**
      * Looks up the specified uri for an attached geometry.

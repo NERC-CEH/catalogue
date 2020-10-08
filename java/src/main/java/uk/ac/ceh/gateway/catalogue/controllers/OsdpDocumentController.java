@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.ToString;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -14,10 +14,10 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
+@ToString(callSuper = true)
 @Controller
 public class OsdpDocumentController extends AbstractDocumentController {
 
-    @Autowired
     public OsdpDocumentController(DocumentRepository documentRepository) {
         super(documentRepository);
     }

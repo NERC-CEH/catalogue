@@ -1,9 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,28 +12,25 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
-import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
-import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
-import uk.ac.ceh.gateway.catalogue.model.TransparentProxyException;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
-import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
-import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
-import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
+import uk.ac.ceh.gateway.catalogue.services.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
+
+@Slf4j
+@ToString
 @Controller
 public class OnlineResourceController {
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private final GetCapabilitiesObtainerService getCapabilitiesObtainerService;
     private final TMSToWMSGetMapService tmsToWmsGetMapService;
     private final MapServerDetailsService mapServerDetailsService;
-    
-    @Autowired
+
     public OnlineResourceController(BundledReaderService<MetadataDocument> documentBundleReader,
                                     GetCapabilitiesObtainerService getCapabilitiesObtainerService,
                                     TMSToWMSGetMapService tmsToWmsGetMapService,
@@ -44,6 +39,7 @@ public class OnlineResourceController {
         this.getCapabilitiesObtainerService = getCapabilitiesObtainerService;
         this.tmsToWmsGetMapService = tmsToWmsGetMapService;
         this.mapServerDetailsService = mapServerDetailsService;
+        log.info("Creating {}", this);
     }
     
     @RequestMapping (value = "documents/{file}/onlineResources",

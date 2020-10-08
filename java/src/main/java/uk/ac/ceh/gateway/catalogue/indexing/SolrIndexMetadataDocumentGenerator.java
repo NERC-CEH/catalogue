@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import com.google.common.base.Strings;
-import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  * The following class is responsible for taking a metadata document and creating 
  * beans which are solr indexable
  */
-@AllArgsConstructor
 @Slf4j
+@ToString
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
     public static final String DEIMS_URL = "https://deims.org/";
 
@@ -52,9 +52,20 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     private final DocumentIdentifierService identifierService;
     private final VocabularyService vocabularyService;
 
+    public SolrIndexMetadataDocumentGenerator(
+            CodeLookupService codeLookupService,
+            DocumentIdentifierService identifierService,
+            VocabularyService vocabularyService
+    ) {
+        this.codeLookupService = codeLookupService;
+        this.identifierService = identifierService;
+        this.vocabularyService = vocabularyService;
+        log.info("Creating {}", this);
+    }
+
     @Override
     public SolrIndex generateIndex(MetadataDocument document) {
-        log.info("{} is a {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
+        log.info("{} is a {}, {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
         return new SolrIndex()
             .setCatalogue(document.getCatalogue())
             .setCondition(getCondition(document))
@@ -139,7 +150,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     }
 
     public static <T> List<String> grab(T item, Function<? super T, String> mapper ) {
-        return grab(Arrays.asList(item), mapper);
+        return grab(Collections.singletonList(item), mapper);
     }
     
     private List<Keyword> getKeywordsFilteredByUrlFragment(MetadataDocument document, String... urlFragments) {

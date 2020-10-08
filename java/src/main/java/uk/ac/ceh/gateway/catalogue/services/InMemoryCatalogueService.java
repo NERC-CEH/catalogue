@@ -1,14 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.NonNull;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueException;
 
+import java.util.*;
+
+@Slf4j
+@ToString
 public class InMemoryCatalogueService implements CatalogueService {
     private final Map<String, Catalogue> catalogues;
     private final String defaultCatalogueKey;
@@ -22,6 +23,7 @@ public class InMemoryCatalogueService implements CatalogueService {
             this.catalogues.put(catalogue.getId(), catalogue);
         }
         this.defaultCatalogueKey = defaultCatalogueKey;
+        log.info("Creating {}", this);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
 import java.util.Arrays;
 
+@Slf4j
+@ToString
 @Controller
 @RequestMapping("maintenance")
 @Secured(DocumentController.MAINTENANCE_ROLE)
@@ -28,8 +31,7 @@ public class MaintenanceController {
     private final DocumentIndexingService linkingService;
     private final DocumentIndexingService validationService;
     private final MapServerIndexingService mapserverService;
-    
-    @Autowired
+
     public MaintenanceController(
         DataRepositoryOptimizingService repoService,
         @Qualifier("solr-index") DocumentIndexingService solrIndex,
@@ -42,6 +44,7 @@ public class MaintenanceController {
         this.linkingService = linkingService;
         this.validationService = validationService;
         this.mapserverService = mapserverService;
+        log.info("Creating {}", this);
     }
     
     @RequestMapping (method = RequestMethod.GET)

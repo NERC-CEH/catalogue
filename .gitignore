@@ -1,3 +1,4 @@
+fixtures/jena
 build
 secrets.env
 /dropbox

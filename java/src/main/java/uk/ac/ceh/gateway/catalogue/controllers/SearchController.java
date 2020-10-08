@@ -1,7 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -19,8 +20,9 @@ import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@Slf4j
+@ToString
 @Controller
-@AllArgsConstructor
 public class SearchController {
     public static final String PAGE_DEFAULT_STRING = "1";
     public static final String ROWS_DEFAULT_STRING = "20";
@@ -40,7 +42,15 @@ public class SearchController {
     private final GroupStore<CatalogueUser> groupStore;
     private final CatalogueService catalogueService;
     private final FacetFactory facetFactory;
-    
+
+    public SearchController(SolrClient solrClient, GroupStore<CatalogueUser> groupStore, CatalogueService catalogueService, FacetFactory facetFactory) {
+        this.solrClient = solrClient;
+        this.groupStore = groupStore;
+        this.catalogueService = catalogueService;
+        this.facetFactory = facetFactory;
+        log.info("Creating {}", this);
+    }
+
     @RequestMapping (value = "documents",
                      method = RequestMethod.GET)
     public RedirectView redirectToDefaultCatalogue(

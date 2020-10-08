@@ -1,72 +1,63 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class DataciteServiceTest {
     private DataciteService service;
+    private MockRestServiceServer mockServer;
+    @Mock
+    DocumentIdentifierService identifierService;
+    @Mock
+    Configuration configuration;
 
-    @Mock RestTemplate rest;
-    @Mock DocumentIdentifierService identifierService;
-    @Mock Template template;
-    
     @Before
     @SneakyThrows
     public void init() {
+        val restTemplate = new RestTemplate();
         service = new DataciteService(
-            "10.8268/",
-            "Test publisher",
-            "username",
-            "password",
-            identifierService,
-            template,
-            rest
+                "https://example.com",
+                "10.8268/",
+                "Test publisher",
+                "username",
+                "password",
+                "datacite/datacite.ftl",
+                identifierService,
+                configuration,
+                restTemplate
         );
+        mockServer = MockRestServiceServer.createServer(restTemplate);
     }
-    
-    @Test
-    public void checkValidAuthentication() {
-        //Given
-        //Nothing
-        
-        //When
-        HttpHeaders headers = service.getBasicAuth();
-        
-        //Then
-        assertTrue("Expected authorization header", headers.containsKey("Authorization"));
-        assertThat("Expected authorization header", headers.get("Authorization"), contains("Basic dXNlcm5hbWU6cGFzc3dvcmQ="));
-    }
-    
+
     @Test
     public void checkThatIsDataciteUpdatableIfEverythingIsPresent() {
         //Given
@@ -79,16 +70,17 @@ public class DataciteServiceTest {
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
-        
+
         //When
         boolean dataciteUpdatable = service.isDatacitable(document);
-        
+
         //Then
-        assertTrue("Expected document to be updateable", dataciteUpdatable);        
+        assertTrue("Expected document to be updatable", dataciteUpdatable);
+        verifyZeroInteractions(configuration, identifierService);
     }
-    
+
     @Test
-    public void checkThatIsntDatacitableIfPublicationDateIsInFuture() {
+    public void checkThatIsNotDatacitableIfPublicationDateIsInFuture() {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
         ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
@@ -99,14 +91,15 @@ public class DataciteServiceTest {
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2110, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
-        
+
         //When
         boolean dataciteUpdatable = service.isDatacitable(document);
-        
+
         //Then
-        assertFalse("Expected document to not be updateable", dataciteUpdatable);        
+        assertFalse("Expected document to not be updatable", dataciteUpdatable);
+        verifyZeroInteractions(configuration, identifierService);
     }
-    
+
     @Test
     public void checkThatIsDatacitableIfPublicationDateIsToday() {
         //Given
@@ -119,28 +112,31 @@ public class DataciteServiceTest {
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
-        
+
         //When
         boolean dataciteUpdatable = service.isDatacitable(document);
-        
+
         //Then
-        assertTrue("Expected document to be updateable", dataciteUpdatable);     
+        assertTrue("Expected document to be updatable", dataciteUpdatable);
+        verifyZeroInteractions(configuration, identifierService);
     }
-    
+
     @Test
-    public void checkThatIsNotDataciteUpdatableIfRequirementsArntMet() {
+    public void checkThatIsNotDataciteUpdatableIfRequirementsAreNotMet() {
         //Given
         GeminiDocument document = new GeminiDocument();
         document.setMetadata(MetadataInfo.builder().build());
-        
+
         //When
         boolean dataciteUpdatable = service.isDatacitable(document);
-        
+
         //Then
-        assertFalse("Expected document to not be updateable", dataciteUpdatable);        
+        assertFalse("Expected document to not be updatable", dataciteUpdatable);
+        verifyZeroInteractions(configuration, identifierService);
     }
-    
+
     @Test
+    @SneakyThrows
     public void checkThatPostsToRestEndpointWhenValid() {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
@@ -152,19 +148,25 @@ public class DataciteServiceTest {
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
+        given(configuration.getTemplate("datacite/datacite.ftl")).willReturn(mock(Template.class));
+
+        // TODO: in future could look at the xml content sent to Datacite
+        mockServer
+                .expect(requestTo("https://example.com/metadata"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML))
+                .andRespond(withSuccess());
 
         //When
-        ResourceIdentifier dataciteUpdatable = service.updateDoiMetadata(document);
-        
+        service.updateDoiMetadata(document);
+
         //Then
-        ArgumentCaptor<HttpEntity> captor = ArgumentCaptor.forClass(HttpEntity.class);
-        verify(rest).postForEntity(eq("https://mds.datacite.org/metadata"), captor.capture(), eq(String.class));
-        assertThat("correct content type", captor.getValue().getHeaders().getContentType(), equalTo(MediaType.valueOf("application/xml;charset=UTF-8")));
+        mockServer.verify();
     }
-    
-    
+
+
     @Test
-    public void checkThatPostsToDoiMintEndpointWhenValid() throws URISyntaxException {
+    public void checkThatPostsToDoiMintEndpointWhenValid() {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
         ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
@@ -177,14 +179,19 @@ public class DataciteServiceTest {
         document.setMetadata(metadata);
         when(identifierService.generateUri("MY_ID")).thenReturn("http://ceh.com");
         document.setId("MY_ID");
-        
+
+        mockServer
+                .expect(requestTo("https://example.com/doi"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
+                .andExpect(content().string("doi=10.8268/MY_ID\nurl=http://ceh.com"))
+                .andRespond(withSuccess());
+
         //When
         service.mintDoiRequest(document);
-        
+
         //Then
-        ArgumentCaptor<HttpEntity> captor = ArgumentCaptor.forClass(HttpEntity.class);
-        verify(rest).postForEntity(eq("https://mds.datacite.org/doi"), captor.capture(), eq(String.class));
-        assertThat("correct content type", captor.getValue().getHeaders().getContentType(), equalTo(MediaType.TEXT_PLAIN));
-        assertThat("correct body", captor.getValue().getBody(), equalTo("doi=10.8268/MY_ID\nurl=http://ceh.com"));
+        mockServer.verify();
+        verify(identifierService).generateUri("MY_ID");
     }
 }

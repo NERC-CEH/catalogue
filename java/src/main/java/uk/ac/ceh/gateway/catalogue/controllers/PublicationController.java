@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,13 +15,15 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.services.PublicationService;
 
+@Slf4j
+@ToString
 @Controller
 public class PublicationController {
     private final PublicationService publicationService;
 
-    @Autowired
     public PublicationController(PublicationService publicationService) {
         this.publicationService = publicationService;
+        log.info("Creating {}", this);
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")

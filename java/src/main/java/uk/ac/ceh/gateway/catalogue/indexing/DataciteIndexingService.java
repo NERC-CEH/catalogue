@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -15,10 +15,19 @@ import java.util.List;
  * that the change in the GeminiDocument adjusts the datacite metadata request.
  */
 @Slf4j
-@AllArgsConstructor
+@ToString
 public class DataciteIndexingService implements DocumentIndexingService {
     private final BundledReaderService<MetadataDocument> bundleReader;
     private final DataciteService datacite;
+
+    public DataciteIndexingService(
+            BundledReaderService<MetadataDocument> bundleReader,
+            DataciteService datacite
+    ) {
+        this.bundleReader = bundleReader;
+        this.datacite = datacite;
+        log.info("Creating {}", this);
+    }
 
     /**
      * Loop around all of the documents ids in the toIndex. Read these and if a

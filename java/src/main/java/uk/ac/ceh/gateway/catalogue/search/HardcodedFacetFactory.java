@@ -1,11 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import lombok.NonNull;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Service
 public class HardcodedFacetFactory implements FacetFactory {
 
     @Override

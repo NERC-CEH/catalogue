@@ -1,30 +1,36 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import static java.lang.String.format;
-
-import java.io.File;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.collect.ImmutableMap;
-
+import lombok.SneakyThrows;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
-import lombok.SneakyThrows;
-import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+
+import java.io.File;
+import java.util.Map;
+
+import static java.lang.String.format;
 
 /**
  * static json MetadataDocument reader
  */
 @Service
+@Slf4j
+@ToString
 public class DocumentReader<T extends MetadataDocument> {
   private static final String datastore = "/var/ceh-catalogue/datastore";
+
+  public DocumentReader() {
+    log.info("Creating {}", this);
+  }
 
   private final static Map<String, String> lookup = ImmutableMap.<String, String>builder()
       .put("GEMINI_DOCUMENT", "application/gemini+json")

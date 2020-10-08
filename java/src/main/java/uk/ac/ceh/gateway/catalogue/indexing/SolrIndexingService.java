@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.SneakyThrows;
+import lombok.ToString;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  * will then go into an instance of Solr for speedy text based searches.
  * @param <D> type of documents to be read from the DataRepository
  */
+@ToString(callSuper = true)
 public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex> {
     private final SolrClient solrClient;
     private final JenaLookupService lookupService;

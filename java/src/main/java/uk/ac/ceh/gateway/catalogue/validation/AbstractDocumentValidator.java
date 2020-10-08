@@ -1,22 +1,31 @@
 package uk.ac.ceh.gateway.catalogue.validation;
 
-import java.io.InputStream;
-import lombok.Data;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+
+import java.io.InputStream;
 
 /**
  * The following is a validator which will read a document from the 
  * documentWritingService as a specified mediatype. It will then delegate the 
  * read InputStream to the subclasses #validate(InputStream) method.
  */
-@Data
 @Slf4j
+@ToString
 public abstract class AbstractDocumentValidator implements Validator {
-    private final String name;
+    @Getter private final String name;
     private final MediaType mediaType;
     private final DocumentWritingService documentWritingService;
+
+    public AbstractDocumentValidator(String name, MediaType mediaType, DocumentWritingService documentWritingService) {
+        this.name = name;
+        this.mediaType = mediaType;
+        this.documentWritingService = documentWritingService;
+        log.info("Creating {}", this);
+    }
 
     @Override
     public ValidationResult validate(Object input) {

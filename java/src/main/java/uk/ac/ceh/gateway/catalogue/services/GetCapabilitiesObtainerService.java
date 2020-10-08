@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -14,11 +15,18 @@ import java.net.URISyntaxException;
 
 import static java.lang.String.format;
 
-@AllArgsConstructor
+@Slf4j
+@ToString
 public class GetCapabilitiesObtainerService {
     private final RestTemplate rest;
     private final MapServerDetailsService mapServerDetailsService;
-    
+
+    public GetCapabilitiesObtainerService(RestTemplate rest, MapServerDetailsService mapServerDetailsService) {
+        this.rest = rest;
+        this.mapServerDetailsService = mapServerDetailsService;
+        log.info("Creating {}", this);
+    }
+
     @Cacheable("capabilities")
     public WmsCapabilities getWmsCapabilities(OnlineResource resource) {
         if(resource.getType().equals(OnlineResource.Type.WMS_GET_CAPABILITIES)) {

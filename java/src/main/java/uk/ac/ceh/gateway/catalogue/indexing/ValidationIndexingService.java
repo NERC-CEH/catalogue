@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import lombok.ToString;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
@@ -16,6 +17,7 @@ import java.util.*;
  * validation checks.
  * @param <D>
  */
+@ToString(callSuper = true, exclude = {"failed", "results"})
 public class ValidationIndexingService<D extends MetadataDocument> extends AbstractIndexingService<D, ValidationReport> {
     private final Map<String, ValidationReport> results;
     private final Set<String> failed;
@@ -28,22 +30,22 @@ public class ValidationIndexingService<D extends MetadataDocument> extends Abstr
             DataRepository<?> repo,
             PostProcessingService<D> postProcessingService,
             DocumentIdentifierService documentIdentifierService,
-            IndexGenerator<D, ValidationReport> indexGenerator) {
+            IndexGenerator<D, ValidationReport> indexGenerator
+    ) {
         super(reader, listingService, repo, indexGenerator);
-        results = new HashMap<>();
-        failed = new HashSet<>();
-        
+        this.results = new HashMap<>();
+        this.failed = new HashSet<>();
         this.postProcessingService = postProcessingService;
         this.documentIdentifierService = documentIdentifierService;
     }
     
     @Override
-    public boolean isIndexEmpty() throws DocumentIndexingException {
+    public boolean isIndexEmpty() {
         return results.isEmpty() && failed.isEmpty();
     }
 
     @Override
-    protected void clearIndex() throws DocumentIndexingException {
+    protected void clearIndex() {
         results.clear();
         failed.clear();
     }
@@ -60,13 +62,13 @@ public class ValidationIndexingService<D extends MetadataDocument> extends Abstr
     }
 
     @Override
-    protected void index(ValidationReport toIndex) throws Exception {
+    protected void index(ValidationReport toIndex) {
         results.put(toIndex.getDocumentId(), toIndex);
     }
 
     @Override
-    public void unindexDocuments(List<String> unIndex) throws DocumentIndexingException {
-        unIndex.stream().forEach(results::remove);
+    public void unindexDocuments(List<String> unIndex) {
+        unIndex.forEach(results::remove);
     }
     
     /**
