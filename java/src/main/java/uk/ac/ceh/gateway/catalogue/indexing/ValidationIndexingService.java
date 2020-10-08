@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
@@ -17,6 +18,7 @@ import java.util.*;
  * validation checks.
  * @param <D>
  */
+@Slf4j
 @ToString(callSuper = true, exclude = {"failed", "results"})
 public class ValidationIndexingService<D extends MetadataDocument> extends AbstractIndexingService<D, ValidationReport> {
     private final Map<String, ValidationReport> results;
@@ -37,6 +39,7 @@ public class ValidationIndexingService<D extends MetadataDocument> extends Abstr
         this.failed = new HashSet<>();
         this.postProcessingService = postProcessingService;
         this.documentIdentifierService = documentIdentifierService;
+        log.info("Creating {}", this);
     }
     
     @Override

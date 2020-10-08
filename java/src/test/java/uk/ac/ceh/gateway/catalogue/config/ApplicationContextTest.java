@@ -33,7 +33,7 @@ public class ApplicationContextTest {
         assertNotNull(applicationContext.getBean("jenaLookupService"));
         assertNotNull(applicationContext.getBean("permission"));
     }
-
+    
     @Test
     public void freemarkerConfiguredCorrectly() {
         val freemarkerConfiguration = (Configuration)applicationContext.getBean("freemarkerConfiguration");

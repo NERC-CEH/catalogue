@@ -26,7 +26,7 @@ public class CrowdUserStoreConfig {
     
     @Bean
     public GroupStore<CatalogueUser> groupStore() {
-        log.info("Creating CrowdGroupStore(address={}, username={}", address, username);
+        log.info("Creating CrowdGroupStore(address={}, username={})", address, username);
         return new CrowdGroupStore<>(crowdCredentials());
     }
     
