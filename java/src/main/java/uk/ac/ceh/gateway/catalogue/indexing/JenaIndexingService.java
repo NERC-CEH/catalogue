@@ -22,7 +22,7 @@ import java.util.List;
  * @param <D> type of documents to be read from the DataRepository
  */
 @Slf4j
-@ToString
+@ToString(callSuper = true)
 public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Statement>> {
     private final DocumentIdentifierService documentIdentifierService;
     private final Dataset jenaTdb;

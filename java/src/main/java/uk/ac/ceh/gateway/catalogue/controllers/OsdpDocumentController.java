@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -14,12 +15,14 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
+@Slf4j
 @ToString(callSuper = true)
 @Controller
 public class OsdpDocumentController extends AbstractDocumentController {
 
     public OsdpDocumentController(DocumentRepository documentRepository) {
         super(documentRepository);
+        log.info("Creating {}", this);
     }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")

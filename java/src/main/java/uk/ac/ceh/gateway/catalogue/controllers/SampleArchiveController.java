@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.ToString;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -15,13 +15,14 @@ import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_JSON_VALUE;
 
+@Slf4j
 @ToString(callSuper = true)
 @Controller
 public class SampleArchiveController extends AbstractDocumentController {
 
-  @Autowired
   public SampleArchiveController(DocumentRepository documentRepository) {
     super(documentRepository);
+    log.info("Creating {}", this);
   }
 
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
