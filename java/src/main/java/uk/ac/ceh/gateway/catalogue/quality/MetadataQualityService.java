@@ -104,10 +104,14 @@ public class MetadataQualityService {
             }
         });
 
-        val description = parsedDoc.read("$.description", String.class).trim();
-        if (description.length() < 100) {
+        try {
+            val description = parsedDoc.read("$.description", String.class).trim();
+            if (description.trim().length() < 100) {
+                toReturn.add(new MetadataCheck("Description is too short (minimum 100 characters)", ERROR));
+            }
+        } catch (NullPointerException ex) {
             toReturn.add(new MetadataCheck("Description is too short (minimum 100 characters)", ERROR));
-        } 
+        }
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -819,7 +823,7 @@ public class MetadataQualityService {
 
     @Value
     public static class CatalogueResults {
-        private final List<Results> results;
+        List<Results> results;
 
         public long getTotalErrors() {
             return results.stream()
