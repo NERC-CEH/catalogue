@@ -43,6 +43,7 @@ public class HubbubService {
     public JsonNode get(String path, Integer page, Integer size, String... status) {
 
         val uriBuilder = UriComponentsBuilder.fromHttpUrl(address)
+                .queryParam("data", true)
                 .queryParam("path", path)
                 .queryParam("page", page.toString())
                 .queryParam("size", size.toString())
@@ -96,6 +97,7 @@ public class HubbubService {
     }
 
     private JsonNode request(String url, HttpMethod method) {
+        log.debug("{} {}", method, url);
         return restTemplate.exchange(
                 url,
                 method,

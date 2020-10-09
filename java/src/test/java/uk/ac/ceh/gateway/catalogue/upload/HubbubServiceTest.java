@@ -104,6 +104,7 @@ public class HubbubServiceTest {
         mockServer
                 .expect(requestTo(startsWith("https://example.com/")))
                 .andExpect(method(HttpMethod.GET))
+                .andExpect(queryParam("data", "true"))
                 .andExpect(queryParam("path", "12345-903"))
                 .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
                 .andExpect(queryParam("page", "1"))
@@ -124,6 +125,7 @@ public class HubbubServiceTest {
         mockServer
                 .expect(requestTo(startsWith("https://example.com/")))
                 .andExpect(method(HttpMethod.GET))
+                .andExpect(queryParam("data", "true"))
                 .andExpect(queryParam("path", "12345-903"))
                 .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
                 .andExpect(queryParam("page", "1"))
