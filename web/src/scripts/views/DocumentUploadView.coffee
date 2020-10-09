@@ -149,6 +149,7 @@ define [
     "#{d}/#{M}/#{y} - #{h}:#{m}"
   
   pagination: (name, pageName) ->
+    console.log @model.attributes
     uploadFiles = @model.get('uploadFiles')
     pagination = uploadFiles[name].pagination
     page = pagination.page

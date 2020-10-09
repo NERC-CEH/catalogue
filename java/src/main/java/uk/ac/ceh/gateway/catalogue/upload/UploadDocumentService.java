@@ -18,6 +18,8 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import static java.lang.String.format;
+
 @Slf4j
 @ToString
 public class UploadDocumentService {
@@ -39,7 +41,7 @@ public class UploadDocumentService {
     val uploadFile = new UploadFile();
       val path = item.get("path").asText();
       uploadFile.setPath(path);
-      val name = path.replace(String.format("/%s/", folder), "");
+      val name = path.replace(format("/%s/", folder), "");
       uploadFile.setName(name);
       uploadFile.setId(name.replaceAll("[^\\w?]", "-"));
 
@@ -64,7 +66,7 @@ public class UploadDocumentService {
   }
 
   private UploadFiles getUploadFiles(String directory, String id, ArrayNode data, ObjectNode paginationNode) {
-    val folder = String.format("%s/%s", directory, id);
+    val folder = format("%s/%s", directory, id);
     val files = new UploadFiles();
     val pagination = new UploadDocumentPagination();
     pagination.setPage(paginationNode.get("page").asInt());
@@ -94,36 +96,37 @@ public class UploadDocumentService {
     val dropboxFiles = new ObjectMapper().createArrayNode();
     val supportingDocumentFiles = new ObjectMapper().createArrayNode();
 
-    val dropboxRes = hubbubService.get(String.format("/dropbox/%s", id), documentsPage, VISIBLE_STATUS);
+    val dropboxRes = hubbubService.get(format("/dropbox/%s", id), documentsPage, VISIBLE_STATUS);
     val dropbox = (ArrayNode) dropboxRes.get("data");
-    dropbox.forEach(item -> { dropboxFiles.add(item); });
+    dropbox.forEach(dropboxFiles::add);
     document.getUploadFiles().put("documents", getUploadFiles("dropbox", id, dropboxFiles, (ObjectNode) dropboxRes.get("pagination")));
 
-    val eidchubRes = hubbubService.get(String.format("/eidchub/%s", id), datastorePage, VISIBLE_STATUS);
+    val eidchubRes = hubbubService.get(format("/eidchub/%s", id), datastorePage, VISIBLE_STATUS);
     val eidchub = (ArrayNode) eidchubRes.get("data");
-    eidchub.forEach(item -> { eidchubFiles.add(item); });
+    eidchub.forEach(eidchubFiles::add);
     val eidchubUploadFiles = getUploadFiles("eidchub", id, eidchubFiles, (ObjectNode) eidchubRes.get("pagination"));
     document.getUploadFiles().put("datastore", eidchubUploadFiles);
 
-    val supportingDocumentRes = hubbubService.get(String.format("/supporting-documents/%s", id), supportingDocumentsPage, VISIBLE_STATUS);
+    val supportingDocumentRes = hubbubService.get(format("/supporting-documents/%s", id), supportingDocumentsPage, VISIBLE_STATUS);
     val supportingDocument = (ArrayNode) supportingDocumentRes.get("data");
-    supportingDocument.forEach(item -> { supportingDocumentFiles.add(item); });
+    supportingDocument.forEach(supportingDocumentFiles::add);
     document.getUploadFiles().put("supporting-documents", getUploadFiles("supporting-documents", id, supportingDocumentFiles, (ObjectNode) supportingDocumentRes.get("pagination")));
-
+    log.debug("Getting {} for {}. Pages (documents={}, datastore={}, supportingDocuments={})", document, id, documentsPage, datastorePage, supportingDocumentsPage);
     return document;
   }
 
   @SneakyThrows
   public void getCsv(PrintWriter writer, String id) {
+    log.debug("Getting CSV for {}", id);
     val first = hubbubService.get(id);
     val total = first.get("pagination").get("total").asInt();
-    val eidchub = (ArrayNode) hubbubService.get(String.format("/eidchub/%s", id), 1, total).get("data");
+    val eidchub = (ArrayNode) hubbubService.get(format("/eidchub/%s", id), 1, total).get("data");
     eidchub.forEach(item -> {
       val status = item.get("status").asText();
       if (status.equals("VALID")) {
-        val path = item.get("path").asText().replace(String.format("/eidchub/%s/", id), "");
+        val path = item.get("path").asText().replace(format("/eidchub/%s/", id), "");
         val hash = item.get("hash").asText();
-        writer.append(String.format("%s,%s", path, hash));
+        writer.append(format("%s,%s", path, hash));
         writer.append("\n\r");
       }
     });
@@ -142,26 +145,27 @@ public class UploadDocumentService {
     val dropboxFiles = new ObjectMapper().createArrayNode();
     val supportingDocumentFiles = new ObjectMapper().createArrayNode();
 
-    val dropboxRes = hubbubService.get(String.format("/dropbox/%s", id), documentsPage);
+    val dropboxRes = hubbubService.get(format("/dropbox/%s", id), documentsPage);
     val dropbox = (ArrayNode) dropboxRes.get("data");
-    dropbox.forEach(item -> { dropboxFiles.add(item); });
+    dropbox.forEach(dropboxFiles::add);
     document.getUploadFiles().put("documents", getUploadFiles("dropbox", id, dropboxFiles, (ObjectNode) dropboxRes.get("pagination")));
     
-    val eidchubRes = hubbubService.get(String.format("/eidchub/%s", id), datastorePage);
+    val eidchubRes = hubbubService.get(format("/eidchub/%s", id), datastorePage);
     val eidchub = (ArrayNode) eidchubRes.get("data");
-    eidchub.forEach(item -> { eidchubFiles.add(item); });
+    eidchub.forEach(eidchubFiles::add);
     val eidchubUploadFiles = getUploadFiles("eidchub", id, eidchubFiles, (ObjectNode) eidchubRes.get("pagination"));
     document.getUploadFiles().put("datastore", eidchubUploadFiles);
 
-    val supportingDocumentRes = hubbubService.get(String.format("/supporting-documents/%s", id), supportingDocumentsPage);
+    val supportingDocumentRes = hubbubService.get(format("/supporting-documents/%s", id), supportingDocumentsPage);
     val supportingDocument = (ArrayNode) supportingDocumentRes.get("data");
-    supportingDocument.forEach(item -> { supportingDocumentFiles.add(item); });
+    supportingDocument.forEach(supportingDocumentFiles::add);
     document.getUploadFiles().put("supporting-documents", getUploadFiles("supporting-documents", id, supportingDocumentFiles, (ObjectNode) supportingDocumentRes.get("pagination")));
-
+    log.debug("Getting {} for {}", document, id);
     return document;
   }
 
   public UploadDocument add(String id, String filename, MultipartFile f) {
+    log.debug("Adding {} to {}", filename, id);
     threadPool.execute(() -> {
       try (InputStream in = f.getInputStream()) {
         val directory = folders.get("documents");
@@ -170,64 +174,65 @@ public class UploadDocumentService {
         file.setReadable(true);
         file.setWritable(false, true);
         file.setExecutable(false);
-        writing(id, String.format("/dropbox/%s/%s", id, filename), in.available());
+        writing(id, format("/dropbox/%s/%s", id, filename), in.available());
         FileUtils.copyInputStreamToFile(in, file);
-        accept(id, String.format("/dropbox/%s/%s", id, filename));
-        validateFile(id, String.format("/dropbox/%s/%s", id, filename));
+        accept(id, format("/dropbox/%s/%s", id, filename));
+        validateFile(id, format("/dropbox/%s/%s", id, filename));
       } catch (IOException err) {
-        System.out.println(err);
+        // TODO: check why this exception is being swallowed
+        log.error(format("Error adding file (id=%s filename=%s)", id, filename), err);
       }
     });
-
     return get(id);
   }
 
   public UploadDocument delete(String id, String filename) {
+    log.debug("Deleting {} from {}", filename, id);
     hubbubService.delete(filename);
     return get(id);
   }
 
   public UploadDocument accept(String id, String filename) {
+    log.debug("Accepting {} for {}", filename, id);
     if (!filename.startsWith("/")) filename = "/" + filename;
     hubbubService.post("/accept", filename);
     return get(id);
   }
 
-  public UploadDocument writing(String id, String filename, int size) {
+  private void writing(String id, String filename, int size) {
+    log.debug("Writing {} with size ({}) for {}", filename, size, id);
     if (!filename.startsWith("/")) filename = "/" + filename;
-    hubbubService.postQuery("/writing", filename, "size", String.format("%d", size));
-    return get(id);
+    hubbubService.postQuery("/writing", filename, "size", format("%d", size));
   }
 
   public UploadDocument validate(String id) {
+    log.debug("Validating {}",  id);
     hubbubService.postQuery("/validate", id, "force", "true");
     return get(id);
   }
 
   public UploadDocument validateFile(String id, String filename) {
+    log.debug("Validating {} for {}", filename, id);
     hubbubService.postQuery("/validate", filename, "force", "true");
     return get(id);
   }
 
 
   public UploadDocument cancel(String id, String filename) {
-    threadPool.execute(() -> {
-      hubbubService.post("/cancel", filename);
-    });
+    log.debug("Cancelling {} for {}", filename, id);
+    threadPool.execute(() -> hubbubService.post("/cancel", filename));
     return get(id);
   }
 
   public UploadDocument move(String id, String filename, String to) {
-    threadPool.execute(() -> {
-      hubbubService.postQuery("/move", filename, "to", to);
-    });
+    log.debug("Moving {} for {} to {}", filename, id, to);
+    threadPool.execute(() -> hubbubService.postQuery("/move", filename, "to", to));
     return get(id);
   }
 
   public UploadDocument moveToDataStore(String id) {
-    threadPool.execute(() -> {
-      hubbubService.post("/move_all", id);
-    });
+    log.debug("Moving to DataStore {}", id);
+    threadPool.execute(() -> hubbubService.post("/move_all", id));
     return get(id);
   }
 }
