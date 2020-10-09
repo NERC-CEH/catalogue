@@ -61,23 +61,26 @@ public class UploadController {
     @SneakyThrows
     @PreAuthorize("@permission.userCanUpload(#id)")
     @GetMapping("upload/{id}")
-    public ModelAndView createOrGetUploadDocument(
+    public ModelAndView getUploadDocumentPage(
             @PathVariable("id") String id
     ) {
+        log.info("Requesting UploadDocument page for {}", id);
         val geminiDocument = (GeminiDocument) documentRepository.read(id);
         Map<String, Object> model = new HashMap<>();
         model.put("id", id);
         model.put("title", geminiDocument.getTitle());
+        log.debug("Model is {}", model);
         return new ModelAndView("/html/upload/upload-document.ftl", model);
     }
 
-    @GetMapping(value = "documents/{id}", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @GetMapping(value = "documents/{id}", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> get(
             @PathVariable("id") String id,
             @RequestParam(value = "documents_page", defaultValue = "1") int documentsPage,
             @RequestParam(value = "datastore_page", defaultValue = "1") int datastorePage,
             @RequestParam(value = "supporting_documents_page", defaultValue = "1") int supportingDocumentsPage
     ) {
+        log.debug("GETing {} (documentsPage={}, datastorePage={}, supportingDocumentsPage={})", id, documentsPage, datastorePage, supportingDocumentsPage);
         return ResponseEntity.ok(
                 uploadDocumentService.get(
                         id,
@@ -116,7 +119,7 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/delete-upload-file", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @PutMapping(value = "documents/{id}/delete-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> deleteFile(
             @PathVariable("id") String id,
             @RequestParam("filename") String filename
@@ -126,7 +129,7 @@ public class UploadController {
 
     @SneakyThrows
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/finish", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @PutMapping(value = "documents/{id}/finish", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> finish(
             @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
@@ -137,7 +140,7 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/schedule", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @PutMapping(value = "documents/{id}/schedule", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> schedule(
             @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
@@ -147,7 +150,7 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/reschedule", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @PutMapping(value = "documents/{id}/reschedule", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> reschedule(
             @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
@@ -157,7 +160,7 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/accept-upload-file", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @PutMapping(value = "documents/{id}/accept-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> acceptFile(
             @PathVariable("id") String id,
             @RequestParam("path") String path
@@ -166,7 +169,7 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/validate-upload-file", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @PutMapping(value = "documents/{id}/validate-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> validateFile(
             @PathVariable("id") String id,
             @RequestParam("path") String path
@@ -175,7 +178,7 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/cancel", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @PutMapping(value = "documents/{id}/cancel", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> cancel(
             @PathVariable("id") String id,
             @RequestParam("filename") String filename
@@ -184,7 +187,7 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/move-upload-file", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @PutMapping(value = "documents/{id}/move-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> moveFile(
             @PathVariable("id") String id,
             @RequestParam("to") String to,
@@ -194,7 +197,7 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/move-to-datastore", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @PutMapping(value = "documents/{id}/move-to-datastore", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> moveToDatastore(
             @PathVariable("id") String id
     ) {
@@ -202,7 +205,7 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/validate", consumes = UPLOAD_DOCUMENT_JSON_VALUE)
+    @PutMapping(value = "documents/{id}/validate", produces = UPLOAD_DOCUMENT_JSON_VALUE)
     public ResponseEntity<UploadDocument> validate(
             @PathVariable("id") String id
     ) {
