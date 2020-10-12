@@ -183,7 +183,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) =>
@@ -199,7 +199,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) =>
@@ -214,7 +214,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) =>
@@ -229,7 +229,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) =>
@@ -244,7 +244,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) =>
@@ -259,7 +259,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) =>
@@ -274,7 +274,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) =>
@@ -290,7 +290,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) =>
@@ -306,7 +306,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) =>
@@ -321,7 +321,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) ->
@@ -335,7 +335,7 @@ Please "VALIDATE" this file then resolve any new errors
     $.ajax {
       url: url
       headers:
-        'Accept': 'application/json'
+        'Accept': 'application/vnd.upload-document+json'
         'Content-Type': 'application/vnd.upload-document+json'
       type: 'PUT'
       success: (data) ->
