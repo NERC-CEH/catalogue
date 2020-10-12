@@ -60,10 +60,6 @@ public class HubbubService {
         return get(path, page, 20, status);
     }
 
-    public JsonNode get(String path, Integer page) {
-        return get(path, page, 20, new String[0]);
-    }
-
     public JsonNode get(String path) {
         return get(path, 1, 20, new String[0]);
     }

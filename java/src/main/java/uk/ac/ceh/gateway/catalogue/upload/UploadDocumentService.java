@@ -1,10 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -37,37 +33,24 @@ public class UploadDocumentService {
         log.info("Creating {}", this);
     }
 
-    @SneakyThrows
+    public UploadDocument get(String id) {
+        return get(id, 1, 1, 1, new String[0]);
+    }
+
     public UploadDocument get(String id, int documentsPage, int datastorePage, int supportingDocumentsPage) {
-        val document = new UploadDocument();
-        document.setId(id);
+        return get(id, documentsPage, datastorePage, supportingDocumentsPage, VISIBLE_STATUS);
+    }
 
-        val dropboxFiles = new ObjectMapper().createArrayNode();
-        val eidchubFiles = new ObjectMapper().createArrayNode();
-        val supportingDocumentFiles = new ObjectMapper().createArrayNode();
+    private UploadDocument get(String id, int documentsPage, int datastorePage, int supportingDocumentsPage, String... status) {
+        val dropboxRes = hubbubService.get(format("/dropbox/%s", id), documentsPage, status);
+        val eidchubRes = hubbubService.get(format("/eidchub/%s", id), datastorePage, status);
+        val supportingDocumentRes = hubbubService.get(format("/supporting-documents/%s", id), supportingDocumentsPage, status);
+        val document = new UploadDocument(id, dropboxRes, eidchubRes, supportingDocumentRes);
 
-        val dropboxRes = hubbubService.get(format("/dropbox/%s", id), documentsPage, VISIBLE_STATUS);
-        val dropbox = (ArrayNode) dropboxRes.get("data");
-        dropbox.forEach(dropboxFiles::add);
-        val dropboxUploadFiles = getUploadFiles("dropbox", id, dropboxFiles, (ObjectNode) dropboxRes.get("pagination"));
-        document.getUploadFiles().put("documents", dropboxUploadFiles);
-
-        val eidchubRes = hubbubService.get(format("/eidchub/%s", id), datastorePage, VISIBLE_STATUS);
-        val eidchub = (ArrayNode) eidchubRes.get("data");
-        eidchub.forEach(eidchubFiles::add);
-        val eidchubUploadFiles = getUploadFiles("eidchub", id, eidchubFiles, (ObjectNode) eidchubRes.get("pagination"));
-        document.getUploadFiles().put("datastore", eidchubUploadFiles);
-
-        val supportingDocumentRes = hubbubService.get(format("/supporting-documents/%s", id), supportingDocumentsPage, VISIBLE_STATUS);
-        val supportingDocument = (ArrayNode) supportingDocumentRes.get("data");
-        supportingDocument.forEach(supportingDocumentFiles::add);
-        val supportingDocumentUploadFiles = getUploadFiles("supporting-documents", id, supportingDocumentFiles, (ObjectNode) supportingDocumentRes.get("pagination"));
-        document.getUploadFiles().put("supporting-documents", supportingDocumentUploadFiles);
-        log.debug("Getting {} for {}. Pages (documents={}, datastore={}, supportingDocuments={})", document, id, documentsPage, datastorePage, supportingDocumentsPage);
+        log.debug("Getting {} for status {}", document, status);
         return document;
     }
 
-    @SneakyThrows
     public void getCsv(PrintWriter writer, String id) {
         log.debug("Getting CSV for {}", id);
         val first = hubbubService.get(id);
@@ -82,38 +65,6 @@ public class UploadDocumentService {
                 writer.append("\n\r");
             }
         });
-    }
-
-    @SneakyThrows
-    public UploadDocument get(String id) {
-        int documentsPage = 1;
-        int datastorePage = 1;
-        int supportingDocumentsPage = 1;
-
-        val document = new UploadDocument();
-        document.setId(id);
-
-        val eidchubFiles = new ObjectMapper().createArrayNode();
-        val dropboxFiles = new ObjectMapper().createArrayNode();
-        val supportingDocumentFiles = new ObjectMapper().createArrayNode();
-
-        val dropboxRes = hubbubService.get(format("/dropbox/%s", id), documentsPage);
-        val dropbox = (ArrayNode) dropboxRes.get("data");
-        dropbox.forEach(dropboxFiles::add);
-        document.getUploadFiles().put("documents", getUploadFiles("dropbox", id, dropboxFiles, (ObjectNode) dropboxRes.get("pagination")));
-
-        val eidchubRes = hubbubService.get(format("/eidchub/%s", id), datastorePage);
-        val eidchub = (ArrayNode) eidchubRes.get("data");
-        eidchub.forEach(eidchubFiles::add);
-        val eidchubUploadFiles = getUploadFiles("eidchub", id, eidchubFiles, (ObjectNode) eidchubRes.get("pagination"));
-        document.getUploadFiles().put("datastore", eidchubUploadFiles);
-
-        val supportingDocumentRes = hubbubService.get(format("/supporting-documents/%s", id), supportingDocumentsPage);
-        val supportingDocument = (ArrayNode) supportingDocumentRes.get("data");
-        supportingDocument.forEach(supportingDocumentFiles::add);
-        document.getUploadFiles().put("supporting-documents", getUploadFiles("supporting-documents", id, supportingDocumentFiles, (ObjectNode) supportingDocumentRes.get("pagination")));
-        log.debug("Getting {} for {}", document, id);
-        return document;
     }
 
     public UploadDocument add(String id, String filename, MultipartFile f) {
@@ -186,55 +137,5 @@ public class UploadDocumentService {
         log.debug("Moving to DataStore {}", id);
         threadPool.execute(() -> hubbubService.post("/move_all", id));
         return get(id);
-    }
-
-    private UploadFile convertJSONToUploadFile(String folder, JsonNode item) {
-        val uploadFile = new UploadFile();
-        val path = item.get("path").asText();
-        uploadFile.setPath(path);
-        val name = path.replace(format("/%s/", folder), "");
-        uploadFile.setName(name);
-        uploadFile.setId(name.replaceAll("[^\\w?]", "-"));
-
-        if (item.has("time"))
-            uploadFile.setTime(item.get("time").asLong());
-        if (item.has("physicalLocation"))
-            uploadFile.setPhysicalLocation(item.get("physicalLocation").asText());
-        if (item.has("format"))
-            uploadFile.setFormat(item.get("format").asText());
-        if (item.has("mediatype"))
-            uploadFile.setMediatype(item.get("mediatype").asText());
-        uploadFile.setEncoding("utf-8");
-        if (item.has("bytes"))
-            uploadFile.setBytes(item.get("bytes").asLong());
-        if (item.has("hash"))
-            uploadFile.setHash(item.get("hash").asText());
-        if (item.has("destination"))
-            uploadFile.setDestination(item.get("destination").asText());
-        val status = item.get("status").asText();
-        uploadFile.setType(status);
-        return uploadFile;
-    }
-
-    private UploadFiles getUploadFiles(String directory, String id, ArrayNode data, ObjectNode paginationNode) {
-        val folder = format("%s/%s", directory, id);
-        val files = new UploadFiles();
-        val pagination = new UploadDocumentPagination();
-        pagination.setPage(paginationNode.get("page").asInt());
-        pagination.setSize(paginationNode.get("size").asInt());
-        pagination.setTotal(paginationNode.get("total").asInt());
-        files.setPagination(pagination);
-        val documents = files.getDocuments();
-        val invalid = files.getInvalid();
-        data.forEach(item -> {
-            val uploadFile = convertJSONToUploadFile(folder, item);
-            val status = item.get("status").asText();
-            val path = item.get("path").asText();
-            if (status.equals("WRITING") || status.equals("VALID") || status.equals("VALIDATING_HASH") || status.equals("NO_HASH") || status.equals("MOVING_FROM") || status.equals("MOVING_TO"))
-                documents.put(path, uploadFile);
-            else
-                invalid.put(path, uploadFile);
-        });
-        return files;
     }
 }
