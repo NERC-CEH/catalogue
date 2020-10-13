@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -100,12 +100,18 @@ public class HubbubService {
             val content = response.getBody();
             log.debug("Content {}", content);
             return content;
-        } catch (RestClientException ex) {
-            log.error("Error communicating with Hubbub");
-            throw new RuntimeException("Failed to communicate with Hubbub", ex);
+        } catch (RestClientResponseException ex) {
+            log.error(
+                    "Error communicating with Hubbub: (statusCode={}, status={}, headers={}, body={})",
+                    ex.getRawStatusCode(),
+                    ex.getStatusText(),
+                    ex.getResponseHeaders(),
+                    ex.getResponseBodyAsString()
+            );
+            throw ex;
         } catch (Exception ex) {
             log.error("Some other error", ex);
-            throw new RuntimeException(ex);
+            throw ex;
         }
     }
 
