@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -61,7 +62,7 @@ public class DataciteService {
             @Value("${doi.templateLocation}") String templateLocation,
             @NonNull DocumentIdentifierService identifierService,
             @NonNull Configuration configuration,
-            @NonNull RestTemplate restTemplate
+            @Qualifier("datacite") RestTemplate restTemplate
     ) {
         this.api = api;
         this.prefix = prefix;

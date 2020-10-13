@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.upload;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -24,9 +23,7 @@ public class HubbubServiceTest {
         mockServer = MockRestServiceServer.createServer(restTemplate);
         hubbubService = new HubbubService(
                 restTemplate,
-                "https://example.com/",
-                "hubbub",
-                "password01234"
+                "https://example.com/"
         );
     }
 
@@ -37,7 +34,6 @@ public class HubbubServiceTest {
                 .expect(requestTo(startsWith("https://example.com/move_all")))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(queryParam("guid", "12345-903"))
-                .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
                 .andRespond(withSuccess("{\"id\": \"42\"}", MediaType.APPLICATION_JSON));
 
         //when
@@ -54,7 +50,6 @@ public class HubbubServiceTest {
                 .expect(requestTo(startsWith("https://example.com/cancel")))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(queryParam("path", "12345-903"))
-                .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
                 .andRespond(withSuccess("{\"id\": \"42\"}", MediaType.APPLICATION_JSON));
 
         //when
@@ -71,7 +66,6 @@ public class HubbubServiceTest {
                 .expect(requestTo(startsWith("https://example.com/move")))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(queryParam("path", "12345-903"))
-                .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
                 .andRespond(withSuccess("{\"id\": \"42\"}", MediaType.APPLICATION_JSON));
 
         //when
@@ -88,7 +82,6 @@ public class HubbubServiceTest {
                 .expect(requestTo(startsWith("https://example.com/delete")))
                 .andExpect(method(HttpMethod.DELETE))
                 .andExpect(queryParam("path", "12345-903"))
-                .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
                 .andRespond(withSuccess("{\"id\": \"42\"}", MediaType.APPLICATION_JSON));
 
         //when
@@ -106,7 +99,6 @@ public class HubbubServiceTest {
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(queryParam("data", "true"))
                 .andExpect(queryParam("path", "12345-903"))
-                .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
                 .andExpect(queryParam("page", "1"))
                 .andExpect(queryParam("size", "20"))
                 .andExpect(queryParam("status", nullValue()))
@@ -127,7 +119,6 @@ public class HubbubServiceTest {
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(queryParam("data", "true"))
                 .andExpect(queryParam("path", "12345-903"))
-                .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
                 .andExpect(queryParam("page", "1"))
                 .andExpect(queryParam("size", "20"))
                 .andExpect(queryParam("status", "one", "two"))

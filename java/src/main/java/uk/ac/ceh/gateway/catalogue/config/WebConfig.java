@@ -16,6 +16,10 @@ import freemarker.template.TemplateExceptionHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -35,6 +39,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -52,6 +57,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
@@ -665,7 +671,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         );
     }
 
-    @Bean(name="getfeatureinfo-rest")
+    @Bean
+    @Qualifier("wms")
     public RestTemplate getFeatureInfoRestTemplate() throws XPathExpressionException {
         RestTemplate toReturn = new RestTemplate();
         toReturn.setMessageConverters(Collections.singletonList(
@@ -673,6 +680,38 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         ));
         toReturn.setErrorHandler(new MapServerGetFeatureInfoErrorHandler());
         return toReturn;
+    }
+
+    @Bean
+    @Qualifier("datacite")
+    public RestTemplate dataciteRestTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
+    @Qualifier("hubbub")
+    public RestTemplate hubbubRestTemplate(
+            @Value("${hubbub.url}") String address,
+            @Value("${hubbub.username}") String username,
+            @Value("${hubbub.password}") String password
+    ) {
+        val connPool = new PoolingHttpClientConnectionManager();
+        connPool.setMaxTotal(100);
+        connPool.setDefaultMaxPerRoute(20);
+
+        val host = UriComponentsBuilder.fromHttpUrl(address).build().getHost();
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(
+                new AuthScope(host, 443),
+                new UsernamePasswordCredentials(username, password)
+        );
+        log.info("Credentials {}", credentialsProvider);
+        val httpClient = HttpClients.custom()
+                .setDefaultCredentialsProvider(credentialsProvider)
+                .setConnectionManager(connPool)
+                .build();
+        val requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        return new RestTemplate(requestFactory);
     }
     
     @Bean

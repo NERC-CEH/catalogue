@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -35,7 +36,7 @@ public class MapViewerController {
     private final RestTemplate rest;
     private final MapServerDetailsService mapServerDetailsService;
 
-    public MapViewerController(RestTemplate rest, MapServerDetailsService mapServerDetailsService) {
+    public MapViewerController(@Qualifier("wms") RestTemplate rest, MapServerDetailsService mapServerDetailsService) {
         this.rest = rest;
         this.mapServerDetailsService = mapServerDetailsService;
         log.info("Creating {}", this);

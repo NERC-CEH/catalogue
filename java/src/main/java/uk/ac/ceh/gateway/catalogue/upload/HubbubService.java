@@ -2,10 +2,10 @@ package uk.ac.ceh.gateway.catalogue.upload;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableSet;
-import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -16,29 +16,23 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Set;
 
-import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
-
 @Slf4j
 @Service
-@ToString(exclude = "password")
+@ToString
 public class HubbubService {
     private final RestTemplate restTemplate;
     private final String address;
-    private final String username;
-    private final String password;
     private final Set<String> guidQueryParameterPaths = ImmutableSet.of("/move_all", "/unzip", "/zip");
 
     public HubbubService(
-            @NonNull RestTemplate restTemplate,
-            @Value("${hubbub.url}") String address,
-            @Value("${hubbub.username}") String username,
-            @Value("${hubbub.password}") String password
+            @Qualifier("hubbub") RestTemplate restTemplate,
+            @Value("${hubbub.url}") String address
     ) {
         this.restTemplate = restTemplate;
         this.address = address;
-        this.username = username;
-        this.password = password;
         log.info("Creating {}", this);
+        log.debug("Request factory {}", restTemplate.getRequestFactory());
+        log.debug("Message converters {}", restTemplate.getMessageConverters());
     }
 
     public JsonNode get(String path, Integer page, Integer size, String... status) {
@@ -99,7 +93,7 @@ public class HubbubService {
             val response = restTemplate.exchange(
                     url,
                     method,
-                    new HttpEntity<>(withBasicAuth(username, password)),
+                    HttpEntity.EMPTY,
                     JsonNode.class
             );
             log.debug("Response Status is {}", response.getStatusCode());
@@ -109,6 +103,9 @@ public class HubbubService {
         } catch (RestClientException ex) {
             log.error("Error communicating with Hubbub");
             throw new RuntimeException("Failed to communicate with Hubbub", ex);
+        } catch (Exception ex) {
+            log.error("Some other error", ex);
+            throw new RuntimeException(ex);
         }
     }
 
