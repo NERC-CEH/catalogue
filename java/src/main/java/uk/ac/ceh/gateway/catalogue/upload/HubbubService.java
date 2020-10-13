@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -94,14 +95,21 @@ public class HubbubService {
 
     private JsonNode request(String url, HttpMethod method) {
         log.debug("{} {}", method, url);
-        val response = restTemplate.exchange(
-                url,
-                method,
-                new HttpEntity<>(withBasicAuth(username, password)),
-                JsonNode.class
-        ).getBody();
-        log.debug("Response {}", response);
-        return response;
+        try {
+            val response = restTemplate.exchange(
+                    url,
+                    method,
+                    new HttpEntity<>(withBasicAuth(username, password)),
+                    JsonNode.class
+            );
+            log.debug("Response Status is {}", response.getStatusCode());
+            val content = response.getBody();
+            log.debug("Content {}", content);
+            return content;
+        } catch (RestClientException ex) {
+            log.error("Error communicating with Hubbub");
+            throw new RuntimeException("Failed to communicate with Hubbub", ex);
+        }
     }
 
     private String queryParamName(String path) {
