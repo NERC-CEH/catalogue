@@ -43,10 +43,12 @@ public class UploadDocumentService {
 
     private UploadDocument get(String id, int documentsPage, int datastorePage, int supportingDocumentsPage, String... status) {
         val dropboxRes = hubbubService.get(format("/dropbox/%s", id), documentsPage, status);
+        log.debug("dropbox is {}", dropboxRes);
         val eidchubRes = hubbubService.get(format("/eidchub/%s", id), datastorePage, status);
+        log.debug("eidchub is {}", eidchubRes);
         val supportingDocumentRes = hubbubService.get(format("/supporting-documents/%s", id), supportingDocumentsPage, status);
+        log.debug("supporting documents is {}", supportingDocumentRes);
         val document = new UploadDocument(id, dropboxRes, eidchubRes, supportingDocumentRes);
-
         log.debug("Getting {} for status {}", document, status);
         return document;
     }

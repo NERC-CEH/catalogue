@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.NonNull;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import static java.lang.String.format;
 
+@Slf4j
 @Value
 public class UploadDocument {
     String id;
@@ -36,6 +38,7 @@ public class UploadDocument {
         uploadFiles.put("documents", new UploadFiles("dropbox", id, dropboxNode));
         uploadFiles.put("datastore", new UploadFiles("eidchub", id, datastoreNode));
         uploadFiles.put("supporting-documents", new UploadFiles("supporting-documents", id, supportingDocumentsNode));
+        log.debug("Creating {}", this);
     }
 
     @Value

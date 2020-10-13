@@ -94,12 +94,14 @@ public class HubbubService {
 
     private JsonNode request(String url, HttpMethod method) {
         log.debug("{} {}", method, url);
-        return restTemplate.exchange(
+        val response = restTemplate.exchange(
                 url,
                 method,
                 new HttpEntity<>(withBasicAuth(username, password)),
                 JsonNode.class
         ).getBody();
+        log.debug("Response {}", response);
+        return response;
     }
 
     private String queryParamName(String path) {

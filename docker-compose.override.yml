@@ -11,6 +11,7 @@ services:
       - ./java/build/libs:/opt/ceh-catalogue/libs
     environment:
       - spring.profiles.active=development
+      - hubbub.url=https://hubbub.staging.ceh.ac.uk/
       - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
   solr:
     # Expose the solr port for development
