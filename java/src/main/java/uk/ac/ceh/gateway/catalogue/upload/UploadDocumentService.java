@@ -62,7 +62,7 @@ public class UploadDocumentService {
         eidchub.stream()
                 .filter(fileInfo -> fileInfo.getStatus().equals("VALID"))
                 .forEach(fileInfo -> {
-                    val path = fileInfo.getTruncatedPath("eidchub");
+                    val path = fileInfo.getTruncatedPath();
                     val hash = fileInfo.getHash();
                     writer.println(format("%s,%s", path, hash));
                 });

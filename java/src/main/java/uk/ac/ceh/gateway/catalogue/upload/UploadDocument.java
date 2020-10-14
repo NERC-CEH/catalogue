@@ -76,7 +76,7 @@ public class UploadDocument {
 
         public UploadFile(HubbubResponse.FileInfo fileInfo, String folder) {
             this.path = fileInfo.getPath();
-            this.name = fileInfo.getTruncatedPath(folder);
+            this.name = fileInfo.getTruncatedPath();
             this.id = name.replaceAll("[^\\w?]", "-");
 
             this.time = fileInfo.getTime();

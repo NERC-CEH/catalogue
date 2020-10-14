@@ -6,12 +6,17 @@ import lombok.Value;
 
 import java.util.List;
 
-import static java.lang.String.format;
-
 @Value
 public class HubbubResponse {
     List<FileInfo> data;
     Pagination pagination;
+
+    /*
+    Regex assumes e.g. /eidchub/444bd227-b934-412e-8863-326afb77063b/dataset.csv
+    or /dropbox/444bd227-b934-412e-8863-326afb77063b/PET/data.csv
+    Looking to match on first two directory levels
+     */
+    private static String TRUNCATE_PATH = "^\\/.*\\/.{36}\\/(.*)";
 
     @JsonCreator
     public HubbubResponse(
@@ -35,6 +40,7 @@ public class HubbubResponse {
         String physicalLocation;
         String status;
         Long time;
+        String truncatedPath;
 
         @JsonCreator
         public FileInfo(
@@ -61,10 +67,7 @@ public class HubbubResponse {
             this.physicalLocation = physicalLocation;
             this.status = status;
             this.time = time;
-        }
-
-        public String getTruncatedPath(String folder) {
-            return path.replace(format("/%s/%s/", folder, id), "");
+            this.truncatedPath = path.replaceAll(TRUNCATE_PATH, "$1");
         }
     }
 
