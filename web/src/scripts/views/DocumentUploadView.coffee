@@ -38,7 +38,7 @@ define [
       do $('.loading').remove
       $('.messages').hide 'fast'
       $('.pag-per-page .fa-spinner').css('visibility', 'hidden')
-      @pollingTimeout = setTimeout(@fetch, 1000)
+      @pollingTimeout = setTimeout(@fetch, 7000)
     do @fetch
 
     @model.on 'change', => do @render
