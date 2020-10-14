@@ -16,7 +16,7 @@ public class HubbubResponse {
     or /dropbox/444bd227-b934-412e-8863-326afb77063b/PET/data.csv
     Looking to match on first two directory levels
      */
-    private static String TRUNCATE_PATH = "^\\/.*\\/.{36}\\/(.*)";
+    private static String TRUNCATE_PATH = 	"^/.*/.{36}/(.*)";
 
     @JsonCreator
     public HubbubResponse(
