@@ -1,14 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static uk.ac.ceh.gateway.catalogue.upload.HubbubResponse.*;
 
 public class UploadDocumentTest {
 
@@ -16,12 +18,12 @@ public class UploadDocumentTest {
     public void create() {
         //given
         val id = "11-22-33-44-55";
-        val dropboxNode = create("hubbub-dropbox-data-true-response.json");
-        val datastoreNode = create("hubbub-eidchub-data-true-response.json");
-        val supportingDocumentsNode = create("hubbub-supporting-documents-data-true-response.json");
+        val dropboxResponse = new HubbubResponse(Collections.emptyList(), new Pagination(1,20, 2));
+        val datastoreResponse = new HubbubResponse(datastore(), new Pagination(1,20, 2));
+        val supportingDocumentsResponse = new HubbubResponse(supportingDocuments(), new Pagination(1,20, 3));
 
         //when
-        val actual = new UploadDocument(id, dropboxNode, datastoreNode, supportingDocumentsNode);
+        val actual = new UploadDocument(id, dropboxResponse, datastoreResponse, supportingDocumentsResponse);
 
         //then
         assertThat(actual.getId(), equalTo(id));
@@ -34,21 +36,32 @@ public class UploadDocumentTest {
         assertThat(datastore.getDocuments().size(), equalTo(2));
         assertThat(datastore.getInvalid().size(), equalTo(0));
         assertThat(datastore.getDocuments().keySet(), containsInAnyOrder(
-                "/eidchub/a4192575-e91a-477d-8f64-aae3b32faf7a/CBESS_Eddy_Covariance_data_Cartmel_Sands.csv",
-                "/eidchub/a4192575-e91a-477d-8f64-aae3b32faf7a/CBESS_data_Cartmel_Sands.csv"
+                "/sdfsdfsdf/dataset0.csv",
+                "/sdfsdfsdf/dataset1.csv"
         ));
 
         val supportingDocuments = actual.getUploadFiles().get("supporting-documents");
-        assertThat(supportingDocuments.getDocuments().size(), equalTo(1));
-        assertThat(supportingDocuments.getInvalid().size(), equalTo(0));
+        assertThat(supportingDocuments.getDocuments().size(), equalTo(2));
+        assertThat(supportingDocuments.getInvalid().size(), equalTo(1));
         assertThat(supportingDocuments.getDocuments().keySet(), containsInAnyOrder(
-                "/supporting-documents/a4192575-e91a-477d-8f64-aae3b32faf7a/CBESS_Eddy_Covariance_data_Cartmel_Sands_supporting-document.docx"
+                "/sdfsdfsdf/support0.csv",
+                "/sdfsdfsdf/support1.csv"
+        ));
+        assertThat(supportingDocuments.getInvalid().keySet(), containsInAnyOrder(
+                "/sdfsdfsdf/support2.csv"
         ));
     }
 
-    @SneakyThrows
-    private JsonNode create(String filename) {
-        val objectMapper = new ObjectMapper();
-        return objectMapper.readTree(getClass().getResourceAsStream(filename));
+    private List<FileInfo> datastore() {
+        val f0 = new FileInfo(123123L, "csv", "dc0834234", "dataset0.csv", "text/csv", "192032.837", "dataset 0.csv","/sdfsdfsdf/dataset0.csv","\\\\mnt\\\\\\\\eidchub\\\\\\something","VALID", 1602301536812L);
+        val f1 = new FileInfo(123123L, "csv", "dfjf459df", "dataset1.csv", "text/csv", "192032.837", "dataset 1.csv","/sdfsdfsdf/dataset1.csv","\\\\mnt\\\\\\\\eidchub\\\\\\something","VALID", 1602301536812L);
+        return Arrays.asList(f0, f1);
+    }
+
+    private List<FileInfo> supportingDocuments() {
+        val f0 = new FileInfo(123123L, "csv", "dc0834234", "support0.csv", "text/csv", "192032.837", "support 0.csv","/sdfsdfsdf/support0.csv","\\\\mnt\\\\\\\\eidchub\\\\\\something","VALID", 1602301536812L);
+        val f1 = new FileInfo(123123L, "csv", "dc0834234", "support1.csv", "text/csv", "192032.837", "support 1.csv","/sdfsdfsdf/support1.csv","\\\\mnt\\\\\\\\eidchub\\\\\\something","VALID", 1602301536812L);
+        val f2 = new FileInfo(123123L, "csv", "dc0834234", "support2.csv", "text/csv", "192032.837", "support 1.csv","/sdfsdfsdf/support2.csv","\\\\mnt\\\\\\\\eidchub\\\\\\something","INVALID", 1602301536812L);
+        return Arrays.asList(f0, f1, f2);
     }
 }

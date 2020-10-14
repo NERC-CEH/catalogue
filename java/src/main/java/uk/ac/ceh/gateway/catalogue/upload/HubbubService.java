@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableSet;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,7 @@ public class HubbubService {
         log.debug("Message converters {}", restTemplate.getMessageConverters());
     }
 
-    public JsonNode get(String path, Integer page, Integer size, String... status) {
+    public HubbubResponse get(String path, Integer page, Integer size, String... status) {
 
         val uriBuilder = UriComponentsBuilder.fromHttpUrl(address)
                 .queryParam("data", true)
@@ -47,19 +46,19 @@ public class HubbubService {
         return request(uriBuilder.toUriString(), HttpMethod.GET);
     }
 
-    public JsonNode get(String path, Integer page, Integer size) {
+    public HubbubResponse get(String path, Integer page, Integer size) {
         return get(path, page, size, new String[0]);
     }
 
-    public JsonNode get(String path, Integer page, String... status) {
+    public HubbubResponse get(String path, Integer page, String... status) {
         return get(path, page, 20, status);
     }
 
-    public JsonNode get(String path) {
+    public HubbubResponse get(String path) {
         return get(path, 1, 20, new String[0]);
     }
 
-    public JsonNode delete(String id) {
+    public HubbubResponse delete(String id) {
         log.info("Deleting: {}", id);
         val uriBuilder = UriComponentsBuilder.fromHttpUrl(address)
                 .path("delete")
@@ -68,7 +67,7 @@ public class HubbubService {
         return request(uriBuilder.toUriString(), HttpMethod.DELETE);
     }
 
-    public JsonNode post(String path, String id) {
+    public HubbubResponse post(String path, String id) {
         log.info("Posting to {}: {}", path, id);
         val uriBuilder = UriComponentsBuilder.fromHttpUrl(address)
                 .path(path)
@@ -77,7 +76,7 @@ public class HubbubService {
         return request(uriBuilder.toUriString(), HttpMethod.POST);
     }
 
-    public JsonNode postQuery(String path, String id, String queryKey, String queryValue) {
+    public HubbubResponse postQuery(String path, String id, String queryKey, String queryValue) {
         log.info("Post query to {}: {} with key: {} value: {}", path, id, queryKey, queryValue);
         val uriBuilder = UriComponentsBuilder.fromHttpUrl(address)
                 .path(path)
@@ -87,14 +86,14 @@ public class HubbubService {
         return request(uriBuilder.toUriString(), HttpMethod.POST);
     }
 
-    private JsonNode request(String url, HttpMethod method) {
+    private HubbubResponse request(String url, HttpMethod method) {
         log.debug("{} {}", method, url);
         try {
             val response = restTemplate.exchange(
                     url,
                     method,
                     HttpEntity.EMPTY,
-                    JsonNode.class
+                    HubbubResponse.class
             );
             log.debug("Response Status is {}", response.getStatusCode());
             val content = response.getBody();

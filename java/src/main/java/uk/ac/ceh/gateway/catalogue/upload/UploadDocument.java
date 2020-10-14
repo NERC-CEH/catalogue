@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.NonNull;
@@ -30,14 +29,14 @@ public class UploadDocument {
 
     public UploadDocument(
             @NonNull String id,
-            @NonNull JsonNode dropboxNode,
-            @NonNull JsonNode datastoreNode,
-            @NonNull JsonNode supportingDocumentsNode
+            @NonNull HubbubResponse dropboxResponse,
+            @NonNull HubbubResponse datastoreResponse,
+            @NonNull HubbubResponse supportingDocumentsResponse
     ) {
         this.id = id;
-        uploadFiles.put("documents", new UploadFiles("dropbox", id, dropboxNode));
-        uploadFiles.put("datastore", new UploadFiles("eidchub", id, datastoreNode));
-        uploadFiles.put("supporting-documents", new UploadFiles("supporting-documents", id, supportingDocumentsNode));
+        uploadFiles.put("documents", new UploadFiles("dropbox", id, dropboxResponse));
+        uploadFiles.put("datastore", new UploadFiles("eidchub", id, datastoreResponse));
+        uploadFiles.put("supporting-documents", new UploadFiles("supporting-documents", id, supportingDocumentsResponse));
         log.debug("Creating {}", this);
     }
 
@@ -45,19 +44,19 @@ public class UploadDocument {
     public static class UploadFiles {
         Map<String, UploadFile> documents = Maps.newHashMap();
         Map<String, UploadFile> invalid = Maps.newHashMap();
-        Pagination pagination;
+        HubbubResponse.Pagination pagination;
 
-        public UploadFiles(String directory, String id, JsonNode uploadFilesNode) {
-            this.pagination = new Pagination(uploadFilesNode.get("pagination"));
+        public UploadFiles(String directory, String id, HubbubResponse hubbubResponse) {
+            this.pagination = hubbubResponse.getPagination();
             val folder = format("%s/%s", directory, id);
-            val data = uploadFilesNode.get("data");
-            data.forEach(item -> {
-                val uploadFile = new UploadFile(item, folder);
-                if (VALID_TYPES.contains(uploadFile.getType()))
-                    documents.put(uploadFile.getPath(), uploadFile);
-                else
-                    invalid.put(uploadFile.getPath(), uploadFile);
-            });
+            hubbubResponse.getData()
+                    .forEach(fileInfo -> {
+                        val uploadFile = new UploadFile(fileInfo, folder);
+                        if (VALID_TYPES.contains(uploadFile.getType()))
+                            documents.put(uploadFile.getPath(), uploadFile);
+                        else
+                            invalid.put(uploadFile.getPath(), uploadFile);
+                    });
         }
     }
 
@@ -74,50 +73,19 @@ public class UploadDocument {
         Long bytes;
         String hash;
         String type;
-        String destination;
 
-        public UploadFile(JsonNode uploadFileNode, String folder) {
-            this.path = uploadFileNode.get("path").asText();
-            this.name = path.replace(format("/%s/", folder), "");
+        public UploadFile(HubbubResponse.FileInfo fileInfo, String folder) {
+            this.path = fileInfo.getPath();
+            this.name = fileInfo.getTruncatedPath(folder);
             this.id = name.replaceAll("[^\\w?]", "-");
 
-            this.time = getLong(uploadFileNode, "time");
-            this.physicalLocation = getString(uploadFileNode,"physicalLocation");
-            this.format = getString(uploadFileNode, "format");
-            this.mediatype = getString(uploadFileNode, "mediatype");
-            this.bytes = getLong(uploadFileNode, "bytes");
-            this.hash = getString(uploadFileNode, "hash");
-            this.type =  getString(uploadFileNode, "status");
-            this.destination = getString(uploadFileNode, "destination");
-        }
-
-        private String getString(JsonNode node, String fieldName) {
-            if (node.has(fieldName)) {
-                return node.get(fieldName).asText();
-            } else {
-                return "";
-            }
-        }
-
-        private Long getLong(JsonNode node, String fieldName) {
-            if (node.has(fieldName)) {
-                return node.get(fieldName).asLong();
-            } else {
-                return null;
-            }
-        }
-    }
-
-    @Value
-    public static class Pagination {
-        int page;
-        int size;
-        int total;
-
-        public Pagination(JsonNode paginationNode) {
-            this.page = paginationNode.get("page").asInt();
-            this.size = paginationNode.get("size").asInt();
-            this.total = paginationNode.get("total").asInt();
+            this.time = fileInfo.getTime();
+            this.physicalLocation = fileInfo.getPhysicalLocation();
+            this.format = fileInfo.getFormat();
+            this.mediatype = fileInfo.getMediatype();
+            this.bytes = fileInfo.getBytes();
+            this.hash = fileInfo.getHash();
+            this.type =  fileInfo.getStatus();
         }
     }
 }

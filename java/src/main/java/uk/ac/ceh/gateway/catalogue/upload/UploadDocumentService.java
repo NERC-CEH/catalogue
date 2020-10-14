@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.upload;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -53,20 +53,19 @@ public class UploadDocumentService {
         return document;
     }
 
+    @SneakyThrows
     public void getCsv(PrintWriter writer, String id) {
         log.debug("Getting CSV for {}", id);
         val first = hubbubService.get(id);
-        val total = first.get("pagination").get("total").asInt();
-        val eidchub = (ArrayNode) hubbubService.get(format("/eidchub/%s", id), 1, total).get("data");
-        eidchub.forEach(item -> {
-            val status = item.get("status").asText();
-            if (status.equals("VALID")) {
-                val path = item.get("path").asText().replace(format("/eidchub/%s/", id), "");
-                val hash = item.get("hash").asText();
-                writer.append(format("%s,%s", path, hash));
-                writer.append("\n\r");
-            }
-        });
+        val total = first.getPagination().getTotal();
+        val eidchub = hubbubService.get(format("/eidchub/%s", id), 1, total).getData();
+        eidchub.stream()
+                .filter(fileInfo -> fileInfo.getStatus().equals("VALID"))
+                .forEach(fileInfo -> {
+                    val path = fileInfo.getTruncatedPath("eidchub");
+                    val hash = fileInfo.getHash();
+                    writer.println(format("%s,%s", path, hash));
+                });
     }
 
     public UploadDocument add(String id, String filename, MultipartFile f) {
