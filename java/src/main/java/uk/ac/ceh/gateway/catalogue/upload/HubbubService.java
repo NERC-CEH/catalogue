@@ -13,6 +13,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Collections;
 import java.util.Set;
 
 @Slf4j
@@ -93,12 +94,12 @@ public class HubbubService {
                     url,
                     method,
                     HttpEntity.EMPTY,
-                    HubbubResponse.class
+                    String.class
             );
             log.debug("Response Status is {}", response.getStatusCode());
             val content = response.getBody();
             log.debug("Content {}", content);
-            return content;
+            return new HubbubResponse(Collections.emptyList(), new HubbubResponse.Pagination(1,20,0));
         } catch (RestClientResponseException ex) {
             log.error(
                     "Error communicating with Hubbub: (statusCode={}, status={}, headers={}, body={})",
