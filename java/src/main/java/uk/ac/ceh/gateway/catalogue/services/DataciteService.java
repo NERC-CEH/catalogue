@@ -62,7 +62,7 @@ public class DataciteService {
             @Value("${doi.templateLocation}") String templateLocation,
             @NonNull DocumentIdentifierService identifierService,
             @NonNull Configuration configuration,
-            @Qualifier("datacite") RestTemplate restTemplate
+            @Qualifier("normal") RestTemplate restTemplate
     ) {
         this.api = api;
         this.prefix = prefix;

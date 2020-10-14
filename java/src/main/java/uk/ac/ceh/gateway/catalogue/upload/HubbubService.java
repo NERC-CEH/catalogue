@@ -13,26 +13,31 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Collections;
 import java.util.Set;
+
+import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 @Slf4j
 @Service
-@ToString
+@ToString(exclude = "password")
 public class HubbubService {
     private final RestTemplate restTemplate;
     private final String address;
+    private final String username;
+    private final String password;
     private final Set<String> guidQueryParameterPaths = ImmutableSet.of("/move_all", "/unzip", "/zip");
 
     public HubbubService(
-            @Qualifier("hubbub") RestTemplate restTemplate,
-            @Value("${hubbub.url}") String address
+            @Qualifier("normal") RestTemplate restTemplate,
+            @Value("${hubbub.url}") String address,
+            @Value("${hubbub.username}") String username,
+            @Value("${hubbub.password}") String password
     ) {
         this.restTemplate = restTemplate;
         this.address = address;
+        this.username = username;
+        this.password = password;
         log.info("Creating {}", this);
-        log.debug("Request factory {}", restTemplate.getRequestFactory());
-        log.debug("Message converters {}", restTemplate.getMessageConverters());
     }
 
     public HubbubResponse get(String path, Integer page, Integer size, String... status) {
@@ -93,13 +98,11 @@ public class HubbubService {
             val response = restTemplate.exchange(
                     url,
                     method,
-                    HttpEntity.EMPTY,
-                    String.class
+                    new HttpEntity<>(withBasicAuth(username, password)),
+                    HubbubResponse.class
             );
-            log.debug("Response Status is {}", response.getStatusCode());
-            val content = response.getBody();
-            log.debug("Content {}", content);
-            return new HubbubResponse(Collections.emptyList(), new HubbubResponse.Pagination(1,20,0));
+            log.debug("Response {}", response);
+            return response.getBody();
         } catch (RestClientResponseException ex) {
             log.error(
                     "Error communicating with Hubbub: (statusCode={}, status={}, headers={}, body={})",
