@@ -35,6 +35,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -665,7 +666,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         );
     }
 
-    @Bean(name="getfeatureinfo-rest")
+    @Bean
+    @Qualifier("wms")
     public RestTemplate getFeatureInfoRestTemplate() throws XPathExpressionException {
         RestTemplate toReturn = new RestTemplate();
         toReturn.setMessageConverters(Collections.singletonList(
@@ -673,6 +675,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         ));
         toReturn.setErrorHandler(new MapServerGetFeatureInfoErrorHandler());
         return toReturn;
+    }
+
+    @Bean
+    @Qualifier("normal")
+    public RestTemplate normalRestTemplate() {
+        val requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient());
+        return new RestTemplate(requestFactory);
     }
     
     @Bean
