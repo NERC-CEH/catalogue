@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.upload;
+package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;

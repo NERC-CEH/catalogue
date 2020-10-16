@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import lombok.val;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -11,15 +12,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubService;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadDocumentService;
 
 import static org.junit.Assert.assertNotNull;
 
-@ActiveProfiles("production")
+@ActiveProfiles({"production", "upload:hubbub"})
 @TestPropertySource
 @ContextConfiguration(classes = WebConfig.class)
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ApplicationContextTest {
+public class EidcApplicationContextTest {
     // Check the production application context can be created and everything wired up
 
     @Autowired
@@ -32,6 +36,15 @@ public class ApplicationContextTest {
         assertNotNull(applicationContext.getBean("dataciteService"));
         assertNotNull(applicationContext.getBean("jenaLookupService"));
         assertNotNull(applicationContext.getBean("permission"));
+    }
+
+    @Test(expected = NoSuchBeanDefinitionException.class)
+    public void hubbubUploadBeansPresent() {
+        assertNotNull(applicationContext.getBean(UploadController.class));
+        assertNotNull(applicationContext.getBean(UploadDocumentService.class));
+        assertNotNull(applicationContext.getBean(HubbubService.class));
+        // No uploadSimple.UploadController has been created, will throw NoSuchBeanDefinitionException
+        applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.simple.UploadController.class);
     }
     
     @Test

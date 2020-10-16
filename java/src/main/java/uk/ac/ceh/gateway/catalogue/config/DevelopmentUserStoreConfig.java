@@ -1,10 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-
 import uk.ac.ceh.components.userstore.UsernameAlreadyTakenException;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryGroupStore;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
@@ -12,6 +12,8 @@ import uk.ac.ceh.gateway.catalogue.controllers.DataciteController;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+
+import javax.annotation.PostConstruct;
 
 /**
  * The following spring JavaConfig defines the beans required for the interacting
@@ -50,9 +52,8 @@ public class DevelopmentUserStoreConfig {
     public static final String SA_EDITOR = "role_sa_editor";
     public static final String SA_PUBLISHER = "role_sa_publisher";
 
-    @Bean
-    @Qualifier("superadmin")
-    public CatalogueUser superadmin() throws UsernameAlreadyTakenException {
+    @PostConstruct
+    public void superadmin() throws UsernameAlreadyTakenException {
         CatalogueUser superadmin = new CatalogueUser()
             .setUsername("superadmin")
             .setEmail("superadmin@ceh.ac.uk");
@@ -63,7 +64,6 @@ public class DevelopmentUserStoreConfig {
         groupStore().grantGroupToUser(superadmin, MAINTENANCE_ROLE);
         groupStore().grantGroupToUser(superadmin, DATACITE_ROLE);
         userStore().addUser(superadmin, "superadminpassword");
-        return superadmin;
     }
 
     @Bean
@@ -292,47 +292,45 @@ public class DevelopmentUserStoreConfig {
         return publisher;
     }
 
-    @Bean
-    @Qualifier("admin")
-    public CatalogueUser admin() throws UsernameAlreadyTakenException {
+    @PostConstruct
+    public void admin() throws UsernameAlreadyTakenException {
         CatalogueUser admin = new CatalogueUser()
             .setUsername("admin")
             .setEmail("admin@ceh.ac.uk");
 
         groupStore().grantGroupToUser(admin, MAINTENANCE_ROLE);
         userStore().addUser(admin, "adminpassword");
-        return admin;
     }
 
     @Bean
     public InMemoryGroupStore<CatalogueUser> groupStore() {
-        InMemoryGroupStore<CatalogueUser> toReturn = new InMemoryGroupStore<>();
+        val groupStore = new InMemoryGroupStore<CatalogueUser>();
         //create groups
-        toReturn.createGroup(CEH_GROUP_NAME, "Centre for Ecology & Hydrology");
-        toReturn.createGroup(READONLY_ROLE, "Read only role");
-        toReturn.createGroup(EIDC_EDITOR, "EIDC Editor Role");
-        toReturn.createGroup(EIDC_PUBLISHER, "EIDC Publisher Role");
-        toReturn.createGroup(CMP_EDITOR, "CMP Editor Role");
-        toReturn.createGroup(CMP_PUBLISHER, "CMP Publisher Role");
-        toReturn.createGroup(ELTER_EDITOR, "ELTER Editor Role");
-        toReturn.createGroup(ELTER_PUBLISHER, "ELTER Publisher Role");
-        toReturn.createGroup(ERAMMP_EDITOR, "ERAMMP Editor Role");
-        toReturn.createGroup(ERAMMP_PUBLISHER, "ERAMMP Publisher Role");
-        toReturn.createGroup(ASSIST_EDITOR, "ASSIST Editor Role");
-        toReturn.createGroup(ASSIST_PUBLISHER, "ASSIST Publisher Role");
-        toReturn.createGroup(NC_EDITOR, "NC Editor Role");
-        toReturn.createGroup(NC_PUBLISHER, "NC Publisher Role");
-        toReturn.createGroup(M_EDITOR, "M Editor Role");
-        toReturn.createGroup(M_PUBLISHER, "M Publisher Role");
-        toReturn.createGroup(INMS_EDITOR, "INMS Editor Role");
-        toReturn.createGroup(INMS_PUBLISHER, "INMS Publisher Role");
-        toReturn.createGroup(OSDP_EDITOR, "OSDP Editor Role");
-        toReturn.createGroup(OSDP_PUBLISHER, "OSDP Publisher Role");
-        toReturn.createGroup(SA_EDITOR, "SA Editor Role");
-        toReturn.createGroup(SA_PUBLISHER, "SA Publisher Role");
-        toReturn.createGroup(MAINTENANCE_ROLE, "System Admin Role");
-        toReturn.createGroup(DATACITE_ROLE, "Datacite Role");
-        return toReturn;
+        groupStore.createGroup(CEH_GROUP_NAME, "Centre for Ecology & Hydrology");
+        groupStore.createGroup(READONLY_ROLE, "Read only role");
+        groupStore.createGroup(EIDC_EDITOR, "EIDC Editor Role");
+        groupStore.createGroup(EIDC_PUBLISHER, "EIDC Publisher Role");
+        groupStore.createGroup(CMP_EDITOR, "CMP Editor Role");
+        groupStore.createGroup(CMP_PUBLISHER, "CMP Publisher Role");
+        groupStore.createGroup(ELTER_EDITOR, "ELTER Editor Role");
+        groupStore.createGroup(ELTER_PUBLISHER, "ELTER Publisher Role");
+        groupStore.createGroup(ERAMMP_EDITOR, "ERAMMP Editor Role");
+        groupStore.createGroup(ERAMMP_PUBLISHER, "ERAMMP Publisher Role");
+        groupStore.createGroup(ASSIST_EDITOR, "ASSIST Editor Role");
+        groupStore.createGroup(ASSIST_PUBLISHER, "ASSIST Publisher Role");
+        groupStore.createGroup(NC_EDITOR, "NC Editor Role");
+        groupStore.createGroup(NC_PUBLISHER, "NC Publisher Role");
+        groupStore.createGroup(M_EDITOR, "M Editor Role");
+        groupStore.createGroup(M_PUBLISHER, "M Publisher Role");
+        groupStore.createGroup(INMS_EDITOR, "INMS Editor Role");
+        groupStore.createGroup(INMS_PUBLISHER, "INMS Publisher Role");
+        groupStore.createGroup(OSDP_EDITOR, "OSDP Editor Role");
+        groupStore.createGroup(OSDP_PUBLISHER, "OSDP Publisher Role");
+        groupStore.createGroup(SA_EDITOR, "SA Editor Role");
+        groupStore.createGroup(SA_PUBLISHER, "SA Publisher Role");
+        groupStore.createGroup(MAINTENANCE_ROLE, "System Admin Role");
+        groupStore.createGroup(DATACITE_ROLE, "Datacite Role");
+        return groupStore;
     }
 
     @Bean

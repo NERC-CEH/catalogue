@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.upload;
+package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
 import lombok.SneakyThrows;
 import lombok.val;

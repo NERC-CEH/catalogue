@@ -1,11 +1,11 @@
-package uk.ac.ceh.gateway.catalogue.upload;
+package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
 import lombok.val;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static uk.ac.ceh.gateway.catalogue.upload.HubbubResponse.*;
+import static uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse.*;
 
 public class HubbubResponseTest {
 

@@ -1,9 +1,10 @@
-package uk.ac.ceh.gateway.catalogue.upload;
+package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_VALUE;
 
 @Controller
+@Profile("upload:hubbub")
 @Slf4j
 @ToString
 public class UploadController {

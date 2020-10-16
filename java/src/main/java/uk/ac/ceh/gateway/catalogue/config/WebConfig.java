@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -88,9 +87,7 @@ import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
-import uk.ac.ceh.gateway.catalogue.upload.HubbubService;
-import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
-import uk.ac.ceh.gateway.catalogue.upload.UploadDocumentService;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadDocument;
 import uk.ac.ceh.gateway.catalogue.util.*;
 import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
@@ -106,7 +103,6 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.stream.Stream.of;
@@ -192,7 +188,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired private DocumentReader<MetadataDocument> documentReader;
     @Autowired private DocumentWritingService documentWritingService;
     @Autowired private GroupStore<CatalogueUser> groupStore;
-    @Autowired private HubbubService hubbubService;
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -430,13 +425,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return HttpClients.custom()
                 .setConnectionManager(connPool)
                 .build();
-    }
-
-    @Bean
-    public UploadDocumentService uploadDocumentService() {
-        Map<String, File> folders = Maps.newHashMap();
-        folders.put("documents", new File("/var/ceh-catalogue/dropbox"));
-        return new UploadDocumentService(hubbubService, folders,  Executors.newCachedThreadPool());
     }
 
     @Bean

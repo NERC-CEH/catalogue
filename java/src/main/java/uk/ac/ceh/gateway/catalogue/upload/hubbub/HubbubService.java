@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.upload;
+package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.ToString;
@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 @Slf4j
 @Service
+@Profile("upload:hubbub")
 @ToString(exclude = "password")
 public class HubbubService {
     private final RestTemplate restTemplate;

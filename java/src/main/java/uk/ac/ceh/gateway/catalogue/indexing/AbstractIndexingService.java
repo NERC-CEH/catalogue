@@ -7,7 +7,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
-import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadDocument;
 
 import java.io.IOException;
 import java.util.List;
