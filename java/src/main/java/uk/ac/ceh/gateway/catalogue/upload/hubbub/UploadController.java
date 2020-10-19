@@ -72,7 +72,7 @@ public class UploadController {
         model.put("id", id);
         model.put("title", geminiDocument.getTitle());
         log.debug("Model is {}", model);
-        return new ModelAndView("/html/upload/upload-document.ftl", model);
+        return new ModelAndView("/html/upload/hubbub/upload-document.ftl", model);
     }
 
     @GetMapping(value = "documents/{id}", produces = UPLOAD_DOCUMENT_JSON_VALUE)

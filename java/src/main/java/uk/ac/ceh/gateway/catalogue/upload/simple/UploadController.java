@@ -43,7 +43,7 @@ public class UploadController {
         model.put("id", id);
         model.put("title", geminiDocument.getTitle());
         log.debug("Model is {}", model);
-        return new ModelAndView("/html/uploadSimple/upload-document.ftl", model);
+        return new ModelAndView("/html/upload/simple/upload-document.ftl", model);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
