@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.services;
+package uk.ac.ceh.gateway.catalogue.permission;
 
 import lombok.NonNull;
 import lombok.ToString;
@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import uk.ac.ceh.components.datastore.DataDocument;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -18,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
+import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -28,12 +29,13 @@ import static java.lang.String.format;
 
 @Slf4j
 @ToString
-public class PermissionService {
+@Service("permission")
+public class CrowdPermissionService implements PermissionService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final GroupStore<CatalogueUser> groupStore;
 
-    public PermissionService(
+    public CrowdPermissionService(
             @NonNull DataRepository<CatalogueUser> repo,
             @NonNull DocumentInfoMapper<MetadataInfo> documentInfoMapper,
             @NonNull GroupStore<CatalogueUser> groupStore
@@ -44,6 +46,7 @@ public class PermissionService {
         log.info("Creating {}", this);
     }
     
+    @Override
     public boolean toAccess(CatalogueUser user, String file, String permission) {
         try {
             return toAccess(
@@ -63,6 +66,7 @@ public class PermissionService {
         }
     }
     
+    @Override
     public boolean toAccess(
         @NonNull CatalogueUser user,
         @NonNull String file,
@@ -79,12 +83,12 @@ public class PermissionService {
         @NonNull String permission
     ) {
         Permission requested = Permission.valueOf(permission.toUpperCase());
-        return 
-            document.isPubliclyViewable(requested)
-            || document.canAccess(requested, user, getGroupsForUser(user))
-            || false;
+        return document.isPubliclyViewable(requested)
+                ||
+                document.canAccess(requested, user, getGroupsForUser(user));
     }
     
+    @Override
     public boolean userCanEdit(@NonNull String file) {
         try {
             final CatalogueUser user = getCurrentUser();
@@ -109,13 +113,15 @@ public class PermissionService {
         }
     }
     
+    @Override
     public boolean userCanUpload(@NonNull String file) {
         val isAdmin = userInGroup(DocumentController.MAINTENANCE_ROLE);
         if (isAdmin) return true;
         try {
-            CatalogueUser user = getCurrentUser();
-            DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
-            MetadataInfo document = getMetadataInfo(file, latestRevision.getRevisionID());
+            val user = getCurrentUser();
+            val latestRevision = repo.getLatestRevision();
+            val document = getMetadataInfo(file, latestRevision.getRevisionID());
+            log.debug("{} has {}", user.getUsername(), document.getIdentities(Permission.UPLOAD));
             return !user.isPublic() && toAccess(user, document, "UPLOAD");
         } catch (DataRepositoryException ex) {
             String message = format("No document found for: %s", file);
@@ -123,6 +129,7 @@ public class PermissionService {
         }
     }
 
+    @Override
     public boolean userCanDelete(@NonNull String file) {
         try {
             CatalogueUser user = getCurrentUser();
@@ -135,14 +142,17 @@ public class PermissionService {
         }
     }
 
+    @Override
     public boolean userCanEditRestrictedFields(@NonNull String catalogue) {
         return userCanCreate(catalogue) || userCanMakePublic(catalogue);
     }
 
+    @Override
     public boolean userCanViewOrIsInGroup(@NonNull String file, @NonNull String group) {
         return userInGroup(group) || userCanView(file);
     }
 
+    @Override
     public boolean userCanView(@NonNull String file) {
         try {
             CatalogueUser user = getCurrentUser();
@@ -155,26 +165,33 @@ public class PermissionService {
         }
     }
 
+    @Override
     public boolean userCanCreate(@NonNull String catalogue) {
+        log.debug("user can create in {}", catalogue);
         return userCan((String name) -> name.equalsIgnoreCase(
             format("role_%s_editor", catalogue)
         ));
     }
     
+    @Override
     public boolean userCanMakePublic(@NonNull String catalogue) {
+        log.debug("user can make public in {}", catalogue);
         return userCan((String name) -> name.equalsIgnoreCase(
             format("role_%s_publisher", catalogue)
         ));
     }
     
+    @Override
     public boolean userCanDatacite() {
         return userCan((String name) -> name.equalsIgnoreCase(DataciteController.DATACITE_ROLE));
     }
 
+    @Override
     public boolean userInGroup (String group) {
         return userCan((String name) -> name.equalsIgnoreCase(group));
     }
     
+    @Override
     public List<Group> getGroupsForUser(CatalogueUser user) {
         return (user.isPublic())
             ? Collections.emptyList()
@@ -186,12 +203,9 @@ public class PermissionService {
         if (user.isPublic()) {
             return false;
         } else {
-            log.debug("getting groups for: {}", user);
-            if (log.isDebugEnabled()) {
-                groupStore.getGroups(user).forEach(group -> log.debug(group.getName()));
-            }
-            return groupStore.getGroups(user)
-                .stream()
+            val groups = groupStore.getGroups(user);
+            log.debug("{} has groups {}", user.getUsername(), groups);
+            return groups.stream()
                 .map(Group::getName)
                 .anyMatch(filter);
         }
@@ -202,12 +216,14 @@ public class PermissionService {
     // that the current user is PUBLIC.
     private CatalogueUser getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (authentication != null) ? (CatalogueUser)authentication.getPrincipal() : CatalogueUser.PUBLIC_USER;
+        val currentUser = (authentication != null) ? (CatalogueUser)authentication.getPrincipal() : CatalogueUser.PUBLIC_USER;
+        log.debug("User in SecurityContext {}", currentUser);
+        return currentUser;
     }
     
     private MetadataInfo getMetadataInfo(String file, String revision) {
         try {
-            final DataDocument dataDocument = repo.getData(revision, format("%s.meta", file));
+            val dataDocument = repo.getData(revision, format("%s.meta", file));
             return documentInfoMapper.readInfo(dataDocument.getInputStream());
         } catch (IOException ex) {
             throw new PermissionDeniedException(

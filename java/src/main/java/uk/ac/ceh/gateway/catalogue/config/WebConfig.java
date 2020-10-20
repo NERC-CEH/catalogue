@@ -55,7 +55,6 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
-import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.converters.*;
@@ -71,6 +70,7 @@ import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
@@ -187,7 +187,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired private DataciteService dataciteService;
     @Autowired private DocumentReader<MetadataDocument> documentReader;
     @Autowired private DocumentWritingService documentWritingService;
-    @Autowired private GroupStore<CatalogueUser> groupStore;
+    @Autowired private PermissionService permissionService;
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -219,12 +219,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean public GitRepoWrapper gitRepoWrapper() {
-        return new GitRepoWrapper(catalogDataRepository(), documentInfoMapper());
-    }
-
-    @Bean("permission")
-    public PermissionService permissionService() {
-        return new PermissionService(catalogDataRepository(), documentInfoMapper(), groupStore);
+        return new GitRepoWrapper(dataRepository(), documentInfoMapper());
     }
 
     @Bean
@@ -256,11 +251,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean
     @SuppressWarnings("UnstableApiUsage")
     @SneakyThrows
-    public DataRepository<CatalogueUser> catalogDataRepository() {
-        return new GitDataRepository<>(new File(dataRepositoryLocation),
+    public DataRepository<CatalogueUser> dataRepository() {
+        return new GitDataRepository<>(
+                new File(dataRepositoryLocation),
                 new InMemoryUserStore<>(),
                 phantomUserBuilderFactory(),
-                communicationBus());
+                communicationBus()
+        );
     }
 
     @Bean
@@ -321,7 +318,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         shared.put("jira", jiraService());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("metadataQuality", metadataQualityService());
-        shared.put("permission", permissionService());
+        shared.put("permission", permissionService);
         log.info("Freemarker shared variables:");
         shared.forEach((key, value) -> log.info("{}: {}", key, value));
 
@@ -478,7 +475,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Bean
     public MetadataListingService getWafListingService() {
-        return new MetadataListingService(catalogDataRepository(), documentListingService(), bundledReaderService());
+        return new MetadataListingService(dataRepository(), documentListingService(), bundledReaderService());
     }
 
     @Bean
@@ -501,7 +498,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @SuppressWarnings("unchecked")
     public MetadataInfoBundledReaderService bundledReaderService() {
         return new MetadataInfoBundledReaderService(
-                catalogDataRepository(),
+                dataRepository(),
                 documentReadingService(),
                 documentInfoMapper(),
                 metadataRepresentationService(),
@@ -567,7 +564,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return new SolrIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
-                catalogDataRepository(),
+                dataRepository(),
                 indexGeneratorRegistry,
                 solrClient(),
                 jenaLookupService(),
@@ -589,7 +586,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return new JenaIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
-                catalogDataRepository(),
+                dataRepository(),
                 new IndexGeneratorRegistry<>(mappings),
                 documentIdentifierService(),
                 tdbModel()
@@ -615,7 +612,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return new MapServerIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
-                catalogDataRepository(),
+                dataRepository(),
                 generator,
                 mapsLocation);
     }
@@ -647,7 +644,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return new ValidationIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
-                catalogDataRepository(),
+                dataRepository(),
                 postProcessingService(),
                 documentIdentifierService(),
                 new IndexGeneratorRegistry<>(mappings)

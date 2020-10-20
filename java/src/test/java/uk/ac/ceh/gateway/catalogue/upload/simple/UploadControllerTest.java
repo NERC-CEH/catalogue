@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 
 import lombok.SneakyThrows;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +39,12 @@ public class UploadControllerTest {
                 .build();
     }
 
-    @Ignore("Need dummy permission service to override the file system lookup")
     @Test
     @SneakyThrows
-    public void getUploadPage() {
+    public void uploaderUserCanAccessPage() {
         //given
-        mockMvc.perform(get("/upload/932d2b25-138c-441c-b898-891c58e9c090").header("Remoter-User", "superadmin"))
+        mockMvc.perform(get("/upload/993c5778-e139-4171-a57f-7a0f396be4b8").header("remote-user", "uploader"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.TEXT_HTML));
+            .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
     }
-
 }

@@ -14,7 +14,7 @@ import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
 import uk.ac.ceh.gateway.catalogue.services.DepositRequestService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
-import uk.ac.ceh.gateway.catalogue.services.PermissionService;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
 import java.util.HashMap;
 import java.util.Map;

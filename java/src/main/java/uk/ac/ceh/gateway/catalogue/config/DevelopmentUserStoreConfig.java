@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import lombok.SneakyThrows;
 import lombok.val;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +56,16 @@ public class DevelopmentUserStoreConfig {
     private void addUserToGroup(CatalogueUser user, String... groups) {
         Arrays.stream(groups)
                 .forEach(group -> groupStore().grantGroupToUser(user, group));
+    }
+
+    @SneakyThrows
+    @PostConstruct
+    public void uploader() {
+        // Used in UploadControllerTest to check upload permissions
+        val user = new CatalogueUser()
+                .setUsername("uploader")
+                .setEmail("uploader@example.com");
+        userStore().addUser(user, "password");
     }
 
     @PostConstruct

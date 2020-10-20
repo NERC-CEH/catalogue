@@ -22,7 +22,6 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
-import uk.ac.ceh.gateway.catalogue.services.PermissionService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -43,18 +42,15 @@ public class UploadController {
     private static final String SCHEDULED = "741";
 
     private final UploadDocumentService uploadDocumentService;
-    private final PermissionService permissionService;
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
 
     public UploadController(
             UploadDocumentService uploadDocumentService,
-            PermissionService permissionService,
             DocumentRepository documentRepository,
             JiraService jiraService
     ) {
         this.uploadDocumentService = uploadDocumentService;
-        this.permissionService = permissionService;
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
         log.info("Creating {}", this);
