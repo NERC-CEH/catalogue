@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import lombok.SneakyThrows;
 import lombok.val;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,9 +57,17 @@ public class DevelopmentUserStoreConfig {
                 .forEach(group -> groupStore().grantGroupToUser(user, group));
     }
 
-    @SneakyThrows
     @PostConstruct
-    public void uploader() {
+    public void unprivilegedUser() throws UsernameAlreadyTakenException {
+        // Used in UploadControllerTest to check upload permissions
+        val user = new CatalogueUser()
+                .setUsername("unprivileged")
+                .setEmail("unprivileged@example.com");
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void uploader() throws UsernameAlreadyTakenException {
         // Used in UploadControllerTest to check upload permissions
         val user = new CatalogueUser()
                 .setUsername("uploader")
