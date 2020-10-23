@@ -121,7 +121,12 @@ public class CrowdPermissionService implements PermissionService {
             val user = getCurrentUser();
             val latestRevision = repo.getLatestRevision();
             val document = getMetadataInfo(file, latestRevision.getRevisionID());
-            log.debug("{} has {}", user.getUsername(), document.getIdentities(Permission.UPLOAD));
+            log.debug(
+                    "Current user is {}, users with upload permission for {} are {}",
+                    user.getUsername(),
+                    file,
+                    document.getIdentities(Permission.UPLOAD)
+            );
             return !user.isPublic() && toAccess(user, document, "UPLOAD");
         } catch (DataRepositoryException ex) {
             String message = format("No document found for: %s", file);

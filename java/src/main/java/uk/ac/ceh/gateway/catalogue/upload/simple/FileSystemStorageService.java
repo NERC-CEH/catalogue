@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Path;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -18,7 +17,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public Stream<Path> loadAll(String id) {
+    public Stream<String> filenames(String id) {
         log.info("In {} loading all files", id);
         return Stream.empty();
     }
