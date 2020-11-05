@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test Upload Controller delete file endpoint
  */
-public class UploadControllerDeleteTest extends UploadControllerTest {
+public class UploadControllerDeleteTest extends AbstractUploadControllerTest {
 
     private final String filename = "test.csv";
 

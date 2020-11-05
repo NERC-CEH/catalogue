@@ -27,11 +27,11 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @ActiveProfiles({"development", "upload:simple"})
 @TestPropertySource
 @WebAppConfiguration
-@ContextConfiguration(classes = {WebConfig.class, UploadControllerTest.TestConfig.class})
+@ContextConfiguration(classes = {WebConfig.class, AbstractUploadControllerTest.TestConfig.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 // DirtiesContext needed as StorageService is a Mock that needs refreshing before each test
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class UploadControllerTest {
+public abstract class AbstractUploadControllerTest {
     @Autowired
     WebApplicationContext wac;
     MockMvc mockMvc;

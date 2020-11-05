@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test Upload Controller filenames JSON endpoint
  */
-public class UploadControllerFilenamesTest extends UploadControllerTest {
+public class UploadControllerFilenamesTest extends AbstractUploadControllerTest {
 
     @Test
     @SneakyThrows

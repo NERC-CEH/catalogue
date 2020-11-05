@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Testing the Upload Controller HTML page endpoint
  */
-public class UploadControllerPageTest extends UploadControllerTest {
+public class UploadControllerPageTest extends AbstractUploadControllerTest {
 
     @Test
     @SneakyThrows

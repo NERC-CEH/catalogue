@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test Upload Controller file upload endpoint
  */
-public class UploadControllerUploadTest extends UploadControllerTest {
+public class UploadControllerUploadTest extends AbstractUploadControllerTest {
 
     private final MockMultipartFile multipartFile = dataCsv();
 
