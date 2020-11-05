@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +32,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolrIndexMetadataDocumentGeneratorTest {
+
+    public static final String DEIMS_URL = "https://deims.org/";
+
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock VocabularyService vocabularyService;
@@ -195,6 +199,50 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         
         //Then
         assertEquals("Expected to get my id", "myid", index.getIdentifier());
+    }
+
+    @Test
+    public void checkThatElterUriTransferedToIndex() {
+        //Given
+        String id = "some crazy long, hard to rememember, number";
+        when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
+        GeminiDocument document = new GeminiDocument();
+        List<Keyword> keywords = new ArrayList<>();
+        Keyword keyword = Keyword.builder().URI("https://deims.org/266eedce-b67c-4935-a7b7-4dc3c169c902")
+                .value("Aamotsdalen - Norway").build();
+        keywords.add(keyword);
+        DescriptiveKeywords descriptiveKeywords = DescriptiveKeywords.builder().keywords(keywords).build();
+        List<DescriptiveKeywords> descriptiveKeywordsList = new ArrayList<>();
+        descriptiveKeywordsList.add(descriptiveKeywords);
+        document.setDescriptiveKeywords(descriptiveKeywordsList);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertEquals("Expected to get my URI", "https://deims.org/266eedce-b67c-4935-a7b7-4dc3c169c902", index.getElterDeimsUri().get(0));
+    }
+
+    @Test
+    public void checkThatElterSiteTransferedToIndex() {
+        //Given
+        String id = "some crazy long, hard to rememember, number";
+        when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
+        GeminiDocument document = new GeminiDocument();
+        List<Keyword> keywords = new ArrayList<>();
+        Keyword keyword = Keyword.builder().URI("https://deims.org/266eedce-b67c-4935-a7b7-4dc3c169c902")
+                .value("Aamotsdalen - Norway").build();
+        keywords.add(keyword);
+        DescriptiveKeywords descriptiveKeywords = DescriptiveKeywords.builder().keywords(keywords).build();
+        List<DescriptiveKeywords> descriptiveKeywordsList = new ArrayList<>();
+        descriptiveKeywordsList.add(descriptiveKeywords);
+        document.setDescriptiveKeywords(descriptiveKeywordsList);
+
+        //When
+        SolrIndex index = generator.generateIndex(document);
+
+        //Then
+        assertEquals("Expected to get my URI", "Aamotsdalen - Norway", index.getElterDeimsSite().get(0));
     }
     
     @Test
