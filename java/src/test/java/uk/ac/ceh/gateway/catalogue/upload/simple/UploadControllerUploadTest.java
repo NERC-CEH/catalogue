@@ -2,52 +2,85 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 
 import lombok.SneakyThrows;
 import lombok.val;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.context.WebApplicationContext;
+import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 
 import java.nio.file.FileAlreadyExistsException;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.*;
 
 /**
  * Test Upload Controller file upload endpoint
  */
-public class UploadControllerUploadTest extends AbstractUploadControllerTest {
+@ActiveProfiles({"development", "upload:simple"})
+@TestPropertySource("UploadControllerTest.properties")
+@WebAppConfiguration
+@ContextConfiguration(classes = {WebConfig.class, UploadControllerUtils.TestConfig.class})
+@RunWith(SpringJUnit4ClassRunner.class)
+// DirtiesContext needed as StorageService is a Mock that needs refreshing before each test
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+public class UploadControllerUploadTest {
+    @Autowired
+    private WebApplicationContext wac;
+    private MockMvc mockMvc;
+    @Autowired
+    private StorageService storageService;
+    private final MockMultipartFile multipartFile = dataCsv(getClass());
 
-    private final MockMultipartFile multipartFile = dataCsv();
+    @Before
+    public void setup() {
+        mockMvc = webAppContextSetup(wac)
+                .apply(springSecurity())
+                .build();
+    }
 
     @Test
     @SneakyThrows
     public void uploaderCanUploadFile() {
         //given
-        given(storageService.filenames(id)).willReturn(Stream.of("data.csv", "data1.csv", "data2.csv"));
+        given(storageService.filenames(ID)).willReturn(Stream.of("data.csv", "data1.csv", "data2.csv"));
 
         //when
         mockMvc.perform(
-                fileUpload("http://example.com/upload/{id}", id)
+                fileUpload("http://example.com/upload/{id}", ID)
                         .file(multipartFile)
                         .header("remote-user", "uploader")
                         .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedResponse("successfulUpload.json")));
+                .andExpect(content().json(expectedResponse(getClass(), "successfulUpload.json")));
 
         //then
-        verify(storageService).store(id, multipartFile);
+        verify(storageService).store(ID, multipartFile);
     }
 
     @Test
     @SneakyThrows
     public void unprivilegedUserCanNotUploadFile() {
         mockMvc.perform(
-                fileUpload("/upload/{id}", id)
+                fileUpload("/upload/{id}", ID)
                         .file(multipartFile)
                         .header("remote-user", "unprivileged")
         )
@@ -61,57 +94,57 @@ public class UploadControllerUploadTest extends AbstractUploadControllerTest {
     @SneakyThrows
     public void errorWhenFileUploadedWithSameNameAsExistingFile() {
         //given
-        doThrow(new FileAlreadyExistsException("data.csv")).when(storageService).store(id, multipartFile);
+        doThrow(new FileAlreadyExistsException("data.csv")).when(storageService).store(ID, multipartFile);
 
         //when
         mockMvc.perform(
-                fileUpload("http://example.com/upload/{id}", id)
+                fileUpload("http://example.com/upload/{id}", ID)
                         .file(multipartFile)
                         .header("remote-user", "uploader")
                         .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isConflict())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedResponse("errorFileExistsUpload.json")));
+                .andExpect(content().json(expectedResponse(getClass(), "errorFileExistsUpload.json")));
     }
 
     @Test
     @SneakyThrows
     public void errorSavingFile() {
         //given
-        doThrow(new RuntimeException()).when(storageService).store(id, multipartFile);
+        doThrow(new RuntimeException()).when(storageService).store(ID, multipartFile);
 
         //when
         mockMvc.perform(
-                fileUpload("http://example.com/upload/{id}", id)
+                fileUpload("http://example.com/upload/{id}", ID)
                         .file(multipartFile)
                         .header("remote-user", "uploader")
                         .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedResponse("errorUpload.json")));
+                .andExpect(content().json(expectedResponse(getClass(),"errorUpload.json")));
     }
 
     @Test
     @SneakyThrows
     public void uploaderCanUploadFileWithSpaces() {
         //given
-        val fileWithSpaces = fileWithSpacesCsv();
-        given(storageService.filenames(id)).willReturn(Stream.of("data.csv", "data1.csv", "data2.csv"));
+        val fileWithSpaces = fileWithSpacesCsv(getClass());
+        given(storageService.filenames(ID)).willReturn(Stream.of("data.csv", "data1.csv", "data2.csv"));
 
         //when
         mockMvc.perform(
-                fileUpload("http://example.com/upload/{id}", id)
+                fileUpload("http://example.com/upload/{id}", ID)
                         .file(fileWithSpaces)
                         .header("remote-user", "uploader")
                         .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedResponse("successfulUploadWithSpaces.json")));
+                .andExpect(content().json(expectedResponse(getClass(),"successfulUploadWithSpaces.json")));
 
         //then
-        verify(storageService).store(id, fileWithSpaces);
+        verify(storageService).store(ID, fileWithSpaces);
     }
 }
