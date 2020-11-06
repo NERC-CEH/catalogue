@@ -33,8 +33,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SolrIndexMetadataDocumentGeneratorTest {
 
-    public static final String DEIMS_URL = "https://deims.org/";
-
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock VocabularyService vocabularyService;
@@ -204,8 +202,6 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     @Test
     public void checkThatElterUriTransferedToIndex() {
         //Given
-        String id = "some crazy long, hard to rememember, number";
-        when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
         GeminiDocument document = new GeminiDocument();
         List<Keyword> keywords = new ArrayList<>();
         Keyword keyword = Keyword.builder().URI("https://deims.org/266eedce-b67c-4935-a7b7-4dc3c169c902")
@@ -226,8 +222,6 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     @Test
     public void checkThatElterSiteTransferedToIndex() {
         //Given
-        String id = "some crazy long, hard to rememember, number";
-        when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
         GeminiDocument document = new GeminiDocument();
         List<Keyword> keywords = new ArrayList<>();
         Keyword keyword = Keyword.builder().URI("https://deims.org/266eedce-b67c-4935-a7b7-4dc3c169c902")
