@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.upload.simple;
 
 import lombok.SneakyThrows;
+import lombok.ToString;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -17,7 +18,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
+import java.io.FileNotFoundException;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.NoSuchFileException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +30,7 @@ import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadController.Type.ER
 import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadController.Type.INFO;
 
 @Slf4j
+@ToString
 @Controller
 @RequestMapping("upload")
 @Profile("upload:simple")
@@ -50,9 +54,9 @@ public class UploadController {
             Model model,
             UriComponentsBuilder builder
     ) {
-        log.info("Getting upload page for {}", id);
-        model.addAttribute("id", id);
         try {
+            log.info("Getting upload page for {}", id);
+            model.addAttribute("id", id);
             val geminiDocument = (GeminiDocument) documentRepository.read(id);
             model.addAttribute("title", geminiDocument.getTitle());
             val files = createFileInfos(id, builder);
@@ -74,11 +78,17 @@ public class UploadController {
             @PathVariable("id") String id,
             UriComponentsBuilder builder
     ) {
-        log.info("For {} getting files", id);
         try {
+            log.info("For {} getting files", id);
             return ResponseEntity.ok(new UploadResponse(createFileInfos(id, builder)));
+        } catch (FileNotFoundException ex) {
+            val message = format("Not known %s", id);
+            log.info(message);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new UploadResponse(message, ERROR));
         } catch (Exception ex) {
             val message = format("Could not retrieve files for %s", id);
+            log.error(message, ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new UploadResponse(message, ERROR));
         }
@@ -92,17 +102,17 @@ public class UploadController {
     ) {
         try {
             storageService.store(id, file);
-            log.info("For {} uploaded {}", id, file.getOriginalFilename());
             val message = format("Successfully uploaded %s", file.getOriginalFilename());
+            log.info("{} for {}", message, id);
             return ResponseEntity.ok(new UploadResponse(message, INFO, createFileInfos(id, builder)));
         } catch (FileAlreadyExistsException ex) {
-            log.info("Cannot upload {} for {}, file already exists", file.getOriginalFilename(), id);
-            val message = format("Could not upload %s for %s, file already exists", file.getOriginalFilename(), id);
+            val message = format("Could not upload %s, file already exists", file.getOriginalFilename());
+            log.info("{} for {}", message, id);
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new UploadResponse(message, ERROR));
         } catch (Exception ex) {
-            log.error(format("Error uploading %s for %s", file.getOriginalFilename(), id), ex);
-            val message = format("Could not upload %s for %s", file.getOriginalFilename(), id);
+            val message = format("Could not upload %s", file.getOriginalFilename());
+            log.error(format("%s for %s", message, id), ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new UploadResponse(message, ERROR));
         }
@@ -116,19 +126,24 @@ public class UploadController {
     ) {
         try {
             storageService.delete(id, filename);
-            log.info("For {} deleting {}", id, filename);
             val message = format("Successfully deleted %s", filename);
             val files = createFileInfos(id, builder);
+            log.info("{} for {}", message, id);
             return ResponseEntity.ok(new UploadResponse(message, INFO, files));
+        } catch (NoSuchFileException ex) {
+            val message = format("File not found %s", filename);
+            log.info(format("%s for %s", message, id), ex);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new UploadResponse(message, ERROR));
         } catch (Exception ex) {
-            val message = format("Error trying to delete %s for %s", filename, id);
-            log.error(message, ex);
+            val message = format("Error trying to delete %s", filename);
+            log.error(format("%s for %s", message, id), ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new UploadResponse(message, ERROR));
         }
     }
 
-    private List<FileInfo> createFileInfos(String id, UriComponentsBuilder builder) {
+    private List<FileInfo> createFileInfos(String id, UriComponentsBuilder builder) throws FileNotFoundException {
         log.debug("Getting filenames for {}", id);
         return storageService.filenames(id)
                 .map(filename -> new FileInfo(

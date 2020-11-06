@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -28,14 +30,12 @@ public class FileSystemStorageService implements StorageService {
         log.info("Creating {}", this);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public void store(String id, MultipartFile file) {
         log.info("Storing {}/{}/{}", datastore, id, file.getOriginalFilename());
-
-        val directory = Paths.get(datastore, id);
-        if ( !Files.exists(directory)) {
-            Files.createDirectory(directory);
+        if (directoryDoesNotExist(id)) {
+            Files.createDirectory(Paths.get(datastore, id));
         }
 
         val uploadFile= Paths.get(datastore, id, file.getOriginalFilename());
@@ -47,13 +47,27 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
+    @SneakyThrows
     public Stream<String> filenames(String id) {
         log.info("In {} loading all files", id);
-        return Stream.empty();
+        if (directoryDoesNotExist(id)) {
+            throw new FileNotFoundException(id);
+        }
+        val directory = Paths.get(datastore, id).toFile();
+        val filenames = Optional.ofNullable(directory.list()).orElse(new String[0]);
+        return Stream.of(filenames);
     }
 
     @Override
+    @SneakyThrows
     public void delete(String id, String filename) {
         log.info("In {} deleting {}", id, filename);
+        val deleteFile = Paths.get(datastore, id, filename);
+        Files.delete(deleteFile);
+    }
+
+    private boolean directoryDoesNotExist(String id) {
+        val directory = Paths.get(datastore, id);
+        return !Files.exists(directory);
     }
 }

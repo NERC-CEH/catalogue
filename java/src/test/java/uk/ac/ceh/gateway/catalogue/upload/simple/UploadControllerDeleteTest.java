@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 
+import java.nio.file.NoSuchFileException;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
@@ -103,6 +104,23 @@ public class UploadControllerDeleteTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expectedResponse(getClass(),"errorDeletion.json")));
+    }
+
+    @Test
+    @SneakyThrows
+    public void deletingUnknownFile() {
+        //given
+        doThrow(new NoSuchFileException("test")).when(storageService).delete(ID, filename);
+
+        //when
+        mockMvc.perform(
+                delete("http://example.com/upload/{id}/{filename}", ID, filename)
+                        .header("remote-user", "uploader")
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(expectedResponse(getClass(),"notFoundDeletion.json")));
     }
 
     @Test
