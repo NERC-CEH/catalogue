@@ -7,7 +7,7 @@
     "bootstrap-colorpicker": "2.3.6",
     "chartjs": "1.0.2",
     "coffee-script": "1.9.3",
-    "dropzone": "^5.1.1",
+    "dropzone": "5.7.2",
     "filesize": "4.1.2",
     "font-awesome-5": "^5.8.1",
     "isInViewport": "2.2.4",

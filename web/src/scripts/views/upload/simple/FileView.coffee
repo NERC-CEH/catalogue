@@ -1,27 +1,22 @@
 define [
-  'jquery'
-  'underscore'
   'backbone'
   'tpl!templates/upload/simple/File.tpl'
-], ($, _, Backbone, template) -> Backbone.View.extend
+], (Backbone, template) -> Backbone.View.extend
 
   tagName: 'li'
 
   template: template
 
   events:
-    'click .destroy': 'clear'
+    'change input': 'select' 
 
   initialize: ->
-    @listenTo(@model, 'sync', @remove);
+    @listenTo(@model, 'sync', @remove)
+    @listenTo(@model, 'change', @render)
 
-  clear: ->
-    if confirm("Delete file: #{@model.get('name')}?")
-      @model.destroy
-        success: (model, response) ->
-          $('#message').html(response.message) if response.message?
-        error: (model, response) ->
-          $('#message').html(response.message) if response.message?
+  select: ->
+    previous = @model.get('toDelete')
+    @model.set('toDelete', !previous)
 
   render: ->
     @$el.html(@template(@model.attributes))
