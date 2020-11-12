@@ -1,7 +1,8 @@
 define [
+  'underscore'
   'backbone'
   'cs!models/MetadataDocument'
-], (Backbone, MetadataDocument) -> Backbone.Collection.extend
+], (_, Backbone, MetadataDocument) -> Backbone.Collection.extend
   model: MetadataDocument
 
   ###
