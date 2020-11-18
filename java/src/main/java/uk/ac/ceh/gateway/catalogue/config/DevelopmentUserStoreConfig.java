@@ -62,6 +62,8 @@ public class DevelopmentUserStoreConfig {
     public static final String SA_PUBLISHER = "role_sa_publisher";
     public static final String UKSCAPE_EDITOR = "role_ukscape_editor";
     public static final String UKSCAPE_PUBLISHER = "role_ukscape_publisher";
+    public static final String UKEMS_EDITOR = "role_ukems_editor";
+    public static final String UKEMS_PUBLISHER = "role_ukems_publisher";
 
     private void addUserToGroup(CatalogueUser user, String... groups) {
         Arrays.stream(groups)
@@ -258,6 +260,27 @@ public class DevelopmentUserStoreConfig {
     }
 
     @PostConstruct
+    public void ukemsPublisher() throws UsernameAlreadyTakenException {
+        val publisher = new CatalogueUser()
+            .setUsername("ukems-publisher")
+            .setEmail("ukems-publisher@ceh.ac.uk");
+
+        groupStore().grantGroupToUser(publisher, UKEMS_EDITOR);
+        groupStore().grantGroupToUser(publisher, UKEMS_PUBLISHER);
+        userStore().addUser(publisher, "publisherpassword");
+    }
+
+    @PostConstruct
+    public void ukemsEditor() throws UsernameAlreadyTakenException {
+        val editor = new CatalogueUser()
+            .setUsername("ukems-editor")
+            .setEmail("ukems-editor@ceh.ac.uk");
+
+        groupStore().grantGroupToUser(editor, UKEMS_EDITOR);
+        userStore().addUser(editor, "editorpassword");
+    }
+
+    @PostConstruct
     public void superadmin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("superadmin")
@@ -325,6 +348,8 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(READONLY_GROUP, "");
         groupStore.createGroup(SA_EDITOR, "");
         groupStore.createGroup(SA_PUBLISHER, "");
+        groupStore.createGroup(UKEMS_EDITOR, "");
+        groupStore.createGroup(UKEMS_PUBLISHER, "");
         groupStore.createGroup(UKSCAPE_PUBLISHER, "");
         groupStore.createGroup(UKSCAPE_EDITOR, "");
         return groupStore;

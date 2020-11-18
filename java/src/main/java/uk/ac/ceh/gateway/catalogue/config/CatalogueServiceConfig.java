@@ -332,6 +332,14 @@ public class CatalogueServiceConfig {
                 .documentType(link)
                 .fileUpload(false)
                 .vocabularies(getCatalogueVocabularies(vocabularies, "ukscape"))
+                .build(),
+
+            Catalogue.builder()
+                .id("ukems")
+                .title("UK Community Emissions Modelling System")
+                .url("")
+                .documentType(gemini)
+                .fileUpload(false)
                 .build()
         );
     }
