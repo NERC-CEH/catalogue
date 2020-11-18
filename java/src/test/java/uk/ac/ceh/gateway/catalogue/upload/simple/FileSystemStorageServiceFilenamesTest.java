@@ -8,12 +8,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.FileNotFoundException;
-import java.util.stream.Collectors;
+import java.io.IOException;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.ID;
 
@@ -30,7 +29,8 @@ public class FileSystemStorageServiceFilenamesTest {
     }
 
     @Test
-    @SneakyThrows
+    @SneakyThrows(IOException.class)
+    @SuppressWarnings("unchecked")
     public void successfullyGetFilenames() {
         //given
         folder.newFolder(ID);
@@ -38,22 +38,26 @@ public class FileSystemStorageServiceFilenamesTest {
         folder.newFile(format("%s/%s", ID, "data2.csv"));
         folder.newFile(format("%s/%s", ID, "data3.csv"));
 
+        val data1 = new FileInfo("data1.csv");
+        val data2 = new FileInfo("data1.csv");
+        val data3 = new FileInfo("data2.csv");
+
         //when
         val filenames = service.filenames(ID);
 
         //then
-        assertThat(filenames.collect(Collectors.toList()), containsInAnyOrder("data1.csv", "data2.csv", "data3.csv"));
+        assertThat(filenames, hasItems(equalTo(data1), equalTo(data2), equalTo(data3)));
     }
 
-    @Test(expected = FileNotFoundException.class)
-    public void notFoundExceptionIfIdNotKnown() {
+    @Test(expected = UserInputException.class)
+    public void exceptionIfIdNotKnown() {
         //given
 
         //when
         service.filenames(ID);
 
         //then
-        fail("Should have thrown FileNotFoundException");
+        fail("Should have thrown exception");
     }
 
 }

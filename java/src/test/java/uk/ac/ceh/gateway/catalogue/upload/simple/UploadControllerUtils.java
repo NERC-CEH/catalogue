@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 public class UploadControllerUtils {
     public static final String ID = "993c5778-e139-4171-a57f-7a0f396be4b8";
     public static final String TITLE = "Belowground carbon stock data in the Ankeniheny Zahamena forest corridor, Madagascar";
+    public static final String CATALOGUE = "eidc";
 
     // Needed as @MockBean only available in Spring Boot
     public static class TestConfig {

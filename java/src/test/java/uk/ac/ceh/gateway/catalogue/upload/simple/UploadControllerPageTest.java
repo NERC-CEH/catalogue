@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.upload.simple;
 
 import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,14 +17,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 
-import static org.hamcrest.Matchers.emptyCollectionOf;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.ID;
-import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.TITLE;
+import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.*;
 
 /**
  * Testing the Upload Controller HTML page endpoint
@@ -42,6 +46,14 @@ public class UploadControllerPageTest {
     private MockMvc mockMvc;
     @Autowired
     private StorageService storageService;
+    private final FileInfo data1 = new FileInfo("data1.csv");
+    private final FileInfo data2 = new FileInfo("data2.csv");
+    private final FileInfo oneWithSpaces = new FileInfo("one with spaces.txt");
+    private final List<FileInfo> fileInfos = Arrays.asList(
+            data1,
+            data2,
+            oneWithSpaces
+    );
 
     @Before
     public void setup() {
@@ -53,6 +65,10 @@ public class UploadControllerPageTest {
     @Test
     @SneakyThrows
     public void uploaderCanAccessPage() {
+        //given
+        given(storageService.filenames(ID)).willReturn(fileInfos);
+
+        //when
         mockMvc.perform(
                 get("/upload/{id}", ID)
                     .header("remote-user", "uploader")
@@ -60,8 +76,9 @@ public class UploadControllerPageTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("id", ID))
                 .andExpect(model().attribute("title", TITLE))
-                .andExpect(model().attributeExists("files"))
-                .andExpect(flash().attributeCount(0))
+                .andExpect(model().attribute("catalogueKey", CATALOGUE))
+                .andExpect(model().attribute("files", hasItems(data1, data2, oneWithSpaces)))
+                .andExpect(model().attributeDoesNotExist("message"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
 
         //then
@@ -71,6 +88,10 @@ public class UploadControllerPageTest {
     @Test
     @SneakyThrows
     public void adminCanAccessPage() {
+        //given
+        given(storageService.filenames(ID)).willReturn(fileInfos);
+
+        //when
         mockMvc.perform(
                 get("/upload/{id}", ID)
                     .header("remote-user", "admin")
@@ -78,8 +99,9 @@ public class UploadControllerPageTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("id", ID))
                 .andExpect(model().attribute("title", TITLE))
-                .andExpect(model().attributeExists("files"))
-                .andExpect(flash().attributeCount(0))
+                .andExpect(model().attribute("catalogueKey", CATALOGUE))
+                .andExpect(model().attribute("files", hasItems(data1, data2, oneWithSpaces)))
+                .andExpect(model().attributeDoesNotExist("message"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
 
         //then
@@ -117,7 +139,10 @@ public class UploadControllerPageTest {
     @SneakyThrows
     public void errorDisplayingFilesOnPage() {
         //given
-        doThrow(new RuntimeException()).when(storageService).filenames(ID);
+        val expectedMessage = new UploadController.ErrorMessage(
+                "Failed to retrieve file information for 993c5778-e139-4171-a57f-7a0f396be4b8"
+        );
+        doThrow(new StorageServiceException(ID, "Failed to retrieve file information")).when(storageService).filenames(ID);
 
         //when
         mockMvc.perform(
@@ -127,8 +152,9 @@ public class UploadControllerPageTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("id", ID))
                 .andExpect(model().attribute("title", TITLE))
-                .andExpect(model().attribute("files", emptyCollectionOf(UploadController.FileInfo.class)))
-                .andExpect(model().attribute("error", "Failed to retrieve information"))
+                .andExpect(model().attribute("catalogueKey", CATALOGUE))
+                .andExpect(model().attribute("files", emptyCollectionOf(String.class)))
+                .andExpect(model().attribute("message", equalTo(expectedMessage)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
 
         //then

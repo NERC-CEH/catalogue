@@ -1,6 +1,6 @@
 <#import "../../skeleton.ftl" as skeleton>
 
-<@skeleton.master title=title>
+<@skeleton.master title=title catalogue=catalogues.retrieve(catalogueKey)>
 <div class="container" id="simple-upload">
   <h1>Dataset Upload: ${title}</h1>
   <ul id="messages"></ul>
@@ -17,9 +17,14 @@
   </#list>
   </ul>
 </div>
-<script id="data" type="application/json">
+<script id="files-data" type="application/json">
 [<#list files as file>
-  {"name":"${file.name}"}<#sep>,</#sep>
+  {"name":"${file.name}","urlEncodedName":"${file.urlEncodedName}"}<#sep>,</#sep>
 </#list>]
 </script>
+<#if message?? >
+<script id="messages-data" type="application/json">
+{"message":"${message.message}","type": "${message.type}"}
+</script>
+</#if>
 </@skeleton.master>

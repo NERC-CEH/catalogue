@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.upload.simple;
 
 import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 
-import java.io.FileNotFoundException;
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -59,7 +59,12 @@ public class UploadControllerFilenamesTest {
     @SneakyThrows
     public void uploaderCanGetListOfFilenames() {
         //given
-        given(storageService.filenames(ID)).willReturn(Stream.of("data1.csv", "data2.csv"));
+        val filenames = Arrays.asList(
+                new FileInfo("data1.csv"),
+                new FileInfo("data2.csv"),
+                new FileInfo("name with spaces.csv")
+        );
+        given(storageService.filenames(ID)).willReturn(filenames);
 
         mockMvc.perform(
                 get("http://example.com/upload/{id}", ID)
@@ -105,7 +110,7 @@ public class UploadControllerFilenamesTest {
     @SneakyThrows
     public void unknownFilenames() {
         //given
-        doThrow(new FileNotFoundException()).when(storageService).filenames(ID);
+        doThrow(new UserInputException(ID, "Could not retrieve files")).when(storageService).filenames(ID);
 
         mockMvc.perform(
                 get("http://example.com/upload/{id}", ID)
@@ -121,7 +126,7 @@ public class UploadControllerFilenamesTest {
     @SneakyThrows
     public void errorMessageGettingFilenames() {
         //given
-        doThrow(new RuntimeException()).when(storageService).filenames(ID);
+        doThrow(new StorageServiceException(ID, "Could not retrieve files")).when(storageService).filenames(ID);
 
         mockMvc.perform(
                 get("http://example.com/upload/{id}", ID)

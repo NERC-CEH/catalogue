@@ -2,13 +2,10 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.NoSuchFileException;
-import java.util.stream.Stream;
+import java.util.List;
 
 public interface StorageService {
-    void store(String id, MultipartFile file) throws FileAlreadyExistsException;
-    Stream<String> filenames(String id) throws FileNotFoundException;
-    void delete(String id, String filename) throws NoSuchFileException;
+    void store(String id, MultipartFile file);
+    List<FileInfo> filenames(String id);
+    void delete(String id, String filename);
 }

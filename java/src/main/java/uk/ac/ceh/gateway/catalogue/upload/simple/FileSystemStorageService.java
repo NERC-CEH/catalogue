@@ -9,12 +9,15 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
 
 @Slf4j
 @Service
@@ -33,37 +36,58 @@ public class FileSystemStorageService implements StorageService {
     @Override
     @SneakyThrows
     public void store(String id, MultipartFile file) {
-        log.info("Storing {}/{}/{}", datastore, id, file.getOriginalFilename());
-        if (directoryDoesNotExist(id)) {
-            Files.createDirectory(Paths.get(datastore, id));
-        }
+        try {
+            log.info("Storing {}/{}/{}", datastore, id, file.getOriginalFilename());
+            if (directoryDoesNotExist(id)) {
+                Files.createDirectory(Paths.get(datastore, id));
+            }
 
-        val uploadFile= Paths.get(datastore, id, file.getOriginalFilename());
-        if (Files.exists(uploadFile)) {
-            throw new FileAlreadyExistsException(uploadFile.toString());
-        }
+            val uploadFile = Paths.get(datastore, id, file.getOriginalFilename());
+            if (Files.exists(uploadFile)) {
+                throw new FileExitsException(id, file.getOriginalFilename());
+            }
 
-        file.transferTo(uploadFile.toFile());
+            file.transferTo(uploadFile.toFile());
+        } catch (FileExitsException ex) {
+          throw ex;
+        } catch (Exception ex) {
+            throw new StorageServiceException(id, ex.getMessage(), ex);
+        }
     }
 
     @Override
     @SneakyThrows
-    public Stream<String> filenames(String id) {
-        log.info("In {} loading all files", id);
-        if (directoryDoesNotExist(id)) {
-            throw new FileNotFoundException(id);
+    public List<FileInfo> filenames(String id) {
+        try {
+            log.info("In {} loading all files", id);
+            if (directoryDoesNotExist(id)) {
+                throw new UserInputException(id, "Could not retrieve files");
+            }
+            val directory = Paths.get(datastore, id).toFile();
+            val filenames = Optional.ofNullable(directory.list()).orElse(new String[0]);
+            return Arrays.stream(filenames)
+                    .map(FileInfo::new)
+                    .collect(Collectors.toList());
+        } catch (UserInputException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new StorageServiceException(id, ex.getMessage(), ex);
         }
-        val directory = Paths.get(datastore, id).toFile();
-        val filenames = Optional.ofNullable(directory.list()).orElse(new String[0]);
-        return Stream.of(filenames);
     }
 
     @Override
     @SneakyThrows
     public void delete(String id, String filename) {
-        log.info("In {} deleting {}", id, filename);
-        val deleteFile = Paths.get(datastore, id, filename);
-        Files.delete(deleteFile);
+        try {
+            log.info("In {} deleting {}", id, filename);
+            val deleteFile = Paths.get(datastore, id, filename);
+            Files.delete(deleteFile);
+        } catch (NoSuchFileException ex) {
+            throw new UserInputException(id, format("File not found %s", filename));
+        }
+        catch (Exception ex) {
+            throw new StorageServiceException(id, ex.getMessage(), ex);
+        }
     }
 
     private boolean directoryDoesNotExist(String id) {

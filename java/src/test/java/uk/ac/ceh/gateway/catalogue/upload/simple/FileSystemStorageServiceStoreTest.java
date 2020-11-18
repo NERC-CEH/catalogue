@@ -8,7 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -54,7 +53,7 @@ public class FileSystemStorageServiceStoreTest {
     }
 
     @SneakyThrows
-    @Test(expected = FileAlreadyExistsException.class)
+    @Test(expected = FileExitsException.class)
     public void fileAlreadyExists() {
         //given
         folder.newFolder(ID);
@@ -64,7 +63,7 @@ public class FileSystemStorageServiceStoreTest {
         service.store(ID, dataCsv(getClass()));
 
         //then
-        fail("Should throw FileAlreadyExistsException");
+        fail("Should throw FileExistsException");
     }
 
     @Test

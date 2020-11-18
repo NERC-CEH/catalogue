@@ -18,10 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 
-import java.nio.file.FileAlreadyExistsException;
-import java.util.stream.Stream;
-
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
@@ -58,9 +54,6 @@ public class UploadControllerUploadTest {
     @Test
     @SneakyThrows
     public void uploaderCanUploadFile() {
-        //given
-        given(storageService.filenames(ID)).willReturn(Stream.of("data.csv", "data1.csv", "data2.csv"));
-
         //when
         mockMvc.perform(
                 fileUpload("http://example.com/upload/{id}", ID)
@@ -68,9 +61,7 @@ public class UploadControllerUploadTest {
                         .header("remote-user", "uploader")
                         .accept(MediaType.APPLICATION_JSON)
         )
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedResponse(getClass(), "successfulUpload.json")));
+                .andExpect(status().isNoContent());
 
         //then
         verify(storageService).store(ID, multipartFile);
@@ -94,7 +85,9 @@ public class UploadControllerUploadTest {
     @SneakyThrows
     public void errorWhenFileUploadedWithSameNameAsExistingFile() {
         //given
-        doThrow(new FileAlreadyExistsException("data.csv")).when(storageService).store(ID, multipartFile);
+        doThrow(new FileExitsException(ID, multipartFile.getOriginalFilename()))
+                .when(storageService)
+                .store(ID, multipartFile);
 
         //when
         mockMvc.perform(
@@ -112,7 +105,9 @@ public class UploadControllerUploadTest {
     @SneakyThrows
     public void errorSavingFile() {
         //given
-        doThrow(new RuntimeException()).when(storageService).store(ID, multipartFile);
+        doThrow(new StorageServiceException(ID, "Could not upload data.csv"))
+                .when(storageService)
+                .store(ID, multipartFile);
 
         //when
         mockMvc.perform(
@@ -131,7 +126,6 @@ public class UploadControllerUploadTest {
     public void uploaderCanUploadFileWithSpaces() {
         //given
         val fileWithSpaces = fileWithSpacesCsv(getClass());
-        given(storageService.filenames(ID)).willReturn(Stream.of("data.csv", "data1.csv", "data2.csv"));
 
         //when
         mockMvc.perform(
@@ -140,9 +134,7 @@ public class UploadControllerUploadTest {
                         .header("remote-user", "uploader")
                         .accept(MediaType.APPLICATION_JSON)
         )
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedResponse(getClass(),"successfulUploadWithSpaces.json")));
+                .andExpect(status().isNoContent());
 
         //then
         verify(storageService).store(ID, fileWithSpaces);

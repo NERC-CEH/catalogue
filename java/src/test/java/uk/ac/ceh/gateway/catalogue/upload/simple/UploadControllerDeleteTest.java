@@ -17,10 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 
-import java.nio.file.NoSuchFileException;
-import java.util.stream.Stream;
-
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -33,7 +29,6 @@ import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.ex
 /**
  * Test Upload Controller delete file endpoint
  */
-
 @ActiveProfiles({"development", "upload:simple"})
 @TestPropertySource("UploadControllerTest.properties")
 @WebAppConfiguration
@@ -59,18 +54,13 @@ public class UploadControllerDeleteTest {
     @Test
     @SneakyThrows
     public void uploaderCanDeleteFile() {
-        //given
-        given(storageService.filenames(ID)).willReturn(Stream.of("data1.csv", "data2.csv"));
-
         //when
         mockMvc.perform(
                 delete("http://example.com/upload/{id}/{filename}", ID, filename)
                         .header("remote-user", "uploader")
                         .accept(MediaType.APPLICATION_JSON)
         )
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedResponse(getClass(),"successfulDeletion.json")));
+                .andExpect(status().isNoContent());
 
         //then
         verify(storageService).delete(ID, filename);
@@ -93,7 +83,9 @@ public class UploadControllerDeleteTest {
     @SneakyThrows
     public void errorDeletingFile() {
         //given
-        doThrow(new RuntimeException()).when(storageService).delete(ID, filename);
+        doThrow(new StorageServiceException(ID, "Error trying to delete test.csv"))
+                .when(storageService)
+                .delete(ID, filename);
 
         //when
         mockMvc.perform(
@@ -110,7 +102,9 @@ public class UploadControllerDeleteTest {
     @SneakyThrows
     public void deletingUnknownFile() {
         //given
-        doThrow(new NoSuchFileException("test")).when(storageService).delete(ID, filename);
+        doThrow(new UserInputException(ID, "File not found test.csv"))
+                .when(storageService)
+                .delete(ID, filename);
 
         //when
         mockMvc.perform(
@@ -128,17 +122,13 @@ public class UploadControllerDeleteTest {
     public void canDeleteFileWithSpacesInName() {
         //given
         val filenameWithSpaces = "data with spaces.csv";
-        given(storageService.filenames(ID)).willReturn(Stream.of("data1.csv", "data2.csv"));
-
         //when
         mockMvc.perform(
                 delete("http://example.com/upload/{id}/{filename}", ID, filenameWithSpaces)
                         .header("remote-user", "uploader")
                         .accept(MediaType.APPLICATION_JSON)
         )
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedResponse(getClass(), "successfulDeletionWithSpaces.json")));
+                .andExpect(status().isNoContent());
 
         //then
         verify(storageService).delete(ID, filenameWithSpaces);

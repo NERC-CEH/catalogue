@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 
 import static java.lang.String.format;
@@ -45,16 +44,17 @@ public class FileSystemStorageServiceDeleteTest {
         assertFalse(Files.exists(deleted));
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test(expected = UserInputException.class)
     @SneakyThrows
-    public void notFoundExceptionIfFileNotKnown() {
+    public void exceptionIfFileNotKnown() {
         //given
+        // No files setup
 
         //when
         service.delete(ID, filename);
 
         //then
-        fail("Should have thrown FileNotFoundException");
+        fail("Should have thrown exception");
     }
 
 }
