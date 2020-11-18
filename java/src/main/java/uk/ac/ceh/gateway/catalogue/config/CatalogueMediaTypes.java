@@ -117,4 +117,8 @@ public class CatalogueMediaTypes {
     public static final String UPLOAD_DOCUMENT_SHORT = "upload";
     public static final String UPLOAD_DOCUMENT_JSON_VALUE = "application/vnd.upload-document+json";
     public static final MediaType UPLOAD_DOCUMENT_JSON = MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE);
+
+    public static final String UKEMS_DOCUMENT_SHORT = "ukems-document";
+    public static final String UKEMS_DOCUMENT_JSON_VALUE = "application/vnd.ukems-document+json";
+    public static final MediaType UKEMS_DOCUMENT_JSON = MediaType.parseMediaType(UKEMS_DOCUMENT_JSON_VALUE);
 }
