@@ -43,19 +43,27 @@
 </div>
 <div class="container" id="simple-upload">
 <h1>Dataset Upload: Upload Test</h1>
-<ul id="messages"></ul>
+<div id="messages">
+<h2>Messages</h2>
+<div id="messages-tools"></div>
+<ul id="messages-list"></ul>
+</div>
+<div id="upload">
 <h2>Upload</h2>
 <form action="/upload/123-456-789"
 class="dropzone"
 id="simple-upload-dropzone"
 ></form>
+</div>
+<div id="files">
 <h2>Files</h2>
-<div id="filesTools"></div>
-<ul id="files">
+<div id="files-tools"></div>
+<ul id="files-list">
 <li>data1.csv</li>
 <li>data2.csv</li>
 <li>name with spaces.csv</li>
 </ul>
+</div>
 </div>
 <script id="files-data" type="application/json">
 [

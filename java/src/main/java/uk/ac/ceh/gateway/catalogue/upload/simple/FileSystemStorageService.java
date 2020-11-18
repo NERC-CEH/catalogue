@@ -66,6 +66,7 @@ public class FileSystemStorageService implements StorageService {
             val directory = Paths.get(datastore, id).toFile();
             val filenames = Optional.ofNullable(directory.list()).orElse(new String[0]);
             return Arrays.stream(filenames)
+                    .sorted()
                     .map(FileInfo::new)
                     .collect(Collectors.toList());
         } catch (UserInputException ex) {

@@ -3,19 +3,27 @@
 <@skeleton.master title=title catalogue=catalogues.retrieve(catalogueKey)>
 <div class="container" id="simple-upload">
   <h1>Dataset Upload: ${title}</h1>
-  <ul id="messages"></ul>
-  <h2>Upload</h2>
-  <form action="/upload/${id}"
-        class="dropzone"
-        id="simple-upload-dropzone"
-  ></form>
-  <h2>Files</h2>
-  <div id="filesTools"></div>
-  <ul id="files">
-  <#list files as file>
-    <li>${file.name}</li>
-  </#list>
-  </ul>
+  <div id="messages">
+    <h2>Messages</h2>
+    <div id="messages-tools"></div>
+    <ul id="messages-list"></ul>
+  </div>
+  <div id="upload">
+    <h2>Upload</h2>
+    <form action="/upload/${id}"
+          class="dropzone"
+          id="simple-upload-dropzone"
+    ></form>
+  </div>
+  <div id="files">
+    <h2>Files</h2>
+    <div id="files-tools"></div>
+    <ul id="files-list">
+    <#list files as file>
+      <li>${file.name}</li>
+    </#list>
+    </ul>
+  </div>
 </div>
 <script id="files-data" type="application/json">
 [<#list files as file>

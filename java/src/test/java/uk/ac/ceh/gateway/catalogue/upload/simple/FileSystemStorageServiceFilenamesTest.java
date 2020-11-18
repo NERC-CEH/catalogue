@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,7 +31,6 @@ public class FileSystemStorageServiceFilenamesTest {
 
     @Test
     @SneakyThrows(IOException.class)
-    @SuppressWarnings("unchecked")
     public void successfullyGetFilenames() {
         //given
         folder.newFolder(ID);
@@ -38,15 +38,17 @@ public class FileSystemStorageServiceFilenamesTest {
         folder.newFile(format("%s/%s", ID, "data2.csv"));
         folder.newFile(format("%s/%s", ID, "data3.csv"));
 
-        val data1 = new FileInfo("data1.csv");
-        val data2 = new FileInfo("data1.csv");
-        val data3 = new FileInfo("data2.csv");
+        val expected = Arrays.asList(
+                new FileInfo("data1.csv"),
+                new FileInfo("data2.csv"),
+                new FileInfo("data3.csv")
+        );
 
         //when
         val filenames = service.filenames(ID);
 
         //then
-        assertThat(filenames, hasItems(equalTo(data1), equalTo(data2), equalTo(data3)));
+        assertThat(filenames, equalTo(expected));
     }
 
     @Test(expected = UserInputException.class)
