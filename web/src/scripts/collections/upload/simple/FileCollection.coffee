@@ -6,6 +6,3 @@ define [
 
     initialize: (options) ->
       @url = options.url
-
-    parse: (response) ->
-      response.files

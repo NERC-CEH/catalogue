@@ -1,0 +1,1 @@
+<button class='clear-all'>Clear</button>

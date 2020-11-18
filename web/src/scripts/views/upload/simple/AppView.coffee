@@ -1,47 +1,32 @@
 define [
   'jquery'
-  'underscore'
   'backbone'
-  'cs!collections/upload/simple/Files'
-  'cs!views/upload/simple/FileView'
-  'cs!views/upload/simple/ToolsView'
-  'cs!views/upload/simple/MessageView'
+  'cs!collections/upload/simple/FileCollection'
+  'cs!views/upload/simple/FilesView'
+  'cs!views/upload/simple/MessagesView'
   'cs!views/upload/simple/UploadView'
-], ($, _, Backbone, Files, FileView, ToolsView, MessageView, UploadView) -> Backbone.View.extend
+], ($, Backbone, FileCollection, FilesView, MessagesView, UploadView) -> Backbone.View.extend
 
   initialize: (options) ->
-    @files = new Files
+    @files = new FileCollection
       url: options.url
 
     @messages = new Backbone.Collection()
 
-    @$fileList = @$('#files')
-    @$messageList = @$('#messages')
-
-    @listenTo(@files, 'add', @addOne)
-    @listenTo(@files, 'reset', @addAll)
-    @listenTo(@messages, 'add', @addMessage)
-
-    @files.reset(JSON.parse($('#data').text()))
+    messagesView = new MessagesView
+      el: '#messages'
+      messages: @messages
 
     uploadView = new UploadView
       el: '#simple-upload-dropzone'
       files: @files
       messages: @messages
 
-    filesTools = new ToolsView
-      el: '#filesTools'
+    filesView = new FilesView
+      el: '#files'
       files: @files
       messages: @messages
 
-  addOne: (file) ->
-    view = new FileView({model: file})
-    @$fileList.append(view.render().el)
-
-  addAll: ->
-    @$fileList.empty()
-    @files.each(@addOne, @)
-
-  addMessage: (message) ->
-    view = new MessageView({model: message})
-    @$messageList.append(view.render().el)
+    @files.reset(JSON.parse($('#files-data').text()))
+    $message = $('#messages-data')
+    @messages.reset(JSON.parse($message.text())) if $message.length
