@@ -43,6 +43,8 @@ public class RememberMeServicesDataLabsTest {
 
     private static final String userName = "username";
 
+    private static final String emailAddress = "email";
+
     private static final String groupName = "groupName";
 
     private static final int keyHash = 106079;
@@ -62,12 +64,14 @@ public class RememberMeServicesDataLabsTest {
     }
 
     @Test
-    public void checkThatTryingToGetValueForMissingContentReturnsNull() throws UnknownUserException {
+    public void autoLoginTest() throws UnknownUserException {
 
         //Given
         List<Group> groups = new ArrayList<>();
         groups.add(group);
         CatalogueUser catalogueUser = new CatalogueUser();
+        catalogueUser.setEmail(emailAddress);
+        catalogueUser.setUsername(userName);
         Mockito.when(userStore.getUser(userName)).thenReturn(catalogueUser);
         Mockito.when(groupStore.getGroups(catalogueUser)).thenReturn(groups);
         Mockito.when(group.getName()).thenReturn(groupName);
@@ -77,5 +81,6 @@ public class RememberMeServicesDataLabsTest {
 
         //Then
         assertThat(authentication.getKeyHash(), is(equalTo(keyHash)));
+        assertThat(authentication.getPrincipal(), is(equalTo(catalogueUser)));
     }
 }

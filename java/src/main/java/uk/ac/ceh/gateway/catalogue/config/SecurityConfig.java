@@ -82,5 +82,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             http.addFilter(rememberMeAuthenticationFilter());
         }
     }
-
 }
