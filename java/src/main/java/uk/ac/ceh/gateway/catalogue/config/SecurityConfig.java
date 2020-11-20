@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -11,7 +12,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.UserStore;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
@@ -30,6 +33,9 @@ import java.util.Collections;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired private UserStore<CatalogueUser> userStore;
     @Autowired private GroupStore<CatalogueUser> groupStore;
+    @Autowired private AuthenticationManager authenticationManager;
+    @Autowired private RememberMeServices rememberMeServices;
+    @Autowired private Environment environment;
     
     @Override
     @Bean
@@ -46,14 +52,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         remoteUserFilter.setAuthenticationManager(authenticationManagerBean());
         return remoteUserFilter;
     }
-    
+
+    @Bean
+    public RememberMeAuthenticationFilter rememberMeAuthenticationFilter() {
+        return new RememberMeAuthenticationFilter(authenticationManager, rememberMeServices);
+    }
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
             .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-                .addFilter(requestHeaderAuthenticationFilter())
             .anonymous()
                 .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
             .and()
@@ -66,5 +76,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
             .exceptionHandling()
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint());
+        if(environment.acceptsProfiles("!auth:datalabs")){
+            http.addFilter(requestHeaderAuthenticationFilter());
+        }if(environment.acceptsProfiles("auth:datalabs")){
+            http.addFilter(rememberMeAuthenticationFilter());
+        }
     }
+
 }
