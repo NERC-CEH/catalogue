@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.security;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,12 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class RememberMeServicesDataLabs implements RememberMeServices {
 
     final private UserStore<CatalogueUser> userStore;
     final private GroupStore<CatalogueUser> groupStore;
     private String cookieName;
-
 
     RememberMeServicesDataLabs(UserStore<CatalogueUser> userStore,
                                GroupStore<CatalogueUser> groupStore,
@@ -45,15 +46,13 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
 
         // The plus one is because the the substring will include the index of "."
         String userName = token.substring(token.indexOf(".") + 1, token.lastIndexOf("."));
+
         CatalogueUser catalogueUser = userStore.getUser(userName);
         List<Group> groups = groupStore.getGroups(catalogueUser);
 
-        groups.stream().map(group -> group.getName());
-
-        List<GrantedAuthority> grantedAuthorities =
-                groups.stream().map(group -> (GrantedAuthority)() -> group.getName()).collect(Collectors.toList());
-
-        return new RememberMeAuthenticationToken("key", catalogueUser, grantedAuthorities);
+        return new RememberMeAuthenticationToken("key", catalogueUser,
+                groups.stream().map(group -> (GrantedAuthority)() -> group.getName())
+                        .collect(Collectors.toList()));
     }
 
     @Override

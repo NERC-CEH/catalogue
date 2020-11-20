@@ -41,7 +41,7 @@ public class RememberMeServicesDataLabsTest {
 
     private static final String cookieName = "token";
 
-    private static final String userName = "userName";
+    private static final String userName = "username";
 
     private static final String groupName = "groupName";
 
