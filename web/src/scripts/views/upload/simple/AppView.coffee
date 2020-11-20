@@ -1,11 +1,12 @@
 define [
   'jquery'
   'backbone'
+  'dropzone'
   'cs!collections/upload/simple/FileCollection'
-  'cs!views/upload/simple/FilesView'
-  'cs!views/upload/simple/MessagesView'
+  'cs!views/upload/simple/FileListView'
+  'cs!views/upload/simple/MessageListView'
   'cs!views/upload/simple/UploadView'
-], ($, Backbone, FileCollection, FilesView, MessagesView, UploadView) -> Backbone.View.extend
+], ($, Backbone, Dropzone, FileCollection, FileListView, MessageListView, UploadView) -> Backbone.View.extend
 
   initialize: (options) ->
     @files = new FileCollection
@@ -13,7 +14,7 @@ define [
 
     @messages = new Backbone.Collection()
 
-    messagesView = new MessagesView
+    messagesView = new MessageListView
       el: '#messages'
       messages: @messages
 
@@ -21,12 +22,14 @@ define [
       el: '#simple-upload-dropzone'
       files: @files
       messages: @messages
+      url: @url
 
-    filesView = new FilesView
+    filesView = new FileListView
       el: '#files'
       files: @files
       messages: @messages
 
-    @files.reset(JSON.parse($('#files-data').text()))
-    $message = $('#messages-data')
-    @messages.reset(JSON.parse($message.text())) if $message.length
+    $filesData = $('#files-data')
+    @files.reset(JSON.parse($filesData.text())) if $filesData.length
+    $messageData = $('#messages-data')
+    @messages.reset(JSON.parse($messageData.text())) if $messageData.length

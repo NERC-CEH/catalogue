@@ -20,8 +20,8 @@
     "grunt-contrib-cssmin": "0.6.1",
     "grunt-combine-harvester": "0.1.0",
     "grunt-contrib-requirejs": "0.4.4",
-    "grunt-template-jasmine-requirejs": "0.2.0",
-    "grunt-contrib-jasmine": "1.0.3",
+    "grunt-template-jasmine-requirejs": "0.2.3",
+    "grunt-contrib-jasmine": "1.2.0",
     "grunt-contrib-coffee": "0.11.1"
   }
 }
