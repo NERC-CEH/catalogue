@@ -50,9 +50,10 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
         CatalogueUser catalogueUser = userStore.getUser(userName);
         List<Group> groups = groupStore.getGroups(catalogueUser);
 
-        return new RememberMeAuthenticationToken("key", catalogueUser,
-                groups.stream().map(group -> (GrantedAuthority)() -> group.getName())
-                        .collect(Collectors.toList()));
+        List<GrantedAuthority> grantedAuthorities = groups.stream().map(group ->
+                (GrantedAuthority)() -> group.getName()).collect(Collectors.toList());
+
+        return new RememberMeAuthenticationToken("key", catalogueUser, grantedAuthorities);
     }
 
     @Override
