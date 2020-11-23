@@ -2,9 +2,9 @@ package uk.ac.ceh.gateway.catalogue.security;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import uk.ac.ceh.components.userstore.Group;
@@ -19,9 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.BDDMockito.given;
 
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class RememberMeServicesDataLabsTest {
 
     @Mock
@@ -53,8 +54,6 @@ public class RememberMeServicesDataLabsTest {
 
     @Before
     public void init() {
-
-        MockitoAnnotations.initMocks(this);
         target = new RememberMeServicesDataLabs(userStore, groupStore, cookieName);
         mockHttpServletRequest = new MockHttpServletRequest();
         Cookie[] cookies = new Cookie[]{
@@ -72,9 +71,9 @@ public class RememberMeServicesDataLabsTest {
         CatalogueUser catalogueUser = new CatalogueUser();
         catalogueUser.setEmail(emailAddress);
         catalogueUser.setUsername(userName);
-        Mockito.when(userStore.getUser(userName)).thenReturn(catalogueUser);
-        Mockito.when(groupStore.getGroups(catalogueUser)).thenReturn(groups);
-        Mockito.when(group.getName()).thenReturn(groupName);
+        given(userStore.getUser(userName)).willReturn(catalogueUser);
+        given(groupStore.getGroups(catalogueUser)).willReturn(groups);
+        given(group.getName()).willReturn(groupName);
 
         //When
         RememberMeAuthenticationToken authentication = (RememberMeAuthenticationToken) target.autoLogin(mockHttpServletRequest, response);
@@ -82,5 +81,27 @@ public class RememberMeServicesDataLabsTest {
         //Then
         assertThat(authentication.getKeyHash(), is(equalTo(keyHash)));
         assertThat(authentication.getPrincipal(), is(equalTo(catalogueUser)));
+    }
+
+    @Test
+    public void autoLoginTest_EmptyToken() throws UnknownUserException {
+
+        //Given
+        MockHttpServletRequest emptyMockHttpServletRequest = new MockHttpServletRequest();
+        List<Group> groups = new ArrayList<>();
+        groups.add(group);
+        CatalogueUser catalogueUser = new CatalogueUser();
+        catalogueUser.setEmail(emailAddress);
+        catalogueUser.setUsername(userName);
+        given(userStore.getUser(userName)).willReturn(catalogueUser);
+        given(groupStore.getGroups(catalogueUser)).willReturn(groups);
+        given(group.getName()).willReturn(groupName);
+
+        //When
+        RememberMeAuthenticationToken authentication = (RememberMeAuthenticationToken)
+                target.autoLogin(emptyMockHttpServletRequest, response);
+
+        //Then
+        assertThat(authentication, is(nullValue()));
     }
 }

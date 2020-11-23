@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.security;
 
 import lombok.SneakyThrows;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -23,11 +24,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Profile("auth:datalabs")
 @Service
+@ToString
 public class RememberMeServicesDataLabs implements RememberMeServices {
 
     final private UserStore<CatalogueUser> userStore;
     final private GroupStore<CatalogueUser> groupStore;
-    private String cookieName;
+    final private String cookieName;
 
     RememberMeServicesDataLabs(UserStore<CatalogueUser> userStore,
                                GroupStore<CatalogueUser> groupStore,
@@ -35,6 +37,7 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
         this.userStore = userStore;
         this.groupStore = groupStore;
         this.cookieName = cookieName;
+        log.info("Creating {}", this);
     }
 
     @SneakyThrows
