@@ -2,10 +2,12 @@ package uk.ac.ceh.gateway.catalogue.security;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
@@ -19,6 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Profile("auth:datalabs")
+@Service
 public class RememberMeServicesDataLabs implements RememberMeServices {
 
     final private UserStore<CatalogueUser> userStore;
