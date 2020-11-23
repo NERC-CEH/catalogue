@@ -157,6 +157,7 @@ public class WebConfig implements WebMvcConfigurer {
             .mediaType(RDF_SCHEMAORG_SHORT, RDF_SCHEMAORG_JSON)
             .mediaType(RDF_TTL_SHORT, RDF_TTL)
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, RESEARCH_INFO_SYSTEMS)
-            .mediaType(SAMPLE_ARCHIVE_SHORT, SAMPLE_ARCHIVE_JSON);
+            .mediaType(SAMPLE_ARCHIVE_SHORT, SAMPLE_ARCHIVE_JSON)
+            .mediaType(UKEMS_DOCUMENT_SHORT, UKEMS_DOCUMENT_JSON);
     }
 }

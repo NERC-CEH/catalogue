@@ -117,6 +117,11 @@ public class CatalogueServiceConfig {
             .type(SAMPLE_ARCHIVE_SHORT)
             .build();
 
+        DocumentType ukems = DocumentType.builder()
+            .title("UK-EMS Document")
+            .type(UKEMS_DOCUMENT_SHORT)
+            .build();
+
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
 
@@ -338,7 +343,7 @@ public class CatalogueServiceConfig {
                 .id("ukems")
                 .title("UK Community Emissions Modelling System")
                 .url("")
-                .documentType(gemini)
+                .documentType(ukems)
                 .fileUpload(false)
                 .build()
         );
