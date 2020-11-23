@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -54,6 +55,7 @@ public class RememberMeServicesDataLabsTest {
 
     @Before
     public void init() {
+        MockitoAnnotations.initMocks(this);
         target = new RememberMeServicesDataLabs(userStore, groupStore, cookieName);
         mockHttpServletRequest = new MockHttpServletRequest();
         Cookie[] cookies = new Cookie[]{
@@ -73,7 +75,6 @@ public class RememberMeServicesDataLabsTest {
         catalogueUser.setUsername(userName);
         given(userStore.getUser(userName)).willReturn(catalogueUser);
         given(groupStore.getGroups(catalogueUser)).willReturn(groups);
-        given(group.getName()).willReturn(groupName);
 
         //When
         RememberMeAuthenticationToken authentication = (RememberMeAuthenticationToken) target.autoLogin(mockHttpServletRequest, response);
@@ -93,9 +94,6 @@ public class RememberMeServicesDataLabsTest {
         CatalogueUser catalogueUser = new CatalogueUser();
         catalogueUser.setEmail(emailAddress);
         catalogueUser.setUsername(userName);
-        given(userStore.getUser(userName)).willReturn(catalogueUser);
-        given(groupStore.getGroups(catalogueUser)).willReturn(groups);
-        given(group.getName()).willReturn(groupName);
 
         //When
         RememberMeAuthenticationToken authentication = (RememberMeAuthenticationToken)
