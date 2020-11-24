@@ -11,7 +11,6 @@
   <div id="upload">
     <h2>Upload</h2>
     <form action="/upload/${id}"
-          class="dropzone"
           id="simple-upload-dropzone"
     ></form>
   </div>

@@ -40,5 +40,4 @@ require.config({
   },
   waitSeconds:1000
 });
-Dropzone.autoDiscover = false; // Prevent Dropzone attaching to form with class .dropzone
 require(['cs!Main'], function(Main){ Main.initialize(); });
