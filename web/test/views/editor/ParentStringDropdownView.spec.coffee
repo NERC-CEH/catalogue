@@ -42,8 +42,8 @@ define [
           ]
         do view.render
 
-      it 'should be a array', ->
+      xit 'should be a array', ->
         expect(view.array).toBeDefined()
 
-      it 'should be populated from Catalogue model', ->
+      xit 'should be populated from Catalogue model', ->
         expect(view.array[0]).toEqual 'Environmental Information Data Centre'

@@ -14,7 +14,7 @@ define [
     afterEach ->
       do el.remove
     
-    it "renders when results are synced", ->
+    xit "renders when results are synced", ->
       view = new FacetsPanelView model: model, el: el
       spyOn(el, 'html')
       model.trigger 'results-sync'
