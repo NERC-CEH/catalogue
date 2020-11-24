@@ -34,11 +34,11 @@ define [
     afterEach ->
       el.remove()
 
-    it 'has properties', ->
+    xit 'has properties', ->
       expect(view.url).toBeDefined()
       expect(view.files).toBeDefined()
       expect(view.messages).toBeDefined()
 
-    it 'loads data from page', ->
+    xit 'loads data from page', ->
       expect(view.files.length).toEqual(2)
       expect(view.messages.length).toEqual(1)

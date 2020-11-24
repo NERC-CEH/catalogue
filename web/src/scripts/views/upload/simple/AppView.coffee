@@ -1,12 +1,11 @@
 define [
   'jquery'
   'backbone'
-  'dropzone'
   'cs!collections/upload/simple/FileCollection'
   'cs!views/upload/simple/FileListView'
   'cs!views/upload/simple/MessageListView'
   'cs!views/upload/simple/UploadView'
-], ($, Backbone, Dropzone, FileCollection, FileListView, MessageListView, UploadView) -> Backbone.View.extend
+], ($, Backbone, FileCollection, FileListView, MessageListView, UploadView) -> Backbone.View.extend
 
   initialize: (options) ->
     @files = new FileCollection
@@ -22,7 +21,7 @@ define [
       el: '#simple-upload-dropzone'
       files: @files
       messages: @messages
-      url: @url
+      url: options.url
 
     filesView = new FileListView
       el: '#files'

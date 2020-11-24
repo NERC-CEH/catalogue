@@ -1,9 +1,8 @@
 define [
   'backbone'
+  'dropzone'
   'cs!models/upload/simple/File'
-], (Backbone, File) -> Backbone.View.extend
-  # Treating Dropzone as a global variable
-  # Dropzone 'required' in Main.coffee, does not work if 'required' here! 
+], (Backbone, Dropzone, File) -> Backbone.View.extend
 
   initialize: (options) ->
     @files = options.files  

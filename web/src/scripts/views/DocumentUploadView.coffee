@@ -2,6 +2,7 @@ define [
   'underscore'
   'jquery'
   'backbone'
+  'dropzone'
   'filesize'
   'tpl!templates/DocumentUploadFileRow.tpl'
   'tpl!templates/DropzoneFile.tpl'
@@ -9,6 +10,7 @@ define [
   _
   $
   Backbone
+  Dropzone
   filesize
   DocumentUploadFileRowTemplate
   DropzoneFileTpl

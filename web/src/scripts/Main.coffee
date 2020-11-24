@@ -2,7 +2,6 @@ define [
   'underscore'
   'jquery'
   'backbone'
-  'dropzone'
   'bootstrap'
   'cs!views/StudyAreaView'
   'cs!models/MapViewerApp'
@@ -45,7 +44,7 @@ define [
   'cs!models/DocumentUploadModel'
   'cs!views/upload/simple/AppView'
 ], (
-  _, $, Backbone, Dropzone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
+  _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
@@ -63,7 +62,7 @@ define [
     # http://stackoverflow.com/a/646643
     String::startsWith ?= (s) -> @slice(0, s.length) == s
     String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
-
+    
     do @initCatalogue if $('.catalogue-control').length
     do @initClipboard if $('.clipboard-copy').length
     do @initDepositRequest if $('#deposit-request').length

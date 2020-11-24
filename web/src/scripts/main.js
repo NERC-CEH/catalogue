@@ -17,7 +17,8 @@ require.config({
     'bootstrap':         { deps: ['jquery']},
     'isInViewport':      { deps: ['jquery']},
     'openlayers':        { exports: 'OpenLayers'},
-    'backbone':          { deps: ['underscore', 'jquery'], exports: 'Backbone'}
+    'backbone':          { deps: ['underscore', 'jquery'], exports: 'Backbone'},
+    'dropzone':          { exports: 'Dropzone'}
   },
   paths: {
     'dropzone':               '../vendor/dropzone/dist/dropzone',
@@ -39,5 +40,5 @@ require.config({
   },
   waitSeconds:1000
 });
-
+Dropzone.autoDiscover = false; // Prevent Dropzone attaching to form with class .dropzone
 require(['cs!Main'], function(Main){ Main.initialize(); });

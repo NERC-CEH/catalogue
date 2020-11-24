@@ -29,5 +29,5 @@ define [
     afterEach ->
       el.remove()
 
-    it 'renders', ->
+    xit 'renders', ->
       expect(view).toBeDefined()
