@@ -10,9 +10,11 @@
   </div>
   <div id="upload">
     <h2>Upload</h2>
-    <form action="/upload/${id}"
-          id="simple-upload-dropzone"
-    ></form>
+    <form action="/upload/${id}" id="simple-upload-dropzone">
+      <div class="dz-default dz-message">
+        <button class="dz-button" type="button">Drop files here to upload</button>
+      </div>
+    </form>
   </div>
   <div id="files">
     <h2>Files</h2>

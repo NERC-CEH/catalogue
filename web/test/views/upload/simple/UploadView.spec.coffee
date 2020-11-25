@@ -9,7 +9,6 @@ define [
     el = null
     template =
       '<form action="/upload/test"
-          class="dropzone"
           id="simple-upload-dropzone"
        ></form>'
     files = null

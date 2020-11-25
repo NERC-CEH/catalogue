@@ -15,5 +15,5 @@ define [
       @files.add(new File({name: file.name}))
     )
     dropzone.on('error', (file, errorMessage) =>
-      @messages.add(new Backbone.Model(message: "#{file.name} - #{errorMessage}", type: 'error'))
+      @messages.add(new Backbone.Model(message: "#{errorMessage.message}", type: 'error'))
     )
