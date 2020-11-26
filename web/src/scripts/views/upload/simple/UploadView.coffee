@@ -5,17 +5,19 @@ define [
 ], (Backbone, Dropzone, File) -> Backbone.View.extend
 
   initialize: (options) ->
-    @files = options.files  
-    @messages = options.messages
+    # Prevent Dropzone auto discovery
+    Dropzone.simpleUploadDropzone = false
+    # Enable Dropzone CSS styling
+    @$el.addClass('dropzone')
 
-    dropzone = Dropzone.forElement(@el)
-    dropzone.on('success', (file) =>
-      @messages.add(new Backbone.Model(message: "Uploaded: #{file.name}", type: 'info'))
-      @files.add(new File({name: file.name}))
+    dropzone = new Dropzone(@el)
+    dropzone.on('success', (file) ->
+      options.messages.add(new Backbone.Model(message: "Uploaded: #{file.name}", type: 'info'))
+      options.files.add(new File({name: file.name}))
     )
-    dropzone.on('error', (file, errorMessage) =>
-      @messages.add(new Backbone.Model(errorMessage))
+    dropzone.on('error', (file, errorMessage) ->
+      options.messages.add(new Backbone.Model(errorMessage))
     )
-    dropzone.on('complete', (file) =>
+    dropzone.on('complete', (file) ->
       dropzone.removeFile(file)
     )
