@@ -13,7 +13,7 @@ define [
 
     @messages = new Backbone.Collection()
 
-    messagesView = new MessageListView
+    messageListView = new MessageListView
       el: '#messages'
       messages: @messages
 
@@ -21,9 +21,8 @@ define [
       el: '#simple-upload-dropzone'
       files: @files
       messages: @messages
-      url: options.url
 
-    filesView = new FileListView
+    fileListView = new FileListView
       el: '#files'
       files: @files
       messages: @messages

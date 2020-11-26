@@ -4,5 +4,7 @@ define [
 ], (Backbone, File) -> Backbone.Collection.extend
     model: File
 
+    comparator: 'name'
+
     initialize: (options) ->
       @url = options.url

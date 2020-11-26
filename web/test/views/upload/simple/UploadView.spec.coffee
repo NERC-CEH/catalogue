@@ -7,10 +7,7 @@ define [
 
   describe "UploadView", ->
     el = null
-    template =
-      '<form action="/upload/test"
-          id="simple-upload-dropzone"
-       ></form>'
+    template ='<form action="/upload/test" id="simple-upload-dropzone"></form>'
     files = null
     messages = null
     view = null

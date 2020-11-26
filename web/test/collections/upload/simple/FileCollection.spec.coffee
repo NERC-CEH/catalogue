@@ -11,3 +11,4 @@ define [
 
       expect(collection.url).toEqual('/upload/993c5778-e139-4171-a57f-7a0f396be4b8')
       expect(collection.model).toEqual(File)
+      expect(collection.comparator).toEqual('name')

@@ -36,7 +36,7 @@ define [
     if confirm("Delete #{toDelete.length} files?")
       options = {
         success: (model) =>
-          @messages.add(new Backbone.Model({message: "Successfully deleted: #{model.get('name')}", type: 'info'}))
+          @messages.add(new Backbone.Model({message: "Deleted: #{model.get('name')}", type: 'info'}))
         error: (model, response) =>
           @messages.add(new Backbone.Model(response))
       }
