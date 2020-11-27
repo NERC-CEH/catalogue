@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.auth.oidc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
+@Profile("auth:datalabs")
 public class DataLabsAuthenticationProvider implements AuthenticationProvider {
 
     private final RestTemplate restTemplate;
