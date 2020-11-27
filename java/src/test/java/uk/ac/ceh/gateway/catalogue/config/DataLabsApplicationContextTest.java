@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -21,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 
 @ActiveProfiles(profiles = "auth:datalabs")
 @TestPropertySource
-@ContextConfiguration(classes = WebConfig.class)
+@ContextConfiguration(classes = {DataLabsApplicationContextTest.TestConfig.class, WebConfig.class})
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DataLabsApplicationContextTest {
@@ -37,8 +39,8 @@ public class DataLabsApplicationContextTest {
         assertNotNull(applicationContext.getBean("dataciteService"));
         assertNotNull(applicationContext.getBean("jenaLookupService"));
         assertNotNull(applicationContext.getBean("permission"));
-        assertNotNull(applicationContext.getBean("rememberMeService"));
-        assertNotNull(applicationContext.getBean("authenticationProvider"));
+        assertNotNull(applicationContext.getBean(RememberMeServices.class));
+        assertNotNull(applicationContext.getBean(AuthenticationProvider.class));
     }
 
     @Test
@@ -85,9 +87,8 @@ public class DataLabsApplicationContextTest {
         );
     }
 
-    @ContextConfiguration(classes = {DataLabsApplicationContextTest.TestConfig.class, WebConfig.class})
     @org.springframework.context.annotation.Configuration
-    private class TestConfig {
+    public static class TestConfig {
         private List<String> userPermissions;
 
         @Bean
@@ -111,44 +112,38 @@ public class DataLabsApplicationContextTest {
             };
         }
 
-            @Bean
-            public GroupStore<CatalogueUser>  groupStore(){
-                return new GroupStore() {
-                    @Override
-                    public List<Group> getGroups(User user) {
-                        return null;
-                    }
-
-                    @Override
-                    public Group getGroup(String name) throws IllegalArgumentException {
-                        return null;
-                    }
-
-                    @Override
-                    public List<Group> getAllGroups() {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean isGroupInExistance(String name) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isGroupDeletable(String group) throws IllegalArgumentException {
-                        return false;
-                    }
-                    // implement methods
-                };
-            }
-
         @Bean
-        public WebConfig webConfig(){
-            return new WebConfig();
-        }
+        public GroupStore<CatalogueUser>  groupStore(){
+            return new GroupStore() {
+                @Override
+                public List<Group> getGroups(User user) {
+                    return null;
+                }
 
+                @Override
+                public Group getGroup(String name) throws IllegalArgumentException {
+                    return null;
+                }
+
+                @Override
+                public List<Group> getAllGroups() {
+                    return null;
+                }
+
+                @Override
+                public boolean isGroupInExistance(String name) {
+                    return false;
+                }
+
+                @Override
+                public boolean isGroupDeletable(String group) throws IllegalArgumentException {
+                    return false;
+                }
+                // implement methods
+            };
         }
     }
+}
 
 
 

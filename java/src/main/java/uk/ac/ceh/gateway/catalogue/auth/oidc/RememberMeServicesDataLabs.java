@@ -17,6 +17,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -48,7 +49,8 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
 
     RememberMeServicesDataLabs(UserStore<CatalogueUser> userStore,
                                GroupStore<CatalogueUser> groupStore,
-                               String cookieName){
+                               @Value("${datalabs.cookieName}") String cookieName
+    ) {
         this.userStore = userStore;
         this.groupStore = groupStore;
         this.cookieName = cookieName;
