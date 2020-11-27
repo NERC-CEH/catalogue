@@ -1,14 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import freemarker.template.Configuration;
-import lombok.val;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -34,62 +30,12 @@ public class DataLabsApplicationContextTest {
 
     @Test
     public void testContext() {
-        assertNotNull(applicationContext.getBean("catalogueService"));
-        assertNotNull(applicationContext.getBean("codeNameLookupService"));
-        assertNotNull(applicationContext.getBean("dataciteService"));
-        assertNotNull(applicationContext.getBean("jenaLookupService"));
-        assertNotNull(applicationContext.getBean("permission"));
-        assertNotNull(applicationContext.getBean(RememberMeServices.class));
-        assertNotNull(applicationContext.getBean(AuthenticationProvider.class));
-    }
-
-    @Test
-    public void freemarkerConfiguredCorrectly() {
-        val freemarkerConfiguration = (Configuration) applicationContext.getBean("freemarkerConfiguration");
-        assertNotNull(
-                "Freemarker configuration not found",
-                freemarkerConfiguration
-        );
-        assertNotNull(
-                "Freemarker missing shared variable: catalogue",
-                freemarkerConfiguration.getSharedVariable("catalogues")
-        );
-        assertNotNull(
-                "Freemarker missing shared variable: codes",
-                freemarkerConfiguration.getSharedVariable("codes")
-        );
-        assertNotNull("Freemarker missing shared variable: downloadOrderDetails",
-                freemarkerConfiguration.getSharedVariable("downloadOrderDetails")
-        );
-        assertNotNull(
-                "Freemarker missing shared variable: geminiHelper",
-                freemarkerConfiguration.getSharedVariable("geminiHelper")
-        );
-        assertNotNull(
-                "Freemarker missing shared variable: jena",
-                freemarkerConfiguration.getSharedVariable("jena")
-        );
-        assertNotNull(
-                "Freemarker missing shared variable: jira",
-                freemarkerConfiguration.getSharedVariable("jira")
-        );
-        assertNotNull(
-                "Freemarker missing shared variable: mapServerDetails",
-                freemarkerConfiguration.getSharedVariable("mapServerDetails")
-        );
-        assertNotNull(
-                "Freemarker missing shared variable: metadataQuality",
-                freemarkerConfiguration.getSharedVariable("metadataQuality")
-        );
-        assertNotNull(
-                "Freemarker missing shared variable: permission",
-                freemarkerConfiguration.getSharedVariable("permission")
-        );
+        assertNotNull(applicationContext.getBean("dataLabsAuthenticationProvider"));
+        assertNotNull(applicationContext.getBean("rememberMeServicesDataLabs"));
     }
 
     @org.springframework.context.annotation.Configuration
     public static class TestConfig {
-        private List<String> userPermissions;
 
         @Bean
         public UserStore<CatalogueUser>  userStore() {
@@ -108,7 +54,6 @@ public class DataLabsApplicationContextTest {
                 public User authenticate(String username, String password) throws InvalidCredentialsException {
                     return null;
                 }
-                // implement methods
             };
         }
 
@@ -139,7 +84,6 @@ public class DataLabsApplicationContextTest {
                 public boolean isGroupDeletable(String group) throws IllegalArgumentException {
                     return false;
                 }
-                // implement methods
             };
         }
     }
