@@ -2,7 +2,8 @@
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(catalogueKey)>
 <div class="container" id="simple-upload">
-  <h1>Dataset Upload: ${title}</h1>
+  <h1>${title}</h1>
+  <a href="/documents/${id}">Return to metadata</a>
   <div id="messages">
     <h2>Messages</h2>
     <div id="messages-tools"></div>
