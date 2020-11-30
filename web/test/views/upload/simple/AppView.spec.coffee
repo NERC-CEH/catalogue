@@ -8,7 +8,8 @@ define [
         <div id="messages-tools"></div>
         <ul id="messages-list"></ul>
       </div>
-      <form id="simple-upload-dropzone"
+      <form id="simple-upload-dropzone" action="/upload/test">
+      </form>
       <div>
         <div id="files-tools"></div>
         <ul id="files-list"></ul>

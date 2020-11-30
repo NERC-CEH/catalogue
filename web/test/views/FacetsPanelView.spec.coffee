@@ -1,9 +1,11 @@
 define [
+  'underscore'
   'jquery'
   'cs!views/FacetsPanelView'
   'cs!models/SearchApp'
-], ($, FacetsPanelView, SearchApp) ->
+], (_, $, FacetsPanelView, SearchApp) ->
   describe "FacetsPanelView", ->
+    window._ = _
     el = null
     model = null
 
@@ -14,7 +16,7 @@ define [
     afterEach ->
       do el.remove
     
-    xit "renders when results are synced", ->
+    it "renders when results are synced", ->
       view = new FacetsPanelView model: model, el: el
       spyOn(el, 'html')
       model.trigger 'results-sync'

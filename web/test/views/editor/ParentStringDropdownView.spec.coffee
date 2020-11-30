@@ -1,8 +1,10 @@
 define [
+  'underscore'
   'cs!views/editor/ParentStringDropdownView'
   'cs!models/Catalogue'
-], (ParentStringDropdownView, Catalogue) ->
+], (_, ParentStringDropdownView, Catalogue) ->
   describe 'ParentStringDropdownView', ->
+    window._ = _
     view = model = null
 
     beforeEach ->
@@ -42,8 +44,8 @@ define [
           ]
         do view.render
 
-      xit 'should be a array', ->
+      it 'should be a array', ->
         expect(view.array).toBeDefined()
 
-      xit 'should be populated from Catalogue model', ->
+      it 'should be populated from Catalogue model', ->
         expect(view.array[0]).toEqual 'Environmental Information Data Centre'

@@ -44,7 +44,7 @@ define [
   'cs!models/DocumentUploadModel'
   'cs!views/upload/simple/AppView'
 ], (
-  _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
+    _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
@@ -62,6 +62,11 @@ define [
     # http://stackoverflow.com/a/646643
     String::startsWith ?= (s) -> @slice(0, s.length) == s
     String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
+
+    # Fix for underscore not being global
+    # Some templates use underscore
+    # Remove once templates fixed
+    window._ = _
     
     do @initCatalogue if $('.catalogue-control').length
     do @initClipboard if $('.clipboard-copy').length
