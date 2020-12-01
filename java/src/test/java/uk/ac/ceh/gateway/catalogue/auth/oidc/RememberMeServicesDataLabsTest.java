@@ -32,13 +32,13 @@ public class RememberMeServicesDataLabsTest {
     private GroupStore<CatalogueUser> groupStore;
 
     @Mock
-    Group group;
+    private Group group;
 
     @Mock
-    HttpServletResponse response;
+    private HttpServletResponse response;
 
     @Mock
-    MockHttpServletRequest mockHttpServletRequest;
+    private MockHttpServletRequest mockHttpServletRequest;
 
     private final String TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlFVWTBORFZFTmtaRE1VSkdRek" +
             "V5TXpaRFEwVTBSa0kwTmpRd01rVkZSRUV6TmpoR1FVUkZRdyJ9.eyJpc3MiOiJodHRwczovL21qYnIuZXUuYXV0aDAu" +
