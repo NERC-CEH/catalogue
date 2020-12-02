@@ -1,21 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
+import lombok.SneakyThrows;
+import lombok.val;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class DataLabsAuthenticationProviderTest {
@@ -29,7 +33,6 @@ public class DataLabsAuthenticationProviderTest {
     @Mock
     private RestTemplate restTemplate;
 
-    @Mock
     private DataLabsUserPermissions dataLabsUserPermissions;
 
     @Mock
@@ -37,9 +40,33 @@ public class DataLabsAuthenticationProviderTest {
 
     private DataLabsAuthenticationProvider target;
 
+    private MockRestServiceServer mockServer;
+
     @Before
     public void init() {
-      target = new DataLabsAuthenticationProvider(restTemplate, ADDRESS);
+        val restTemplate = new RestTemplate();
+        target = new DataLabsAuthenticationProvider(restTemplate, ADDRESS);
+        mockServer = MockRestServiceServer.createServer(restTemplate);
+    }
+
+    @Test
+    @SneakyThrows
+    public void successfullyAddGrantedAuthorities() {
+        //Given
+        val input = new PreAuthenticatedAuthenticationToken(PRINCIPAL, CREDENTIALS);
+        val response = IOUtils.toByteArray(getClass().getResource("userPermissions.json"));
+        mockServer.expect(requestTo(ADDRESS))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header("Authorization", "Bearer" + CREDENTIALS))
+                .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
+
+        //When
+        Authentication actual = target.authenticate(input);
+
+        //Then
+        assertTrue(actual.isAuthenticated());
+        assertThat(actual.getAuthorities(), contains("CIG_SYSTEM_ADMIN", "ROLE_DATALABS_PUBLISHER", "ROLE_DATALABS_EDITOR"));
+        mockServer.verify();
     }
 
     @Test
