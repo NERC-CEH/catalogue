@@ -1,7 +1,8 @@
 define [
+  'underscore'
   'jquery'
   'backbone'
-], ($, Backbone) -> Backbone.View.extend
+], (_, $, Backbone) -> Backbone.View.extend
   events:
     "keyup  [name='term']": "handleTyping"
     "change [name='term']": "handleTyping"

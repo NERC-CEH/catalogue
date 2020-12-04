@@ -1,7 +1,6 @@
 define [
-  'underscore'
   'backbone'
-], (_, Backbone) -> Backbone.Model.extend
+], (Backbone) -> Backbone.Model.extend
 
   url: ->
     do @urlRoot

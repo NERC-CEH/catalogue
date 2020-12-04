@@ -1,7 +1,8 @@
 define [
+  'underscore'
   'jquery'
   'cs!views/ExtentHighlightingMapView'
-], ($, ExtentHighlightingMapView) -> ExtentHighlightingMapView.extend
+], (_, $, ExtentHighlightingMapView) -> ExtentHighlightingMapView.extend
   el: '#studyarea-map'
 
   initialize: ->

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -56,7 +55,6 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
-import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.converters.*;
@@ -72,6 +70,7 @@ import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
@@ -88,9 +87,7 @@ import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
-import uk.ac.ceh.gateway.catalogue.upload.HubbubService;
-import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
-import uk.ac.ceh.gateway.catalogue.upload.UploadDocumentService;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadDocument;
 import uk.ac.ceh.gateway.catalogue.util.*;
 import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
@@ -106,7 +103,6 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.stream.Stream.of;
@@ -191,8 +187,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired private DataciteService dataciteService;
     @Autowired private DocumentReader<MetadataDocument> documentReader;
     @Autowired private DocumentWritingService documentWritingService;
-    @Autowired private GroupStore<CatalogueUser> groupStore;
-    @Autowired private HubbubService hubbubService;
+    @Autowired private PermissionService permissionService;
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -224,12 +219,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean public GitRepoWrapper gitRepoWrapper() {
-        return new GitRepoWrapper(catalogDataRepository(), documentInfoMapper());
-    }
-
-    @Bean("permission")
-    public PermissionService permissionService() {
-        return new PermissionService(catalogDataRepository(), documentInfoMapper(), groupStore);
+        return new GitRepoWrapper(dataRepository(), documentInfoMapper());
     }
 
     @Bean
@@ -261,11 +251,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean
     @SuppressWarnings("UnstableApiUsage")
     @SneakyThrows
-    public DataRepository<CatalogueUser> catalogDataRepository() {
-        return new GitDataRepository<>(new File(dataRepositoryLocation),
+    public DataRepository<CatalogueUser> dataRepository() {
+        return new GitDataRepository<>(
+                new File(dataRepositoryLocation),
                 new InMemoryUserStore<>(),
                 phantomUserBuilderFactory(),
-                communicationBus());
+                communicationBus()
+        );
     }
 
     @Bean
@@ -326,7 +318,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         shared.put("jira", jiraService());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("metadataQuality", metadataQualityService());
-        shared.put("permission", permissionService());
+        shared.put("permission", permissionService);
         log.info("Freemarker shared variables:");
         shared.forEach((key, value) -> log.info("{}: {}", key, value));
 
@@ -433,13 +425,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public UploadDocumentService uploadDocumentService() {
-        Map<String, File> folders = Maps.newHashMap();
-        folders.put("documents", new File("/var/ceh-catalogue/dropbox"));
-        return new UploadDocumentService(hubbubService, folders,  Executors.newCachedThreadPool());
-    }
-
-    @Bean
     public JiraService jiraService() {
         Client client = Client.create();
         client.addFilter(new HTTPBasicAuthFilter(jiraUsername, jiraPassword));
@@ -490,7 +475,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Bean
     public MetadataListingService getWafListingService() {
-        return new MetadataListingService(catalogDataRepository(), documentListingService(), bundledReaderService());
+        return new MetadataListingService(dataRepository(), documentListingService(), bundledReaderService());
     }
 
     @Bean
@@ -513,7 +498,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @SuppressWarnings("unchecked")
     public MetadataInfoBundledReaderService bundledReaderService() {
         return new MetadataInfoBundledReaderService(
-                catalogDataRepository(),
+                dataRepository(),
                 documentReadingService(),
                 documentInfoMapper(),
                 metadataRepresentationService(),
@@ -579,7 +564,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return new SolrIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
-                catalogDataRepository(),
+                dataRepository(),
                 indexGeneratorRegistry,
                 solrClient(),
                 jenaLookupService(),
@@ -601,7 +586,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return new JenaIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
-                catalogDataRepository(),
+                dataRepository(),
                 new IndexGeneratorRegistry<>(mappings),
                 documentIdentifierService(),
                 tdbModel()
@@ -627,7 +612,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return new MapServerIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
-                catalogDataRepository(),
+                dataRepository(),
                 generator,
                 mapsLocation);
     }
@@ -659,7 +644,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return new ValidationIndexingService<>(
                 bundledReaderService(),
                 documentListingService(),
-                catalogDataRepository(),
+                dataRepository(),
                 postProcessingService(),
                 documentIdentifierService(),
                 new IndexGeneratorRegistry<>(mappings)

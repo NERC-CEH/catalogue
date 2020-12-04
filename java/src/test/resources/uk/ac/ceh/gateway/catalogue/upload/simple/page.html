@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="en-GB" data-catalogue=test>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dcterms.language" content="en">
+<meta name="dcterms.title" content="Upload Test">
+<meta name="og.title" content="Upload Test">
+<meta name="og.site_name" content="Test Catalogue">
+<title>Upload Test - Test Catalogue</title>
+<link rel="stylesheet" type="text/css" href="/static/css/style-test.css">
+<!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
+<![endif]-->
+</head>
+<body data-edit-restricted="disabled">
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+<div class="container">
+<div id="sso-brand" class="navbar-header">
+<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+<span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</button>
+<h3 class="navbar-text" href="#">Not Proxied</h3>
+</div>
+<div class="navbar-collapse collapse">
+<ul class="nav navbar-nav">
+<li class="navbar-title">
+<a href="https://example.com">Test Catalogue</a>
+</li>
+<li ><a href="/test/documents">Search</a></li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li id="sso-user"><a>Joe Bloggs</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="container" id="simple-upload">
+<h1>Upload Test</h1>
+<a href="/documents/123-456-789">Return to metadata</a>
+<div id="messages">
+<h2>Messages</h2>
+<div id="messages-tools"></div>
+<ul id="messages-list"></ul>
+</div>
+<div id="upload">
+<h2>Upload</h2>
+<form action="/upload/123-456-789" id="simple-upload-dropzone">
+</form>
+</div>
+<div id="files">
+<h2>Files</h2>
+<div id="files-tools"></div>
+<ul id="files-list">
+<li>data1.csv</li>
+<li>data2.csv</li>
+<li>name with spaces.csv</li>
+</ul>
+</div>
+</div>
+<script id="files-data" type="application/json">
+[
+{"name":"data1.csv","urlEncodedName":"data1.csv"},
+{"name":"data2.csv","urlEncodedName":"data2.csv"},
+{"name":"name with spaces.csv","urlEncodedName":"name%20with%20spaces.csv"}
+]
+</script>
+<script id="messages-data" type="application/json">
+{"message":"Test error","type": "error"}
+</script>
+<div id="message-panel"></div>
+<script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+</body>
+</html>

@@ -1,10 +1,11 @@
 define [
+  'underscore'
   'cs!views/editor/ObjectInputView'
   'cs!views/editor/ChildView'
   'cs!views/editor/MapValueView'
   'cs!views/editor/MapBucketView'
   'tpl!templates/editor/MapAttribute.tpl'
-], (ObjectInputView, ChildView, MapValueView, MapBucketView, template) -> ObjectInputView.extend
+], (_, ObjectInputView, ChildView, MapValueView, MapBucketView, template) -> ObjectInputView.extend
 
   template: template
   

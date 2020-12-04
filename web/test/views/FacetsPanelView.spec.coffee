@@ -1,9 +1,11 @@
 define [
+  'underscore'
   'jquery'
   'cs!views/FacetsPanelView'
   'cs!models/SearchApp'
-], ($, FacetsPanelView, SearchApp) ->
+], (_, $, FacetsPanelView, SearchApp) ->
   describe "FacetsPanelView", ->
+    window._ = _
     el = null
     model = null
 
