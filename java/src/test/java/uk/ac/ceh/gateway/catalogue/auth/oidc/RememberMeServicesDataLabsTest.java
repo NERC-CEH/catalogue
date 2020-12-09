@@ -1,5 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,16 +19,19 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.ac.ceh.components.userstore.Group;
-import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.components.userstore.UserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,18 +41,13 @@ import static org.hamcrest.Matchers.*;
 public class RememberMeServicesDataLabsTest {
 
     @Mock
-    private UserStore<CatalogueUser> userStore;
-
-    @Mock
-    private GroupStore<CatalogueUser> groupStore;
-
-    @Mock
     private Group group;
 
     @Mock
     private HttpServletResponse response;
 
-    @Mock
+    private RSASSASigner signer;
+
     private MockHttpServletRequest mockHttpServletRequest;
 
     private final String TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlFVWTBORFZFTmtaRE1VSkdRek" +
@@ -61,21 +71,41 @@ public class RememberMeServicesDataLabsTest {
 
     private static final String EMAIL_ADDRESS = "email";
 
+    private RSAKey privateKey;
+
+    private RSAKey publicKey;
+
+    private JWKSet jwkSet;
+
     private RememberMeServicesDataLabs target;
 
     @Before
+    @SneakyThrows
     public void init() {
         MockitoAnnotations.initMocks(this);
-        target = new RememberMeServicesDataLabs(userStore, groupStore, COOKIE_NAME);
-        mockHttpServletRequest = new MockHttpServletRequest();
+
+        privateKey = new RSAKeyGenerator(2048).keyID("123").generate();
+        publicKey = new RSAKey.Builder(privateKey.toPublicJWK()).build();
+        jwkSet = new JWKSet(publicKey);
+        val keySource = new ImmutableJWKSet<>(jwkSet);
+
+        this.signer = new RSASSASigner(privateKey);
+
+        target = new RememberMeServicesDataLabs(COOKIE_NAME, "https://mjbr.eu.auth0.com/", keySource);
+
         Cookie[] cookies = new Cookie[]{
                 new Cookie("token", TOKEN)
         };
+        mockHttpServletRequest = MockMvcRequestBuilders
+                .get(URI.create("https://example.com"))
+                .cookie(new Cookie("token", getAccessToken()))
+                .buildRequest(new MockServletContext());
+
         mockHttpServletRequest.setCookies(cookies);
     }
 
-    @Test
-    public void autoLoginTest() {
+        @Test
+    public void successfullyAutoLoginTest() {
 
         //Given
         List<Group> groups = new ArrayList<>();
@@ -85,15 +115,17 @@ public class RememberMeServicesDataLabsTest {
         catalogueUser.setUsername(USER_NAME);
 
         //When
-        PreAuthenticatedAuthenticationToken authentication = (PreAuthenticatedAuthenticationToken) target.autoLogin(mockHttpServletRequest, response);
+        PreAuthenticatedAuthenticationToken authentication = (PreAuthenticatedAuthenticationToken)
+                target.autoLogin(mockHttpServletRequest, response);
 
         //Then
-        assertThat(authentication.getPrincipal().toString(), is(equalTo(PRINCIPAL)));
-        assertThat(authentication.getCredentials().toString(), is(equalTo(CREDENTIALS)));
+
+        assertThat(authentication.getPrincipal().toString().contains(USER_NAME), is(equalTo(true)));
+        assertThat(TOKEN.contains(authentication.getCredentials().toString()), is(equalTo(true)));
     }
 
     @Test
-    public void autoLoginTest_EmptyToken() {
+    public void autoLoginTestShouldReturnNull() {
 
         //Given
         MockHttpServletRequest emptyMockHttpServletRequest = new MockHttpServletRequest();
@@ -109,5 +141,23 @@ public class RememberMeServicesDataLabsTest {
 
         //Then
         assertThat(authentication, is(nullValue()));
+    }
+
+    private String getAccessToken() throws JOSEException {
+        val claimsSet = new JWTClaimsSet.Builder()
+                .subject("tester")
+                .issuer("https://mjbr.eu.auth0.com/")
+                .issueTime(new Date(new Date().getTime() - 90 * 1000))
+                .expirationTime(new Date(new Date().getTime() - 60 * 1000))
+                .audience(Arrays.asList("https://datalab.datalabs.ceh.ac.uk/api", "https://mjbr.eu.auth0.com/userinfo"))
+                .claim("scope", "openid profile")
+                .build();
+        val signedJWT = new SignedJWT(
+                new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(publicKey.getKeyID()).build(),
+                claimsSet);
+
+        signedJWT.sign(signer);
+
+        return signedJWT.serialize();
     }
 }

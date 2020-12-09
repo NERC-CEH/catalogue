@@ -8,16 +8,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -65,34 +67,14 @@ public class DataLabsAuthenticationProviderTest {
 
         //Then
         assertTrue(actual.isAuthenticated());
-        assertThat(actual.getAuthorities(), contains("CIG_SYSTEM_ADMIN", "ROLE_DATALABS_PUBLISHER", "ROLE_DATALABS_EDITOR"));
+        assertThat(actual.getAuthorities().toString().contains("CIG_SYSTEM_ADMIN"), is(equalTo(true)));
+        assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_PUBLISHER"), is(equalTo(true)));
+        assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_EDITOR"), is(equalTo(true)));
         mockServer.verify();
     }
 
     @Test
-    public void authenticateTest() {
-
-        //Given
-        PreAuthenticatedAuthenticationToken input = new PreAuthenticatedAuthenticationToken(PRINCIPAL, CREDENTIALS);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer" + CREDENTIALS);
-        HttpEntity<String> request = new HttpEntity<>(headers);
-
-        given(restTemplate.exchange(this.ADDRESS, HttpMethod.GET,
-                request, DataLabsUserPermissions.class)).willReturn(responseEntity);
-
-        given(responseEntity.getBody()).willReturn(dataLabsUserPermissions);
-
-        //When
-        PreAuthenticatedAuthenticationToken authentication = (PreAuthenticatedAuthenticationToken) target.authenticate(input);
-
-        //Then
-        assertThat(authentication.getPrincipal().toString(), is(equalTo(PRINCIPAL)));
-        assertThat(authentication.getCredentials().toString(), is(equalTo(dataLabsUserPermissions.toString())));
-    }
-
-    @Test
-    public void authenticateTest_EmptyInput() {
+    public void addGrantedAuthoritiesReturnNull() {
 
         //When
         PreAuthenticatedAuthenticationToken authentication = (PreAuthenticatedAuthenticationToken) target.authenticate(null);
@@ -112,7 +94,7 @@ public class DataLabsAuthenticationProviderTest {
     }
 
     @Test
-    public void supportsTest_False() {
+    public void supportsTestShouldReturnFalse() {
 
         //When
         Boolean result = target.supports(Object.class);

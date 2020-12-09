@@ -15,7 +15,7 @@ import uk.ac.ceh.components.userstore.crowd.CrowdUserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 @Configuration
-@Profile("production")
+@Profile("auth:crowd")
 @Slf4j
 public class CrowdUserStoreConfig {
     @Value("${crowd.address}") String address;

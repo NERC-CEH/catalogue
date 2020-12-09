@@ -12,9 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Slf4j
 @ToString
@@ -39,14 +44,27 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
             return null;
         }
 
-        HttpHeaders headers = new HttpHeaders();
-        String username = (String)authentication.getPrincipal();
-        headers.add("Authorization", "Bearer" + authentication.getCredentials().toString());
+        DataLabsUserPermissions dataLabsUserPermissions =
+                this.retrievePermissions(authentication.getCredentials().toString());
 
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        ResponseEntity<DataLabsUserPermissions> response = restTemplate.exchange(this.address, HttpMethod.GET,
-                request, DataLabsUserPermissions.class);
-        return new PreAuthenticatedAuthenticationToken(username, response.getBody());
+        Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+
+        for(String dataLabsUserPermission: dataLabsUserPermissions.getUserPermissions()){
+            String catalogueRole =
+                    mapDataLabsPermissionsToCatalogueRoles(dataLabsUserPermission);
+
+            if(dataLabsUserPermission != "") {
+                grantedAuthorities.add(new SimpleGrantedAuthority(catalogueRole));
+            }
+        }
+
+        PreAuthenticatedAuthenticationToken preAuthenticatedAuthenticationToken =
+                new PreAuthenticatedAuthenticationToken(authentication.getPrincipal(),
+                        authentication.getCredentials(), grantedAuthorities);
+
+        preAuthenticatedAuthenticationToken.setAuthenticated(true);
+
+        return preAuthenticatedAuthenticationToken;
     }
 
     @Override
@@ -54,4 +72,26 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
         return authentication.equals(PreAuthenticatedAuthenticationToken.class);
     }
 
+    private DataLabsUserPermissions retrievePermissions(String accessToken){
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer" + accessToken);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<DataLabsUserPermissions> response = restTemplate.exchange(this.address, HttpMethod.GET,
+                request, DataLabsUserPermissions.class);
+
+        return response.getBody();
+    }
+
+    private String mapDataLabsPermissionsToCatalogueRoles(String dataLabsPermission){
+            switch(dataLabsPermission) {
+                case "system:catalogue:admin":
+                    return "CIG_SYSTEM_ADMIN";
+                case "system:catalogue:publish":
+                    return "ROLE_DATALABS_PUBLISHER";
+                case "system:catalogue:edit":
+                    return "ROLE_DATALABS_EDITOR";
+            }
+        return "";
+    }
 }

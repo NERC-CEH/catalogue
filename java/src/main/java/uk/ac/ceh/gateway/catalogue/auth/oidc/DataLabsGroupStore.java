@@ -1,53 +1,37 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
+import lombok.SneakyThrows;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.userstore.Group;
+import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.User;
-import uk.ac.ceh.components.userstore.WritableGroupStore;
 import uk.ac.ceh.components.userstore.crowd.model.CrowdGroup;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class DataLabsGroupStore<U extends User> implements WritableGroupStore<U> {
-    @Override
-    public Group createGroup(String groupname, String description) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
-    }
+@Profile("auth:datalabs")
+@Service
+public class DataLabsGroupStore<CatalogueUser extends User> implements GroupStore<CatalogueUser> {
 
+    @SneakyThrows
     @Override
-    public Group updateGroup(String groupName, String description) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean deleteGroup(String groupname) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean grantGroupToUser(U user, String groupname) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean revokeGroupFromUser(U user, String groupname) throws IllegalArgumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Group> getGroups(U user) {
+    public List<Group> getGroups(CatalogueUser user) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) authentication.getAuthorities();
-        ArrayList<Group> groups = new ArrayList<>();
-        for(GrantedAuthority authority: authorities){
-            Group group = new CrowdGroup(authority.getAuthority().toUpperCase(), "");
-            groups.add(group);
+        CatalogueUser principalUser = (CatalogueUser) authentication.getPrincipal();
+        if(user.getUsername() != principalUser.getUsername()){
+            throw new Exception("Username does not match the principle");
         }
-        return groups;
+        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) authentication.getAuthorities();
+        return authorities
+                .stream()
+                .map(authority -> new CrowdGroup(authority.getAuthority().toUpperCase(), ""))
+                .collect(Collectors.toList());
     }
 
     @Override

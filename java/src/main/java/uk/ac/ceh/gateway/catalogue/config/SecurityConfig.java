@@ -28,7 +28,7 @@ import java.util.Collections;
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @EnableWebSecurity
-@Profile("!auth:datalabs")
+@Profile("auth:crowd")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired private UserStore<CatalogueUser> userStore;
     @Autowired private GroupStore<CatalogueUser> groupStore;

@@ -14,7 +14,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertNotNull;
 
-@ActiveProfiles("production")
+@ActiveProfiles("auth:crowd")
 @TestPropertySource
 @ContextConfiguration(classes = WebConfig.class)
 @WebAppConfiguration

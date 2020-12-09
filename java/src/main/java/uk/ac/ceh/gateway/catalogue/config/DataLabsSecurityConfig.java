@@ -15,8 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
-import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.components.userstore.UserStore;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
 import uk.ac.ceh.components.userstore.springsecurity.RestAuthenticationEntryPoint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -31,8 +29,6 @@ import java.util.Collections;
 @EnableWebSecurity
 @Profile("auth:datalabs")
 public class DataLabsSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired private UserStore<CatalogueUser> userStore;
-    @Autowired private GroupStore<CatalogueUser> groupStore;
     @Autowired private AuthenticationProvider authenticationProvider;
     @Autowired RememberMeServices rememberMeServices;
 

@@ -24,8 +24,6 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
-import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.components.userstore.UserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import javax.servlet.http.Cookie;
@@ -43,17 +41,16 @@ import java.util.HashSet;
 @ToString
 public class RememberMeServicesDataLabs implements RememberMeServices {
 
-    final private UserStore<CatalogueUser> userStore;
-    final private GroupStore<CatalogueUser> groupStore;
     final private String cookieName;
 
-    RememberMeServicesDataLabs(UserStore<CatalogueUser> userStore,
-                               GroupStore<CatalogueUser> groupStore,
-                               @Value("${datalabs.cookieName}") String cookieName
-    ) {
-        this.userStore = userStore;
-        this.groupStore = groupStore;
+    final private ConfigurableJWTProcessor<SecurityContext> jwtProcessor;
+
+    RememberMeServicesDataLabs(@Value("${datalabs.cookieName}") String cookieName,
+                               @Value("${datalabs.issuer}") String issuer,
+                               @Value("${datalabs.jwks}") JWKSource<SecurityContext> keySource) {
         this.cookieName = cookieName;
+        this.jwtProcessor = createJwtProcessor(keySource, issuer);
+        ConfigurableJWTProcessor<SecurityContext> jwtProcessor = this.createJwtProcessor(keySource , issuer);
         log.info("Creating {}", this);
     }
 
@@ -67,17 +64,10 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
         }
 
         String token = cookie.getValue();
+        CatalogueUser user = new CatalogueUser();
+        user.setUsername(getClaimSet(token).getSubject());
 
-        val jwsObject = JWSObject.parse(token);
-        val payload = jwsObject.getPayload().toJSONObject();
-        val claimsSet = JWTClaimsSet.parse(payload);
-
-        log.info(claimsSet.getSubject());
-        log.info(claimsSet.getExpirationTime().toString());
-
-        String userName = claimsSet.getSubject();
-
-        return new PreAuthenticatedAuthenticationToken(userName, token);
+        return new PreAuthenticatedAuthenticationToken(user, token);
     }
 
     @Override
@@ -90,12 +80,9 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
 
     }
 
-    private boolean verifyToken(String token, String userName) throws ParseException, JOSEException, BadJOSEException, MalformedURLException {
+    private JWTClaimsSet verifyToken(String token, String userName) throws ParseException, JOSEException, BadJOSEException, MalformedURLException {
 
         // https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens
-        // Create a JWT processor for the access tokens
-        ConfigurableJWTProcessor<SecurityContext> jwtProcessor =
-                new DefaultJWTProcessor<>();
 
         // Set the required "typ" header "at+jwt" for access tokens issued by the
         // Connect2id server, may not be set by other servers
@@ -140,9 +127,33 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
         log.info(claimsSet.getExpirationTime().toString());
 
         if(claimsSet.getSubject() == userName){
-            return true;
+            return claimsSet;
         }
-        return false;
+        return null;
+    }
+
+    private JWTClaimsSet getClaimSet(String token) throws ParseException {
+
+        val jwsObject = JWSObject.parse(token);
+        val payload = jwsObject.getPayload().toJSONObject();
+        val claimsSet = JWTClaimsSet.parse(payload);
+
+        log.info(claimsSet.getSubject());
+        log.info(claimsSet.getExpirationTime().toString());
+
+        return claimsSet;
+    }
+
+    private ConfigurableJWTProcessor<SecurityContext> createJwtProcessor(JWKSource<SecurityContext> keySource, String issuer) {
+        val jwtProcessor = new DefaultJWTProcessor<>();
+        JWSAlgorithm expectedJWSAlg = JWSAlgorithm.RS256;
+        JWSKeySelector<SecurityContext> keySelector =
+                new JWSVerificationKeySelector<>(expectedJWSAlg, keySource);
+        jwtProcessor.setJWSKeySelector(keySelector);
+        jwtProcessor.setJWTClaimsSetVerifier(new DefaultJWTClaimsVerifier(
+                new JWTClaimsSet.Builder().issuer(issuer).build(),
+                new HashSet<>(Arrays.asList("sub", "aud", "iat", "exp", "scope"))));
+        return jwtProcessor;
     }
 
 }
