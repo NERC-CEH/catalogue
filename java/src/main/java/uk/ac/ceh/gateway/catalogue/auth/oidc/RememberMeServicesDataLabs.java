@@ -47,7 +47,7 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
 
     RememberMeServicesDataLabs(@Value("${datalabs.cookieName}") String cookieName,
                                @Value("${datalabs.issuer}") String issuer,
-                               @Value("${datalabs.jwks}") JWKSource<SecurityContext> keySource) {
+                               JWKSource<SecurityContext> keySource) {
         this.cookieName = cookieName;
         this.jwtProcessor = createJwtProcessor(keySource, issuer);
         ConfigurableJWTProcessor<SecurityContext> jwtProcessor = this.createJwtProcessor(keySource , issuer);
