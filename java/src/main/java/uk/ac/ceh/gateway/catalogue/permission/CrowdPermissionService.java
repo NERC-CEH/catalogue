@@ -43,7 +43,8 @@ public class CrowdPermissionService implements PermissionService {
         this.repo = repo;
         this.documentInfoMapper = documentInfoMapper;
         this.groupStore = groupStore;
-        log.info("Creating {}", this);
+        log.info("Creating CrowdPermissionService");
+        log.debug("CrowdPermissionService has {}", this.groupStore);
     }
     
     @Override
@@ -83,9 +84,11 @@ public class CrowdPermissionService implements PermissionService {
         @NonNull String permission
     ) {
         Permission requested = Permission.valueOf(permission.toUpperCase());
-        return document.isPubliclyViewable(requested)
+        boolean canAccess = document.isPubliclyViewable(requested)
                 ||
                 document.canAccess(requested, user, getGroupsForUser(user));
+        log.debug("Can {} access document with {} permission? {}", user.getUsername(), permission, canAccess);
+        return canAccess;
     }
     
     @Override
@@ -127,7 +130,9 @@ public class CrowdPermissionService implements PermissionService {
                     file,
                     document.getIdentities(Permission.UPLOAD)
             );
-            return !user.isPublic() && toAccess(user, document, "UPLOAD");
+            val canUpload = !user.isPublic() && toAccess(user, document, "UPLOAD");
+            log.debug("Can user upload? {}", canUpload);
+            return canUpload;
         } catch (DataRepositoryException ex) {
             String message = format("No document found for: %s", file);
             throw new PermissionDeniedException(message, ex);

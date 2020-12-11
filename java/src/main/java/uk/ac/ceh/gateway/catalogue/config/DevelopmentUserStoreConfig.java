@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import java.util.Arrays;
  * @see CrowdUserStoreConfig
 
  */
+@Slf4j
 @Configuration
 @Profile("development")
 public class DevelopmentUserStoreConfig {
@@ -73,6 +75,7 @@ public class DevelopmentUserStoreConfig {
                 .setUsername("uploader")
                 .setEmail("uploader@example.com");
         userStore().addUser(user, "password");
+        log.info("UserStore adding {}", user);
     }
 
     @PostConstruct

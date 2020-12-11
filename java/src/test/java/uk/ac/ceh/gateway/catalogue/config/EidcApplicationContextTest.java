@@ -18,7 +18,7 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadDocumentService;
 
 import static org.junit.Assert.assertNotNull;
 
-@ActiveProfiles({"production", "upload:hubbub"})
+@ActiveProfiles({"auth:crowd", "upload:hubbub"})
 @TestPropertySource
 @ContextConfiguration(classes = WebConfig.class)
 @WebAppConfiguration
@@ -46,7 +46,7 @@ public class EidcApplicationContextTest {
         // No uploadSimple.UploadController has been created, will throw NoSuchBeanDefinitionException
         applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.simple.UploadController.class);
     }
-    
+
     @Test
     public void freemarkerConfiguredCorrectly() {
         val freemarkerConfiguration = (Configuration)applicationContext.getBean("freemarkerConfiguration");

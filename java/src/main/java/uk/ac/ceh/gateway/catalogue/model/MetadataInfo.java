@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
@@ -18,14 +19,15 @@ import java.util.stream.Collectors;
 /**
  * The following class represents the state at which a document is in
  */
+@Slf4j
 @Value
 // N.B. JsonAutoDetect needed to get 'permissions' written to file
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class MetadataInfo {
-    private final String rawType, state;
-    private final String documentType, catalogue;
+    String rawType, state;
+    String documentType, catalogue;
     @Getter(AccessLevel.NONE)
-    private final Multimap<Permission, String> permissions;
+    Multimap<Permission, String> permissions;
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "ROLE_CIG_READONLY";
     public static final String PUBLISHER_GROUP = "role_%s_publisher";
@@ -114,7 +116,7 @@ public class MetadataInfo {
         MetadataInfo toReturn = new MetadataInfo(this);
         toReturn.permissions.clear();
 
-        updated.stream().forEach(ip -> {
+        updated.forEach(ip -> {
             if (ip.isCanView()) {
                 toReturn.addPermission(Permission.VIEW, ip.getIdentity());    
             }
@@ -137,7 +139,7 @@ public class MetadataInfo {
             updated.permissions.putAll(this.permissions);
         } else {
             Collection<String> view = updated.permissions.get(Permission.VIEW);
-            Optional<String> possible = view.stream().filter(v -> PUBLIC_GROUP.equalsIgnoreCase(v)).findFirst();
+            Optional<String> possible = view.stream().filter(PUBLIC_GROUP::equalsIgnoreCase).findFirst();
             if (view.size() == 1 && possible.isPresent()) {
                 updated.permissions.clear();
                 updated.permissions.putAll(this.permissions);
@@ -170,22 +172,22 @@ public class MetadataInfo {
         if (user.isPublic()) {
             return false;
         }
-
-        return
-            permissions.containsEntry(requested, user.getUsername().toLowerCase())
-            ||
-            groups
+        log.debug("Permissions are {}", permissions);
+        val canAccessAsUser = permissions.containsEntry(requested, user.getUsername().toLowerCase());
+        log.debug("Can {} as {}? {}", requested, user.getUsername(), canAccessAsUser);
+        val canAccessFromGroup = groups
                 .stream()
                 .map(Group::getName)
-                .filter(name -> {
-                    return
-                        permissions.containsEntry(requested, name.toLowerCase())
-                        ||
-                        (Permission.VIEW.equals(requested) && READONLY_GROUP.equalsIgnoreCase(name))
-                        ||
-                        (Permission.VIEW.equals(requested) && String.format(PUBLISHER_GROUP, catalogue).equalsIgnoreCase(name));
-                })
-                .findFirst()
-                .isPresent();
+                .anyMatch(name -> {
+                    val canGroupAccess = permissions.containsEntry(requested, name.toLowerCase());
+                    log.debug("Can {} {}? {}", name, requested, canGroupAccess);
+                    val canReadOnlyAccess = Permission.VIEW.equals(requested) && READONLY_GROUP.equalsIgnoreCase(name);
+                    log.debug("Can {} {}? {}", name, requested, canReadOnlyAccess);
+                    val canPublisherAccess = Permission.VIEW.equals(requested) && String.format(PUBLISHER_GROUP, catalogue).equalsIgnoreCase(name);
+                    log.debug("Can {} {}? {}", name, requested, canPublisherAccess);
+                    return canGroupAccess || canReadOnlyAccess || canPublisherAccess;
+                });
+        log.debug("Can {} from group? {}", requested, canAccessAsUser);
+        return canAccessAsUser || canAccessFromGroup;
     }
 }

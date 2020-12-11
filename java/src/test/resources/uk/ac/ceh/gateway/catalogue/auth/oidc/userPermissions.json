@@ -1,0 +1,7 @@
+{
+  "userPermissions": [
+    "system:catalogue:admin",
+    "system:catalogue:publish",
+    "system:catalogue:edit"
+  ]
+}

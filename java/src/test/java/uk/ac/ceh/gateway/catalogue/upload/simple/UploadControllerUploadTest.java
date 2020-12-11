@@ -42,7 +42,6 @@ public class UploadControllerUploadTest {
     private MockMvc mockMvc;
     @Autowired
     private StorageService storageService;
-    private final MockMultipartFile multipartFile = dataCsv(getClass());
 
     @Before
     public void setup() {
@@ -54,6 +53,9 @@ public class UploadControllerUploadTest {
     @Test
     @SneakyThrows
     public void uploaderCanUploadFile() {
+        //given
+        MockMultipartFile multipartFile = dataCsv(getClass());
+
         //when
         mockMvc.perform(
                 fileUpload("http://example.com/upload/{id}", ID)
@@ -70,6 +72,10 @@ public class UploadControllerUploadTest {
     @Test
     @SneakyThrows
     public void unprivilegedUserCanNotUploadFile() {
+        //given
+        MockMultipartFile multipartFile = dataCsv(getClass());
+
+        //when
         mockMvc.perform(
                 fileUpload("/upload/{id}", ID)
                         .file(multipartFile)
@@ -85,6 +91,7 @@ public class UploadControllerUploadTest {
     @SneakyThrows
     public void errorWhenFileUploadedWithSameNameAsExistingFile() {
         //given
+        MockMultipartFile multipartFile = dataCsv(getClass());
         doThrow(new FileExitsException(ID, multipartFile.getOriginalFilename()))
                 .when(storageService)
                 .store(ID, multipartFile);
@@ -105,6 +112,7 @@ public class UploadControllerUploadTest {
     @SneakyThrows
     public void errorSavingFile() {
         //given
+        MockMultipartFile multipartFile = dataCsv(getClass());
         doThrow(new StorageServiceException(ID, "Could not upload data.csv"))
                 .when(storageService)
                 .store(ID, multipartFile);
