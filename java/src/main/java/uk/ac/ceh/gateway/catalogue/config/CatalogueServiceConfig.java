@@ -168,7 +168,7 @@ public class CatalogueServiceConfig {
                 .fileUpload(false)
                 .build(),
 
-                Catalogue.builder()
+            Catalogue.builder()
                 .id("nc")
                 .title("Natural Capital")
                 .url("http://www.ceh.ac.uk")
@@ -184,7 +184,7 @@ public class CatalogueServiceConfig {
                 .fileUpload(false)
                 .build(),
 
-                Catalogue.builder()
+            Catalogue.builder()
                 .id("erammp")
                 .title("ERAMMP")
                 .url("")
