@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -12,14 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ToString
@@ -47,16 +46,9 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
         DataLabsUserPermissions dataLabsUserPermissions =
                 this.retrievePermissions(authentication.getCredentials().toString());
 
-        Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-
-        for(String dataLabsUserPermission: dataLabsUserPermissions.getUserPermissions()){
-            String catalogueRole =
-                    mapDataLabsPermissionsToCatalogueRoles(dataLabsUserPermission);
-
-            if(dataLabsUserPermission != "") {
-                grantedAuthorities.add(new SimpleGrantedAuthority(catalogueRole));
-            }
-        }
+        val grantedAuthorities = dataLabsUserPermissions.getUserPermissions().stream()
+                .map(this::mapDataLabsPermissionsToCatalogueRoles)
+                .collect(Collectors.toList());
 
         PreAuthenticatedAuthenticationToken preAuthenticatedAuthenticationToken =
                 new PreAuthenticatedAuthenticationToken(authentication.getPrincipal(),
@@ -72,7 +64,7 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
         return authentication.equals(PreAuthenticatedAuthenticationToken.class);
     }
 
-    private DataLabsUserPermissions retrievePermissions(String accessToken){
+    private DataLabsUserPermissions retrievePermissions(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer" + accessToken);
 
@@ -83,15 +75,16 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
         return response.getBody();
     }
 
-    private String mapDataLabsPermissionsToCatalogueRoles(String dataLabsPermission){
-            switch(dataLabsPermission) {
-                case "system:catalogue:admin":
-                    return "CIG_SYSTEM_ADMIN";
-                case "system:catalogue:publish":
-                    return "ROLE_DATALABS_PUBLISHER";
-                case "system:catalogue:edit":
-                    return "ROLE_DATALABS_EDITOR";
-            }
-        return "";
+    private SimpleGrantedAuthority mapDataLabsPermissionsToCatalogueRoles(String dataLabsPermission) {
+        switch (dataLabsPermission) {
+            case "system:catalogue:admin":
+                return new SimpleGrantedAuthority("CIG_SYSTEM_ADMIN");
+            case "system:catalogue:publish":
+                return new SimpleGrantedAuthority("ROLE_DATALABS_PUBLISHER");
+            case "system:catalogue:edit":
+                return new SimpleGrantedAuthority("ROLE_DATALABS_EDITOR");
+            default:
+                return new SimpleGrantedAuthority(dataLabsPermission);
+        }
     }
 }
