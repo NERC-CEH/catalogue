@@ -19,16 +19,13 @@ import org.mockito.Mock;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -36,14 +33,9 @@ import static org.hamcrest.Matchers.*;
 public class RememberMeServicesDataLabsTest {
 
     @Mock
-    private Group group;
-
-    @Mock
     private HttpServletResponse response;
 
     private RSASSASigner signer;
-
-    private MockHttpServletRequest mockHttpServletRequest;
 
     private static final String COOKIE_NAME = "token";
 
@@ -52,6 +44,8 @@ public class RememberMeServicesDataLabsTest {
     private static final String ISSUER = "https://mjbr.eu.auth0.com/";
 
     private static final String WRONG_ISSUER = "https://mjbr.eu.fake.com/";
+
+    private static final long ONE_HOUR = 3600000L;
 
     private RSAKey privateKey;
 
@@ -69,8 +63,7 @@ public class RememberMeServicesDataLabsTest {
         publicKey = new RSAKey.Builder(privateKey.toPublicJWK()).build();
         jwkSet = new JWKSet(publicKey);
         val keySource = new ImmutableJWKSet<>(jwkSet);
-
-        this.signer = new RSASSASigner(privateKey);
+        signer = new RSASSASigner(privateKey);
 
         target = new RememberMeServicesDataLabs(COOKIE_NAME, ISSUER, keySource);
     }
@@ -80,53 +73,27 @@ public class RememberMeServicesDataLabsTest {
     public void successfullyAutoLoginTest() throws JOSEException {
 
         //Given
-        String token = this.getAccessToken(ISSUER, new Date(new Date().getTime()),
-                new Date(new Date().getTime() - 90 * 1000000000));
+        String token = this.getAccessToken(ISSUER, new Date(new Date().getTime() - ONE_HOUR),
+                new Date(new Date().getTime() + ONE_HOUR));
 
-        Cookie[] cookies = new Cookie[]{
-                new Cookie("token", token)
-        };
-        mockHttpServletRequest = MockMvcRequestBuilders
+        val request = MockMvcRequestBuilders
                 .get(URI.create("https://example.com"))
                 .cookie(new Cookie("token", token))
                 .buildRequest(new MockServletContext());
 
-        mockHttpServletRequest.setCookies(cookies);
-
-        List<Group> groups = new ArrayList<>();
-        groups.add(group);
-        CatalogueUser catalogueUser = new CatalogueUser();
-        catalogueUser.setUsername(USER_NAME);
-
         //When
-        val authentication = target.autoLogin(mockHttpServletRequest, response);
+        val authentication = target.autoLogin(request, response);
 
         //Then
-        assertThat(((CatalogueUser)authentication.getPrincipal()).getUsername(), is(equalTo(USER_NAME)));
-        assertThat(((String)authentication.getCredentials()), is(equalTo(token)));
+        assertThat(((CatalogueUser) authentication.getPrincipal()).getUsername(), is(equalTo(USER_NAME)));
+        assertThat(((String) authentication.getCredentials()), is(equalTo(token)));
     }
 
     @Test
-    public void autoLoginTestShouldReturnNull() throws JOSEException {
+    public void autoLoginTestShouldReturnNull() {
 
         //Given
-        String token = this.getAccessToken(ISSUER, new Date(new Date().getTime()),
-                new Date(new Date().getTime() - 90 * 1000000000));
-        Cookie[] cookies = new Cookie[]{
-                new Cookie("token", token)
-        };
-        mockHttpServletRequest = MockMvcRequestBuilders
-                .get(URI.create("https://example.com"))
-                .cookie(new Cookie("token", token))
-                .buildRequest(new MockServletContext());
-
-        mockHttpServletRequest.setCookies(cookies);
-
         MockHttpServletRequest emptyMockHttpServletRequest = new MockHttpServletRequest();
-        List<Group> groups = new ArrayList<>();
-        groups.add(group);
-        CatalogueUser catalogueUser = new CatalogueUser();
-        catalogueUser.setUsername(USER_NAME);
 
         //When
         val authentication = target.autoLogin(emptyMockHttpServletRequest, response);
@@ -139,52 +106,31 @@ public class RememberMeServicesDataLabsTest {
     public void autoLoginTestExpiredToken() throws JOSEException {
 
         //Given
-        String token = this.getAccessToken(ISSUER, new Date(new Date().getTime() - 90 * 1000),
-                new Date(new Date().getTime() - 60 * 1000));
+        String token = this.getAccessToken(WRONG_ISSUER, new Date(new Date().getTime() - 2 * ONE_HOUR),
+                new Date(new Date().getTime() - ONE_HOUR));
 
-        Cookie[] cookies = new Cookie[]{
-                new Cookie("token", token)
-        };
-        mockHttpServletRequest = MockMvcRequestBuilders
+        val request = MockMvcRequestBuilders
                 .get(URI.create("https://example.com"))
                 .cookie(new Cookie("token", token))
                 .buildRequest(new MockServletContext());
-
-        mockHttpServletRequest.setCookies(cookies);
-
-        List<Group> groups = new ArrayList<>();
-        groups.add(group);
-        CatalogueUser catalogueUser = new CatalogueUser();
-        catalogueUser.setUsername(USER_NAME);
-
         //When
-        target.autoLogin(mockHttpServletRequest, response);
+        target.autoLogin(request, response);
     }
 
     @Test(expected = BadJWTException.class)
     public void autoLoginTestIssuerDoesNotMatch() throws JOSEException {
 
         //Given
-        String token = this.getAccessToken(WRONG_ISSUER, new Date(new Date().getTime()),
-                new Date(new Date().getTime() - 90 * 1000000000));
+        String token = this.getAccessToken(WRONG_ISSUER, new Date(new Date().getTime() - ONE_HOUR),
+                new Date(new Date().getTime() + ONE_HOUR));
 
-        Cookie[] cookies = new Cookie[]{
-                new Cookie("token", token)
-        };
-        mockHttpServletRequest = MockMvcRequestBuilders
+        val request = MockMvcRequestBuilders
                 .get(URI.create("https://example.com"))
                 .cookie(new Cookie("token", token))
                 .buildRequest(new MockServletContext());
 
-        mockHttpServletRequest.setCookies(cookies);
-
-        List<Group> groups = new ArrayList<>();
-        groups.add(group);
-        CatalogueUser catalogueUser = new CatalogueUser();
-        catalogueUser.setUsername(USER_NAME);
-
         //When
-        target.autoLogin(mockHttpServletRequest, response);
+        target.autoLogin(request, response);
 
     }
 
