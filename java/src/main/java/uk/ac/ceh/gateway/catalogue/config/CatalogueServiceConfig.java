@@ -284,6 +284,19 @@ public class CatalogueServiceConfig {
                 .facetKey("saTaxon")
                 .documentType(sampleArchive)
                 .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
+                .id("ukscape")
+                .title("UK-SCAPE")
+                .url("https://www.ceh.ac.uk/ukscape")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .documentType(gemini)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
+                .documentType(link)
+                .fileUpload(false)
                 .build()
         );
     }
