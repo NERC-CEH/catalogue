@@ -9,6 +9,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
+import com.nimbusds.jwt.proc.JWTProcessor;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +35,8 @@ import java.util.HashSet;
 @ToString
 public class RememberMeServicesDataLabs implements RememberMeServices {
 
-    final private String cookieName;
-
-    private ConfigurableJWTProcessor<SecurityContext> jwtProcessor;
+    private final String cookieName;
+    private final JWTProcessor<SecurityContext> jwtProcessor;
 
 
     RememberMeServicesDataLabs(@Value("${datalabs.cookieName}") String cookieName,
@@ -80,7 +80,7 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
         JWSKeySelector<SecurityContext> keySelector =
                 new JWSVerificationKeySelector<>(expectedJWSAlg, keySource);
         jwtProcessor.setJWSKeySelector(keySelector);
-        jwtProcessor.setJWTClaimsSetVerifier(new DefaultJWTClaimsVerifier(
+        jwtProcessor.setJWTClaimsSetVerifier(new DefaultJWTClaimsVerifier<>(
                 new JWTClaimsSet.Builder().issuer(issuer).build(),
                 new HashSet<>(Arrays.asList("sub", "aud", "iat", "exp", "scope"))));
         return jwtProcessor;
