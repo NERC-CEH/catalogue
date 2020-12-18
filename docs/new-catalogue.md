@@ -1,18 +1,12 @@
 # How to Build a New Catalogue
 
-# Step 0: Name
+## Step 1: Add a catalogue
 
-First: `catalogue` not `catalog`, we are not American
+You need to add your new Catalogue to the `CatalogueServiceConfig.java`
 
-# Step 1: CatalogueServiceConfig
+In the function `catalogueService` you will see `return new InMemoryCatalogueService`
 
-You need to add your new Catalogue to the catalogue service config
-
-In the function `catalogueService`
-
-You will see `return new InMemoryCatalogueService`
-
-Add a new Catalogue e.g.
+Add a new Catalogue (keep in alphabetical order) e.g.
 
 ```java
 Catalogue.builder()
@@ -25,28 +19,28 @@ Catalogue.builder()
   .build()
 ```
 
-* `id`
-  * the url e.g. `http://location:8080/your-id/documents"
-  * identiying the document
-* `title`
-  * self explanitory
-* `url`
-  * no idea but you need it
-* `facetKey`
-  * you can have chain of these e.g. `.facetKey("keyA").facetKey("keyB")`
+* *id*
+  * identifies the search page of this catalogue e.g. `http://location:8080/your-id/documents`
+* *title*
+  * self-explanatory
+* *url*
+  * URL to a project website
+* *facetKey*
+  * you can have a chain of these e.g. `.facetKey("keyA").facetKey("keyB")`
   * the values live here `SolrIndex` and have a look in codelist.properties
-  * these are filters in your documents view
-* `documentType`
+  * these are filters in your search page
+* *documentType*
   * a list of documents you can create and edit (see documents below)
-  * you can have chain of these e.g. `.documentType(documentTypeA).documentType(documentTypeB)`
-* `fileUpload`
-  * if true then you can upload documents, you see this when you go to <http://location:8080/your-id/documents> and click `create` then select `file-upload`
+  * you can have a chain of these e.g. `.documentType(documentTypeA).documentType(documentTypeB)`
+* *fileUpload*
+  * if `true` then you can upload documents, you see this when you go to <http://location:8080/your-id/documents> and click `create` then select `file-upload`.
+  Most of the time it should be `false` 
 
 ### Search facets
 There are many fields already indexed in Solr that can be used as search facets.
 
-- *resourceType* type of metadata e.g. Dataset, Service, Model, Activity, Facility
-- *licence* is the metadata Open Government licenced
+* *resourceType* type of metadata e.g. Dataset, Service, Model, Activity, Facility
+* *licence* is the metadata Open Government licenced
 
 #### New search facets
 
@@ -79,13 +73,11 @@ e.g. http://vocabs.ceh.ac.uk/imp/wp/nitrogen
 See [SolrIndexGeminiDocumentGenerator](../java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndexGeminiDocumentGenerator.java) for how this is used.
 
 
-# Step 2: Users
+## Step 2: Add Users & Groups
 
-you need to create some new roles for development
+You need to create some new roles for development.
 
-first in `DevelopmentUserStoreConfig`
-
-You will want to add 2 roles, an editor and a publisher
+First, in `DevelopmentUserStoreConfig` add two roles, an editor and a publisher
 
 at the top of this file add
 
@@ -94,33 +86,32 @@ public static final String YOUR_CATALOGUE_EDITOR = "role_yourCatalogue_editor";
 public static final String YOUR_CATALOGUE_PUBLISHER = "role_yourCatalogue_publisher";
 ```
 
-second you need a new user, add something like this
+Second, you need a new user, add something like this
 
 ```java
-@Bean @Qualifier("yourCatalogue-publisher")
-public CatalogueUser yourCataloguePublisher() throws lreadyTakenException {
-    CatalogueUser publisher = new CatalogueUser()
-        .setUsername("yourCatalogue-publisher")
-        .setEmail("yourCatalogue-publisher@ceh.ac.uk");
-    groupStore().grantGroupToUser(publisher, YOUR_CATALOGUE_PUBLISHER);
-    groupStore().grantGroupToUser(publisher, YOUR_CATALOGUE_EDITOR);
-    userStore().addUser(publisher, "publisherpassword");
-    return publisher;
+@PostConstruct
+public void yourCataloguePublisher() throws UsernameAlreadyTakenException {
+  val user =new CatalogueUser()
+    .setUsername("yourCatalogue-publisher")
+    .setEmail("yourCatalogue-publisher@ceh.ac.uk");
+  addUserToGroup(user, YOUR_CATALOGUE_EDITOR, YOUR_CATALOGUE_PUBLISHER);
+  userStore().addUser(user, "password");
 }
 ```
 
-You also need to add the new user to the group store in `groupStore`, using the title from `Step 1: CatalogueServiceConfig`
+You also need to add the new groups to the group store in `groupStore`, using the title from `Step 1: CatalogueServiceConfig`
 
 ```java
 toReturn.createGroup(YOUR_CATALOGUE_PUBLISHER, "Your Title Publisher Role");
 toReturn.createGroup(YOUR_CATALOGUE_EDITOR, "Your Title Editor Role");
 ```
 
-now when you go to <http://location:8080/your-id/documents> you can add the header `Remote-User=yourCatalogue-publisher` and they can read/write/edit files
+Now when you go to <http://location:8080/your-id/documents> you can add the header `Remote-User=yourCatalogue-publisher` and they can read/write/edit files.
+You might need to install a Chrome plugin like ModHeaders to do this.
 
-# Step 3: View
+## Step 3: Add style
 
-in the `Gruntfile.js` you need to add the following in the `less` task
+In the `Gruntfile.js` you need to add the following in the `less` task
 
 ```js
 youId: {
@@ -140,7 +131,7 @@ youId: {
 }
 ```
 
-and you need to create the two files `src/less/style-youId.less` and `src/less/style-youId.css` (the latter triggers grunt when running concurrently, but not strictly required)
+You need to create `src/less/style-youId.less`
 
 your less files will look like this
 
@@ -156,15 +147,16 @@ but if you want your own colors you can do something like this
 .text-red {color:#E74C3C;}
 ```
 
-# Step 4: Documents
+## Step 4: Adding new DocumentTypes
 
-this is going to show requirements for making/editing and assigning permissions to document(s)
+__N.B.__ This step is only needed if adding a new documentType, if reusing existing documentTypes
+this step can be ignored.
 
-you need at least one document otherwise your catalogue is a waste of breath
+This is going to show requirements for making/editing and assigning permissions to document(s)
 
 if you want to see more then read [new document type](newDocumentType.markdown)
 
-# Step 4a: Document
+### Step 4a: New DocumentType
 
 create a new folder `uk.ac.ceh.gateway.catalogue.your-id` add your document to this folder e.g.
 
@@ -191,7 +183,7 @@ public class YourDocument extends AbstractMetadataDocument {
 }
 ```
 
-# Step 4b: html file
+### Step 4b: HTML Freemarker template
 
 create `html/your-id/your-document.ftl`
 
@@ -217,7 +209,7 @@ you can get access to your values of the document on the root level, in the abov
 
 Anything else is up to you
 
-# Step 4c: WebConfig
+### Step 4c: WebConfig.java
 
 you need to add this to the top
 
@@ -230,13 +222,13 @@ then in `configureContentNegotiation` you need to add
 
 `.put(YOUR_DOCUMENT_SHORT, MediaType.parseMediaType(YOUR_DOCUMENT_JSON_VALUE))` 
 
-# Step 4d: ServiceConfig
+### Step 4d: ServiceConfig.java
 
 in `metadataRepresentationService` you need to add
 
 `.register(YOUR_DOCUMENT_SHORT, YourDocument.class);`
 
-# Step 4e: CatalogueService
+### Step 4e: CatalogueServiceConfig.java
 
 in `catalogueService` you need to create a document e.g.
 
@@ -260,7 +252,7 @@ Catalogue.builder()
   .build()
 ```
 
-you also need to add conversters for your documents in `messageConverters` add
+you also need to add converters for your documents in `messageConverters` add
 
 ```java
 converters.add(new Object2TemplatedMessageConverter<>(YourNewDocument.class, freemarkerConfiguration()));
@@ -268,7 +260,7 @@ converters.add(new Object2TemplatedMessageConverter<>(YourNewDocument.class, fre
 
 Now your document will render as per `html/your-id/your-document.ftl`
 
-# Step 4f: Controller
+### Step 4f: Controller
 
 You need this to save and view a file
 
@@ -313,7 +305,7 @@ public class YourController extends AbstractDocumentController {
 }
 ```
 
-# Step 4g: View
+### Step 4g: View
 
 in `Main.coffee` in `initEditor` you need to add
 
@@ -367,7 +359,7 @@ new SingleObjectView
     ObjectInputView: ResourceTypeView
 ```
 
-# Step 4h: Admin
+### Step 4h: Admin Freemarker template
 
 you don't have to do this step if you don't want to. It lets you let users edit and publish the document
 
