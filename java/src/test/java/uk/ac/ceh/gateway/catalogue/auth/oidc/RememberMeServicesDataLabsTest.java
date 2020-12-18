@@ -106,7 +106,7 @@ public class RememberMeServicesDataLabsTest {
     public void autoLoginTestExpiredToken() throws JOSEException {
 
         //Given
-        String token = this.getAccessToken(WRONG_ISSUER, new Date(new Date().getTime() - 2 * ONE_HOUR),
+        String token = this.getAccessToken(ISSUER, new Date(new Date().getTime() - 2 * ONE_HOUR),
                 new Date(new Date().getTime() - ONE_HOUR));
 
         val request = MockMvcRequestBuilders
