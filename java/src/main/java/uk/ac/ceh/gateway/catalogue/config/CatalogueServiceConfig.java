@@ -23,6 +23,41 @@ public class CatalogueServiceConfig {
     public CatalogueService catalogueService() {
         String defaultCatalogueKey = "eidc";
 
+        DocumentType agent = DocumentType.builder()
+                .title("Agent")
+                .type(OSDP_AGENT_SHORT)
+                .build();
+
+        DocumentType dataset = DocumentType.builder()
+                .title("Dataset")
+                .type(OSDP_DATASET_SHORT)
+                .build();
+
+        DocumentType dataType = DocumentType.builder()
+                .title("Data type")
+                .type(DATA_TYPE_SHORT)
+                .build();
+
+        DocumentType erammpDatacube = DocumentType.builder()
+                .title("ERAMMP data cube")
+                .type(ERAMMP_DATACUBE_SHORT)
+                .build();
+
+        DocumentType erammpModel = DocumentType.builder()
+                .title("ERAMMP model")
+                .type(ERAMMP_MODEL_SHORT)
+                .build();
+
+        DocumentType cehModel = DocumentType.builder()
+                .title("Model")
+                .type(CEH_MODEL)
+                .build();
+
+        DocumentType cehModelApplication = DocumentType.builder()
+                .title("Model Application")
+                .type(CEH_MODEL_APPLICATION)
+                .build();
+
         DocumentType gemini = DocumentType.builder()
             .title("Data resource")
             .type(GEMINI_DOCUMENT)
@@ -33,29 +68,9 @@ public class CatalogueServiceConfig {
             .type(IMP_DOCUMENT)
             .build();
 
-        DocumentType cehModel = DocumentType.builder()
-            .title("Model")
-            .type(CEH_MODEL)
-            .build();
-
-        DocumentType cehModelApplication = DocumentType.builder()
-            .title("Model Application")
-            .type(CEH_MODEL_APPLICATION)
-            .build();
-
         DocumentType link = DocumentType.builder()
             .title("Link")
             .type(LINK_DOCUMENT)
-            .build();
-
-        DocumentType agent = DocumentType.builder()
-            .title("Agent")
-            .type(OSDP_AGENT_SHORT)
-            .build();
-
-        DocumentType dataset = DocumentType.builder()
-            .title("Dataset")
-            .type(OSDP_DATASET_SHORT)
             .build();
 
         DocumentType model = DocumentType.builder()
@@ -88,28 +103,76 @@ public class CatalogueServiceConfig {
             .type(OSDP_SAMPLE_SHORT)
             .build();
 
-        DocumentType erammpModel = DocumentType.builder()
-            .title("ERAMMP model")
-            .type(ERAMMP_MODEL_SHORT)
-            .build();
-
-        DocumentType erammpDatacube = DocumentType.builder()
-            .title("ERAMMP data cube")
-            .type(ERAMMP_DATACUBE_SHORT)
-            .build();
-
         DocumentType sampleArchive = DocumentType.builder()
             .title("Sample Archive")
             .type(SAMPLE_ARCHIVE_SHORT)
             .build();
 
-        DocumentType dataType = DocumentType.builder()
-            .title("Data type")
-            .type(DATA_TYPE_SHORT)
-            .build();
-
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
+
+            Catalogue.builder()
+                .id("assist")
+                .title("Achieving Sustainable Agricultural Systems")
+                .url("http://assist.ceh.ac.uk")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .documentType(gemini)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
+                .documentType(link)
+                .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
+                .id("cmp")
+                .title("Catchment Management Modelling Platform")
+                .url("http://www.cammp.org.uk/index.php")
+                .facetKey("resourceType")
+                .facetKey("impCaMMPIssues")
+                .facetKey("impDataType")
+                .facetKey("impScale")
+                .facetKey("impTopic")
+                .facetKey("impWaterPollutant")
+                .documentType(gemini)
+                .documentType(imp)
+                .documentType(link)
+                .fileUpload(true)
+                .build(),
+
+            Catalogue.builder()
+                .id("ceh")
+                .title("UK Centre for Ecology & Hydrology")
+                .url("https://www.ceh.ac.uk")
+                .facetKey("topic")
+                .facetKey("resourceType")
+                .facetKey("licence")
+                .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
+                .id("edge")
+                .title("EDgE")
+                .url("https://edge.climate.copernicus.eu")
+                .facetKey("recordType")
+                .documentType(gemini)
+                .documentType(link)
+                .fileUpload(true)
+                .build(),
+
+            Catalogue.builder()
+                .id(defaultCatalogueKey)
+                .title("EIDC")
+                .url("https://www.eidc.ac.uk")
+                .facetKey("topic")
+                .facetKey("recordType")
+                .facetKey("status")
+                .facetKey("rightsHolder")
+                .facetKey("funder")
+                .documentType(gemini)
+                .documentType(dataType)
+                .fileUpload(false)
+                .build(),
 
             Catalogue.builder()
                 .id("elter")
@@ -121,41 +184,42 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
-                .id("nm")
-                .title("NERC Models Sandpit")
+                .id("erammp")
+                .title("ERAMMP")
                 .url("")
-                .facetKey("topic")
+                .facetKey("recordType")
+                .facetKey("condition")
+                .documentType(erammpModel)
+                .documentType(erammpDatacube)
+                .documentType(link)
+                .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
+                .id("inlicensed")
+                .title("UKCEH In-licensed Datasets")
+                .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
                 .facetKey("resourceType")
-                .facetKey("licence")
+                .documentType(gemini)
+                .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
+                .id("inms")
+                .title("International Nitrogen Management System")
+                .url("https://data.inms.international/")
+                .facetKey("recordType")
+                .facetKey("impScale")
+                .facetKey("impTopic")
+                .facetKey("inmsPollutant")
+                .facetKey("modelType")
+                .facetKey("inmsDemonstrationRegion")
+                .facetKey("inmsProject")
                 .documentType(gemini)
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
-                .id("sa")
-                .title("Sample Archive")
-                .url("")
-                .facetKey("saTaxon")
-                .documentType(sampleArchive)
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
-                .id("osdp")
-                .title("Open Soils Data Platform")
-                .url("http://www.ceh.ac.uk")
-                .documentType(agent)
-                .documentType(dataset)
-                .documentType(model)
-                .documentType(monitoringActivity)
-                .documentType(monitoringFacility)
-                .documentType(monitoringProgramme)
-                .documentType(publication)
-                .documentType(sample)
-                .facetKey("resourceType")
-                .fileUpload(false)
+                .documentType(link)
+                .fileUpload(true)
                 .build(),
 
             Catalogue.builder()
@@ -185,104 +249,53 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
-                .id("erammp")
-                .title("ERAMMP")
+                .id("nm")
+                .title("NERC Models Sandpit")
                 .url("")
-                .facetKey("recordType")
-                .facetKey("condition")
-                .documentType(erammpModel)
-                .documentType(erammpDatacube)
-                .documentType(link)
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
-                .id("inms")
-                .title("International Nitrogen Management System")
-                .url("https://data.inms.international/")
-                .facetKey("recordType")
-                .facetKey("impScale")
-                .facetKey("impTopic")
-                .facetKey("inmsPollutant")
-                .facetKey("modelType")
-                .facetKey("inmsDemonstrationRegion")
-                .facetKey("inmsProject")
-                .documentType(gemini)
-                .documentType(cehModel)
-                .documentType(cehModelApplication)
-                .documentType(link)
-                .fileUpload(true)
-                .build(),
-
-            Catalogue.builder()
-                .id("edge")
-                .title("EDgE")
-                .url("https://edge.climate.copernicus.eu")
-                .facetKey("recordType")
-                .documentType(gemini)
-                .documentType(link)
-                .fileUpload(true)
-                .build(),
-
-            Catalogue.builder()
-                .id("ceh")
-                .title("UK Centre for Ecology & Hydrology")
-                .url("https://www.ceh.ac.uk")
                 .facetKey("topic")
                 .facetKey("resourceType")
                 .facetKey("licence")
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
-                .id(defaultCatalogueKey)
-                .title("EIDC")
-                .url("https://www.eidc.ac.uk")
-                .facetKey("topic")
-                .facetKey("recordType")
-                .facetKey("status")
-                .facetKey("rightsHolder")
-                .facetKey("funder")
                 .documentType(gemini)
-                .documentType(dataType)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
                 .fileUpload(false)
                 .build(),
 
             Catalogue.builder()
-                .id("cmp")
-                .title("Catchment Management Modelling Platform")
-                .url("http://www.cammp.org.uk/index.php")
+                .id("osdp")
+                .title("Open Soils Data Platform")
+                .url("http://www.ceh.ac.uk")
+                .documentType(agent)
+                .documentType(dataset)
+                .documentType(model)
+                .documentType(monitoringActivity)
+                .documentType(monitoringFacility)
+                .documentType(monitoringProgramme)
+                .documentType(publication)
+                .documentType(sample)
                 .facetKey("resourceType")
-                .facetKey("impCaMMPIssues")
-                .facetKey("impDataType")
-                .facetKey("impScale")
-                .facetKey("impTopic")
-                .facetKey("impWaterPollutant")
-                .documentType(gemini)
-                .documentType(imp)
-                .documentType(link)
-                .fileUpload(true)
+                .fileUpload(false)
                 .build(),
 
             Catalogue.builder()
-                .id("assist")
-                .title("Achieving Sustainable Agricultural Systems")
-                .url("http://assist.ceh.ac.uk")
+                .id("sa")
+                .title("Sample Archive")
+                .url("")
+                .facetKey("saTaxon")
+                .documentType(sampleArchive)
+                .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
+                .id("ukscape")
+                .title("UK-SCAPE")
+                .url("https://www.ceh.ac.uk/ukscape")
                 .facetKey("resourceType")
                 .facetKey("licence")
                 .documentType(gemini)
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
                 .documentType(link)
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
-                .id("inlicensed")
-                .title("UKCEH In-licensed Datasets")
-                .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
-                .facetKey("resourceType")
-                .documentType(gemini)
                 .fileUpload(false)
                 .build()
         );

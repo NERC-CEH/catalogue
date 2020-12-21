@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +22,6 @@ import java.util.Arrays;
  * @see CrowdUserStoreConfig
 
  */
-@Slf4j
 @Configuration
 @Profile("development")
 public class DevelopmentUserStoreConfig {
@@ -53,6 +51,7 @@ public class DevelopmentUserStoreConfig {
     public static final String OSDP_PUBLISHER = "role_osdp_publisher";
     public static final String SA_EDITOR = "role_sa_editor";
     public static final String SA_PUBLISHER = "role_sa_publisher";
+    public static final String UKSCAPE_PUBLISHER = "role_ukscape_publisher";
 
     private void addUserToGroup(CatalogueUser user, String... groups) {
         Arrays.stream(groups)
@@ -60,129 +59,11 @@ public class DevelopmentUserStoreConfig {
     }
 
     @PostConstruct
-    public void unprivilegedUser() throws UsernameAlreadyTakenException {
-        // Used in UploadControllerTest to check upload permissions
+    public void admin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
-                .setUsername("unprivileged")
-                .setEmail("unprivileged@example.com");
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void uploader() throws UsernameAlreadyTakenException {
-        // Used in UploadControllerTest to check upload permissions
-        val user = new CatalogueUser()
-                .setUsername("uploader")
-                .setEmail("uploader@example.com");
-        userStore().addUser(user, "password");
-        log.info("UserStore adding {}", user);
-    }
-
-    @PostConstruct
-    public void superadmin() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("superadmin")
-            .setEmail("superadmin@ceh.ac.uk");
-        addUserToGroup(user, CEH_GROUP_NAME, EIDC_EDITOR, EIDC_PUBLISHER, MAINTENANCE_ROLE, DATACITE_ROLE);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void readonly() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("readonly")
-            .setEmail("readonly@ceh.ac.uk");
-        addUserToGroup(user, READONLY_ROLE);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void eidcEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("eidc-editor")
-            .setEmail("eidc-editor@ceh.ac.uk");
-        addUserToGroup(user, EIDC_EDITOR);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void eidcPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("eidc-publisher")
-            .setEmail("eidc-publisher@ceh.ac.uk");
-        addUserToGroup(user, EIDC_EDITOR, EIDC_PUBLISHER);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void cmpEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("cmp-editor")
-            .setEmail("cmp-editor@ceh.ac.uk");
-        addUserToGroup(user, CMP_EDITOR);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void cmpPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("cmp-publisher")
-            .setEmail("cmp-publisher@ceh.ac.uk");
-        addUserToGroup(user, CMP_EDITOR, CMP_PUBLISHER);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void elterEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-                .setUsername("elter-editor")
-                .setEmail("elter-editor@ceh.ac.uk");
-        addUserToGroup(user, ELTER_EDITOR);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void elterPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-                .setUsername("elter-publisher")
-                .setEmail("elter-publisher@ceh.ac.uk");
-        addUserToGroup(user, ELTER_EDITOR, ELTER_PUBLISHER);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void ncEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("nc-editor")
-            .setEmail("nc-editor@ceh.ac.uk");
-        addUserToGroup(user, NC_EDITOR);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void ncPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("nc-publisher")
-            .setEmail("nc-publisher@ceh.ac.uk");
-        addUserToGroup(user, NC_EDITOR, NC_PUBLISHER);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void erammpEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("erammp-editor")
-            .setEmail("erammp-editor@ceh.ac.uk");
-        addUserToGroup(user, ERAMMP_EDITOR);
-        userStore().addUser(user, "password");
-    }
-
-    @PostConstruct
-    public void erammpPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("erammp-publisher")
-            .setEmail("erammp-publisher@ceh.ac.uk");
-        addUserToGroup(user, ERAMMP_EDITOR, ERAMMP_PUBLISHER);
+            .setUsername("admin")
+            .setEmail("admin@ceh.ac.uk");
+        addUserToGroup(user, MAINTENANCE_ROLE);
         userStore().addUser(user, "password");
     }
 
@@ -205,11 +86,74 @@ public class DevelopmentUserStoreConfig {
     }
 
     @PostConstruct
-    public void mPublisher() throws UsernameAlreadyTakenException {
+    public void cmpEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
-            .setUsername("m-publisher")
-            .setEmail("m-publisher@ceh.ac.uk");
-        addUserToGroup(user, M_EDITOR, M_PUBLISHER);
+            .setUsername("cmp-editor")
+            .setEmail("cmp-editor@ceh.ac.uk");
+        addUserToGroup(user, CMP_EDITOR);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void cmpPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("cmp-publisher")
+            .setEmail("cmp-publisher@ceh.ac.uk");
+        addUserToGroup(user, CMP_EDITOR, CMP_PUBLISHER);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void eidcEditor() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("eidc-editor")
+            .setEmail("eidc-editor@ceh.ac.uk");
+        addUserToGroup(user, EIDC_EDITOR);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void eidcPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("eidc-publisher")
+            .setEmail("eidc-publisher@ceh.ac.uk");
+        addUserToGroup(user, EIDC_EDITOR, EIDC_PUBLISHER);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void elterEditor() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("elter-editor")
+            .setEmail("elter-editor@ceh.ac.uk");
+        addUserToGroup(user, ELTER_EDITOR);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void elterPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("elter-publisher")
+            .setEmail("elter-publisher@ceh.ac.uk");
+        addUserToGroup(user, ELTER_EDITOR, ELTER_PUBLISHER);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void erammpEditor() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("erammp-editor")
+            .setEmail("erammp-editor@ceh.ac.uk");
+        addUserToGroup(user, ERAMMP_EDITOR);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void erammpPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("erammp-publisher")
+            .setEmail("erammp-publisher@ceh.ac.uk");
+        addUserToGroup(user, ERAMMP_EDITOR, ERAMMP_PUBLISHER);
         userStore().addUser(user, "password");
     }
 
@@ -223,11 +167,47 @@ public class DevelopmentUserStoreConfig {
     }
 
     @PostConstruct
+    public void mPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("m-publisher")
+            .setEmail("m-publisher@ceh.ac.uk");
+        addUserToGroup(user, M_EDITOR, M_PUBLISHER);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void ncEditor() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("nc-editor")
+            .setEmail("nc-editor@ceh.ac.uk");
+        addUserToGroup(user, NC_EDITOR);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void ncPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("nc-publisher")
+            .setEmail("nc-publisher@ceh.ac.uk");
+        addUserToGroup(user, NC_EDITOR, NC_PUBLISHER);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
     public void osdpPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("osdp-publisher")
             .setEmail("osdp-publisher@ceh.ac.uk");
         addUserToGroup(user, OSDP_EDITOR, OSDP_PUBLISHER);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void readonly() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("readonly")
+            .setEmail("readonly@ceh.ac.uk");
+        addUserToGroup(user, READONLY_ROLE);
         userStore().addUser(user, "password");
     }
 
@@ -241,11 +221,38 @@ public class DevelopmentUserStoreConfig {
     }
 
     @PostConstruct
-    public void admin() throws UsernameAlreadyTakenException {
+    public void superadmin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
-            .setUsername("admin")
-            .setEmail("admin@ceh.ac.uk");
-        addUserToGroup(user, MAINTENANCE_ROLE);
+            .setUsername("superadmin")
+            .setEmail("superadmin@ceh.ac.uk");
+        addUserToGroup(user, CEH_GROUP_NAME, EIDC_EDITOR, EIDC_PUBLISHER, MAINTENANCE_ROLE, DATACITE_ROLE);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void ukscapePublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("ukscape-publisher")
+            .setEmail("ukscape-publisher@ceh.ac.uk");
+        addUserToGroup(user, UKSCAPE_PUBLISHER);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void unprivilegedUser() throws UsernameAlreadyTakenException {
+        // Used in UploadControllerTest to check upload permissions
+        val user = new CatalogueUser()
+            .setUsername("unprivileged")
+            .setEmail("unprivileged@example.com");
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void uploader() throws UsernameAlreadyTakenException {
+        // Used in UploadControllerTest to check upload permissions
+        val user = new CatalogueUser()
+            .setUsername("uploader")
+            .setEmail("uploader@example.com");
         userStore().addUser(user, "password");
     }
 
@@ -253,30 +260,31 @@ public class DevelopmentUserStoreConfig {
     public InMemoryGroupStore<CatalogueUser> groupStore() {
         val groupStore = new InMemoryGroupStore<CatalogueUser>();
         //create groups
-        groupStore.createGroup(CEH_GROUP_NAME, "Centre for Ecology & Hydrology");
-        groupStore.createGroup(READONLY_ROLE, "Read only role");
-        groupStore.createGroup(EIDC_EDITOR, "EIDC Editor Role");
-        groupStore.createGroup(EIDC_PUBLISHER, "EIDC Publisher Role");
-        groupStore.createGroup(CMP_EDITOR, "CMP Editor Role");
-        groupStore.createGroup(CMP_PUBLISHER, "CMP Publisher Role");
-        groupStore.createGroup(ELTER_EDITOR, "ELTER Editor Role");
-        groupStore.createGroup(ELTER_PUBLISHER, "ELTER Publisher Role");
-        groupStore.createGroup(ERAMMP_EDITOR, "ERAMMP Editor Role");
-        groupStore.createGroup(ERAMMP_PUBLISHER, "ERAMMP Publisher Role");
-        groupStore.createGroup(ASSIST_EDITOR, "ASSIST Editor Role");
-        groupStore.createGroup(ASSIST_PUBLISHER, "ASSIST Publisher Role");
-        groupStore.createGroup(NC_EDITOR, "NC Editor Role");
-        groupStore.createGroup(NC_PUBLISHER, "NC Publisher Role");
-        groupStore.createGroup(M_EDITOR, "M Editor Role");
-        groupStore.createGroup(M_PUBLISHER, "M Publisher Role");
-        groupStore.createGroup(INMS_EDITOR, "INMS Editor Role");
-        groupStore.createGroup(INMS_PUBLISHER, "INMS Publisher Role");
-        groupStore.createGroup(OSDP_EDITOR, "OSDP Editor Role");
-        groupStore.createGroup(OSDP_PUBLISHER, "OSDP Publisher Role");
-        groupStore.createGroup(SA_EDITOR, "SA Editor Role");
-        groupStore.createGroup(SA_PUBLISHER, "SA Publisher Role");
-        groupStore.createGroup(MAINTENANCE_ROLE, "System Admin Role");
-        groupStore.createGroup(DATACITE_ROLE, "Datacite Role");
+        groupStore.createGroup(ASSIST_EDITOR, "");
+        groupStore.createGroup(ASSIST_PUBLISHER, "");
+        groupStore.createGroup(CEH_GROUP_NAME, "");
+        groupStore.createGroup(CMP_EDITOR, "");
+        groupStore.createGroup(CMP_PUBLISHER, "");
+        groupStore.createGroup(DATACITE_ROLE, "");
+        groupStore.createGroup(EIDC_EDITOR, "");
+        groupStore.createGroup(EIDC_PUBLISHER, "");
+        groupStore.createGroup(ELTER_EDITOR, "");
+        groupStore.createGroup(ELTER_PUBLISHER, "");
+        groupStore.createGroup(ERAMMP_EDITOR, "");
+        groupStore.createGroup(ERAMMP_PUBLISHER, "");
+        groupStore.createGroup(INMS_EDITOR, "");
+        groupStore.createGroup(INMS_PUBLISHER, "");
+        groupStore.createGroup(M_EDITOR, "");
+        groupStore.createGroup(M_PUBLISHER, "");
+        groupStore.createGroup(MAINTENANCE_ROLE, "");
+        groupStore.createGroup(NC_EDITOR, "");
+        groupStore.createGroup(NC_PUBLISHER, "");
+        groupStore.createGroup(OSDP_EDITOR, "");
+        groupStore.createGroup(OSDP_PUBLISHER, "");
+        groupStore.createGroup(READONLY_ROLE, "");
+        groupStore.createGroup(SA_EDITOR, "");
+        groupStore.createGroup(SA_PUBLISHER, "");
+        groupStore.createGroup(UKSCAPE_PUBLISHER, "");
         return groupStore;
     }
 
