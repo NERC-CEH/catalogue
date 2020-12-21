@@ -109,6 +109,11 @@ module.exports = function(grunt) {
         files: {
           'src/css/style-sa.css': 'src/less/style-sa.less'
         }
+      },
+      ukscape: {
+        files: {
+          'src/css/style-ukscape.css': 'src/less/style-ukscape.less'
+        }
       }
     },
     cssmin: {
@@ -180,6 +185,11 @@ module.exports = function(grunt) {
       sa: {
         files: {
           'src/css/style-sa.css': 'src/css/style-sa.css'
+        }
+      },
+      ukscape: {
+        files: {
+          'src/css/style-ukscape.css': 'src/css/style-ukscape.css'
         }
       }
     },

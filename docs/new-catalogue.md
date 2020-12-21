@@ -102,12 +102,12 @@ public void yourCataloguePublisher() throws UsernameAlreadyTakenException {
 You also need to add the new groups to the group store in `groupStore`, using the title from `Step 1: CatalogueServiceConfig`
 
 ```java
-toReturn.createGroup(YOUR_CATALOGUE_PUBLISHER, "Your Title Publisher Role");
-toReturn.createGroup(YOUR_CATALOGUE_EDITOR, "Your Title Editor Role");
+createGroup(YOUR_CATALOGUE_EDITOR, "");
+createGroup(YOUR_CATALOGUE_PUBLISHER, "");
 ```
 
 Now when you go to <http://location:8080/your-id/documents> you can add the header `Remote-User=yourCatalogue-publisher` and they can read/write/edit files.
-You might need to install a Chrome plugin like ModHeaders to do this.
+Use a browser plugin like [ModHeaders](https://bewisse.com/modheader/) to modify the headers.
 
 ## Step 3: Add style
 

@@ -51,6 +51,7 @@ public class DevelopmentUserStoreConfig {
     public static final String OSDP_PUBLISHER = "role_osdp_publisher";
     public static final String SA_EDITOR = "role_sa_editor";
     public static final String SA_PUBLISHER = "role_sa_publisher";
+    public static final String UKSCAPE_PUBLISHER = "role_ukscape_publisher";
 
     private void addUserToGroup(CatalogueUser user, String... groups) {
         Arrays.stream(groups)
@@ -229,6 +230,15 @@ public class DevelopmentUserStoreConfig {
     }
 
     @PostConstruct
+    public void ukscapePublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("ukscape-publisher")
+            .setEmail("ukscape-publisher@ceh.ac.uk");
+        addUserToGroup(user, UKSCAPE_PUBLISHER);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
     public void unprivilegedUser() throws UsernameAlreadyTakenException {
         // Used in UploadControllerTest to check upload permissions
         val user = new CatalogueUser()
@@ -250,30 +260,31 @@ public class DevelopmentUserStoreConfig {
     public InMemoryGroupStore<CatalogueUser> groupStore() {
         val groupStore = new InMemoryGroupStore<CatalogueUser>();
         //create groups
-        groupStore.createGroup(ASSIST_EDITOR, "ASSIST Editor Role");
-        groupStore.createGroup(ASSIST_PUBLISHER, "ASSIST Publisher Role");
-        groupStore.createGroup(CEH_GROUP_NAME, "Centre for Ecology & Hydrology");
-        groupStore.createGroup(CMP_EDITOR, "CMP Editor Role");
-        groupStore.createGroup(CMP_PUBLISHER, "CMP Publisher Role");
-        groupStore.createGroup(DATACITE_ROLE, "Datacite Role");
-        groupStore.createGroup(EIDC_EDITOR, "EIDC Editor Role");
-        groupStore.createGroup(EIDC_PUBLISHER, "EIDC Publisher Role");
-        groupStore.createGroup(ELTER_EDITOR, "ELTER Editor Role");
-        groupStore.createGroup(ELTER_PUBLISHER, "ELTER Publisher Role");
-        groupStore.createGroup(ERAMMP_EDITOR, "ERAMMP Editor Role");
-        groupStore.createGroup(ERAMMP_PUBLISHER, "ERAMMP Publisher Role");
-        groupStore.createGroup(INMS_EDITOR, "INMS Editor Role");
-        groupStore.createGroup(INMS_PUBLISHER, "INMS Publisher Role");
-        groupStore.createGroup(M_EDITOR, "M Editor Role");
-        groupStore.createGroup(M_PUBLISHER, "M Publisher Role");
-        groupStore.createGroup(MAINTENANCE_ROLE, "System Admin Role");
-        groupStore.createGroup(NC_EDITOR, "NC Editor Role");
-        groupStore.createGroup(NC_PUBLISHER, "NC Publisher Role");
-        groupStore.createGroup(OSDP_EDITOR, "OSDP Editor Role");
-        groupStore.createGroup(OSDP_PUBLISHER, "OSDP Publisher Role");
-        groupStore.createGroup(READONLY_ROLE, "Read only role");
-        groupStore.createGroup(SA_EDITOR, "SA Editor Role");
-        groupStore.createGroup(SA_PUBLISHER, "SA Publisher Role");
+        groupStore.createGroup(ASSIST_EDITOR, "");
+        groupStore.createGroup(ASSIST_PUBLISHER, "");
+        groupStore.createGroup(CEH_GROUP_NAME, "");
+        groupStore.createGroup(CMP_EDITOR, "");
+        groupStore.createGroup(CMP_PUBLISHER, "");
+        groupStore.createGroup(DATACITE_ROLE, "");
+        groupStore.createGroup(EIDC_EDITOR, "");
+        groupStore.createGroup(EIDC_PUBLISHER, "");
+        groupStore.createGroup(ELTER_EDITOR, "");
+        groupStore.createGroup(ELTER_PUBLISHER, "");
+        groupStore.createGroup(ERAMMP_EDITOR, "");
+        groupStore.createGroup(ERAMMP_PUBLISHER, "");
+        groupStore.createGroup(INMS_EDITOR, "");
+        groupStore.createGroup(INMS_PUBLISHER, "");
+        groupStore.createGroup(M_EDITOR, "");
+        groupStore.createGroup(M_PUBLISHER, "");
+        groupStore.createGroup(MAINTENANCE_ROLE, "");
+        groupStore.createGroup(NC_EDITOR, "");
+        groupStore.createGroup(NC_PUBLISHER, "");
+        groupStore.createGroup(OSDP_EDITOR, "");
+        groupStore.createGroup(OSDP_PUBLISHER, "");
+        groupStore.createGroup(READONLY_ROLE, "");
+        groupStore.createGroup(SA_EDITOR, "");
+        groupStore.createGroup(SA_PUBLISHER, "");
+        groupStore.createGroup(UKSCAPE_PUBLISHER, "");
         return groupStore;
     }
 
