@@ -55,9 +55,9 @@ module.exports = function(grunt) {
           'src/css/style-cmp.css': 'src/less/style-cmp.less'
         }
       },
-      erammp: {
+      edge: {
         files: {
-          'src/css/style-erammp.css': 'src/less/style-erammp.less'
+          'src/css/style-edge.css': 'src/less/style-edge.less'
         }
       },
       eidc: {
@@ -65,19 +65,19 @@ module.exports = function(grunt) {
           'src/css/style-eidc.css': 'src/less/style-eidc.less'
         }
       },
-      inlicensed: {
-        files: {
-          'src/css/style-inlicensed.css': 'src/less/style-inlicensed.less'
-        }
-      },
       elter: {
         files: {
           'src/css/style-elter.css': 'src/less/style-elter.less'
         }
       },
-      edge: {
+      erammp: {
         files: {
-          'src/css/style-edge.css': 'src/less/style-edge.less'
+          'src/css/style-erammp.css': 'src/less/style-erammp.less'
+        }
+      },
+      inlicensed: {
+        files: {
+          'src/css/style-inlicensed.css': 'src/less/style-inlicensed.less'
         }
       },
       inms: {
@@ -90,7 +90,7 @@ module.exports = function(grunt) {
           'src/css/style-nc.css': 'src/less/style-nc.less'
         }
       },
-      nc: {
+      nm: {
         files: {
           'src/css/style-nm.css': 'src/less/style-nm.less'
         }
@@ -127,6 +127,16 @@ module.exports = function(grunt) {
           'src/css/style-cmp.css': 'src/css/style-cmp.css'
         }
       },
+      edge: {
+        files: {
+          'src/css/style-edge.css': 'src/css/style-edge.css'
+        }
+      },
+      eidc: {
+        files: {
+          'src/css/style-eidc.css': 'src/css/style-eidc.css'
+        }
+      },
       elter: {
         files: {
           'src/css/style-elter.css': 'src/css/style-elter.css'
@@ -137,19 +147,9 @@ module.exports = function(grunt) {
           'src/css/style-erammp.css': 'src/css/style-erammp.css'
         }
       },
-      eidc: {
-        files: {
-          'src/css/style-eidc.css': 'src/css/style-eidc.css'
-        }
-      },
       inlicensed: {
         files: {
           'src/css/style-inlicensed.css': 'src/css/style-inlicensed.css'
-        }
-      },
-      edge: {
-        files: {
-          'src/css/style-edge.css': 'src/css/style-edge.css'
         }
       },
       inms: {
@@ -162,7 +162,7 @@ module.exports = function(grunt) {
           'src/css/style-nc.css': 'src/css/style-nc.css'
         }
       },
-      nc: {
+      nm: {
         files: {
           'src/css/style-nm.css': 'src/css/style-nm.css'
         }
