@@ -51,6 +51,7 @@ public class DevelopmentUserStoreConfig {
     public static final String OSDP_PUBLISHER = "role_osdp_publisher";
     public static final String SA_EDITOR = "role_sa_editor";
     public static final String SA_PUBLISHER = "role_sa_publisher";
+    public static final String UKSCAPE_EDITOR = "role_ukscape_editor";
     public static final String UKSCAPE_PUBLISHER = "role_ukscape_publisher";
 
     private void addUserToGroup(CatalogueUser user, String... groups) {
@@ -234,7 +235,7 @@ public class DevelopmentUserStoreConfig {
         val user = new CatalogueUser()
             .setUsername("ukscape-publisher")
             .setEmail("ukscape-publisher@ceh.ac.uk");
-        addUserToGroup(user, UKSCAPE_PUBLISHER);
+        addUserToGroup(user, UKSCAPE_EDITOR, UKSCAPE_PUBLISHER);
         userStore().addUser(user, "password");
     }
 
@@ -285,6 +286,7 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(SA_EDITOR, "");
         groupStore.createGroup(SA_PUBLISHER, "");
         groupStore.createGroup(UKSCAPE_PUBLISHER, "");
+        groupStore.createGroup(UKSCAPE_EDITOR, "");
         return groupStore;
     }
 
