@@ -196,6 +196,17 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
+                .id("datalabs")
+                .title("Datalabs")
+                .url("https://datalab.datalabs.ceh.ac.uk/")
+                .facetKey("resourceType")
+                .documentType(gemini)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
+                .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
                 .id("inlicensed")
                 .title("UKCEH In-licensed Datasets")
                 .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
