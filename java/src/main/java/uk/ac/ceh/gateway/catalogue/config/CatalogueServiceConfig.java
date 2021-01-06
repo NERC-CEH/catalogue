@@ -151,6 +151,17 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
+                .id("datalabs")
+                .title("Datalabs")
+                .url("https://datalab.datalabs.ceh.ac.uk/")
+                .facetKey("resourceType")
+                .documentType(gemini)
+                .documentType(cehModel)
+                .documentType(cehModelApplication)
+                .fileUpload(false)
+                .build(),
+
+            Catalogue.builder()
                 .id("edge")
                 .title("EDgE")
                 .url("https://edge.climate.copernicus.eu")

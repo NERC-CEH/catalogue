@@ -55,6 +55,11 @@ module.exports = function(grunt) {
           'src/css/style-cmp.css': 'src/less/style-cmp.less'
         }
       },
+      datalabs: {
+        files: {
+          'src/css/style-datalabs.css': 'src/less/style-datalabs.less'
+        }
+      },
       edge: {
         files: {
           'src/css/style-edge.css': 'src/less/style-edge.less'
@@ -132,6 +137,11 @@ module.exports = function(grunt) {
           'src/css/style-cmp.css': 'src/css/style-cmp.css'
         }
       },
+      datalabs: {
+        files: {
+          'src/css/style-datalabs.css': 'src/css/style-datalabs.css'
+          }
+        },
       edge: {
         files: {
           'src/css/style-edge.css': 'src/css/style-edge.css'

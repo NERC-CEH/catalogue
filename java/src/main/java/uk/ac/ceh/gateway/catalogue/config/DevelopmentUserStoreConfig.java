@@ -35,6 +35,8 @@ public class DevelopmentUserStoreConfig {
     public static final String ASSIST_PUBLISHER = "role_assist_publisher";
     public static final String CMP_EDITOR = "role_cmp_editor";
     public static final String CMP_PUBLISHER = "role_cmp_publisher";
+    public static final String DATALABS_EDITOR = "role_datalabs_editor";
+    public static final String DATALABS_PUBLISHER = "role_datalabs_publisher";
     public static final String EIDC_EDITOR = "role_eidc_editor";
     public static final String EIDC_PUBLISHER = "role_eidc_publisher";
     public static final String ELTER_EDITOR = "role_elter_editor";
@@ -101,6 +103,24 @@ public class DevelopmentUserStoreConfig {
             .setUsername("cmp-publisher")
             .setEmail("cmp-publisher@ceh.ac.uk");
         addUserToGroup(user, CMP_EDITOR, CMP_PUBLISHER);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void datalabsEditor() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+                .setUsername("datalabs-editor")
+                .setEmail("datalabs-editor@ceh.ac.uk");
+        addUserToGroup(user, DATALABS_EDITOR);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
+    public void datalabsPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+                .setUsername("datalabs-publisher")
+                .setEmail("datalabs-publisher@ceh.ac.uk");
+        addUserToGroup(user, DATALABS_EDITOR, DATALABS_PUBLISHER);
         userStore().addUser(user, "password");
     }
 
@@ -267,6 +287,8 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(CMP_EDITOR, "");
         groupStore.createGroup(CMP_PUBLISHER, "");
         groupStore.createGroup(DATACITE_ROLE, "");
+        groupStore.createGroup(DATALABS_EDITOR, "");
+        groupStore.createGroup(DATALABS_PUBLISHER, "");
         groupStore.createGroup(EIDC_EDITOR, "");
         groupStore.createGroup(EIDC_PUBLISHER, "");
         groupStore.createGroup(ELTER_EDITOR, "");
