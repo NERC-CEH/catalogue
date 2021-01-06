@@ -1,4 +1,4 @@
-<div class="row">
+ <!--<div class="row">
   <div class="col-sm-2">
     <label class="control-label" for="spatialResolution<%= data.index %>EquivalentScale">Equivalent Scale</label>
   </div>
@@ -12,4 +12,7 @@
   <div class="col-sm-3">
     <input data-name='distance' type="number" step="1" min="1" class="editor-input" id="spatialResolution<%= data.index %>Distance" value="<%= data.distance %>">
   </div>
+</div>-->
+<div class="row">
+  <input data-name='distance' type="number" step="1" min="1" class="editor-input" id="spatialResolution<%= data.index %>Distance" value="<%= data.distance %>" placeholder="Enter ONLY numbers">
 </div>

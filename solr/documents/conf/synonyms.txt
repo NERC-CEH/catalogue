@@ -37,4 +37,5 @@ louse,lice
 mouse,mice
 stratum,strata
 synthesis,syntheses
+Brazil, Brasil
 

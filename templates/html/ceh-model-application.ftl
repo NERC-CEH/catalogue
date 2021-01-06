@@ -213,38 +213,6 @@
     </section>
     </#if>
 
-<div class="testingout">
-    <div class="file file__VALID">
-        <div class="filename" data-toggle="collapse" data-target="#collapse1"><span class="status">VALID</span>filename</div>
-        <div class="collapse" id="collapse1"><div class="file--collapse">
-            <div class="path"><span>Path</span><span>path</span></div>
-            <div class="hash"><span>Checksum</span><span>hash</span></div>
-            <div class="filesize"><span>Size</span><span>size</span></div>
-            <div class="lastValid"><span>Last validated</span><span>yyyy-mm-dd</span></div>
-            <div class="time"><span>Time to validate</span><span>time</span></div>
-            <div class="buttons"><button class="btn btn-default">buttons</button> <button class="btn btn-default">buttons</button></div>
-        </div> </div>
-    </div>
-
-
-    <div class="file file__ERROR">
-        <div class="filename" data-toggle="collapse" data-target="#collapse2">
-          <span class="status">ERROR</span>MidCent_GlaciersProjection_C09.csv
-        </div>
-        <div class="collapse" id="collapse2">
-          <div class="file--collapse">
-              <div class="path">
-                  <span>Path</span><span>/dropbox/715db0b2-1d63-4842-ab80-f0f33b39e5e0/MidCent_GlaciersProjection_C09.csv</span>
-              </div>
-              <div class="hash"><span>Checksum</span><span>036981bfef5d518bb4e70e26e144ae42</span></div>
-              <div class="filesize"><span>Size</span><span>7.25 KB</span></div>
-              <div class="lastValid"><span>Last validated</span><span>20/7/20 - 16:03</span></div>
-              <div class="time"><span>Time to validate</span><span>1s</span></div>
-              <div class="buttons"><button class="btn btn-default">buttons</button> <button class="btn btn-default">buttons</button></div>
-          </div>
-        </div>
-    </div>
-</div>
     <@m.additionalMetadata />
     
   </@b.metadataContainer>

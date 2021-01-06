@@ -503,10 +503,11 @@ define [
           model: @model
           modelAttribute: 'spatialResolutions'
           ModelType: SpatialResolution
-          label: 'Spatial resolution'
+          label: 'Spatial resolution (distance)'
           ObjectInputView: SpatialResolutionView
           helpText: """
-                    <p>This is an indication of the level of spatial detail/accuracy. Enter a distance OR equivalent scale but not both. For most datasets, <i>distance</i> is more appropriate.</p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
+                    <p>This is an indication of the level of spatial detail/accuracy. Enter the distance in metres.</p>
+                    <p>For gridded data, resolution is the area of the ground represented in each pixel (e.g. a 1km resolution raster, the distance is 1km = 1000m, so enter <strong>1000</strong>).</p><p>For point data, resolution is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference such as SN666781, the resolution would be 100m so enter <strong>100</strong>)</p>
                     """
       ]
     ,  

@@ -122,7 +122,7 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id("nm")
-                .title("NERC Models Sandpit")
+                .title("NERC EDS model catalogue")
                 .url("")
                 .facetKey("topic")
                 .facetKey("resourceType")
