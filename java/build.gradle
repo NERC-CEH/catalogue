@@ -72,6 +72,8 @@ dependencies {
     implementation "uk.ac.ceh.components:userstore-crowd:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:springsecurity-userstore:${cehComponentsVersion}"
+    implementation "uk.ac.ceh.components:vocab-rdf:${cehComponentsVersion}"
+    implementation "uk.ac.ceh.components:vocab-sparql:${cehComponentsVersion}"
     implementation 'org.hibernate.validator:hibernate-validator:6.0.1.Final'
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-guava:${jacksonVersion}"
