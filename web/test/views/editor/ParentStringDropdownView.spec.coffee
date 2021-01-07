@@ -1,8 +1,10 @@
 define [
+  'underscore'
   'cs!views/editor/ParentStringDropdownView'
   'cs!models/Catalogue'
-], (ParentStringDropdownView, Catalogue) ->
+], (_, ParentStringDropdownView, Catalogue) ->
   describe 'ParentStringDropdownView', ->
+    window._ = _
     view = model = null
 
     beforeEach ->

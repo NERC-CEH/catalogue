@@ -10,9 +10,10 @@ services:
     volumes:
       - ./datastore:/var/ceh-catalogue/datastore
       - ./dropbox:/var/ceh-catalogue/dropbox
+      - ./upload:/var/upload/datastore
       - mapfiles:/var/ceh-catalogue/mapfiles
     environment:
-      - spring.profiles.active=development
+      - wspring.profiles.active=development,upload:simple
     env_file:
       - secrets.env
   solr:

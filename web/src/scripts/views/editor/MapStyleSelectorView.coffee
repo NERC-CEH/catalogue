@@ -1,8 +1,9 @@
 define [
+  'underscore'
   'cs!views/editor/ObjectInputView'
   'tpl!templates/editor/MapStyleSelector.tpl'
   'colorpicker'
-], (ObjectInputView, template) -> ObjectInputView.extend
+], (_, ObjectInputView, template) -> ObjectInputView.extend
 
   template: template
 

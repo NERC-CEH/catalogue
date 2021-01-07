@@ -6,7 +6,7 @@
 - View metadata
 - Metadata editor
 - Map viewer
-- Mainenance - Reindex, Re-link, SPARQL query
+- Maintenance - Reindex, Re-link, SPARQL query
 - User permissions
 - Multi-catalogue - one application instance can run catalogues for lots of different projects, e.g. EIDC, ASSIST, ERAMMP, etc
 
@@ -15,7 +15,7 @@
 - DocumentTypes - Multiple document types: ISO 19115, CEH Model, Environmental Modelling facilities, project specific.
 - Searching - faceted search, multiple filters, project specific filters
 - Linking documents - multiple relationships between documents e.g. dataset and service, monitoring facility and activity
-- Multiple representations of metadta e.g. HTML, INSPIRE XML, Json, JSON-LD, Datacite XML, citation XML, RDF turtle
+- Multiple representations of metadata e.g. HTML, INSPIRE XML, Json, JSON-LD, Datacite XML, citation XML, RDF turtle
 - Services e.g. Datacite DOI minting, INSPIRE metadata harvesting (web accessible folder)
 - Version controlled metadata documents using git
 
@@ -46,7 +46,7 @@ Some of the major libraries used, build.gradle list all dependencies.
 - Freemarker templating - generating HTML, XML, etc from Java objects [documentation](https://freemarker.apache.org/)
 - Jackson - marshalling & unmarshalling Java objects to json [documentation](https://github.com/FasterXML/jackson)
 - Lombok - reducing boilerplate code [documentation](https://projectlombok.org/features/all)
-- CEH Java Commons - user authentiaction, Git repository [documentation](https://github.com/NERC-CEH/java-commons)
+- CEH Java Commons - user authentication, Git repository [documentation](https://github.com/NERC-CEH/java-commons)
 
 ### Testing
 
@@ -69,7 +69,7 @@ All dependencies are in bower.json, some of the major ones are:
 
 - Coffeescript - Modernising javascript (but not! overtaken by ES6 and newer) [documentation](https://coffeescript.org/)
 - Backbone - models, views and templates for javascript [documentation](https://backbonejs.org/)
-- underscore - utlity library [documentation](https://underscorejs.org/)
+- underscore - utility library [documentation](https://underscorejs.org/)
 - require-js - javascript module loader (overtaken by ES6+ imports) [documentation](https://requirejs.org/)
 - Bootstrap 3 - layout & styling [documentation](https://getbootstrap.com/docs/3.3/)
 - Openlayers - maps [documentation](https://openlayers.org/two/)
@@ -92,14 +92,14 @@ All dependencies are in bower.json, some of the major ones are:
 - Inversion of Control (IOC) - the framework calls your code at the right time/place
 - Dependency Injection (DI) - the framework provides dependencies to your class
 - Container - the environment (big bucket on Beans) that Spring creates to run the catalogue. Out of which comes the the Inversion of Control and Dependency Injection.
-- Beans - framework instanciated objects, either explicitly created with @Bean to implicit through other annotations e.g. @Controller
+- Beans - framework instantiated objects, either explicitly created with @Bean to implicit through other annotations e.g. @Controller
 - Spring MVC - Spring library to handle HTTP requests [documentation](https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html)
 
 ### Java packages
 
 #### config
 
-Directly instatinated components (Beans)
+Directly instantiated components (Beans)
 
 #### controllers
 
@@ -113,7 +113,7 @@ Annotation code to specify which Freemarker template to use to convert Java obje
 
 #### ef
 
-Java classes represention Environmental Facilities i.e Activities, Facilities, Programmes, Networks
+Java classes representing Environmental Facilities i.e Activities, Facilities, Programmes, Networks
 
 #### erammp
 
@@ -175,7 +175,7 @@ Decoupling the work of actually doing something from the HTTP code to ease testi
 
 #### sparql
 
-Retrieve vocabularies from a SPARQL endpoint like the [CEH Vocabulary Sercice](https://vocabs.ceh.ac.uk)
+Retrieve vocabularies from a SPARQL endpoint like the [CEH Vocabulary Service](https://vocabs.ceh.ac.uk)
 
 #### upload
 
@@ -203,5 +203,5 @@ LESS css for different catalogues, most just import `style-ceh.less` and change 
 
 - Search - the search page for each catalogue, facets, spatial search, show search results
 - Permissions - change users permissions on a metadata record
-- Editors - create and edit the different document types e.g. Gemini, OSDP. Configured from componets, e.g. simple textbox, list of strings, list of keywords.
+- Editors - create and edit the different document types e.g. Gemini, OSDP. Configured from components, e.g. simple textbox, list of strings, list of keywords.
 - Map Viewer - Show metadata records spatial services, WMS

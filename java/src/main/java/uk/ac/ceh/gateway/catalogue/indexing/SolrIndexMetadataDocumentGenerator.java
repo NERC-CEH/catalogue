@@ -72,6 +72,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
             .setElterDeimsSite(grab(getKeywordsFilteredByUrlFragment(document, DEIMS_URL), Keyword::getValue))
+            .setElterDeimsUri(grab(getKeywordsFilteredByUrlFragment(document, DEIMS_URL), Keyword::getUri))
             .setIdentifier(identifierService.generateFileId(document.getId()))
             .setImpCaMMPIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_CAMMP_ISSUES_URL), Keyword::getValue))
             .setImpDataType(grab(getKeywordsFilteredByUrlFragment(document, IMP_DATA_TYPE_URL), Keyword::getValue))

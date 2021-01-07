@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.util;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
 /**
  * The following class allows us to register a class to instance mapping. The 

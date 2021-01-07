@@ -41,7 +41,6 @@ define [
 
       it 'can populate model', ->
         view.collection.add test: 'data'
-        console.info model.attributes.one.two
         expect(model.attributes.one.two.depth).toEqual [{test: 'data'}]
 
     describe 'when view is created with populated model', ->

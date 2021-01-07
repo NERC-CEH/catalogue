@@ -55,30 +55,35 @@ module.exports = function (grunt) {
           "src/css/style-cmp.css": "src/less/style-cmp.less",
         },
       },
-      erammp: {
+      datalabs: {
         files: {
-          "src/css/style-erammp.css": "src/less/style-erammp.less",
-        },
+          'src/css/style-datalabs.css': 'src/less/style-datalabs.less'
+        }
+      },
+      edge: {
+        files: {
+          'src/css/style-edge.css': 'src/less/style-edge.less'
+        }
       },
       eidc: {
         files: {
-          "src/css/style-eidc.css": "src/less/style-eidc.less",
-        },
-      },
-      inlicensed: {
-        files: {
-          "src/css/style-inlicensed.css": "src/less/style-inlicensed.less",
-        },
+          'src/css/style-eidc.css': 'src/less/style-eidc.less'
+        }
       },
       elter: {
         files: {
           "src/css/style-elter.css": "src/less/style-elter.less",
         },
       },
-      edge: {
+      erammp: {
         files: {
-          "src/css/style-edge.css": "src/less/style-edge.less",
-        },
+          'src/css/style-erammp.css': 'src/less/style-erammp.less'
+        }
+      },
+      inlicensed: {
+        files: {
+          'src/css/style-inlicensed.css': 'src/less/style-inlicensed.less'
+        }
       },
       inms: {
         files: {
@@ -90,7 +95,7 @@ module.exports = function (grunt) {
           "src/css/style-nc.css": "src/less/style-nc.less",
         },
       },
-      nc: {
+      nm: {
         files: {
           "src/css/style-nm.css": "src/less/style-nm.less",
         },
@@ -107,9 +112,14 @@ module.exports = function (grunt) {
       },
       esb: {
         files: {
-          "src/css/style-esb.css": "src/less/style-esb.less",
-        },
+          'src/css/style-esb.css': 'src/less/style-esb.less'
+        }
       },
+      ukscape: {
+        files: {
+          'src/css/style-ukscape.css': 'src/less/style-ukscape.less'
+        }
+      }
     },
     cssmin: {
       assist: {
@@ -127,30 +137,35 @@ module.exports = function (grunt) {
           "src/css/style-cmp.css": "src/css/style-cmp.css",
         },
       },
-      elter: {
+      datalabs: {
         files: {
-          "src/css/style-elter.css": "src/css/style-elter.css",
+          'src/css/style-datalabs.css': 'src/css/style-datalabs.css'
+          }
         },
-      },
-      erammp: {
+      edge: {
         files: {
-          "src/css/style-erammp.css": "src/css/style-erammp.css",
-        },
+          'src/css/style-edge.css': 'src/css/style-edge.css'
+        }
       },
       eidc: {
         files: {
           "src/css/style-eidc.css": "src/css/style-eidc.css",
         },
       },
+      elter: {
+        files: {
+          'src/css/style-elter.css': 'src/css/style-elter.css'
+        }
+      },
+      erammp: {
+        files: {
+          'src/css/style-erammp.css': 'src/css/style-erammp.css'
+        }
+      },
       inlicensed: {
         files: {
-          "src/css/style-inlicensed.css": "src/css/style-inlicensed.css",
-        },
-      },
-      edge: {
-        files: {
-          "src/css/style-edge.css": "src/css/style-edge.css",
-        },
+          'src/css/style-inlicensed.css': 'src/css/style-inlicensed.css'
+        }
       },
       inms: {
         files: {
@@ -162,7 +177,7 @@ module.exports = function (grunt) {
           "src/css/style-nc.css": "src/css/style-nc.css",
         },
       },
-      nc: {
+      nm: {
         files: {
           "src/css/style-nm.css": "src/css/style-nm.css",
         },
@@ -179,9 +194,14 @@ module.exports = function (grunt) {
       },
       esb: {
         files: {
-          "src/css/style-esb.css": "src/css/style-esb.css",
-        },
+          'src/css/style-esb.css': 'src/css/style-esb.css'
+        }
       },
+      ukscape: {
+        files: {
+          'src/css/style-ukscape.css': 'src/css/style-ukscape.css'
+        }
+      }
     },
     requirejs: {
       compile: {
@@ -263,9 +283,9 @@ module.exports = function (grunt) {
       prep: ["src/css"],
     },
   });
-  grunt.registerTask("prep", ["clean", "combine_harvester:openlayers"]);
-  grunt.registerTask("test", ["clean:test", "coffee", "jasmine"]);
-  grunt.registerTask("develop", ["less", "copy:requirejs", "concurrent:watch"]);
-  grunt.registerTask("build", ["clean", "less", "cssmin", "requirejs"]);
-  grunt.registerTask("default", ["prep", "test", "build"]);
+  grunt.registerTask('prep', ['clean', 'combine_harvester:openlayers']);
+  grunt.registerTask('test', ['clean:test', 'coffee', 'jasmine']);
+  grunt.registerTask('develop', ['less', 'copy:requirejs', 'concurrent:watch']);
+  grunt.registerTask('build', ['clean', 'less', 'cssmin', 'requirejs']);
+  grunt.registerTask('default', ['prep', 'build']);
 };

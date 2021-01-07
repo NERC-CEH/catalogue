@@ -7,7 +7,7 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
-import uk.ac.ceh.gateway.catalogue.upload.UploadDocument;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadDocument;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,7 +44,6 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         this.listingService = listingService;
         this.repo = repo;
         this.indexGenerator = indexGenerator;
-        log.info("Creating {}", this);
     }
 
     protected abstract void clearIndex() throws DocumentIndexingException;
@@ -68,7 +67,7 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     @Override
     public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
         DocumentIndexingException joinedException = new DocumentIndexingException("Failed to index one or more documents");
-        documents.stream().forEach((document) -> {
+        documents.forEach((document) -> {
             try {
                 log.debug("Indexing: {}, revision: {}", document, revision);
                 val doc = readDocument(document, revision);
@@ -80,10 +79,13 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
             }
         });
 
-        //If an exception was supressed, then throw
-        if(joinedException.getSuppressed().length != 0) {
+        if(hasSuppressedExceptions(joinedException)) {
             throw joinedException;
         }
+    }
+
+    private boolean hasSuppressedExceptions(DocumentIndexingException joinedException) {
+        return joinedException.getSuppressed().length != 0;
     }
 
     public void initialIndex() {

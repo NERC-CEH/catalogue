@@ -1,4 +1,5 @@
 define [
+  'underscore'
   'cs!views/editor/ObjectInputView'
   'cs!views/editor/MapReprojectionView'
   'cs!views/editor/ChildView'
@@ -6,7 +7,7 @@ define [
   'cs!views/editor/MapAttributeView'
   'cs!collections/Positionable'
   'tpl!templates/editor/MapDataSource.tpl'
-], (ObjectInputView, MapReprojectionView, ChildView, MapFeaturesView, MapAttributeView, Positionable, template) -> ObjectInputView.extend
+], (_, ObjectInputView, MapReprojectionView, ChildView, MapFeaturesView, MapAttributeView, Positionable, template) -> ObjectInputView.extend
 
   template: template
 

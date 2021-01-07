@@ -6,9 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -19,12 +17,11 @@ import uk.ac.ceh.gateway.catalogue.model.JiraIssueCreate;
 import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument.Funded;
 import uk.ac.ceh.gateway.catalogue.services.DepositRequestService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
-import uk.ac.ceh.gateway.catalogue.services.PermissionService;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import org.apache.jena.ext.com.google.common.collect.Lists;
 
 import static org.mockito.Mockito.*;
 import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.containsString;
 
 @RunWith(MockitoJUnitRunner.class)

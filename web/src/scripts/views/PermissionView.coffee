@@ -1,9 +1,10 @@
 define [
+  'underscore'
   'backbone'
   'tpl!templates/Permission.tpl'
   'cs!views/IdentityPermissionView'
   'cs!models/IdentityPermission'
-], (Backbone, template, IdentityPermissionView, IdentityPermission) -> Backbone.View.extend
+], (_, Backbone, template, IdentityPermissionView, IdentityPermission) -> Backbone.View.extend
   el: '.permission'
 
   events:

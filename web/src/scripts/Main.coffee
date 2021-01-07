@@ -2,7 +2,6 @@ define [
   'underscore'
   'jquery'
   'backbone'
-  'dropzone'
   'bootstrap'
   'cs!views/StudyAreaView'
   'cs!models/MapViewerApp'
@@ -43,13 +42,14 @@ define [
   'cs!views/DataTypeEditorView'
   'cs!views/DocumentUploadView'
   'cs!models/DocumentUploadModel'
+  'cs!views/upload/simple/AppView'
 ], (
-  _, $, Backbone, Dropzone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
+    _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SpecimenBankEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, DepositRequestModel, DepositRequestView,
-    ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel
+    ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel, SimpleUploadView
 ) ->
 
   ###
@@ -63,21 +63,62 @@ define [
     String::startsWith ?= (s) -> @slice(0, s.length) == s
     String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
 
-    do @initDocumentUpload if $('#document-upload').length
-
-    do @initDepositRequest if $('#deposit-request').length
-    do @initStudyAreaMap if $('#studyarea-map').length
-    do @initGeometryMap if $('#geometry-map').length
-    do @initMapviewer if $('#mapviewer').length
-    do @initSearch if $('#search').length
-    do @initEditor if $('.edit-control').length
-    do @initPermission if $('.permission').length
+    # Fix for underscore not being global
+    # Some templates use underscore
+    # Remove once templates fixed
+    window._ = _
+    
     do @initCatalogue if $('.catalogue-control').length
     do @initClipboard if $('.clipboard-copy').length
+    do @initDepositRequest if $('#deposit-request').length
+    do @initDocumentUpload if $('#document-upload').length
+    do @initEditor if $('.edit-control').length
+    do @initGeometryMap if $('#geometry-map').length
+    do @initMapviewer if $('#mapviewer').length
+    do @initPermission if $('.permission').length
+    do @initSearch if $('#search').length
+    do @initSimpleUpload if $('#simple-upload').length
+    do @initStudyAreaMap if $('#studyarea-map').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
-  
+
+  ###
+  Initialize the catalogue application
+  ###
+  initCatalogue: ->
+    catalogues = undefined
+
+    $.getJSON '/catalogues', (data) ->
+      catalogues = _.chain(data).map((c) -> { value: c.id, label: c.title }).value()
+
+    $('.catalogue-control').on 'click', (event) ->
+      do event.preventDefault
+      $.getJSON $(event.target).attr('href'), (data) ->
+        model = new Catalogue data
+        model.options = catalogues
+
+        new CatalogueView
+          el: '#metadata'
+          model: model
+
+  ###
+  Initialize clipboard copy
+  ###
+  initClipboard: ->
+    view = new ClipboardCopyView
+      el: '.clipboard-copy'
+
+  ###
+  Initialize Deposit Request
+  ###
+  initDepositRequest: ->
+    app = new DepositRequestModel
+    view = new DepositRequestView model: app
+
+  ###
+  Initalize Document Upload using Hubbub service
+  ###
   initDocumentUpload: ->
     id = $('#document-upload').data('guid')
     app = new DocumentUploadModel null,
@@ -86,44 +127,8 @@ define [
     app.set('id', id)
     view = new DocumentUploadView model: app
 
-  initDepositRequest: ->
-    app = new DepositRequestModel
-    view = new DepositRequestView model: app
-
-  initStudyAreaMap: ->
-    view = new StudyAreaView
-      el: '#studyarea-map'
-
-  initGeometryMap: ->
-    view = new StudyAreaView
-      el: '#geometry-map'
-
-  initClipboard: ->
-    view = new ClipboardCopyView
-      el: '.clipboard-copy'
-
   ###
-  Initialize the map viewer app, view and router
-  ###
-  initMapviewer: ->
-    app    = new MapViewerApp()
-    view   = new MapViewerAppView model: app
-    router = new LayersRouter model: app
-
-    @createMessageViewFor app
-
-  ###
-  Initialize the search application
-  ###
-  initSearch: ->
-    app    = new SearchApp()
-    view   = new SearchAppView model: app
-    router = new SearchRouter model: app, location: window.location
-
-    @createMessageViewFor app
-
-  ###
-  Initialize the editor application
+  Initialize the editor
   ###
   initEditor: ->
 
@@ -226,6 +231,23 @@ define [
               el: '#metadata'
 
   ###
+  Initialize the geometry map
+  ###
+  initGeometryMap: ->
+    view = new StudyAreaView
+      el: '#geometry-map'
+
+  ###
+  Initialize the WMS map viewer
+  ###
+  initMapviewer: ->
+    app    = new MapViewerApp()
+    view   = new MapViewerAppView model: app
+    router = new LayersRouter model: app
+
+    @createMessageViewFor app
+
+  ###
   Initialize the permission application
   ###
   initPermission: ->
@@ -236,23 +258,30 @@ define [
     @createMessageViewFor app
 
   ###
-  Initialize the catalogue application
+  Initialize the search
   ###
-  initCatalogue: ->
-    catalogues = undefined
+  initSearch: ->
+    app    = new SearchApp()
+    view   = new SearchAppView model: app
+    router = new SearchRouter model: app, location: window.location
 
-    $.getJSON '/catalogues', (data) ->
-      catalogues = _.chain(data).map((c) -> { value: c.id, label: c.title }).value()
+    @createMessageViewFor app
 
-    $('.catalogue-control').on 'click', (event) ->
-      do event.preventDefault
-      $.getJSON $(event.target).attr('href'), (data) ->
-        model = new Catalogue data
-        model.options = catalogues
+  ###
+  Initialize the simple dataset upload
+  ###
+  initSimpleUpload: ->
+    url = $('#simple-upload-dropzone').attr('action')
+    view = new SimpleUploadView
+      el: '#simple-upload'
+      url: url
 
-        new CatalogueView
-          el: '#metadata'
-          model: model
+  ###
+  Initialize the Study Area map
+  ###
+  initStudyAreaMap: ->
+    view = new StudyAreaView
+      el: '#studyarea-map'
 
   ###
   Create a message view. Which listens to the supplied app model for messages (errors, info)

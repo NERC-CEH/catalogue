@@ -15,18 +15,22 @@ import uk.ac.ceh.components.userstore.crowd.CrowdUserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 @Configuration
-@Profile("production")
+@Profile("auth:crowd")
 @Slf4j
 public class CrowdUserStoreConfig {
-    @Value("${crowd.address}") String address;
-    @Value("${crowd.username}") String username;
-    @Value("${crowd.password}") String password;
-    
-    @Autowired AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
-    
+    @Value("${crowd.address}")
+    String address;
+    @Value("${crowd.username}")
+    String username;
+    @Value("${crowd.password}")
+    String password;
+
+    @Autowired
+    AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
+
     @Bean
     public GroupStore<CatalogueUser> groupStore() {
-        log.info("Creating CrowdGroupStore(address={}, username={}", address, username);
+        log.info("Creating CrowdGroupStore(address={}, username={})", address, username);
         return new CrowdGroupStore<>(crowdCredentials());
     }
     

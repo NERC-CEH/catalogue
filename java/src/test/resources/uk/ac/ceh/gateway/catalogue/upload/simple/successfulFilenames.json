@@ -1,0 +1,14 @@
+[
+  {
+    "name": "data1.csv",
+    "urlEncodedName": "data1.csv"
+  },
+  {
+    "name": "data2.csv",
+    "urlEncodedName": "data2.csv"
+  },
+  {
+    "name": "name with spaces.csv",
+    "urlEncodedName": "name%20with%20spaces.csv"
+  }
+]

@@ -1,10 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-
 import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,16 +9,15 @@ import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.CataloguePermission;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.model.PermissionResource;
+import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.PermissionService;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 public class PermissionControllerTest {
     @Mock private PermissionService permissionService;

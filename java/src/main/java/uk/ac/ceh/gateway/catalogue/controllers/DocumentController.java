@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.SneakyThrows;
 import lombok.ToString;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,14 +33,15 @@ import java.util.List;
 
 import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
+@Slf4j
 @ToString(callSuper = true)
 @Controller
 public class DocumentController extends AbstractDocumentController {
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
     
-    @Autowired
     public DocumentController(DocumentRepository documentRepository) {
         super(documentRepository);
+        log.info("Creating {}", this);
     }
 
     @GetMapping("id/{id}.xml")
@@ -99,7 +101,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody ImpDocument document,
             @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveNewMetadataDocument(
             user,
             document,
@@ -116,7 +118,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody ImpDocument document
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveMetadataDocument(
             user,
             file,
@@ -132,7 +134,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody GeminiDocument document,
             @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveNewMetadataDocument(
             user,
             document,
@@ -149,7 +151,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody GeminiDocument document
-    ) throws DocumentRepositoryException  {      
+    ) {      
         return saveMetadataDocument(
             user,
             file,
@@ -165,7 +167,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody CehModel document,
             @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveNewMetadataDocument(
             user,
             document,
@@ -182,7 +184,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody CehModel document
-    ) throws DocumentRepositoryException  {      
+    ) {      
         return saveMetadataDocument(
             user,
             file,
@@ -198,7 +200,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @RequestBody DataType document,
         @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveNewMetadataDocument(
             user,
             document,
@@ -215,7 +217,7 @@ public class DocumentController extends AbstractDocumentController {
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
         @RequestBody DataType document
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveMetadataDocument(
             user,
             file,
@@ -231,7 +233,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody CehModelApplication document,
             @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveNewMetadataDocument(
             user,
             document,
@@ -248,7 +250,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody CehModelApplication document
-    ) throws DocumentRepositoryException  {      
+    ) {      
         return saveMetadataDocument(
             user,
             file,
@@ -264,7 +266,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @RequestBody LinkDocument document,
             @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException  {
+    ) {
         return saveNewMetadataDocument(
             user,
             document,
@@ -281,7 +283,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody LinkDocument document
-    ) throws DocumentRepositoryException  {    
+    ) {    
         return saveMetadataDocument(
             user,
             file,
@@ -293,10 +295,11 @@ public class DocumentController extends AbstractDocumentController {
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.GET)   
     @ResponseBody
+    @SneakyThrows
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file
-    ) throws DocumentRepositoryException  {        
+    ) {        
         return postprocessLinkDocument(documentRepository.read(file));
     }
     
@@ -305,10 +308,11 @@ public class DocumentController extends AbstractDocumentController {
                     method = RequestMethod.GET,
                     produces = LINKED_JSON_VALUE)   
     @ResponseBody
+    @SneakyThrows
     public MetadataDocument readLinkDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file
-    ) throws DocumentRepositoryException  {
+    ) {
         return documentRepository.read(file);
     }
     
@@ -318,7 +322,7 @@ public class DocumentController extends AbstractDocumentController {
     public JsonNode rawDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file
-    ) throws DocumentRepositoryException  {
+    ) {
         return DocumentReader.raw(file);
     }
     
@@ -327,11 +331,12 @@ public class DocumentController extends AbstractDocumentController {
     @RequestMapping(value = "history/{revision}/{file}",
                     method = RequestMethod.GET)
     @ResponseBody
+    @SneakyThrows
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @PathVariable("revision") String revision
-    ) throws DocumentRepositoryException {
+    ) {
         return postprocessLinkDocument(documentRepository.read(file, revision));
     }
     
@@ -358,10 +363,11 @@ public class DocumentController extends AbstractDocumentController {
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.DELETE)
     @ResponseBody
+    @SneakyThrows
     public DataRevision<CatalogueUser> deleteDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file
-    ) throws DocumentRepositoryException {    
+    ) {    
         return documentRepository.delete(user, file);
     }
 }
