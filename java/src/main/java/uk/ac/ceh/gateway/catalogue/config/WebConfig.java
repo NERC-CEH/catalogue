@@ -171,6 +171,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Value("${documents.baseUri}") private String baseUri;
     @Value("${data.repository.location}") private String dataRepositoryLocation;
+    @Value("$solr.server.collections.documents") private String documentsCollection;
     @Value("${maps.location}") private File mapsLocation;
     @Value("${jira.username}") private String jiraUsername;
     @Value("${jira.password}") private String jiraPassword;
@@ -568,7 +569,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                 indexGeneratorRegistry,
                 solrClient(),
                 jenaLookupService(),
-                documentIdentifierService()
+                documentIdentifierService(),
+                documentsCollection
         );
     }
 

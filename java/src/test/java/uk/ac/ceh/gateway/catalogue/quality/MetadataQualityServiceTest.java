@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,8 +29,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.ERROR;
@@ -159,7 +162,8 @@ public class MetadataQualityServiceTest {
         assertTrue(actual);
     }
 
-    //@Test
+    @Test
+    @Ignore
     public void checkSignpostHasCorrectOnlineResource() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("signpostRight.json"), this.config);
