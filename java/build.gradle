@@ -2,7 +2,7 @@ plugins {
     id 'war'
     id 'idea'
     id 'com.github.ben-manes.versions' version '0.15.0'
-    id 'org.unbroken-dome.test-sets' version '1.4.2'
+    id 'org.unbroken-dome.test-sets' version '3.0.1'
     id 'com.avast.gradle.docker-compose' version '0.6.12'
 }
 
@@ -24,8 +24,8 @@ war {
 }
 
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 composeUp.dependsOn war
 
@@ -100,6 +100,10 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:1.2.3"
     implementation "org.slf4j:jcl-over-slf4j:1.7.25"
     implementation "org.freemarker:freemarker:2.3.23"
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
+    implementation "javax.annotation:javax.annotation-api:1.3.2"
+
     testImplementation('junit:junit:4.12') {
         exclude(module: 'org.hamcrest-core')
     }
