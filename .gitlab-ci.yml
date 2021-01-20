@@ -29,7 +29,7 @@ mirror:
 build_java:
   stage: build
   image: openjdk:15-alpine
-  script: ./gradlew clean prepFixtures build
+  script: ./gradlew clean prepFixtures build grunt_default
   artifacts:
     when: always
     expire_in: 2 hrs
