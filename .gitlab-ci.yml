@@ -62,8 +62,7 @@ build_java:
 .deployment_template: &deployment_definition # Hidden deployment definition for docker builds
   stage: docker
   image: gitlab/dind
-  dependencies:
-    - java
+  dependencies: []
   only:
     - tags
 
