@@ -8,8 +8,6 @@ variables:
   NODE_VALUE: $CI_BUILD_REF_NAME
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
-services:
-  - docker:dind
 
 cache:
   paths:
@@ -29,12 +27,29 @@ mirror:
 build_java:
   stage: build
   image: openjdk:15-alpine
-  script: ./gradlew clean prepFixtures build grunt_default
+  script: ./gradlew clean prepFixtures build
   artifacts:
     when: always
     expire_in: 2 hrs
     paths:
       - java/build/libs/ROOT.war
+
+web_build:
+  stage: build
+  image: node:15
+  script:
+    - cd web
+    - npm ci
+    - bower install
+    - grunt
+  artifacts:
+    when: always
+    expire_in: 2 hrs
+    paths:
+      - web/src/vendor/
+      - web/src/css/
+      - web/src/scripts/main-out.js
+
 
 .java:
   stage: build
