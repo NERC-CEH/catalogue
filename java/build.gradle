@@ -20,7 +20,7 @@ tasks.withType(JavaCompile) {
 }
 
 war {
-    archiveName 'ROOT.war'
+    archiveFileName = 'ROOT.war'
 }
 
 
@@ -67,7 +67,7 @@ integrationTest.doFirst {
 }
 
 dependencies {
-    compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.1.2'
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.1.2'
     implementation "uk.ac.ceh.components:datastore-git:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:userstore-crowd:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
