@@ -35,7 +35,7 @@ public class HardcodedGeminiNamespaceResolver implements NamespaceContext {
     }
 
     @Override
-    public Iterator<Object> getPrefixes(String namespaceURI) {
+    public Iterator<String> getPrefixes(String namespaceURI) {
         return Collections.emptyIterator();
     }
 }

@@ -62,13 +62,12 @@ public class MetadataInfoBundledReaderServiceTest {
         doReturn(rawDocument).when(repo).getData(revision, "file.raw");
         
         MetadataInfo metadata = MetadataInfo.builder().rawType("text/xml").build();
-        when(representationService.getType(any(String.class))).thenReturn((Class)GeminiDocument.class);
-        when(documentInfoMapper.readInfo(metadataInfoInputStream)).thenReturn(metadata);
-        
+        doReturn(GeminiDocument.class).when(representationService).getType(any(String.class));
+        doReturn(metadata).when(documentInfoMapper).readInfo(metadataInfoInputStream);
+
         GeminiDocument geminiDocument = mock(GeminiDocument.class);
-        when(documentReader.read(rawInputStream, MediaType.TEXT_XML, GeminiDocument.class)).thenReturn(geminiDocument);
-        
-        when(documentIdentifierService.generateUri(fileToRead, revision)).thenReturn(uri);
+        doReturn(geminiDocument).when(documentReader).read(rawInputStream, MediaType.TEXT_XML, GeminiDocument.class);
+        doReturn(uri).when(documentIdentifierService).generateUri(fileToRead, revision);
         
         //When
         service.readBundle(fileToRead, revision);
