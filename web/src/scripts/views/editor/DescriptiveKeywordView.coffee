@@ -4,8 +4,9 @@ define [
   'cs!views/editor/ObjectInputView'
   'cs!views/editor/ChildView'
   'cs!views/editor/KeywordView'
+  'cs!views/editor/KeywordPickerView'
   'tpl!templates/editor/DescriptiveKeyword.tpl'
-], (_, Backbone, ObjectInputView, ChildView, KeywordView, template) -> ObjectInputView.extend
+], (_, Backbone, ObjectInputView, ChildView, KeywordView, KeywordPickerView, template) -> ObjectInputView.extend
 
   template: template
 
@@ -30,6 +31,8 @@ define [
     @createList @keywords, '.keywords', @addOne
 
     @$('input.date').datepicker dateFormat: "yy-mm-dd"
+    new KeywordPickerView
+        el: '.keyword-picker'
 
   render: ->
     ObjectInputView.prototype.render.apply @

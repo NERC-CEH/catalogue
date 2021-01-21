@@ -52,5 +52,7 @@
     <div class="keyword-add">
       <button class="editor-button add">Add <span class="fas fa-plus" aria-hidden="true"></span></button>
     </div>
+    <div class="keyword-picker">
+    </div>
   </div>
 </div>
