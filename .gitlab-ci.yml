@@ -51,7 +51,7 @@ build_web:
 
 .deployment_template: &deployment_definition # Hidden deployment definition for docker builds
   stage: docker
-  image: docker:20.10-dind
+  image: gitlab/dind
   needs:
     - job: build_java
       artifacts: true
