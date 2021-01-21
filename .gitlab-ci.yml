@@ -99,4 +99,3 @@ deploy_staging:
   environment:
     name: staging
     url:  https://catalogue-staging.ceh.ac.uk/eidc/documents
-  when: manual
