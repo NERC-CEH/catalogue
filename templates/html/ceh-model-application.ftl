@@ -219,7 +219,7 @@
 </#escape></@skeleton.master>
 
 <#macro variablesTable data> 
-<table class="table table-condensed">
+<table class="table table-condensed table-sm">
 <thead><tr><th>Name</th><th>Title</th><th>Description</th><th>Units</th><th>Format</th></tr></thead>
 <tbody>
   <#list data as item>

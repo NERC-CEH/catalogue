@@ -47,12 +47,14 @@ public class DevelopmentUserStoreConfig {
     public static final String INMS_PUBLISHER = "role_inms_publisher";
     public static final String M_EDITOR = "role_m_editor";
     public static final String M_PUBLISHER = "role_m_publisher";
+    public static final String NM_EDITOR = "role_nm_editor";
+    public static final String NM_PUBLISHER = "role_nm_publisher";
     public static final String NC_EDITOR = "role_nc_editor";
     public static final String NC_PUBLISHER = "role_nc_publisher";
     public static final String OSDP_EDITOR = "role_osdp_editor";
     public static final String OSDP_PUBLISHER = "role_osdp_publisher";
-    public static final String SA_EDITOR = "role_sa_editor";
-    public static final String SA_PUBLISHER = "role_sa_publisher";
+    public static final String ESB_EDITOR = "role_esb_editor";
+    public static final String ESB_PUBLISHER = "role_esb_publisher";
     public static final String UKSCAPE_EDITOR = "role_ukscape_editor";
     public static final String UKSCAPE_PUBLISHER = "role_ukscape_publisher";
 
@@ -197,6 +199,15 @@ public class DevelopmentUserStoreConfig {
     }
 
     @PostConstruct
+    public void nmPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("nm-publisher")
+            .setEmail("nm-publisher@ceh.ac.uk");
+        addUserToGroup(user, NM_EDITOR, NM_PUBLISHER);
+        userStore().addUser(user, "password");
+    }
+
+    @PostConstruct
     public void ncEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("nc-editor")
@@ -233,11 +244,11 @@ public class DevelopmentUserStoreConfig {
     }
 
     @PostConstruct
-    public void saPublisher() throws UsernameAlreadyTakenException {
+    public void esbPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
-            .setUsername("sa-publisher")
-            .setEmail("sa-publisher@ceh.ac.uk");
-        addUserToGroup(user, SA_EDITOR, SA_PUBLISHER);
+            .setUsername("esb-publisher")
+            .setEmail("esb-publisher@ceh.ac.uk");
+        addUserToGroup(user, ESB_EDITOR, ESB_PUBLISHER);
         userStore().addUser(user, "password");
     }
 
@@ -299,14 +310,16 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(INMS_PUBLISHER, "");
         groupStore.createGroup(M_EDITOR, "");
         groupStore.createGroup(M_PUBLISHER, "");
+        groupStore.createGroup(NM_EDITOR, "");
+        groupStore.createGroup(NM_PUBLISHER, "");
         groupStore.createGroup(MAINTENANCE_ROLE, "");
         groupStore.createGroup(NC_EDITOR, "");
         groupStore.createGroup(NC_PUBLISHER, "");
         groupStore.createGroup(OSDP_EDITOR, "");
         groupStore.createGroup(OSDP_PUBLISHER, "");
         groupStore.createGroup(READONLY_ROLE, "");
-        groupStore.createGroup(SA_EDITOR, "");
-        groupStore.createGroup(SA_PUBLISHER, "");
+        groupStore.createGroup(ESB_EDITOR, "");
+        groupStore.createGroup(ESB_PUBLISHER, "");
         groupStore.createGroup(UKSCAPE_PUBLISHER, "");
         groupStore.createGroup(UKSCAPE_EDITOR, "");
         return groupStore;

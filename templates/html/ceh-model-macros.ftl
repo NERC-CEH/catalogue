@@ -1,10 +1,8 @@
-
-<#macro key key definition="" auto_esc=false>
-  <@b.basicRow "key-value"> 
-    <@keyContent key definition>
-      <#nested>
-    </@keyContent>
-  </@b.basicRow>
+<#macro key key definition="" classes="" auto_esc=false>
+  <div class="${classes}">
+    <div><strong title="${definition}">${key}</strong></div>
+    <div><#nested></div>
+  </div>
 </#macro>
 
 <#macro keyContent key definition="">

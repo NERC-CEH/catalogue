@@ -133,7 +133,7 @@
     display: block;
   }
   #section-children {
-    margin-top: 5em;
+    margin: 3.5em 0;
   }
 
   #section-supplemental {
@@ -234,6 +234,7 @@
   .grid {
     display: grid;
     gap: 2em;
+    margin-bottom: 2em;
     grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
 
     &-compact {
@@ -247,35 +248,55 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
-    padding: 1em;
-    overflow: hidden;
-    border: 1px solid #353535;
-    border-radius: 4px;
+    border: 2px solid @brand-success;
+    border-radius: 8px;
     box-shadow: rgba(3, 8, 20, 0.1) 0px 0.15rem 0.5rem,
       rgba(2, 8, 20, 0.1) 0px 0.075rem 0.175rem;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     justify-content: top;
-
-    &-header,
-    &-footer {
-      flex-shrink: 0;
+    display: grid;
+    grid-template-columns: 10rem auto;
+    gap: 1em;
+    > div {
+      padding: 1em;
+      overflow: hidden;
+    }
+    div:first-child {
+      text-align: center;
+      i {
+        background-color: @brand-success;
+        border-radius: 50%;
+        border: 2px solid white;
+        color: white;
+        font-size: 1.5rem;
+        font-style: normal;
+        line-height: 2.5rem;
+        width: 4rem;
+        height: 4rem;
+        text-align: center;
+        margin-right: 0.2rem;
+        padding-top: 0.5rem;
+      }
+    }
+    span {
+      color: grey;
     }
 
-    &-body {
-      flex-grow: 1;
-      padding: 1em;
-      font-weight: bold;
+    &:hover {
+      span {
+        color: white;
+      }
     }
   }
 
   a.card {
-    color: #777;
+    color: @brand-success;
 
     &:hover {
-      background-color: #eee;
-      color: #000;
+      background-color: @brand-success;
+      color: white;
       text-decoration: none;
     }
   }
@@ -616,5 +637,11 @@ dl.dl-horizontal {
         font-weight: bold;
       }
     }
+  }
+}
+
+@media only screen and (min-width: 557px) {
+  .card {
+    align-items: center;
   }
 }

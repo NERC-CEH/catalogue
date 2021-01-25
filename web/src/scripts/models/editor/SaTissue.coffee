@@ -8,7 +8,7 @@ define [
   uris:
     'Bone': 'http://vocab.ceh.ac.uk.org/esb#bone'
     'Brain': 'http://vocab.ceh.ac.uk.org/esb#brain'
-    'Egg': 'http://vocab.ceh.ac.uk.org/esb#egg'
+    'Egg': 'http://vocab.ceh.ac.uk.org/esb#eggTissue'
     'Fat': 'http://vocab.ceh.ac.uk.org/esb#fat '
     'Feather': 'http://vocab.ceh.ac.uk.org/esb#feather'
     'Fur': 'http://vocab.ceh.ac.uk.org/esb#fur'

@@ -7,7 +7,12 @@
        <#else> 
         <#assign licenceText = licence.value >
       </#if>
-
+      <#if resourceStatus?? && resourceStatus == 'Controlled'>
+        <span class="fa-stack" title="Access to this data is controlled - a bespoke licence may need to be negotiated">
+          <i class="text-muted fas fa-lock-open fa-stack-1x"></i>
+          <i class="fas fa-slash fa-stack-1x"></i>
+        </span>
+      </#if>
 
         <#if licence.uri?has_content><a rel="license" href="${licence.uri}"></#if>
           ${licenceText?replace("resource",recordType)?html}
