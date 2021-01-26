@@ -65,15 +65,14 @@ module.exports = function (grunt) {
           'src/css/style-edge.css': 'src/less/style-edge.less'
         }
       },
-      eidc: {
-        files: {
-          'src/css/style-eidc.css': 'src/less/style-eidc.less'
-        }
-      },
       elter: {
         files: {
           "src/css/style-elter.css": "src/less/style-elter.less",
         },
+      eidc: {
+        files: {
+          'src/css/style-eidc.css': 'src/less/style-eidc.less'
+        }
       },
       erammp: {
         files: {
@@ -119,6 +118,11 @@ module.exports = function (grunt) {
         files: {
           'src/css/style-ukscape.css': 'src/less/style-ukscape.less'
         }
+      },
+      ukscape: {
+        files: {
+          'src/css/style-ukscape.css': 'src/less/style-ukscape.less'
+        }
       }
     },
     cssmin: {
@@ -154,17 +158,12 @@ module.exports = function (grunt) {
       },
       elter: {
         files: {
-          'src/css/style-elter.css': 'src/css/style-elter.css'
-        }
-      },
-      erammp: {
-        files: {
-          'src/css/style-erammp.css': 'src/css/style-erammp.css'
-        }
-      },
+          'src/css/style-datalabs.css': 'src/css/style-datalabs.css'
+          }
+        },
       inlicensed: {
         files: {
-          'src/css/style-inlicensed.css': 'src/css/style-inlicensed.css'
+          'src/css/style-elter.css': 'src/css/style-elter.css'
         }
       },
       inms: {
@@ -195,6 +194,11 @@ module.exports = function (grunt) {
       esb: {
         files: {
           'src/css/style-esb.css': 'src/css/style-esb.css'
+        }
+      },
+      ukscape: {
+        files: {
+          'src/css/style-ukscape.css': 'src/css/style-ukscape.css'
         }
       },
       ukscape: {

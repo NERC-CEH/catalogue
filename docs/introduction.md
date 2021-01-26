@@ -159,9 +159,9 @@ Metadata quality checker, applies rules to the metadata document especially Gemi
 
 How metadata documents are stored and retrieved from a Git repository
 
-#### sb
+#### sa
 
-Specimen Bank documents
+Sample Archive model documents
 
 #### search
 
