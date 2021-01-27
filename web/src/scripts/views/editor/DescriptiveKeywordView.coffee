@@ -1,12 +1,13 @@
 define [
   'underscore'
+  'jquery'
   'backbone'
   'cs!views/editor/ObjectInputView'
   'cs!views/editor/ChildView'
   'cs!views/editor/KeywordView'
   'cs!views/editor/KeywordPickerView'
   'tpl!templates/editor/DescriptiveKeyword.tpl'
-], (_, Backbone, ObjectInputView, ChildView, KeywordView, KeywordPickerView, template) -> ObjectInputView.extend
+], (_, $, Backbone, ObjectInputView, ChildView, KeywordView, KeywordPickerView, template) -> ObjectInputView.extend
 
   template: template
 
@@ -15,6 +16,8 @@ define [
       'click .add': -> do @add
 
       'click .predefined': (event) -> @addPredefined event
+
+      'click .keyword-picker-add': -> @showKeywordPicker()
 
   initialize: (options) ->
     ObjectInputView.prototype.initialize.call @, options
@@ -31,8 +34,6 @@ define [
     @createList @keywords, '.keywords', @addOne
 
     @$('input.date').datepicker dateFormat: "yy-mm-dd"
-    new KeywordPickerView
-        el: '.keyword-picker'
 
   render: ->
     ObjectInputView.prototype.render.apply @
@@ -50,7 +51,7 @@ define [
 
   addPredefined: (event) ->
     event.preventDefault()
-    $target = @$(event.target)
+    $target = $(event.target)
     @keywords.add
       value: $target.text()
       uri: $target.attr 'href'
@@ -64,3 +65,9 @@ define [
       @model.set name, value
     else
       @model.unset name
+
+  showKeywordPicker: ->
+    new KeywordPickerView
+        el: @$('.keyword-picker')
+        addPredefined: (event) => @addPredefined(event)
+

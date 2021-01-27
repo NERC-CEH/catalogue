@@ -15,6 +15,51 @@
 #editor {
   padding-bottom: 70px;
 
+  .keyword-picker-add {
+    .btn;
+    btn-default;
+    .btn-sm;
+    margin-left: 8px;
+    float: left;
+  }
+
+  .add {
+    .btn;
+    .btn-default;
+    .btn-sm;
+    margin: auto;
+    border-color: lighten(@gray-light, 15%);
+    appearance: button;
+    margin-bottom: 10px;
+    width: 90%;
+    height: 20%;
+    text-align: left;
+  }
+
+  .keyword-picker-outer{
+    border-style: solid;
+    border-width: 1px;
+    border-color: lighten(@gray-light, 15%);
+    border-radius: 5px;
+    padding: 1em;
+    padding: 1em;
+    height: 20%;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .keyword-picker-inner{
+    border-style: solid;
+    border-width: 1px;
+    border-color: lighten(@gray-light, 15%);
+    border-radius: 5px;
+    padding: 1em;
+    padding: 1em;
+    height: 20%;
+    overflow: hidden;
+    text-align:center;
+  }
+
   .editor-input {
     .form-control;
     .input-sm;
@@ -170,7 +215,6 @@
     margin-bottom: 70px;
     max-height: 350px;
     overflow: auto;
-    z-index: -1;
     position: relative
   }
 
@@ -232,4 +276,5 @@ ul.ui-autocomplete {
     font-size: 0.8em;
     font-family: @font-family-sans-serif;
   }
+
 }
