@@ -1,4 +1,4 @@
-<#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" || resourceStatus == "Embargoed">
+<#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" || resourceStatus == "Embargoed" || resourceStatus == "In progress">
     <div id="resourceStatus" class="alert alert-${resourceStatus}" role="alert">
         <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
             <p>
@@ -19,6 +19,13 @@
                 and will be made available by ${datasetReferenceDate.releasedDate?date?string["d MMMM yyyy"]} at the latest
             </#if>
             &nbsp;<a href="https://www.eidc.ac.uk/help/faq/embargos" target="_blank" rel="noopener noreferrer" title="more information about embargos"><i class="fas fa-question-circle text-info"></i></a>
+        </p>
+        <#elseif resourceStatus == "In progress">
+         <p>
+             <b>This ${recordType} is currently being generated</b>
+             <#if datasetReferenceDate?? && datasetReferenceDate.releasedDate?has_content>
+                 and is expected to become available from ${datasetReferenceDate.releasedDate?date?string["d MMMM yyyy"]} at the latest
+             </#if>
         </p>
         </#if>
     </div>
