@@ -22,6 +22,7 @@ define [
     'Registration is required to access this data':'Available'
     'no limitations to public access':'Available'
     'embargoed':'Embargoed'
+    'in-progress':'In-progress'
     'superseded':'Superseded'
     'withdrawn':'Withdrawn'
     'To access this data, a licence needs to be negotiated with the provider and there may be a cost':'Controlled'
