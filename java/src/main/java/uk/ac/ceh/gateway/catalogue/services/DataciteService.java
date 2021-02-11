@@ -7,9 +7,11 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.DataciteException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.services.requests.DataciteRequest;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -96,13 +99,16 @@ public class DataciteService {
         if (doi != null) {
             val url = UriComponentsBuilder
                     .fromHttpUrl(api)
-                    .pathSegment("metadata", doi)
+                    .pathSegment(doi)
                     .toUriString();
             try {
+                HttpHeaders headers = withBasicAuth(username, password);
+                headers.set("Accept", "application/vnd.datacite.datacite+xml");
+
                 return restTemplate.exchange(
                         url,
                         HttpMethod.GET,
-                        new HttpEntity<>(withBasicAuth(username, password)),
+                        new HttpEntity<>(headers),
                         String.class
                 ).getBody();
             }
@@ -125,15 +131,18 @@ public class DataciteService {
         if(isDatacitable(document)) {
             try {
                 val headers = withBasicAuth(username, password);
-                headers.setContentType(MediaType.valueOf("application/xml;charset=UTF-8"));
+                headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
                 val request = getDatacitationRequest(document);
                 val url = UriComponentsBuilder
                         .fromHttpUrl(api)
-                        .path("metadata")
+                        .path(getDoi(document))
                         .toUriString();
-                restTemplate.postForEntity(
+
+                DataciteRequest dataciteRequest = new DataciteRequest(getDoi(document), request);
+                restTemplate.exchange(
                         url,
-                        new HttpEntity<>(request, headers),
+                        HttpMethod.PUT,
+                        new HttpEntity<>(dataciteRequest, headers),
                         String.class
                 );
 
@@ -163,18 +172,18 @@ public class DataciteService {
     public void mintDoiRequest(GeminiDocument document) {
         if(isDataciteMintable(document)) {
             val doi = generateDoiString(document);
-            val request = format("doi=%s\nurl=%s", doi, identifierService.generateUri(document.getId()));
+            val request = getDatacitationRequest(document);
             log.info("Requesting mint of doi: {}", request);
             val url = UriComponentsBuilder
                     .fromHttpUrl(api)
-                    .path("doi")
                     .toUriString();
+            DataciteRequest dataciteRequest = new DataciteRequest(doi, request);
             try {
                 val headers = withBasicAuth(username, password);
-                headers.setContentType(MediaType.TEXT_PLAIN);
+                headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
                 restTemplate.postForEntity(
                         url,
-                        new HttpEntity<>(request, headers),
+                        new HttpEntity<>(dataciteRequest, headers),
                         String.class
                 );
             }
