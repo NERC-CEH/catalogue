@@ -174,18 +174,20 @@ public class DataciteService {
     public void mintDoiRequest(GeminiDocument document) {
         if(isDataciteMintable(document)) {
             val doi = generateDoiString(document);
-            val request = format("doi=%s\nurl=%s", doi, identifierService.generateUri(document.getId()));
+            val request = getDatacitationRequest(document);
             log.info("Requesting mint of doi: {}", request);
             val url = UriComponentsBuilder
-                    .fromHttpUrl(mintApi)
-                    .path("doi")
+                    .fromHttpUrl(api)
                     .toUriString();
+            DataciteRequest dataciteRequest = new DataciteRequest(doi, request);
             try {
                 val headers = withBasicAuth(username, password);
                 headers.setContentType(MediaType.TEXT_PLAIN);
-                restTemplate.postForEntity(
+                headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
+                restTemplate.exchange(
                         url,
-                        new HttpEntity<>(request, headers),
+                        HttpMethod.PUT,
+                        new HttpEntity<>(dataciteRequest, headers),
                         String.class
                 );
             }
