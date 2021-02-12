@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.services.requests;
+package uk.ac.ceh.gateway.catalogue.datacite;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 import lombok.Value;

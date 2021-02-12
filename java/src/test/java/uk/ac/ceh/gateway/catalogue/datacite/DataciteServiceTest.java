@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.services;
+package uk.ac.ceh.gateway.catalogue.datacite;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -18,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -46,6 +47,7 @@ public class DataciteServiceTest {
         val restTemplate = new RestTemplate();
         service = new DataciteService(
                 "https://example.com/dois",
+                "https://example.com/",
                 "10.8268/",
                 "Test publisher",
                 "username",
@@ -166,7 +168,6 @@ public class DataciteServiceTest {
 
 
     @Test
-    @SneakyThrows
     public void checkThatPostsToDoiMintEndpointWhenValid() {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
@@ -180,13 +181,12 @@ public class DataciteServiceTest {
         document.setMetadata(metadata);
         when(identifierService.generateUri("MY_ID")).thenReturn("http://ceh.com");
         document.setId("MY_ID");
-        given(configuration.getTemplate("datacite/datacite.ftl")).willReturn(mock(Template.class));
 
         mockServer
-                .expect(requestTo("https://example.com/dois"))
+                .expect(requestTo("https://example.com/doi"))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().contentTypeCompatibleWith(MediaType.valueOf("application/vnd.api+json")))
-                .andExpect(content().string("{\"id\":\"10.8268/MY_ID\",\"type\":\"dois\",\"atttributes\":{\"event\":\"publish\",\"url\":\"https://schema.datacite.org/meta/kernel-4.0/index.html\",\"xml\":\"\"}}"))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
+                .andExpect(content().string("doi=10.8268/MY_ID\nurl=http://ceh.com"))
                 .andRespond(withSuccess());
 
         //When
@@ -194,5 +194,6 @@ public class DataciteServiceTest {
 
         //Then
         mockServer.verify();
+        verify(identifierService).generateUri("MY_ID");
     }
 }

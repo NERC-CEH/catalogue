@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.services;
+package uk.ac.ceh.gateway.catalogue.datacite;
 
 import com.google.common.base.Strings;
 import freemarker.template.Configuration;
@@ -7,7 +7,6 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -26,7 +25,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.DataciteException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.services.requests.DataciteRequest;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -47,6 +46,7 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 @ToString(exclude = "password")
 public class DataciteService {
     private final String api;
+    private final String mintApi;
     private final String prefix;
     private final String publisher;
     private final String username;
@@ -58,6 +58,7 @@ public class DataciteService {
 
     public DataciteService(
             @Value("${doi.api}") String api,
+            @Value("${doi.mintApi}") String mintApi,
             @Value("${doi.prefix}") String prefix,
             @Value("${doi.publisher}") String publisher,
             @Value("${doi.username}") String username,
@@ -68,6 +69,7 @@ public class DataciteService {
             @Qualifier("normal") RestTemplate restTemplate
     ) {
         this.api = api;
+        this.mintApi = mintApi;
         this.prefix = prefix;
         this.publisher = publisher;
         this.username = username;
@@ -172,18 +174,18 @@ public class DataciteService {
     public void mintDoiRequest(GeminiDocument document) {
         if(isDataciteMintable(document)) {
             val doi = generateDoiString(document);
-            val request = getDatacitationRequest(document);
+            val request = format("doi=%s\nurl=%s", doi, identifierService.generateUri(document.getId()));
             log.info("Requesting mint of doi: {}", request);
             val url = UriComponentsBuilder
-                    .fromHttpUrl(api)
+                    .fromHttpUrl(mintApi)
+                    .path("doi")
                     .toUriString();
-            DataciteRequest dataciteRequest = new DataciteRequest(doi, request);
             try {
                 val headers = withBasicAuth(username, password);
-                headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
+                headers.setContentType(MediaType.TEXT_PLAIN);
                 restTemplate.postForEntity(
                         url,
-                        new HttpEntity<>(dataciteRequest, headers),
+                        new HttpEntity<>(request, headers),
                         String.class
                 );
             }
