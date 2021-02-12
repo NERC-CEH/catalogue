@@ -29,6 +29,8 @@ build_java:
   script: ./gradlew -g ./cache/gradle clean prepFixtures build
   artifacts:
     when: always
+    reports:
+      junit: build/test-results/test/**/TEST-*.xml
     expire_in: 2 hrs
     paths:
       - java/build/libs/ROOT.war
