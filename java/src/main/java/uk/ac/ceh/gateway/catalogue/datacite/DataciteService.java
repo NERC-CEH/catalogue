@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 /**
@@ -46,7 +45,6 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 @ToString(exclude = "password")
 public class DataciteService {
     private final String api;
-    private final String mintApi;
     private final String prefix;
     private final String publisher;
     private final String username;
@@ -58,7 +56,6 @@ public class DataciteService {
 
     public DataciteService(
             @Value("${doi.api}") String api,
-            @Value("${doi.mintApi}") String mintApi,
             @Value("${doi.prefix}") String prefix,
             @Value("${doi.publisher}") String publisher,
             @Value("${doi.username}") String username,
@@ -69,7 +66,6 @@ public class DataciteService {
             @Qualifier("normal") RestTemplate restTemplate
     ) {
         this.api = api;
-        this.mintApi = mintApi;
         this.prefix = prefix;
         this.publisher = publisher;
         this.username = username;
@@ -86,9 +82,42 @@ public class DataciteService {
      * gets the that request minted
      */
     public ResourceIdentifier generateDoi(GeminiDocument document) throws DataciteException {
-        ResourceIdentifier doi = updateDoiMetadata(document);
-        mintDoiRequest(document);
-        return doi;
+        if(isDataciteMintable(document)) {
+            val doi = generateDoiString(document);
+            val request = getDatacitationRequest(document);
+            log.info("Requesting mint of doi: {}", request);
+            val url = UriComponentsBuilder
+                    .fromHttpUrl(api)
+                    .toUriString();
+            DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
+            try {
+                val headers = withBasicAuth(username, password);
+                headers.setContentType(MediaType.TEXT_PLAIN);
+                headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
+                restTemplate.postForEntity(
+                        url,
+                        new HttpEntity<>(dataciteRequest, headers),
+                        String.class
+                );
+            }
+            catch(HttpClientErrorException ex) {
+                log.error("Failed to mint doi: {} - {}", doi, ex.getResponseBodyAsString());
+                throw new DataciteException("Minting of the DOI failed, please review the datacite.xml (is it valid?) then try again", ex);
+            }
+            catch(RestClientException ex) {
+                throw new DataciteException("Failed to communicate with the datacite api when trying to mint the doi", ex);
+            }
+        }
+        else {
+            throw new DataciteException("This record does not meet the requirements for datacite minting");
+        }
+
+        return ResourceIdentifier
+                .builder()
+                .code(generateDoiString(document))
+                .codeSpace("doi:")
+                .build();
+
     }
 
     /**
@@ -129,7 +158,7 @@ public class DataciteService {
      * @param document to submit a metadata datacite request of
      * @return the generated doi represented as a resource identifier
      */
-    public ResourceIdentifier updateDoiMetadata(GeminiDocument document) {
+    public void updateDoiMetadata(GeminiDocument document) {
         if(isDatacitable(document)) {
             try {
                 val headers = withBasicAuth(username, password);
@@ -140,7 +169,7 @@ public class DataciteService {
                         .path(getDoi(document))
                         .toUriString();
 
-                DataciteRequest dataciteRequest = new DataciteRequest(getDoi(document), request);
+                DataciteRequest dataciteRequest = new DataciteRequest(getDoi(document), request, identifierService.generateUri(document.getId()));
                 restTemplate.exchange(
                         url,
                         HttpMethod.PUT,
@@ -148,11 +177,6 @@ public class DataciteService {
                         String.class
                 );
 
-                return ResourceIdentifier
-                        .builder()
-                        .code(generateDoiString(document))
-                        .codeSpace("doi:")
-                        .build();
             }
             catch(HttpClientErrorException ex) {
                 log.error("Failed to upload doi: {} - {}", generateDoiString(document), ex.getResponseBodyAsString());
@@ -179,14 +203,13 @@ public class DataciteService {
             val url = UriComponentsBuilder
                     .fromHttpUrl(api)
                     .toUriString();
-            DataciteRequest dataciteRequest = new DataciteRequest(doi, request);
+            DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
             try {
                 val headers = withBasicAuth(username, password);
                 headers.setContentType(MediaType.TEXT_PLAIN);
                 headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
-                restTemplate.exchange(
+                restTemplate.postForEntity(
                         url,
-                        HttpMethod.PUT,
                         new HttpEntity<>(dataciteRequest, headers),
                         String.class
                 );

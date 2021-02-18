@@ -7,10 +7,10 @@ import org.apache.commons.codec.binary.Base64;
 @Value
 @JsonRootName("data")
 public class DataciteRequest {
-    public DataciteRequest(String id, String request) {
+    public DataciteRequest(String id, String request, String url) {
         this.id = id;
         this.type = "dois";
-        this.atttributes = new Attributes(request);
+        this.atttributes = new Attributes(request, url);
     }
 
     String id; // this is the DOI
@@ -19,11 +19,11 @@ public class DataciteRequest {
 
     @Value
     public static class Attributes {
-        public Attributes(String xml) {
+        public Attributes(String xml, String url) {
             byte[] bytesEncoded = Base64.encodeBase64(xml.getBytes());
             this.xml = new String(bytesEncoded);
             this.event = "publish";
-            this.url = "https://schema.datacite.org/meta/kernel-4.0/index.html";
+            this.url = url;
         }
 
         String event; // fixed as "publish" String doi;

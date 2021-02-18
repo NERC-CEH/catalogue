@@ -46,8 +46,7 @@ public class DataciteServiceTest {
     public void init() {
         val restTemplate = new RestTemplate();
         service = new DataciteService(
-                "https://example.com/dois",
-                "https://example.com/",
+                "https://example.com/doi",
                 "10.8268/",
                 "Test publisher",
                 "username",
@@ -154,7 +153,7 @@ public class DataciteServiceTest {
 
         // TODO: in future could look at the xml content sent to Datacite
         mockServer
-                .expect(requestTo("https://example.com/dois"))
+                .expect(requestTo("https://example.com/doi"))
                 .andExpect(method(HttpMethod.PUT))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.valueOf("application/vnd.api+json")))
                 .andRespond(withSuccess());
@@ -185,10 +184,10 @@ public class DataciteServiceTest {
         given(configuration.getTemplate("datacite/datacite.ftl")).willReturn(mock(Template.class));
 
         mockServer
-                .expect(requestTo("https://example.com/dois"))
-                .andExpect(method(HttpMethod.PUT))
+                .expect(requestTo("https://example.com/doi"))
+                .andExpect(method(HttpMethod.POST))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.valueOf("application/vnd.api+json")))
-                .andExpect(content().string("{\"id\":\"10.8268/MY_ID\",\"type\":\"dois\",\"atttributes\":{\"event\":\"publish\",\"url\":\"https://schema.datacite.org/meta/kernel-4.0/index.html\",\"xml\":\"\"}}"))
+                .andExpect(content().string("{\"id\":\"10.8268/MY_ID\",\"type\":\"dois\",\"atttributes\":{\"event\":\"publish\",\"url\":\"http://ceh.com\",\"xml\":\"\"}}"))
                 .andRespond(withSuccess());
 
         //When
@@ -196,5 +195,6 @@ public class DataciteServiceTest {
 
         //Then
         mockServer.verify();
+        verify(identifierService).generateUri("MY_ID");
     }
 }
