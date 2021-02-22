@@ -10,6 +10,7 @@ services:
       - ./web/src:/opt/ceh-catalogue/web
       - ./java/build/libs:/opt/ceh-catalogue/libs
     environment:
+      - doi.api=https://api.test.datacite.org/dois
       - spring.profiles.active=development,upload:simple
       - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
   solr:
