@@ -92,7 +92,6 @@ public class DataciteService {
             DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
             try {
                 val headers = withBasicAuth(username, password);
-                headers.setContentType(MediaType.TEXT_PLAIN);
                 headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
                 restTemplate.postForEntity(
                         url,
@@ -156,7 +155,6 @@ public class DataciteService {
      * Contact the datacite rest api and submit a metadata request. This is only
      * possible if the document is in the correct format
      * @param document to submit a metadata datacite request of
-     * @return the generated doi represented as a resource identifier
      */
     public void updateDoiMetadata(GeminiDocument document) {
         if(isDatacitable(document)) {
@@ -188,42 +186,6 @@ public class DataciteService {
         }
         else {
             throw new DataciteException("This record does not meet the requirements for datacite updating");
-        }
-    }
-
-    /**
-     * Mints a datacite metadata request for a given document.
-     * @param document the document which should be doi minted
-     */
-    public void mintDoiRequest(GeminiDocument document) {
-        if(isDataciteMintable(document)) {
-            val doi = generateDoiString(document);
-            val request = getDatacitationRequest(document);
-            log.info("Requesting mint of doi: {}", request);
-            val url = UriComponentsBuilder
-                    .fromHttpUrl(api)
-                    .toUriString();
-            DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
-            try {
-                val headers = withBasicAuth(username, password);
-                headers.setContentType(MediaType.TEXT_PLAIN);
-                headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
-                restTemplate.postForEntity(
-                        url,
-                        new HttpEntity<>(dataciteRequest, headers),
-                        String.class
-                );
-            }
-            catch(HttpClientErrorException ex) {
-                log.error("Failed to mint doi: {} - {}", doi, ex.getResponseBodyAsString());
-                throw new DataciteException("Minting of the DOI failed, please review the datacite.xml (is it valid?) then try again", ex);
-            }
-            catch(RestClientException ex) {
-                throw new DataciteException("Failed to communicate with the datacite api when trying to mint the doi", ex);
-            }
-        }
-        else {
-            throw new DataciteException("This record does not meet the requirements for datacite minting");
         }
     }
 

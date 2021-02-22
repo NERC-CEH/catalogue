@@ -138,7 +138,7 @@ public class DataciteServiceTest {
 
     @Test
     @SneakyThrows
-    public void checkThatPostsToRestEndpointWhenValid() {
+    public void updatesDoiMetadata() {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
         ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
@@ -168,7 +168,7 @@ public class DataciteServiceTest {
 
     @Test
     @SneakyThrows
-    public void checkThatPostsToDoiMintEndpointWhenValid() {
+    public void generateDoi() {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
         ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
@@ -191,7 +191,7 @@ public class DataciteServiceTest {
                 .andRespond(withSuccess());
 
         //When
-        service.mintDoiRequest(document);
+        service.generateDoi(document);
 
         //Then
         mockServer.verify();

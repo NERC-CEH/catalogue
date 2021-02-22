@@ -27,7 +27,7 @@ public class DataciteRequest {
         }
 
         String event; // fixed as "publish" String doi;
-        String url; //fixed as "https://schema.datacite.org/meta/kernel-4.0/index.html"
+        String url; // url of DOI landing page
         String xml; // base64 encoded xml from the Freemarker template
     }
 }
