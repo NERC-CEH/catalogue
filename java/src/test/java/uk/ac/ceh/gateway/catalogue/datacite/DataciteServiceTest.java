@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.datacite;
 
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,13 +20,14 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -38,20 +39,22 @@ public class DataciteServiceTest {
     private MockRestServiceServer mockServer;
     @Mock
     DocumentIdentifierService identifierService;
-    @Mock
     Configuration configuration;
+    String doiPrefix = "10.8268/";
 
     @Before
     @SneakyThrows
     public void init() {
         val restTemplate = new RestTemplate();
+        configuration = new Configuration(Configuration.VERSION_2_3_23);
+        configuration.setDirectoryForTemplateLoading(new File("../templates"));
         service = new DataciteService(
                 "https://example.com/doi",
-                "10.8268/",
+                doiPrefix,
                 "Test publisher",
                 "username",
                 "password",
-                "datacite/datacite.ftl",
+                "datacite/datacite.xml.tpl",
                 identifierService,
                 configuration,
                 restTemplate
@@ -77,7 +80,7 @@ public class DataciteServiceTest {
 
         //Then
         assertTrue("Expected document to be updatable", dataciteUpdatable);
-        verifyZeroInteractions(configuration, identifierService);
+        verifyZeroInteractions(identifierService);
     }
 
     @Test
@@ -98,7 +101,7 @@ public class DataciteServiceTest {
 
         //Then
         assertFalse("Expected document to not be updatable", dataciteUpdatable);
-        verifyZeroInteractions(configuration, identifierService);
+        verifyZeroInteractions(identifierService);
     }
 
     @Test
@@ -119,7 +122,7 @@ public class DataciteServiceTest {
 
         //Then
         assertTrue("Expected document to be updatable", dataciteUpdatable);
-        verifyZeroInteractions(configuration, identifierService);
+        verifyZeroInteractions(identifierService);
     }
 
     @Test
@@ -133,23 +136,23 @@ public class DataciteServiceTest {
 
         //Then
         assertFalse("Expected document to not be updatable", dataciteUpdatable);
-        verifyZeroInteractions(configuration, identifierService);
+        verifyZeroInteractions(identifierService);
     }
 
     @Test
     @SneakyThrows
     public void updatesDoiMetadata() {
         //Given
-        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
-        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
-        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
+        val author = ResponsibleParty.builder().role("author").build();
+        val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
+        val metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
-        GeminiDocument document = new GeminiDocument();
+        val document = new GeminiDocument();
+        document.setDescription("Some description");
         document.setResponsibleParties(Arrays.asList(author, publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
-        given(configuration.getTemplate("datacite/datacite.ftl")).willReturn(mock(Template.class));
 
         // TODO: in future could look at the xml content sent to Datacite
         mockServer
@@ -170,24 +173,29 @@ public class DataciteServiceTest {
     @SneakyThrows
     public void generateDoi() {
         //Given
-        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
-        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
-        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
+        val id = "d4bdc836-5b89-44c5-aca2-2880a5d5a5be";
+        val author = ResponsibleParty.builder().role("author").build();
+        val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
+        val metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
-        GeminiDocument document = new GeminiDocument();
+        val document = new GeminiDocument();
+        document.setDescription("This is the description");
         document.setResponsibleParties(Arrays.asList(author, publisher));
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
-        when(identifierService.generateUri("MY_ID")).thenReturn("http://ceh.com");
-        document.setId("MY_ID");
-        given(configuration.getTemplate("datacite/datacite.ftl")).willReturn(mock(Template.class));
+        document.setId(id);
+        when(identifierService.generateUri(id)).thenReturn("https://catalogue.ceh.ac.uk/id/" + id);
+        val encoded = IOUtils.toString(getClass().getResourceAsStream("encoded.txt"), StandardCharsets.UTF_8);
 
         mockServer
                 .expect(requestTo("https://example.com/doi"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.valueOf("application/vnd.api+json")))
-                .andExpect(content().string("{\"id\":\"10.8268/MY_ID\",\"type\":\"dois\",\"atttributes\":{\"event\":\"publish\",\"url\":\"http://ceh.com\",\"xml\":\"\"}}"))
+                .andExpect(jsonPath("$.data.id").value(doiPrefix + id))
+                .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + id))
+                .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + id))
+                .andExpect(jsonPath("$.data.attributes.xml").value(encoded))
                 .andRespond(withSuccess());
 
         //When
@@ -195,6 +203,6 @@ public class DataciteServiceTest {
 
         //Then
         mockServer.verify();
-        verify(identifierService).generateUri("MY_ID");
+        verify(identifierService).generateUri(id);
     }
 }
