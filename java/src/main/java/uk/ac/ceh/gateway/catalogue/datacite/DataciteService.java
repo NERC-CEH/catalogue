@@ -159,15 +159,16 @@ public class DataciteService {
     public void updateDoiMetadata(GeminiDocument document) {
         if(isDatacitable(document)) {
             try {
+                val doi = generateDoiString(document);
                 val headers = withBasicAuth(username, password);
                 headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
                 val request = getDatacitationRequest(document);
                 val url = UriComponentsBuilder
                         .fromHttpUrl(api)
-                        .path(getDoi(document))
+                        .pathSegment(prefix, document.getId())
                         .toUriString();
 
-                DataciteRequest dataciteRequest = new DataciteRequest(getDoi(document), request, identifierService.generateUri(document.getId()));
+                DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
                 restTemplate.exchange(
                         url,
                         HttpMethod.PUT,
@@ -290,6 +291,6 @@ public class DataciteService {
     }
 
     private String generateDoiString(GeminiDocument document) {
-        return prefix + document.getId();
+        return prefix + "/" + document.getId();
     }
 }

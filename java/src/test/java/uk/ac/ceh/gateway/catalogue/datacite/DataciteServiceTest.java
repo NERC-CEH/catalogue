@@ -35,12 +35,14 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class DataciteServiceTest {
+    private static String ID = "d4bdc836-5b89-44c5-aca2-2880a5d5a5be";
+
     private DataciteService service;
     private MockRestServiceServer mockServer;
     @Mock
     DocumentIdentifierService identifierService;
     Configuration configuration;
-    String doiPrefix = "10.8268/";
+    String doiPrefix = "10.8268";
 
     @Before
     @SneakyThrows
@@ -143,22 +145,19 @@ public class DataciteServiceTest {
     @SneakyThrows
     public void updatesDoiMetadata() {
         //Given
-        val author = ResponsibleParty.builder().role("author").build();
-        val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
-        val metadata = MetadataInfo.builder().state("published").build();
-        metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
-        val document = new GeminiDocument();
-        document.setDescription("Some description");
-        document.setResponsibleParties(Arrays.asList(author, publisher));
-        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
-        document.setTitle("Title");
-        document.setMetadata(metadata);
+        val document = getGeminiDocument();
+        when(identifierService.generateUri(ID)).thenReturn("https://catalogue.ceh.ac.uk/id/" + ID);
+        val encoded = IOUtils.toString(getClass().getResourceAsStream("encoded.txt"), StandardCharsets.UTF_8);
 
         // TODO: in future could look at the xml content sent to Datacite
         mockServer
-                .expect(requestTo("https://example.com/doi"))
+                .expect(requestTo("https://example.com/doi/10.8268/d4bdc836-5b89-44c5-aca2-2880a5d5a5be"))
                 .andExpect(method(HttpMethod.PUT))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.valueOf("application/vnd.api+json")))
+                .andExpect(jsonPath("$.data.id").value(doiPrefix + "/" + ID))
+                .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + "/" + ID))
+                .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + ID))
+                .andExpect(jsonPath("$.data.attributes.xml").value(encoded))
                 .andRespond(withSuccess());
 
         //When
@@ -166,6 +165,7 @@ public class DataciteServiceTest {
 
         //Then
         mockServer.verify();
+        verify(identifierService).generateUri(ID);
     }
 
 
@@ -173,7 +173,29 @@ public class DataciteServiceTest {
     @SneakyThrows
     public void generateDoi() {
         //Given
-        val id = "d4bdc836-5b89-44c5-aca2-2880a5d5a5be";
+        val document = getGeminiDocument();
+        when(identifierService.generateUri(ID)).thenReturn("https://catalogue.ceh.ac.uk/id/" + ID);
+        val encoded = IOUtils.toString(getClass().getResourceAsStream("encoded.txt"), StandardCharsets.UTF_8);
+
+        mockServer
+                .expect(requestTo("https://example.com/doi"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.valueOf("application/vnd.api+json")))
+                .andExpect(jsonPath("$.data.id").value(doiPrefix + "/" + ID))
+                .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + "/" + ID))
+                .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + ID))
+                .andExpect(jsonPath("$.data.attributes.xml").value(encoded))
+                .andRespond(withSuccess());
+
+        //When
+        service.generateDoi(document);
+
+        //Then
+        mockServer.verify();
+        verify(identifierService).generateUri(ID);
+    }
+
+    private GeminiDocument getGeminiDocument(){
         val author = ResponsibleParty.builder().role("author").build();
         val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
         val metadata = MetadataInfo.builder().state("published").build();
@@ -184,25 +206,8 @@ public class DataciteServiceTest {
         document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
         document.setTitle("Title");
         document.setMetadata(metadata);
-        document.setId(id);
-        when(identifierService.generateUri(id)).thenReturn("https://catalogue.ceh.ac.uk/id/" + id);
-        val encoded = IOUtils.toString(getClass().getResourceAsStream("encoded.txt"), StandardCharsets.UTF_8);
+        document.setId(ID);
 
-        mockServer
-                .expect(requestTo("https://example.com/doi"))
-                .andExpect(method(HttpMethod.POST))
-                .andExpect(content().contentTypeCompatibleWith(MediaType.valueOf("application/vnd.api+json")))
-                .andExpect(jsonPath("$.data.id").value(doiPrefix + id))
-                .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + id))
-                .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + id))
-                .andExpect(jsonPath("$.data.attributes.xml").value(encoded))
-                .andRespond(withSuccess());
-
-        //When
-        service.generateDoi(document);
-
-        //Then
-        mockServer.verify();
-        verify(identifierService).generateUri(id);
+        return document;
     }
 }
