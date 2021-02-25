@@ -26,9 +26,11 @@ mirror:
 build_java:
   stage: build
   image: openjdk:15-alpine
-  script: ./gradlew -g ./cache/gradle clean prepFixtures build
+  script: ./gradlew -g ./cache/gradle clean prepFixtures build --no-daemon
   artifacts:
     when: always
+    reports:
+      junit: java/build/test-results/test/**/TEST-*.xml
     expire_in: 2 hrs
     paths:
       - java/build/libs/ROOT.war

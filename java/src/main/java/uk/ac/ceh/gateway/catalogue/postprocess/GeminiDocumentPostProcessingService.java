@@ -7,7 +7,7 @@ import org.apache.jena.query.*;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.services.CitationService;
-import uk.ac.ceh.gateway.catalogue.services.DataciteService;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 import java.util.HashSet;

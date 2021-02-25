@@ -7,10 +7,7 @@
 <#assign pocs = func.filter(doc.responsibleParties, "role", "pointOfContact")>
 <#assign rightsHolders = func.filter(doc.responsibleParties, "role", "rightsHolder")>
 <#assign custodians = func.filter(doc.responsibleParties, "role", "custodian")>
-
-<#compress>
-<#escape x as x?xml>
-<?xml version="1.0" encoding="UTF-8"?>
+<#compress><#escape x as x?xml><?xml version="1.0" encoding="UTF-8"?>
 <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.2/metadata.xsd">
   <identifier identifierType="DOI">${doi}</identifier>
   
@@ -120,9 +117,4 @@
     </#list>
   </fundingReferences>
   </#if>
-</resource>
-</#escape>
-</#compress>
-
-
-
+</resource></#escape></#compress>

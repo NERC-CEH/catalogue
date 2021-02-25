@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.ex
 /**
  * Test Upload Controller filenames JSON endpoint
  */
+
+@Ignore
 @ActiveProfiles({"development", "upload:simple"})
 @TestPropertySource("UploadControllerTest.properties")
 @WebAppConfiguration
