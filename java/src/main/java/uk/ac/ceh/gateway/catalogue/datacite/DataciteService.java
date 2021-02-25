@@ -125,12 +125,12 @@ public class DataciteService {
      * @return string containing a doi metadata request, or null if nothing there
      */
     public String getDoiMetadata(GeminiDocument document) {
-        String doi = getDoi(document);
-        if (doi != null) {
+        if (getDoi(document).isPresent()) {
             val url = UriComponentsBuilder
                     .fromHttpUrl(api)
-                    .pathSegment(doi)
+                    .pathSegment(prefix, document.getId())
                     .toUriString();
+            log.debug("Url to retrieve DOI from Datacite: {}", url);
             try {
                 HttpHeaders headers = withBasicAuth(username, password);
                 headers.set("Accept", "application/vnd.datacite.datacite+xml");
@@ -145,8 +145,7 @@ public class DataciteService {
             catch(RestClientException ex) {
                 throw new DataciteException("Failed to obtain datacite metadata", ex);
             }
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -228,7 +227,7 @@ public class DataciteService {
      * @return true if the GeminiDocument has already been submitted for a doi
      */
     public boolean isDatacited(GeminiDocument document) {
-        return isDatacitable(document) && hasDoi(document);
+        return isDatacitable(document) && getDoi(document).isPresent();
     }
 
     /**
@@ -237,22 +236,17 @@ public class DataciteService {
      * @return true if the GeminiDocument can be submitted for a doi
      */
     public boolean isDataciteMintable(GeminiDocument document) {
-        return isDatacitable(document) && !hasDoi(document);
+        return isDatacitable(document) && getDoi(document).isEmpty();
     }
 
-    private boolean hasDoi(GeminiDocument document) {
-        return getDoi(document) != null;
-    }
-
-    private String getDoi(GeminiDocument document) {
+    private Optional<String> getDoi(GeminiDocument document) {
         return Optional.ofNullable(document.getResourceIdentifiers())
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter((i) -> i.getCodeSpace().equals("doi:"))
-                .filter((i) -> i.getCode().startsWith(prefix))
                 .map(ResourceIdentifier::getCode)
-                .findFirst()
-                .orElse(null);
+                .filter(code -> code.startsWith(prefix))
+                .findFirst();
     }
 
     /**

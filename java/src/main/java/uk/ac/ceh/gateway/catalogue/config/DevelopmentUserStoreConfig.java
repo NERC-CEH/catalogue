@@ -138,7 +138,7 @@ public class DevelopmentUserStoreConfig {
         val user = new CatalogueUser()
             .setUsername("eidc-publisher")
             .setEmail("eidc-publisher@ceh.ac.uk");
-        addUserToGroup(user, EIDC_EDITOR, EIDC_PUBLISHER);
+        addUserToGroup(user, DATACITE_ROLE, EIDC_EDITOR, EIDC_PUBLISHER);
         userStore().addUser(user, "password");
     }
 

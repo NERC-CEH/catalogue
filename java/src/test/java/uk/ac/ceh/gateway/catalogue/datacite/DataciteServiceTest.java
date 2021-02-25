@@ -15,6 +15,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
@@ -209,5 +210,24 @@ public class DataciteServiceTest {
         document.setId(ID);
 
         return document;
+    }
+
+    @Test
+    public void canGetDoiMetadata() {
+        //given
+        val document = getGeminiDocument();
+        document.setResourceIdentifiers(Arrays.asList(
+            ResourceIdentifier.builder().codeSpace("doi:").code(doiPrefix + "/" + ID).build()
+        ));
+        mockServer.expect(requestTo("https://example.com/doi/10.8268/d4bdc836-5b89-44c5-aca2-2880a5d5a5be"))
+            .andExpect(method(HttpMethod.GET))
+            .andExpect(header("accept", "application/vnd.datacite.datacite+xml"))
+            .andRespond(withSuccess());
+
+        //when
+        service.getDoiMetadata(document);
+
+        //then
+        mockServer.verify();
     }
 }
