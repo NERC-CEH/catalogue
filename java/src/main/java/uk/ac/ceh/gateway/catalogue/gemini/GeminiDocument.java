@@ -223,4 +223,13 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .map(BoundingBox::getWkt)
             .collect(Collectors.toList());
     }
+
+    public int getIncomingCitationCount(){
+
+        List incomingCitations = this.getSupplemental().stream()
+                .filter(s -> s.getType() == "isReferencedBy" ||
+                        s.getType() == "isSupplementTo").collect(Collectors.toList());
+        return incomingCitations.size();
+    }
+
 }

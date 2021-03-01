@@ -1,19 +1,36 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.internal.util.reflection.FieldSetter;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class GeminiDocumentTest {
+
+    private Supplemental supplemental;
+    private Supplemental isReferencedBy;
+    private Supplemental isSupplementTo;
+
     @Test
     public void checkIfIsMapViewableIfGetCapabilitiesOnlineResourceExists() {
         //Given
@@ -89,5 +106,41 @@ public class GeminiDocumentTest {
         //Then
         assertThat("MetadataDateTime should be empty string", actual, equalTo(""));
         
+    }
+
+    @Test
+    public void testGetIncomingCitationCount() {
+        // Given
+        GeminiDocument document = new GeminiDocument();
+        supplemental = Supplemental.builder().name("foo").type("other").build();
+        isReferencedBy = Supplemental.builder().name("foo").type("isReferencedBy").build();
+        isSupplementTo = Supplemental.builder().name("foo").type("isSupplementTo").build();
+        List<Supplemental> supplementals = new ArrayList<>();
+        supplementals.add(supplemental);
+        supplementals.add(isReferencedBy);
+        supplementals.add(isSupplementTo);
+        document.setSupplemental(supplementals);
+
+        // When
+        int output = document.getIncomingCitationCount();
+
+        // Then
+        assertThat(output, is(2));
+    }
+
+    @Test
+    public void testGetIncomingCitationCount_ShouldBeEmpty() {
+        // Given
+        GeminiDocument document = new GeminiDocument();
+        supplemental = Supplemental.builder().name("foo").type("other").build();
+        List<Supplemental> supplementals = new ArrayList<>();
+        supplementals.add(supplemental);
+        document.setSupplemental(supplementals);
+
+        // When
+        int output = document.getIncomingCitationCount();
+
+        // Then
+        assertThat(output, is(0));
     }
 }

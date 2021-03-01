@@ -75,7 +75,7 @@
     <field name="authorOrcid" type="orcids"/>
     <field name="authorRor" type="rors"/>
     <field name="catalogue" type="keywords" multiValued="false"/>
-    <field name="citationCount" type="pdouble"/>
+    <field name="citationCount" type="plong"/>
     <field name="condition" type="keywords" multiValued="false"/>
     <field name="description" type="text_general" multiValued="false"/>
     <field name="documentType" type="keywords" multiValued="false"/>
