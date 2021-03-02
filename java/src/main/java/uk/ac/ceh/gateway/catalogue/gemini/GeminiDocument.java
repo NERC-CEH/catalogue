@@ -1,27 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_SCHEMAORG_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.RDF_TTL_VALUE;
-import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.springframework.http.MediaType;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
@@ -29,6 +14,12 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
+import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
 @Data 
 @EqualsAndHashCode(callSuper = true)
@@ -224,12 +215,9 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toList());
     }
 
-    public int getIncomingCitationCount(){
-
-        List incomingCitations = this.getSupplemental().stream()
-                .filter(s -> s.getType() == "isReferencedBy" ||
-                        s.getType() == "isSupplementTo").collect(Collectors.toList());
-        return incomingCitations.size();
+    public long getIncomingCitationCount(){
+        return this.getSupplemental().stream().filter(s -> s.getFunction().equals("isReferencedBy") ||
+                s.getFunction().equals("isSupplementTo")).count();
     }
 
 }

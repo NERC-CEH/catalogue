@@ -12,7 +12,7 @@ import java.util.List;
 public class SolrIndex {
     protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 265;
     private @Field List<String> altTitle;
-    private @Field Number citationCount;
+    private @Field long incomingCitationCount;
     private @Field String description;
     private @Field String lineage;
     private @Field String resourceStatus;

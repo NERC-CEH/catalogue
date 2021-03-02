@@ -50,7 +50,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setAuthorName(grab(document.getAuthors(), ResponsibleParty::getIndividualName))
             .setAuthorOrcid(grab(document.getAuthors(), ResponsibleParty::getNameIdentifier))
             .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
-            .setCitationCount(document.getIncomingCitationCount())
+            .setIncomingCitationCount(document.getIncomingCitationCount())
             .setFunder(grab(document.getFunding(), Funding::getFunderName))
             .setGrant(grab(document.getFunding(), Funding::getAwardNumber))
             .setIndividual(grab(document.getResponsibleParties(), ResponsibleParty::getIndividualName))
