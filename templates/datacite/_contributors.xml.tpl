@@ -9,7 +9,7 @@
                 <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${contact.nameIdentifier}</nameIdentifier>
             </#if>
             <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
-                <affiliation affiliationIdentifier="${contact.organisationIdentifier}" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">${contact.organisationName}</affiliation>
+                <affiliation affiliationIdentifier="${contact.organisationIdentifier}" affiliationIdentifierScheme="ROR">${contact.organisationName}</affiliation>
             <#else>
                 <affiliation>${contact.organisationName}</affiliation>
             </#if>
@@ -27,7 +27,7 @@
         <contributor contributorType="RightsHolder">
         <contributorName nameType="Organizational">${contact.organisationName}</contributorName>
         <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
-            <nameIdentifier nameIdentifierScheme="ROR" schemeURI="http://ror.org/">${contact.organisationIdentifier}</nameIdentifier>
+            <nameIdentifier nameIdentifierScheme="ROR">${contact.organisationIdentifier}</nameIdentifier>
         </#if>
         </contributor>
     </#list>
@@ -37,7 +37,7 @@
         <contributor contributorType="HostingInstitution">
         <contributorName nameType="Organizational">${contact.organisationName}</contributorName>
         <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
-            <nameIdentifier nameIdentifierScheme="ROR" schemeURI="http://ror.org/">${contact.organisationIdentifier}</nameIdentifier>
+            <nameIdentifier nameIdentifierScheme="ROR">${contact.organisationIdentifier}</nameIdentifier>
         </#if>
         </contributor>
     </#list>

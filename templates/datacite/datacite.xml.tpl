@@ -100,7 +100,7 @@
         <funderName>${funder.funderName}</funderName>
         <#if funder.funderIdentifier?has_content>
           <#if funder.funderIdentifier?matches("^http(|s)://ror.org/[0-9a-z]+$")>
-            <funderIdentifier funderIdentifierType="Other">${funder.funderIdentifier}</funderIdentifier>
+            <funderIdentifier funderIdentifierType="ROR">${funder.funderIdentifier}</funderIdentifier>
           <#elseif funder.funderIdentifier?matches("^http(|s)://(|dx.)doi.org/10.13039/\\d+$")>
             <funderIdentifier funderIdentifierType="Crossref Funder">${funder.funderIdentifier}</funderIdentifier>
           <#else>
