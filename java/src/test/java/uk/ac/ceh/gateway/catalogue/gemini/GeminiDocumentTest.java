@@ -13,10 +13,6 @@ import static org.mockito.Mockito.*;
 
 public class GeminiDocumentTest {
 
-    private Supplemental supplemental;
-    private Supplemental isReferencedBy;
-    private Supplemental isSupplementTo;
-
     @Test
     public void checkIfIsMapViewableIfGetCapabilitiesOnlineResourceExists() {
         //Given
@@ -98,9 +94,9 @@ public class GeminiDocumentTest {
     public void testGetIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        supplemental = Supplemental.builder().name("foo").function("other").build();
-        isReferencedBy = Supplemental.builder().name("foo").function("isReferencedBy").build();
-        isSupplementTo = Supplemental.builder().name("foo").function("isSupplementTo").build();
+        Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
+        Supplemental isReferencedBy = Supplemental.builder().name("foo").function("isReferencedBy").build();
+        Supplemental isSupplementTo = Supplemental.builder().name("foo").function("isSupplementTo").build();
         List<Supplemental> supplementals = new ArrayList<>();
         supplementals.add(supplemental);
         supplementals.add(isReferencedBy);
@@ -119,9 +115,24 @@ public class GeminiDocumentTest {
     public void testGetIncomingCitationCount_ShouldBeEmpty() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        supplemental = Supplemental.builder().name("foo").function("other").build();
+        Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
         List<Supplemental> supplementals = new ArrayList<>();
         supplementals.add(supplemental);
+        document.setSupplemental(supplementals);
+        long expected = 0;
+
+        // When
+        long output = document.getIncomingCitationCount();
+
+        // Then
+        assertThat(output, is(expected));
+    }
+
+    @Test
+    public void testGetIncomingCitationCount_NoSupplemental() {
+        // Given
+        GeminiDocument document = new GeminiDocument();
+        List<Supplemental> supplementals = new ArrayList<>();
         document.setSupplemental(supplementals);
         long expected = 0;
 

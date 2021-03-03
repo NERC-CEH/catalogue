@@ -32,6 +32,7 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
     @Template(called="schema.org/schema.org.tpl",   whenRequestedAs=RDF_SCHEMAORG_VALUE)
 })
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
+    private static final Set<String> ALLOWED_CITATION_FUNCTIONS = Set.of("isReferencedBy","isSupplementTo");
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, lineage, reasonChanged,
         metadataStandardName, metadataStandardVersion;
@@ -215,9 +216,12 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toList());
     }
 
-    public long getIncomingCitationCount(){
-        return this.getSupplemental().stream().filter(s -> s.getFunction().equals("isReferencedBy") ||
-                s.getFunction().equals("isSupplementTo")).count();
+    public long getIncomingCitationCount() {
+        return Optional.ofNullable(supplemental)
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(s -> ALLOWED_CITATION_FUNCTIONS.contains(s.getFunction()))
+                .count();
     }
-
+    
 }
