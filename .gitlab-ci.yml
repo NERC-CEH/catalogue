@@ -64,19 +64,20 @@ build_web:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   only:
     - tags
-    - branches@EDS-2185-installation
 
 build_application:
   <<: *deployment_definition
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_SLUG .
-    - docker push $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_SLUG
+    - docker build -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+    - docker tag $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_SLUG
+    - docker push $CI_REGISTRY_IMAGE/app
 
 build_solr:
   <<: *deployment_definition
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_SLUG solr
-    - docker push $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_SLUG
+    - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA solr
+    - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_SLUG
+    - docker push $CI_REGISTRY_IMAGE/solr
 
 .puppet_deploy: &puppet_deployment_definition
   image: ruby:2
