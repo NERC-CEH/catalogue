@@ -3,7 +3,7 @@
     <div id="document-metrics">
       <h2><a href="#section-supplemental">
       <i class="fas fa-book-reader pull-right"></i>
-      <span>${incomingCitationCount}</span> Incoming citation<#if incomingCitationCount gt 1>s</#if>
+      <span>${incomingCitationCount}</span> citation<#if incomingCitationCount gt 1>s</#if>
       </a></h2>
     </div>
   </#if>
