@@ -1,11 +1,9 @@
 variables:
-  CONTAINER_APPLICATION_IMAGE: registry.gitlab.ceh.ac.uk/eip/catalogue:app-$CI_BUILD_REF_NAME
-  CONTAINER_SOLR_IMAGE:        registry.gitlab.ceh.ac.uk/eip/catalogue:solr-$CI_BUILD_REF_NAME
-  DOCKER_DAEMON_ARGS:          -g /cache/docker
+  DOCKER_DAEMON_ARGS: -g /cache/docker
   DOCKER_DRIVER: overlay2
   DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
   NODE_KEY: catalogue_version
-  NODE_VALUE: $CI_BUILD_REF_NAME
+  NODE_VALUE: $CI_COMMIT_REF_SLUG
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 cache:
@@ -53,28 +51,32 @@ build_web:
 
 .deployment_template: &deployment_definition # Hidden deployment definition for docker builds
   stage: docker
-  image: gitlab/dind
+  image: docker:20.10.5
+  services:
+    - name: docker:20.10.5-dind
+      alias: docker
   needs:
     - job: build_java
       artifacts: true
     - job: build_web
       artifacts: true
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   only:
     - tags
+    - branches@EDS-2185-installation
 
 build_application:
   <<: *deployment_definition
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.ceh.ac.uk
-    - docker build -t $CONTAINER_APPLICATION_IMAGE .
-    - docker push $CONTAINER_APPLICATION_IMAGE
+    - docker build -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_SLUG .
+    - docker push $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_SLUG
 
 build_solr:
   <<: *deployment_definition
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.ceh.ac.uk
-    - docker build -t $CONTAINER_SOLR_IMAGE solr
-    - docker push $CONTAINER_SOLR_IMAGE
+    - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_SLUG solr
+    - docker push $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_SLUG
 
 .puppet_deploy: &puppet_deployment_definition
   image: ruby:2
