@@ -70,14 +70,14 @@ build_application:
   script:
     - docker build -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
     - docker tag $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_SLUG
-    - docker push $CI_REGISTRY_IMAGE/app
+    - docker push $CI_REGISTRY_IMAGE/app --all-tags
 
 build_solr:
   <<: *deployment_definition
   script:
     - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA solr
     - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_SLUG
-    - docker push $CI_REGISTRY_IMAGE/solr
+    - docker push $CI_REGISTRY_IMAGE/solr --all-tags
 
 .puppet_deploy: &puppet_deployment_definition
   image: ruby:2
