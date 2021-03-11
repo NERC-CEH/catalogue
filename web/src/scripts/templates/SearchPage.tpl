@@ -4,35 +4,52 @@
  IMPORTANT: If you change the structure of this, please update the 
  corresponding freemarker template /templates/search/_page.ftl
 */ %>
-<div class="search-results-heading">
+<div class="results__header">
   <span id="num-records"><%=numFound%></span> records found
 </div>
+
+<div class="results__list">
 <% _.each(results, function(result) { %>
 
-  <div class="result result-<%=result.state%>" id="<%=result.identifier%>">
-    <h2 class="resultTitle">
-      <small>
-      <% if (result.condition != '') {  %>
-        <span class="label-<%=result.condition%>"><%=result.condition%></span>
-      <% } %>
+  <a class="result result--<%=result.state%> <% if (result.resourceStatus != '') { %>result--<%=result.resourceStatus%><% } %>" id="<%=result.identifier%>" href="/documents/<%=result.identifier%>">
+      
+    <div class="result__tags">
+      <div class="recordType">
       <% if (result.documentType != '' && result.documentType == "LINK_DOCUMENT") {  %>
-       <i class="fas fa-link"></i> Linked 
+      <i class="fas fa-link"></i> Linked 
       <% } %>
         <span><%=result.recordType%></span>
+      </div>
+      
       <% if (result.resourceStatus != '') {  %>
-        <span class="label-<%=result.resourceStatus%>"><%=result.resourceStatus%></span>
+        <div class="resourceStatus"><%=result.resourceStatus%></div>
       <% } %>
-      <% if(result.state == 'draft') { %>
-        <span class="text-draft"><b>DRAFT</b></span>
-      <% } else if(result.state == 'pending') { %>
-        <span class="text-pending"><b>PENDING PUBLICATION</b></span>
-      <% } %>
-      </small><br>
-      <a href="/documents/<%=result.identifier%>" class="title"><%=result.title%></a>
-    </h2>
-    <div class="resultDescription"><%=result.shortenedDescription%></div>
-  </div>
+
+      <div class="state">
+        <% if(result.state == 'draft') { %>
+          <span class="text-draft"><b>DRAFT</b></span>
+        <% } else if(result.state == 'pending') { %>
+          <span class="text-pending"><b>PENDING PUBLICATION</b></span>
+        <% } %>
+      </div>
+
+      <% if (typeof result.condition != "undefined" && result.condition != '') {  %>
+        <div class="condition"><%=result.condition%></div>
+      <% } %> 
+    </div>
+
+    <div class="result__title"><%=result.title%></div>
+    <div class="result__description"><%=result.shortenedDescription%></div>
+    
+    <% if(result.incomingCitationCount != 0) { %>
+      <div class="result__citationCount"><%=result.incomingCitationCount%> citation<% if(result.incomingCitationCount >1) { %>s<% } %></div>
+     <% } %>
+ 
+  </a>
 <% }); %>
+</div>
+
+<div class="results__footer">
 <ul class="pager">
   <% if(prevPage) { %>
     <li class="previous"><a href="<%=prevPage%>">&larr; Previous</a></li>
@@ -42,3 +59,4 @@
     <li class="next"><a href="<%=nextPage%>">Next &rarr;</a></li>
   <% } %>
 </ul>
+</div>
