@@ -5,33 +5,46 @@
   IMPORTANT: If you change the structure of this, please update the corresponding 
   javascript template /web/src/scripts/templates/SearchPage.tpl
 -->
-<div class="search-results-heading">
+<div class="results__header">
   <span id="num-records">${numFound}</span> records found
 </div>
+
+<div class="results__list">
 <#list results as result>
-  <div class="result result-${result.state}" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
-    <h2 class="resultTitle">
-      <small>
-        <#if (result.condition??) >
-          <span class="label-${result.condition}">${result.condition}</span>
-        </#if>
-        <#if (result.documentType?? && result.documentType == "LINK_DOCUMENT") >
-          <i class="fas fa-link"></i> Linked 
-        </#if>
-        <span>${result.recordType!""}</span>
-        <#if (result.resourceStatus??) >
-          <span class="label-${result.resourceStatus}">${result.resourceStatus}</span>
-        </#if>
-             
-        <#if (result.state == 'draft' || result.state == 'pending') >
-          <span class="text-${result.state}"><b>${codes.lookup('publication.state', result.state)?upper_case!''}</b> </span>
-        </#if>
-      </small><br>
-      <a href="/${docroot}/${result.identifier}" class="title">${result.title}</a>
-    </h2> 
-    <div class="resultDescription">${result.shortenedDescription}</div>
-  </div>
+  <a href="/${docroot}/${result.identifier}" class="result result--${result.state} <#if (result.resourceStatus??)>result--${result.resourceStatus}</#if>" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
+   
+    <div class="result__tags">
+      <div class="recordType">
+      <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
+        <i class="fas fa-link"></i> Linked 
+      </#if>
+      ${result.recordType!""}
+      </div>
+      
+      <#if result.resourceStatus?? >
+          <div class="resourceStatus">${result.resourceStatus}</div>
+      </#if>
+      
+      <div class="state">${codes.lookup('publication.state', result.state)?upper_case!''}</div>
+      
+      <#if result.condition?? >
+        <div class="condition">${result.condition}</div>
+      </#if>
+      
+    </div>
+        
+    <div class="result__title">${result.title}</div> 
+    <div class="result__description">${result.shortenedDescription}</div>
+    
+    <#if result.incomingCitationCount gt 0 >
+      <div class="result__citationCount">${result.incomingCitationCount} citation<#if result.incomingCitationCount gt 1 >s</#if></div>
+    </#if>
+
+  </a>
 </#list>
+</div>
+
+<div class="results__footer">
 <ul class="pager">
   <#if prevPage?has_content>
     <li class="previous"><a href="${prevPage}">&larr; Previous</a></li>
@@ -41,3 +54,4 @@
     <li class="next"><a href="${nextPage}">Next &rarr;</a></li>
   </#if>
 </ul>
+</div>
