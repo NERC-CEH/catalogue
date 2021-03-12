@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -17,22 +16,24 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.stream.Collectors;
 
 @Slf4j
-@ToString
+@ToString(of = "address")
 @Service
 @Profile("auth:datalabs")
 public class DataLabsAuthenticationProvider implements AuthenticationProvider {
 
     private final RestTemplate restTemplate;
-    private final String address;
+    private final URI address;
 
     public DataLabsAuthenticationProvider(@Qualifier("normal") RestTemplate restTemplate,
-                                          @Value("${datalabs.userpermissions}") String address) {
+                                          @Value("${datalabs.userPermissions}") String address) {
         this.restTemplate = restTemplate;
-        this.address = address;
+        this.address = UriComponentsBuilder.fromHttpUrl(address).build().toUri();
         log.info("Creating {}", this);
     }
 
@@ -43,20 +44,21 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
             return null;
         }
 
-        DataLabsUserPermissions dataLabsUserPermissions =
+        val dataLabsUserPermissions =
                 this.retrievePermissions(authentication.getCredentials().toString());
 
         val grantedAuthorities = dataLabsUserPermissions.getUserPermissions().stream()
                 .map(this::mapDataLabsPermissionsToCatalogueRoles)
                 .collect(Collectors.toList());
 
-        PreAuthenticatedAuthenticationToken preAuthenticatedAuthenticationToken =
-                new PreAuthenticatedAuthenticationToken(authentication.getPrincipal(),
-                        authentication.getCredentials(), grantedAuthorities);
+        val token = new PreAuthenticatedAuthenticationToken(
+                authentication.getPrincipal(),
+                authentication.getCredentials(),
+                grantedAuthorities
+        );
 
-        preAuthenticatedAuthenticationToken.setAuthenticated(true);
-
-        return preAuthenticatedAuthenticationToken;
+        token.setAuthenticated(true);
+        return token;
     }
 
     @Override
@@ -65,13 +67,16 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
     }
 
     private DataLabsUserPermissions retrievePermissions(String accessToken) {
-        HttpHeaders headers = new HttpHeaders();
+        val headers = new HttpHeaders();
         headers.add("Authorization", "Bearer" + accessToken);
 
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        ResponseEntity<DataLabsUserPermissions> response = restTemplate.exchange(this.address, HttpMethod.GET,
-                request, DataLabsUserPermissions.class);
-
+        val request = new HttpEntity<>(headers);
+        val response = restTemplate.exchange(
+                this.address,
+                HttpMethod.GET,
+                request,
+                DataLabsUserPermissions.class
+        );
         return response.getBody();
     }
 

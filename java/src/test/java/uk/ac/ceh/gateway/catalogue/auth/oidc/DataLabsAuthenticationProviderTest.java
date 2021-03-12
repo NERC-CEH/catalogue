@@ -25,7 +25,7 @@ public class DataLabsAuthenticationProviderTest {
 
     private static final String PRINCIPAL = "auth0|5a0eae97a392a940775b40d1";
 
-    private static final String ADDRESS = "address";
+    private static final String ADDRESS = "https://example.com";
 
     private DataLabsAuthenticationProvider target;
 
@@ -58,6 +58,26 @@ public class DataLabsAuthenticationProviderTest {
         assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_PUBLISHER"), is(equalTo(true)));
         assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_EDITOR"), is(equalTo(true)));
         mockServer.verify();
+    }
+
+    @Test
+    @SneakyThrows
+    public void canCopeWithCurlyBracketsInAddress() {
+        //given
+        val address = "https://example.com/api?query={userPermissions}";
+        val restTemplate = new RestTemplate();
+        val service = new DataLabsAuthenticationProvider(restTemplate, address);
+        val localMockServer = MockRestServiceServer.createServer(restTemplate);
+        val response = IOUtils.toByteArray(getClass().getResource("userPermissions.json"));
+        localMockServer.expect(requestTo("https://example.com/api?query=%7BuserPermissions%7D"))
+            .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
+        val authentication = new PreAuthenticatedAuthenticationToken(PRINCIPAL, CREDENTIALS);
+
+        //when
+        service.authenticate(authentication);
+
+        //then
+        localMockServer.verify();
     }
 
     @Test
