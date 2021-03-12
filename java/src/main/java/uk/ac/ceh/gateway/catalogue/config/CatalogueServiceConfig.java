@@ -11,7 +11,6 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
 @Configuration
 public class CatalogueServiceConfig {
-    public static final String DEPOSIT_REQUEST_DOCUMENT = "DEPOSIT_REQUEST_DOCUMENT";
     public static final String GEMINI_DOCUMENT = "GEMINI_DOCUMENT";
     public static final String EF_DOCUMENT = "EF_DOCUMENT";
     public static final String IMP_DOCUMENT = "IMP_DOCUMENT";

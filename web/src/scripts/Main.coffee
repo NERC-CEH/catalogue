@@ -36,8 +36,6 @@ define [
   'cs!views/SampleArchiveEditorView'
   'cs!views/ErammpModelEditorView'
   'cs!views/ErammpDatacubeEditorView'
-  'cs!models/DepositRequestModel'
-  'cs!views/DepositRequestView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'cs!views/DocumentUploadView'
@@ -48,7 +46,7 @@ define [
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, DepositRequestModel, DepositRequestView,
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView,
     ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel, SimpleUploadView
 ) ->
 
@@ -70,7 +68,6 @@ define [
     
     do @initCatalogue if $('.catalogue-control').length
     do @initClipboard if $('.clipboard-copy').length
-    do @initDepositRequest if $('#deposit-request').length
     do @initDocumentUpload if $('#document-upload').length
     do @initEditor if $('.edit-control').length
     do @initGeometryMap if $('#geometry-map').length
@@ -110,14 +107,7 @@ define [
       el: '.clipboard-copy'
 
   ###
-  Initialize Deposit Request
-  ###
-  initDepositRequest: ->
-    app = new DepositRequestModel
-    view = new DepositRequestView model: app
-
-  ###
-  Initalize Document Upload using Hubbub service
+  Initialize Document Upload using Hubbub service
   ###
   initDocumentUpload: ->
     id = $('#document-upload').data('guid')

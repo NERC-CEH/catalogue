@@ -7,9 +7,6 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.template.TemplateExceptionHandler;
 import lombok.SneakyThrows;
@@ -173,9 +170,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${documents.baseUri}") private String baseUri;
     @Value("${data.repository.location}") private String dataRepositoryLocation;
     @Value("${maps.location}") private File mapsLocation;
-    @Value("${jira.username}") private String jiraUsername;
-    @Value("${jira.password}") private String jiraPassword;
-    @Value("${jira.address}") private String jiraAddress;
     @Value("${jena.location}") String location;
     @Value("${schemas.location}") String schemas;
     @Value("${solr.server.documents.url}") String solrDocumentServerUrl;
@@ -316,7 +310,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         shared.put("downloadOrderDetails", downloadOrderDetailsService());
         shared.put("geminiHelper", geminiExtractor());
         shared.put("jena", jenaLookupService());
-        shared.put("jira", jiraService());
         shared.put("mapServerDetails", mapServerDetailsService());
         shared.put("metadataQuality", metadataQualityService());
         shared.put("permission", permissionService);
@@ -426,14 +419,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public JiraService jiraService() {
-        Client client = Client.create();
-        client.addFilter(new HTTPBasicAuthFilter(jiraUsername, jiraPassword));
-        WebResource jira = client.resource(jiraAddress);
-        return new JiraService(jira);
-    }
-
-    @Bean
     public DocumentReadingService documentReadingService() {
         return new MessageConverterReadingService()
                 .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeNameLookupService()))
@@ -444,7 +429,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
-                .register(DEPOSIT_REQUEST_DOCUMENT, DepositRequestDocument.class)
                 .register(GEMINI_DOCUMENT, GeminiDocument.class)
                 .register(EF_DOCUMENT, BaseMonitoringType.class)
                 .register(IMP_DOCUMENT, ImpDocument.class)

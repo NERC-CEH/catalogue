@@ -4,10 +4,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
-import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
-import uk.ac.ceh.gateway.catalogue.model.JiraIssueCreate;
 import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
 
 import javax.ws.rs.core.MediaType;
@@ -21,16 +18,6 @@ public class JiraService {
     public JiraService(WebResource resource) {
         this.resource = resource;
         log.info("Creating {}", this);
-    }
-
-    public JiraIssueCreate create (JiraIssueBuilder builder) {
-        String path = "issue";
-        val input = builder.build();
-        return resource
-            .path(path)
-            .accept(MediaType.APPLICATION_JSON_TYPE)
-            .type(MediaType.APPLICATION_JSON_TYPE)
-            .post(JiraIssueCreate.class, input);
     }
 
     public void comment (String key, String comment) {
