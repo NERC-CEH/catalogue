@@ -40,7 +40,12 @@ HEALTHCHECK CMD curl --fail http://localhost:8080/eidc/documents || exit 1
 FROM alpine/git:v2.30.1 AS datastore
 COPY fixtures/datastore/REV-1 /datastore
 WORKDIR /datastore
-RUN git init && git config user.email "test@example.com" && git config user.name "test" && git add -A && git commit -m "data loading"
+RUN git config --global init.defaultBranch main \
+    && git init \
+    && git config user.email "test@example.com" \
+    && git config user.name "test" \
+    && git add -A \
+    && git commit -m "data loading"
 
 # Development image
 FROM prod AS dev
