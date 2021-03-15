@@ -25,15 +25,14 @@ test_java:
     reports:
       junit: java/build/test-results/test/**/TEST-*.xml
 
-# Disabled test_web as javascript testing broken
-.test_web:
+test_web:
   stage: test
   image: node:15.11.0-stretch
   script:
     - cd web
     - npm ci
     - ./node_modules/.bin/bower install --allow-root
-    - ./node_modules/.bin/grunt test
+    - ./node_modules/.bin/grunt prep build    # test not actually run as are broken
 
 build_application:
   stage: build
